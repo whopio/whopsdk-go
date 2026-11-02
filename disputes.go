@@ -5,41 +5,71 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
 
 var (
-	listDisputesRequestFieldAccountID     = big.NewInt(1 << 0)
-	listDisputesRequestFieldFirst         = big.NewInt(1 << 1)
-	listDisputesRequestFieldAfter         = big.NewInt(1 << 2)
-	listDisputesRequestFieldLast          = big.NewInt(1 << 3)
-	listDisputesRequestFieldBefore        = big.NewInt(1 << 4)
-	listDisputesRequestFieldOrder         = big.NewInt(1 << 5)
-	listDisputesRequestFieldDirection     = big.NewInt(1 << 6)
-	listDisputesRequestFieldStatus        = big.NewInt(1 << 7)
-	listDisputesRequestFieldCurrency      = big.NewInt(1 << 8)
-	listDisputesRequestFieldCreatedBefore = big.NewInt(1 << 9)
-	listDisputesRequestFieldCreatedAfter  = big.NewInt(1 << 10)
+	acceptDisputesRequestFieldID = big.NewInt(1 << 0)
+)
+
+type AcceptDisputesRequest struct {
+	// The dispute ID (`dspt_` tag).
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (a *AcceptDisputesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AcceptDisputesRequest) SetID(id string) {
+	a.ID = id
+	a.require(acceptDisputesRequestFieldID)
+}
+
+var (
+	listDisputesRequestFieldAccountID                = big.NewInt(1 << 0)
+	listDisputesRequestFieldFirst                    = big.NewInt(1 << 1)
+	listDisputesRequestFieldAfter                    = big.NewInt(1 << 2)
+	listDisputesRequestFieldLast                     = big.NewInt(1 << 3)
+	listDisputesRequestFieldBefore                   = big.NewInt(1 << 4)
+	listDisputesRequestFieldOrder                    = big.NewInt(1 << 5)
+	listDisputesRequestFieldDirection                = big.NewInt(1 << 6)
+	listDisputesRequestFieldStatus                   = big.NewInt(1 << 7)
+	listDisputesRequestFieldCurrency                 = big.NewInt(1 << 8)
+	listDisputesRequestFieldCreatedBefore            = big.NewInt(1 << 9)
+	listDisputesRequestFieldCreatedAfter             = big.NewInt(1 << 10)
+	listDisputesRequestFieldQuery                    = big.NewInt(1 << 11)
+	listDisputesRequestFieldIncludeConnectedAccounts = big.NewInt(1 << 12)
 )
 
 type ListDisputesRequest struct {
 	// Only disputes filed against this account (`biz_` tag). Omit it to cover every account you can read.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// The number of disputes to return (default 20, max 100).
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor; returns disputes after this position.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of disputes to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// A cursor; returns disputes before this position.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 	// The field to sort disputes by.
 	Order *ListDisputesRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
 	Direction *ListDisputesRequestDirection `json:"-" url:"direction,omitempty"`
-	// Only disputes in these statuses. Repeat the parameter to pass several — one paginated list covers all of them. Covers both chargebacks and inquiries at each stage. A `needs_response` dispute whose evidence deadline has passed reports and filters as `under_review` instead.
+	// Only disputes in these statuses. Repeat the parameter to pass several — one paginated list covers all of them. Inquiries match only the `warning_` statuses. A `needs_response` dispute whose evidence deadline has passed reports and filters as `under_review` instead.
 	Status []*ListDisputesRequestStatusItem `json:"-" url:"status,omitempty"`
 	// Only disputes in this three-letter ISO currency.
 	Currency *string `json:"-" url:"currency,omitempty"`
@@ -47,16 +77,22 @@ type ListDisputesRequest struct {
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only disputes opened after this ISO 8601 timestamp.
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
+	// Search disputes by dispute ID, payment ID, user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
+	Query *string `json:"-" url:"query,omitempty"`
+	// Also cover the account's connected accounts. Requires `account_id`, and is a 400 without it. Without `query`, covers the disputes of the account and every connected account, in any order. The listing is cut off after 10 seconds; add a `query` to narrow it. With `query`, matches on dispute, payment, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`); free-text queries such as a name search only the named account. Connected accounts' disputes are returned only for connected accounts you can read disputes on.
+	IncludeConnectedAccounts *bool `json:"-" url:"include_connected_accounts,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (l *ListDisputesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -136,6 +172,20 @@ func (l *ListDisputesRequest) SetCreatedAfter(createdAfter *string) {
 	l.require(listDisputesRequestFieldCreatedAfter)
 }
 
+// SetQuery sets the Query field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListDisputesRequest) SetQuery(query *string) {
+	l.Query = query
+	l.require(listDisputesRequestFieldQuery)
+}
+
+// SetIncludeConnectedAccounts sets the IncludeConnectedAccounts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListDisputesRequest) SetIncludeConnectedAccounts(includeConnectedAccounts *bool) {
+	l.IncludeConnectedAccounts = includeConnectedAccounts
+	l.require(listDisputesRequestFieldIncludeConnectedAccounts)
+}
+
 var (
 	retrieveDisputesRequestFieldID = big.NewInt(1 << 0)
 )
@@ -149,10 +199,12 @@ type RetrieveDisputesRequest struct {
 }
 
 func (r *RetrieveDisputesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -175,10 +227,12 @@ type SubmitDisputesRequest struct {
 }
 
 func (s *SubmitDisputesRequest) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -189,38 +243,14 @@ func (s *SubmitDisputesRequest) SetID(id string) {
 }
 
 var (
-	submitEvidenceDisputeRequestFieldID = big.NewInt(1 << 0)
-)
-
-type SubmitEvidenceDisputeRequest struct {
-	// The unique identifier of the dispute to submit to the payment processor for review.
-	ID string `json:"-" url:"-"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (s *SubmitEvidenceDisputeRequest) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
-	}
-	s.explicitFields.Or(s.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SubmitEvidenceDisputeRequest) SetID(id string) {
-	s.ID = id
-	s.require(submitEvidenceDisputeRequestFieldID)
-}
-
-var (
-	summaryDisputesRequestFieldGroups        = big.NewInt(1 << 0)
-	summaryDisputesRequestFieldAccountID     = big.NewInt(1 << 1)
-	summaryDisputesRequestFieldStatus        = big.NewInt(1 << 2)
-	summaryDisputesRequestFieldCurrency      = big.NewInt(1 << 3)
-	summaryDisputesRequestFieldCreatedBefore = big.NewInt(1 << 4)
-	summaryDisputesRequestFieldCreatedAfter  = big.NewInt(1 << 5)
+	summaryDisputesRequestFieldGroups                   = big.NewInt(1 << 0)
+	summaryDisputesRequestFieldAccountID                = big.NewInt(1 << 1)
+	summaryDisputesRequestFieldStatus                   = big.NewInt(1 << 2)
+	summaryDisputesRequestFieldCurrency                 = big.NewInt(1 << 3)
+	summaryDisputesRequestFieldCreatedBefore            = big.NewInt(1 << 4)
+	summaryDisputesRequestFieldCreatedAfter             = big.NewInt(1 << 5)
+	summaryDisputesRequestFieldQuery                    = big.NewInt(1 << 6)
+	summaryDisputesRequestFieldIncludeConnectedAccounts = big.NewInt(1 << 7)
 )
 
 type SummaryDisputesRequest struct {
@@ -236,16 +266,22 @@ type SummaryDisputesRequest struct {
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only disputes opened after this ISO 8601 timestamp.
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
+	// Search disputes by dispute ID, payment ID, user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
+	Query *string `json:"-" url:"query,omitempty"`
+	// Also cover the account's connected accounts. Requires `account_id`, and is a 400 without it. Without `query`, covers the disputes of the account and every connected account, in any order. The listing is cut off after 10 seconds; add a `query` to narrow it. With `query`, matches on dispute, payment, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`); free-text queries such as a name search only the named account. Connected accounts' disputes are returned only for connected accounts you can read disputes on.
+	IncludeConnectedAccounts *bool `json:"-" url:"include_connected_accounts,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (s *SummaryDisputesRequest) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetGroups sets the Groups field and marks it as non-optional;
@@ -290,45 +326,75 @@ func (s *SummaryDisputesRequest) SetCreatedAfter(createdAfter *string) {
 	s.require(summaryDisputesRequestFieldCreatedAfter)
 }
 
+// SetQuery sets the Query field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryDisputesRequest) SetQuery(query *string) {
+	s.Query = query
+	s.require(summaryDisputesRequestFieldQuery)
+}
+
+// SetIncludeConnectedAccounts sets the IncludeConnectedAccounts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryDisputesRequest) SetIncludeConnectedAccounts(includeConnectedAccounts *bool) {
+	s.IncludeConnectedAccounts = includeConnectedAccounts
+	s.require(summaryDisputesRequestFieldIncludeConnectedAccounts)
+}
+
 var (
-	disputeFieldAccountID                   = big.NewInt(1 << 0)
-	disputeFieldAmount                      = big.NewInt(1 << 1)
-	disputeFieldBuyer                       = big.NewInt(1 << 2)
-	disputeFieldCreatedAt                   = big.NewInt(1 << 3)
-	disputeFieldCurrency                    = big.NewInt(1 << 4)
-	disputeFieldEvidence                    = big.NewInt(1 << 5)
-	disputeFieldEvidenceDueAt               = big.NewInt(1 << 6)
-	disputeFieldEvidenceEditable            = big.NewInt(1 << 7)
-	disputeFieldEvidenceLockedReason        = big.NewInt(1 << 8)
-	disputeFieldEvidenceSubmittedAt         = big.NewInt(1 << 9)
-	disputeFieldGeneratedResponseAttachment = big.NewInt(1 << 10)
-	disputeFieldID                          = big.NewInt(1 << 11)
-	disputeFieldInquiry                     = big.NewInt(1 << 12)
-	disputeFieldIssuerComments              = big.NewInt(1 << 13)
-	disputeFieldPayment                     = big.NewInt(1 << 14)
-	disputeFieldPlanID                      = big.NewInt(1 << 15)
-	disputeFieldProductID                   = big.NewInt(1 << 16)
-	disputeFieldRapidDisputeResolution      = big.NewInt(1 << 17)
-	disputeFieldReason                      = big.NewInt(1 << 18)
-	disputeFieldReasonCode                  = big.NewInt(1 << 19)
-	disputeFieldStatus                      = big.NewInt(1 << 20)
-	disputeFieldUpdatedAt                   = big.NewInt(1 << 21)
+	disputeFieldAcceptable           = big.NewInt(1 << 0)
+	disputeFieldAccountID            = big.NewInt(1 << 1)
+	disputeFieldAmount               = big.NewInt(1 << 2)
+	disputeFieldBuyer                = big.NewInt(1 << 3)
+	disputeFieldCreatedAt            = big.NewInt(1 << 4)
+	disputeFieldCurrency             = big.NewInt(1 << 5)
+	disputeFieldEvidence             = big.NewInt(1 << 6)
+	disputeFieldEvidenceDueAt        = big.NewInt(1 << 7)
+	disputeFieldEvidenceEditable     = big.NewInt(1 << 8)
+	disputeFieldEvidenceLockedReason = big.NewInt(1 << 9)
+	disputeFieldEvidenceSubmittedAt  = big.NewInt(1 << 10)
+	disputeFieldFee                  = big.NewInt(1 << 11)
+	disputeFieldFeeCharged           = big.NewInt(1 << 12)
+	disputeFieldID                   = big.NewInt(1 << 13)
+	disputeFieldInquiry              = big.NewInt(1 << 14)
+	disputeFieldIssuerComments       = big.NewInt(1 << 15)
+	disputeFieldLineItems            = big.NewInt(1 << 16)
+	disputeFieldPayment              = big.NewInt(1 << 17)
+	disputeFieldProductID            = big.NewInt(1 << 18)
+	disputeFieldReason               = big.NewInt(1 << 19)
+	disputeFieldReasonCode           = big.NewInt(1 << 20)
+	disputeFieldStatus               = big.NewInt(1 << 21)
+	disputeFieldUpdatedAt            = big.NewInt(1 << 22)
+	disputeFieldVariantID            = big.NewInt(1 << 23)
 )
 
+// disputeNullableFields maps the wire names of Dispute's nullable fields (required or optional) to their field bits.
+var disputeNullableFields = map[string]*big.Int{
+	"account_id":             disputeFieldAccountID,
+	"evidence_due_at":        disputeFieldEvidenceDueAt,
+	"evidence_locked_reason": disputeFieldEvidenceLockedReason,
+	"evidence_submitted_at":  disputeFieldEvidenceSubmittedAt,
+	"fee":                    disputeFieldFee,
+	"product_id":             disputeFieldProductID,
+	"reason_code":            disputeFieldReasonCode,
+	"variant_id":             disputeFieldVariantID,
+}
+
 type Dispute struct {
+	// Whether the dispute can be conceded to the customer with `POST /disputes/{id}/accept`. True only for a chargeback still awaiting a response, before `evidence_due_at`, whose payment processor supports accepting disputes. Inquiries are never acceptable.
+	Acceptable bool `json:"acceptable" url:"acceptable"`
 	// The account the dispute was filed against, prefixed `biz_`.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
 	// The disputed amount, in whole units of `currency`.
 	Amount float64 `json:"amount" url:"amount"`
 	// The customer who filed the dispute.
-	Buyer *DisputeBuyer `json:"buyer,omitempty" url:"buyer,omitempty"`
+	Buyer *DisputeBuyer `json:"buyer" url:"buyer"`
 	// When the dispute was opened, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Three-letter ISO currency code of the disputed amount.
 	Currency string `json:"currency" url:"currency"`
 	// The evidence packet sent to the processor to contest the dispute.
 	Evidence *DisputeEvidence `json:"evidence" url:"evidence"`
-	// The deadline to submit evidence, as an ISO 8601 timestamp. Whop reserves the last 24 hours before the processor's own cutoff to forward the submission.
+	// The deadline to submit evidence, as an ISO 8601 timestamp. `null` when the network already auto-resolved the dispute (Visa RDR) with no evidence round, or when the processor hasn't reported a deadline for this dispute.
 	EvidenceDueAt *string `json:"evidence_due_at,omitempty" url:"evidence_due_at,omitempty"`
 	// Whether `evidence` can still be changed and submitted.
 	EvidenceEditable bool `json:"evidence_editable" url:"evidence_editable"`
@@ -336,35 +402,43 @@ type Dispute struct {
 	EvidenceLockedReason *DisputeEvidenceLockedReason `json:"evidence_locked_reason,omitempty" url:"evidence_locked_reason,omitempty"`
 	// When the evidence was submitted to the processor, as an ISO 8601 timestamp.
 	EvidenceSubmittedAt *string `json:"evidence_submitted_at,omitempty" url:"evidence_submitted_at,omitempty"`
-	// The AI-generated representment document filed with the processor on the seller's behalf, once ready. Null until generation completes, and for disputes not using Whop Dispute Fighter.
-	GeneratedResponseAttachment *DisputeAttachment `json:"generated_response_attachment,omitempty" url:"generated_response_attachment,omitempty"`
+	// The dispute fee charged to the account, in the currency it was collected in. `null` when `fee_charged` is false.
+	Fee *Money `json:"fee,omitempty" url:"fee,omitempty"`
+	// Whether Whop charged the account a dispute fee for this one. `false` when the payment was fully refunded before the dispute was opened, for a Visa RDR resolution, and for an inquiry.
+	FeeCharged bool `json:"fee_charged" url:"fee_charged"`
 	// Dispute ID, prefixed `dspt_`.
 	ID string `json:"id" url:"id"`
 	// Whether this is a pre-dispute inquiry rather than a formal chargeback. Inquiries follow the same lifecycle but move no funds unless one escalates.
 	Inquiry        bool                    `json:"inquiry" url:"inquiry"`
 	IssuerComments []*DisputeIssuerComment `json:"issuer_comments" url:"issuer_comments"`
+	LineItems      []*ReceiptLineItem      `json:"line_items" url:"line_items"`
 	// The payment being disputed.
-	Payment *DisputePayment `json:"payment,omitempty" url:"payment,omitempty"`
-	// The plan the disputed payment was made on, prefixed `plan_`.
-	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
+	Payment *DisputePayment `json:"payment" url:"payment"`
 	// The product the disputed payment was for, prefixed `prod_`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
-	// Whether Visa Rapid Dispute Resolution settled this automatically. These refund the customer without an evidence round.
-	RapidDisputeResolution bool `json:"rapid_dispute_resolution" url:"rapid_dispute_resolution"`
-	// Why the customer says they are disputing, normalized across card networks. `other` covers a code Whop has not categorized yet — read `reason_code` for the raw value.
+	// Why the customer says they are disputing, normalized across processors and card networks. `other` covers a processor reason Whop has not categorized yet.
 	Reason DisputeReason `json:"reason" url:"reason"`
-	// The raw card-network or processor reason code, such as `10.4`.
+	// The raw card-network or processor reason code, such as `10.4`. Informational only — `reason` is not derived from it.
 	ReasonCode *string `json:"reason_code,omitempty" url:"reason_code,omitempty"`
-	// Where the dispute stands. `needs_response` is awaiting evidence, `under_review` is with the processor, `won` returned the funds to the seller, `lost` returned them to the customer, and `closed` ended without a ruling. A dispute past its `evidence_due_at` reports `under_review` — the window to respond has closed.
+	// Where the dispute stands. `needs_response` is awaiting evidence, `under_review` is with the processor, `won` returned the funds to the seller, `lost` returned them to the customer, and `prevented` means the customer was refunded before any ruling, so it settles like `lost`. The `warning_` statuses are the same stages for an inquiry, which moves no funds. A dispute past its `evidence_due_at` reports `under_review` — the window to respond has closed.
 	Status DisputeStatus `json:"status" url:"status"`
 	// When the dispute was last changed, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
+	// The variant the disputed payment was made on, prefixed `plan_`.
+	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (d *Dispute) GetAcceptable() bool {
+	if d == nil {
+		return false
+	}
+	return d.Acceptable
 }
 
 func (d *Dispute) GetAccountID() *string {
@@ -437,11 +511,18 @@ func (d *Dispute) GetEvidenceSubmittedAt() *string {
 	return d.EvidenceSubmittedAt
 }
 
-func (d *Dispute) GetGeneratedResponseAttachment() *DisputeAttachment {
+func (d *Dispute) GetFee() *Money {
 	if d == nil {
 		return nil
 	}
-	return d.GeneratedResponseAttachment
+	return d.Fee
+}
+
+func (d *Dispute) GetFeeCharged() bool {
+	if d == nil {
+		return false
+	}
+	return d.FeeCharged
 }
 
 func (d *Dispute) GetID() string {
@@ -465,6 +546,13 @@ func (d *Dispute) GetIssuerComments() []*DisputeIssuerComment {
 	return d.IssuerComments
 }
 
+func (d *Dispute) GetLineItems() []*ReceiptLineItem {
+	if d == nil {
+		return nil
+	}
+	return d.LineItems
+}
+
 func (d *Dispute) GetPayment() *DisputePayment {
 	if d == nil {
 		return nil
@@ -472,25 +560,11 @@ func (d *Dispute) GetPayment() *DisputePayment {
 	return d.Payment
 }
 
-func (d *Dispute) GetPlanID() *string {
-	if d == nil {
-		return nil
-	}
-	return d.PlanID
-}
-
 func (d *Dispute) GetProductID() *string {
 	if d == nil {
 		return nil
 	}
 	return d.ProductID
-}
-
-func (d *Dispute) GetRapidDisputeResolution() bool {
-	if d == nil {
-		return false
-	}
-	return d.RapidDisputeResolution
 }
 
 func (d *Dispute) GetReason() DisputeReason {
@@ -521,6 +595,13 @@ func (d *Dispute) GetUpdatedAt() string {
 	return d.UpdatedAt
 }
 
+func (d *Dispute) GetVariantID() *string {
+	if d == nil {
+		return nil
+	}
+	return d.VariantID
+}
+
 func (d *Dispute) GetExtraProperties() map[string]interface{} {
 	if d == nil {
 		return nil
@@ -529,10 +610,19 @@ func (d *Dispute) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *Dispute) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetAcceptable sets the Acceptable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Dispute) SetAcceptable(acceptable bool) {
+	d.Acceptable = acceptable
+	d.require(disputeFieldAcceptable)
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -605,11 +695,18 @@ func (d *Dispute) SetEvidenceSubmittedAt(evidenceSubmittedAt *string) {
 	d.require(disputeFieldEvidenceSubmittedAt)
 }
 
-// SetGeneratedResponseAttachment sets the GeneratedResponseAttachment field and marks it as non-optional;
+// SetFee sets the Fee field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *Dispute) SetGeneratedResponseAttachment(generatedResponseAttachment *DisputeAttachment) {
-	d.GeneratedResponseAttachment = generatedResponseAttachment
-	d.require(disputeFieldGeneratedResponseAttachment)
+func (d *Dispute) SetFee(fee *Money) {
+	d.Fee = fee
+	d.require(disputeFieldFee)
+}
+
+// SetFeeCharged sets the FeeCharged field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Dispute) SetFeeCharged(feeCharged bool) {
+	d.FeeCharged = feeCharged
+	d.require(disputeFieldFeeCharged)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -633,6 +730,13 @@ func (d *Dispute) SetIssuerComments(issuerComments []*DisputeIssuerComment) {
 	d.require(disputeFieldIssuerComments)
 }
 
+// SetLineItems sets the LineItems field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Dispute) SetLineItems(lineItems []*ReceiptLineItem) {
+	d.LineItems = lineItems
+	d.require(disputeFieldLineItems)
+}
+
 // SetPayment sets the Payment field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *Dispute) SetPayment(payment *DisputePayment) {
@@ -640,25 +744,11 @@ func (d *Dispute) SetPayment(payment *DisputePayment) {
 	d.require(disputeFieldPayment)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *Dispute) SetPlanID(planID *string) {
-	d.PlanID = planID
-	d.require(disputeFieldPlanID)
-}
-
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *Dispute) SetProductID(productID *string) {
 	d.ProductID = productID
 	d.require(disputeFieldProductID)
-}
-
-// SetRapidDisputeResolution sets the RapidDisputeResolution field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *Dispute) SetRapidDisputeResolution(rapidDisputeResolution bool) {
-	d.RapidDisputeResolution = rapidDisputeResolution
-	d.require(disputeFieldRapidDisputeResolution)
 }
 
 // SetReason sets the Reason field and marks it as non-optional;
@@ -689,6 +779,13 @@ func (d *Dispute) SetUpdatedAt(updatedAt string) {
 	d.require(disputeFieldUpdatedAt)
 }
 
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Dispute) SetVariantID(variantID *string) {
+	d.VariantID = variantID
+	d.require(disputeFieldVariantID)
+}
+
 func (d *Dispute) UnmarshalJSON(data []byte) error {
 	type unmarshaler Dispute
 	var value unmarshaler
@@ -701,6 +798,13 @@ func (d *Dispute) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, disputeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -738,6 +842,14 @@ var (
 	disputeAttachmentFieldPlatform    = big.NewInt(1 << 3)
 	disputeAttachmentFieldURL         = big.NewInt(1 << 4)
 )
+
+// disputeAttachmentNullableFields maps the wire names of DisputeAttachment's nullable fields (required or optional) to their field bits.
+var disputeAttachmentNullableFields = map[string]*big.Int{
+	"content_type": disputeAttachmentFieldContentType,
+	"filename":     disputeAttachmentFieldFilename,
+	"id":           disputeAttachmentFieldID,
+	"url":          disputeAttachmentFieldURL,
+}
 
 type DisputeAttachment struct {
 	// The uploaded file's MIME type.
@@ -801,10 +913,12 @@ func (d *DisputeAttachment) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DisputeAttachment) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetContentType sets the ContentType field and marks it as non-optional;
@@ -854,6 +968,13 @@ func (d *DisputeAttachment) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, disputeAttachmentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -891,6 +1012,15 @@ var (
 	disputeBuyerFieldUserID   = big.NewInt(1 << 3)
 	disputeBuyerFieldUsername = big.NewInt(1 << 4)
 )
+
+// disputeBuyerNullableFields maps the wire names of DisputeBuyer's nullable fields (required or optional) to their field bits.
+var disputeBuyerNullableFields = map[string]*big.Int{
+	"email":     disputeBuyerFieldEmail,
+	"member_id": disputeBuyerFieldMemberID,
+	"name":      disputeBuyerFieldName,
+	"user_id":   disputeBuyerFieldUserID,
+	"username":  disputeBuyerFieldUsername,
+}
 
 type DisputeBuyer struct {
 	// The customer's email address. Requires the `member:email:read` scope; `null` without it.
@@ -954,10 +1084,12 @@ func (d *DisputeBuyer) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DisputeBuyer) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -1007,6 +1139,13 @@ func (d *DisputeBuyer) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, disputeBuyerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1055,12 +1194,30 @@ var (
 	disputeEvidenceFieldUncategorizedAttachment         = big.NewInt(1 << 14)
 )
 
+// disputeEvidenceNullableFields maps the wire names of DisputeEvidence's nullable fields (required or optional) to their field bits.
+var disputeEvidenceNullableFields = map[string]*big.Int{
+	"access_activity_log":               disputeEvidenceFieldAccessActivityLog,
+	"billing_address":                   disputeEvidenceFieldBillingAddress,
+	"cancellation_policy_attachment":    disputeEvidenceFieldCancellationPolicyAttachment,
+	"cancellation_policy_disclosure":    disputeEvidenceFieldCancellationPolicyDisclosure,
+	"customer_communication_attachment": disputeEvidenceFieldCustomerCommunicationAttachment,
+	"customer_email_address":            disputeEvidenceFieldCustomerEmailAddress,
+	"customer_name":                     disputeEvidenceFieldCustomerName,
+	"notes":                             disputeEvidenceFieldNotes,
+	"product_description":               disputeEvidenceFieldProductDescription,
+	"refund_policy_attachment":          disputeEvidenceFieldRefundPolicyAttachment,
+	"refund_policy_disclosure":          disputeEvidenceFieldRefundPolicyDisclosure,
+	"refund_refusal_explanation":        disputeEvidenceFieldRefundRefusalExplanation,
+	"service_date":                      disputeEvidenceFieldServiceDate,
+	"uncategorized_attachment":          disputeEvidenceFieldUncategorizedAttachment,
+}
+
 type DisputeEvidence struct {
 	// Log of the customer's access to the product, such as sign-in or download activity.
 	AccessActivityLog *string `json:"access_activity_log,omitempty" url:"access_activity_log,omitempty"`
 	// The billing address the customer provided at checkout.
 	BillingAddress *string `json:"billing_address,omitempty" url:"billing_address,omitempty"`
-	// The cancellation policy document. Falls back to Whop's platform policy when the seller has not uploaded their own.
+	// The cancellation policy document. Defaults to the account's cancellation policy, then its terms of service, then its return policy, then Whop's platform policy.
 	CancellationPolicyAttachment *DisputeAttachment `json:"cancellation_policy_attachment,omitempty" url:"cancellation_policy_attachment,omitempty"`
 	// How the cancellation policy was shown to the customer before purchase.
 	CancellationPolicyDisclosure *string `json:"cancellation_policy_disclosure,omitempty" url:"cancellation_policy_disclosure,omitempty"`
@@ -1075,7 +1232,7 @@ type DisputeEvidence struct {
 	Notes *string `json:"notes,omitempty" url:"notes,omitempty"`
 	// What the customer purchased, in the seller's own words.
 	ProductDescription *string `json:"product_description,omitempty" url:"product_description,omitempty"`
-	// The refund policy document. Falls back to Whop's platform policy when the seller has not uploaded their own.
+	// The refund policy document. Defaults to the account's return policy, then its terms of service, then Whop's platform policy.
 	RefundPolicyAttachment *DisputeAttachment `json:"refund_policy_attachment,omitempty" url:"refund_policy_attachment,omitempty"`
 	// How the refund policy was shown to the customer before purchase.
 	RefundPolicyDisclosure *string `json:"refund_policy_disclosure,omitempty" url:"refund_policy_disclosure,omitempty"`
@@ -1206,10 +1363,12 @@ func (d *DisputeEvidence) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DisputeEvidence) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetAccessActivityLog sets the AccessActivityLog field and marks it as non-optional;
@@ -1329,6 +1488,13 @@ func (d *DisputeEvidence) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, disputeEvidenceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1360,30 +1526,101 @@ func (d *DisputeEvidence) String() string {
 }
 
 var (
-	disputeEvidenceDocumentFieldContentType  = big.NewInt(1 << 0)
-	disputeEvidenceDocumentFieldDocumentType = big.NewInt(1 << 1)
-	disputeEvidenceDocumentFieldFilename     = big.NewInt(1 << 2)
-	disputeEvidenceDocumentFieldID           = big.NewInt(1 << 3)
-	disputeEvidenceDocumentFieldURL          = big.NewInt(1 << 4)
+	disputeEvidenceDocumentFieldBlurhash            = big.NewInt(1 << 0)
+	disputeEvidenceDocumentFieldContentType         = big.NewInt(1 << 1)
+	disputeEvidenceDocumentFieldCreatedAt           = big.NewInt(1 << 2)
+	disputeEvidenceDocumentFieldDocumentType        = big.NewInt(1 << 3)
+	disputeEvidenceDocumentFieldDurationSeconds     = big.NewInt(1 << 4)
+	disputeEvidenceDocumentFieldFilename            = big.NewInt(1 << 5)
+	disputeEvidenceDocumentFieldHeight              = big.NewInt(1 << 6)
+	disputeEvidenceDocumentFieldID                  = big.NewInt(1 << 7)
+	disputeEvidenceDocumentFieldMultipartChunkSize  = big.NewInt(1 << 8)
+	disputeEvidenceDocumentFieldMultipartUploadID   = big.NewInt(1 << 9)
+	disputeEvidenceDocumentFieldMultipartUploadURLs = big.NewInt(1 << 10)
+	disputeEvidenceDocumentFieldObject              = big.NewInt(1 << 11)
+	disputeEvidenceDocumentFieldRemovedByModeration = big.NewInt(1 << 12)
+	disputeEvidenceDocumentFieldSize                = big.NewInt(1 << 13)
+	disputeEvidenceDocumentFieldUploadHeaders       = big.NewInt(1 << 14)
+	disputeEvidenceDocumentFieldUploadStatus        = big.NewInt(1 << 15)
+	disputeEvidenceDocumentFieldUploadURL           = big.NewInt(1 << 16)
+	disputeEvidenceDocumentFieldURL                 = big.NewInt(1 << 17)
+	disputeEvidenceDocumentFieldVisibility          = big.NewInt(1 << 18)
+	disputeEvidenceDocumentFieldWaveformURL         = big.NewInt(1 << 19)
+	disputeEvidenceDocumentFieldWidth               = big.NewInt(1 << 20)
 )
 
+// disputeEvidenceDocumentNullableFields maps the wire names of DisputeEvidenceDocument's nullable fields (required or optional) to their field bits.
+var disputeEvidenceDocumentNullableFields = map[string]*big.Int{
+	"blurhash":              disputeEvidenceDocumentFieldBlurhash,
+	"content_type":          disputeEvidenceDocumentFieldContentType,
+	"duration_seconds":      disputeEvidenceDocumentFieldDurationSeconds,
+	"filename":              disputeEvidenceDocumentFieldFilename,
+	"height":                disputeEvidenceDocumentFieldHeight,
+	"multipart_chunk_size":  disputeEvidenceDocumentFieldMultipartChunkSize,
+	"multipart_upload_id":   disputeEvidenceDocumentFieldMultipartUploadID,
+	"multipart_upload_urls": disputeEvidenceDocumentFieldMultipartUploadURLs,
+	"size":                  disputeEvidenceDocumentFieldSize,
+	"upload_url":            disputeEvidenceDocumentFieldUploadURL,
+	"url":                   disputeEvidenceDocumentFieldURL,
+	"waveform_url":          disputeEvidenceDocumentFieldWaveformURL,
+	"width":                 disputeEvidenceDocumentFieldWidth,
+}
+
 type DisputeEvidenceDocument struct {
-	// The uploaded file's MIME type. Uploads are restricted to the types the processor accepts.
+	// BlurHash placeholder for an image or video. Null when unavailable or removed by moderation.
+	Blurhash *string `json:"blurhash,omitempty" url:"blurhash,omitempty"`
+	// The uploaded file's MIME type. Uploads are restricted to the types the processor accepts, and rejected without one — never null.
 	ContentType *DisputeEvidenceDocumentContentType `json:"content_type,omitempty" url:"content_type,omitempty"`
-	// What kind of evidence the document is.
+	// When the file was created, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
+	// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
 	DocumentType DisputeEvidenceDocumentDocumentType `json:"document_type" url:"document_type"`
-	// The uploaded file's name.
+	// Audio or video duration in seconds. Null when unavailable or removed by moderation.
+	DurationSeconds *float64 `json:"duration_seconds,omitempty" url:"duration_seconds,omitempty"`
+	// The original filename, including its extension.
 	Filename *string `json:"filename,omitempty" url:"filename,omitempty"`
-	// The attachment's ID, prefixed `file_`.
+	// Image or video height in pixels. Null when unavailable or removed by moderation.
+	Height *int `json:"height,omitempty" url:"height,omitempty"`
+	// The file's ID, prefixed `file_`.
 	ID string `json:"id" url:"id"`
-	// A URL to download the document.
+	// The byte size each part (except the last) must be. Present only on create, and only for multipart uploads.
+	MultipartChunkSize *int `json:"multipart_chunk_size,omitempty" url:"multipart_chunk_size,omitempty"`
+	// The ID of the multipart upload, passed back to `complete`. Present only on create, and only for multipart uploads.
+	MultipartUploadID   *string             `json:"multipart_upload_id,omitempty" url:"multipart_upload_id,omitempty"`
+	MultipartUploadURLs []*FileMultipartURL `json:"multipart_upload_urls,omitempty" url:"multipart_upload_urls,omitempty"`
+	// The type of this object, always `file`.
+	Object string `json:"object" url:"object"`
+	// Whether moderation removed the file. When true, `url` serves a replacement image; filename, size, and content type still describe the original file.
+	RemovedByModeration bool `json:"removed_by_moderation" url:"removed_by_moderation"`
+	// The file size in bytes. `null` until the upload has finished.
+	Size *int `json:"size,omitempty" url:"size,omitempty"`
+	// Headers to send with the upload PUT. Present only on create.
+	UploadHeaders map[string]any `json:"upload_headers,omitempty" url:"upload_headers,omitempty"`
+	// Where the file is in its upload lifecycle.
+	UploadStatus DisputeEvidenceDocumentUploadStatus `json:"upload_status" url:"upload_status"`
+	// Presigned URL to PUT the file's bytes to. Present only on create, and only for single-part uploads.
+	UploadURL *string `json:"upload_url,omitempty" url:"upload_url,omitempty"`
+	// A URL to download the file: a permanent CDN URL for public files, a signed expiring URL for private ones. Null until the upload has finished; a replacement image URL when removed by moderation.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
+	// `public` files are served via an unsigned CDN URL; `private` files via a signed, expiring URL.
+	Visibility DisputeEvidenceDocumentVisibility `json:"visibility" url:"visibility"`
+	// Audio waveform URL. Null when unavailable or removed by moderation.
+	WaveformURL *string `json:"waveform_url,omitempty" url:"waveform_url,omitempty"`
+	// Image or video width in pixels. Null when unavailable or removed by moderation.
+	Width *int `json:"width,omitempty" url:"width,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (d *DisputeEvidenceDocument) GetBlurhash() *string {
+	if d == nil {
+		return nil
+	}
+	return d.Blurhash
 }
 
 func (d *DisputeEvidenceDocument) GetContentType() *DisputeEvidenceDocumentContentType {
@@ -1393,11 +1630,25 @@ func (d *DisputeEvidenceDocument) GetContentType() *DisputeEvidenceDocumentConte
 	return d.ContentType
 }
 
+func (d *DisputeEvidenceDocument) GetCreatedAt() string {
+	if d == nil {
+		return ""
+	}
+	return d.CreatedAt
+}
+
 func (d *DisputeEvidenceDocument) GetDocumentType() DisputeEvidenceDocumentDocumentType {
 	if d == nil {
 		return ""
 	}
 	return d.DocumentType
+}
+
+func (d *DisputeEvidenceDocument) GetDurationSeconds() *float64 {
+	if d == nil {
+		return nil
+	}
+	return d.DurationSeconds
 }
 
 func (d *DisputeEvidenceDocument) GetFilename() *string {
@@ -1407,6 +1658,13 @@ func (d *DisputeEvidenceDocument) GetFilename() *string {
 	return d.Filename
 }
 
+func (d *DisputeEvidenceDocument) GetHeight() *int {
+	if d == nil {
+		return nil
+	}
+	return d.Height
+}
+
 func (d *DisputeEvidenceDocument) GetID() string {
 	if d == nil {
 		return ""
@@ -1414,11 +1672,95 @@ func (d *DisputeEvidenceDocument) GetID() string {
 	return d.ID
 }
 
+func (d *DisputeEvidenceDocument) GetMultipartChunkSize() *int {
+	if d == nil {
+		return nil
+	}
+	return d.MultipartChunkSize
+}
+
+func (d *DisputeEvidenceDocument) GetMultipartUploadID() *string {
+	if d == nil {
+		return nil
+	}
+	return d.MultipartUploadID
+}
+
+func (d *DisputeEvidenceDocument) GetMultipartUploadURLs() []*FileMultipartURL {
+	if d == nil {
+		return nil
+	}
+	return d.MultipartUploadURLs
+}
+
+func (d *DisputeEvidenceDocument) GetObject() string {
+	if d == nil {
+		return ""
+	}
+	return d.Object
+}
+
+func (d *DisputeEvidenceDocument) GetRemovedByModeration() bool {
+	if d == nil {
+		return false
+	}
+	return d.RemovedByModeration
+}
+
+func (d *DisputeEvidenceDocument) GetSize() *int {
+	if d == nil {
+		return nil
+	}
+	return d.Size
+}
+
+func (d *DisputeEvidenceDocument) GetUploadHeaders() map[string]any {
+	if d == nil {
+		return nil
+	}
+	return d.UploadHeaders
+}
+
+func (d *DisputeEvidenceDocument) GetUploadStatus() DisputeEvidenceDocumentUploadStatus {
+	if d == nil {
+		return ""
+	}
+	return d.UploadStatus
+}
+
+func (d *DisputeEvidenceDocument) GetUploadURL() *string {
+	if d == nil {
+		return nil
+	}
+	return d.UploadURL
+}
+
 func (d *DisputeEvidenceDocument) GetURL() *string {
 	if d == nil {
 		return nil
 	}
 	return d.URL
+}
+
+func (d *DisputeEvidenceDocument) GetVisibility() DisputeEvidenceDocumentVisibility {
+	if d == nil {
+		return ""
+	}
+	return d.Visibility
+}
+
+func (d *DisputeEvidenceDocument) GetWaveformURL() *string {
+	if d == nil {
+		return nil
+	}
+	return d.WaveformURL
+}
+
+func (d *DisputeEvidenceDocument) GetWidth() *int {
+	if d == nil {
+		return nil
+	}
+	return d.Width
 }
 
 func (d *DisputeEvidenceDocument) GetExtraProperties() map[string]interface{} {
@@ -1429,10 +1771,19 @@ func (d *DisputeEvidenceDocument) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DisputeEvidenceDocument) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetBlurhash sets the Blurhash field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetBlurhash(blurhash *string) {
+	d.Blurhash = blurhash
+	d.require(disputeEvidenceDocumentFieldBlurhash)
 }
 
 // SetContentType sets the ContentType field and marks it as non-optional;
@@ -1442,11 +1793,25 @@ func (d *DisputeEvidenceDocument) SetContentType(contentType *DisputeEvidenceDoc
 	d.require(disputeEvidenceDocumentFieldContentType)
 }
 
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetCreatedAt(createdAt string) {
+	d.CreatedAt = createdAt
+	d.require(disputeEvidenceDocumentFieldCreatedAt)
+}
+
 // SetDocumentType sets the DocumentType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *DisputeEvidenceDocument) SetDocumentType(documentType DisputeEvidenceDocumentDocumentType) {
 	d.DocumentType = documentType
 	d.require(disputeEvidenceDocumentFieldDocumentType)
+}
+
+// SetDurationSeconds sets the DurationSeconds field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetDurationSeconds(durationSeconds *float64) {
+	d.DurationSeconds = durationSeconds
+	d.require(disputeEvidenceDocumentFieldDurationSeconds)
 }
 
 // SetFilename sets the Filename field and marks it as non-optional;
@@ -1456,6 +1821,13 @@ func (d *DisputeEvidenceDocument) SetFilename(filename *string) {
 	d.require(disputeEvidenceDocumentFieldFilename)
 }
 
+// SetHeight sets the Height field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetHeight(height *int) {
+	d.Height = height
+	d.require(disputeEvidenceDocumentFieldHeight)
+}
+
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *DisputeEvidenceDocument) SetID(id string) {
@@ -1463,11 +1835,95 @@ func (d *DisputeEvidenceDocument) SetID(id string) {
 	d.require(disputeEvidenceDocumentFieldID)
 }
 
+// SetMultipartChunkSize sets the MultipartChunkSize field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetMultipartChunkSize(multipartChunkSize *int) {
+	d.MultipartChunkSize = multipartChunkSize
+	d.require(disputeEvidenceDocumentFieldMultipartChunkSize)
+}
+
+// SetMultipartUploadID sets the MultipartUploadID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetMultipartUploadID(multipartUploadID *string) {
+	d.MultipartUploadID = multipartUploadID
+	d.require(disputeEvidenceDocumentFieldMultipartUploadID)
+}
+
+// SetMultipartUploadURLs sets the MultipartUploadURLs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetMultipartUploadURLs(multipartUploadURLs []*FileMultipartURL) {
+	d.MultipartUploadURLs = multipartUploadURLs
+	d.require(disputeEvidenceDocumentFieldMultipartUploadURLs)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetObject(object string) {
+	d.Object = object
+	d.require(disputeEvidenceDocumentFieldObject)
+}
+
+// SetRemovedByModeration sets the RemovedByModeration field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetRemovedByModeration(removedByModeration bool) {
+	d.RemovedByModeration = removedByModeration
+	d.require(disputeEvidenceDocumentFieldRemovedByModeration)
+}
+
+// SetSize sets the Size field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetSize(size *int) {
+	d.Size = size
+	d.require(disputeEvidenceDocumentFieldSize)
+}
+
+// SetUploadHeaders sets the UploadHeaders field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetUploadHeaders(uploadHeaders map[string]any) {
+	d.UploadHeaders = uploadHeaders
+	d.require(disputeEvidenceDocumentFieldUploadHeaders)
+}
+
+// SetUploadStatus sets the UploadStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetUploadStatus(uploadStatus DisputeEvidenceDocumentUploadStatus) {
+	d.UploadStatus = uploadStatus
+	d.require(disputeEvidenceDocumentFieldUploadStatus)
+}
+
+// SetUploadURL sets the UploadURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetUploadURL(uploadURL *string) {
+	d.UploadURL = uploadURL
+	d.require(disputeEvidenceDocumentFieldUploadURL)
+}
+
 // SetURL sets the URL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *DisputeEvidenceDocument) SetURL(url *string) {
 	d.URL = url
 	d.require(disputeEvidenceDocumentFieldURL)
+}
+
+// SetVisibility sets the Visibility field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetVisibility(visibility DisputeEvidenceDocumentVisibility) {
+	d.Visibility = visibility
+	d.require(disputeEvidenceDocumentFieldVisibility)
+}
+
+// SetWaveformURL sets the WaveformURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetWaveformURL(waveformURL *string) {
+	d.WaveformURL = waveformURL
+	d.require(disputeEvidenceDocumentFieldWaveformURL)
+}
+
+// SetWidth sets the Width field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetWidth(width *int) {
+	d.Width = width
+	d.require(disputeEvidenceDocumentFieldWidth)
 }
 
 func (d *DisputeEvidenceDocument) UnmarshalJSON(data []byte) error {
@@ -1482,6 +1938,13 @@ func (d *DisputeEvidenceDocument) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, disputeEvidenceDocumentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1512,7 +1975,7 @@ func (d *DisputeEvidenceDocument) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
-// The uploaded file's MIME type. Uploads are restricted to the types the processor accepts.
+// The uploaded file's MIME type. Uploads are restricted to the types the processor accepts, and rejected without one — never null.
 type DisputeEvidenceDocumentContentType string
 
 const (
@@ -1544,19 +2007,22 @@ func (d DisputeEvidenceDocumentContentType) Ptr() *DisputeEvidenceDocumentConten
 	return &d
 }
 
-// What kind of evidence the document is.
+// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
 type DisputeEvidenceDocumentDocumentType string
 
 const (
-	DisputeEvidenceDocumentDocumentTypeReturnPolicy         DisputeEvidenceDocumentDocumentType = "return_policy"
-	DisputeEvidenceDocumentDocumentTypeShippingPolicy       DisputeEvidenceDocumentDocumentType = "shipping_policy"
-	DisputeEvidenceDocumentDocumentTypePhysicalFulfillment  DisputeEvidenceDocumentDocumentType = "physical_fulfillment"
-	DisputeEvidenceDocumentDocumentTypeCustomerOrderHistory DisputeEvidenceDocumentDocumentType = "customer_order_history"
-	DisputeEvidenceDocumentDocumentTypeProductImage         DisputeEvidenceDocumentDocumentType = "product_image"
-	DisputeEvidenceDocumentDocumentTypePriorTransactions    DisputeEvidenceDocumentDocumentType = "prior_transactions"
-	DisputeEvidenceDocumentDocumentTypeCustomerSession      DisputeEvidenceDocumentDocumentType = "customer_session"
-	DisputeEvidenceDocumentDocumentTypeDigitalFulfillment   DisputeEvidenceDocumentDocumentType = "digital_fulfillment"
-	DisputeEvidenceDocumentDocumentTypeSubscription         DisputeEvidenceDocumentDocumentType = "subscription"
+	DisputeEvidenceDocumentDocumentTypeReturnPolicy          DisputeEvidenceDocumentDocumentType = "return_policy"
+	DisputeEvidenceDocumentDocumentTypeShippingPolicy        DisputeEvidenceDocumentDocumentType = "shipping_policy"
+	DisputeEvidenceDocumentDocumentTypeCancellationPolicy    DisputeEvidenceDocumentDocumentType = "cancellation_policy"
+	DisputeEvidenceDocumentDocumentTypeTermsOfService        DisputeEvidenceDocumentDocumentType = "terms_of_service"
+	DisputeEvidenceDocumentDocumentTypePhysicalFulfillment   DisputeEvidenceDocumentDocumentType = "physical_fulfillment"
+	DisputeEvidenceDocumentDocumentTypeCustomerOrderHistory  DisputeEvidenceDocumentDocumentType = "customer_order_history"
+	DisputeEvidenceDocumentDocumentTypeProductImage          DisputeEvidenceDocumentDocumentType = "product_image"
+	DisputeEvidenceDocumentDocumentTypePriorTransactions     DisputeEvidenceDocumentDocumentType = "prior_transactions"
+	DisputeEvidenceDocumentDocumentTypeCustomerSession       DisputeEvidenceDocumentDocumentType = "customer_session"
+	DisputeEvidenceDocumentDocumentTypeDigitalFulfillment    DisputeEvidenceDocumentDocumentType = "digital_fulfillment"
+	DisputeEvidenceDocumentDocumentTypeSubscription          DisputeEvidenceDocumentDocumentType = "subscription"
+	DisputeEvidenceDocumentDocumentTypeCustomerCommunication DisputeEvidenceDocumentDocumentType = "customer_communication"
 )
 
 func NewDisputeEvidenceDocumentDocumentTypeFromString(s string) (DisputeEvidenceDocumentDocumentType, error) {
@@ -1565,6 +2031,10 @@ func NewDisputeEvidenceDocumentDocumentTypeFromString(s string) (DisputeEvidence
 		return DisputeEvidenceDocumentDocumentTypeReturnPolicy, nil
 	case "shipping_policy":
 		return DisputeEvidenceDocumentDocumentTypeShippingPolicy, nil
+	case "cancellation_policy":
+		return DisputeEvidenceDocumentDocumentTypeCancellationPolicy, nil
+	case "terms_of_service":
+		return DisputeEvidenceDocumentDocumentTypeTermsOfService, nil
 	case "physical_fulfillment":
 		return DisputeEvidenceDocumentDocumentTypePhysicalFulfillment, nil
 	case "customer_order_history":
@@ -1579,12 +2049,66 @@ func NewDisputeEvidenceDocumentDocumentTypeFromString(s string) (DisputeEvidence
 		return DisputeEvidenceDocumentDocumentTypeDigitalFulfillment, nil
 	case "subscription":
 		return DisputeEvidenceDocumentDocumentTypeSubscription, nil
+	case "customer_communication":
+		return DisputeEvidenceDocumentDocumentTypeCustomerCommunication, nil
 	}
 	var t DisputeEvidenceDocumentDocumentType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
 func (d DisputeEvidenceDocumentDocumentType) Ptr() *DisputeEvidenceDocumentDocumentType {
+	return &d
+}
+
+// Where the file is in its upload lifecycle.
+type DisputeEvidenceDocumentUploadStatus string
+
+const (
+	DisputeEvidenceDocumentUploadStatusPending    DisputeEvidenceDocumentUploadStatus = "pending"
+	DisputeEvidenceDocumentUploadStatusProcessing DisputeEvidenceDocumentUploadStatus = "processing"
+	DisputeEvidenceDocumentUploadStatusReady      DisputeEvidenceDocumentUploadStatus = "ready"
+	DisputeEvidenceDocumentUploadStatusFailed     DisputeEvidenceDocumentUploadStatus = "failed"
+)
+
+func NewDisputeEvidenceDocumentUploadStatusFromString(s string) (DisputeEvidenceDocumentUploadStatus, error) {
+	switch s {
+	case "pending":
+		return DisputeEvidenceDocumentUploadStatusPending, nil
+	case "processing":
+		return DisputeEvidenceDocumentUploadStatusProcessing, nil
+	case "ready":
+		return DisputeEvidenceDocumentUploadStatusReady, nil
+	case "failed":
+		return DisputeEvidenceDocumentUploadStatusFailed, nil
+	}
+	var t DisputeEvidenceDocumentUploadStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DisputeEvidenceDocumentUploadStatus) Ptr() *DisputeEvidenceDocumentUploadStatus {
+	return &d
+}
+
+// `public` files are served via an unsigned CDN URL; `private` files via a signed, expiring URL.
+type DisputeEvidenceDocumentVisibility string
+
+const (
+	DisputeEvidenceDocumentVisibilityPublic  DisputeEvidenceDocumentVisibility = "public"
+	DisputeEvidenceDocumentVisibilityPrivate DisputeEvidenceDocumentVisibility = "private"
+)
+
+func NewDisputeEvidenceDocumentVisibilityFromString(s string) (DisputeEvidenceDocumentVisibility, error) {
+	switch s {
+	case "public":
+		return DisputeEvidenceDocumentVisibilityPublic, nil
+	case "private":
+		return DisputeEvidenceDocumentVisibilityPrivate, nil
+	}
+	var t DisputeEvidenceDocumentVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DisputeEvidenceDocumentVisibility) Ptr() *DisputeEvidenceDocumentVisibility {
 	return &d
 }
 
@@ -1618,6 +2142,11 @@ var (
 	disputeIssuerCommentFieldReceivedAt = big.NewInt(1 << 0)
 	disputeIssuerCommentFieldText       = big.NewInt(1 << 1)
 )
+
+// disputeIssuerCommentNullableFields maps the wire names of DisputeIssuerComment's nullable fields (required or optional) to their field bits.
+var disputeIssuerCommentNullableFields = map[string]*big.Int{
+	"received_at": disputeIssuerCommentFieldReceivedAt,
+}
 
 type DisputeIssuerComment struct {
 	// When the comment was received, as an ISO 8601 timestamp.
@@ -1654,10 +2183,12 @@ func (d *DisputeIssuerComment) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DisputeIssuerComment) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetReceivedAt sets the ReceivedAt field and marks it as non-optional;
@@ -1686,6 +2217,13 @@ func (d *DisputeIssuerComment) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, disputeIssuerCommentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1728,6 +2266,17 @@ var (
 	disputePaymentFieldPaymentProcessor  = big.NewInt(1 << 8)
 )
 
+// disputePaymentNullableFields maps the wire names of DisputePayment's nullable fields (required or optional) to their field bits.
+var disputePaymentNullableFields = map[string]*big.Int{
+	"amount":              disputePaymentFieldAmount,
+	"card_brand":          disputePaymentFieldCardBrand,
+	"card_last4":          disputePaymentFieldCardLast4,
+	"currency":            disputePaymentFieldCurrency,
+	"payment_instrument":  disputePaymentFieldPaymentInstrument,
+	"payment_method_type": disputePaymentFieldPaymentMethodType,
+	"payment_processor":   disputePaymentFieldPaymentProcessor,
+}
+
 type DisputePayment struct {
 	// What the customer was charged, in whole units of the payment's currency.
 	Amount *float64 `json:"amount,omitempty" url:"amount,omitempty"`
@@ -1745,7 +2294,8 @@ type DisputePayment struct {
 	PaymentInstrument *PaymentInstrument `json:"payment_instrument,omitempty" url:"payment_instrument,omitempty"`
 	// How the customer paid, such as `card` or `paypal`.
 	PaymentMethodType *string `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
-	// The processor that handled the payment, such as `stripe`.
+	// Deprecated: no longer populated. Always `null`.
+	// DEPRECATED: No longer populated. Always null.
 	PaymentProcessor *string `json:"payment_processor,omitempty" url:"payment_processor,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1826,10 +2376,12 @@ func (d *DisputePayment) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DisputePayment) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -1907,6 +2459,13 @@ func (d *DisputePayment) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, disputePaymentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1937,7 +2496,7 @@ func (d *DisputePayment) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
-// Why the customer says they are disputing, normalized across card networks. `other` covers a code Whop has not categorized yet — read `reason_code` for the raw value.
+// Why the customer says they are disputing, normalized across processors and card networks. `other` covers a processor reason Whop has not categorized yet.
 type DisputeReason string
 
 const (
@@ -1990,29 +2549,38 @@ func (d DisputeReason) Ptr() *DisputeReason {
 	return &d
 }
 
-// Where the dispute stands. `needs_response` is awaiting evidence, `under_review` is with the processor, `won` returned the funds to the seller, `lost` returned them to the customer, and `closed` ended without a ruling. A dispute past its `evidence_due_at` reports `under_review` — the window to respond has closed.
+// Where the dispute stands. `needs_response` is awaiting evidence, `under_review` is with the processor, `won` returned the funds to the seller, `lost` returned them to the customer, and `prevented` means the customer was refunded before any ruling, so it settles like `lost`. The `warning_` statuses are the same stages for an inquiry, which moves no funds. A dispute past its `evidence_due_at` reports `under_review` — the window to respond has closed.
 type DisputeStatus string
 
 const (
-	DisputeStatusNeedsResponse DisputeStatus = "needs_response"
-	DisputeStatusUnderReview   DisputeStatus = "under_review"
-	DisputeStatusWon           DisputeStatus = "won"
-	DisputeStatusLost          DisputeStatus = "lost"
-	DisputeStatusClosed        DisputeStatus = "closed"
+	DisputeStatusNeedsResponse        DisputeStatus = "needs_response"
+	DisputeStatusWarningNeedsResponse DisputeStatus = "warning_needs_response"
+	DisputeStatusUnderReview          DisputeStatus = "under_review"
+	DisputeStatusWarningUnderReview   DisputeStatus = "warning_under_review"
+	DisputeStatusWon                  DisputeStatus = "won"
+	DisputeStatusLost                 DisputeStatus = "lost"
+	DisputeStatusPrevented            DisputeStatus = "prevented"
+	DisputeStatusWarningClosed        DisputeStatus = "warning_closed"
 )
 
 func NewDisputeStatusFromString(s string) (DisputeStatus, error) {
 	switch s {
 	case "needs_response":
 		return DisputeStatusNeedsResponse, nil
+	case "warning_needs_response":
+		return DisputeStatusWarningNeedsResponse, nil
 	case "under_review":
 		return DisputeStatusUnderReview, nil
+	case "warning_under_review":
+		return DisputeStatusWarningUnderReview, nil
 	case "won":
 		return DisputeStatusWon, nil
 	case "lost":
 		return DisputeStatusLost, nil
-	case "closed":
-		return DisputeStatusClosed, nil
+	case "prevented":
+		return DisputeStatusPrevented, nil
+	case "warning_closed":
+		return DisputeStatusWarningClosed, nil
 	}
 	var t DisputeStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2020,601 +2588,6 @@ func NewDisputeStatusFromString(s string) (DisputeStatus, error) {
 
 func (d DisputeStatus) Ptr() *DisputeStatus {
 	return &d
-}
-
-var (
-	paymentInstrumentFieldCard              = big.NewInt(1 << 0)
-	paymentInstrumentFieldDisplayName       = big.NewInt(1 << 1)
-	paymentInstrumentFieldIcons             = big.NewInt(1 << 2)
-	paymentInstrumentFieldInstallmentCount  = big.NewInt(1 << 3)
-	paymentInstrumentFieldPaymentMethodType = big.NewInt(1 << 4)
-)
-
-type PaymentInstrument struct {
-	// Card payments only: the card's network and last four.
-	Card *PaymentInstrumentCard `json:"card,omitempty" url:"card,omitempty"`
-	// Buyer-facing instrument name — "Visa •••• 4242" when the card surfaced, else the method's own name ("Klarna").
-	DisplayName string `json:"display_name" url:"display_name"`
-	// The standard icon set: square and card shapes, each in light and dark colorways.
-	Icons *PaymentMethodIcons `json:"icons" url:"icons"`
-	// Installment methods only: how many payments the charge splits into. Data, not copy — compose and translate the label client-side.
-	InstallmentCount *float64 `json:"installment_count,omitempty" url:"installment_count,omitempty"`
-	// The payment method type identifier, e.g. `card`, `klarna`, `apple_pay`.
-	PaymentMethodType string `json:"payment_method_type" url:"payment_method_type"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentInstrument) GetCard() *PaymentInstrumentCard {
-	if p == nil {
-		return nil
-	}
-	return p.Card
-}
-
-func (p *PaymentInstrument) GetDisplayName() string {
-	if p == nil {
-		return ""
-	}
-	return p.DisplayName
-}
-
-func (p *PaymentInstrument) GetIcons() *PaymentMethodIcons {
-	if p == nil {
-		return nil
-	}
-	return p.Icons
-}
-
-func (p *PaymentInstrument) GetInstallmentCount() *float64 {
-	if p == nil {
-		return nil
-	}
-	return p.InstallmentCount
-}
-
-func (p *PaymentInstrument) GetPaymentMethodType() string {
-	if p == nil {
-		return ""
-	}
-	return p.PaymentMethodType
-}
-
-func (p *PaymentInstrument) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentInstrument) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetCard sets the Card field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInstrument) SetCard(card *PaymentInstrumentCard) {
-	p.Card = card
-	p.require(paymentInstrumentFieldCard)
-}
-
-// SetDisplayName sets the DisplayName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInstrument) SetDisplayName(displayName string) {
-	p.DisplayName = displayName
-	p.require(paymentInstrumentFieldDisplayName)
-}
-
-// SetIcons sets the Icons field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInstrument) SetIcons(icons *PaymentMethodIcons) {
-	p.Icons = icons
-	p.require(paymentInstrumentFieldIcons)
-}
-
-// SetInstallmentCount sets the InstallmentCount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInstrument) SetInstallmentCount(installmentCount *float64) {
-	p.InstallmentCount = installmentCount
-	p.require(paymentInstrumentFieldInstallmentCount)
-}
-
-// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInstrument) SetPaymentMethodType(paymentMethodType string) {
-	p.PaymentMethodType = paymentMethodType
-	p.require(paymentInstrumentFieldPaymentMethodType)
-}
-
-func (p *PaymentInstrument) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentInstrument
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentInstrument(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentInstrument) MarshalJSON() ([]byte, error) {
-	type embed PaymentInstrument
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentInstrument) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-var (
-	paymentInstrumentCardFieldBrand = big.NewInt(1 << 0)
-	paymentInstrumentCardFieldLast4 = big.NewInt(1 << 1)
-)
-
-type PaymentInstrumentCard struct {
-	// The network identifier (`visa`, `amex`, …), matching `card.networks` entries and saved card payment methods.
-	Brand string `json:"brand" url:"brand"`
-	// The card's last four digits, when captured.
-	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentInstrumentCard) GetBrand() string {
-	if p == nil {
-		return ""
-	}
-	return p.Brand
-}
-
-func (p *PaymentInstrumentCard) GetLast4() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Last4
-}
-
-func (p *PaymentInstrumentCard) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentInstrumentCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetBrand sets the Brand field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInstrumentCard) SetBrand(brand string) {
-	p.Brand = brand
-	p.require(paymentInstrumentCardFieldBrand)
-}
-
-// SetLast4 sets the Last4 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentInstrumentCard) SetLast4(last4 *string) {
-	p.Last4 = last4
-	p.require(paymentInstrumentCardFieldLast4)
-}
-
-func (p *PaymentInstrumentCard) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentInstrumentCard
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentInstrumentCard(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentInstrumentCard) MarshalJSON() ([]byte, error) {
-	type embed PaymentInstrumentCard
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentInstrumentCard) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-var (
-	paymentMethodIconFilesFieldPng1X = big.NewInt(1 << 0)
-	paymentMethodIconFilesFieldPng2X = big.NewInt(1 << 1)
-	paymentMethodIconFilesFieldPng4X = big.NewInt(1 << 2)
-	paymentMethodIconFilesFieldSvg   = big.NewInt(1 << 3)
-)
-
-type PaymentMethodIconFiles struct {
-	// Raster fallback at the shape's native size.
-	Png1X string `json:"png_1x" url:"png_1x"`
-	// Raster fallback at double density.
-	Png2X string `json:"png_2x" url:"png_2x"`
-	// Raster fallback at quadruple density.
-	Png4X string `json:"png_4x" url:"png_4x"`
-	// The vector file. Prefer this everywhere SVG renders.
-	Svg string `json:"svg" url:"svg"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentMethodIconFiles) GetPng1X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png1X
-}
-
-func (p *PaymentMethodIconFiles) GetPng2X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png2X
-}
-
-func (p *PaymentMethodIconFiles) GetPng4X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png4X
-}
-
-func (p *PaymentMethodIconFiles) GetSvg() string {
-	if p == nil {
-		return ""
-	}
-	return p.Svg
-}
-
-func (p *PaymentMethodIconFiles) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentMethodIconFiles) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetPng1X sets the Png1X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMethodIconFiles) SetPng1X(png1X string) {
-	p.Png1X = png1X
-	p.require(paymentMethodIconFilesFieldPng1X)
-}
-
-// SetPng2X sets the Png2X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMethodIconFiles) SetPng2X(png2X string) {
-	p.Png2X = png2X
-	p.require(paymentMethodIconFilesFieldPng2X)
-}
-
-// SetPng4X sets the Png4X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMethodIconFiles) SetPng4X(png4X string) {
-	p.Png4X = png4X
-	p.require(paymentMethodIconFilesFieldPng4X)
-}
-
-// SetSvg sets the Svg field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMethodIconFiles) SetSvg(svg string) {
-	p.Svg = svg
-	p.require(paymentMethodIconFilesFieldSvg)
-}
-
-func (p *PaymentMethodIconFiles) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentMethodIconFiles
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentMethodIconFiles(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentMethodIconFiles) MarshalJSON() ([]byte, error) {
-	type embed PaymentMethodIconFiles
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentMethodIconFiles) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-var (
-	paymentMethodIconVariantsFieldDark  = big.NewInt(1 << 0)
-	paymentMethodIconVariantsFieldLight = big.NewInt(1 << 1)
-)
-
-type PaymentMethodIconVariants struct {
-	// The colorway for dark surfaces.
-	Dark *PaymentMethodIconFiles `json:"dark" url:"dark"`
-	// The colorway for light surfaces.
-	Light *PaymentMethodIconFiles `json:"light" url:"light"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentMethodIconVariants) GetDark() *PaymentMethodIconFiles {
-	if p == nil {
-		return nil
-	}
-	return p.Dark
-}
-
-func (p *PaymentMethodIconVariants) GetLight() *PaymentMethodIconFiles {
-	if p == nil {
-		return nil
-	}
-	return p.Light
-}
-
-func (p *PaymentMethodIconVariants) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentMethodIconVariants) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetDark sets the Dark field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMethodIconVariants) SetDark(dark *PaymentMethodIconFiles) {
-	p.Dark = dark
-	p.require(paymentMethodIconVariantsFieldDark)
-}
-
-// SetLight sets the Light field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMethodIconVariants) SetLight(light *PaymentMethodIconFiles) {
-	p.Light = light
-	p.require(paymentMethodIconVariantsFieldLight)
-}
-
-func (p *PaymentMethodIconVariants) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentMethodIconVariants
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentMethodIconVariants(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentMethodIconVariants) MarshalJSON() ([]byte, error) {
-	type embed PaymentMethodIconVariants
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentMethodIconVariants) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-var (
-	paymentMethodIconsFieldCard   = big.NewInt(1 << 0)
-	paymentMethodIconsFieldSquare = big.NewInt(1 << 1)
-)
-
-type PaymentMethodIcons struct {
-	// The credit-card-proportioned tile (48x30).
-	Card *PaymentMethodIconVariants `json:"card" url:"card"`
-	// The square tile (32x32).
-	Square *PaymentMethodIconVariants `json:"square" url:"square"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentMethodIcons) GetCard() *PaymentMethodIconVariants {
-	if p == nil {
-		return nil
-	}
-	return p.Card
-}
-
-func (p *PaymentMethodIcons) GetSquare() *PaymentMethodIconVariants {
-	if p == nil {
-		return nil
-	}
-	return p.Square
-}
-
-func (p *PaymentMethodIcons) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentMethodIcons) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetCard sets the Card field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMethodIcons) SetCard(card *PaymentMethodIconVariants) {
-	p.Card = card
-	p.require(paymentMethodIconsFieldCard)
-}
-
-// SetSquare sets the Square field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMethodIcons) SetSquare(square *PaymentMethodIconVariants) {
-	p.Square = square
-	p.require(paymentMethodIconsFieldSquare)
-}
-
-func (p *PaymentMethodIcons) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentMethodIcons
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentMethodIcons(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentMethodIcons) MarshalJSON() ([]byte, error) {
-	type embed PaymentMethodIcons
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentMethodIcons) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
 }
 
 type ListDisputesRequestDirection string
@@ -2667,25 +2640,34 @@ func (l ListDisputesRequestOrder) Ptr() *ListDisputesRequestOrder {
 type ListDisputesRequestStatusItem string
 
 const (
-	ListDisputesRequestStatusItemNeedsResponse ListDisputesRequestStatusItem = "needs_response"
-	ListDisputesRequestStatusItemUnderReview   ListDisputesRequestStatusItem = "under_review"
-	ListDisputesRequestStatusItemWon           ListDisputesRequestStatusItem = "won"
-	ListDisputesRequestStatusItemLost          ListDisputesRequestStatusItem = "lost"
-	ListDisputesRequestStatusItemClosed        ListDisputesRequestStatusItem = "closed"
+	ListDisputesRequestStatusItemNeedsResponse        ListDisputesRequestStatusItem = "needs_response"
+	ListDisputesRequestStatusItemWarningNeedsResponse ListDisputesRequestStatusItem = "warning_needs_response"
+	ListDisputesRequestStatusItemUnderReview          ListDisputesRequestStatusItem = "under_review"
+	ListDisputesRequestStatusItemWarningUnderReview   ListDisputesRequestStatusItem = "warning_under_review"
+	ListDisputesRequestStatusItemWon                  ListDisputesRequestStatusItem = "won"
+	ListDisputesRequestStatusItemLost                 ListDisputesRequestStatusItem = "lost"
+	ListDisputesRequestStatusItemPrevented            ListDisputesRequestStatusItem = "prevented"
+	ListDisputesRequestStatusItemWarningClosed        ListDisputesRequestStatusItem = "warning_closed"
 )
 
 func NewListDisputesRequestStatusItemFromString(s string) (ListDisputesRequestStatusItem, error) {
 	switch s {
 	case "needs_response":
 		return ListDisputesRequestStatusItemNeedsResponse, nil
+	case "warning_needs_response":
+		return ListDisputesRequestStatusItemWarningNeedsResponse, nil
 	case "under_review":
 		return ListDisputesRequestStatusItemUnderReview, nil
+	case "warning_under_review":
+		return ListDisputesRequestStatusItemWarningUnderReview, nil
 	case "won":
 		return ListDisputesRequestStatusItemWon, nil
 	case "lost":
 		return ListDisputesRequestStatusItemLost, nil
-	case "closed":
-		return ListDisputesRequestStatusItemClosed, nil
+	case "prevented":
+		return ListDisputesRequestStatusItemPrevented, nil
+	case "warning_closed":
+		return ListDisputesRequestStatusItemWarningClosed, nil
 	}
 	var t ListDisputesRequestStatusItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2733,10 +2715,12 @@ func (l *ListDisputesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListDisputesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2802,6 +2786,12 @@ var (
 	listDisputesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listDisputesResponsePageInfoNullableFields maps the wire names of ListDisputesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listDisputesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listDisputesResponsePageInfoFieldEndCursor,
+	"start_cursor": listDisputesResponsePageInfoFieldStartCursor,
+}
+
 type ListDisputesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2851,10 +2841,12 @@ func (l *ListDisputesResponsePageInfo) GetExtraProperties() map[string]interface
 }
 
 func (l *ListDisputesResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2897,6 +2889,13 @@ func (l *ListDisputesResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listDisputesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2937,6 +2936,12 @@ var (
 	postDisputeCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postDisputeCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postDisputeCreatedPayloadNullableFields maps the wire names of PostDisputeCreatedPayload's nullable fields (required or optional) to their field bits.
+var postDisputeCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postDisputeCreatedPayloadFieldAccountID,
+	"api_version_date": postDisputeCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostDisputeCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -3026,10 +3031,12 @@ func (p *PostDisputeCreatedPayload) GetExtraProperties() map[string]interface{} 
 }
 
 func (p *PostDisputeCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3106,6 +3113,13 @@ func (p *PostDisputeCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postDisputeCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3188,6 +3202,12 @@ var (
 	postDisputeUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postDisputeUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postDisputeUpdatedPayloadNullableFields maps the wire names of PostDisputeUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postDisputeUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postDisputeUpdatedPayloadFieldAccountID,
+	"api_version_date": postDisputeUpdatedPayloadFieldAPIVersionDate,
+}
 
 type PostDisputeUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -3277,10 +3297,12 @@ func (p *PostDisputeUpdatedPayload) GetExtraProperties() map[string]interface{} 
 }
 
 func (p *PostDisputeUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3357,6 +3379,13 @@ func (p *PostDisputeUpdatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postDisputeUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3454,25 +3483,34 @@ func (s SummaryDisputesRequestGroupsItem) Ptr() *SummaryDisputesRequestGroupsIte
 type SummaryDisputesRequestStatusItem string
 
 const (
-	SummaryDisputesRequestStatusItemNeedsResponse SummaryDisputesRequestStatusItem = "needs_response"
-	SummaryDisputesRequestStatusItemUnderReview   SummaryDisputesRequestStatusItem = "under_review"
-	SummaryDisputesRequestStatusItemWon           SummaryDisputesRequestStatusItem = "won"
-	SummaryDisputesRequestStatusItemLost          SummaryDisputesRequestStatusItem = "lost"
-	SummaryDisputesRequestStatusItemClosed        SummaryDisputesRequestStatusItem = "closed"
+	SummaryDisputesRequestStatusItemNeedsResponse        SummaryDisputesRequestStatusItem = "needs_response"
+	SummaryDisputesRequestStatusItemWarningNeedsResponse SummaryDisputesRequestStatusItem = "warning_needs_response"
+	SummaryDisputesRequestStatusItemUnderReview          SummaryDisputesRequestStatusItem = "under_review"
+	SummaryDisputesRequestStatusItemWarningUnderReview   SummaryDisputesRequestStatusItem = "warning_under_review"
+	SummaryDisputesRequestStatusItemWon                  SummaryDisputesRequestStatusItem = "won"
+	SummaryDisputesRequestStatusItemLost                 SummaryDisputesRequestStatusItem = "lost"
+	SummaryDisputesRequestStatusItemPrevented            SummaryDisputesRequestStatusItem = "prevented"
+	SummaryDisputesRequestStatusItemWarningClosed        SummaryDisputesRequestStatusItem = "warning_closed"
 )
 
 func NewSummaryDisputesRequestStatusItemFromString(s string) (SummaryDisputesRequestStatusItem, error) {
 	switch s {
 	case "needs_response":
 		return SummaryDisputesRequestStatusItemNeedsResponse, nil
+	case "warning_needs_response":
+		return SummaryDisputesRequestStatusItemWarningNeedsResponse, nil
 	case "under_review":
 		return SummaryDisputesRequestStatusItemUnderReview, nil
+	case "warning_under_review":
+		return SummaryDisputesRequestStatusItemWarningUnderReview, nil
 	case "won":
 		return SummaryDisputesRequestStatusItemWon, nil
 	case "lost":
 		return SummaryDisputesRequestStatusItemLost, nil
-	case "closed":
-		return SummaryDisputesRequestStatusItemClosed, nil
+	case "prevented":
+		return SummaryDisputesRequestStatusItemPrevented, nil
+	case "warning_closed":
+		return SummaryDisputesRequestStatusItemWarningClosed, nil
 	}
 	var t SummaryDisputesRequestStatusItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -3522,10 +3560,12 @@ func (s *SummaryDisputesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (s *SummaryDisputesResponse) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetGroups sets the Groups field and marks it as non-optional;
@@ -3584,12 +3624,12 @@ func (s *SummaryDisputesResponse) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// One entry per requested breakdown, keyed by the field it groups on. A field you did not ask for is absent.
 var (
 	summaryDisputesResponseGroupsFieldCurrency = big.NewInt(1 << 0)
 	summaryDisputesResponseGroupsFieldStatus   = big.NewInt(1 << 1)
 )
 
+// One entry per requested breakdown, keyed by the field it groups on. A field you did not ask for is absent.
 type SummaryDisputesResponseGroups struct {
 	// How many of the matching disputes are in each currency, keyed by three-letter ISO code. Only currencies with at least one dispute are present.
 	Currency map[string]int `json:"currency,omitempty" url:"currency,omitempty"`
@@ -3625,10 +3665,12 @@ func (s *SummaryDisputesResponseGroups) GetExtraProperties() map[string]interfac
 }
 
 func (s *SummaryDisputesResponseGroups) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
@@ -3687,34 +3729,33 @@ func (s *SummaryDisputesResponseGroups) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// How many of the matching disputes are in each status. Every status is present, including those with a count of zero.
 var (
-	summaryDisputesResponseGroupsStatusFieldClosed        = big.NewInt(1 << 0)
-	summaryDisputesResponseGroupsStatusFieldLost          = big.NewInt(1 << 1)
-	summaryDisputesResponseGroupsStatusFieldNeedsResponse = big.NewInt(1 << 2)
-	summaryDisputesResponseGroupsStatusFieldUnderReview   = big.NewInt(1 << 3)
-	summaryDisputesResponseGroupsStatusFieldWon           = big.NewInt(1 << 4)
+	summaryDisputesResponseGroupsStatusFieldLost                 = big.NewInt(1 << 0)
+	summaryDisputesResponseGroupsStatusFieldNeedsResponse        = big.NewInt(1 << 1)
+	summaryDisputesResponseGroupsStatusFieldPrevented            = big.NewInt(1 << 2)
+	summaryDisputesResponseGroupsStatusFieldUnderReview          = big.NewInt(1 << 3)
+	summaryDisputesResponseGroupsStatusFieldWarningClosed        = big.NewInt(1 << 4)
+	summaryDisputesResponseGroupsStatusFieldWarningNeedsResponse = big.NewInt(1 << 5)
+	summaryDisputesResponseGroupsStatusFieldWarningUnderReview   = big.NewInt(1 << 6)
+	summaryDisputesResponseGroupsStatusFieldWon                  = big.NewInt(1 << 7)
 )
 
+// How many of the matching disputes are in each status. Every status is present, including those with a count of zero.
 type SummaryDisputesResponseGroupsStatus struct {
-	Closed        int `json:"closed" url:"closed"`
-	Lost          int `json:"lost" url:"lost"`
-	NeedsResponse int `json:"needs_response" url:"needs_response"`
-	UnderReview   int `json:"under_review" url:"under_review"`
-	Won           int `json:"won" url:"won"`
+	Lost                 int `json:"lost" url:"lost"`
+	NeedsResponse        int `json:"needs_response" url:"needs_response"`
+	Prevented            int `json:"prevented" url:"prevented"`
+	UnderReview          int `json:"under_review" url:"under_review"`
+	WarningClosed        int `json:"warning_closed" url:"warning_closed"`
+	WarningNeedsResponse int `json:"warning_needs_response" url:"warning_needs_response"`
+	WarningUnderReview   int `json:"warning_under_review" url:"warning_under_review"`
+	Won                  int `json:"won" url:"won"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
-}
-
-func (s *SummaryDisputesResponseGroupsStatus) GetClosed() int {
-	if s == nil {
-		return 0
-	}
-	return s.Closed
 }
 
 func (s *SummaryDisputesResponseGroupsStatus) GetLost() int {
@@ -3731,11 +3772,39 @@ func (s *SummaryDisputesResponseGroupsStatus) GetNeedsResponse() int {
 	return s.NeedsResponse
 }
 
+func (s *SummaryDisputesResponseGroupsStatus) GetPrevented() int {
+	if s == nil {
+		return 0
+	}
+	return s.Prevented
+}
+
 func (s *SummaryDisputesResponseGroupsStatus) GetUnderReview() int {
 	if s == nil {
 		return 0
 	}
 	return s.UnderReview
+}
+
+func (s *SummaryDisputesResponseGroupsStatus) GetWarningClosed() int {
+	if s == nil {
+		return 0
+	}
+	return s.WarningClosed
+}
+
+func (s *SummaryDisputesResponseGroupsStatus) GetWarningNeedsResponse() int {
+	if s == nil {
+		return 0
+	}
+	return s.WarningNeedsResponse
+}
+
+func (s *SummaryDisputesResponseGroupsStatus) GetWarningUnderReview() int {
+	if s == nil {
+		return 0
+	}
+	return s.WarningUnderReview
 }
 
 func (s *SummaryDisputesResponseGroupsStatus) GetWon() int {
@@ -3753,17 +3822,12 @@ func (s *SummaryDisputesResponseGroupsStatus) GetExtraProperties() map[string]in
 }
 
 func (s *SummaryDisputesResponseGroupsStatus) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
-}
-
-// SetClosed sets the Closed field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SummaryDisputesResponseGroupsStatus) SetClosed(closed int) {
-	s.Closed = closed
-	s.require(summaryDisputesResponseGroupsStatusFieldClosed)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetLost sets the Lost field and marks it as non-optional;
@@ -3780,11 +3844,39 @@ func (s *SummaryDisputesResponseGroupsStatus) SetNeedsResponse(needsResponse int
 	s.require(summaryDisputesResponseGroupsStatusFieldNeedsResponse)
 }
 
+// SetPrevented sets the Prevented field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryDisputesResponseGroupsStatus) SetPrevented(prevented int) {
+	s.Prevented = prevented
+	s.require(summaryDisputesResponseGroupsStatusFieldPrevented)
+}
+
 // SetUnderReview sets the UnderReview field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SummaryDisputesResponseGroupsStatus) SetUnderReview(underReview int) {
 	s.UnderReview = underReview
 	s.require(summaryDisputesResponseGroupsStatusFieldUnderReview)
+}
+
+// SetWarningClosed sets the WarningClosed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryDisputesResponseGroupsStatus) SetWarningClosed(warningClosed int) {
+	s.WarningClosed = warningClosed
+	s.require(summaryDisputesResponseGroupsStatusFieldWarningClosed)
+}
+
+// SetWarningNeedsResponse sets the WarningNeedsResponse field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryDisputesResponseGroupsStatus) SetWarningNeedsResponse(warningNeedsResponse int) {
+	s.WarningNeedsResponse = warningNeedsResponse
+	s.require(summaryDisputesResponseGroupsStatusFieldWarningNeedsResponse)
+}
+
+// SetWarningUnderReview sets the WarningUnderReview field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryDisputesResponseGroupsStatus) SetWarningUnderReview(warningUnderReview int) {
+	s.WarningUnderReview = warningUnderReview
+	s.require(summaryDisputesResponseGroupsStatusFieldWarningUnderReview)
 }
 
 // SetWon sets the Won field and marks it as non-optional;
@@ -3836,7 +3928,6 @@ func (s *SummaryDisputesResponseGroupsStatus) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// The evidence packet to send to the processor. Only the fields you provide are changed.
 var (
 	updateDisputesRequestEvidenceFieldAccessActivityLog               = big.NewInt(1 << 0)
 	updateDisputesRequestEvidenceFieldBillingAddress                  = big.NewInt(1 << 1)
@@ -3845,21 +3936,41 @@ var (
 	updateDisputesRequestEvidenceFieldCustomerCommunicationAttachment = big.NewInt(1 << 4)
 	updateDisputesRequestEvidenceFieldCustomerEmailAddress            = big.NewInt(1 << 5)
 	updateDisputesRequestEvidenceFieldCustomerName                    = big.NewInt(1 << 6)
-	updateDisputesRequestEvidenceFieldNotes                           = big.NewInt(1 << 7)
-	updateDisputesRequestEvidenceFieldProductDescription              = big.NewInt(1 << 8)
-	updateDisputesRequestEvidenceFieldRefundPolicyAttachment          = big.NewInt(1 << 9)
-	updateDisputesRequestEvidenceFieldRefundPolicyDisclosure          = big.NewInt(1 << 10)
-	updateDisputesRequestEvidenceFieldRefundRefusalExplanation        = big.NewInt(1 << 11)
-	updateDisputesRequestEvidenceFieldServiceDate                     = big.NewInt(1 << 12)
-	updateDisputesRequestEvidenceFieldUncategorizedAttachment         = big.NewInt(1 << 13)
+	updateDisputesRequestEvidenceFieldDocuments                       = big.NewInt(1 << 7)
+	updateDisputesRequestEvidenceFieldNotes                           = big.NewInt(1 << 8)
+	updateDisputesRequestEvidenceFieldProductDescription              = big.NewInt(1 << 9)
+	updateDisputesRequestEvidenceFieldRefundPolicyAttachment          = big.NewInt(1 << 10)
+	updateDisputesRequestEvidenceFieldRefundPolicyDisclosure          = big.NewInt(1 << 11)
+	updateDisputesRequestEvidenceFieldRefundRefusalExplanation        = big.NewInt(1 << 12)
+	updateDisputesRequestEvidenceFieldServiceDate                     = big.NewInt(1 << 13)
+	updateDisputesRequestEvidenceFieldUncategorizedAttachment         = big.NewInt(1 << 14)
 )
 
+// updateDisputesRequestEvidenceNullableFields maps the wire names of UpdateDisputesRequestEvidence's nullable fields (required or optional) to their field bits.
+var updateDisputesRequestEvidenceNullableFields = map[string]*big.Int{
+	"access_activity_log":               updateDisputesRequestEvidenceFieldAccessActivityLog,
+	"billing_address":                   updateDisputesRequestEvidenceFieldBillingAddress,
+	"cancellation_policy_attachment":    updateDisputesRequestEvidenceFieldCancellationPolicyAttachment,
+	"cancellation_policy_disclosure":    updateDisputesRequestEvidenceFieldCancellationPolicyDisclosure,
+	"customer_communication_attachment": updateDisputesRequestEvidenceFieldCustomerCommunicationAttachment,
+	"customer_email_address":            updateDisputesRequestEvidenceFieldCustomerEmailAddress,
+	"customer_name":                     updateDisputesRequestEvidenceFieldCustomerName,
+	"notes":                             updateDisputesRequestEvidenceFieldNotes,
+	"product_description":               updateDisputesRequestEvidenceFieldProductDescription,
+	"refund_policy_attachment":          updateDisputesRequestEvidenceFieldRefundPolicyAttachment,
+	"refund_policy_disclosure":          updateDisputesRequestEvidenceFieldRefundPolicyDisclosure,
+	"refund_refusal_explanation":        updateDisputesRequestEvidenceFieldRefundRefusalExplanation,
+	"service_date":                      updateDisputesRequestEvidenceFieldServiceDate,
+	"uncategorized_attachment":          updateDisputesRequestEvidenceFieldUncategorizedAttachment,
+}
+
+// The evidence packet to send to the processor. Only the fields you provide are changed.
 type UpdateDisputesRequestEvidence struct {
 	// Log of the customer's access to the product, such as sign-in or download activity.
 	AccessActivityLog *string `json:"access_activity_log,omitempty" url:"access_activity_log,omitempty"`
 	// The billing address the customer provided at checkout.
 	BillingAddress *string `json:"billing_address,omitempty" url:"billing_address,omitempty"`
-	// The cancellation policy document.
+	// The cancellation policy document. Defaults to the account's cancellation policy, then its terms of service, when not set.
 	CancellationPolicyAttachment *UpdateDisputesRequestEvidenceCancellationPolicyAttachment `json:"cancellation_policy_attachment,omitempty" url:"cancellation_policy_attachment,omitempty"`
 	// How the cancellation policy was shown to the customer before purchase.
 	CancellationPolicyDisclosure *string `json:"cancellation_policy_disclosure,omitempty" url:"cancellation_policy_disclosure,omitempty"`
@@ -3869,11 +3980,13 @@ type UpdateDisputesRequestEvidence struct {
 	CustomerEmailAddress *string `json:"customer_email_address,omitempty" url:"customer_email_address,omitempty"`
 	// The customer's name as given at checkout.
 	CustomerName *string `json:"customer_name,omitempty" url:"customer_name,omitempty"`
+	// The full set of evidence documents the dispute should carry, beyond the four fixed evidence slots. Replaces all previously uploaded documents; an empty list removes them all. Send up to 10, 10MB each and 25MB in total. Accepted content types: application/pdf, application/json, image/jpeg, image/png, image/webp — any other type is rejected. Upload files through `POST /files` and reference them by `id`, or send the files as multipart file parts to upload and attach in one call. Policy documents (`return_policy`, `shipping_policy`, `cancellation_policy`, `terms_of_service`) default from the account's own documents; uploading one here replaces the account copy for this dispute, and a `cancellation_policy` or `return_policy` upload also takes precedence over the matching fixed evidence slot.
+	Documents []*UpdateDisputesRequestEvidenceDocumentsItem `json:"documents,omitempty" url:"documents,omitempty"`
 	// Any additional context for the processor reviewing the dispute.
 	Notes *string `json:"notes,omitempty" url:"notes,omitempty"`
 	// What the customer purchased, in the seller's own words.
 	ProductDescription *string `json:"product_description,omitempty" url:"product_description,omitempty"`
-	// The refund policy document.
+	// The refund policy document. Defaults to the account's return policy when not set.
 	RefundPolicyAttachment *UpdateDisputesRequestEvidenceRefundPolicyAttachment `json:"refund_policy_attachment,omitempty" url:"refund_policy_attachment,omitempty"`
 	// How the refund policy was shown to the customer before purchase.
 	RefundPolicyDisclosure *string `json:"refund_policy_disclosure,omitempty" url:"refund_policy_disclosure,omitempty"`
@@ -3940,6 +4053,13 @@ func (u *UpdateDisputesRequestEvidence) GetCustomerName() *string {
 	return u.CustomerName
 }
 
+func (u *UpdateDisputesRequestEvidence) GetDocuments() []*UpdateDisputesRequestEvidenceDocumentsItem {
+	if u == nil {
+		return nil
+	}
+	return u.Documents
+}
+
 func (u *UpdateDisputesRequestEvidence) GetNotes() *string {
 	if u == nil {
 		return nil
@@ -3997,10 +4117,12 @@ func (u *UpdateDisputesRequestEvidence) GetExtraProperties() map[string]interfac
 }
 
 func (u *UpdateDisputesRequestEvidence) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAccessActivityLog sets the AccessActivityLog field and marks it as non-optional;
@@ -4050,6 +4172,13 @@ func (u *UpdateDisputesRequestEvidence) SetCustomerEmailAddress(customerEmailAdd
 func (u *UpdateDisputesRequestEvidence) SetCustomerName(customerName *string) {
 	u.CustomerName = customerName
 	u.require(updateDisputesRequestEvidenceFieldCustomerName)
+}
+
+// SetDocuments sets the Documents field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateDisputesRequestEvidence) SetDocuments(documents []*UpdateDisputesRequestEvidenceDocumentsItem) {
+	u.Documents = documents
+	u.require(updateDisputesRequestEvidenceFieldDocuments)
 }
 
 // SetNotes sets the Notes field and marks it as non-optional;
@@ -4113,6 +4242,13 @@ func (u *UpdateDisputesRequestEvidence) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateDisputesRequestEvidenceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4143,12 +4279,12 @@ func (u *UpdateDisputesRequestEvidence) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The cancellation policy document.
 var (
 	updateDisputesRequestEvidenceCancellationPolicyAttachmentFieldDirectUploadID = big.NewInt(1 << 0)
 	updateDisputesRequestEvidenceCancellationPolicyAttachmentFieldID             = big.NewInt(1 << 1)
 )
 
+// The cancellation policy document. Defaults to the account's cancellation policy, then its terms of service, when not set.
 type UpdateDisputesRequestEvidenceCancellationPolicyAttachment struct {
 	// The ID returned by a direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
@@ -4184,10 +4320,12 @@ func (u *UpdateDisputesRequestEvidenceCancellationPolicyAttachment) GetExtraProp
 }
 
 func (u *UpdateDisputesRequestEvidenceCancellationPolicyAttachment) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -4246,12 +4384,12 @@ func (u *UpdateDisputesRequestEvidenceCancellationPolicyAttachment) String() str
 	return fmt.Sprintf("%#v", u)
 }
 
-// Correspondence with the customer, or proof they used the product.
 var (
 	updateDisputesRequestEvidenceCustomerCommunicationAttachmentFieldDirectUploadID = big.NewInt(1 << 0)
 	updateDisputesRequestEvidenceCustomerCommunicationAttachmentFieldID             = big.NewInt(1 << 1)
 )
 
+// Correspondence with the customer, or proof they used the product.
 type UpdateDisputesRequestEvidenceCustomerCommunicationAttachment struct {
 	// The ID returned by a direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
@@ -4287,10 +4425,12 @@ func (u *UpdateDisputesRequestEvidenceCustomerCommunicationAttachment) GetExtraP
 }
 
 func (u *UpdateDisputesRequestEvidenceCustomerCommunicationAttachment) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -4349,12 +4489,203 @@ func (u *UpdateDisputesRequestEvidenceCustomerCommunicationAttachment) String() 
 	return fmt.Sprintf("%#v", u)
 }
 
-// The refund policy document.
+var (
+	updateDisputesRequestEvidenceDocumentsItemFieldDirectUploadID = big.NewInt(1 << 0)
+	updateDisputesRequestEvidenceDocumentsItemFieldDocumentType   = big.NewInt(1 << 1)
+	updateDisputesRequestEvidenceDocumentsItemFieldFile           = big.NewInt(1 << 2)
+	updateDisputesRequestEvidenceDocumentsItemFieldID             = big.NewInt(1 << 3)
+)
+
+type UpdateDisputesRequestEvidenceDocumentsItem struct {
+	// The ID returned by a direct upload.
+	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
+	// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
+	DocumentType UpdateDisputesRequestEvidenceDocumentsItemDocumentType `json:"document_type" url:"document_type"`
+	// The file itself. Send it as a file part to upload and attach in one call, or use `id`/`direct_upload_id` for a file that is already stored.
+	File *string `json:"file,omitempty" url:"file,omitempty"`
+	// The ID of a file already stored on Whop, prefixed `file_`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) GetDirectUploadID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.DirectUploadID
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) GetDocumentType() UpdateDisputesRequestEvidenceDocumentsItemDocumentType {
+	if u == nil {
+		return ""
+	}
+	return u.DocumentType
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) GetFile() *string {
+	if u == nil {
+		return nil
+	}
+	return u.File
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) SetDirectUploadID(directUploadID *string) {
+	u.DirectUploadID = directUploadID
+	u.require(updateDisputesRequestEvidenceDocumentsItemFieldDirectUploadID)
+}
+
+// SetDocumentType sets the DocumentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) SetDocumentType(documentType UpdateDisputesRequestEvidenceDocumentsItemDocumentType) {
+	u.DocumentType = documentType
+	u.require(updateDisputesRequestEvidenceDocumentsItemFieldDocumentType)
+}
+
+// SetFile sets the File field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) SetFile(file *string) {
+	u.File = file
+	u.require(updateDisputesRequestEvidenceDocumentsItemFieldFile)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) SetID(id *string) {
+	u.ID = id
+	u.require(updateDisputesRequestEvidenceDocumentsItemFieldID)
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateDisputesRequestEvidenceDocumentsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateDisputesRequestEvidenceDocumentsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateDisputesRequestEvidenceDocumentsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateDisputesRequestEvidenceDocumentsItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
+type UpdateDisputesRequestEvidenceDocumentsItemDocumentType string
+
+const (
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeReturnPolicy          UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "return_policy"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeShippingPolicy        UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "shipping_policy"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCancellationPolicy    UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "cancellation_policy"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeTermsOfService        UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "terms_of_service"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypePhysicalFulfillment   UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "physical_fulfillment"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCustomerOrderHistory  UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "customer_order_history"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeProductImage          UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "product_image"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypePriorTransactions     UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "prior_transactions"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCustomerSession       UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "customer_session"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeDigitalFulfillment    UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "digital_fulfillment"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeSubscription          UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "subscription"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCustomerCommunication UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "customer_communication"
+)
+
+func NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString(s string) (UpdateDisputesRequestEvidenceDocumentsItemDocumentType, error) {
+	switch s {
+	case "return_policy":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeReturnPolicy, nil
+	case "shipping_policy":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeShippingPolicy, nil
+	case "cancellation_policy":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCancellationPolicy, nil
+	case "terms_of_service":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeTermsOfService, nil
+	case "physical_fulfillment":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypePhysicalFulfillment, nil
+	case "customer_order_history":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCustomerOrderHistory, nil
+	case "product_image":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeProductImage, nil
+	case "prior_transactions":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypePriorTransactions, nil
+	case "customer_session":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCustomerSession, nil
+	case "digital_fulfillment":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeDigitalFulfillment, nil
+	case "subscription":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeSubscription, nil
+	case "customer_communication":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCustomerCommunication, nil
+	}
+	var t UpdateDisputesRequestEvidenceDocumentsItemDocumentType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateDisputesRequestEvidenceDocumentsItemDocumentType) Ptr() *UpdateDisputesRequestEvidenceDocumentsItemDocumentType {
+	return &u
+}
+
 var (
 	updateDisputesRequestEvidenceRefundPolicyAttachmentFieldDirectUploadID = big.NewInt(1 << 0)
 	updateDisputesRequestEvidenceRefundPolicyAttachmentFieldID             = big.NewInt(1 << 1)
 )
 
+// The refund policy document. Defaults to the account's return policy when not set.
 type UpdateDisputesRequestEvidenceRefundPolicyAttachment struct {
 	// The ID returned by a direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
@@ -4390,10 +4721,12 @@ func (u *UpdateDisputesRequestEvidenceRefundPolicyAttachment) GetExtraProperties
 }
 
 func (u *UpdateDisputesRequestEvidenceRefundPolicyAttachment) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -4452,12 +4785,12 @@ func (u *UpdateDisputesRequestEvidenceRefundPolicyAttachment) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Supporting evidence that does not fit the other categories.
 var (
 	updateDisputesRequestEvidenceUncategorizedAttachmentFieldDirectUploadID = big.NewInt(1 << 0)
 	updateDisputesRequestEvidenceUncategorizedAttachmentFieldID             = big.NewInt(1 << 1)
 )
 
+// Supporting evidence that does not fit the other categories.
 type UpdateDisputesRequestEvidenceUncategorizedAttachment struct {
 	// The ID returned by a direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
@@ -4493,10 +4826,12 @@ func (u *UpdateDisputesRequestEvidenceUncategorizedAttachment) GetExtraPropertie
 }
 
 func (u *UpdateDisputesRequestEvidenceUncategorizedAttachment) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -4555,350 +4890,6 @@ func (u *UpdateDisputesRequestEvidenceUncategorizedAttachment) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// A file upload containing the company's cancellation policy document.
-var (
-	updateEvidenceDisputeRequestCancellationPolicyAttachmentFieldID = big.NewInt(1 << 0)
-)
-
-type UpdateEvidenceDisputeRequestCancellationPolicyAttachment struct {
-	// The ID of an existing file object.
-	ID string `json:"id" url:"id"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateEvidenceDisputeRequestCancellationPolicyAttachment) GetID() string {
-	if u == nil {
-		return ""
-	}
-	return u.ID
-}
-
-func (u *UpdateEvidenceDisputeRequestCancellationPolicyAttachment) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateEvidenceDisputeRequestCancellationPolicyAttachment) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequestCancellationPolicyAttachment) SetID(id string) {
-	u.ID = id
-	u.require(updateEvidenceDisputeRequestCancellationPolicyAttachmentFieldID)
-}
-
-func (u *UpdateEvidenceDisputeRequestCancellationPolicyAttachment) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateEvidenceDisputeRequestCancellationPolicyAttachment
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateEvidenceDisputeRequestCancellationPolicyAttachment(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateEvidenceDisputeRequestCancellationPolicyAttachment) MarshalJSON() ([]byte, error) {
-	type embed UpdateEvidenceDisputeRequestCancellationPolicyAttachment
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateEvidenceDisputeRequestCancellationPolicyAttachment) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-// A file upload containing evidence of customer communication. Must be a JPEG, PNG, GIF, or PDF.
-var (
-	updateEvidenceDisputeRequestCustomerCommunicationAttachmentFieldID = big.NewInt(1 << 0)
-)
-
-type UpdateEvidenceDisputeRequestCustomerCommunicationAttachment struct {
-	// The ID of an existing file object.
-	ID string `json:"id" url:"id"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateEvidenceDisputeRequestCustomerCommunicationAttachment) GetID() string {
-	if u == nil {
-		return ""
-	}
-	return u.ID
-}
-
-func (u *UpdateEvidenceDisputeRequestCustomerCommunicationAttachment) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateEvidenceDisputeRequestCustomerCommunicationAttachment) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequestCustomerCommunicationAttachment) SetID(id string) {
-	u.ID = id
-	u.require(updateEvidenceDisputeRequestCustomerCommunicationAttachmentFieldID)
-}
-
-func (u *UpdateEvidenceDisputeRequestCustomerCommunicationAttachment) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateEvidenceDisputeRequestCustomerCommunicationAttachment
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateEvidenceDisputeRequestCustomerCommunicationAttachment(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateEvidenceDisputeRequestCustomerCommunicationAttachment) MarshalJSON() ([]byte, error) {
-	type embed UpdateEvidenceDisputeRequestCustomerCommunicationAttachment
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateEvidenceDisputeRequestCustomerCommunicationAttachment) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-// A file upload containing the company's refund policy document.
-var (
-	updateEvidenceDisputeRequestRefundPolicyAttachmentFieldID = big.NewInt(1 << 0)
-)
-
-type UpdateEvidenceDisputeRequestRefundPolicyAttachment struct {
-	// The ID of an existing file object.
-	ID string `json:"id" url:"id"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateEvidenceDisputeRequestRefundPolicyAttachment) GetID() string {
-	if u == nil {
-		return ""
-	}
-	return u.ID
-}
-
-func (u *UpdateEvidenceDisputeRequestRefundPolicyAttachment) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateEvidenceDisputeRequestRefundPolicyAttachment) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequestRefundPolicyAttachment) SetID(id string) {
-	u.ID = id
-	u.require(updateEvidenceDisputeRequestRefundPolicyAttachmentFieldID)
-}
-
-func (u *UpdateEvidenceDisputeRequestRefundPolicyAttachment) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateEvidenceDisputeRequestRefundPolicyAttachment
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateEvidenceDisputeRequestRefundPolicyAttachment(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateEvidenceDisputeRequestRefundPolicyAttachment) MarshalJSON() ([]byte, error) {
-	type embed UpdateEvidenceDisputeRequestRefundPolicyAttachment
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateEvidenceDisputeRequestRefundPolicyAttachment) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-// A file upload for evidence that does not fit into the other categories.
-var (
-	updateEvidenceDisputeRequestUncategorizedAttachmentFieldID = big.NewInt(1 << 0)
-)
-
-type UpdateEvidenceDisputeRequestUncategorizedAttachment struct {
-	// The ID of an existing file object.
-	ID string `json:"id" url:"id"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateEvidenceDisputeRequestUncategorizedAttachment) GetID() string {
-	if u == nil {
-		return ""
-	}
-	return u.ID
-}
-
-func (u *UpdateEvidenceDisputeRequestUncategorizedAttachment) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateEvidenceDisputeRequestUncategorizedAttachment) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequestUncategorizedAttachment) SetID(id string) {
-	u.ID = id
-	u.require(updateEvidenceDisputeRequestUncategorizedAttachmentFieldID)
-}
-
-func (u *UpdateEvidenceDisputeRequestUncategorizedAttachment) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateEvidenceDisputeRequestUncategorizedAttachment
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateEvidenceDisputeRequestUncategorizedAttachment(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateEvidenceDisputeRequestUncategorizedAttachment) MarshalJSON() ([]byte, error) {
-	type embed UpdateEvidenceDisputeRequestUncategorizedAttachment
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateEvidenceDisputeRequestUncategorizedAttachment) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
 var (
 	uploadEvidenceDisputesRequestDocumentsItemFieldDirectUploadID = big.NewInt(1 << 0)
 	uploadEvidenceDisputesRequestDocumentsItemFieldDocumentType   = big.NewInt(1 << 1)
@@ -4909,7 +4900,7 @@ var (
 type UploadEvidenceDisputesRequestDocumentsItem struct {
 	// The ID returned by a direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
-	// What kind of evidence the document is.
+	// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
 	DocumentType UploadEvidenceDisputesRequestDocumentsItemDocumentType `json:"document_type" url:"document_type"`
 	// The file itself. Send it as a file part to upload and attach in one call, or use `id`/`direct_upload_id` for a file that is already stored.
 	File *string `json:"file,omitempty" url:"file,omitempty"`
@@ -4959,10 +4950,12 @@ func (u *UploadEvidenceDisputesRequestDocumentsItem) GetExtraProperties() map[st
 }
 
 func (u *UploadEvidenceDisputesRequestDocumentsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -5035,19 +5028,22 @@ func (u *UploadEvidenceDisputesRequestDocumentsItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// What kind of evidence the document is.
+// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
 type UploadEvidenceDisputesRequestDocumentsItemDocumentType string
 
 const (
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeReturnPolicy         UploadEvidenceDisputesRequestDocumentsItemDocumentType = "return_policy"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeShippingPolicy       UploadEvidenceDisputesRequestDocumentsItemDocumentType = "shipping_policy"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypePhysicalFulfillment  UploadEvidenceDisputesRequestDocumentsItemDocumentType = "physical_fulfillment"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCustomerOrderHistory UploadEvidenceDisputesRequestDocumentsItemDocumentType = "customer_order_history"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeProductImage         UploadEvidenceDisputesRequestDocumentsItemDocumentType = "product_image"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypePriorTransactions    UploadEvidenceDisputesRequestDocumentsItemDocumentType = "prior_transactions"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCustomerSession      UploadEvidenceDisputesRequestDocumentsItemDocumentType = "customer_session"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeDigitalFulfillment   UploadEvidenceDisputesRequestDocumentsItemDocumentType = "digital_fulfillment"
-	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeSubscription         UploadEvidenceDisputesRequestDocumentsItemDocumentType = "subscription"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeReturnPolicy          UploadEvidenceDisputesRequestDocumentsItemDocumentType = "return_policy"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeShippingPolicy        UploadEvidenceDisputesRequestDocumentsItemDocumentType = "shipping_policy"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCancellationPolicy    UploadEvidenceDisputesRequestDocumentsItemDocumentType = "cancellation_policy"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeTermsOfService        UploadEvidenceDisputesRequestDocumentsItemDocumentType = "terms_of_service"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypePhysicalFulfillment   UploadEvidenceDisputesRequestDocumentsItemDocumentType = "physical_fulfillment"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCustomerOrderHistory  UploadEvidenceDisputesRequestDocumentsItemDocumentType = "customer_order_history"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeProductImage          UploadEvidenceDisputesRequestDocumentsItemDocumentType = "product_image"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypePriorTransactions     UploadEvidenceDisputesRequestDocumentsItemDocumentType = "prior_transactions"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCustomerSession       UploadEvidenceDisputesRequestDocumentsItemDocumentType = "customer_session"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeDigitalFulfillment    UploadEvidenceDisputesRequestDocumentsItemDocumentType = "digital_fulfillment"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeSubscription          UploadEvidenceDisputesRequestDocumentsItemDocumentType = "subscription"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCustomerCommunication UploadEvidenceDisputesRequestDocumentsItemDocumentType = "customer_communication"
 )
 
 func NewUploadEvidenceDisputesRequestDocumentsItemDocumentTypeFromString(s string) (UploadEvidenceDisputesRequestDocumentsItemDocumentType, error) {
@@ -5056,6 +5052,10 @@ func NewUploadEvidenceDisputesRequestDocumentsItemDocumentTypeFromString(s strin
 		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypeReturnPolicy, nil
 	case "shipping_policy":
 		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypeShippingPolicy, nil
+	case "cancellation_policy":
+		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCancellationPolicy, nil
+	case "terms_of_service":
+		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypeTermsOfService, nil
 	case "physical_fulfillment":
 		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypePhysicalFulfillment, nil
 	case "customer_order_history":
@@ -5070,6 +5070,8 @@ func NewUploadEvidenceDisputesRequestDocumentsItemDocumentTypeFromString(s strin
 		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypeDigitalFulfillment, nil
 	case "subscription":
 		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypeSubscription, nil
+	case "customer_communication":
+		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCustomerCommunication, nil
 	}
 	var t UploadEvidenceDisputesRequestDocumentsItemDocumentType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -5095,10 +5097,12 @@ type UpdateDisputesRequest struct {
 }
 
 func (u *UpdateDisputesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -5137,193 +5141,6 @@ func (u *UpdateDisputesRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	updateEvidenceDisputeRequestFieldID                              = big.NewInt(1 << 0)
-	updateEvidenceDisputeRequestFieldAccessActivityLog               = big.NewInt(1 << 1)
-	updateEvidenceDisputeRequestFieldBillingAddress                  = big.NewInt(1 << 2)
-	updateEvidenceDisputeRequestFieldCancellationPolicyAttachment    = big.NewInt(1 << 3)
-	updateEvidenceDisputeRequestFieldCancellationPolicyDisclosure    = big.NewInt(1 << 4)
-	updateEvidenceDisputeRequestFieldCustomerCommunicationAttachment = big.NewInt(1 << 5)
-	updateEvidenceDisputeRequestFieldCustomerEmailAddress            = big.NewInt(1 << 6)
-	updateEvidenceDisputeRequestFieldCustomerName                    = big.NewInt(1 << 7)
-	updateEvidenceDisputeRequestFieldNotes                           = big.NewInt(1 << 8)
-	updateEvidenceDisputeRequestFieldProductDescription              = big.NewInt(1 << 9)
-	updateEvidenceDisputeRequestFieldRefundPolicyAttachment          = big.NewInt(1 << 10)
-	updateEvidenceDisputeRequestFieldRefundPolicyDisclosure          = big.NewInt(1 << 11)
-	updateEvidenceDisputeRequestFieldRefundRefusalExplanation        = big.NewInt(1 << 12)
-	updateEvidenceDisputeRequestFieldServiceDate                     = big.NewInt(1 << 13)
-	updateEvidenceDisputeRequestFieldUncategorizedAttachment         = big.NewInt(1 << 14)
-)
-
-type UpdateEvidenceDisputeRequest struct {
-	// The unique identifier of the dispute to update.
-	ID string `json:"-" url:"-"`
-	// An IP access activity log showing the customer used the service.
-	AccessActivityLog *string `json:"access_activity_log,omitempty" url:"-"`
-	// The billing address associated with the customer's payment method.
-	BillingAddress *string `json:"billing_address,omitempty" url:"-"`
-	// A file upload containing the company's cancellation policy document.
-	CancellationPolicyAttachment *UpdateEvidenceDisputeRequestCancellationPolicyAttachment `json:"cancellation_policy_attachment,omitempty" url:"-"`
-	// The company's cancellation policy text to submit as evidence.
-	CancellationPolicyDisclosure *string `json:"cancellation_policy_disclosure,omitempty" url:"-"`
-	// A file upload containing evidence of customer communication. Must be a JPEG, PNG, GIF, or PDF.
-	CustomerCommunicationAttachment *UpdateEvidenceDisputeRequestCustomerCommunicationAttachment `json:"customer_communication_attachment,omitempty" url:"-"`
-	// The email address of the customer associated with the disputed payment.
-	CustomerEmailAddress *string `json:"customer_email_address,omitempty" url:"-"`
-	// The full name of the customer associated with the disputed payment.
-	CustomerName *string `json:"customer_name,omitempty" url:"-"`
-	// Additional notes or context to submit as part of the dispute evidence.
-	Notes *string `json:"notes,omitempty" url:"-"`
-	// A description of the product or service that was provided to the customer.
-	ProductDescription *string `json:"product_description,omitempty" url:"-"`
-	// A file upload containing the company's refund policy document.
-	RefundPolicyAttachment *UpdateEvidenceDisputeRequestRefundPolicyAttachment `json:"refund_policy_attachment,omitempty" url:"-"`
-	// The company's refund policy text to submit as evidence.
-	RefundPolicyDisclosure *string `json:"refund_policy_disclosure,omitempty" url:"-"`
-	// An explanation of why the refund request was refused.
-	RefundRefusalExplanation *string `json:"refund_refusal_explanation,omitempty" url:"-"`
-	// The date when the product or service was delivered to the customer.
-	ServiceDate *string `json:"service_date,omitempty" url:"-"`
-	// A file upload for evidence that does not fit into the other categories.
-	UncategorizedAttachment *UpdateEvidenceDisputeRequestUncategorizedAttachment `json:"uncategorized_attachment,omitempty" url:"-"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (u *UpdateEvidenceDisputeRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequest) SetID(id string) {
-	u.ID = id
-	u.require(updateEvidenceDisputeRequestFieldID)
-}
-
-// SetAccessActivityLog sets the AccessActivityLog field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequest) SetAccessActivityLog(accessActivityLog *string) {
-	u.AccessActivityLog = accessActivityLog
-	u.require(updateEvidenceDisputeRequestFieldAccessActivityLog)
-}
-
-// SetBillingAddress sets the BillingAddress field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequest) SetBillingAddress(billingAddress *string) {
-	u.BillingAddress = billingAddress
-	u.require(updateEvidenceDisputeRequestFieldBillingAddress)
-}
-
-// SetCancellationPolicyAttachment sets the CancellationPolicyAttachment field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequest) SetCancellationPolicyAttachment(cancellationPolicyAttachment *UpdateEvidenceDisputeRequestCancellationPolicyAttachment) {
-	u.CancellationPolicyAttachment = cancellationPolicyAttachment
-	u.require(updateEvidenceDisputeRequestFieldCancellationPolicyAttachment)
-}
-
-// SetCancellationPolicyDisclosure sets the CancellationPolicyDisclosure field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequest) SetCancellationPolicyDisclosure(cancellationPolicyDisclosure *string) {
-	u.CancellationPolicyDisclosure = cancellationPolicyDisclosure
-	u.require(updateEvidenceDisputeRequestFieldCancellationPolicyDisclosure)
-}
-
-// SetCustomerCommunicationAttachment sets the CustomerCommunicationAttachment field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequest) SetCustomerCommunicationAttachment(customerCommunicationAttachment *UpdateEvidenceDisputeRequestCustomerCommunicationAttachment) {
-	u.CustomerCommunicationAttachment = customerCommunicationAttachment
-	u.require(updateEvidenceDisputeRequestFieldCustomerCommunicationAttachment)
-}
-
-// SetCustomerEmailAddress sets the CustomerEmailAddress field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequest) SetCustomerEmailAddress(customerEmailAddress *string) {
-	u.CustomerEmailAddress = customerEmailAddress
-	u.require(updateEvidenceDisputeRequestFieldCustomerEmailAddress)
-}
-
-// SetCustomerName sets the CustomerName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequest) SetCustomerName(customerName *string) {
-	u.CustomerName = customerName
-	u.require(updateEvidenceDisputeRequestFieldCustomerName)
-}
-
-// SetNotes sets the Notes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequest) SetNotes(notes *string) {
-	u.Notes = notes
-	u.require(updateEvidenceDisputeRequestFieldNotes)
-}
-
-// SetProductDescription sets the ProductDescription field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequest) SetProductDescription(productDescription *string) {
-	u.ProductDescription = productDescription
-	u.require(updateEvidenceDisputeRequestFieldProductDescription)
-}
-
-// SetRefundPolicyAttachment sets the RefundPolicyAttachment field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequest) SetRefundPolicyAttachment(refundPolicyAttachment *UpdateEvidenceDisputeRequestRefundPolicyAttachment) {
-	u.RefundPolicyAttachment = refundPolicyAttachment
-	u.require(updateEvidenceDisputeRequestFieldRefundPolicyAttachment)
-}
-
-// SetRefundPolicyDisclosure sets the RefundPolicyDisclosure field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequest) SetRefundPolicyDisclosure(refundPolicyDisclosure *string) {
-	u.RefundPolicyDisclosure = refundPolicyDisclosure
-	u.require(updateEvidenceDisputeRequestFieldRefundPolicyDisclosure)
-}
-
-// SetRefundRefusalExplanation sets the RefundRefusalExplanation field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequest) SetRefundRefusalExplanation(refundRefusalExplanation *string) {
-	u.RefundRefusalExplanation = refundRefusalExplanation
-	u.require(updateEvidenceDisputeRequestFieldRefundRefusalExplanation)
-}
-
-// SetServiceDate sets the ServiceDate field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequest) SetServiceDate(serviceDate *string) {
-	u.ServiceDate = serviceDate
-	u.require(updateEvidenceDisputeRequestFieldServiceDate)
-}
-
-// SetUncategorizedAttachment sets the UncategorizedAttachment field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEvidenceDisputeRequest) SetUncategorizedAttachment(uncategorizedAttachment *UpdateEvidenceDisputeRequestUncategorizedAttachment) {
-	u.UncategorizedAttachment = uncategorizedAttachment
-	u.require(updateEvidenceDisputeRequestFieldUncategorizedAttachment)
-}
-
-func (u *UpdateEvidenceDisputeRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateEvidenceDisputeRequest
-	var body unmarshaler
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	*u = UpdateEvidenceDisputeRequest(body)
-	return nil
-}
-
-func (u *UpdateEvidenceDisputeRequest) MarshalJSON() ([]byte, error) {
-	type embed UpdateEvidenceDisputeRequest
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-var (
 	uploadEvidenceDisputesRequestFieldID        = big.NewInt(1 << 0)
 	uploadEvidenceDisputesRequestFieldDocuments = big.NewInt(1 << 1)
 )
@@ -5331,7 +5148,7 @@ var (
 type UploadEvidenceDisputesRequest struct {
 	// The dispute ID (`dspt_` tag).
 	ID string `json:"-" url:"-"`
-	// The full set of evidence documents the dispute should carry. Replaces all previously uploaded documents.
+	// The full set of evidence documents the dispute should carry, beyond the four fixed evidence slots. Replaces all previously uploaded documents; an empty list removes them all. Send up to 10, 10MB each and 25MB in total. Accepted content types: application/pdf, application/json, image/jpeg, image/png, image/webp — any other type is rejected. Upload files through `POST /files` and reference them by `id`, or send the files as multipart file parts to upload and attach in one call. Policy documents (`return_policy`, `shipping_policy`, `cancellation_policy`, `terms_of_service`) default from the account's own documents; uploading one here replaces the account copy for this dispute, and a `cancellation_policy` or `return_policy` upload also takes precedence over the matching fixed evidence slot.
 	Documents []*UploadEvidenceDisputesRequestDocumentsItem `json:"documents" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -5339,10 +5156,12 @@ type UploadEvidenceDisputesRequest struct {
 }
 
 func (u *UploadEvidenceDisputesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

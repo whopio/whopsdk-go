@@ -4,11 +4,12 @@ package files
 
 import (
 	context "context"
+	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -21,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -38,12 +39,98 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Create a new file record and receive a presigned URL for uploading content to S3.
+// Returns the files with the given IDs, newest first — fetch a batch in one request instead of retrieving each file individually. Only files you created are returned; IDs that do not exist, or that another credential created, are omitted. For a batch larger than one page, follow `page_info` with the same `file_ids` to walk the rest.
+//
+// Example:
+//
+//	request := &whopsdk.ListFilesRequest{
+//	    FileIDs: []*string{
+//	        whopsdk.String(
+//	            "file_xxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	}
+//	client.Files.List(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) List(
+	ctx context.Context,
+	request *whopsdk.ListFilesRequest,
+	opts ...option.RequestOption,
+) (*core.Page[*string, *whopsdk.File, *whopsdk.ListFilesResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
+		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := baseURL + "/files"
+	queryParams, err := internal.QueryValues(request)
+	if err != nil {
+		return nil, err
+	}
+	headers := internal.MergeHeaders(
+		c.options.ToHeader(),
+		options.ToHeader(),
+	)
+	prepareCall := func(pageRequest *core.PageRequest[*string]) *internal.CallParams {
+		if pageRequest.Cursor != nil {
+			queryParams.Set("after", *pageRequest.Cursor)
+		}
+		nextURL := endpointURL
+		if len(queryParams) > 0 {
+			nextURL += "?" + queryParams.Encode()
+		}
+		return &internal.CallParams{
+			URL:             nextURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        pageRequest.Response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		}
+	}
+	readPageResponse := func(response *whopsdk.ListFilesResponse) *core.PageResponse[*string, *whopsdk.File, *whopsdk.ListFilesResponse] {
+		var zeroValue *string
+		var next *string
+		if response.PageInfo != nil {
+			next = response.PageInfo.EndCursor
+		}
+		results := response.GetData()
+		return &core.PageResponse[*string, *whopsdk.File, *whopsdk.ListFilesResponse]{
+			Results:  results,
+			Response: response,
+			Next:     next,
+			Done:     next == zeroValue || *next == "",
+		}
+	}
+	pager := internal.NewCursorPager(
+		c.caller,
+		prepareCall,
+		readPageResponse,
+	)
+	return pager.GetPage(ctx, request.After)
+}
+
+// Creates a file and returns a presigned destination to upload its bytes to. PUT the bytes to `upload_url` (single-part), or to each of `multipart_upload_urls` and then call Complete File Multipart Upload. Once the bytes land the file becomes `ready`, and its ID can be attached wherever a file is accepted — account legal documents, dispute evidence documents. For a step-by-step walkthrough of single-part and multipart uploads, see the [direct file uploads guide](/developer/guides/direct-file-uploads).
 //
 // Example:
 //
 //	request := &whopsdk.CreateFilesRequest{
-//	    Filename: "filename",
+//	    Filename: "terms.pdf",
 //	}
 //	client.Files.Create(
 //	    context.TODO(),
@@ -53,7 +140,7 @@ func (c *Client) Create(
 	ctx context.Context,
 	request *whopsdk.CreateFilesRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.CreateFilesResponse, error) {
+) (*whopsdk.File, error) {
 	response, err := c.WithRawResponse.Create(
 		ctx,
 		request,
@@ -65,12 +152,12 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Retrieves the details of an existing file.
+// Retrieves a file you uploaded — poll it after uploading the bytes to see `upload_status` become `ready`. Only the creator can retrieve a file this way; a file attached to another resource is read through that resource.
 //
 // Example:
 //
 //	request := &whopsdk.RetrieveFilesRequest{
-//	    ID: "file_xxxxxxxxxxxxx",
+//	    ID: "id",
 //	}
 //	client.Files.Retrieve(
 //	    context.TODO(),
@@ -82,6 +169,40 @@ func (c *Client) Retrieve(
 	opts ...option.RequestOption,
 ) (*whopsdk.File, error) {
 	response, err := c.WithRawResponse.Retrieve(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Assembles the parts of a multipart upload after every part has been PUT to its presigned URL. Pass the `multipart_upload_id` from Create File and each part's `ETag` response header. For a step-by-step walkthrough of multipart uploads, see the [direct file uploads guide](/developer/guides/direct-file-uploads).
+//
+// Example:
+//
+//	request := &whopsdk.CompleteFilesRequest{
+//	    ID: "id",
+//	    MultipartParts: []*whopsdk.CompleteFilesRequestMultipartPartsItem{
+//	        &whopsdk.CompleteFilesRequestMultipartPartsItem{
+//	            Etag: "etag-1",
+//	            PartNumber: 1,
+//	        },
+//	    },
+//	    MultipartUploadID: "upload-id",
+//	}
+//	client.Files.Complete(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Complete(
+	ctx context.Context,
+	request *whopsdk.CompleteFilesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.File, error) {
+	response, err := c.WithRawResponse.Complete(
 		ctx,
 		request,
 		opts...,

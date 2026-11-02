@@ -6,18 +6,20 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
-	methods "github.com/whopio/whopsdk-go/payouts/methods"
-	supportedmethods "github.com/whopio/whopsdk-go/payouts/supportedmethods"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
+	methods "github.com/whopio/whopsdk-go/v2/payouts/methods"
+	paypallinksessions "github.com/whopio/whopsdk-go/v2/payouts/paypallinksessions"
+	supportedmethods "github.com/whopio/whopsdk-go/v2/payouts/supportedmethods"
 )
 
 type Client struct {
-	WithRawResponse  *RawClient
-	Methods          *methods.Client
-	SupportedMethods *supportedmethods.Client
+	WithRawResponse    *RawClient
+	Methods            *methods.Client
+	PaypalLinkSessions *paypallinksessions.Client
+	SupportedMethods   *supportedmethods.Client
 
 	options *core.RequestOptions
 	baseURL string
@@ -26,15 +28,16 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
-		Methods:          methods.NewClient(options),
-		SupportedMethods: supportedmethods.NewClient(options),
-		WithRawResponse:  NewRawClient(options),
-		options:          options,
-		baseURL:          options.BaseURL,
+		Methods:            methods.NewClient(options),
+		PaypalLinkSessions: paypallinksessions.NewClient(options),
+		SupportedMethods:   supportedmethods.NewClient(options),
+		WithRawResponse:    NewRawClient(options),
+		options:            options,
+		baseURL:            options.BaseURL,
 		caller: internal.NewCaller(
 			&internal.CallerParams{
 				Client:         options.HTTPClient,
@@ -62,7 +65,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/payouts"
@@ -121,10 +132,9 @@ func (c *Client) List(
 //
 // Example:
 //
-//	request := &whopsdk.CreatePayoutsRequestBody{
-//	    Unknown: map[string]any{
-//	        "key": "value",
-//	    },
+//	request := &whopsdk.CreatePayoutsRequest{
+//	    Amount: 50,
+//	    PayoutMethodID: "potk_xxxxxxxxxxxxxx",
 //	}
 //	client.Payouts.Create(
 //	    context.TODO(),
@@ -132,7 +142,7 @@ func (c *Client) List(
 //	)
 func (c *Client) Create(
 	ctx context.Context,
-	request *whopsdk.CreatePayoutsRequestBody,
+	request *whopsdk.CreatePayoutsRequest,
 	opts ...option.RequestOption,
 ) (*whopsdk.CreatePayoutsResponse, error) {
 	response, err := c.WithRawResponse.Create(
@@ -146,7 +156,34 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Fetches one payout by its `wdrl_` ID, or by the `cofr_` conversion request ID a stablecoin payout carries as `payout_request_id` — both ids answer with the same payout object.
+// Creates a short-lived, provider-backed quote of a payout's fee, exchange rate, and destination amount. No funds move until you submit the returned `quote_token` to `POST /payouts`.
+//
+// Example:
+//
+//	request := &whopsdk.CreateQuotePayoutsRequest{
+//	    PayoutMethodID: "potk_xxxxxxxxxxxxxx",
+//	}
+//	client.Payouts.CreateQuote(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) CreateQuote(
+	ctx context.Context,
+	request *whopsdk.CreateQuotePayoutsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.CreateQuotePayoutsResponse, error) {
+	response, err := c.WithRawResponse.CreateQuote(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Retrieves a payout by its `wdrl_` ID, or by the `cofr_` conversion request ID a payout carries as `payout_request_id`. Authentication is optional: anyone with the ID can view tracking details, including notes, trace code, exchange rate, and payout request ID, while accounting fields require `payout:withdrawal:read` on the account or user that owns the payout. A supplied invalid credential returns 401.
 //
 // Example:
 //
@@ -163,6 +200,33 @@ func (c *Client) Retrieve(
 	opts ...option.RequestOption,
 ) (*whopsdk.RetrievePayoutsResponse, error) {
 	response, err := c.WithRawResponse.Retrieve(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Cancels a payout before it is sent to the payout provider, or asks the provider to stop one already sent. While the payout is `in_review`, or `processing` with nothing sent yet (see `cancelable`), it is canceled and the funds, fees included, return to the balance. Once sent, the response is 202 with a `cancellation` object, and the payout reads `canceled` only if the provider confirms it stopped. A `requested` payout returns 409 until it reaches review, a payout the provider can no longer stop returns 409 with error type `not_cancelable`, and canceling an already-canceled payout returns it unchanged.
+//
+// Example:
+//
+//	request := &whopsdk.CancelPayoutsRequest{
+//	    ID: "id",
+//	}
+//	client.Payouts.Cancel(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Cancel(
+	ctx context.Context,
+	request *whopsdk.CancelPayoutsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.CancelPayoutsResponse, error) {
+	response, err := c.WithRawResponse.Cancel(
 		ctx,
 		request,
 		opts...,

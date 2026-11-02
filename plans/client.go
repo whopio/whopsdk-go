@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,33 +39,11 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of plans belonging to an account, with optional filtering by visibility, type, release method, and product.
+// Deprecated compatibility endpoint. List variants with `GET /variants` instead.
 //
 // Example:
 //
-//	request := &whopsdk.ListPlansRequest{
-//	    AccountID: "account_id",
-//	    ReleaseMethods: []*string{
-//	        whopsdk.String(
-//	            "buy_now",
-//	        ),
-//	    },
-//	    Visibilities: []*string{
-//	        whopsdk.String(
-//	            "visible",
-//	        ),
-//	    },
-//	    PlanTypes: []*string{
-//	        whopsdk.String(
-//	            "renewal",
-//	        ),
-//	    },
-//	    ProductIDs: []*string{
-//	        whopsdk.String(
-//	            "prod_xxxxxxxxxxxxxx",
-//	        ),
-//	    },
-//	}
+//	request := &whopsdk.ListPlansRequest{}
 //	client.Plans.List(
 //	    context.TODO(),
 //	    request,
@@ -78,7 +56,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/plans"
@@ -108,7 +94,6 @@ func (c *Client) List(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Response:        pageRequest.Response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		}
 	}
 	readPageResponse := func(response *whopsdk.ListPlansResponse) *core.PageResponse[*string, *whopsdk.PlanListItem, *whopsdk.ListPlansResponse] {
@@ -133,7 +118,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Create a new pricing plan for a product. The plan defines the billing interval, price, and availability for customers.
+// Deprecated compatibility endpoint. Create variants with `POST /variants` instead.
 //
 // Example:
 //
@@ -158,7 +143,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Retrieves the details of an existing plan.
+// Deprecated compatibility endpoint. Retrieve variants with `GET /variants/{id}` instead.
 //
 // Example:
 //
@@ -185,7 +170,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Permanently delete a plan from a product. Existing memberships on this plan will not be affected.
+// Deprecated compatibility endpoint. Delete variants with `DELETE /variants/{id}` instead.
 //
 // Example:
 //
@@ -212,7 +197,7 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Update a plan's pricing, billing interval, visibility, stock, and other settings.
+// Deprecated compatibility endpoint. Update variants with `PATCH /variants/{id}` instead.
 //
 // Example:
 //
@@ -239,18 +224,12 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Previews tax for a plan before checkout, based on the buyer's location.
+// Deprecated compatibility endpoint. Quote tax with `POST /payment_quotes` instead.
 //
 // Example:
 //
 //	request := &whopsdk.CalculateTaxPlansRequest{
 //	    ID: "id",
-//	    Address: &whopsdk.CalculateTaxPlansRequestAddress{
-//	        Country: "DE",
-//	        PostalCode: whopsdk.String(
-//	            "10115",
-//	        ),
-//	    },
 //	}
 //	client.Plans.CalculateTax(
 //	    context.TODO(),

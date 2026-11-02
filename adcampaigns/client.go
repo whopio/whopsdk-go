@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -56,7 +56,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/ad_campaigns"
@@ -111,13 +119,12 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates an ad campaign for an account.
+// Creates an ad campaign in `draft` status for an account. Nothing runs until you launch it by setting `status` to `active` with `PATCH /ad_campaigns/:id`.
 //
 // Example:
 //
 //	request := &whopsdk.CreateAdCampaignsRequest{
-//	    Objective: whopsdk.CreateAdCampaignsRequestObjectiveAwareness,
-//	    Platform: whopsdk.CreateAdCampaignsRequestPlatformMeta,
+//	    Objective: whopsdk.CreateAdCampaignsRequestObjectiveTraffic,
 //	    Title: "Now hiring mobile detailers — Austin",
 //	}
 //	client.AdCampaigns.Create(
@@ -167,7 +174,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Deletes an ad campaign and archives it on the ad platform (cascades to ad groups and ads).
+// Deletes an ad campaign with its ad groups and ads, and stops their delivery.
 //
 // Example:
 //
@@ -194,7 +201,7 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Updates an ad campaign's editable fields (title, budget, schedule, bid strategy, special ad categories, and, before launch, budget optimization), and launches a draft campaign by setting status to active. Objective, budget type and desired cost per result are fixed at creation and cannot be changed.
+// Updates an ad campaign's settings, or launches a draft campaign by setting `status` to `active`. The objective is fixed at creation and cannot be changed.
 //
 // Example:
 //
@@ -275,34 +282,7 @@ func (c *Client) Pause(
 	return response.Body, nil
 }
 
-// Retries billing for an ad campaign whose payment previously failed.
-//
-// Example:
-//
-//	request := &whopsdk.RetryPaymentAdCampaignsRequest{
-//	    ID: "id",
-//	}
-//	client.AdCampaigns.RetryPayment(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) RetryPayment(
-	ctx context.Context,
-	request *whopsdk.RetryPaymentAdCampaignsRequest,
-	opts ...option.RequestOption,
-) (*whopsdk.AdCampaign, error) {
-	response, err := c.WithRawResponse.RetryPayment(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return response.Body, nil
-}
-
-// Resumes a paused ad campaign.
+// Resumes a paused ad campaign. Requires an ads payment method on the account.
 //
 // Example:
 //

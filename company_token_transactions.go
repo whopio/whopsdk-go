@@ -5,7 +5,7 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
@@ -15,9 +15,9 @@ var (
 	listCompanyTokenTransactionsRequestFieldBefore          = big.NewInt(1 << 1)
 	listCompanyTokenTransactionsRequestFieldFirst           = big.NewInt(1 << 2)
 	listCompanyTokenTransactionsRequestFieldLast            = big.NewInt(1 << 3)
-	listCompanyTokenTransactionsRequestFieldCompanyID       = big.NewInt(1 << 4)
-	listCompanyTokenTransactionsRequestFieldUserID          = big.NewInt(1 << 5)
-	listCompanyTokenTransactionsRequestFieldTransactionType = big.NewInt(1 << 6)
+	listCompanyTokenTransactionsRequestFieldUserID          = big.NewInt(1 << 4)
+	listCompanyTokenTransactionsRequestFieldTransactionType = big.NewInt(1 << 5)
+	listCompanyTokenTransactionsRequestFieldAccountID       = big.NewInt(1 << 6)
 )
 
 type ListCompanyTokenTransactionsRequest struct {
@@ -29,21 +29,23 @@ type ListCompanyTokenTransactionsRequest struct {
 	First *int `json:"-" url:"first,omitempty"`
 	// Returns the last _n_ elements from the list.
 	Last *int `json:"-" url:"last,omitempty"`
-	// The unique identifier of the company to list token transactions for.
-	CompanyID string `json:"-" url:"company_id"`
 	// Filter transactions to only those involving this specific user.
 	UserID          *string                       `json:"-" url:"user_id,omitempty"`
 	TransactionType *CompanyTokenTransactionTypes `json:"-" url:"transaction_type,omitempty"`
+	// The unique identifier of the company to list token transactions for.
+	AccountID string `json:"-" url:"account_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (l *ListCompanyTokenTransactionsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -74,13 +76,6 @@ func (l *ListCompanyTokenTransactionsRequest) SetLast(last *int) {
 	l.require(listCompanyTokenTransactionsRequestFieldLast)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListCompanyTokenTransactionsRequest) SetCompanyID(companyID string) {
-	l.CompanyID = companyID
-	l.require(listCompanyTokenTransactionsRequestFieldCompanyID)
-}
-
 // SetUserID sets the UserID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListCompanyTokenTransactionsRequest) SetUserID(userID *string) {
@@ -93,6 +88,13 @@ func (l *ListCompanyTokenTransactionsRequest) SetUserID(userID *string) {
 func (l *ListCompanyTokenTransactionsRequest) SetTransactionType(transactionType *CompanyTokenTransactionTypes) {
 	l.TransactionType = transactionType
 	l.require(listCompanyTokenTransactionsRequestFieldTransactionType)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCompanyTokenTransactionsRequest) SetAccountID(accountID string) {
+	l.AccountID = accountID
+	l.require(listCompanyTokenTransactionsRequestFieldAccountID)
 }
 
 var (
@@ -108,10 +110,12 @@ type RetrieveCompanyTokenTransactionsRequest struct {
 }
 
 func (r *RetrieveCompanyTokenTransactionsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -121,7 +125,6 @@ func (r *RetrieveCompanyTokenTransactionsRequest) SetID(id string) {
 	r.require(retrieveCompanyTokenTransactionsRequestFieldID)
 }
 
-// A token transaction records a credit or debit to a member's token balance within a company, including transfers between members.
 var (
 	companyTokenTransactionFieldAmount              = big.NewInt(1 << 0)
 	companyTokenTransactionFieldCompany             = big.NewInt(1 << 1)
@@ -135,6 +138,14 @@ var (
 	companyTokenTransactionFieldUser                = big.NewInt(1 << 9)
 )
 
+// companyTokenTransactionNullableFields maps the wire names of CompanyTokenTransaction's nullable fields (required or optional) to their field bits.
+var companyTokenTransactionNullableFields = map[string]*big.Int{
+	"description":           companyTokenTransactionFieldDescription,
+	"idempotency_key":       companyTokenTransactionFieldIdempotencyKey,
+	"linked_transaction_id": companyTokenTransactionFieldLinkedTransactionID,
+}
+
+// A token transaction records a credit or debit to a member's token balance within a company, including transfers between members.
 type CompanyTokenTransaction struct {
 	// The token amount for this transaction. Always a positive value regardless of transaction type.
 	Amount float64 `json:"amount" url:"amount"`
@@ -242,10 +253,12 @@ func (c *CompanyTokenTransaction) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CompanyTokenTransaction) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -336,6 +349,13 @@ func (c *CompanyTokenTransaction) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, companyTokenTransactionNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -368,13 +388,13 @@ func (c *CompanyTokenTransaction) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The company whose token balance this transaction affects.
 var (
 	companyTokenTransactionCompanyFieldID    = big.NewInt(1 << 0)
 	companyTokenTransactionCompanyFieldRoute = big.NewInt(1 << 1)
 	companyTokenTransactionCompanyFieldTitle = big.NewInt(1 << 2)
 )
 
+// The company whose token balance this transaction affects.
 type CompanyTokenTransactionCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
@@ -419,10 +439,12 @@ func (c *CompanyTokenTransactionCompany) GetExtraProperties() map[string]interfa
 }
 
 func (c *CompanyTokenTransactionCompany) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -488,7 +510,6 @@ func (c *CompanyTokenTransactionCompany) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// A token transaction records a credit or debit to a member's token balance within a company, including transfers between members.
 var (
 	companyTokenTransactionListItemFieldAmount              = big.NewInt(1 << 0)
 	companyTokenTransactionListItemFieldCompany             = big.NewInt(1 << 1)
@@ -502,6 +523,14 @@ var (
 	companyTokenTransactionListItemFieldUser                = big.NewInt(1 << 9)
 )
 
+// companyTokenTransactionListItemNullableFields maps the wire names of CompanyTokenTransactionListItem's nullable fields (required or optional) to their field bits.
+var companyTokenTransactionListItemNullableFields = map[string]*big.Int{
+	"description":           companyTokenTransactionListItemFieldDescription,
+	"idempotency_key":       companyTokenTransactionListItemFieldIdempotencyKey,
+	"linked_transaction_id": companyTokenTransactionListItemFieldLinkedTransactionID,
+}
+
+// A token transaction records a credit or debit to a member's token balance within a company, including transfers between members.
 type CompanyTokenTransactionListItem struct {
 	// The token amount for this transaction. Always a positive value regardless of transaction type.
 	Amount float64 `json:"amount" url:"amount"`
@@ -609,10 +638,12 @@ func (c *CompanyTokenTransactionListItem) GetExtraProperties() map[string]interf
 }
 
 func (c *CompanyTokenTransactionListItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -703,6 +734,13 @@ func (c *CompanyTokenTransactionListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, companyTokenTransactionListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -735,13 +773,13 @@ func (c *CompanyTokenTransactionListItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The company whose token balance this transaction affects.
 var (
 	companyTokenTransactionListItemCompanyFieldID    = big.NewInt(1 << 0)
 	companyTokenTransactionListItemCompanyFieldRoute = big.NewInt(1 << 1)
 	companyTokenTransactionListItemCompanyFieldTitle = big.NewInt(1 << 2)
 )
 
+// The company whose token balance this transaction affects.
 type CompanyTokenTransactionListItemCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
@@ -786,10 +824,12 @@ func (c *CompanyTokenTransactionListItemCompany) GetExtraProperties() map[string
 }
 
 func (c *CompanyTokenTransactionListItemCompany) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -855,11 +895,11 @@ func (c *CompanyTokenTransactionListItemCompany) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The member whose token balance was affected by this transaction.
 var (
 	companyTokenTransactionListItemMemberFieldID = big.NewInt(1 << 0)
 )
 
+// The member whose token balance was affected by this transaction.
 type CompanyTokenTransactionListItemMember struct {
 	// The unique identifier for the company member.
 	ID string `json:"id" url:"id"`
@@ -886,10 +926,12 @@ func (c *CompanyTokenTransactionListItemMember) GetExtraProperties() map[string]
 }
 
 func (c *CompanyTokenTransactionListItemMember) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -941,13 +983,18 @@ func (c *CompanyTokenTransactionListItemMember) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The user whose token balance was affected by this transaction.
 var (
 	companyTokenTransactionListItemUserFieldID       = big.NewInt(1 << 0)
 	companyTokenTransactionListItemUserFieldName     = big.NewInt(1 << 1)
 	companyTokenTransactionListItemUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// companyTokenTransactionListItemUserNullableFields maps the wire names of CompanyTokenTransactionListItemUser's nullable fields (required or optional) to their field bits.
+var companyTokenTransactionListItemUserNullableFields = map[string]*big.Int{
+	"name": companyTokenTransactionListItemUserFieldName,
+}
+
+// The user whose token balance was affected by this transaction.
 type CompanyTokenTransactionListItemUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -992,10 +1039,12 @@ func (c *CompanyTokenTransactionListItemUser) GetExtraProperties() map[string]in
 }
 
 func (c *CompanyTokenTransactionListItemUser) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1031,6 +1080,13 @@ func (c *CompanyTokenTransactionListItemUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, companyTokenTransactionListItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1061,11 +1117,11 @@ func (c *CompanyTokenTransactionListItemUser) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The member whose token balance was affected by this transaction.
 var (
 	companyTokenTransactionMemberFieldID = big.NewInt(1 << 0)
 )
 
+// The member whose token balance was affected by this transaction.
 type CompanyTokenTransactionMember struct {
 	// The unique identifier for the company member.
 	ID string `json:"id" url:"id"`
@@ -1092,10 +1148,12 @@ func (c *CompanyTokenTransactionMember) GetExtraProperties() map[string]interfac
 }
 
 func (c *CompanyTokenTransactionMember) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1173,13 +1231,18 @@ func (c CompanyTokenTransactionTypes) Ptr() *CompanyTokenTransactionTypes {
 	return &c
 }
 
-// The user whose token balance was affected by this transaction.
 var (
 	companyTokenTransactionUserFieldID       = big.NewInt(1 << 0)
 	companyTokenTransactionUserFieldName     = big.NewInt(1 << 1)
 	companyTokenTransactionUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// companyTokenTransactionUserNullableFields maps the wire names of CompanyTokenTransactionUser's nullable fields (required or optional) to their field bits.
+var companyTokenTransactionUserNullableFields = map[string]*big.Int{
+	"name": companyTokenTransactionUserFieldName,
+}
+
+// The user whose token balance was affected by this transaction.
 type CompanyTokenTransactionUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -1224,10 +1287,12 @@ func (c *CompanyTokenTransactionUser) GetExtraProperties() map[string]interface{
 }
 
 func (c *CompanyTokenTransactionUser) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1263,6 +1328,13 @@ func (c *CompanyTokenTransactionUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, companyTokenTransactionUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1447,20 +1519,26 @@ func (c *CreateCompanyTokenTransactionsRequest) validate() error {
 	return nil
 }
 
-// Autogenerated input type of CreateCompanyTokenTransaction
 var (
-	createCompanyTokenTransactionsRequestAddFieldAmount         = big.NewInt(1 << 0)
-	createCompanyTokenTransactionsRequestAddFieldCompanyID      = big.NewInt(1 << 1)
+	createCompanyTokenTransactionsRequestAddFieldAccountID      = big.NewInt(1 << 0)
+	createCompanyTokenTransactionsRequestAddFieldAmount         = big.NewInt(1 << 1)
 	createCompanyTokenTransactionsRequestAddFieldDescription    = big.NewInt(1 << 2)
 	createCompanyTokenTransactionsRequestAddFieldIdempotencyKey = big.NewInt(1 << 3)
 	createCompanyTokenTransactionsRequestAddFieldUserID         = big.NewInt(1 << 4)
 )
 
+// createCompanyTokenTransactionsRequestAddNullableFields maps the wire names of CreateCompanyTokenTransactionsRequestAdd's nullable fields (required or optional) to their field bits.
+var createCompanyTokenTransactionsRequestAddNullableFields = map[string]*big.Int{
+	"description":     createCompanyTokenTransactionsRequestAddFieldDescription,
+	"idempotency_key": createCompanyTokenTransactionsRequestAddFieldIdempotencyKey,
+}
+
+// Autogenerated input type of CreateCompanyTokenTransaction
 type CreateCompanyTokenTransactionsRequestAdd struct {
+	// The unique identifier of the company to create the transaction in, starting with 'biz_'.
+	AccountID string `json:"account_id" url:"account_id"`
 	// The positive number of tokens to transact. For example, 100.0 for 100 tokens.
 	Amount float64 `json:"amount" url:"amount"`
-	// The unique identifier of the company to create the transaction in, starting with 'biz_'.
-	CompanyID string `json:"company_id" url:"company_id"`
 	// A human-readable description of why the transaction was created.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// A unique key to prevent duplicate transactions. Use a UUID or similar unique string.
@@ -1475,18 +1553,18 @@ type CreateCompanyTokenTransactionsRequestAdd struct {
 	rawJSON         json.RawMessage
 }
 
+func (c *CreateCompanyTokenTransactionsRequestAdd) GetAccountID() string {
+	if c == nil {
+		return ""
+	}
+	return c.AccountID
+}
+
 func (c *CreateCompanyTokenTransactionsRequestAdd) GetAmount() float64 {
 	if c == nil {
 		return 0
 	}
 	return c.Amount
-}
-
-func (c *CreateCompanyTokenTransactionsRequestAdd) GetCompanyID() string {
-	if c == nil {
-		return ""
-	}
-	return c.CompanyID
 }
 
 func (c *CreateCompanyTokenTransactionsRequestAdd) GetDescription() *string {
@@ -1518,10 +1596,19 @@ func (c *CreateCompanyTokenTransactionsRequestAdd) GetExtraProperties() map[stri
 }
 
 func (c *CreateCompanyTokenTransactionsRequestAdd) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCompanyTokenTransactionsRequestAdd) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(createCompanyTokenTransactionsRequestAddFieldAccountID)
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -1529,13 +1616,6 @@ func (c *CreateCompanyTokenTransactionsRequestAdd) require(field *big.Int) {
 func (c *CreateCompanyTokenTransactionsRequestAdd) SetAmount(amount float64) {
 	c.Amount = amount
 	c.require(createCompanyTokenTransactionsRequestAddFieldAmount)
-}
-
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCompanyTokenTransactionsRequestAdd) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createCompanyTokenTransactionsRequestAddFieldCompanyID)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
@@ -1571,6 +1651,13 @@ func (c *CreateCompanyTokenTransactionsRequestAdd) UnmarshalJSON(data []byte) er
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createCompanyTokenTransactionsRequestAddNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1601,20 +1688,26 @@ func (c *CreateCompanyTokenTransactionsRequestAdd) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Autogenerated input type of CreateCompanyTokenTransaction
 var (
-	createCompanyTokenTransactionsRequestSubtractFieldAmount         = big.NewInt(1 << 0)
-	createCompanyTokenTransactionsRequestSubtractFieldCompanyID      = big.NewInt(1 << 1)
+	createCompanyTokenTransactionsRequestSubtractFieldAccountID      = big.NewInt(1 << 0)
+	createCompanyTokenTransactionsRequestSubtractFieldAmount         = big.NewInt(1 << 1)
 	createCompanyTokenTransactionsRequestSubtractFieldDescription    = big.NewInt(1 << 2)
 	createCompanyTokenTransactionsRequestSubtractFieldIdempotencyKey = big.NewInt(1 << 3)
 	createCompanyTokenTransactionsRequestSubtractFieldUserID         = big.NewInt(1 << 4)
 )
 
+// createCompanyTokenTransactionsRequestSubtractNullableFields maps the wire names of CreateCompanyTokenTransactionsRequestSubtract's nullable fields (required or optional) to their field bits.
+var createCompanyTokenTransactionsRequestSubtractNullableFields = map[string]*big.Int{
+	"description":     createCompanyTokenTransactionsRequestSubtractFieldDescription,
+	"idempotency_key": createCompanyTokenTransactionsRequestSubtractFieldIdempotencyKey,
+}
+
+// Autogenerated input type of CreateCompanyTokenTransaction
 type CreateCompanyTokenTransactionsRequestSubtract struct {
+	// The unique identifier of the company to create the transaction in, starting with 'biz_'.
+	AccountID string `json:"account_id" url:"account_id"`
 	// The positive number of tokens to transact. For example, 100.0 for 100 tokens.
 	Amount float64 `json:"amount" url:"amount"`
-	// The unique identifier of the company to create the transaction in, starting with 'biz_'.
-	CompanyID string `json:"company_id" url:"company_id"`
 	// A human-readable description of why the transaction was created.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// A unique key to prevent duplicate transactions. Use a UUID or similar unique string.
@@ -1629,18 +1722,18 @@ type CreateCompanyTokenTransactionsRequestSubtract struct {
 	rawJSON         json.RawMessage
 }
 
+func (c *CreateCompanyTokenTransactionsRequestSubtract) GetAccountID() string {
+	if c == nil {
+		return ""
+	}
+	return c.AccountID
+}
+
 func (c *CreateCompanyTokenTransactionsRequestSubtract) GetAmount() float64 {
 	if c == nil {
 		return 0
 	}
 	return c.Amount
-}
-
-func (c *CreateCompanyTokenTransactionsRequestSubtract) GetCompanyID() string {
-	if c == nil {
-		return ""
-	}
-	return c.CompanyID
 }
 
 func (c *CreateCompanyTokenTransactionsRequestSubtract) GetDescription() *string {
@@ -1672,10 +1765,19 @@ func (c *CreateCompanyTokenTransactionsRequestSubtract) GetExtraProperties() map
 }
 
 func (c *CreateCompanyTokenTransactionsRequestSubtract) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCompanyTokenTransactionsRequestSubtract) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(createCompanyTokenTransactionsRequestSubtractFieldAccountID)
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -1683,13 +1785,6 @@ func (c *CreateCompanyTokenTransactionsRequestSubtract) require(field *big.Int) 
 func (c *CreateCompanyTokenTransactionsRequestSubtract) SetAmount(amount float64) {
 	c.Amount = amount
 	c.require(createCompanyTokenTransactionsRequestSubtractFieldAmount)
-}
-
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCompanyTokenTransactionsRequestSubtract) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createCompanyTokenTransactionsRequestSubtractFieldCompanyID)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
@@ -1725,6 +1820,13 @@ func (c *CreateCompanyTokenTransactionsRequestSubtract) UnmarshalJSON(data []byt
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createCompanyTokenTransactionsRequestSubtractNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1755,21 +1857,27 @@ func (c *CreateCompanyTokenTransactionsRequestSubtract) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Autogenerated input type of CreateCompanyTokenTransaction
 var (
-	createCompanyTokenTransactionsRequestTransferFieldAmount            = big.NewInt(1 << 0)
-	createCompanyTokenTransactionsRequestTransferFieldCompanyID         = big.NewInt(1 << 1)
+	createCompanyTokenTransactionsRequestTransferFieldAccountID         = big.NewInt(1 << 0)
+	createCompanyTokenTransactionsRequestTransferFieldAmount            = big.NewInt(1 << 1)
 	createCompanyTokenTransactionsRequestTransferFieldDescription       = big.NewInt(1 << 2)
 	createCompanyTokenTransactionsRequestTransferFieldDestinationUserID = big.NewInt(1 << 3)
 	createCompanyTokenTransactionsRequestTransferFieldIdempotencyKey    = big.NewInt(1 << 4)
 	createCompanyTokenTransactionsRequestTransferFieldUserID            = big.NewInt(1 << 5)
 )
 
+// createCompanyTokenTransactionsRequestTransferNullableFields maps the wire names of CreateCompanyTokenTransactionsRequestTransfer's nullable fields (required or optional) to their field bits.
+var createCompanyTokenTransactionsRequestTransferNullableFields = map[string]*big.Int{
+	"description":     createCompanyTokenTransactionsRequestTransferFieldDescription,
+	"idempotency_key": createCompanyTokenTransactionsRequestTransferFieldIdempotencyKey,
+}
+
+// Autogenerated input type of CreateCompanyTokenTransaction
 type CreateCompanyTokenTransactionsRequestTransfer struct {
+	// The unique identifier of the company to create the transaction in, starting with 'biz_'.
+	AccountID string `json:"account_id" url:"account_id"`
 	// The positive number of tokens to transact. For example, 100.0 for 100 tokens.
 	Amount float64 `json:"amount" url:"amount"`
-	// The unique identifier of the company to create the transaction in, starting with 'biz_'.
-	CompanyID string `json:"company_id" url:"company_id"`
 	// A human-readable description of why the transaction was created.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// The unique identifier of the user receiving the tokens. Required when the transaction type is 'transfer'.
@@ -1786,18 +1894,18 @@ type CreateCompanyTokenTransactionsRequestTransfer struct {
 	rawJSON         json.RawMessage
 }
 
+func (c *CreateCompanyTokenTransactionsRequestTransfer) GetAccountID() string {
+	if c == nil {
+		return ""
+	}
+	return c.AccountID
+}
+
 func (c *CreateCompanyTokenTransactionsRequestTransfer) GetAmount() float64 {
 	if c == nil {
 		return 0
 	}
 	return c.Amount
-}
-
-func (c *CreateCompanyTokenTransactionsRequestTransfer) GetCompanyID() string {
-	if c == nil {
-		return ""
-	}
-	return c.CompanyID
 }
 
 func (c *CreateCompanyTokenTransactionsRequestTransfer) GetDescription() *string {
@@ -1836,10 +1944,19 @@ func (c *CreateCompanyTokenTransactionsRequestTransfer) GetExtraProperties() map
 }
 
 func (c *CreateCompanyTokenTransactionsRequestTransfer) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCompanyTokenTransactionsRequestTransfer) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(createCompanyTokenTransactionsRequestTransferFieldAccountID)
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -1847,13 +1964,6 @@ func (c *CreateCompanyTokenTransactionsRequestTransfer) require(field *big.Int) 
 func (c *CreateCompanyTokenTransactionsRequestTransfer) SetAmount(amount float64) {
 	c.Amount = amount
 	c.require(createCompanyTokenTransactionsRequestTransferFieldAmount)
-}
-
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCompanyTokenTransactionsRequestTransfer) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createCompanyTokenTransactionsRequestTransferFieldCompanyID)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
@@ -1896,6 +2006,13 @@ func (c *CreateCompanyTokenTransactionsRequestTransfer) UnmarshalJSON(data []byt
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createCompanyTokenTransactionsRequestTransferNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1926,12 +2043,12 @@ func (c *CreateCompanyTokenTransactionsRequestTransfer) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The connection type for CompanyTokenTransaction.
 var (
 	listCompanyTokenTransactionsResponseFieldData     = big.NewInt(1 << 0)
 	listCompanyTokenTransactionsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for CompanyTokenTransaction.
 type ListCompanyTokenTransactionsResponse struct {
 	// A list of nodes.
 	Data []*CompanyTokenTransactionListItem `json:"data" url:"data"`
@@ -1967,10 +2084,12 @@ func (l *ListCompanyTokenTransactionsResponse) GetExtraProperties() map[string]i
 }
 
 func (l *ListCompanyTokenTransactionsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;

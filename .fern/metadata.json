@@ -1,18 +1,19 @@
 {
   "cliVersion": "5.90.1",
   "generatorName": "fernapi/fern-go-sdk",
-  "generatorVersion": "1.57.3",
+  "generatorVersion": "1.65.1",
   "generatorConfig": {
     "module": {
-      "path": "github.com/whopio/whopsdk-go"
+      "path": "github.com/whopio/whopsdk-go/v2"
     },
+    "user-agent": "github.com/whopio/whopsdk-go/v2/{version}",
     "packageName": "whopsdk",
     "clientName": "Whop"
   },
-  "originGitCommit": "a26a97d2d8ee29f78819a299712fb3b4086d634e",
+  "originGitCommit": "d66eddd7d02b6667964658632a3962cf05a7fbcc",
   "originGitCommitIsDirty": false,
   "invokedBy": "ci",
-  "requestedVersion": "1.0.11",
+  "requestedVersion": "2.7.0",
   "ciProvider": "unknown",
-  "sdkVersion": "v1.0.11"
+  "sdkVersion": "v2.7.0"
 }

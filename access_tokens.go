@@ -5,13 +5,13 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
 
 var (
-	createAccessTokensRequestFieldCompanyID     = big.NewInt(1 << 0)
+	createAccessTokensRequestFieldAccountID     = big.NewInt(1 << 0)
 	createAccessTokensRequestFieldExpiresAt     = big.NewInt(1 << 1)
 	createAccessTokensRequestFieldScopedActions = big.NewInt(1 << 2)
 	createAccessTokensRequestFieldUserID        = big.NewInt(1 << 3)
@@ -19,7 +19,7 @@ var (
 
 type CreateAccessTokensRequest struct {
 	// The unique identifier of the company to generate the token for, starting with 'biz_'. The API key must have permission to access this company.
-	CompanyID *string `json:"company_id,omitempty" url:"-"`
+	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// The expiration timestamp for the access token. Defaults to 1 hour from now, with a maximum of 3 hours.
 	ExpiresAt *time.Time `json:"expires_at,omitempty" url:"-"`
 	// An array of permission scopes to grant to the access token. If empty or omitted, all permissions from the authenticating credential are inherited. Must be a subset of the credential's permissions.
@@ -32,17 +32,19 @@ type CreateAccessTokensRequest struct {
 }
 
 func (c *CreateAccessTokensRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAccessTokensRequest) SetCompanyID(companyID *string) {
-	c.CompanyID = companyID
-	c.require(createAccessTokensRequestFieldCompanyID)
+func (c *CreateAccessTokensRequest) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createAccessTokensRequestFieldAccountID)
 }
 
 // SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
@@ -67,12 +69,18 @@ func (c *CreateAccessTokensRequest) SetUserID(userID *string) {
 }
 
 func (c *CreateAccessTokensRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAccessTokensRequest
-	var body unmarshaler
+	type embed CreateAccessTokensRequest
+	var body = struct {
+		embed
+		ExpiresAt *internal.DateTime `json:"expires_at,omitempty"`
+	}{
+		embed: embed(*c),
+	}
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}
-	*c = CreateAccessTokensRequest(body)
+	*c = CreateAccessTokensRequest(body.embed)
+	c.ExpiresAt = body.ExpiresAt.TimePtr()
 	return nil
 }
 
@@ -89,12 +97,12 @@ func (c *CreateAccessTokensRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-// A short-lived access token used to authenticate API requests on behalf of a user.
 var (
 	accessTokenFieldExpiresAt = big.NewInt(1 << 0)
 	accessTokenFieldToken     = big.NewInt(1 << 1)
 )
 
+// A short-lived access token used to authenticate API requests on behalf of a user.
 type AccessToken struct {
 	// The timestamp after which this access token is no longer valid and must be refreshed.
 	ExpiresAt time.Time `json:"expires_at" url:"expires_at"`
@@ -130,10 +138,12 @@ func (a *AccessToken) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccessToken) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetExpiresAt sets the ExpiresAt field and marks it as non-optional;

@@ -5,8 +5,8 @@ package notifications
 import (
 	json "encoding/json"
 	fmt "fmt"
-	whopsdkgo "github.com/whopio/whopsdk-go"
-	internal "github.com/whopio/whopsdk-go/internal"
+	v2 "github.com/whopio/whopsdk-go/v2"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 
@@ -16,9 +16,9 @@ var (
 )
 
 type ListExperiencesRequest struct {
-	// The number of preferences to return.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor; returns preferences after this position.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -26,10 +26,12 @@ type ListExperiencesRequest struct {
 }
 
 func (l *ListExperiencesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetFirst sets the First field and marks it as non-optional;
@@ -52,8 +54,8 @@ var (
 )
 
 type ListExperiencesResponse struct {
-	Data     []*whopsdkgo.ExperienceNotificationPreference `json:"data" url:"data"`
-	PageInfo *ListExperiencesResponsePageInfo              `json:"page_info" url:"page_info"`
+	Data     []*v2.ExperienceNotificationPreference `json:"data" url:"data"`
+	PageInfo *ListExperiencesResponsePageInfo       `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -62,7 +64,7 @@ type ListExperiencesResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListExperiencesResponse) GetData() []*whopsdkgo.ExperienceNotificationPreference {
+func (l *ListExperiencesResponse) GetData() []*v2.ExperienceNotificationPreference {
 	if l == nil {
 		return nil
 	}
@@ -84,15 +86,17 @@ func (l *ListExperiencesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListExperiencesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListExperiencesResponse) SetData(data []*whopsdkgo.ExperienceNotificationPreference) {
+func (l *ListExperiencesResponse) SetData(data []*v2.ExperienceNotificationPreference) {
 	l.Data = data
 	l.require(listExperiencesResponseFieldData)
 }
@@ -153,6 +157,12 @@ var (
 	listExperiencesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listExperiencesResponsePageInfoNullableFields maps the wire names of ListExperiencesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listExperiencesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listExperiencesResponsePageInfoFieldEndCursor,
+	"start_cursor": listExperiencesResponsePageInfoFieldStartCursor,
+}
+
 type ListExperiencesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -202,10 +212,12 @@ func (l *ListExperiencesResponsePageInfo) GetExtraProperties() map[string]interf
 }
 
 func (l *ListExperiencesResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -248,6 +260,13 @@ func (l *ListExperiencesResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listExperiencesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

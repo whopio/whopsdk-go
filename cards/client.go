@@ -5,10 +5,10 @@ package cards
 import (
 	context "context"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -21,7 +21,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -63,7 +63,7 @@ func (c *Client) List(
 	return response.Body, nil
 }
 
-// Issue a virtual card, or apply for card issuing.
+// Issues a virtual card, or applies for card issuing. An account with no application files one here and gets back a `202`; call again to issue the card once it is approved. An account whose application was denied or canceled applies again the same way, replacing that application.
 //
 // Example:
 //
@@ -88,7 +88,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Retrieve a single card.
+// Retrieves a single card, including its `secrets` (card number, CVC, and PIN), which List Cards does not return.
 //
 // Example:
 //
@@ -115,7 +115,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Update, freeze, or cancel a card. Updating the card's name, billing address, or limits requires both `payout:account:update` and `company:balance:read`; a card's assigned holder may update their own card's pin and frozen state with any user token.
+// Updates, freezes, or cancels a card. Updating the card's name, billing address, or limits requires both `payout:account:update` and `company:balance:read`; a card's assigned holder may update their own card's pin and frozen state with any user token.
 //
 // Example:
 //

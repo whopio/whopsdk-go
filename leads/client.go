@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of leads for a company, with optional filtering by product and creation date.
+// Lists an account's leads, newest first.
 //
 // Required permissions:
 //   - `lead:basic:read`
@@ -56,7 +56,6 @@ func NewClient(options *core.RequestOptions) *Client {
 //	    Last: whopsdk.Int(
 //	        42,
 //	    ),
-//	    CompanyID: "biz_xxxxxxxxxxxxxx",
 //	    CreatedAfter: whopsdk.Time(
 //	        whopsdk.MustParseDateTime(
 //	            "2023-12-01T05:00:00Z",
@@ -67,6 +66,7 @@ func NewClient(options *core.RequestOptions) *Client {
 //	            "2023-12-01T05:00:00Z",
 //	        ),
 //	    ),
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	}
 //	client.Leads.List(
 //	    context.TODO(),
@@ -80,7 +80,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/leads"
@@ -135,7 +143,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Record a new lead for a company, capturing a potential customer's interest in a specific product.
+// Records a lead: a potential customer's interest in an account or one of its products.
 //
 // Required permissions:
 //   - `lead:manage`
@@ -146,7 +154,7 @@ func (c *Client) List(
 // Example:
 //
 //	request := &whopsdk.CreateLeadsRequest{
-//	    CompanyID: "biz_xxxxxxxxxxxxxx",
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	}
 //	client.Leads.Create(
 //	    context.TODO(),
@@ -201,7 +209,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Update the metadata or referrer information on an existing lead record.
+// Updates a lead's `metadata` or `referrer`.
 //
 // Required permissions:
 //   - `lead:manage`

@@ -5,8 +5,8 @@ package preferences
 import (
 	json "encoding/json"
 	fmt "fmt"
-	whopsdkgo "github.com/whopio/whopsdk-go"
-	internal "github.com/whopio/whopsdk-go/internal"
+	v2 "github.com/whopio/whopsdk-go/v2"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 
@@ -23,10 +23,12 @@ type SetNotificationsRequest struct {
 }
 
 func (s *SetNotificationsRequest) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetPreferences sets the Preferences field and marks it as non-optional;
@@ -62,10 +64,15 @@ var (
 	setNotificationsRequestPreferencesItemFieldScope = big.NewInt(1 << 1)
 )
 
+// setNotificationsRequestPreferencesItemNullableFields maps the wire names of SetNotificationsRequestPreferencesItem's nullable fields (required or optional) to their field bits.
+var setNotificationsRequestPreferencesItemNullableFields = map[string]*big.Int{
+	"level": setNotificationsRequestPreferencesItemFieldLevel,
+}
+
 type SetNotificationsRequestPreferencesItem struct {
-	// What the user is notified about in this scope. `mentions` is only valid for an experience level. `null` clears the preference.
+	// What the user is notified about in this scope. `mentions` is only valid for an experience level; a topic override is `all` or `nothing`. `null` clears the preference, so the scope inherits its default again rather than being switched off.
 	Level *SetNotificationsRequestPreferencesItemLevel `json:"level,omitempty" url:"level,omitempty"`
-	// What the preference applies to. `null` on a dimension means the preference is not narrowed there.
+	// What the preference applies to. `null` on a dimension means the preference is not narrowed there. A scope read back from either list endpoint can be sent as-is. A scope naming an experience with no topic sets that experience's level; any other scope sets a topic override.
 	Scope *SetNotificationsRequestPreferencesItemScope `json:"scope" url:"scope"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -97,10 +104,12 @@ func (s *SetNotificationsRequestPreferencesItem) GetExtraProperties() map[string
 }
 
 func (s *SetNotificationsRequestPreferencesItem) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetLevel sets the Level field and marks it as non-optional;
@@ -129,6 +138,13 @@ func (s *SetNotificationsRequestPreferencesItem) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, setNotificationsRequestPreferencesItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -159,7 +175,7 @@ func (s *SetNotificationsRequestPreferencesItem) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// What the user is notified about in this scope. `mentions` is only valid for an experience level. `null` clears the preference.
+// What the user is notified about in this scope. `mentions` is only valid for an experience level; a topic override is `all` or `nothing`. `null` clears the preference, so the scope inherits its default again rather than being switched off.
 type SetNotificationsRequestPreferencesItemLevel string
 
 const (
@@ -185,7 +201,6 @@ func (s SetNotificationsRequestPreferencesItemLevel) Ptr() *SetNotificationsRequ
 	return &s
 }
 
-// What the preference applies to. `null` on a dimension means the preference is not narrowed there.
 var (
 	setNotificationsRequestPreferencesItemScopeFieldAccountID     = big.NewInt(1 << 0)
 	setNotificationsRequestPreferencesItemScopeFieldChannel       = big.NewInt(1 << 1)
@@ -194,16 +209,26 @@ var (
 	setNotificationsRequestPreferencesItemScopeFieldTopicID       = big.NewInt(1 << 4)
 )
 
+// setNotificationsRequestPreferencesItemScopeNullableFields maps the wire names of SetNotificationsRequestPreferencesItemScope's nullable fields (required or optional) to their field bits.
+var setNotificationsRequestPreferencesItemScopeNullableFields = map[string]*big.Int{
+	"account_id":      setNotificationsRequestPreferencesItemScopeFieldAccountID,
+	"channel":         setNotificationsRequestPreferencesItemScopeFieldChannel,
+	"experience_id":   setNotificationsRequestPreferencesItemScopeFieldExperienceID,
+	"team_account_id": setNotificationsRequestPreferencesItemScopeFieldTeamAccountID,
+	"topic_id":        setNotificationsRequestPreferencesItemScopeFieldTopicID,
+}
+
+// What the preference applies to. `null` on a dimension means the preference is not narrowed there. A scope read back from either list endpoint can be sent as-is. A scope naming an experience with no topic sets that experience's level; any other scope sets a topic override.
 type SetNotificationsRequestPreferencesItemScope struct {
 	// Account to scope the preference to (member notifications), `biz_` tag.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// Delivery channel the preference applies to. Required when setting a topic override.
+	// Delivery channel the preference applies to. Omit it (or pass `null`) to apply the preference to every channel.
 	Channel *SetNotificationsRequestPreferencesItemScopeChannel `json:"channel,omitempty" url:"channel,omitempty"`
 	// Experience to scope the preference to (`exp_` tag). Requires `account_id` when a `topic_id` is also given.
 	ExperienceID *string `json:"experience_id,omitempty" url:"experience_id,omitempty"`
 	// Account whose team notifications the preference is scoped to, `biz_` tag.
 	TeamAccountID *string `json:"team_account_id,omitempty" url:"team_account_id,omitempty"`
-	// Notification topic to scope the preference to, `topic_` tag.
+	// Notification topic to scope the preference to, `topic_` tag. Topic IDs come from `GET /notifications/topics`.
 	TopicID *string `json:"topic_id,omitempty" url:"topic_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -256,10 +281,12 @@ func (s *SetNotificationsRequestPreferencesItemScope) GetExtraProperties() map[s
 }
 
 func (s *SetNotificationsRequestPreferencesItemScope) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -309,6 +336,13 @@ func (s *SetNotificationsRequestPreferencesItemScope) UnmarshalJSON(data []byte)
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, setNotificationsRequestPreferencesItemScopeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -339,7 +373,7 @@ func (s *SetNotificationsRequestPreferencesItemScope) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// Delivery channel the preference applies to. Required when setting a topic override.
+// Delivery channel the preference applies to. Omit it (or pass `null`) to apply the preference to every channel.
 type SetNotificationsRequestPreferencesItemScopeChannel string
 
 const (
@@ -367,7 +401,7 @@ var (
 )
 
 type SetNotificationsResponse struct {
-	Data []*whopsdkgo.NotificationPreferenceState `json:"data" url:"data"`
+	Data []*v2.NotificationPreferenceState `json:"data" url:"data"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -376,7 +410,7 @@ type SetNotificationsResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (s *SetNotificationsResponse) GetData() []*whopsdkgo.NotificationPreferenceState {
+func (s *SetNotificationsResponse) GetData() []*v2.NotificationPreferenceState {
 	if s == nil {
 		return nil
 	}
@@ -391,15 +425,17 @@ func (s *SetNotificationsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (s *SetNotificationsResponse) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SetNotificationsResponse) SetData(data []*whopsdkgo.NotificationPreferenceState) {
+func (s *SetNotificationsResponse) SetData(data []*v2.NotificationPreferenceState) {
 	s.Data = data
 	s.require(setNotificationsResponseFieldData)
 }

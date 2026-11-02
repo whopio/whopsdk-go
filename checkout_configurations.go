@@ -5,7 +5,7 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 
@@ -16,10 +16,10 @@ var (
 	createCheckoutConfigurationsRequestFieldMetadata                   = big.NewInt(1 << 3)
 	createCheckoutConfigurationsRequestFieldMode                       = big.NewInt(1 << 4)
 	createCheckoutConfigurationsRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 5)
-	createCheckoutConfigurationsRequestFieldPlan                       = big.NewInt(1 << 6)
-	createCheckoutConfigurationsRequestFieldPlanID                     = big.NewInt(1 << 7)
-	createCheckoutConfigurationsRequestFieldRedirectURL                = big.NewInt(1 << 8)
-	createCheckoutConfigurationsRequestFieldThreeDsLevel               = big.NewInt(1 << 9)
+	createCheckoutConfigurationsRequestFieldRedirectURL                = big.NewInt(1 << 6)
+	createCheckoutConfigurationsRequestFieldThreeDsLevel               = big.NewInt(1 << 7)
+	createCheckoutConfigurationsRequestFieldVariant                    = big.NewInt(1 << 8)
+	createCheckoutConfigurationsRequestFieldVariantID                  = big.NewInt(1 << 9)
 )
 
 type CreateCheckoutConfigurationsRequest struct {
@@ -33,26 +33,28 @@ type CreateCheckoutConfigurationsRequest struct {
 	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
 	// Controls whether checkout charges the buyer immediately or saves payment details for later. Defaults to `payment`.
 	Mode *CreateCheckoutConfigurationsRequestMode `json:"mode,omitempty" url:"-"`
-	// Payment method overrides for this checkout. `null` uses the plan or platform defaults.
+	// Payment method overrides for this checkout. `null` uses the variant or platform defaults.
 	PaymentMethodConfiguration *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"-"`
-	// Plan attributes used to create or find a plan for this checkout configuration. Mutually exclusive with `plan_id`.
-	Plan *CreateCheckoutConfigurationsRequestPlan `json:"plan,omitempty" url:"-"`
-	// Existing plan ID, prefixed `plan_`. Mutually exclusive with `plan`.
-	PlanID *string `json:"plan_id,omitempty" url:"-"`
 	// URL customers are sent to after checkout.
 	RedirectURL *string `json:"redirect_url,omitempty" url:"-"`
-	// 3D Secure behavior for this checkout.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
 	ThreeDsLevel *CreateCheckoutConfigurationsRequestThreeDsLevel `json:"three_ds_level,omitempty" url:"-"`
+	// Variant attributes used to create or find a variant for this checkout configuration. Mutually exclusive with `variant_id`.
+	Variant *CreateCheckoutConfigurationsRequestVariant `json:"variant,omitempty" url:"-"`
+	// Existing variant ID, prefixed `plan_`. Mutually exclusive with `variant`.
+	VariantID *string `json:"variant_id,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (c *CreateCheckoutConfigurationsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -97,20 +99,6 @@ func (c *CreateCheckoutConfigurationsRequest) SetPaymentMethodConfiguration(paym
 	c.require(createCheckoutConfigurationsRequestFieldPaymentMethodConfiguration)
 }
 
-// SetPlan sets the Plan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequest) SetPlan(plan *CreateCheckoutConfigurationsRequestPlan) {
-	c.Plan = plan
-	c.require(createCheckoutConfigurationsRequestFieldPlan)
-}
-
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequest) SetPlanID(planID *string) {
-	c.PlanID = planID
-	c.require(createCheckoutConfigurationsRequestFieldPlanID)
-}
-
 // SetRedirectURL sets the RedirectURL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateCheckoutConfigurationsRequest) SetRedirectURL(redirectURL *string) {
@@ -123,6 +111,20 @@ func (c *CreateCheckoutConfigurationsRequest) SetRedirectURL(redirectURL *string
 func (c *CreateCheckoutConfigurationsRequest) SetThreeDsLevel(threeDsLevel *CreateCheckoutConfigurationsRequestThreeDsLevel) {
 	c.ThreeDsLevel = threeDsLevel
 	c.require(createCheckoutConfigurationsRequestFieldThreeDsLevel)
+}
+
+// SetVariant sets the Variant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCheckoutConfigurationsRequest) SetVariant(variant *CreateCheckoutConfigurationsRequestVariant) {
+	c.Variant = variant
+	c.require(createCheckoutConfigurationsRequestFieldVariant)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCheckoutConfigurationsRequest) SetVariantID(variantID *string) {
+	c.VariantID = variantID
+	c.require(createCheckoutConfigurationsRequestFieldVariantID)
 }
 
 func (c *CreateCheckoutConfigurationsRequest) UnmarshalJSON(data []byte) error {
@@ -159,10 +161,12 @@ type DeleteCheckoutConfigurationsRequest struct {
 }
 
 func (d *DeleteCheckoutConfigurationsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -174,7 +178,7 @@ func (d *DeleteCheckoutConfigurationsRequest) SetID(id string) {
 
 var (
 	listCheckoutConfigurationsRequestFieldAccountID     = big.NewInt(1 << 0)
-	listCheckoutConfigurationsRequestFieldPlanID        = big.NewInt(1 << 1)
+	listCheckoutConfigurationsRequestFieldVariantID     = big.NewInt(1 << 1)
 	listCheckoutConfigurationsRequestFieldCreatedBefore = big.NewInt(1 << 2)
 	listCheckoutConfigurationsRequestFieldCreatedAfter  = big.NewInt(1 << 3)
 	listCheckoutConfigurationsRequestFieldOrder         = big.NewInt(1 << 4)
@@ -186,8 +190,8 @@ var (
 type ListCheckoutConfigurationsRequest struct {
 	// Account ID, prefixed `biz_`.
 	AccountID string `json:"-" url:"account_id"`
-	// Only return checkout configurations for this plan ID, prefixed `plan_`.
-	PlanID *string `json:"-" url:"plan_id,omitempty"`
+	// Only return checkout configurations for this variant ID, prefixed `plan_`.
+	VariantID *string `json:"-" url:"variant_id,omitempty"`
 	// Only return checkout configurations created before this ISO 8601 timestamp.
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only return checkout configurations created after this ISO 8601 timestamp.
@@ -196,9 +200,9 @@ type ListCheckoutConfigurationsRequest struct {
 	Order *ListCheckoutConfigurationsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction. Defaults to `desc`.
 	Direction *ListCheckoutConfigurationsRequestDirection `json:"-" url:"direction,omitempty"`
-	// Number of checkout configurations to return.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor for the next page of results.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -206,10 +210,12 @@ type ListCheckoutConfigurationsRequest struct {
 }
 
 func (l *ListCheckoutConfigurationsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -219,11 +225,11 @@ func (l *ListCheckoutConfigurationsRequest) SetAccountID(accountID string) {
 	l.require(listCheckoutConfigurationsRequestFieldAccountID)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
+// SetVariantID sets the VariantID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListCheckoutConfigurationsRequest) SetPlanID(planID *string) {
-	l.PlanID = planID
-	l.require(listCheckoutConfigurationsRequestFieldPlanID)
+func (l *ListCheckoutConfigurationsRequest) SetVariantID(variantID *string) {
+	l.VariantID = variantID
+	l.require(listCheckoutConfigurationsRequestFieldVariantID)
 }
 
 // SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;
@@ -281,10 +287,12 @@ type RetrieveCheckoutConfigurationsRequest struct {
 }
 
 func (r *RetrieveCheckoutConfigurationsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -317,18 +325,18 @@ func (c CreateCheckoutConfigurationsRequestMode) Ptr() *CreateCheckoutConfigurat
 	return &c
 }
 
-// Payment method overrides for this checkout. `null` uses the plan or platform defaults.
 var (
 	createCheckoutConfigurationsRequestPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	createCheckoutConfigurationsRequestPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	createCheckoutConfigurationsRequestPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// Payment method overrides for this checkout. `null` uses the variant or platform defaults.
 type CreateCheckoutConfigurationsRequestPaymentMethodConfiguration struct {
-	// Payment methods explicitly disabled for checkout.
-	Disabled []string `json:"disabled,omitempty" url:"disabled,omitempty"`
-	// Payment methods explicitly enabled for checkout.
-	Enabled []string `json:"enabled,omitempty" url:"enabled,omitempty"`
+	// Payment method types explicitly disabled for checkout — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	Disabled []PaymentMethodTypes `json:"disabled,omitempty" url:"disabled,omitempty"`
+	// Payment method types explicitly enabled for checkout — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	Enabled []PaymentMethodTypes `json:"enabled,omitempty" url:"enabled,omitempty"`
 	// Whether platform default payment methods are included.
 	IncludePlatformDefaults *bool `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
 
@@ -339,14 +347,14 @@ type CreateCheckoutConfigurationsRequestPaymentMethodConfiguration struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) GetDisabled() []string {
+func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) GetDisabled() []PaymentMethodTypes {
 	if c == nil {
 		return nil
 	}
 	return c.Disabled
 }
 
-func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) GetEnabled() []string {
+func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) GetEnabled() []PaymentMethodTypes {
 	if c == nil {
 		return nil
 	}
@@ -368,22 +376,24 @@ func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) GetExtra
 }
 
 func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) SetDisabled(disabled []string) {
+func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) SetDisabled(disabled []PaymentMethodTypes) {
 	c.Disabled = disabled
 	c.require(createCheckoutConfigurationsRequestPaymentMethodConfigurationFieldDisabled)
 }
 
 // SetEnabled sets the Enabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) SetEnabled(enabled []string) {
+func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) SetEnabled(enabled []PaymentMethodTypes) {
 	c.Enabled = enabled
 	c.require(createCheckoutConfigurationsRequestPaymentMethodConfigurationFieldEnabled)
 }
@@ -437,71 +447,121 @@ func (c *CreateCheckoutConfigurationsRequestPaymentMethodConfiguration) String()
 	return fmt.Sprintf("%#v", c)
 }
 
-// Plan attributes used to create or find a plan for this checkout configuration. Mutually exclusive with `plan_id`.
-var (
-	createCheckoutConfigurationsRequestPlanFieldAccountID                  = big.NewInt(1 << 0)
-	createCheckoutConfigurationsRequestPlanFieldBillingPeriod              = big.NewInt(1 << 1)
-	createCheckoutConfigurationsRequestPlanFieldCurrency                   = big.NewInt(1 << 2)
-	createCheckoutConfigurationsRequestPlanFieldDescription                = big.NewInt(1 << 3)
-	createCheckoutConfigurationsRequestPlanFieldExpirationDays             = big.NewInt(1 << 4)
-	createCheckoutConfigurationsRequestPlanFieldForceCreateNewPlan         = big.NewInt(1 << 5)
-	createCheckoutConfigurationsRequestPlanFieldInitialPrice               = big.NewInt(1 << 6)
-	createCheckoutConfigurationsRequestPlanFieldMetadata                   = big.NewInt(1 << 7)
-	createCheckoutConfigurationsRequestPlanFieldOverrideTaxType            = big.NewInt(1 << 8)
-	createCheckoutConfigurationsRequestPlanFieldPaymentMethodConfiguration = big.NewInt(1 << 9)
-	createCheckoutConfigurationsRequestPlanFieldPlanType                   = big.NewInt(1 << 10)
-	createCheckoutConfigurationsRequestPlanFieldProductID                  = big.NewInt(1 << 11)
-	createCheckoutConfigurationsRequestPlanFieldReleaseMethod              = big.NewInt(1 << 12)
-	createCheckoutConfigurationsRequestPlanFieldRenewalPrice               = big.NewInt(1 << 13)
-	createCheckoutConfigurationsRequestPlanFieldStock                      = big.NewInt(1 << 14)
-	createCheckoutConfigurationsRequestPlanFieldThreeDsLevel               = big.NewInt(1 << 15)
-	createCheckoutConfigurationsRequestPlanFieldTitle                      = big.NewInt(1 << 16)
-	createCheckoutConfigurationsRequestPlanFieldTrialPeriodDays            = big.NewInt(1 << 17)
-	createCheckoutConfigurationsRequestPlanFieldUnlimitedStock             = big.NewInt(1 << 18)
-	createCheckoutConfigurationsRequestPlanFieldVisibility                 = big.NewInt(1 << 19)
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
+type CreateCheckoutConfigurationsRequestThreeDsLevel string
+
+const (
+	CreateCheckoutConfigurationsRequestThreeDsLevelMandateChallenge       CreateCheckoutConfigurationsRequestThreeDsLevel = "mandate_challenge"
+	CreateCheckoutConfigurationsRequestThreeDsLevelMandateIfRequired      CreateCheckoutConfigurationsRequestThreeDsLevel = "mandate_if_required"
+	CreateCheckoutConfigurationsRequestThreeDsLevelFrictionlessIfRequired CreateCheckoutConfigurationsRequestThreeDsLevel = "frictionless_if_required"
 )
 
-type CreateCheckoutConfigurationsRequestPlan struct {
-	// Account ID for the inline plan, prefixed `biz_`. Defaults to the account resolved from the request.
+func NewCreateCheckoutConfigurationsRequestThreeDsLevelFromString(s string) (CreateCheckoutConfigurationsRequestThreeDsLevel, error) {
+	switch s {
+	case "mandate_challenge":
+		return CreateCheckoutConfigurationsRequestThreeDsLevelMandateChallenge, nil
+	case "mandate_if_required":
+		return CreateCheckoutConfigurationsRequestThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return CreateCheckoutConfigurationsRequestThreeDsLevelFrictionlessIfRequired, nil
+	}
+	var t CreateCheckoutConfigurationsRequestThreeDsLevel
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateCheckoutConfigurationsRequestThreeDsLevel) Ptr() *CreateCheckoutConfigurationsRequestThreeDsLevel {
+	return &c
+}
+
+var (
+	createCheckoutConfigurationsRequestVariantFieldAccountID                  = big.NewInt(1 << 0)
+	createCheckoutConfigurationsRequestVariantFieldBillingPeriod              = big.NewInt(1 << 1)
+	createCheckoutConfigurationsRequestVariantFieldBillingType                = big.NewInt(1 << 2)
+	createCheckoutConfigurationsRequestVariantFieldCurrency                   = big.NewInt(1 << 3)
+	createCheckoutConfigurationsRequestVariantFieldDescription                = big.NewInt(1 << 4)
+	createCheckoutConfigurationsRequestVariantFieldExpirationDays             = big.NewInt(1 << 5)
+	createCheckoutConfigurationsRequestVariantFieldForceCreateNewPlan         = big.NewInt(1 << 6)
+	createCheckoutConfigurationsRequestVariantFieldInitialPrice               = big.NewInt(1 << 7)
+	createCheckoutConfigurationsRequestVariantFieldMetadata                   = big.NewInt(1 << 8)
+	createCheckoutConfigurationsRequestVariantFieldOverrideTaxType            = big.NewInt(1 << 9)
+	createCheckoutConfigurationsRequestVariantFieldPaymentMethodConfiguration = big.NewInt(1 << 10)
+	createCheckoutConfigurationsRequestVariantFieldProductID                  = big.NewInt(1 << 11)
+	createCheckoutConfigurationsRequestVariantFieldReleaseMethod              = big.NewInt(1 << 12)
+	createCheckoutConfigurationsRequestVariantFieldRenewalPrice               = big.NewInt(1 << 13)
+	createCheckoutConfigurationsRequestVariantFieldStock                      = big.NewInt(1 << 14)
+	createCheckoutConfigurationsRequestVariantFieldThreeDsLevel               = big.NewInt(1 << 15)
+	createCheckoutConfigurationsRequestVariantFieldTitle                      = big.NewInt(1 << 16)
+	createCheckoutConfigurationsRequestVariantFieldTrialPeriodDays            = big.NewInt(1 << 17)
+	createCheckoutConfigurationsRequestVariantFieldUnlimitedStock             = big.NewInt(1 << 18)
+	createCheckoutConfigurationsRequestVariantFieldVisibility                 = big.NewInt(1 << 19)
+)
+
+// createCheckoutConfigurationsRequestVariantNullableFields maps the wire names of CreateCheckoutConfigurationsRequestVariant's nullable fields (required or optional) to their field bits.
+var createCheckoutConfigurationsRequestVariantNullableFields = map[string]*big.Int{
+	"account_id":                   createCheckoutConfigurationsRequestVariantFieldAccountID,
+	"billing_period":               createCheckoutConfigurationsRequestVariantFieldBillingPeriod,
+	"billing_type":                 createCheckoutConfigurationsRequestVariantFieldBillingType,
+	"currency":                     createCheckoutConfigurationsRequestVariantFieldCurrency,
+	"description":                  createCheckoutConfigurationsRequestVariantFieldDescription,
+	"expiration_days":              createCheckoutConfigurationsRequestVariantFieldExpirationDays,
+	"force_create_new_plan":        createCheckoutConfigurationsRequestVariantFieldForceCreateNewPlan,
+	"initial_price":                createCheckoutConfigurationsRequestVariantFieldInitialPrice,
+	"metadata":                     createCheckoutConfigurationsRequestVariantFieldMetadata,
+	"override_tax_type":            createCheckoutConfigurationsRequestVariantFieldOverrideTaxType,
+	"payment_method_configuration": createCheckoutConfigurationsRequestVariantFieldPaymentMethodConfiguration,
+	"product_id":                   createCheckoutConfigurationsRequestVariantFieldProductID,
+	"release_method":               createCheckoutConfigurationsRequestVariantFieldReleaseMethod,
+	"renewal_price":                createCheckoutConfigurationsRequestVariantFieldRenewalPrice,
+	"stock":                        createCheckoutConfigurationsRequestVariantFieldStock,
+	"three_ds_level":               createCheckoutConfigurationsRequestVariantFieldThreeDsLevel,
+	"title":                        createCheckoutConfigurationsRequestVariantFieldTitle,
+	"trial_period_days":            createCheckoutConfigurationsRequestVariantFieldTrialPeriodDays,
+	"unlimited_stock":              createCheckoutConfigurationsRequestVariantFieldUnlimitedStock,
+	"visibility":                   createCheckoutConfigurationsRequestVariantFieldVisibility,
+}
+
+// Variant attributes used to create or find a variant for this checkout configuration. Mutually exclusive with `variant_id`.
+type CreateCheckoutConfigurationsRequestVariant struct {
+	// Account ID for the inline variant, prefixed `biz_`. Defaults to the account resolved from the request.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
 	// Recurring billing interval in days, such as 30 for monthly or 365 for annual.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// Three-letter ISO currency code for the plan's prices.
+	// Billing model for the variant.
+	BillingType *CreateCheckoutConfigurationsRequestVariantBillingType `json:"billing_type,omitempty" url:"billing_type,omitempty"`
+	// Three-letter ISO currency code for the variant's prices.
 	Currency *string `json:"currency,omitempty" url:"currency,omitempty"`
-	// Customer-visible plan description.
+	// Customer-visible variant description.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	// Access duration in days for expiration-based plans.
+	// Access duration in days for expiration-based variants.
 	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Whether to create a new plan instead of reusing a matching one.
+	// Whether to create a new variant instead of reusing a matching one.
 	ForceCreateNewPlan *bool `json:"force_create_new_plan,omitempty" url:"force_create_new_plan,omitempty"`
-	// Initial purchase price in the plan currency.
+	// Initial purchase price in the variant currency.
 	InitialPrice *float64 `json:"initial_price,omitempty" url:"initial_price,omitempty"`
-	// Custom key-value metadata stored on the plan.
+	// Custom key-value metadata stored on the variant.
 	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// Tax classification override for this plan.
+	// Tax classification override for this variant.
 	OverrideTaxType *string `json:"override_tax_type,omitempty" url:"override_tax_type,omitempty"`
-	// Payment method overrides for the inline plan. `null` uses platform defaults.
-	PaymentMethodConfiguration *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Billing model for the plan.
-	PlanType *CreateCheckoutConfigurationsRequestPlanPlanType `json:"plan_type,omitempty" url:"plan_type,omitempty"`
-	// Product ID the inline plan should belong to, prefixed `prod_`.
+	// Payment method overrides for the inline variant. `null` uses platform defaults.
+	PaymentMethodConfiguration *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
+	// Product ID the inline variant should belong to, prefixed `prod_`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
-	// Sales method for the plan.
-	ReleaseMethod *CreateCheckoutConfigurationsRequestPlanReleaseMethod `json:"release_method,omitempty" url:"release_method,omitempty"`
+	// Sales method for the variant.
+	ReleaseMethod *CreateCheckoutConfigurationsRequestVariantReleaseMethod `json:"release_method,omitempty" url:"release_method,omitempty"`
 	// Recurring price charged each billing period.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
 	// Units available for purchase.
 	Stock *int `json:"stock,omitempty" url:"stock,omitempty"`
-	// 3D Secure behavior for the inline plan, or `null` to use the account default.
-	ThreeDsLevel *CreateCheckoutConfigurationsRequestPlanThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
-	// Plan display name shown to customers.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
+	ThreeDsLevel *CreateCheckoutConfigurationsRequestVariantThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
+	// Variant display name shown to customers.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
 	// Free trial days before the first renewal charge.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// Whether the plan has unlimited stock.
+	// Whether the variant has unlimited stock.
 	UnlimitedStock *bool `json:"unlimited_stock,omitempty" url:"unlimited_stock,omitempty"`
-	// Whether the plan is visible to customers or hidden from public view.
-	Visibility *CreateCheckoutConfigurationsRequestPlanVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
+	// Whether the variant is visible to customers or hidden from public view.
+	Visibility *CreateCheckoutConfigurationsRequestVariantVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -510,318 +570,327 @@ type CreateCheckoutConfigurationsRequestPlan struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetAccountID() *string {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetAccountID() *string {
 	if c == nil {
 		return nil
 	}
 	return c.AccountID
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetBillingPeriod() *int {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetBillingPeriod() *int {
 	if c == nil {
 		return nil
 	}
 	return c.BillingPeriod
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetCurrency() *string {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetBillingType() *CreateCheckoutConfigurationsRequestVariantBillingType {
+	if c == nil {
+		return nil
+	}
+	return c.BillingType
+}
+
+func (c *CreateCheckoutConfigurationsRequestVariant) GetCurrency() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Currency
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetDescription() *string {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetDescription() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Description
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetExpirationDays() *int {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetExpirationDays() *int {
 	if c == nil {
 		return nil
 	}
 	return c.ExpirationDays
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetForceCreateNewPlan() *bool {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetForceCreateNewPlan() *bool {
 	if c == nil {
 		return nil
 	}
 	return c.ForceCreateNewPlan
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetInitialPrice() *float64 {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetInitialPrice() *float64 {
 	if c == nil {
 		return nil
 	}
 	return c.InitialPrice
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetMetadata() map[string]any {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetMetadata() map[string]any {
 	if c == nil {
 		return nil
 	}
 	return c.Metadata
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetOverrideTaxType() *string {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetOverrideTaxType() *string {
 	if c == nil {
 		return nil
 	}
 	return c.OverrideTaxType
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetPaymentMethodConfiguration() *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetPaymentMethodConfiguration() *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration {
 	if c == nil {
 		return nil
 	}
 	return c.PaymentMethodConfiguration
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetPlanType() *CreateCheckoutConfigurationsRequestPlanPlanType {
-	if c == nil {
-		return nil
-	}
-	return c.PlanType
-}
-
-func (c *CreateCheckoutConfigurationsRequestPlan) GetProductID() *string {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetProductID() *string {
 	if c == nil {
 		return nil
 	}
 	return c.ProductID
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetReleaseMethod() *CreateCheckoutConfigurationsRequestPlanReleaseMethod {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetReleaseMethod() *CreateCheckoutConfigurationsRequestVariantReleaseMethod {
 	if c == nil {
 		return nil
 	}
 	return c.ReleaseMethod
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetRenewalPrice() *float64 {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetRenewalPrice() *float64 {
 	if c == nil {
 		return nil
 	}
 	return c.RenewalPrice
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetStock() *int {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetStock() *int {
 	if c == nil {
 		return nil
 	}
 	return c.Stock
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetThreeDsLevel() *CreateCheckoutConfigurationsRequestPlanThreeDsLevel {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetThreeDsLevel() *CreateCheckoutConfigurationsRequestVariantThreeDsLevel {
 	if c == nil {
 		return nil
 	}
 	return c.ThreeDsLevel
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetTitle() *string {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetTitle() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Title
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetTrialPeriodDays() *int {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetTrialPeriodDays() *int {
 	if c == nil {
 		return nil
 	}
 	return c.TrialPeriodDays
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetUnlimitedStock() *bool {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetUnlimitedStock() *bool {
 	if c == nil {
 		return nil
 	}
 	return c.UnlimitedStock
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetVisibility() *CreateCheckoutConfigurationsRequestPlanVisibility {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetVisibility() *CreateCheckoutConfigurationsRequestVariantVisibility {
 	if c == nil {
 		return nil
 	}
 	return c.Visibility
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) GetExtraProperties() map[string]interface{} {
+func (c *CreateCheckoutConfigurationsRequestVariant) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+func (c *CreateCheckoutConfigurationsRequestVariant) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetAccountID(accountID *string) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetAccountID(accountID *string) {
 	c.AccountID = accountID
-	c.require(createCheckoutConfigurationsRequestPlanFieldAccountID)
+	c.require(createCheckoutConfigurationsRequestVariantFieldAccountID)
 }
 
 // SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetBillingPeriod(billingPeriod *int) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetBillingPeriod(billingPeriod *int) {
 	c.BillingPeriod = billingPeriod
-	c.require(createCheckoutConfigurationsRequestPlanFieldBillingPeriod)
+	c.require(createCheckoutConfigurationsRequestVariantFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCheckoutConfigurationsRequestVariant) SetBillingType(billingType *CreateCheckoutConfigurationsRequestVariantBillingType) {
+	c.BillingType = billingType
+	c.require(createCheckoutConfigurationsRequestVariantFieldBillingType)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetCurrency(currency *string) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetCurrency(currency *string) {
 	c.Currency = currency
-	c.require(createCheckoutConfigurationsRequestPlanFieldCurrency)
+	c.require(createCheckoutConfigurationsRequestVariantFieldCurrency)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetDescription(description *string) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetDescription(description *string) {
 	c.Description = description
-	c.require(createCheckoutConfigurationsRequestPlanFieldDescription)
+	c.require(createCheckoutConfigurationsRequestVariantFieldDescription)
 }
 
 // SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetExpirationDays(expirationDays *int) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetExpirationDays(expirationDays *int) {
 	c.ExpirationDays = expirationDays
-	c.require(createCheckoutConfigurationsRequestPlanFieldExpirationDays)
+	c.require(createCheckoutConfigurationsRequestVariantFieldExpirationDays)
 }
 
 // SetForceCreateNewPlan sets the ForceCreateNewPlan field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetForceCreateNewPlan(forceCreateNewPlan *bool) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetForceCreateNewPlan(forceCreateNewPlan *bool) {
 	c.ForceCreateNewPlan = forceCreateNewPlan
-	c.require(createCheckoutConfigurationsRequestPlanFieldForceCreateNewPlan)
+	c.require(createCheckoutConfigurationsRequestVariantFieldForceCreateNewPlan)
 }
 
 // SetInitialPrice sets the InitialPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetInitialPrice(initialPrice *float64) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetInitialPrice(initialPrice *float64) {
 	c.InitialPrice = initialPrice
-	c.require(createCheckoutConfigurationsRequestPlanFieldInitialPrice)
+	c.require(createCheckoutConfigurationsRequestVariantFieldInitialPrice)
 }
 
 // SetMetadata sets the Metadata field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetMetadata(metadata map[string]any) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetMetadata(metadata map[string]any) {
 	c.Metadata = metadata
-	c.require(createCheckoutConfigurationsRequestPlanFieldMetadata)
+	c.require(createCheckoutConfigurationsRequestVariantFieldMetadata)
 }
 
 // SetOverrideTaxType sets the OverrideTaxType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetOverrideTaxType(overrideTaxType *string) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetOverrideTaxType(overrideTaxType *string) {
 	c.OverrideTaxType = overrideTaxType
-	c.require(createCheckoutConfigurationsRequestPlanFieldOverrideTaxType)
+	c.require(createCheckoutConfigurationsRequestVariantFieldOverrideTaxType)
 }
 
 // SetPaymentMethodConfiguration sets the PaymentMethodConfiguration field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetPaymentMethodConfiguration(paymentMethodConfiguration *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetPaymentMethodConfiguration(paymentMethodConfiguration *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration) {
 	c.PaymentMethodConfiguration = paymentMethodConfiguration
-	c.require(createCheckoutConfigurationsRequestPlanFieldPaymentMethodConfiguration)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetPlanType(planType *CreateCheckoutConfigurationsRequestPlanPlanType) {
-	c.PlanType = planType
-	c.require(createCheckoutConfigurationsRequestPlanFieldPlanType)
+	c.require(createCheckoutConfigurationsRequestVariantFieldPaymentMethodConfiguration)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetProductID(productID *string) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetProductID(productID *string) {
 	c.ProductID = productID
-	c.require(createCheckoutConfigurationsRequestPlanFieldProductID)
+	c.require(createCheckoutConfigurationsRequestVariantFieldProductID)
 }
 
 // SetReleaseMethod sets the ReleaseMethod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetReleaseMethod(releaseMethod *CreateCheckoutConfigurationsRequestPlanReleaseMethod) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetReleaseMethod(releaseMethod *CreateCheckoutConfigurationsRequestVariantReleaseMethod) {
 	c.ReleaseMethod = releaseMethod
-	c.require(createCheckoutConfigurationsRequestPlanFieldReleaseMethod)
+	c.require(createCheckoutConfigurationsRequestVariantFieldReleaseMethod)
 }
 
 // SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetRenewalPrice(renewalPrice *float64) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetRenewalPrice(renewalPrice *float64) {
 	c.RenewalPrice = renewalPrice
-	c.require(createCheckoutConfigurationsRequestPlanFieldRenewalPrice)
+	c.require(createCheckoutConfigurationsRequestVariantFieldRenewalPrice)
 }
 
 // SetStock sets the Stock field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetStock(stock *int) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetStock(stock *int) {
 	c.Stock = stock
-	c.require(createCheckoutConfigurationsRequestPlanFieldStock)
+	c.require(createCheckoutConfigurationsRequestVariantFieldStock)
 }
 
 // SetThreeDsLevel sets the ThreeDsLevel field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetThreeDsLevel(threeDsLevel *CreateCheckoutConfigurationsRequestPlanThreeDsLevel) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetThreeDsLevel(threeDsLevel *CreateCheckoutConfigurationsRequestVariantThreeDsLevel) {
 	c.ThreeDsLevel = threeDsLevel
-	c.require(createCheckoutConfigurationsRequestPlanFieldThreeDsLevel)
+	c.require(createCheckoutConfigurationsRequestVariantFieldThreeDsLevel)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetTitle(title *string) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetTitle(title *string) {
 	c.Title = title
-	c.require(createCheckoutConfigurationsRequestPlanFieldTitle)
+	c.require(createCheckoutConfigurationsRequestVariantFieldTitle)
 }
 
 // SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetTrialPeriodDays(trialPeriodDays *int) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetTrialPeriodDays(trialPeriodDays *int) {
 	c.TrialPeriodDays = trialPeriodDays
-	c.require(createCheckoutConfigurationsRequestPlanFieldTrialPeriodDays)
+	c.require(createCheckoutConfigurationsRequestVariantFieldTrialPeriodDays)
 }
 
 // SetUnlimitedStock sets the UnlimitedStock field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetUnlimitedStock(unlimitedStock *bool) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetUnlimitedStock(unlimitedStock *bool) {
 	c.UnlimitedStock = unlimitedStock
-	c.require(createCheckoutConfigurationsRequestPlanFieldUnlimitedStock)
+	c.require(createCheckoutConfigurationsRequestVariantFieldUnlimitedStock)
 }
 
 // SetVisibility sets the Visibility field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlan) SetVisibility(visibility *CreateCheckoutConfigurationsRequestPlanVisibility) {
+func (c *CreateCheckoutConfigurationsRequestVariant) SetVisibility(visibility *CreateCheckoutConfigurationsRequestVariantVisibility) {
 	c.Visibility = visibility
-	c.require(createCheckoutConfigurationsRequestPlanFieldVisibility)
+	c.require(createCheckoutConfigurationsRequestVariantFieldVisibility)
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateCheckoutConfigurationsRequestPlan
+func (c *CreateCheckoutConfigurationsRequestVariant) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateCheckoutConfigurationsRequestVariant
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreateCheckoutConfigurationsRequestPlan(value)
+	*c = CreateCheckoutConfigurationsRequestVariant(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createCheckoutConfigurationsRequestVariantNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) MarshalJSON() ([]byte, error) {
-	type embed CreateCheckoutConfigurationsRequestPlan
+func (c *CreateCheckoutConfigurationsRequestVariant) MarshalJSON() ([]byte, error) {
+	type embed CreateCheckoutConfigurationsRequestVariant
 	var marshaler = struct {
 		embed
 	}{
@@ -831,7 +900,7 @@ func (c *CreateCheckoutConfigurationsRequestPlan) MarshalJSON() ([]byte, error) 
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlan) String() string {
+func (c *CreateCheckoutConfigurationsRequestVariant) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -846,18 +915,41 @@ func (c *CreateCheckoutConfigurationsRequestPlan) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Payment method overrides for the inline plan. `null` uses platform defaults.
-var (
-	createCheckoutConfigurationsRequestPlanPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
-	createCheckoutConfigurationsRequestPlanPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
-	createCheckoutConfigurationsRequestPlanPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
+// Billing model for the variant.
+type CreateCheckoutConfigurationsRequestVariantBillingType string
+
+const (
+	CreateCheckoutConfigurationsRequestVariantBillingTypeRenewal CreateCheckoutConfigurationsRequestVariantBillingType = "renewal"
+	CreateCheckoutConfigurationsRequestVariantBillingTypeOneTime CreateCheckoutConfigurationsRequestVariantBillingType = "one_time"
 )
 
-type CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration struct {
-	// Payment methods explicitly disabled for this plan.
-	Disabled []string `json:"disabled,omitempty" url:"disabled,omitempty"`
-	// Payment methods explicitly enabled for this plan.
-	Enabled []string `json:"enabled,omitempty" url:"enabled,omitempty"`
+func NewCreateCheckoutConfigurationsRequestVariantBillingTypeFromString(s string) (CreateCheckoutConfigurationsRequestVariantBillingType, error) {
+	switch s {
+	case "renewal":
+		return CreateCheckoutConfigurationsRequestVariantBillingTypeRenewal, nil
+	case "one_time":
+		return CreateCheckoutConfigurationsRequestVariantBillingTypeOneTime, nil
+	}
+	var t CreateCheckoutConfigurationsRequestVariantBillingType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateCheckoutConfigurationsRequestVariantBillingType) Ptr() *CreateCheckoutConfigurationsRequestVariantBillingType {
+	return &c
+}
+
+var (
+	createCheckoutConfigurationsRequestVariantPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
+	createCheckoutConfigurationsRequestVariantPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
+	createCheckoutConfigurationsRequestVariantPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
+)
+
+// Payment method overrides for the inline variant. `null` uses platform defaults.
+type CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration struct {
+	// Payment method types explicitly disabled for this variant — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	Disabled []PaymentMethodTypes `json:"disabled,omitempty" url:"disabled,omitempty"`
+	// Payment method types explicitly enabled for this variant — the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	Enabled []PaymentMethodTypes `json:"enabled,omitempty" url:"enabled,omitempty"`
 	// Whether platform default payment methods are included.
 	IncludePlatformDefaults *bool `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
 
@@ -868,69 +960,71 @@ type CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) GetDisabled() []string {
+func (c *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration) GetDisabled() []PaymentMethodTypes {
 	if c == nil {
 		return nil
 	}
 	return c.Disabled
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) GetEnabled() []string {
+func (c *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration) GetEnabled() []PaymentMethodTypes {
 	if c == nil {
 		return nil
 	}
 	return c.Enabled
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) GetIncludePlatformDefaults() *bool {
+func (c *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration) GetIncludePlatformDefaults() *bool {
 	if c == nil {
 		return nil
 	}
 	return c.IncludePlatformDefaults
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) GetExtraProperties() map[string]interface{} {
+func (c *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+func (c *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) SetDisabled(disabled []string) {
+func (c *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration) SetDisabled(disabled []PaymentMethodTypes) {
 	c.Disabled = disabled
-	c.require(createCheckoutConfigurationsRequestPlanPaymentMethodConfigurationFieldDisabled)
+	c.require(createCheckoutConfigurationsRequestVariantPaymentMethodConfigurationFieldDisabled)
 }
 
 // SetEnabled sets the Enabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) SetEnabled(enabled []string) {
+func (c *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration) SetEnabled(enabled []PaymentMethodTypes) {
 	c.Enabled = enabled
-	c.require(createCheckoutConfigurationsRequestPlanPaymentMethodConfigurationFieldEnabled)
+	c.require(createCheckoutConfigurationsRequestVariantPaymentMethodConfigurationFieldEnabled)
 }
 
 // SetIncludePlatformDefaults sets the IncludePlatformDefaults field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) SetIncludePlatformDefaults(includePlatformDefaults *bool) {
+func (c *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration) SetIncludePlatformDefaults(includePlatformDefaults *bool) {
 	c.IncludePlatformDefaults = includePlatformDefaults
-	c.require(createCheckoutConfigurationsRequestPlanPaymentMethodConfigurationFieldIncludePlatformDefaults)
+	c.require(createCheckoutConfigurationsRequestVariantPaymentMethodConfigurationFieldIncludePlatformDefaults)
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration
+func (c *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration(value)
+	*c = CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
@@ -940,8 +1034,8 @@ func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) Unma
 	return nil
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) MarshalJSON() ([]byte, error) {
-	type embed CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration
+func (c *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration) MarshalJSON() ([]byte, error) {
+	type embed CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration
 	var marshaler = struct {
 		embed
 	}{
@@ -951,7 +1045,7 @@ func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) Mars
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) String() string {
+func (c *CreateCheckoutConfigurationsRequestVariantPaymentMethodConfiguration) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -966,124 +1060,81 @@ func (c *CreateCheckoutConfigurationsRequestPlanPaymentMethodConfiguration) Stri
 	return fmt.Sprintf("%#v", c)
 }
 
-// Billing model for the plan.
-type CreateCheckoutConfigurationsRequestPlanPlanType string
+// Sales method for the variant.
+type CreateCheckoutConfigurationsRequestVariantReleaseMethod string
 
 const (
-	CreateCheckoutConfigurationsRequestPlanPlanTypeRenewal CreateCheckoutConfigurationsRequestPlanPlanType = "renewal"
-	CreateCheckoutConfigurationsRequestPlanPlanTypeOneTime CreateCheckoutConfigurationsRequestPlanPlanType = "one_time"
+	CreateCheckoutConfigurationsRequestVariantReleaseMethodBuyNow   CreateCheckoutConfigurationsRequestVariantReleaseMethod = "buy_now"
+	CreateCheckoutConfigurationsRequestVariantReleaseMethodWaitlist CreateCheckoutConfigurationsRequestVariantReleaseMethod = "waitlist"
 )
 
-func NewCreateCheckoutConfigurationsRequestPlanPlanTypeFromString(s string) (CreateCheckoutConfigurationsRequestPlanPlanType, error) {
-	switch s {
-	case "renewal":
-		return CreateCheckoutConfigurationsRequestPlanPlanTypeRenewal, nil
-	case "one_time":
-		return CreateCheckoutConfigurationsRequestPlanPlanTypeOneTime, nil
-	}
-	var t CreateCheckoutConfigurationsRequestPlanPlanType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateCheckoutConfigurationsRequestPlanPlanType) Ptr() *CreateCheckoutConfigurationsRequestPlanPlanType {
-	return &c
-}
-
-// Sales method for the plan.
-type CreateCheckoutConfigurationsRequestPlanReleaseMethod string
-
-const (
-	CreateCheckoutConfigurationsRequestPlanReleaseMethodBuyNow   CreateCheckoutConfigurationsRequestPlanReleaseMethod = "buy_now"
-	CreateCheckoutConfigurationsRequestPlanReleaseMethodWaitlist CreateCheckoutConfigurationsRequestPlanReleaseMethod = "waitlist"
-)
-
-func NewCreateCheckoutConfigurationsRequestPlanReleaseMethodFromString(s string) (CreateCheckoutConfigurationsRequestPlanReleaseMethod, error) {
+func NewCreateCheckoutConfigurationsRequestVariantReleaseMethodFromString(s string) (CreateCheckoutConfigurationsRequestVariantReleaseMethod, error) {
 	switch s {
 	case "buy_now":
-		return CreateCheckoutConfigurationsRequestPlanReleaseMethodBuyNow, nil
+		return CreateCheckoutConfigurationsRequestVariantReleaseMethodBuyNow, nil
 	case "waitlist":
-		return CreateCheckoutConfigurationsRequestPlanReleaseMethodWaitlist, nil
+		return CreateCheckoutConfigurationsRequestVariantReleaseMethodWaitlist, nil
 	}
-	var t CreateCheckoutConfigurationsRequestPlanReleaseMethod
+	var t CreateCheckoutConfigurationsRequestVariantReleaseMethod
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (c CreateCheckoutConfigurationsRequestPlanReleaseMethod) Ptr() *CreateCheckoutConfigurationsRequestPlanReleaseMethod {
+func (c CreateCheckoutConfigurationsRequestVariantReleaseMethod) Ptr() *CreateCheckoutConfigurationsRequestVariantReleaseMethod {
 	return &c
 }
 
-// 3D Secure behavior for the inline plan, or `null` to use the account default.
-type CreateCheckoutConfigurationsRequestPlanThreeDsLevel string
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
+type CreateCheckoutConfigurationsRequestVariantThreeDsLevel string
 
 const (
-	CreateCheckoutConfigurationsRequestPlanThreeDsLevelMandateChallenge CreateCheckoutConfigurationsRequestPlanThreeDsLevel = "mandate_challenge"
-	CreateCheckoutConfigurationsRequestPlanThreeDsLevelFrictionless     CreateCheckoutConfigurationsRequestPlanThreeDsLevel = "frictionless"
+	CreateCheckoutConfigurationsRequestVariantThreeDsLevelMandateChallenge       CreateCheckoutConfigurationsRequestVariantThreeDsLevel = "mandate_challenge"
+	CreateCheckoutConfigurationsRequestVariantThreeDsLevelMandateIfRequired      CreateCheckoutConfigurationsRequestVariantThreeDsLevel = "mandate_if_required"
+	CreateCheckoutConfigurationsRequestVariantThreeDsLevelFrictionlessIfRequired CreateCheckoutConfigurationsRequestVariantThreeDsLevel = "frictionless_if_required"
 )
 
-func NewCreateCheckoutConfigurationsRequestPlanThreeDsLevelFromString(s string) (CreateCheckoutConfigurationsRequestPlanThreeDsLevel, error) {
+func NewCreateCheckoutConfigurationsRequestVariantThreeDsLevelFromString(s string) (CreateCheckoutConfigurationsRequestVariantThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
-		return CreateCheckoutConfigurationsRequestPlanThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return CreateCheckoutConfigurationsRequestPlanThreeDsLevelFrictionless, nil
+		return CreateCheckoutConfigurationsRequestVariantThreeDsLevelMandateChallenge, nil
+	case "mandate_if_required":
+		return CreateCheckoutConfigurationsRequestVariantThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return CreateCheckoutConfigurationsRequestVariantThreeDsLevelFrictionlessIfRequired, nil
 	}
-	var t CreateCheckoutConfigurationsRequestPlanThreeDsLevel
+	var t CreateCheckoutConfigurationsRequestVariantThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (c CreateCheckoutConfigurationsRequestPlanThreeDsLevel) Ptr() *CreateCheckoutConfigurationsRequestPlanThreeDsLevel {
+func (c CreateCheckoutConfigurationsRequestVariantThreeDsLevel) Ptr() *CreateCheckoutConfigurationsRequestVariantThreeDsLevel {
 	return &c
 }
 
-// Whether the plan is visible to customers or hidden from public view.
-type CreateCheckoutConfigurationsRequestPlanVisibility string
+// Whether the variant is visible to customers or hidden from public view.
+type CreateCheckoutConfigurationsRequestVariantVisibility string
 
 const (
-	CreateCheckoutConfigurationsRequestPlanVisibilityVisible   CreateCheckoutConfigurationsRequestPlanVisibility = "visible"
-	CreateCheckoutConfigurationsRequestPlanVisibilityHidden    CreateCheckoutConfigurationsRequestPlanVisibility = "hidden"
-	CreateCheckoutConfigurationsRequestPlanVisibilityArchived  CreateCheckoutConfigurationsRequestPlanVisibility = "archived"
-	CreateCheckoutConfigurationsRequestPlanVisibilityQuickLink CreateCheckoutConfigurationsRequestPlanVisibility = "quick_link"
+	CreateCheckoutConfigurationsRequestVariantVisibilityVisible   CreateCheckoutConfigurationsRequestVariantVisibility = "visible"
+	CreateCheckoutConfigurationsRequestVariantVisibilityHidden    CreateCheckoutConfigurationsRequestVariantVisibility = "hidden"
+	CreateCheckoutConfigurationsRequestVariantVisibilityArchived  CreateCheckoutConfigurationsRequestVariantVisibility = "archived"
+	CreateCheckoutConfigurationsRequestVariantVisibilityQuickLink CreateCheckoutConfigurationsRequestVariantVisibility = "quick_link"
 )
 
-func NewCreateCheckoutConfigurationsRequestPlanVisibilityFromString(s string) (CreateCheckoutConfigurationsRequestPlanVisibility, error) {
+func NewCreateCheckoutConfigurationsRequestVariantVisibilityFromString(s string) (CreateCheckoutConfigurationsRequestVariantVisibility, error) {
 	switch s {
 	case "visible":
-		return CreateCheckoutConfigurationsRequestPlanVisibilityVisible, nil
+		return CreateCheckoutConfigurationsRequestVariantVisibilityVisible, nil
 	case "hidden":
-		return CreateCheckoutConfigurationsRequestPlanVisibilityHidden, nil
+		return CreateCheckoutConfigurationsRequestVariantVisibilityHidden, nil
 	case "archived":
-		return CreateCheckoutConfigurationsRequestPlanVisibilityArchived, nil
+		return CreateCheckoutConfigurationsRequestVariantVisibilityArchived, nil
 	case "quick_link":
-		return CreateCheckoutConfigurationsRequestPlanVisibilityQuickLink, nil
+		return CreateCheckoutConfigurationsRequestVariantVisibilityQuickLink, nil
 	}
-	var t CreateCheckoutConfigurationsRequestPlanVisibility
+	var t CreateCheckoutConfigurationsRequestVariantVisibility
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (c CreateCheckoutConfigurationsRequestPlanVisibility) Ptr() *CreateCheckoutConfigurationsRequestPlanVisibility {
-	return &c
-}
-
-// 3D Secure behavior for this checkout.
-type CreateCheckoutConfigurationsRequestThreeDsLevel string
-
-const (
-	CreateCheckoutConfigurationsRequestThreeDsLevelMandateChallenge CreateCheckoutConfigurationsRequestThreeDsLevel = "mandate_challenge"
-	CreateCheckoutConfigurationsRequestThreeDsLevelFrictionless     CreateCheckoutConfigurationsRequestThreeDsLevel = "frictionless"
-)
-
-func NewCreateCheckoutConfigurationsRequestThreeDsLevelFromString(s string) (CreateCheckoutConfigurationsRequestThreeDsLevel, error) {
-	switch s {
-	case "mandate_challenge":
-		return CreateCheckoutConfigurationsRequestThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return CreateCheckoutConfigurationsRequestThreeDsLevelFrictionless, nil
-	}
-	var t CreateCheckoutConfigurationsRequestThreeDsLevel
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateCheckoutConfigurationsRequestThreeDsLevel) Ptr() *CreateCheckoutConfigurationsRequestThreeDsLevel {
+func (c CreateCheckoutConfigurationsRequestVariantVisibility) Ptr() *CreateCheckoutConfigurationsRequestVariantVisibility {
 	return &c
 }
 
@@ -1097,12 +1148,25 @@ var (
 	createCheckoutConfigurationsResponseFieldMetadata                            = big.NewInt(1 << 6)
 	createCheckoutConfigurationsResponseFieldMode                                = big.NewInt(1 << 7)
 	createCheckoutConfigurationsResponseFieldPaymentMethodConfiguration          = big.NewInt(1 << 8)
-	createCheckoutConfigurationsResponseFieldPlan                                = big.NewInt(1 << 9)
-	createCheckoutConfigurationsResponseFieldPurchaseURL                         = big.NewInt(1 << 10)
-	createCheckoutConfigurationsResponseFieldRedirectURL                         = big.NewInt(1 << 11)
-	createCheckoutConfigurationsResponseFieldThreeDsLevel                        = big.NewInt(1 << 12)
-	createCheckoutConfigurationsResponseFieldUpdatedAt                           = big.NewInt(1 << 13)
+	createCheckoutConfigurationsResponseFieldPurchaseURL                         = big.NewInt(1 << 9)
+	createCheckoutConfigurationsResponseFieldRedirectURL                         = big.NewInt(1 << 10)
+	createCheckoutConfigurationsResponseFieldThreeDsLevel                        = big.NewInt(1 << 11)
+	createCheckoutConfigurationsResponseFieldUpdatedAt                           = big.NewInt(1 << 12)
+	createCheckoutConfigurationsResponseFieldVariant                             = big.NewInt(1 << 13)
 )
+
+// createCheckoutConfigurationsResponseNullableFields maps the wire names of CreateCheckoutConfigurationsResponse's nullable fields (required or optional) to their field bits.
+var createCheckoutConfigurationsResponseNullableFields = map[string]*big.Int{
+	"affiliate_code":                         createCheckoutConfigurationsResponseFieldAffiliateCode,
+	"currency":                               createCheckoutConfigurationsResponseFieldCurrency,
+	"effective_payment_method_configuration": createCheckoutConfigurationsResponseFieldEffectivePaymentMethodConfiguration,
+	"metadata":                               createCheckoutConfigurationsResponseFieldMetadata,
+	"payment_method_configuration":           createCheckoutConfigurationsResponseFieldPaymentMethodConfiguration,
+	"purchase_url":                           createCheckoutConfigurationsResponseFieldPurchaseURL,
+	"redirect_url":                           createCheckoutConfigurationsResponseFieldRedirectURL,
+	"three_ds_level":                         createCheckoutConfigurationsResponseFieldThreeDsLevel,
+	"variant":                                createCheckoutConfigurationsResponseFieldVariant,
+}
 
 type CreateCheckoutConfigurationsResponse struct {
 	// Account ID, prefixed `biz_`.
@@ -1113,7 +1177,7 @@ type CreateCheckoutConfigurationsResponse struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Currency used for setup-mode payment method availability; defaults to `usd` when omitted.
 	Currency *string `json:"currency,omitempty" url:"currency,omitempty"`
-	// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the plan's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
+	// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 	EffectivePaymentMethodConfiguration *CreateCheckoutConfigurationsResponseEffectivePaymentMethodConfiguration `json:"effective_payment_method_configuration,omitempty" url:"effective_payment_method_configuration,omitempty"`
 	// Checkout configuration ID, prefixed `ch_`.
 	ID string `json:"id" url:"id"`
@@ -1121,18 +1185,18 @@ type CreateCheckoutConfigurationsResponse struct {
 	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// Controls whether checkout charges the buyer immediately or saves payment details for later.
 	Mode CreateCheckoutConfigurationsResponseMode `json:"mode" url:"mode"`
-	// Payment method overrides for this checkout. `null` when it uses the plan or platform defaults.
+	// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 	PaymentMethodConfiguration *CreateCheckoutConfigurationsResponsePaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Plan used for payment checkout. `null` in setup mode.
-	Plan *CreateCheckoutConfigurationsResponsePlan `json:"plan,omitempty" url:"plan,omitempty"`
 	// Checkout URL you can send to customers.
 	PurchaseURL *string `json:"purchase_url,omitempty" url:"purchase_url,omitempty"`
 	// URL customers are sent to after checkout, or `null` when no redirect is configured.
 	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
-	// 3D Secure behavior for this checkout, or `null` to use the account default.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
 	ThreeDsLevel *CreateCheckoutConfigurationsResponseThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// When the checkout configuration was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
+	// Variant used for payment checkout. `null` in setup mode.
+	Variant *CreateCheckoutConfigurationsResponseVariant `json:"variant,omitempty" url:"variant,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1204,13 +1268,6 @@ func (c *CreateCheckoutConfigurationsResponse) GetPaymentMethodConfiguration() *
 	return c.PaymentMethodConfiguration
 }
 
-func (c *CreateCheckoutConfigurationsResponse) GetPlan() *CreateCheckoutConfigurationsResponsePlan {
-	if c == nil {
-		return nil
-	}
-	return c.Plan
-}
-
 func (c *CreateCheckoutConfigurationsResponse) GetPurchaseURL() *string {
 	if c == nil {
 		return nil
@@ -1239,6 +1296,13 @@ func (c *CreateCheckoutConfigurationsResponse) GetUpdatedAt() string {
 	return c.UpdatedAt
 }
 
+func (c *CreateCheckoutConfigurationsResponse) GetVariant() *CreateCheckoutConfigurationsResponseVariant {
+	if c == nil {
+		return nil
+	}
+	return c.Variant
+}
+
 func (c *CreateCheckoutConfigurationsResponse) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
@@ -1247,10 +1311,12 @@ func (c *CreateCheckoutConfigurationsResponse) GetExtraProperties() map[string]i
 }
 
 func (c *CreateCheckoutConfigurationsResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1316,13 +1382,6 @@ func (c *CreateCheckoutConfigurationsResponse) SetPaymentMethodConfiguration(pay
 	c.require(createCheckoutConfigurationsResponseFieldPaymentMethodConfiguration)
 }
 
-// SetPlan sets the Plan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsResponse) SetPlan(plan *CreateCheckoutConfigurationsResponsePlan) {
-	c.Plan = plan
-	c.require(createCheckoutConfigurationsResponseFieldPlan)
-}
-
 // SetPurchaseURL sets the PurchaseURL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateCheckoutConfigurationsResponse) SetPurchaseURL(purchaseURL *string) {
@@ -1351,6 +1410,13 @@ func (c *CreateCheckoutConfigurationsResponse) SetUpdatedAt(updatedAt string) {
 	c.require(createCheckoutConfigurationsResponseFieldUpdatedAt)
 }
 
+// SetVariant sets the Variant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCheckoutConfigurationsResponse) SetVariant(variant *CreateCheckoutConfigurationsResponseVariant) {
+	c.Variant = variant
+	c.require(createCheckoutConfigurationsResponseFieldVariant)
+}
+
 func (c *CreateCheckoutConfigurationsResponse) UnmarshalJSON(data []byte) error {
 	type unmarshaler CreateCheckoutConfigurationsResponse
 	var value unmarshaler
@@ -1363,6 +1429,13 @@ func (c *CreateCheckoutConfigurationsResponse) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createCheckoutConfigurationsResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1393,13 +1466,13 @@ func (c *CreateCheckoutConfigurationsResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the plan's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 var (
 	createCheckoutConfigurationsResponseEffectivePaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	createCheckoutConfigurationsResponseEffectivePaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	createCheckoutConfigurationsResponseEffectivePaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 type CreateCheckoutConfigurationsResponseEffectivePaymentMethodConfiguration struct {
 	// Payment methods explicitly disabled.
 	Disabled []string `json:"disabled,omitempty" url:"disabled,omitempty"`
@@ -1444,10 +1517,12 @@ func (c *CreateCheckoutConfigurationsResponseEffectivePaymentMethodConfiguration
 }
 
 func (c *CreateCheckoutConfigurationsResponseEffectivePaymentMethodConfiguration) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -1536,13 +1611,13 @@ func (c CreateCheckoutConfigurationsResponseMode) Ptr() *CreateCheckoutConfigura
 	return &c
 }
 
-// Payment method overrides for this checkout. `null` when it uses the plan or platform defaults.
 var (
 	createCheckoutConfigurationsResponsePaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	createCheckoutConfigurationsResponsePaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	createCheckoutConfigurationsResponsePaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 type CreateCheckoutConfigurationsResponsePaymentMethodConfiguration struct {
 	// Payment methods explicitly disabled for checkout.
 	Disabled []string `json:"disabled,omitempty" url:"disabled,omitempty"`
@@ -1587,10 +1662,12 @@ func (c *CreateCheckoutConfigurationsResponsePaymentMethodConfiguration) GetExtr
 }
 
 func (c *CreateCheckoutConfigurationsResponsePaymentMethodConfiguration) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -1656,47 +1733,81 @@ func (c *CreateCheckoutConfigurationsResponsePaymentMethodConfiguration) String(
 	return fmt.Sprintf("%#v", c)
 }
 
-// Plan used for payment checkout. `null` in setup mode.
-var (
-	createCheckoutConfigurationsResponsePlanFieldAdaptivePricingEnabled = big.NewInt(1 << 0)
-	createCheckoutConfigurationsResponsePlanFieldBillingPeriod          = big.NewInt(1 << 1)
-	createCheckoutConfigurationsResponsePlanFieldCurrency               = big.NewInt(1 << 2)
-	createCheckoutConfigurationsResponsePlanFieldExpirationDays         = big.NewInt(1 << 3)
-	createCheckoutConfigurationsResponsePlanFieldID                     = big.NewInt(1 << 4)
-	createCheckoutConfigurationsResponsePlanFieldInitialPrice           = big.NewInt(1 << 5)
-	createCheckoutConfigurationsResponsePlanFieldPlanType               = big.NewInt(1 << 6)
-	createCheckoutConfigurationsResponsePlanFieldReleaseMethod          = big.NewInt(1 << 7)
-	createCheckoutConfigurationsResponsePlanFieldRenewalPrice           = big.NewInt(1 << 8)
-	createCheckoutConfigurationsResponsePlanFieldThreeDsLevel           = big.NewInt(1 << 9)
-	createCheckoutConfigurationsResponsePlanFieldTrialPeriodDays        = big.NewInt(1 << 10)
-	createCheckoutConfigurationsResponsePlanFieldVisibility             = big.NewInt(1 << 11)
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
+type CreateCheckoutConfigurationsResponseThreeDsLevel string
+
+const (
+	CreateCheckoutConfigurationsResponseThreeDsLevelMandateChallenge       CreateCheckoutConfigurationsResponseThreeDsLevel = "mandate_challenge"
+	CreateCheckoutConfigurationsResponseThreeDsLevelMandateIfRequired      CreateCheckoutConfigurationsResponseThreeDsLevel = "mandate_if_required"
+	CreateCheckoutConfigurationsResponseThreeDsLevelFrictionlessIfRequired CreateCheckoutConfigurationsResponseThreeDsLevel = "frictionless_if_required"
 )
 
-type CreateCheckoutConfigurationsResponsePlan struct {
-	// Whether this plan accepts local currency payments via adaptive pricing.
+func NewCreateCheckoutConfigurationsResponseThreeDsLevelFromString(s string) (CreateCheckoutConfigurationsResponseThreeDsLevel, error) {
+	switch s {
+	case "mandate_challenge":
+		return CreateCheckoutConfigurationsResponseThreeDsLevelMandateChallenge, nil
+	case "mandate_if_required":
+		return CreateCheckoutConfigurationsResponseThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return CreateCheckoutConfigurationsResponseThreeDsLevelFrictionlessIfRequired, nil
+	}
+	var t CreateCheckoutConfigurationsResponseThreeDsLevel
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateCheckoutConfigurationsResponseThreeDsLevel) Ptr() *CreateCheckoutConfigurationsResponseThreeDsLevel {
+	return &c
+}
+
+var (
+	createCheckoutConfigurationsResponseVariantFieldAdaptivePricingEnabled = big.NewInt(1 << 0)
+	createCheckoutConfigurationsResponseVariantFieldBillingPeriod          = big.NewInt(1 << 1)
+	createCheckoutConfigurationsResponseVariantFieldBillingType            = big.NewInt(1 << 2)
+	createCheckoutConfigurationsResponseVariantFieldCurrency               = big.NewInt(1 << 3)
+	createCheckoutConfigurationsResponseVariantFieldExpirationDays         = big.NewInt(1 << 4)
+	createCheckoutConfigurationsResponseVariantFieldID                     = big.NewInt(1 << 5)
+	createCheckoutConfigurationsResponseVariantFieldInitialPrice           = big.NewInt(1 << 6)
+	createCheckoutConfigurationsResponseVariantFieldReleaseMethod          = big.NewInt(1 << 7)
+	createCheckoutConfigurationsResponseVariantFieldRenewalPrice           = big.NewInt(1 << 8)
+	createCheckoutConfigurationsResponseVariantFieldThreeDsLevel           = big.NewInt(1 << 9)
+	createCheckoutConfigurationsResponseVariantFieldTrialPeriodDays        = big.NewInt(1 << 10)
+	createCheckoutConfigurationsResponseVariantFieldVisibility             = big.NewInt(1 << 11)
+)
+
+// createCheckoutConfigurationsResponseVariantNullableFields maps the wire names of CreateCheckoutConfigurationsResponseVariant's nullable fields (required or optional) to their field bits.
+var createCheckoutConfigurationsResponseVariantNullableFields = map[string]*big.Int{
+	"billing_period":    createCheckoutConfigurationsResponseVariantFieldBillingPeriod,
+	"expiration_days":   createCheckoutConfigurationsResponseVariantFieldExpirationDays,
+	"three_ds_level":    createCheckoutConfigurationsResponseVariantFieldThreeDsLevel,
+	"trial_period_days": createCheckoutConfigurationsResponseVariantFieldTrialPeriodDays,
+}
+
+// Variant used for payment checkout. `null` in setup mode.
+type CreateCheckoutConfigurationsResponseVariant struct {
+	// Whether this variant accepts local currency payments via adaptive pricing.
 	AdaptivePricingEnabled bool `json:"adaptive_pricing_enabled" url:"adaptive_pricing_enabled"`
-	// Recurring billing interval in days, such as 30 for monthly or 365 for annual. `null` for one-time plans.
+	// Recurring billing interval in days, such as 30 for monthly or 365 for annual. `null` for one-time variants.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// Three-letter ISO currency code for the plan's prices.
+	// Billing model for the variant.
+	BillingType CreateCheckoutConfigurationsResponseVariantBillingType `json:"billing_type" url:"billing_type"`
+	// Three-letter ISO currency code for the variant's prices.
 	Currency string `json:"currency" url:"currency"`
-	// Access duration in days for expiration-based plans.
+	// Access duration in days for expiration-based variants.
 	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Plan ID, prefixed `plan_`.
+	// Variant ID, prefixed `plan_`.
 	ID string `json:"id" url:"id"`
-	// Initial purchase price in the plan currency.
+	// Initial purchase price in the variant currency.
 	InitialPrice float64 `json:"initial_price" url:"initial_price"`
-	// Billing model for the plan.
-	PlanType CreateCheckoutConfigurationsResponsePlanPlanType `json:"plan_type" url:"plan_type"`
-	// Sales method for the plan.
-	ReleaseMethod CreateCheckoutConfigurationsResponsePlanReleaseMethod `json:"release_method" url:"release_method"`
+	// Sales method for the variant.
+	ReleaseMethod CreateCheckoutConfigurationsResponseVariantReleaseMethod `json:"release_method" url:"release_method"`
 	// Recurring price charged each billing period.
 	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
-	// 3D Secure behavior for this plan, or `null` to use the account default.
-	ThreeDsLevel *CreateCheckoutConfigurationsResponsePlanThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
+	ThreeDsLevel *CreateCheckoutConfigurationsResponseVariantThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// Free trial days before the first renewal charge.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// Whether the plan is visible to customers or hidden from public view.
-	Visibility CreateCheckoutConfigurationsResponsePlanVisibility `json:"visibility" url:"visibility"`
+	// Whether the variant is visible to customers or hidden from public view.
+	Visibility CreateCheckoutConfigurationsResponseVariantVisibility `json:"visibility" url:"visibility"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1705,206 +1816,215 @@ type CreateCheckoutConfigurationsResponsePlan struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateCheckoutConfigurationsResponsePlan) GetAdaptivePricingEnabled() bool {
+func (c *CreateCheckoutConfigurationsResponseVariant) GetAdaptivePricingEnabled() bool {
 	if c == nil {
 		return false
 	}
 	return c.AdaptivePricingEnabled
 }
 
-func (c *CreateCheckoutConfigurationsResponsePlan) GetBillingPeriod() *int {
+func (c *CreateCheckoutConfigurationsResponseVariant) GetBillingPeriod() *int {
 	if c == nil {
 		return nil
 	}
 	return c.BillingPeriod
 }
 
-func (c *CreateCheckoutConfigurationsResponsePlan) GetCurrency() string {
+func (c *CreateCheckoutConfigurationsResponseVariant) GetBillingType() CreateCheckoutConfigurationsResponseVariantBillingType {
+	if c == nil {
+		return ""
+	}
+	return c.BillingType
+}
+
+func (c *CreateCheckoutConfigurationsResponseVariant) GetCurrency() string {
 	if c == nil {
 		return ""
 	}
 	return c.Currency
 }
 
-func (c *CreateCheckoutConfigurationsResponsePlan) GetExpirationDays() *int {
+func (c *CreateCheckoutConfigurationsResponseVariant) GetExpirationDays() *int {
 	if c == nil {
 		return nil
 	}
 	return c.ExpirationDays
 }
 
-func (c *CreateCheckoutConfigurationsResponsePlan) GetID() string {
+func (c *CreateCheckoutConfigurationsResponseVariant) GetID() string {
 	if c == nil {
 		return ""
 	}
 	return c.ID
 }
 
-func (c *CreateCheckoutConfigurationsResponsePlan) GetInitialPrice() float64 {
+func (c *CreateCheckoutConfigurationsResponseVariant) GetInitialPrice() float64 {
 	if c == nil {
 		return 0
 	}
 	return c.InitialPrice
 }
 
-func (c *CreateCheckoutConfigurationsResponsePlan) GetPlanType() CreateCheckoutConfigurationsResponsePlanPlanType {
-	if c == nil {
-		return ""
-	}
-	return c.PlanType
-}
-
-func (c *CreateCheckoutConfigurationsResponsePlan) GetReleaseMethod() CreateCheckoutConfigurationsResponsePlanReleaseMethod {
+func (c *CreateCheckoutConfigurationsResponseVariant) GetReleaseMethod() CreateCheckoutConfigurationsResponseVariantReleaseMethod {
 	if c == nil {
 		return ""
 	}
 	return c.ReleaseMethod
 }
 
-func (c *CreateCheckoutConfigurationsResponsePlan) GetRenewalPrice() float64 {
+func (c *CreateCheckoutConfigurationsResponseVariant) GetRenewalPrice() float64 {
 	if c == nil {
 		return 0
 	}
 	return c.RenewalPrice
 }
 
-func (c *CreateCheckoutConfigurationsResponsePlan) GetThreeDsLevel() *CreateCheckoutConfigurationsResponsePlanThreeDsLevel {
+func (c *CreateCheckoutConfigurationsResponseVariant) GetThreeDsLevel() *CreateCheckoutConfigurationsResponseVariantThreeDsLevel {
 	if c == nil {
 		return nil
 	}
 	return c.ThreeDsLevel
 }
 
-func (c *CreateCheckoutConfigurationsResponsePlan) GetTrialPeriodDays() *int {
+func (c *CreateCheckoutConfigurationsResponseVariant) GetTrialPeriodDays() *int {
 	if c == nil {
 		return nil
 	}
 	return c.TrialPeriodDays
 }
 
-func (c *CreateCheckoutConfigurationsResponsePlan) GetVisibility() CreateCheckoutConfigurationsResponsePlanVisibility {
+func (c *CreateCheckoutConfigurationsResponseVariant) GetVisibility() CreateCheckoutConfigurationsResponseVariantVisibility {
 	if c == nil {
 		return ""
 	}
 	return c.Visibility
 }
 
-func (c *CreateCheckoutConfigurationsResponsePlan) GetExtraProperties() map[string]interface{} {
+func (c *CreateCheckoutConfigurationsResponseVariant) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreateCheckoutConfigurationsResponsePlan) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+func (c *CreateCheckoutConfigurationsResponseVariant) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAdaptivePricingEnabled sets the AdaptivePricingEnabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsResponsePlan) SetAdaptivePricingEnabled(adaptivePricingEnabled bool) {
+func (c *CreateCheckoutConfigurationsResponseVariant) SetAdaptivePricingEnabled(adaptivePricingEnabled bool) {
 	c.AdaptivePricingEnabled = adaptivePricingEnabled
-	c.require(createCheckoutConfigurationsResponsePlanFieldAdaptivePricingEnabled)
+	c.require(createCheckoutConfigurationsResponseVariantFieldAdaptivePricingEnabled)
 }
 
 // SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsResponsePlan) SetBillingPeriod(billingPeriod *int) {
+func (c *CreateCheckoutConfigurationsResponseVariant) SetBillingPeriod(billingPeriod *int) {
 	c.BillingPeriod = billingPeriod
-	c.require(createCheckoutConfigurationsResponsePlanFieldBillingPeriod)
+	c.require(createCheckoutConfigurationsResponseVariantFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCheckoutConfigurationsResponseVariant) SetBillingType(billingType CreateCheckoutConfigurationsResponseVariantBillingType) {
+	c.BillingType = billingType
+	c.require(createCheckoutConfigurationsResponseVariantFieldBillingType)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsResponsePlan) SetCurrency(currency string) {
+func (c *CreateCheckoutConfigurationsResponseVariant) SetCurrency(currency string) {
 	c.Currency = currency
-	c.require(createCheckoutConfigurationsResponsePlanFieldCurrency)
+	c.require(createCheckoutConfigurationsResponseVariantFieldCurrency)
 }
 
 // SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsResponsePlan) SetExpirationDays(expirationDays *int) {
+func (c *CreateCheckoutConfigurationsResponseVariant) SetExpirationDays(expirationDays *int) {
 	c.ExpirationDays = expirationDays
-	c.require(createCheckoutConfigurationsResponsePlanFieldExpirationDays)
+	c.require(createCheckoutConfigurationsResponseVariantFieldExpirationDays)
 }
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsResponsePlan) SetID(id string) {
+func (c *CreateCheckoutConfigurationsResponseVariant) SetID(id string) {
 	c.ID = id
-	c.require(createCheckoutConfigurationsResponsePlanFieldID)
+	c.require(createCheckoutConfigurationsResponseVariantFieldID)
 }
 
 // SetInitialPrice sets the InitialPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsResponsePlan) SetInitialPrice(initialPrice float64) {
+func (c *CreateCheckoutConfigurationsResponseVariant) SetInitialPrice(initialPrice float64) {
 	c.InitialPrice = initialPrice
-	c.require(createCheckoutConfigurationsResponsePlanFieldInitialPrice)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsResponsePlan) SetPlanType(planType CreateCheckoutConfigurationsResponsePlanPlanType) {
-	c.PlanType = planType
-	c.require(createCheckoutConfigurationsResponsePlanFieldPlanType)
+	c.require(createCheckoutConfigurationsResponseVariantFieldInitialPrice)
 }
 
 // SetReleaseMethod sets the ReleaseMethod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsResponsePlan) SetReleaseMethod(releaseMethod CreateCheckoutConfigurationsResponsePlanReleaseMethod) {
+func (c *CreateCheckoutConfigurationsResponseVariant) SetReleaseMethod(releaseMethod CreateCheckoutConfigurationsResponseVariantReleaseMethod) {
 	c.ReleaseMethod = releaseMethod
-	c.require(createCheckoutConfigurationsResponsePlanFieldReleaseMethod)
+	c.require(createCheckoutConfigurationsResponseVariantFieldReleaseMethod)
 }
 
 // SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsResponsePlan) SetRenewalPrice(renewalPrice float64) {
+func (c *CreateCheckoutConfigurationsResponseVariant) SetRenewalPrice(renewalPrice float64) {
 	c.RenewalPrice = renewalPrice
-	c.require(createCheckoutConfigurationsResponsePlanFieldRenewalPrice)
+	c.require(createCheckoutConfigurationsResponseVariantFieldRenewalPrice)
 }
 
 // SetThreeDsLevel sets the ThreeDsLevel field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsResponsePlan) SetThreeDsLevel(threeDsLevel *CreateCheckoutConfigurationsResponsePlanThreeDsLevel) {
+func (c *CreateCheckoutConfigurationsResponseVariant) SetThreeDsLevel(threeDsLevel *CreateCheckoutConfigurationsResponseVariantThreeDsLevel) {
 	c.ThreeDsLevel = threeDsLevel
-	c.require(createCheckoutConfigurationsResponsePlanFieldThreeDsLevel)
+	c.require(createCheckoutConfigurationsResponseVariantFieldThreeDsLevel)
 }
 
 // SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsResponsePlan) SetTrialPeriodDays(trialPeriodDays *int) {
+func (c *CreateCheckoutConfigurationsResponseVariant) SetTrialPeriodDays(trialPeriodDays *int) {
 	c.TrialPeriodDays = trialPeriodDays
-	c.require(createCheckoutConfigurationsResponsePlanFieldTrialPeriodDays)
+	c.require(createCheckoutConfigurationsResponseVariantFieldTrialPeriodDays)
 }
 
 // SetVisibility sets the Visibility field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateCheckoutConfigurationsResponsePlan) SetVisibility(visibility CreateCheckoutConfigurationsResponsePlanVisibility) {
+func (c *CreateCheckoutConfigurationsResponseVariant) SetVisibility(visibility CreateCheckoutConfigurationsResponseVariantVisibility) {
 	c.Visibility = visibility
-	c.require(createCheckoutConfigurationsResponsePlanFieldVisibility)
+	c.require(createCheckoutConfigurationsResponseVariantFieldVisibility)
 }
 
-func (c *CreateCheckoutConfigurationsResponsePlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateCheckoutConfigurationsResponsePlan
+func (c *CreateCheckoutConfigurationsResponseVariant) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateCheckoutConfigurationsResponseVariant
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreateCheckoutConfigurationsResponsePlan(value)
+	*c = CreateCheckoutConfigurationsResponseVariant(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createCheckoutConfigurationsResponseVariantNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (c *CreateCheckoutConfigurationsResponsePlan) MarshalJSON() ([]byte, error) {
-	type embed CreateCheckoutConfigurationsResponsePlan
+func (c *CreateCheckoutConfigurationsResponseVariant) MarshalJSON() ([]byte, error) {
+	type embed CreateCheckoutConfigurationsResponseVariant
 	var marshaler = struct {
 		embed
 	}{
@@ -1914,7 +2034,7 @@ func (c *CreateCheckoutConfigurationsResponsePlan) MarshalJSON() ([]byte, error)
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreateCheckoutConfigurationsResponsePlan) String() string {
+func (c *CreateCheckoutConfigurationsResponseVariant) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -1929,124 +2049,104 @@ func (c *CreateCheckoutConfigurationsResponsePlan) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Billing model for the plan.
-type CreateCheckoutConfigurationsResponsePlanPlanType string
+// Billing model for the variant.
+type CreateCheckoutConfigurationsResponseVariantBillingType string
 
 const (
-	CreateCheckoutConfigurationsResponsePlanPlanTypeRenewal CreateCheckoutConfigurationsResponsePlanPlanType = "renewal"
-	CreateCheckoutConfigurationsResponsePlanPlanTypeOneTime CreateCheckoutConfigurationsResponsePlanPlanType = "one_time"
+	CreateCheckoutConfigurationsResponseVariantBillingTypeRenewal CreateCheckoutConfigurationsResponseVariantBillingType = "renewal"
+	CreateCheckoutConfigurationsResponseVariantBillingTypeOneTime CreateCheckoutConfigurationsResponseVariantBillingType = "one_time"
 )
 
-func NewCreateCheckoutConfigurationsResponsePlanPlanTypeFromString(s string) (CreateCheckoutConfigurationsResponsePlanPlanType, error) {
+func NewCreateCheckoutConfigurationsResponseVariantBillingTypeFromString(s string) (CreateCheckoutConfigurationsResponseVariantBillingType, error) {
 	switch s {
 	case "renewal":
-		return CreateCheckoutConfigurationsResponsePlanPlanTypeRenewal, nil
+		return CreateCheckoutConfigurationsResponseVariantBillingTypeRenewal, nil
 	case "one_time":
-		return CreateCheckoutConfigurationsResponsePlanPlanTypeOneTime, nil
+		return CreateCheckoutConfigurationsResponseVariantBillingTypeOneTime, nil
 	}
-	var t CreateCheckoutConfigurationsResponsePlanPlanType
+	var t CreateCheckoutConfigurationsResponseVariantBillingType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (c CreateCheckoutConfigurationsResponsePlanPlanType) Ptr() *CreateCheckoutConfigurationsResponsePlanPlanType {
+func (c CreateCheckoutConfigurationsResponseVariantBillingType) Ptr() *CreateCheckoutConfigurationsResponseVariantBillingType {
 	return &c
 }
 
-// Sales method for the plan.
-type CreateCheckoutConfigurationsResponsePlanReleaseMethod string
+// Sales method for the variant.
+type CreateCheckoutConfigurationsResponseVariantReleaseMethod string
 
 const (
-	CreateCheckoutConfigurationsResponsePlanReleaseMethodBuyNow   CreateCheckoutConfigurationsResponsePlanReleaseMethod = "buy_now"
-	CreateCheckoutConfigurationsResponsePlanReleaseMethodWaitlist CreateCheckoutConfigurationsResponsePlanReleaseMethod = "waitlist"
+	CreateCheckoutConfigurationsResponseVariantReleaseMethodBuyNow   CreateCheckoutConfigurationsResponseVariantReleaseMethod = "buy_now"
+	CreateCheckoutConfigurationsResponseVariantReleaseMethodWaitlist CreateCheckoutConfigurationsResponseVariantReleaseMethod = "waitlist"
 )
 
-func NewCreateCheckoutConfigurationsResponsePlanReleaseMethodFromString(s string) (CreateCheckoutConfigurationsResponsePlanReleaseMethod, error) {
+func NewCreateCheckoutConfigurationsResponseVariantReleaseMethodFromString(s string) (CreateCheckoutConfigurationsResponseVariantReleaseMethod, error) {
 	switch s {
 	case "buy_now":
-		return CreateCheckoutConfigurationsResponsePlanReleaseMethodBuyNow, nil
+		return CreateCheckoutConfigurationsResponseVariantReleaseMethodBuyNow, nil
 	case "waitlist":
-		return CreateCheckoutConfigurationsResponsePlanReleaseMethodWaitlist, nil
+		return CreateCheckoutConfigurationsResponseVariantReleaseMethodWaitlist, nil
 	}
-	var t CreateCheckoutConfigurationsResponsePlanReleaseMethod
+	var t CreateCheckoutConfigurationsResponseVariantReleaseMethod
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (c CreateCheckoutConfigurationsResponsePlanReleaseMethod) Ptr() *CreateCheckoutConfigurationsResponsePlanReleaseMethod {
+func (c CreateCheckoutConfigurationsResponseVariantReleaseMethod) Ptr() *CreateCheckoutConfigurationsResponseVariantReleaseMethod {
 	return &c
 }
 
-// 3D Secure behavior for this plan, or `null` to use the account default.
-type CreateCheckoutConfigurationsResponsePlanThreeDsLevel string
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
+type CreateCheckoutConfigurationsResponseVariantThreeDsLevel string
 
 const (
-	CreateCheckoutConfigurationsResponsePlanThreeDsLevelMandateChallenge CreateCheckoutConfigurationsResponsePlanThreeDsLevel = "mandate_challenge"
-	CreateCheckoutConfigurationsResponsePlanThreeDsLevelFrictionless     CreateCheckoutConfigurationsResponsePlanThreeDsLevel = "frictionless"
+	CreateCheckoutConfigurationsResponseVariantThreeDsLevelMandateChallenge       CreateCheckoutConfigurationsResponseVariantThreeDsLevel = "mandate_challenge"
+	CreateCheckoutConfigurationsResponseVariantThreeDsLevelMandateIfRequired      CreateCheckoutConfigurationsResponseVariantThreeDsLevel = "mandate_if_required"
+	CreateCheckoutConfigurationsResponseVariantThreeDsLevelFrictionlessIfRequired CreateCheckoutConfigurationsResponseVariantThreeDsLevel = "frictionless_if_required"
 )
 
-func NewCreateCheckoutConfigurationsResponsePlanThreeDsLevelFromString(s string) (CreateCheckoutConfigurationsResponsePlanThreeDsLevel, error) {
+func NewCreateCheckoutConfigurationsResponseVariantThreeDsLevelFromString(s string) (CreateCheckoutConfigurationsResponseVariantThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
-		return CreateCheckoutConfigurationsResponsePlanThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return CreateCheckoutConfigurationsResponsePlanThreeDsLevelFrictionless, nil
+		return CreateCheckoutConfigurationsResponseVariantThreeDsLevelMandateChallenge, nil
+	case "mandate_if_required":
+		return CreateCheckoutConfigurationsResponseVariantThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return CreateCheckoutConfigurationsResponseVariantThreeDsLevelFrictionlessIfRequired, nil
 	}
-	var t CreateCheckoutConfigurationsResponsePlanThreeDsLevel
+	var t CreateCheckoutConfigurationsResponseVariantThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (c CreateCheckoutConfigurationsResponsePlanThreeDsLevel) Ptr() *CreateCheckoutConfigurationsResponsePlanThreeDsLevel {
+func (c CreateCheckoutConfigurationsResponseVariantThreeDsLevel) Ptr() *CreateCheckoutConfigurationsResponseVariantThreeDsLevel {
 	return &c
 }
 
-// Whether the plan is visible to customers or hidden from public view.
-type CreateCheckoutConfigurationsResponsePlanVisibility string
+// Whether the variant is visible to customers or hidden from public view.
+type CreateCheckoutConfigurationsResponseVariantVisibility string
 
 const (
-	CreateCheckoutConfigurationsResponsePlanVisibilityVisible   CreateCheckoutConfigurationsResponsePlanVisibility = "visible"
-	CreateCheckoutConfigurationsResponsePlanVisibilityHidden    CreateCheckoutConfigurationsResponsePlanVisibility = "hidden"
-	CreateCheckoutConfigurationsResponsePlanVisibilityArchived  CreateCheckoutConfigurationsResponsePlanVisibility = "archived"
-	CreateCheckoutConfigurationsResponsePlanVisibilityQuickLink CreateCheckoutConfigurationsResponsePlanVisibility = "quick_link"
+	CreateCheckoutConfigurationsResponseVariantVisibilityVisible   CreateCheckoutConfigurationsResponseVariantVisibility = "visible"
+	CreateCheckoutConfigurationsResponseVariantVisibilityHidden    CreateCheckoutConfigurationsResponseVariantVisibility = "hidden"
+	CreateCheckoutConfigurationsResponseVariantVisibilityArchived  CreateCheckoutConfigurationsResponseVariantVisibility = "archived"
+	CreateCheckoutConfigurationsResponseVariantVisibilityQuickLink CreateCheckoutConfigurationsResponseVariantVisibility = "quick_link"
 )
 
-func NewCreateCheckoutConfigurationsResponsePlanVisibilityFromString(s string) (CreateCheckoutConfigurationsResponsePlanVisibility, error) {
+func NewCreateCheckoutConfigurationsResponseVariantVisibilityFromString(s string) (CreateCheckoutConfigurationsResponseVariantVisibility, error) {
 	switch s {
 	case "visible":
-		return CreateCheckoutConfigurationsResponsePlanVisibilityVisible, nil
+		return CreateCheckoutConfigurationsResponseVariantVisibilityVisible, nil
 	case "hidden":
-		return CreateCheckoutConfigurationsResponsePlanVisibilityHidden, nil
+		return CreateCheckoutConfigurationsResponseVariantVisibilityHidden, nil
 	case "archived":
-		return CreateCheckoutConfigurationsResponsePlanVisibilityArchived, nil
+		return CreateCheckoutConfigurationsResponseVariantVisibilityArchived, nil
 	case "quick_link":
-		return CreateCheckoutConfigurationsResponsePlanVisibilityQuickLink, nil
+		return CreateCheckoutConfigurationsResponseVariantVisibilityQuickLink, nil
 	}
-	var t CreateCheckoutConfigurationsResponsePlanVisibility
+	var t CreateCheckoutConfigurationsResponseVariantVisibility
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (c CreateCheckoutConfigurationsResponsePlanVisibility) Ptr() *CreateCheckoutConfigurationsResponsePlanVisibility {
-	return &c
-}
-
-// 3D Secure behavior for this checkout, or `null` to use the account default.
-type CreateCheckoutConfigurationsResponseThreeDsLevel string
-
-const (
-	CreateCheckoutConfigurationsResponseThreeDsLevelMandateChallenge CreateCheckoutConfigurationsResponseThreeDsLevel = "mandate_challenge"
-	CreateCheckoutConfigurationsResponseThreeDsLevelFrictionless     CreateCheckoutConfigurationsResponseThreeDsLevel = "frictionless"
-)
-
-func NewCreateCheckoutConfigurationsResponseThreeDsLevelFromString(s string) (CreateCheckoutConfigurationsResponseThreeDsLevel, error) {
-	switch s {
-	case "mandate_challenge":
-		return CreateCheckoutConfigurationsResponseThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return CreateCheckoutConfigurationsResponseThreeDsLevelFrictionless, nil
-	}
-	var t CreateCheckoutConfigurationsResponseThreeDsLevel
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateCheckoutConfigurationsResponseThreeDsLevel) Ptr() *CreateCheckoutConfigurationsResponseThreeDsLevel {
+func (c CreateCheckoutConfigurationsResponseVariantVisibility) Ptr() *CreateCheckoutConfigurationsResponseVariantVisibility {
 	return &c
 }
 
@@ -2090,10 +2190,12 @@ func (d *DeleteCheckoutConfigurationsResponse) GetExtraProperties() map[string]i
 }
 
 func (d *DeleteCheckoutConfigurationsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -2231,10 +2333,12 @@ func (l *ListCheckoutConfigurationsResponse) GetExtraProperties() map[string]int
 }
 
 func (l *ListCheckoutConfigurationsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2303,12 +2407,25 @@ var (
 	listCheckoutConfigurationsResponseDataItemFieldMetadata                            = big.NewInt(1 << 6)
 	listCheckoutConfigurationsResponseDataItemFieldMode                                = big.NewInt(1 << 7)
 	listCheckoutConfigurationsResponseDataItemFieldPaymentMethodConfiguration          = big.NewInt(1 << 8)
-	listCheckoutConfigurationsResponseDataItemFieldPlan                                = big.NewInt(1 << 9)
-	listCheckoutConfigurationsResponseDataItemFieldPurchaseURL                         = big.NewInt(1 << 10)
-	listCheckoutConfigurationsResponseDataItemFieldRedirectURL                         = big.NewInt(1 << 11)
-	listCheckoutConfigurationsResponseDataItemFieldThreeDsLevel                        = big.NewInt(1 << 12)
-	listCheckoutConfigurationsResponseDataItemFieldUpdatedAt                           = big.NewInt(1 << 13)
+	listCheckoutConfigurationsResponseDataItemFieldPurchaseURL                         = big.NewInt(1 << 9)
+	listCheckoutConfigurationsResponseDataItemFieldRedirectURL                         = big.NewInt(1 << 10)
+	listCheckoutConfigurationsResponseDataItemFieldThreeDsLevel                        = big.NewInt(1 << 11)
+	listCheckoutConfigurationsResponseDataItemFieldUpdatedAt                           = big.NewInt(1 << 12)
+	listCheckoutConfigurationsResponseDataItemFieldVariant                             = big.NewInt(1 << 13)
 )
+
+// listCheckoutConfigurationsResponseDataItemNullableFields maps the wire names of ListCheckoutConfigurationsResponseDataItem's nullable fields (required or optional) to their field bits.
+var listCheckoutConfigurationsResponseDataItemNullableFields = map[string]*big.Int{
+	"affiliate_code":                         listCheckoutConfigurationsResponseDataItemFieldAffiliateCode,
+	"currency":                               listCheckoutConfigurationsResponseDataItemFieldCurrency,
+	"effective_payment_method_configuration": listCheckoutConfigurationsResponseDataItemFieldEffectivePaymentMethodConfiguration,
+	"metadata":                               listCheckoutConfigurationsResponseDataItemFieldMetadata,
+	"payment_method_configuration":           listCheckoutConfigurationsResponseDataItemFieldPaymentMethodConfiguration,
+	"purchase_url":                           listCheckoutConfigurationsResponseDataItemFieldPurchaseURL,
+	"redirect_url":                           listCheckoutConfigurationsResponseDataItemFieldRedirectURL,
+	"three_ds_level":                         listCheckoutConfigurationsResponseDataItemFieldThreeDsLevel,
+	"variant":                                listCheckoutConfigurationsResponseDataItemFieldVariant,
+}
 
 type ListCheckoutConfigurationsResponseDataItem struct {
 	// Account ID, prefixed `biz_`.
@@ -2319,7 +2436,7 @@ type ListCheckoutConfigurationsResponseDataItem struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Currency used for setup-mode payment method availability; defaults to `usd` when omitted.
 	Currency *string `json:"currency,omitempty" url:"currency,omitempty"`
-	// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the plan's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
+	// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 	EffectivePaymentMethodConfiguration *ListCheckoutConfigurationsResponseDataItemEffectivePaymentMethodConfiguration `json:"effective_payment_method_configuration,omitempty" url:"effective_payment_method_configuration,omitempty"`
 	// Checkout configuration ID, prefixed `ch_`.
 	ID string `json:"id" url:"id"`
@@ -2327,18 +2444,18 @@ type ListCheckoutConfigurationsResponseDataItem struct {
 	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// Controls whether checkout charges the buyer immediately or saves payment details for later.
 	Mode ListCheckoutConfigurationsResponseDataItemMode `json:"mode" url:"mode"`
-	// Payment method overrides for this checkout. `null` when it uses the plan or platform defaults.
+	// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 	PaymentMethodConfiguration *ListCheckoutConfigurationsResponseDataItemPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Plan used for payment checkout. `null` in setup mode.
-	Plan *ListCheckoutConfigurationsResponseDataItemPlan `json:"plan,omitempty" url:"plan,omitempty"`
 	// Checkout URL you can send to customers.
 	PurchaseURL *string `json:"purchase_url,omitempty" url:"purchase_url,omitempty"`
 	// URL customers are sent to after checkout, or `null` when no redirect is configured.
 	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
-	// 3D Secure behavior for this checkout, or `null` to use the account default.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
 	ThreeDsLevel *ListCheckoutConfigurationsResponseDataItemThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// When the checkout configuration was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
+	// Variant used for payment checkout. `null` in setup mode.
+	Variant *ListCheckoutConfigurationsResponseDataItemVariant `json:"variant,omitempty" url:"variant,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2410,13 +2527,6 @@ func (l *ListCheckoutConfigurationsResponseDataItem) GetPaymentMethodConfigurati
 	return l.PaymentMethodConfiguration
 }
 
-func (l *ListCheckoutConfigurationsResponseDataItem) GetPlan() *ListCheckoutConfigurationsResponseDataItemPlan {
-	if l == nil {
-		return nil
-	}
-	return l.Plan
-}
-
 func (l *ListCheckoutConfigurationsResponseDataItem) GetPurchaseURL() *string {
 	if l == nil {
 		return nil
@@ -2445,6 +2555,13 @@ func (l *ListCheckoutConfigurationsResponseDataItem) GetUpdatedAt() string {
 	return l.UpdatedAt
 }
 
+func (l *ListCheckoutConfigurationsResponseDataItem) GetVariant() *ListCheckoutConfigurationsResponseDataItemVariant {
+	if l == nil {
+		return nil
+	}
+	return l.Variant
+}
+
 func (l *ListCheckoutConfigurationsResponseDataItem) GetExtraProperties() map[string]interface{} {
 	if l == nil {
 		return nil
@@ -2453,10 +2570,12 @@ func (l *ListCheckoutConfigurationsResponseDataItem) GetExtraProperties() map[st
 }
 
 func (l *ListCheckoutConfigurationsResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -2522,13 +2641,6 @@ func (l *ListCheckoutConfigurationsResponseDataItem) SetPaymentMethodConfigurati
 	l.require(listCheckoutConfigurationsResponseDataItemFieldPaymentMethodConfiguration)
 }
 
-// SetPlan sets the Plan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListCheckoutConfigurationsResponseDataItem) SetPlan(plan *ListCheckoutConfigurationsResponseDataItemPlan) {
-	l.Plan = plan
-	l.require(listCheckoutConfigurationsResponseDataItemFieldPlan)
-}
-
 // SetPurchaseURL sets the PurchaseURL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListCheckoutConfigurationsResponseDataItem) SetPurchaseURL(purchaseURL *string) {
@@ -2557,6 +2669,13 @@ func (l *ListCheckoutConfigurationsResponseDataItem) SetUpdatedAt(updatedAt stri
 	l.require(listCheckoutConfigurationsResponseDataItemFieldUpdatedAt)
 }
 
+// SetVariant sets the Variant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCheckoutConfigurationsResponseDataItem) SetVariant(variant *ListCheckoutConfigurationsResponseDataItemVariant) {
+	l.Variant = variant
+	l.require(listCheckoutConfigurationsResponseDataItemFieldVariant)
+}
+
 func (l *ListCheckoutConfigurationsResponseDataItem) UnmarshalJSON(data []byte) error {
 	type unmarshaler ListCheckoutConfigurationsResponseDataItem
 	var value unmarshaler
@@ -2569,6 +2688,13 @@ func (l *ListCheckoutConfigurationsResponseDataItem) UnmarshalJSON(data []byte) 
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listCheckoutConfigurationsResponseDataItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2599,13 +2725,13 @@ func (l *ListCheckoutConfigurationsResponseDataItem) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the plan's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 var (
 	listCheckoutConfigurationsResponseDataItemEffectivePaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	listCheckoutConfigurationsResponseDataItemEffectivePaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	listCheckoutConfigurationsResponseDataItemEffectivePaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 type ListCheckoutConfigurationsResponseDataItemEffectivePaymentMethodConfiguration struct {
 	// Payment methods explicitly disabled.
 	Disabled []string `json:"disabled,omitempty" url:"disabled,omitempty"`
@@ -2650,10 +2776,12 @@ func (l *ListCheckoutConfigurationsResponseDataItemEffectivePaymentMethodConfigu
 }
 
 func (l *ListCheckoutConfigurationsResponseDataItemEffectivePaymentMethodConfiguration) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -2742,13 +2870,13 @@ func (l ListCheckoutConfigurationsResponseDataItemMode) Ptr() *ListCheckoutConfi
 	return &l
 }
 
-// Payment method overrides for this checkout. `null` when it uses the plan or platform defaults.
 var (
 	listCheckoutConfigurationsResponseDataItemPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	listCheckoutConfigurationsResponseDataItemPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	listCheckoutConfigurationsResponseDataItemPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 type ListCheckoutConfigurationsResponseDataItemPaymentMethodConfiguration struct {
 	// Payment methods explicitly disabled for checkout.
 	Disabled []string `json:"disabled,omitempty" url:"disabled,omitempty"`
@@ -2793,10 +2921,12 @@ func (l *ListCheckoutConfigurationsResponseDataItemPaymentMethodConfiguration) G
 }
 
 func (l *ListCheckoutConfigurationsResponseDataItemPaymentMethodConfiguration) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -2862,47 +2992,81 @@ func (l *ListCheckoutConfigurationsResponseDataItemPaymentMethodConfiguration) S
 	return fmt.Sprintf("%#v", l)
 }
 
-// Plan used for payment checkout. `null` in setup mode.
-var (
-	listCheckoutConfigurationsResponseDataItemPlanFieldAdaptivePricingEnabled = big.NewInt(1 << 0)
-	listCheckoutConfigurationsResponseDataItemPlanFieldBillingPeriod          = big.NewInt(1 << 1)
-	listCheckoutConfigurationsResponseDataItemPlanFieldCurrency               = big.NewInt(1 << 2)
-	listCheckoutConfigurationsResponseDataItemPlanFieldExpirationDays         = big.NewInt(1 << 3)
-	listCheckoutConfigurationsResponseDataItemPlanFieldID                     = big.NewInt(1 << 4)
-	listCheckoutConfigurationsResponseDataItemPlanFieldInitialPrice           = big.NewInt(1 << 5)
-	listCheckoutConfigurationsResponseDataItemPlanFieldPlanType               = big.NewInt(1 << 6)
-	listCheckoutConfigurationsResponseDataItemPlanFieldReleaseMethod          = big.NewInt(1 << 7)
-	listCheckoutConfigurationsResponseDataItemPlanFieldRenewalPrice           = big.NewInt(1 << 8)
-	listCheckoutConfigurationsResponseDataItemPlanFieldThreeDsLevel           = big.NewInt(1 << 9)
-	listCheckoutConfigurationsResponseDataItemPlanFieldTrialPeriodDays        = big.NewInt(1 << 10)
-	listCheckoutConfigurationsResponseDataItemPlanFieldVisibility             = big.NewInt(1 << 11)
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
+type ListCheckoutConfigurationsResponseDataItemThreeDsLevel string
+
+const (
+	ListCheckoutConfigurationsResponseDataItemThreeDsLevelMandateChallenge       ListCheckoutConfigurationsResponseDataItemThreeDsLevel = "mandate_challenge"
+	ListCheckoutConfigurationsResponseDataItemThreeDsLevelMandateIfRequired      ListCheckoutConfigurationsResponseDataItemThreeDsLevel = "mandate_if_required"
+	ListCheckoutConfigurationsResponseDataItemThreeDsLevelFrictionlessIfRequired ListCheckoutConfigurationsResponseDataItemThreeDsLevel = "frictionless_if_required"
 )
 
-type ListCheckoutConfigurationsResponseDataItemPlan struct {
-	// Whether this plan accepts local currency payments via adaptive pricing.
+func NewListCheckoutConfigurationsResponseDataItemThreeDsLevelFromString(s string) (ListCheckoutConfigurationsResponseDataItemThreeDsLevel, error) {
+	switch s {
+	case "mandate_challenge":
+		return ListCheckoutConfigurationsResponseDataItemThreeDsLevelMandateChallenge, nil
+	case "mandate_if_required":
+		return ListCheckoutConfigurationsResponseDataItemThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return ListCheckoutConfigurationsResponseDataItemThreeDsLevelFrictionlessIfRequired, nil
+	}
+	var t ListCheckoutConfigurationsResponseDataItemThreeDsLevel
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListCheckoutConfigurationsResponseDataItemThreeDsLevel) Ptr() *ListCheckoutConfigurationsResponseDataItemThreeDsLevel {
+	return &l
+}
+
+var (
+	listCheckoutConfigurationsResponseDataItemVariantFieldAdaptivePricingEnabled = big.NewInt(1 << 0)
+	listCheckoutConfigurationsResponseDataItemVariantFieldBillingPeriod          = big.NewInt(1 << 1)
+	listCheckoutConfigurationsResponseDataItemVariantFieldBillingType            = big.NewInt(1 << 2)
+	listCheckoutConfigurationsResponseDataItemVariantFieldCurrency               = big.NewInt(1 << 3)
+	listCheckoutConfigurationsResponseDataItemVariantFieldExpirationDays         = big.NewInt(1 << 4)
+	listCheckoutConfigurationsResponseDataItemVariantFieldID                     = big.NewInt(1 << 5)
+	listCheckoutConfigurationsResponseDataItemVariantFieldInitialPrice           = big.NewInt(1 << 6)
+	listCheckoutConfigurationsResponseDataItemVariantFieldReleaseMethod          = big.NewInt(1 << 7)
+	listCheckoutConfigurationsResponseDataItemVariantFieldRenewalPrice           = big.NewInt(1 << 8)
+	listCheckoutConfigurationsResponseDataItemVariantFieldThreeDsLevel           = big.NewInt(1 << 9)
+	listCheckoutConfigurationsResponseDataItemVariantFieldTrialPeriodDays        = big.NewInt(1 << 10)
+	listCheckoutConfigurationsResponseDataItemVariantFieldVisibility             = big.NewInt(1 << 11)
+)
+
+// listCheckoutConfigurationsResponseDataItemVariantNullableFields maps the wire names of ListCheckoutConfigurationsResponseDataItemVariant's nullable fields (required or optional) to their field bits.
+var listCheckoutConfigurationsResponseDataItemVariantNullableFields = map[string]*big.Int{
+	"billing_period":    listCheckoutConfigurationsResponseDataItemVariantFieldBillingPeriod,
+	"expiration_days":   listCheckoutConfigurationsResponseDataItemVariantFieldExpirationDays,
+	"three_ds_level":    listCheckoutConfigurationsResponseDataItemVariantFieldThreeDsLevel,
+	"trial_period_days": listCheckoutConfigurationsResponseDataItemVariantFieldTrialPeriodDays,
+}
+
+// Variant used for payment checkout. `null` in setup mode.
+type ListCheckoutConfigurationsResponseDataItemVariant struct {
+	// Whether this variant accepts local currency payments via adaptive pricing.
 	AdaptivePricingEnabled bool `json:"adaptive_pricing_enabled" url:"adaptive_pricing_enabled"`
-	// Recurring billing interval in days, such as 30 for monthly or 365 for annual. `null` for one-time plans.
+	// Recurring billing interval in days, such as 30 for monthly or 365 for annual. `null` for one-time variants.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// Three-letter ISO currency code for the plan's prices.
+	// Billing model for the variant.
+	BillingType ListCheckoutConfigurationsResponseDataItemVariantBillingType `json:"billing_type" url:"billing_type"`
+	// Three-letter ISO currency code for the variant's prices.
 	Currency string `json:"currency" url:"currency"`
-	// Access duration in days for expiration-based plans.
+	// Access duration in days for expiration-based variants.
 	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Plan ID, prefixed `plan_`.
+	// Variant ID, prefixed `plan_`.
 	ID string `json:"id" url:"id"`
-	// Initial purchase price in the plan currency.
+	// Initial purchase price in the variant currency.
 	InitialPrice float64 `json:"initial_price" url:"initial_price"`
-	// Billing model for the plan.
-	PlanType ListCheckoutConfigurationsResponseDataItemPlanPlanType `json:"plan_type" url:"plan_type"`
-	// Sales method for the plan.
-	ReleaseMethod ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod `json:"release_method" url:"release_method"`
+	// Sales method for the variant.
+	ReleaseMethod ListCheckoutConfigurationsResponseDataItemVariantReleaseMethod `json:"release_method" url:"release_method"`
 	// Recurring price charged each billing period.
 	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
-	// 3D Secure behavior for this plan, or `null` to use the account default.
-	ThreeDsLevel *ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
+	ThreeDsLevel *ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// Free trial days before the first renewal charge.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// Whether the plan is visible to customers or hidden from public view.
-	Visibility ListCheckoutConfigurationsResponseDataItemPlanVisibility `json:"visibility" url:"visibility"`
+	// Whether the variant is visible to customers or hidden from public view.
+	Visibility ListCheckoutConfigurationsResponseDataItemVariantVisibility `json:"visibility" url:"visibility"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2911,206 +3075,215 @@ type ListCheckoutConfigurationsResponseDataItemPlan struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) GetAdaptivePricingEnabled() bool {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) GetAdaptivePricingEnabled() bool {
 	if l == nil {
 		return false
 	}
 	return l.AdaptivePricingEnabled
 }
 
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) GetBillingPeriod() *int {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) GetBillingPeriod() *int {
 	if l == nil {
 		return nil
 	}
 	return l.BillingPeriod
 }
 
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) GetCurrency() string {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) GetBillingType() ListCheckoutConfigurationsResponseDataItemVariantBillingType {
+	if l == nil {
+		return ""
+	}
+	return l.BillingType
+}
+
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) GetCurrency() string {
 	if l == nil {
 		return ""
 	}
 	return l.Currency
 }
 
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) GetExpirationDays() *int {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) GetExpirationDays() *int {
 	if l == nil {
 		return nil
 	}
 	return l.ExpirationDays
 }
 
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) GetID() string {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) GetID() string {
 	if l == nil {
 		return ""
 	}
 	return l.ID
 }
 
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) GetInitialPrice() float64 {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) GetInitialPrice() float64 {
 	if l == nil {
 		return 0
 	}
 	return l.InitialPrice
 }
 
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) GetPlanType() ListCheckoutConfigurationsResponseDataItemPlanPlanType {
-	if l == nil {
-		return ""
-	}
-	return l.PlanType
-}
-
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) GetReleaseMethod() ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) GetReleaseMethod() ListCheckoutConfigurationsResponseDataItemVariantReleaseMethod {
 	if l == nil {
 		return ""
 	}
 	return l.ReleaseMethod
 }
 
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) GetRenewalPrice() float64 {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) GetRenewalPrice() float64 {
 	if l == nil {
 		return 0
 	}
 	return l.RenewalPrice
 }
 
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) GetThreeDsLevel() *ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) GetThreeDsLevel() *ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel {
 	if l == nil {
 		return nil
 	}
 	return l.ThreeDsLevel
 }
 
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) GetTrialPeriodDays() *int {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) GetTrialPeriodDays() *int {
 	if l == nil {
 		return nil
 	}
 	return l.TrialPeriodDays
 }
 
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) GetVisibility() ListCheckoutConfigurationsResponseDataItemPlanVisibility {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) GetVisibility() ListCheckoutConfigurationsResponseDataItemVariantVisibility {
 	if l == nil {
 		return ""
 	}
 	return l.Visibility
 }
 
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) GetExtraProperties() map[string]interface{} {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) GetExtraProperties() map[string]interface{} {
 	if l == nil {
 		return nil
 	}
 	return l.extraProperties
 }
 
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAdaptivePricingEnabled sets the AdaptivePricingEnabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) SetAdaptivePricingEnabled(adaptivePricingEnabled bool) {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) SetAdaptivePricingEnabled(adaptivePricingEnabled bool) {
 	l.AdaptivePricingEnabled = adaptivePricingEnabled
-	l.require(listCheckoutConfigurationsResponseDataItemPlanFieldAdaptivePricingEnabled)
+	l.require(listCheckoutConfigurationsResponseDataItemVariantFieldAdaptivePricingEnabled)
 }
 
 // SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) SetBillingPeriod(billingPeriod *int) {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) SetBillingPeriod(billingPeriod *int) {
 	l.BillingPeriod = billingPeriod
-	l.require(listCheckoutConfigurationsResponseDataItemPlanFieldBillingPeriod)
+	l.require(listCheckoutConfigurationsResponseDataItemVariantFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) SetBillingType(billingType ListCheckoutConfigurationsResponseDataItemVariantBillingType) {
+	l.BillingType = billingType
+	l.require(listCheckoutConfigurationsResponseDataItemVariantFieldBillingType)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) SetCurrency(currency string) {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) SetCurrency(currency string) {
 	l.Currency = currency
-	l.require(listCheckoutConfigurationsResponseDataItemPlanFieldCurrency)
+	l.require(listCheckoutConfigurationsResponseDataItemVariantFieldCurrency)
 }
 
 // SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) SetExpirationDays(expirationDays *int) {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) SetExpirationDays(expirationDays *int) {
 	l.ExpirationDays = expirationDays
-	l.require(listCheckoutConfigurationsResponseDataItemPlanFieldExpirationDays)
+	l.require(listCheckoutConfigurationsResponseDataItemVariantFieldExpirationDays)
 }
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) SetID(id string) {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) SetID(id string) {
 	l.ID = id
-	l.require(listCheckoutConfigurationsResponseDataItemPlanFieldID)
+	l.require(listCheckoutConfigurationsResponseDataItemVariantFieldID)
 }
 
 // SetInitialPrice sets the InitialPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) SetInitialPrice(initialPrice float64) {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) SetInitialPrice(initialPrice float64) {
 	l.InitialPrice = initialPrice
-	l.require(listCheckoutConfigurationsResponseDataItemPlanFieldInitialPrice)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) SetPlanType(planType ListCheckoutConfigurationsResponseDataItemPlanPlanType) {
-	l.PlanType = planType
-	l.require(listCheckoutConfigurationsResponseDataItemPlanFieldPlanType)
+	l.require(listCheckoutConfigurationsResponseDataItemVariantFieldInitialPrice)
 }
 
 // SetReleaseMethod sets the ReleaseMethod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) SetReleaseMethod(releaseMethod ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod) {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) SetReleaseMethod(releaseMethod ListCheckoutConfigurationsResponseDataItemVariantReleaseMethod) {
 	l.ReleaseMethod = releaseMethod
-	l.require(listCheckoutConfigurationsResponseDataItemPlanFieldReleaseMethod)
+	l.require(listCheckoutConfigurationsResponseDataItemVariantFieldReleaseMethod)
 }
 
 // SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) SetRenewalPrice(renewalPrice float64) {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) SetRenewalPrice(renewalPrice float64) {
 	l.RenewalPrice = renewalPrice
-	l.require(listCheckoutConfigurationsResponseDataItemPlanFieldRenewalPrice)
+	l.require(listCheckoutConfigurationsResponseDataItemVariantFieldRenewalPrice)
 }
 
 // SetThreeDsLevel sets the ThreeDsLevel field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) SetThreeDsLevel(threeDsLevel *ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel) {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) SetThreeDsLevel(threeDsLevel *ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel) {
 	l.ThreeDsLevel = threeDsLevel
-	l.require(listCheckoutConfigurationsResponseDataItemPlanFieldThreeDsLevel)
+	l.require(listCheckoutConfigurationsResponseDataItemVariantFieldThreeDsLevel)
 }
 
 // SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) SetTrialPeriodDays(trialPeriodDays *int) {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) SetTrialPeriodDays(trialPeriodDays *int) {
 	l.TrialPeriodDays = trialPeriodDays
-	l.require(listCheckoutConfigurationsResponseDataItemPlanFieldTrialPeriodDays)
+	l.require(listCheckoutConfigurationsResponseDataItemVariantFieldTrialPeriodDays)
 }
 
 // SetVisibility sets the Visibility field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) SetVisibility(visibility ListCheckoutConfigurationsResponseDataItemPlanVisibility) {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) SetVisibility(visibility ListCheckoutConfigurationsResponseDataItemVariantVisibility) {
 	l.Visibility = visibility
-	l.require(listCheckoutConfigurationsResponseDataItemPlanFieldVisibility)
+	l.require(listCheckoutConfigurationsResponseDataItemVariantFieldVisibility)
 }
 
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler ListCheckoutConfigurationsResponseDataItemPlan
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListCheckoutConfigurationsResponseDataItemVariant
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*l = ListCheckoutConfigurationsResponseDataItemPlan(value)
+	*l = ListCheckoutConfigurationsResponseDataItemVariant(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *l)
 	if err != nil {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listCheckoutConfigurationsResponseDataItemVariantNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) MarshalJSON() ([]byte, error) {
-	type embed ListCheckoutConfigurationsResponseDataItemPlan
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) MarshalJSON() ([]byte, error) {
+	type embed ListCheckoutConfigurationsResponseDataItemVariant
 	var marshaler = struct {
 		embed
 	}{
@@ -3120,7 +3293,7 @@ func (l *ListCheckoutConfigurationsResponseDataItemPlan) MarshalJSON() ([]byte, 
 	return json.Marshal(explicitMarshaler)
 }
 
-func (l *ListCheckoutConfigurationsResponseDataItemPlan) String() string {
+func (l *ListCheckoutConfigurationsResponseDataItemVariant) String() string {
 	if l == nil {
 		return "<nil>"
 	}
@@ -3135,124 +3308,104 @@ func (l *ListCheckoutConfigurationsResponseDataItemPlan) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Billing model for the plan.
-type ListCheckoutConfigurationsResponseDataItemPlanPlanType string
+// Billing model for the variant.
+type ListCheckoutConfigurationsResponseDataItemVariantBillingType string
 
 const (
-	ListCheckoutConfigurationsResponseDataItemPlanPlanTypeRenewal ListCheckoutConfigurationsResponseDataItemPlanPlanType = "renewal"
-	ListCheckoutConfigurationsResponseDataItemPlanPlanTypeOneTime ListCheckoutConfigurationsResponseDataItemPlanPlanType = "one_time"
+	ListCheckoutConfigurationsResponseDataItemVariantBillingTypeRenewal ListCheckoutConfigurationsResponseDataItemVariantBillingType = "renewal"
+	ListCheckoutConfigurationsResponseDataItemVariantBillingTypeOneTime ListCheckoutConfigurationsResponseDataItemVariantBillingType = "one_time"
 )
 
-func NewListCheckoutConfigurationsResponseDataItemPlanPlanTypeFromString(s string) (ListCheckoutConfigurationsResponseDataItemPlanPlanType, error) {
+func NewListCheckoutConfigurationsResponseDataItemVariantBillingTypeFromString(s string) (ListCheckoutConfigurationsResponseDataItemVariantBillingType, error) {
 	switch s {
 	case "renewal":
-		return ListCheckoutConfigurationsResponseDataItemPlanPlanTypeRenewal, nil
+		return ListCheckoutConfigurationsResponseDataItemVariantBillingTypeRenewal, nil
 	case "one_time":
-		return ListCheckoutConfigurationsResponseDataItemPlanPlanTypeOneTime, nil
+		return ListCheckoutConfigurationsResponseDataItemVariantBillingTypeOneTime, nil
 	}
-	var t ListCheckoutConfigurationsResponseDataItemPlanPlanType
+	var t ListCheckoutConfigurationsResponseDataItemVariantBillingType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (l ListCheckoutConfigurationsResponseDataItemPlanPlanType) Ptr() *ListCheckoutConfigurationsResponseDataItemPlanPlanType {
+func (l ListCheckoutConfigurationsResponseDataItemVariantBillingType) Ptr() *ListCheckoutConfigurationsResponseDataItemVariantBillingType {
 	return &l
 }
 
-// Sales method for the plan.
-type ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod string
+// Sales method for the variant.
+type ListCheckoutConfigurationsResponseDataItemVariantReleaseMethod string
 
 const (
-	ListCheckoutConfigurationsResponseDataItemPlanReleaseMethodBuyNow   ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod = "buy_now"
-	ListCheckoutConfigurationsResponseDataItemPlanReleaseMethodWaitlist ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod = "waitlist"
+	ListCheckoutConfigurationsResponseDataItemVariantReleaseMethodBuyNow   ListCheckoutConfigurationsResponseDataItemVariantReleaseMethod = "buy_now"
+	ListCheckoutConfigurationsResponseDataItemVariantReleaseMethodWaitlist ListCheckoutConfigurationsResponseDataItemVariantReleaseMethod = "waitlist"
 )
 
-func NewListCheckoutConfigurationsResponseDataItemPlanReleaseMethodFromString(s string) (ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod, error) {
+func NewListCheckoutConfigurationsResponseDataItemVariantReleaseMethodFromString(s string) (ListCheckoutConfigurationsResponseDataItemVariantReleaseMethod, error) {
 	switch s {
 	case "buy_now":
-		return ListCheckoutConfigurationsResponseDataItemPlanReleaseMethodBuyNow, nil
+		return ListCheckoutConfigurationsResponseDataItemVariantReleaseMethodBuyNow, nil
 	case "waitlist":
-		return ListCheckoutConfigurationsResponseDataItemPlanReleaseMethodWaitlist, nil
+		return ListCheckoutConfigurationsResponseDataItemVariantReleaseMethodWaitlist, nil
 	}
-	var t ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod
+	var t ListCheckoutConfigurationsResponseDataItemVariantReleaseMethod
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (l ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod) Ptr() *ListCheckoutConfigurationsResponseDataItemPlanReleaseMethod {
+func (l ListCheckoutConfigurationsResponseDataItemVariantReleaseMethod) Ptr() *ListCheckoutConfigurationsResponseDataItemVariantReleaseMethod {
 	return &l
 }
 
-// 3D Secure behavior for this plan, or `null` to use the account default.
-type ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel string
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
+type ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel string
 
 const (
-	ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelMandateChallenge ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel = "mandate_challenge"
-	ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelFrictionless     ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel = "frictionless"
+	ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevelMandateChallenge       ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel = "mandate_challenge"
+	ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevelMandateIfRequired      ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel = "mandate_if_required"
+	ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevelFrictionlessIfRequired ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel = "frictionless_if_required"
 )
 
-func NewListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelFromString(s string) (ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel, error) {
+func NewListCheckoutConfigurationsResponseDataItemVariantThreeDsLevelFromString(s string) (ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
-		return ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevelFrictionless, nil
+		return ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevelMandateChallenge, nil
+	case "mandate_if_required":
+		return ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevelFrictionlessIfRequired, nil
 	}
-	var t ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel
+	var t ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (l ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel) Ptr() *ListCheckoutConfigurationsResponseDataItemPlanThreeDsLevel {
+func (l ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel) Ptr() *ListCheckoutConfigurationsResponseDataItemVariantThreeDsLevel {
 	return &l
 }
 
-// Whether the plan is visible to customers or hidden from public view.
-type ListCheckoutConfigurationsResponseDataItemPlanVisibility string
+// Whether the variant is visible to customers or hidden from public view.
+type ListCheckoutConfigurationsResponseDataItemVariantVisibility string
 
 const (
-	ListCheckoutConfigurationsResponseDataItemPlanVisibilityVisible   ListCheckoutConfigurationsResponseDataItemPlanVisibility = "visible"
-	ListCheckoutConfigurationsResponseDataItemPlanVisibilityHidden    ListCheckoutConfigurationsResponseDataItemPlanVisibility = "hidden"
-	ListCheckoutConfigurationsResponseDataItemPlanVisibilityArchived  ListCheckoutConfigurationsResponseDataItemPlanVisibility = "archived"
-	ListCheckoutConfigurationsResponseDataItemPlanVisibilityQuickLink ListCheckoutConfigurationsResponseDataItemPlanVisibility = "quick_link"
+	ListCheckoutConfigurationsResponseDataItemVariantVisibilityVisible   ListCheckoutConfigurationsResponseDataItemVariantVisibility = "visible"
+	ListCheckoutConfigurationsResponseDataItemVariantVisibilityHidden    ListCheckoutConfigurationsResponseDataItemVariantVisibility = "hidden"
+	ListCheckoutConfigurationsResponseDataItemVariantVisibilityArchived  ListCheckoutConfigurationsResponseDataItemVariantVisibility = "archived"
+	ListCheckoutConfigurationsResponseDataItemVariantVisibilityQuickLink ListCheckoutConfigurationsResponseDataItemVariantVisibility = "quick_link"
 )
 
-func NewListCheckoutConfigurationsResponseDataItemPlanVisibilityFromString(s string) (ListCheckoutConfigurationsResponseDataItemPlanVisibility, error) {
+func NewListCheckoutConfigurationsResponseDataItemVariantVisibilityFromString(s string) (ListCheckoutConfigurationsResponseDataItemVariantVisibility, error) {
 	switch s {
 	case "visible":
-		return ListCheckoutConfigurationsResponseDataItemPlanVisibilityVisible, nil
+		return ListCheckoutConfigurationsResponseDataItemVariantVisibilityVisible, nil
 	case "hidden":
-		return ListCheckoutConfigurationsResponseDataItemPlanVisibilityHidden, nil
+		return ListCheckoutConfigurationsResponseDataItemVariantVisibilityHidden, nil
 	case "archived":
-		return ListCheckoutConfigurationsResponseDataItemPlanVisibilityArchived, nil
+		return ListCheckoutConfigurationsResponseDataItemVariantVisibilityArchived, nil
 	case "quick_link":
-		return ListCheckoutConfigurationsResponseDataItemPlanVisibilityQuickLink, nil
+		return ListCheckoutConfigurationsResponseDataItemVariantVisibilityQuickLink, nil
 	}
-	var t ListCheckoutConfigurationsResponseDataItemPlanVisibility
+	var t ListCheckoutConfigurationsResponseDataItemVariantVisibility
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (l ListCheckoutConfigurationsResponseDataItemPlanVisibility) Ptr() *ListCheckoutConfigurationsResponseDataItemPlanVisibility {
-	return &l
-}
-
-// 3D Secure behavior for this checkout, or `null` to use the account default.
-type ListCheckoutConfigurationsResponseDataItemThreeDsLevel string
-
-const (
-	ListCheckoutConfigurationsResponseDataItemThreeDsLevelMandateChallenge ListCheckoutConfigurationsResponseDataItemThreeDsLevel = "mandate_challenge"
-	ListCheckoutConfigurationsResponseDataItemThreeDsLevelFrictionless     ListCheckoutConfigurationsResponseDataItemThreeDsLevel = "frictionless"
-)
-
-func NewListCheckoutConfigurationsResponseDataItemThreeDsLevelFromString(s string) (ListCheckoutConfigurationsResponseDataItemThreeDsLevel, error) {
-	switch s {
-	case "mandate_challenge":
-		return ListCheckoutConfigurationsResponseDataItemThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return ListCheckoutConfigurationsResponseDataItemThreeDsLevelFrictionless, nil
-	}
-	var t ListCheckoutConfigurationsResponseDataItemThreeDsLevel
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (l ListCheckoutConfigurationsResponseDataItemThreeDsLevel) Ptr() *ListCheckoutConfigurationsResponseDataItemThreeDsLevel {
+func (l ListCheckoutConfigurationsResponseDataItemVariantVisibility) Ptr() *ListCheckoutConfigurationsResponseDataItemVariantVisibility {
 	return &l
 }
 
@@ -3262,6 +3415,12 @@ var (
 	listCheckoutConfigurationsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
 	listCheckoutConfigurationsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
+
+// listCheckoutConfigurationsResponsePageInfoNullableFields maps the wire names of ListCheckoutConfigurationsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listCheckoutConfigurationsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listCheckoutConfigurationsResponsePageInfoFieldEndCursor,
+	"start_cursor": listCheckoutConfigurationsResponsePageInfoFieldStartCursor,
+}
 
 type ListCheckoutConfigurationsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
@@ -3312,10 +3471,12 @@ func (l *ListCheckoutConfigurationsResponsePageInfo) GetExtraProperties() map[st
 }
 
 func (l *ListCheckoutConfigurationsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -3358,6 +3519,13 @@ func (l *ListCheckoutConfigurationsResponsePageInfo) UnmarshalJSON(data []byte) 
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listCheckoutConfigurationsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3398,12 +3566,25 @@ var (
 	retrieveCheckoutConfigurationsResponseFieldMetadata                            = big.NewInt(1 << 6)
 	retrieveCheckoutConfigurationsResponseFieldMode                                = big.NewInt(1 << 7)
 	retrieveCheckoutConfigurationsResponseFieldPaymentMethodConfiguration          = big.NewInt(1 << 8)
-	retrieveCheckoutConfigurationsResponseFieldPlan                                = big.NewInt(1 << 9)
-	retrieveCheckoutConfigurationsResponseFieldPurchaseURL                         = big.NewInt(1 << 10)
-	retrieveCheckoutConfigurationsResponseFieldRedirectURL                         = big.NewInt(1 << 11)
-	retrieveCheckoutConfigurationsResponseFieldThreeDsLevel                        = big.NewInt(1 << 12)
-	retrieveCheckoutConfigurationsResponseFieldUpdatedAt                           = big.NewInt(1 << 13)
+	retrieveCheckoutConfigurationsResponseFieldPurchaseURL                         = big.NewInt(1 << 9)
+	retrieveCheckoutConfigurationsResponseFieldRedirectURL                         = big.NewInt(1 << 10)
+	retrieveCheckoutConfigurationsResponseFieldThreeDsLevel                        = big.NewInt(1 << 11)
+	retrieveCheckoutConfigurationsResponseFieldUpdatedAt                           = big.NewInt(1 << 12)
+	retrieveCheckoutConfigurationsResponseFieldVariant                             = big.NewInt(1 << 13)
 )
+
+// retrieveCheckoutConfigurationsResponseNullableFields maps the wire names of RetrieveCheckoutConfigurationsResponse's nullable fields (required or optional) to their field bits.
+var retrieveCheckoutConfigurationsResponseNullableFields = map[string]*big.Int{
+	"affiliate_code":                         retrieveCheckoutConfigurationsResponseFieldAffiliateCode,
+	"currency":                               retrieveCheckoutConfigurationsResponseFieldCurrency,
+	"effective_payment_method_configuration": retrieveCheckoutConfigurationsResponseFieldEffectivePaymentMethodConfiguration,
+	"metadata":                               retrieveCheckoutConfigurationsResponseFieldMetadata,
+	"payment_method_configuration":           retrieveCheckoutConfigurationsResponseFieldPaymentMethodConfiguration,
+	"purchase_url":                           retrieveCheckoutConfigurationsResponseFieldPurchaseURL,
+	"redirect_url":                           retrieveCheckoutConfigurationsResponseFieldRedirectURL,
+	"three_ds_level":                         retrieveCheckoutConfigurationsResponseFieldThreeDsLevel,
+	"variant":                                retrieveCheckoutConfigurationsResponseFieldVariant,
+}
 
 type RetrieveCheckoutConfigurationsResponse struct {
 	// Account ID, prefixed `biz_`.
@@ -3414,7 +3595,7 @@ type RetrieveCheckoutConfigurationsResponse struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Currency used for setup-mode payment method availability; defaults to `usd` when omitted.
 	Currency *string `json:"currency,omitempty" url:"currency,omitempty"`
-	// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the plan's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
+	// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 	EffectivePaymentMethodConfiguration *RetrieveCheckoutConfigurationsResponseEffectivePaymentMethodConfiguration `json:"effective_payment_method_configuration,omitempty" url:"effective_payment_method_configuration,omitempty"`
 	// Checkout configuration ID, prefixed `ch_`.
 	ID string `json:"id" url:"id"`
@@ -3422,18 +3603,18 @@ type RetrieveCheckoutConfigurationsResponse struct {
 	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// Controls whether checkout charges the buyer immediately or saves payment details for later.
 	Mode RetrieveCheckoutConfigurationsResponseMode `json:"mode" url:"mode"`
-	// Payment method overrides for this checkout. `null` when it uses the plan or platform defaults.
+	// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 	PaymentMethodConfiguration *RetrieveCheckoutConfigurationsResponsePaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Plan used for payment checkout. `null` in setup mode.
-	Plan *RetrieveCheckoutConfigurationsResponsePlan `json:"plan,omitempty" url:"plan,omitempty"`
 	// Checkout URL you can send to customers.
 	PurchaseURL *string `json:"purchase_url,omitempty" url:"purchase_url,omitempty"`
 	// URL customers are sent to after checkout, or `null` when no redirect is configured.
 	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
-	// 3D Secure behavior for this checkout, or `null` to use the account default.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
 	ThreeDsLevel *RetrieveCheckoutConfigurationsResponseThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// When the checkout configuration was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
+	// Variant used for payment checkout. `null` in setup mode.
+	Variant *RetrieveCheckoutConfigurationsResponseVariant `json:"variant,omitempty" url:"variant,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3505,13 +3686,6 @@ func (r *RetrieveCheckoutConfigurationsResponse) GetPaymentMethodConfiguration()
 	return r.PaymentMethodConfiguration
 }
 
-func (r *RetrieveCheckoutConfigurationsResponse) GetPlan() *RetrieveCheckoutConfigurationsResponsePlan {
-	if r == nil {
-		return nil
-	}
-	return r.Plan
-}
-
 func (r *RetrieveCheckoutConfigurationsResponse) GetPurchaseURL() *string {
 	if r == nil {
 		return nil
@@ -3540,6 +3714,13 @@ func (r *RetrieveCheckoutConfigurationsResponse) GetUpdatedAt() string {
 	return r.UpdatedAt
 }
 
+func (r *RetrieveCheckoutConfigurationsResponse) GetVariant() *RetrieveCheckoutConfigurationsResponseVariant {
+	if r == nil {
+		return nil
+	}
+	return r.Variant
+}
+
 func (r *RetrieveCheckoutConfigurationsResponse) GetExtraProperties() map[string]interface{} {
 	if r == nil {
 		return nil
@@ -3548,10 +3729,12 @@ func (r *RetrieveCheckoutConfigurationsResponse) GetExtraProperties() map[string
 }
 
 func (r *RetrieveCheckoutConfigurationsResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3617,13 +3800,6 @@ func (r *RetrieveCheckoutConfigurationsResponse) SetPaymentMethodConfiguration(p
 	r.require(retrieveCheckoutConfigurationsResponseFieldPaymentMethodConfiguration)
 }
 
-// SetPlan sets the Plan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveCheckoutConfigurationsResponse) SetPlan(plan *RetrieveCheckoutConfigurationsResponsePlan) {
-	r.Plan = plan
-	r.require(retrieveCheckoutConfigurationsResponseFieldPlan)
-}
-
 // SetPurchaseURL sets the PurchaseURL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (r *RetrieveCheckoutConfigurationsResponse) SetPurchaseURL(purchaseURL *string) {
@@ -3652,6 +3828,13 @@ func (r *RetrieveCheckoutConfigurationsResponse) SetUpdatedAt(updatedAt string) 
 	r.require(retrieveCheckoutConfigurationsResponseFieldUpdatedAt)
 }
 
+// SetVariant sets the Variant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveCheckoutConfigurationsResponse) SetVariant(variant *RetrieveCheckoutConfigurationsResponseVariant) {
+	r.Variant = variant
+	r.require(retrieveCheckoutConfigurationsResponseFieldVariant)
+}
+
 func (r *RetrieveCheckoutConfigurationsResponse) UnmarshalJSON(data []byte) error {
 	type unmarshaler RetrieveCheckoutConfigurationsResponse
 	var value unmarshaler
@@ -3664,6 +3847,13 @@ func (r *RetrieveCheckoutConfigurationsResponse) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveCheckoutConfigurationsResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3694,13 +3884,13 @@ func (r *RetrieveCheckoutConfigurationsResponse) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the plan's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 var (
 	retrieveCheckoutConfigurationsResponseEffectivePaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	retrieveCheckoutConfigurationsResponseEffectivePaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	retrieveCheckoutConfigurationsResponseEffectivePaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// The configuration governing a checkout mounted from this configuration, resolved through every layer (its own overrides, the variant's, and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays this configuration's own editable override.
 type RetrieveCheckoutConfigurationsResponseEffectivePaymentMethodConfiguration struct {
 	// Payment methods explicitly disabled.
 	Disabled []string `json:"disabled,omitempty" url:"disabled,omitempty"`
@@ -3745,10 +3935,12 @@ func (r *RetrieveCheckoutConfigurationsResponseEffectivePaymentMethodConfigurati
 }
 
 func (r *RetrieveCheckoutConfigurationsResponseEffectivePaymentMethodConfiguration) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -3837,13 +4029,13 @@ func (r RetrieveCheckoutConfigurationsResponseMode) Ptr() *RetrieveCheckoutConfi
 	return &r
 }
 
-// Payment method overrides for this checkout. `null` when it uses the plan or platform defaults.
 var (
 	retrieveCheckoutConfigurationsResponsePaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	retrieveCheckoutConfigurationsResponsePaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
 	retrieveCheckoutConfigurationsResponsePaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
 )
 
+// Payment method overrides for this checkout. `null` when it uses the variant or platform defaults.
 type RetrieveCheckoutConfigurationsResponsePaymentMethodConfiguration struct {
 	// Payment methods explicitly disabled for checkout.
 	Disabled []string `json:"disabled,omitempty" url:"disabled,omitempty"`
@@ -3888,10 +4080,12 @@ func (r *RetrieveCheckoutConfigurationsResponsePaymentMethodConfiguration) GetEx
 }
 
 func (r *RetrieveCheckoutConfigurationsResponsePaymentMethodConfiguration) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
@@ -3957,47 +4151,81 @@ func (r *RetrieveCheckoutConfigurationsResponsePaymentMethodConfiguration) Strin
 	return fmt.Sprintf("%#v", r)
 }
 
-// Plan used for payment checkout. `null` in setup mode.
-var (
-	retrieveCheckoutConfigurationsResponsePlanFieldAdaptivePricingEnabled = big.NewInt(1 << 0)
-	retrieveCheckoutConfigurationsResponsePlanFieldBillingPeriod          = big.NewInt(1 << 1)
-	retrieveCheckoutConfigurationsResponsePlanFieldCurrency               = big.NewInt(1 << 2)
-	retrieveCheckoutConfigurationsResponsePlanFieldExpirationDays         = big.NewInt(1 << 3)
-	retrieveCheckoutConfigurationsResponsePlanFieldID                     = big.NewInt(1 << 4)
-	retrieveCheckoutConfigurationsResponsePlanFieldInitialPrice           = big.NewInt(1 << 5)
-	retrieveCheckoutConfigurationsResponsePlanFieldPlanType               = big.NewInt(1 << 6)
-	retrieveCheckoutConfigurationsResponsePlanFieldReleaseMethod          = big.NewInt(1 << 7)
-	retrieveCheckoutConfigurationsResponsePlanFieldRenewalPrice           = big.NewInt(1 << 8)
-	retrieveCheckoutConfigurationsResponsePlanFieldThreeDsLevel           = big.NewInt(1 << 9)
-	retrieveCheckoutConfigurationsResponsePlanFieldTrialPeriodDays        = big.NewInt(1 << 10)
-	retrieveCheckoutConfigurationsResponsePlanFieldVisibility             = big.NewInt(1 << 11)
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. Applies in setup mode; `null` uses frictionless 3DS. Payment mode uses the variant policy.
+type RetrieveCheckoutConfigurationsResponseThreeDsLevel string
+
+const (
+	RetrieveCheckoutConfigurationsResponseThreeDsLevelMandateChallenge       RetrieveCheckoutConfigurationsResponseThreeDsLevel = "mandate_challenge"
+	RetrieveCheckoutConfigurationsResponseThreeDsLevelMandateIfRequired      RetrieveCheckoutConfigurationsResponseThreeDsLevel = "mandate_if_required"
+	RetrieveCheckoutConfigurationsResponseThreeDsLevelFrictionlessIfRequired RetrieveCheckoutConfigurationsResponseThreeDsLevel = "frictionless_if_required"
 )
 
-type RetrieveCheckoutConfigurationsResponsePlan struct {
-	// Whether this plan accepts local currency payments via adaptive pricing.
+func NewRetrieveCheckoutConfigurationsResponseThreeDsLevelFromString(s string) (RetrieveCheckoutConfigurationsResponseThreeDsLevel, error) {
+	switch s {
+	case "mandate_challenge":
+		return RetrieveCheckoutConfigurationsResponseThreeDsLevelMandateChallenge, nil
+	case "mandate_if_required":
+		return RetrieveCheckoutConfigurationsResponseThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return RetrieveCheckoutConfigurationsResponseThreeDsLevelFrictionlessIfRequired, nil
+	}
+	var t RetrieveCheckoutConfigurationsResponseThreeDsLevel
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrieveCheckoutConfigurationsResponseThreeDsLevel) Ptr() *RetrieveCheckoutConfigurationsResponseThreeDsLevel {
+	return &r
+}
+
+var (
+	retrieveCheckoutConfigurationsResponseVariantFieldAdaptivePricingEnabled = big.NewInt(1 << 0)
+	retrieveCheckoutConfigurationsResponseVariantFieldBillingPeriod          = big.NewInt(1 << 1)
+	retrieveCheckoutConfigurationsResponseVariantFieldBillingType            = big.NewInt(1 << 2)
+	retrieveCheckoutConfigurationsResponseVariantFieldCurrency               = big.NewInt(1 << 3)
+	retrieveCheckoutConfigurationsResponseVariantFieldExpirationDays         = big.NewInt(1 << 4)
+	retrieveCheckoutConfigurationsResponseVariantFieldID                     = big.NewInt(1 << 5)
+	retrieveCheckoutConfigurationsResponseVariantFieldInitialPrice           = big.NewInt(1 << 6)
+	retrieveCheckoutConfigurationsResponseVariantFieldReleaseMethod          = big.NewInt(1 << 7)
+	retrieveCheckoutConfigurationsResponseVariantFieldRenewalPrice           = big.NewInt(1 << 8)
+	retrieveCheckoutConfigurationsResponseVariantFieldThreeDsLevel           = big.NewInt(1 << 9)
+	retrieveCheckoutConfigurationsResponseVariantFieldTrialPeriodDays        = big.NewInt(1 << 10)
+	retrieveCheckoutConfigurationsResponseVariantFieldVisibility             = big.NewInt(1 << 11)
+)
+
+// retrieveCheckoutConfigurationsResponseVariantNullableFields maps the wire names of RetrieveCheckoutConfigurationsResponseVariant's nullable fields (required or optional) to their field bits.
+var retrieveCheckoutConfigurationsResponseVariantNullableFields = map[string]*big.Int{
+	"billing_period":    retrieveCheckoutConfigurationsResponseVariantFieldBillingPeriod,
+	"expiration_days":   retrieveCheckoutConfigurationsResponseVariantFieldExpirationDays,
+	"three_ds_level":    retrieveCheckoutConfigurationsResponseVariantFieldThreeDsLevel,
+	"trial_period_days": retrieveCheckoutConfigurationsResponseVariantFieldTrialPeriodDays,
+}
+
+// Variant used for payment checkout. `null` in setup mode.
+type RetrieveCheckoutConfigurationsResponseVariant struct {
+	// Whether this variant accepts local currency payments via adaptive pricing.
 	AdaptivePricingEnabled bool `json:"adaptive_pricing_enabled" url:"adaptive_pricing_enabled"`
-	// Recurring billing interval in days, such as 30 for monthly or 365 for annual. `null` for one-time plans.
+	// Recurring billing interval in days, such as 30 for monthly or 365 for annual. `null` for one-time variants.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// Three-letter ISO currency code for the plan's prices.
+	// Billing model for the variant.
+	BillingType RetrieveCheckoutConfigurationsResponseVariantBillingType `json:"billing_type" url:"billing_type"`
+	// Three-letter ISO currency code for the variant's prices.
 	Currency string `json:"currency" url:"currency"`
-	// Access duration in days for expiration-based plans.
+	// Access duration in days for expiration-based variants.
 	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Plan ID, prefixed `plan_`.
+	// Variant ID, prefixed `plan_`.
 	ID string `json:"id" url:"id"`
-	// Initial purchase price in the plan currency.
+	// Initial purchase price in the variant currency.
 	InitialPrice float64 `json:"initial_price" url:"initial_price"`
-	// Billing model for the plan.
-	PlanType RetrieveCheckoutConfigurationsResponsePlanPlanType `json:"plan_type" url:"plan_type"`
-	// Sales method for the plan.
-	ReleaseMethod RetrieveCheckoutConfigurationsResponsePlanReleaseMethod `json:"release_method" url:"release_method"`
+	// Sales method for the variant.
+	ReleaseMethod RetrieveCheckoutConfigurationsResponseVariantReleaseMethod `json:"release_method" url:"release_method"`
 	// Recurring price charged each billing period.
 	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
-	// 3D Secure behavior for this plan, or `null` to use the account default.
-	ThreeDsLevel *RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
+	ThreeDsLevel *RetrieveCheckoutConfigurationsResponseVariantThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// Free trial days before the first renewal charge.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// Whether the plan is visible to customers or hidden from public view.
-	Visibility RetrieveCheckoutConfigurationsResponsePlanVisibility `json:"visibility" url:"visibility"`
+	// Whether the variant is visible to customers or hidden from public view.
+	Visibility RetrieveCheckoutConfigurationsResponseVariantVisibility `json:"visibility" url:"visibility"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4006,206 +4234,215 @@ type RetrieveCheckoutConfigurationsResponsePlan struct {
 	rawJSON         json.RawMessage
 }
 
-func (r *RetrieveCheckoutConfigurationsResponsePlan) GetAdaptivePricingEnabled() bool {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) GetAdaptivePricingEnabled() bool {
 	if r == nil {
 		return false
 	}
 	return r.AdaptivePricingEnabled
 }
 
-func (r *RetrieveCheckoutConfigurationsResponsePlan) GetBillingPeriod() *int {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) GetBillingPeriod() *int {
 	if r == nil {
 		return nil
 	}
 	return r.BillingPeriod
 }
 
-func (r *RetrieveCheckoutConfigurationsResponsePlan) GetCurrency() string {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) GetBillingType() RetrieveCheckoutConfigurationsResponseVariantBillingType {
+	if r == nil {
+		return ""
+	}
+	return r.BillingType
+}
+
+func (r *RetrieveCheckoutConfigurationsResponseVariant) GetCurrency() string {
 	if r == nil {
 		return ""
 	}
 	return r.Currency
 }
 
-func (r *RetrieveCheckoutConfigurationsResponsePlan) GetExpirationDays() *int {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) GetExpirationDays() *int {
 	if r == nil {
 		return nil
 	}
 	return r.ExpirationDays
 }
 
-func (r *RetrieveCheckoutConfigurationsResponsePlan) GetID() string {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) GetID() string {
 	if r == nil {
 		return ""
 	}
 	return r.ID
 }
 
-func (r *RetrieveCheckoutConfigurationsResponsePlan) GetInitialPrice() float64 {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) GetInitialPrice() float64 {
 	if r == nil {
 		return 0
 	}
 	return r.InitialPrice
 }
 
-func (r *RetrieveCheckoutConfigurationsResponsePlan) GetPlanType() RetrieveCheckoutConfigurationsResponsePlanPlanType {
-	if r == nil {
-		return ""
-	}
-	return r.PlanType
-}
-
-func (r *RetrieveCheckoutConfigurationsResponsePlan) GetReleaseMethod() RetrieveCheckoutConfigurationsResponsePlanReleaseMethod {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) GetReleaseMethod() RetrieveCheckoutConfigurationsResponseVariantReleaseMethod {
 	if r == nil {
 		return ""
 	}
 	return r.ReleaseMethod
 }
 
-func (r *RetrieveCheckoutConfigurationsResponsePlan) GetRenewalPrice() float64 {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) GetRenewalPrice() float64 {
 	if r == nil {
 		return 0
 	}
 	return r.RenewalPrice
 }
 
-func (r *RetrieveCheckoutConfigurationsResponsePlan) GetThreeDsLevel() *RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) GetThreeDsLevel() *RetrieveCheckoutConfigurationsResponseVariantThreeDsLevel {
 	if r == nil {
 		return nil
 	}
 	return r.ThreeDsLevel
 }
 
-func (r *RetrieveCheckoutConfigurationsResponsePlan) GetTrialPeriodDays() *int {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) GetTrialPeriodDays() *int {
 	if r == nil {
 		return nil
 	}
 	return r.TrialPeriodDays
 }
 
-func (r *RetrieveCheckoutConfigurationsResponsePlan) GetVisibility() RetrieveCheckoutConfigurationsResponsePlanVisibility {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) GetVisibility() RetrieveCheckoutConfigurationsResponseVariantVisibility {
 	if r == nil {
 		return ""
 	}
 	return r.Visibility
 }
 
-func (r *RetrieveCheckoutConfigurationsResponsePlan) GetExtraProperties() map[string]interface{} {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) GetExtraProperties() map[string]interface{} {
 	if r == nil {
 		return nil
 	}
 	return r.extraProperties
 }
 
-func (r *RetrieveCheckoutConfigurationsResponsePlan) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+func (r *RetrieveCheckoutConfigurationsResponseVariant) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAdaptivePricingEnabled sets the AdaptivePricingEnabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveCheckoutConfigurationsResponsePlan) SetAdaptivePricingEnabled(adaptivePricingEnabled bool) {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) SetAdaptivePricingEnabled(adaptivePricingEnabled bool) {
 	r.AdaptivePricingEnabled = adaptivePricingEnabled
-	r.require(retrieveCheckoutConfigurationsResponsePlanFieldAdaptivePricingEnabled)
+	r.require(retrieveCheckoutConfigurationsResponseVariantFieldAdaptivePricingEnabled)
 }
 
 // SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveCheckoutConfigurationsResponsePlan) SetBillingPeriod(billingPeriod *int) {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) SetBillingPeriod(billingPeriod *int) {
 	r.BillingPeriod = billingPeriod
-	r.require(retrieveCheckoutConfigurationsResponsePlanFieldBillingPeriod)
+	r.require(retrieveCheckoutConfigurationsResponseVariantFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveCheckoutConfigurationsResponseVariant) SetBillingType(billingType RetrieveCheckoutConfigurationsResponseVariantBillingType) {
+	r.BillingType = billingType
+	r.require(retrieveCheckoutConfigurationsResponseVariantFieldBillingType)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveCheckoutConfigurationsResponsePlan) SetCurrency(currency string) {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) SetCurrency(currency string) {
 	r.Currency = currency
-	r.require(retrieveCheckoutConfigurationsResponsePlanFieldCurrency)
+	r.require(retrieveCheckoutConfigurationsResponseVariantFieldCurrency)
 }
 
 // SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveCheckoutConfigurationsResponsePlan) SetExpirationDays(expirationDays *int) {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) SetExpirationDays(expirationDays *int) {
 	r.ExpirationDays = expirationDays
-	r.require(retrieveCheckoutConfigurationsResponsePlanFieldExpirationDays)
+	r.require(retrieveCheckoutConfigurationsResponseVariantFieldExpirationDays)
 }
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveCheckoutConfigurationsResponsePlan) SetID(id string) {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) SetID(id string) {
 	r.ID = id
-	r.require(retrieveCheckoutConfigurationsResponsePlanFieldID)
+	r.require(retrieveCheckoutConfigurationsResponseVariantFieldID)
 }
 
 // SetInitialPrice sets the InitialPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveCheckoutConfigurationsResponsePlan) SetInitialPrice(initialPrice float64) {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) SetInitialPrice(initialPrice float64) {
 	r.InitialPrice = initialPrice
-	r.require(retrieveCheckoutConfigurationsResponsePlanFieldInitialPrice)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveCheckoutConfigurationsResponsePlan) SetPlanType(planType RetrieveCheckoutConfigurationsResponsePlanPlanType) {
-	r.PlanType = planType
-	r.require(retrieveCheckoutConfigurationsResponsePlanFieldPlanType)
+	r.require(retrieveCheckoutConfigurationsResponseVariantFieldInitialPrice)
 }
 
 // SetReleaseMethod sets the ReleaseMethod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveCheckoutConfigurationsResponsePlan) SetReleaseMethod(releaseMethod RetrieveCheckoutConfigurationsResponsePlanReleaseMethod) {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) SetReleaseMethod(releaseMethod RetrieveCheckoutConfigurationsResponseVariantReleaseMethod) {
 	r.ReleaseMethod = releaseMethod
-	r.require(retrieveCheckoutConfigurationsResponsePlanFieldReleaseMethod)
+	r.require(retrieveCheckoutConfigurationsResponseVariantFieldReleaseMethod)
 }
 
 // SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveCheckoutConfigurationsResponsePlan) SetRenewalPrice(renewalPrice float64) {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) SetRenewalPrice(renewalPrice float64) {
 	r.RenewalPrice = renewalPrice
-	r.require(retrieveCheckoutConfigurationsResponsePlanFieldRenewalPrice)
+	r.require(retrieveCheckoutConfigurationsResponseVariantFieldRenewalPrice)
 }
 
 // SetThreeDsLevel sets the ThreeDsLevel field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveCheckoutConfigurationsResponsePlan) SetThreeDsLevel(threeDsLevel *RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel) {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) SetThreeDsLevel(threeDsLevel *RetrieveCheckoutConfigurationsResponseVariantThreeDsLevel) {
 	r.ThreeDsLevel = threeDsLevel
-	r.require(retrieveCheckoutConfigurationsResponsePlanFieldThreeDsLevel)
+	r.require(retrieveCheckoutConfigurationsResponseVariantFieldThreeDsLevel)
 }
 
 // SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveCheckoutConfigurationsResponsePlan) SetTrialPeriodDays(trialPeriodDays *int) {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) SetTrialPeriodDays(trialPeriodDays *int) {
 	r.TrialPeriodDays = trialPeriodDays
-	r.require(retrieveCheckoutConfigurationsResponsePlanFieldTrialPeriodDays)
+	r.require(retrieveCheckoutConfigurationsResponseVariantFieldTrialPeriodDays)
 }
 
 // SetVisibility sets the Visibility field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveCheckoutConfigurationsResponsePlan) SetVisibility(visibility RetrieveCheckoutConfigurationsResponsePlanVisibility) {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) SetVisibility(visibility RetrieveCheckoutConfigurationsResponseVariantVisibility) {
 	r.Visibility = visibility
-	r.require(retrieveCheckoutConfigurationsResponsePlanFieldVisibility)
+	r.require(retrieveCheckoutConfigurationsResponseVariantFieldVisibility)
 }
 
-func (r *RetrieveCheckoutConfigurationsResponsePlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler RetrieveCheckoutConfigurationsResponsePlan
+func (r *RetrieveCheckoutConfigurationsResponseVariant) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrieveCheckoutConfigurationsResponseVariant
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*r = RetrieveCheckoutConfigurationsResponsePlan(value)
+	*r = RetrieveCheckoutConfigurationsResponseVariant(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *r)
 	if err != nil {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveCheckoutConfigurationsResponseVariantNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (r *RetrieveCheckoutConfigurationsResponsePlan) MarshalJSON() ([]byte, error) {
-	type embed RetrieveCheckoutConfigurationsResponsePlan
+func (r *RetrieveCheckoutConfigurationsResponseVariant) MarshalJSON() ([]byte, error) {
+	type embed RetrieveCheckoutConfigurationsResponseVariant
 	var marshaler = struct {
 		embed
 	}{
@@ -4215,7 +4452,7 @@ func (r *RetrieveCheckoutConfigurationsResponsePlan) MarshalJSON() ([]byte, erro
 	return json.Marshal(explicitMarshaler)
 }
 
-func (r *RetrieveCheckoutConfigurationsResponsePlan) String() string {
+func (r *RetrieveCheckoutConfigurationsResponseVariant) String() string {
 	if r == nil {
 		return "<nil>"
 	}
@@ -4230,123 +4467,103 @@ func (r *RetrieveCheckoutConfigurationsResponsePlan) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// Billing model for the plan.
-type RetrieveCheckoutConfigurationsResponsePlanPlanType string
+// Billing model for the variant.
+type RetrieveCheckoutConfigurationsResponseVariantBillingType string
 
 const (
-	RetrieveCheckoutConfigurationsResponsePlanPlanTypeRenewal RetrieveCheckoutConfigurationsResponsePlanPlanType = "renewal"
-	RetrieveCheckoutConfigurationsResponsePlanPlanTypeOneTime RetrieveCheckoutConfigurationsResponsePlanPlanType = "one_time"
+	RetrieveCheckoutConfigurationsResponseVariantBillingTypeRenewal RetrieveCheckoutConfigurationsResponseVariantBillingType = "renewal"
+	RetrieveCheckoutConfigurationsResponseVariantBillingTypeOneTime RetrieveCheckoutConfigurationsResponseVariantBillingType = "one_time"
 )
 
-func NewRetrieveCheckoutConfigurationsResponsePlanPlanTypeFromString(s string) (RetrieveCheckoutConfigurationsResponsePlanPlanType, error) {
+func NewRetrieveCheckoutConfigurationsResponseVariantBillingTypeFromString(s string) (RetrieveCheckoutConfigurationsResponseVariantBillingType, error) {
 	switch s {
 	case "renewal":
-		return RetrieveCheckoutConfigurationsResponsePlanPlanTypeRenewal, nil
+		return RetrieveCheckoutConfigurationsResponseVariantBillingTypeRenewal, nil
 	case "one_time":
-		return RetrieveCheckoutConfigurationsResponsePlanPlanTypeOneTime, nil
+		return RetrieveCheckoutConfigurationsResponseVariantBillingTypeOneTime, nil
 	}
-	var t RetrieveCheckoutConfigurationsResponsePlanPlanType
+	var t RetrieveCheckoutConfigurationsResponseVariantBillingType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (r RetrieveCheckoutConfigurationsResponsePlanPlanType) Ptr() *RetrieveCheckoutConfigurationsResponsePlanPlanType {
+func (r RetrieveCheckoutConfigurationsResponseVariantBillingType) Ptr() *RetrieveCheckoutConfigurationsResponseVariantBillingType {
 	return &r
 }
 
-// Sales method for the plan.
-type RetrieveCheckoutConfigurationsResponsePlanReleaseMethod string
+// Sales method for the variant.
+type RetrieveCheckoutConfigurationsResponseVariantReleaseMethod string
 
 const (
-	RetrieveCheckoutConfigurationsResponsePlanReleaseMethodBuyNow   RetrieveCheckoutConfigurationsResponsePlanReleaseMethod = "buy_now"
-	RetrieveCheckoutConfigurationsResponsePlanReleaseMethodWaitlist RetrieveCheckoutConfigurationsResponsePlanReleaseMethod = "waitlist"
+	RetrieveCheckoutConfigurationsResponseVariantReleaseMethodBuyNow   RetrieveCheckoutConfigurationsResponseVariantReleaseMethod = "buy_now"
+	RetrieveCheckoutConfigurationsResponseVariantReleaseMethodWaitlist RetrieveCheckoutConfigurationsResponseVariantReleaseMethod = "waitlist"
 )
 
-func NewRetrieveCheckoutConfigurationsResponsePlanReleaseMethodFromString(s string) (RetrieveCheckoutConfigurationsResponsePlanReleaseMethod, error) {
+func NewRetrieveCheckoutConfigurationsResponseVariantReleaseMethodFromString(s string) (RetrieveCheckoutConfigurationsResponseVariantReleaseMethod, error) {
 	switch s {
 	case "buy_now":
-		return RetrieveCheckoutConfigurationsResponsePlanReleaseMethodBuyNow, nil
+		return RetrieveCheckoutConfigurationsResponseVariantReleaseMethodBuyNow, nil
 	case "waitlist":
-		return RetrieveCheckoutConfigurationsResponsePlanReleaseMethodWaitlist, nil
+		return RetrieveCheckoutConfigurationsResponseVariantReleaseMethodWaitlist, nil
 	}
-	var t RetrieveCheckoutConfigurationsResponsePlanReleaseMethod
+	var t RetrieveCheckoutConfigurationsResponseVariantReleaseMethod
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (r RetrieveCheckoutConfigurationsResponsePlanReleaseMethod) Ptr() *RetrieveCheckoutConfigurationsResponsePlanReleaseMethod {
+func (r RetrieveCheckoutConfigurationsResponseVariantReleaseMethod) Ptr() *RetrieveCheckoutConfigurationsResponseVariantReleaseMethod {
 	return &r
 }
 
-// 3D Secure behavior for this plan, or `null` to use the account default.
-type RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel string
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
+type RetrieveCheckoutConfigurationsResponseVariantThreeDsLevel string
 
 const (
-	RetrieveCheckoutConfigurationsResponsePlanThreeDsLevelMandateChallenge RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel = "mandate_challenge"
-	RetrieveCheckoutConfigurationsResponsePlanThreeDsLevelFrictionless     RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel = "frictionless"
+	RetrieveCheckoutConfigurationsResponseVariantThreeDsLevelMandateChallenge       RetrieveCheckoutConfigurationsResponseVariantThreeDsLevel = "mandate_challenge"
+	RetrieveCheckoutConfigurationsResponseVariantThreeDsLevelMandateIfRequired      RetrieveCheckoutConfigurationsResponseVariantThreeDsLevel = "mandate_if_required"
+	RetrieveCheckoutConfigurationsResponseVariantThreeDsLevelFrictionlessIfRequired RetrieveCheckoutConfigurationsResponseVariantThreeDsLevel = "frictionless_if_required"
 )
 
-func NewRetrieveCheckoutConfigurationsResponsePlanThreeDsLevelFromString(s string) (RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel, error) {
+func NewRetrieveCheckoutConfigurationsResponseVariantThreeDsLevelFromString(s string) (RetrieveCheckoutConfigurationsResponseVariantThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
-		return RetrieveCheckoutConfigurationsResponsePlanThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return RetrieveCheckoutConfigurationsResponsePlanThreeDsLevelFrictionless, nil
+		return RetrieveCheckoutConfigurationsResponseVariantThreeDsLevelMandateChallenge, nil
+	case "mandate_if_required":
+		return RetrieveCheckoutConfigurationsResponseVariantThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return RetrieveCheckoutConfigurationsResponseVariantThreeDsLevelFrictionlessIfRequired, nil
 	}
-	var t RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel
+	var t RetrieveCheckoutConfigurationsResponseVariantThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (r RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel) Ptr() *RetrieveCheckoutConfigurationsResponsePlanThreeDsLevel {
+func (r RetrieveCheckoutConfigurationsResponseVariantThreeDsLevel) Ptr() *RetrieveCheckoutConfigurationsResponseVariantThreeDsLevel {
 	return &r
 }
 
-// Whether the plan is visible to customers or hidden from public view.
-type RetrieveCheckoutConfigurationsResponsePlanVisibility string
+// Whether the variant is visible to customers or hidden from public view.
+type RetrieveCheckoutConfigurationsResponseVariantVisibility string
 
 const (
-	RetrieveCheckoutConfigurationsResponsePlanVisibilityVisible   RetrieveCheckoutConfigurationsResponsePlanVisibility = "visible"
-	RetrieveCheckoutConfigurationsResponsePlanVisibilityHidden    RetrieveCheckoutConfigurationsResponsePlanVisibility = "hidden"
-	RetrieveCheckoutConfigurationsResponsePlanVisibilityArchived  RetrieveCheckoutConfigurationsResponsePlanVisibility = "archived"
-	RetrieveCheckoutConfigurationsResponsePlanVisibilityQuickLink RetrieveCheckoutConfigurationsResponsePlanVisibility = "quick_link"
+	RetrieveCheckoutConfigurationsResponseVariantVisibilityVisible   RetrieveCheckoutConfigurationsResponseVariantVisibility = "visible"
+	RetrieveCheckoutConfigurationsResponseVariantVisibilityHidden    RetrieveCheckoutConfigurationsResponseVariantVisibility = "hidden"
+	RetrieveCheckoutConfigurationsResponseVariantVisibilityArchived  RetrieveCheckoutConfigurationsResponseVariantVisibility = "archived"
+	RetrieveCheckoutConfigurationsResponseVariantVisibilityQuickLink RetrieveCheckoutConfigurationsResponseVariantVisibility = "quick_link"
 )
 
-func NewRetrieveCheckoutConfigurationsResponsePlanVisibilityFromString(s string) (RetrieveCheckoutConfigurationsResponsePlanVisibility, error) {
+func NewRetrieveCheckoutConfigurationsResponseVariantVisibilityFromString(s string) (RetrieveCheckoutConfigurationsResponseVariantVisibility, error) {
 	switch s {
 	case "visible":
-		return RetrieveCheckoutConfigurationsResponsePlanVisibilityVisible, nil
+		return RetrieveCheckoutConfigurationsResponseVariantVisibilityVisible, nil
 	case "hidden":
-		return RetrieveCheckoutConfigurationsResponsePlanVisibilityHidden, nil
+		return RetrieveCheckoutConfigurationsResponseVariantVisibilityHidden, nil
 	case "archived":
-		return RetrieveCheckoutConfigurationsResponsePlanVisibilityArchived, nil
+		return RetrieveCheckoutConfigurationsResponseVariantVisibilityArchived, nil
 	case "quick_link":
-		return RetrieveCheckoutConfigurationsResponsePlanVisibilityQuickLink, nil
+		return RetrieveCheckoutConfigurationsResponseVariantVisibilityQuickLink, nil
 	}
-	var t RetrieveCheckoutConfigurationsResponsePlanVisibility
+	var t RetrieveCheckoutConfigurationsResponseVariantVisibility
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (r RetrieveCheckoutConfigurationsResponsePlanVisibility) Ptr() *RetrieveCheckoutConfigurationsResponsePlanVisibility {
-	return &r
-}
-
-// 3D Secure behavior for this checkout, or `null` to use the account default.
-type RetrieveCheckoutConfigurationsResponseThreeDsLevel string
-
-const (
-	RetrieveCheckoutConfigurationsResponseThreeDsLevelMandateChallenge RetrieveCheckoutConfigurationsResponseThreeDsLevel = "mandate_challenge"
-	RetrieveCheckoutConfigurationsResponseThreeDsLevelFrictionless     RetrieveCheckoutConfigurationsResponseThreeDsLevel = "frictionless"
-)
-
-func NewRetrieveCheckoutConfigurationsResponseThreeDsLevelFromString(s string) (RetrieveCheckoutConfigurationsResponseThreeDsLevel, error) {
-	switch s {
-	case "mandate_challenge":
-		return RetrieveCheckoutConfigurationsResponseThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return RetrieveCheckoutConfigurationsResponseThreeDsLevelFrictionless, nil
-	}
-	var t RetrieveCheckoutConfigurationsResponseThreeDsLevel
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (r RetrieveCheckoutConfigurationsResponseThreeDsLevel) Ptr() *RetrieveCheckoutConfigurationsResponseThreeDsLevel {
+func (r RetrieveCheckoutConfigurationsResponseVariantVisibility) Ptr() *RetrieveCheckoutConfigurationsResponseVariantVisibility {
 	return &r
 }

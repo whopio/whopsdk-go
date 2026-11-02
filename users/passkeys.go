@@ -5,8 +5,8 @@ package users
 import (
 	json "encoding/json"
 	fmt "fmt"
-	whopsdkgo "github.com/whopio/whopsdk-go"
-	internal "github.com/whopio/whopsdk-go/internal"
+	v2 "github.com/whopio/whopsdk-go/v2"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 
@@ -26,10 +26,12 @@ type ChallengePasskeysRequest struct {
 }
 
 func (c *ChallengePasskeysRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetChallengeType sets the ChallengeType field and marks it as non-optional;
@@ -72,6 +74,8 @@ var (
 	createPasskeysRequestFieldClientDataJSON    = big.NewInt(1 << 1)
 	createPasskeysRequestFieldCredentialID      = big.NewInt(1 << 2)
 	createPasskeysRequestFieldNickname          = big.NewInt(1 << 3)
+	createPasskeysRequestFieldTransports        = big.NewInt(1 << 4)
+	createPasskeysRequestFieldUserHandle        = big.NewInt(1 << 5)
 )
 
 type CreatePasskeysRequest struct {
@@ -83,16 +87,22 @@ type CreatePasskeysRequest struct {
 	CredentialID string `json:"credential_id" url:"-"`
 	// A name for this passkey, usually the device it lives on. 255 characters or fewer.
 	Nickname string `json:"nickname" url:"-"`
+	// The `getTransports()` result from the registration response. Values Whop does not recognize are dropped.
+	Transports []string `json:"transports,omitempty" url:"-"`
+	// The `creation_options.user.id` the passkey was created with. Must match the challenge's options.
+	UserHandle string `json:"user_handle" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (c *CreatePasskeysRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAttestationObject sets the AttestationObject field and marks it as non-optional;
@@ -121,6 +131,20 @@ func (c *CreatePasskeysRequest) SetCredentialID(credentialID string) {
 func (c *CreatePasskeysRequest) SetNickname(nickname string) {
 	c.Nickname = nickname
 	c.require(createPasskeysRequestFieldNickname)
+}
+
+// SetTransports sets the Transports field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePasskeysRequest) SetTransports(transports []string) {
+	c.Transports = transports
+	c.require(createPasskeysRequestFieldTransports)
+}
+
+// SetUserHandle sets the UserHandle field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePasskeysRequest) SetUserHandle(userHandle string) {
+	c.UserHandle = userHandle
+	c.require(createPasskeysRequestFieldUserHandle)
 }
 
 func (c *CreatePasskeysRequest) UnmarshalJSON(data []byte) error {
@@ -166,10 +190,12 @@ type DeletePasskeysRequest struct {
 }
 
 func (d *DeletePasskeysRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -231,13 +257,13 @@ var (
 )
 
 type ListPasskeysRequest struct {
-	// The number of passkeys to return (default 20, max 100).
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor; returns passkeys after this position.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of passkeys to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// A cursor; returns passkeys before this position.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 	// The field to sort passkeys by.
 	Order *ListPasskeysRequestOrder `json:"-" url:"order,omitempty"`
@@ -249,10 +275,12 @@ type ListPasskeysRequest struct {
 }
 
 func (l *ListPasskeysRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetFirst sets the First field and marks it as non-optional;
@@ -321,91 +349,6 @@ func (c ChallengePasskeysRequestChallengeType) Ptr() *ChallengePasskeysRequestCh
 }
 
 var (
-	challengePasskeysResponseFieldChallenge = big.NewInt(1 << 0)
-)
-
-type ChallengePasskeysResponse struct {
-	// The challenge to pass to the WebAuthn ceremony, base64url-encoded without padding.
-	Challenge string `json:"challenge" url:"challenge"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *ChallengePasskeysResponse) GetChallenge() string {
-	if c == nil {
-		return ""
-	}
-	return c.Challenge
-}
-
-func (c *ChallengePasskeysResponse) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *ChallengePasskeysResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetChallenge sets the Challenge field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *ChallengePasskeysResponse) SetChallenge(challenge string) {
-	c.Challenge = challenge
-	c.require(challengePasskeysResponseFieldChallenge)
-}
-
-func (c *ChallengePasskeysResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler ChallengePasskeysResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = ChallengePasskeysResponse(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *ChallengePasskeysResponse) MarshalJSON() ([]byte, error) {
-	type embed ChallengePasskeysResponse
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *ChallengePasskeysResponse) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
 	deletePasskeysResponseFieldDeleted = big.NewInt(1 << 0)
 	deletePasskeysResponseFieldID      = big.NewInt(1 << 1)
 )
@@ -445,10 +388,12 @@ func (d *DeletePasskeysResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeletePasskeysResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -554,7 +499,7 @@ var (
 )
 
 type ListPasskeysResponse struct {
-	Data     []*whopsdkgo.Passkey          `json:"data" url:"data"`
+	Data     []*v2.Passkey                 `json:"data" url:"data"`
 	PageInfo *ListPasskeysResponsePageInfo `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -564,7 +509,7 @@ type ListPasskeysResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListPasskeysResponse) GetData() []*whopsdkgo.Passkey {
+func (l *ListPasskeysResponse) GetData() []*v2.Passkey {
 	if l == nil {
 		return nil
 	}
@@ -586,15 +531,17 @@ func (l *ListPasskeysResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListPasskeysResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPasskeysResponse) SetData(data []*whopsdkgo.Passkey) {
+func (l *ListPasskeysResponse) SetData(data []*v2.Passkey) {
 	l.Data = data
 	l.require(listPasskeysResponseFieldData)
 }
@@ -655,6 +602,12 @@ var (
 	listPasskeysResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listPasskeysResponsePageInfoNullableFields maps the wire names of ListPasskeysResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listPasskeysResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listPasskeysResponsePageInfoFieldEndCursor,
+	"start_cursor": listPasskeysResponsePageInfoFieldStartCursor,
+}
+
 type ListPasskeysResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -704,10 +657,12 @@ func (l *ListPasskeysResponsePageInfo) GetExtraProperties() map[string]interface
 }
 
 func (l *ListPasskeysResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -750,6 +705,13 @@ func (l *ListPasskeysResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPasskeysResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

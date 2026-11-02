@@ -6,7 +6,7 @@ import (
 	json "encoding/json"
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
-	whopsdkgo "github.com/whopio/whopsdk-go"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	testing "testing"
 )
 
@@ -29,7 +29,7 @@ func TestSettersCreateOauthGrantsRequest(t *testing.T) {
 
 	t.Run("SetCodeChallenge", func(t *testing.T) {
 		obj := &CreateOauthGrantsRequest{}
-		var fernTestValueCodeChallenge string
+		var fernTestValueCodeChallenge *string
 		obj.SetCodeChallenge(fernTestValueCodeChallenge)
 		assert.Equal(t, fernTestValueCodeChallenge, obj.CodeChallenge)
 		assert.NotNil(t, obj.explicitFields)
@@ -37,7 +37,7 @@ func TestSettersCreateOauthGrantsRequest(t *testing.T) {
 
 	t.Run("SetCodeChallengeMethod", func(t *testing.T) {
 		obj := &CreateOauthGrantsRequest{}
-		var fernTestValueCodeChallengeMethod CreateOauthGrantsRequestCodeChallengeMethod
+		var fernTestValueCodeChallengeMethod *CreateOauthGrantsRequestCodeChallengeMethod
 		obj.SetCodeChallengeMethod(fernTestValueCodeChallengeMethod)
 		assert.Equal(t, fernTestValueCodeChallengeMethod, obj.CodeChallengeMethod)
 		assert.NotNil(t, obj.explicitFields)
@@ -48,6 +48,14 @@ func TestSettersCreateOauthGrantsRequest(t *testing.T) {
 		var fernTestValueConsentShown *bool
 		obj.SetConsentShown(fernTestValueConsentShown)
 		assert.Equal(t, fernTestValueConsentShown, obj.ConsentShown)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetMcpClient", func(t *testing.T) {
+		obj := &CreateOauthGrantsRequest{}
+		var fernTestValueMcpClient *CreateOauthGrantsRequestMcpClient
+		obj.SetMcpClient(fernTestValueMcpClient)
+		assert.Equal(t, fernTestValueMcpClient, obj.McpClient)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -160,7 +168,7 @@ func TestSettersMarkExplicitCreateOauthGrantsRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOauthGrantsRequest{}
-		var fernTestValueCodeChallenge string
+		var fernTestValueCodeChallenge *string
 
 		// Act
 		obj.SetCodeChallenge(fernTestValueCodeChallenge)
@@ -191,7 +199,7 @@ func TestSettersMarkExplicitCreateOauthGrantsRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateOauthGrantsRequest{}
-		var fernTestValueCodeChallengeMethod CreateOauthGrantsRequestCodeChallengeMethod
+		var fernTestValueCodeChallengeMethod *CreateOauthGrantsRequestCodeChallengeMethod
 
 		// Act
 		obj.SetCodeChallengeMethod(fernTestValueCodeChallengeMethod)
@@ -226,6 +234,37 @@ func TestSettersMarkExplicitCreateOauthGrantsRequest(t *testing.T) {
 
 		// Act
 		obj.SetConsentShown(fernTestValueConsentShown)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMcpClient_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateOauthGrantsRequest{}
+		var fernTestValueMcpClient *CreateOauthGrantsRequestMcpClient
+
+		// Act
+		obj.SetMcpClient(fernTestValueMcpClient)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -685,10 +724,205 @@ func TestSettersMarkExplicitListOauthGrantsRequest(t *testing.T) {
 
 }
 
+func TestSettersCreateOauthGrantsRequestMcpClient(t *testing.T) {
+	t.Run("SetClientID", func(t *testing.T) {
+		obj := &CreateOauthGrantsRequestMcpClient{}
+		var fernTestValueClientID string
+		obj.SetClientID(fernTestValueClientID)
+		assert.Equal(t, fernTestValueClientID, obj.ClientID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetClientName", func(t *testing.T) {
+		obj := &CreateOauthGrantsRequestMcpClient{}
+		var fernTestValueClientName string
+		obj.SetClientName(fernTestValueClientName)
+		assert.Equal(t, fernTestValueClientName, obj.ClientName)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRedirectURI", func(t *testing.T) {
+		obj := &CreateOauthGrantsRequestMcpClient{}
+		var fernTestValueRedirectURI string
+		obj.SetRedirectURI(fernTestValueRedirectURI)
+		assert.Equal(t, fernTestValueRedirectURI, obj.RedirectURI)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCreateOauthGrantsRequestMcpClient(t *testing.T) {
+	t.Run("GetClientID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateOauthGrantsRequestMcpClient{}
+		var expected string
+		obj.ClientID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetClientID(), "getter should return the property value")
+	})
+
+	t.Run("GetClientID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateOauthGrantsRequestMcpClient
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetClientID() // Should return zero value
+	})
+
+	t.Run("GetClientName", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateOauthGrantsRequestMcpClient{}
+		var expected string
+		obj.ClientName = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetClientName(), "getter should return the property value")
+	})
+
+	t.Run("GetClientName_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateOauthGrantsRequestMcpClient
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetClientName() // Should return zero value
+	})
+
+	t.Run("GetRedirectURI", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateOauthGrantsRequestMcpClient{}
+		var expected string
+		obj.RedirectURI = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRedirectURI(), "getter should return the property value")
+	})
+
+	t.Run("GetRedirectURI_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateOauthGrantsRequestMcpClient
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRedirectURI() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCreateOauthGrantsRequestMcpClient(t *testing.T) {
+	t.Run("SetClientID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateOauthGrantsRequestMcpClient{}
+		var fernTestValueClientID string
+
+		// Act
+		obj.SetClientID(fernTestValueClientID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetClientName_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateOauthGrantsRequestMcpClient{}
+		var fernTestValueClientName string
+
+		// Act
+		obj.SetClientName(fernTestValueClientName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRedirectURI_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateOauthGrantsRequestMcpClient{}
+		var fernTestValueRedirectURI string
+
+		// Act
+		obj.SetRedirectURI(fernTestValueRedirectURI)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersListOauthGrantsResponse(t *testing.T) {
 	t.Run("SetData", func(t *testing.T) {
 		obj := &ListOauthGrantsResponse{}
-		var fernTestValueData []*whopsdkgo.OauthGrant
+		var fernTestValueData []*v2.OauthGrant
 		obj.SetData(fernTestValueData)
 		assert.Equal(t, fernTestValueData, obj.Data)
 		assert.NotNil(t, obj.explicitFields)
@@ -709,7 +943,7 @@ func TestGettersListOauthGrantsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListOauthGrantsResponse{}
-		var expected []*whopsdkgo.OauthGrant
+		var expected []*v2.OauthGrant
 		obj.Data = expected
 
 		// Act & Assert
@@ -778,7 +1012,7 @@ func TestSettersMarkExplicitListOauthGrantsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListOauthGrantsResponse{}
-		var fernTestValueData []*whopsdkgo.OauthGrant
+		var fernTestValueData []*v2.OauthGrant
 
 		// Act
 		obj.SetData(fernTestValueData)
@@ -1115,6 +1349,39 @@ func TestSettersMarkExplicitListOauthGrantsResponsePageInfo(t *testing.T) {
 
 }
 
+func TestJSONMarshalingCreateOauthGrantsRequestMcpClient(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateOauthGrantsRequestMcpClient{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreateOauthGrantsRequestMcpClient
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateOauthGrantsRequestMcpClient
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateOauthGrantsRequestMcpClient
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingListOauthGrantsResponse(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -1178,6 +1445,66 @@ func TestJSONMarshalingListOauthGrantsResponsePageInfo(t *testing.T) {
 		var obj ListOauthGrantsResponsePageInfo
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestRequiredNullableRoundTripListOauthGrantsResponsePageInfo(t *testing.T) {
+	requiredNullableKeys := []string{
+		"end_cursor",
+		"start_cursor",
+	}
+	marshalToMap := func(t *testing.T, obj *ListOauthGrantsResponsePageInfo) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj ListOauthGrantsResponsePageInfo
+		require.NoError(t, json.Unmarshal([]byte(`{"end_cursor":null,"start_cursor":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj ListOauthGrantsResponsePageInfo
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &ListOauthGrantsResponsePageInfo{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestStringCreateOauthGrantsRequestMcpClient(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateOauthGrantsRequestMcpClient{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateOauthGrantsRequestMcpClient
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
 }
 
@@ -1305,6 +1632,29 @@ func TestEnumListOauthGrantsRequestOrder(t *testing.T) {
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
 		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestExtraPropertiesCreateOauthGrantsRequestMcpClient(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateOauthGrantsRequestMcpClient{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateOauthGrantsRequestMcpClient
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
 }
 

@@ -5,8 +5,9 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
+	time "time"
 )
 
 var (
@@ -14,25 +15,20 @@ var (
 	createAdGroupsRequestFieldAudiences            = big.NewInt(1 << 1)
 	createAdGroupsRequestFieldBidType              = big.NewInt(1 << 2)
 	createAdGroupsRequestFieldBudgetAmount         = big.NewInt(1 << 3)
-	createAdGroupsRequestFieldBudgetType           = big.NewInt(1 << 4)
-	createAdGroupsRequestFieldConversionEvent      = big.NewInt(1 << 5)
-	createAdGroupsRequestFieldConversionLocation   = big.NewInt(1 << 6)
-	createAdGroupsRequestFieldDemographics         = big.NewInt(1 << 7)
-	createAdGroupsRequestFieldDesiredCostPerResult = big.NewInt(1 << 8)
-	createAdGroupsRequestFieldDetailedTargeting    = big.NewInt(1 << 9)
+	createAdGroupsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 4)
+	createAdGroupsRequestFieldBudgetType           = big.NewInt(1 << 5)
+	createAdGroupsRequestFieldConversionEvent      = big.NewInt(1 << 6)
+	createAdGroupsRequestFieldDeliverySchedule     = big.NewInt(1 << 7)
+	createAdGroupsRequestFieldDemographics         = big.NewInt(1 << 8)
+	createAdGroupsRequestFieldDesiredCostPerResult = big.NewInt(1 << 9)
 	createAdGroupsRequestFieldDevices              = big.NewInt(1 << 10)
-	createAdGroupsRequestFieldDynamicCreative      = big.NewInt(1 << 11)
-	createAdGroupsRequestFieldEndsAt               = big.NewInt(1 << 12)
-	createAdGroupsRequestFieldFrequencyCap         = big.NewInt(1 << 13)
-	createAdGroupsRequestFieldLanguages            = big.NewInt(1 << 14)
-	createAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 15)
-	createAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 16)
-	createAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 17)
-	createAdGroupsRequestFieldPlacements           = big.NewInt(1 << 18)
-	createAdGroupsRequestFieldRegions              = big.NewInt(1 << 19)
-	createAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 20)
-	createAdGroupsRequestFieldStatus               = big.NewInt(1 << 21)
-	createAdGroupsRequestFieldTitle                = big.NewInt(1 << 22)
+	createAdGroupsRequestFieldEndsAt               = big.NewInt(1 << 11)
+	createAdGroupsRequestFieldKeywords             = big.NewInt(1 << 12)
+	createAdGroupsRequestFieldLanguages            = big.NewInt(1 << 13)
+	createAdGroupsRequestFieldRegions              = big.NewInt(1 << 14)
+	createAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 15)
+	createAdGroupsRequestFieldStatus               = big.NewInt(1 << 16)
+	createAdGroupsRequestFieldTitle                = big.NewInt(1 << 17)
 )
 
 type CreateAdGroupsRequest struct {
@@ -42,46 +38,27 @@ type CreateAdGroupsRequest struct {
 	Audiences *AdGroupAudiencesBody `json:"audiences,omitempty" url:"-"`
 	// How delivery bids are set in the ad auction. Target-based strategies use `desired_cost_per_result`.
 	BidType *CreateAdGroupsRequestBidType `json:"bid_type,omitempty" url:"-"`
-	// This ad group's budget, in the ad account's currency. Omit when the budget is set on the campaign instead.
+	// This ad group's budget in USD, which is what it is stored and billed in. Omit when the budget is set on the campaign instead.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"-"`
+	// This ad group's budget stated in the account's ads reporting currency (`budget_currency` on the response) instead of USD. Converted to USD at the current exchange rate and stored as budget_amount; on an update, an amount equal to the current budget_amount_local keeps the stored USD budget as is. Provide this or budget_amount, not both.
+	BudgetAmountLocal *float64 `json:"budget_amount_local,omitempty" url:"-"`
 	// Whether budget_amount is spent per day (`daily`) or over the ad group's full run (`lifetime`).
 	BudgetType      *CreateAdGroupsRequestBudgetType `json:"budget_type,omitempty" url:"-"`
 	ConversionEvent *ConversionEvent                 `json:"conversion_event,omitempty" url:"-"`
-	// Where the outcome being optimized for occurs, such as a website visit, social-profile visit, messaging conversation, ad interaction, or lead-form submission. The lead form itself is set on the ad.
-	ConversionLocation *CreateAdGroupsRequestConversionLocation `json:"conversion_location,omitempty" url:"-"`
+	// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+	DeliverySchedule *CreateAdGroupsRequestDeliverySchedule `json:"delivery_schedule,omitempty" url:"-"`
 	// Age, gender, and automatic-audience targeting.
 	Demographics *AdGroupDemographicsBody `json:"demographics,omitempty" url:"-"`
 	// Cost per result to aim for (`average_target`) or never exceed (`maximum_target`).
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"-"`
-	// Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. Entries across interests, behaviors, and demographics are OR'd together (anyone matching any entry is reached), matching Ads Manager's detailed-targeting box. At most 100 entries per section. Can't be combined with demographics.automatic, and unavailable to campaigns with special_ad_categories. Send the complete intended state — a section you omit is cleared.
-	DetailedTargeting *AdGroupDetailedTargetingBody `json:"detailed_targeting,omitempty" url:"-"`
 	// Device platforms and operating systems to target.
 	Devices *AdGroupDevicesBody `json:"devices,omitempty" url:"-"`
-	// Let the ad platform automatically mix and match this ad group's creatives and copy to find the best-performing combinations. Set at creation; can't be changed afterward.
-	DynamicCreative *bool `json:"dynamic_creative,omitempty" url:"-"`
 	// When the ad group stops delivering, as an ISO 8601 timestamp. Omit to run until paused.
 	EndsAt *string `json:"ends_at,omitempty" url:"-"`
-	// Cap on how often one person sees ads from this ad group. Only available on campaigns with the `awareness` objective.
-	FrequencyCap *CreateAdGroupsRequestFrequencyCap `json:"frequency_cap,omitempty" url:"-"`
+	// Search terms the ad group's ads can show for, and terms they never show for. Only search campaigns take keywords, and each of their ad groups needs at least one before launch. Replaces the stored list; omit to keep it.
+	Keywords []*CreateAdGroupsRequestKeywordsItem `json:"keywords,omitempty" url:"-"`
 	// Languages to target, as ISO 639 codes such as `en` or `es`. Empty or omitted targets all languages.
 	Languages []string `json:"languages,omitempty" url:"-"`
-	// Apps the conversation opens in. Required when setting `conversion_location` to `messaging`, and rejected unless the ad group's conversion location is `messaging`.
-	MessageApps []CreateAdGroupsRequestMessageAppsItem `json:"message_apps,omitempty" url:"-"`
-	// Minimum the ad group tries to spend each day.
-	MinimumDailySpend *float64 `json:"minimum_daily_spend,omitempty" url:"-"`
-	// The result the ad group's delivery is optimized to get the most of.
-	OptimizationGoal *CreateAdGroupsRequestOptimizationGoal `json:"optimization_goal,omitempty" url:"-"`
-	// `automatic` to let the ad platform choose placements, or the list of platforms and positions to target. Omit a platform's positions to target all of them.
-	//
-	// Valid positions per platform:
-	//
-	// - `facebook`: `feed`, `right_hand_column`, `marketplace`, `search`, `profile_feed`, `notification`, `story`, `instream_video`, `facebook_reels`, `facebook_reels_overlay`, `biz_disco_feed`
-	// - `instagram`: `stream`, `story`, `explore`, `explore_home`, `reels`, `profile_feed`, `profile_reels`, `ig_search`
-	// - `messenger`: `story`
-	// - `audience_network`: `classic`, `rewarded_video`
-	// - `threads`: `threads_stream`
-	// - `whatsapp`: `status`
-	Placements *CreateAdGroupsRequestPlacements `json:"placements,omitempty" url:"-"`
 	// Locations to target and exclude.
 	Regions *AdGroupRegionsBody `json:"regions,omitempty" url:"-"`
 	// When the ad group starts delivering, as an ISO 8601 timestamp. Omit to start as soon as it's active.
@@ -96,10 +73,12 @@ type CreateAdGroupsRequest struct {
 }
 
 func (c *CreateAdGroupsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAdCampaignID sets the AdCampaignID field and marks it as non-optional;
@@ -130,6 +109,13 @@ func (c *CreateAdGroupsRequest) SetBudgetAmount(budgetAmount *float64) {
 	c.require(createAdGroupsRequestFieldBudgetAmount)
 }
 
+// SetBudgetAmountLocal sets the BudgetAmountLocal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequest) SetBudgetAmountLocal(budgetAmountLocal *float64) {
+	c.BudgetAmountLocal = budgetAmountLocal
+	c.require(createAdGroupsRequestFieldBudgetAmountLocal)
+}
+
 // SetBudgetType sets the BudgetType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateAdGroupsRequest) SetBudgetType(budgetType *CreateAdGroupsRequestBudgetType) {
@@ -144,11 +130,11 @@ func (c *CreateAdGroupsRequest) SetConversionEvent(conversionEvent *ConversionEv
 	c.require(createAdGroupsRequestFieldConversionEvent)
 }
 
-// SetConversionLocation sets the ConversionLocation field and marks it as non-optional;
+// SetDeliverySchedule sets the DeliverySchedule field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdGroupsRequest) SetConversionLocation(conversionLocation *CreateAdGroupsRequestConversionLocation) {
-	c.ConversionLocation = conversionLocation
-	c.require(createAdGroupsRequestFieldConversionLocation)
+func (c *CreateAdGroupsRequest) SetDeliverySchedule(deliverySchedule *CreateAdGroupsRequestDeliverySchedule) {
+	c.DeliverySchedule = deliverySchedule
+	c.require(createAdGroupsRequestFieldDeliverySchedule)
 }
 
 // SetDemographics sets the Demographics field and marks it as non-optional;
@@ -165,25 +151,11 @@ func (c *CreateAdGroupsRequest) SetDesiredCostPerResult(desiredCostPerResult *fl
 	c.require(createAdGroupsRequestFieldDesiredCostPerResult)
 }
 
-// SetDetailedTargeting sets the DetailedTargeting field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdGroupsRequest) SetDetailedTargeting(detailedTargeting *AdGroupDetailedTargetingBody) {
-	c.DetailedTargeting = detailedTargeting
-	c.require(createAdGroupsRequestFieldDetailedTargeting)
-}
-
 // SetDevices sets the Devices field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateAdGroupsRequest) SetDevices(devices *AdGroupDevicesBody) {
 	c.Devices = devices
 	c.require(createAdGroupsRequestFieldDevices)
-}
-
-// SetDynamicCreative sets the DynamicCreative field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdGroupsRequest) SetDynamicCreative(dynamicCreative *bool) {
-	c.DynamicCreative = dynamicCreative
-	c.require(createAdGroupsRequestFieldDynamicCreative)
 }
 
 // SetEndsAt sets the EndsAt field and marks it as non-optional;
@@ -193,11 +165,11 @@ func (c *CreateAdGroupsRequest) SetEndsAt(endsAt *string) {
 	c.require(createAdGroupsRequestFieldEndsAt)
 }
 
-// SetFrequencyCap sets the FrequencyCap field and marks it as non-optional;
+// SetKeywords sets the Keywords field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdGroupsRequest) SetFrequencyCap(frequencyCap *CreateAdGroupsRequestFrequencyCap) {
-	c.FrequencyCap = frequencyCap
-	c.require(createAdGroupsRequestFieldFrequencyCap)
+func (c *CreateAdGroupsRequest) SetKeywords(keywords []*CreateAdGroupsRequestKeywordsItem) {
+	c.Keywords = keywords
+	c.require(createAdGroupsRequestFieldKeywords)
 }
 
 // SetLanguages sets the Languages field and marks it as non-optional;
@@ -205,34 +177,6 @@ func (c *CreateAdGroupsRequest) SetFrequencyCap(frequencyCap *CreateAdGroupsRequ
 func (c *CreateAdGroupsRequest) SetLanguages(languages []string) {
 	c.Languages = languages
 	c.require(createAdGroupsRequestFieldLanguages)
-}
-
-// SetMessageApps sets the MessageApps field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdGroupsRequest) SetMessageApps(messageApps []CreateAdGroupsRequestMessageAppsItem) {
-	c.MessageApps = messageApps
-	c.require(createAdGroupsRequestFieldMessageApps)
-}
-
-// SetMinimumDailySpend sets the MinimumDailySpend field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdGroupsRequest) SetMinimumDailySpend(minimumDailySpend *float64) {
-	c.MinimumDailySpend = minimumDailySpend
-	c.require(createAdGroupsRequestFieldMinimumDailySpend)
-}
-
-// SetOptimizationGoal sets the OptimizationGoal field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdGroupsRequest) SetOptimizationGoal(optimizationGoal *CreateAdGroupsRequestOptimizationGoal) {
-	c.OptimizationGoal = optimizationGoal
-	c.require(createAdGroupsRequestFieldOptimizationGoal)
-}
-
-// SetPlacements sets the Placements field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdGroupsRequest) SetPlacements(placements *CreateAdGroupsRequestPlacements) {
-	c.Placements = placements
-	c.require(createAdGroupsRequestFieldPlacements)
 }
 
 // SetRegions sets the Regions field and marks it as non-optional;
@@ -297,10 +241,12 @@ type DeleteAdGroupsRequest struct {
 }
 
 func (d *DeleteAdGroupsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -313,8 +259,7 @@ func (d *DeleteAdGroupsRequest) SetID(id string) {
 var (
 	duplicateAdGroupsRequestFieldID                 = big.NewInt(1 << 0)
 	duplicateAdGroupsRequestFieldCount              = big.NewInt(1 << 1)
-	duplicateAdGroupsRequestFieldPreserveEngagement = big.NewInt(1 << 2)
-	duplicateAdGroupsRequestFieldTargetAdCampaignID = big.NewInt(1 << 3)
+	duplicateAdGroupsRequestFieldTargetAdCampaignID = big.NewInt(1 << 2)
 )
 
 type DuplicateAdGroupsRequest struct {
@@ -322,9 +267,7 @@ type DuplicateAdGroupsRequest struct {
 	ID string `json:"-" url:"-"`
 	// Number of copies to create (1-10). Defaults to 1.
 	Count *int `json:"count,omitempty" url:"-"`
-	// Whether the copied ads keep the original posts' engagement (likes, comments, shares). Defaults to false.
-	PreserveEngagement *bool `json:"preserve_engagement,omitempty" url:"-"`
-	// Campaign to duplicate into. Defaults to the ad group's own campaign.
+	// Campaign to duplicate into. Must belong to the same account and be compatible with the ad group's targeting and goals. Defaults to the ad group's own campaign.
 	TargetAdCampaignID *string `json:"target_ad_campaign_id,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -332,10 +275,12 @@ type DuplicateAdGroupsRequest struct {
 }
 
 func (d *DuplicateAdGroupsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -350,13 +295,6 @@ func (d *DuplicateAdGroupsRequest) SetID(id string) {
 func (d *DuplicateAdGroupsRequest) SetCount(count *int) {
 	d.Count = count
 	d.require(duplicateAdGroupsRequestFieldCount)
-}
-
-// SetPreserveEngagement sets the PreserveEngagement field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DuplicateAdGroupsRequest) SetPreserveEngagement(preserveEngagement *bool) {
-	d.PreserveEngagement = preserveEngagement
-	d.require(duplicateAdGroupsRequestFieldPreserveEngagement)
 }
 
 // SetTargetAdCampaignID sets the TargetAdCampaignID field and marks it as non-optional;
@@ -384,123 +322,6 @@ func (d *DuplicateAdGroupsRequest) MarshalJSON() ([]byte, error) {
 		embed: embed(*d),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-var (
-	estimateReachAdGroupsRequestFieldAccountID         = big.NewInt(1 << 0)
-	estimateReachAdGroupsRequestFieldAudiences         = big.NewInt(1 << 1)
-	estimateReachAdGroupsRequestFieldDemographics      = big.NewInt(1 << 2)
-	estimateReachAdGroupsRequestFieldDetailedTargeting = big.NewInt(1 << 3)
-	estimateReachAdGroupsRequestFieldDevices           = big.NewInt(1 << 4)
-	estimateReachAdGroupsRequestFieldLanguages         = big.NewInt(1 << 5)
-	estimateReachAdGroupsRequestFieldPlatform          = big.NewInt(1 << 6)
-	estimateReachAdGroupsRequestFieldRegions           = big.NewInt(1 << 7)
-)
-
-type EstimateReachAdGroupsRequest struct {
-	// Account to estimate on behalf of. Defaults to the authenticated account.
-	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// Saved audiences to deliver to or exclude. Can't be combined with demographics.automatic.
-	Audiences *AdGroupAudiencesBody `json:"audiences,omitempty" url:"-"`
-	// Age, gender, and automatic-audience targeting.
-	Demographics *AdGroupDemographicsBody `json:"demographics,omitempty" url:"-"`
-	// Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. At most 100 entries per section.
-	DetailedTargeting *AdGroupDetailedTargetingBody `json:"detailed_targeting,omitempty" url:"-"`
-	// Device platforms and operating systems to target.
-	Devices *AdGroupDevicesBody `json:"devices,omitempty" url:"-"`
-	// Languages to target, as ISO 639 codes such as `en` or `es`. Empty or omitted targets all languages.
-	Languages []string `json:"languages,omitempty" url:"-"`
-	// The ad network the estimate runs on.
-	Platform EstimateReachAdGroupsRequestPlatform `json:"platform" url:"-"`
-	// Locations to target and exclude.
-	Regions *AdGroupRegionsBody `json:"regions,omitempty" url:"-"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (e *EstimateReachAdGroupsRequest) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
-	}
-	e.explicitFields.Or(e.explicitFields, field)
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EstimateReachAdGroupsRequest) SetAccountID(accountID *string) {
-	e.AccountID = accountID
-	e.require(estimateReachAdGroupsRequestFieldAccountID)
-}
-
-// SetAudiences sets the Audiences field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EstimateReachAdGroupsRequest) SetAudiences(audiences *AdGroupAudiencesBody) {
-	e.Audiences = audiences
-	e.require(estimateReachAdGroupsRequestFieldAudiences)
-}
-
-// SetDemographics sets the Demographics field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EstimateReachAdGroupsRequest) SetDemographics(demographics *AdGroupDemographicsBody) {
-	e.Demographics = demographics
-	e.require(estimateReachAdGroupsRequestFieldDemographics)
-}
-
-// SetDetailedTargeting sets the DetailedTargeting field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EstimateReachAdGroupsRequest) SetDetailedTargeting(detailedTargeting *AdGroupDetailedTargetingBody) {
-	e.DetailedTargeting = detailedTargeting
-	e.require(estimateReachAdGroupsRequestFieldDetailedTargeting)
-}
-
-// SetDevices sets the Devices field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EstimateReachAdGroupsRequest) SetDevices(devices *AdGroupDevicesBody) {
-	e.Devices = devices
-	e.require(estimateReachAdGroupsRequestFieldDevices)
-}
-
-// SetLanguages sets the Languages field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EstimateReachAdGroupsRequest) SetLanguages(languages []string) {
-	e.Languages = languages
-	e.require(estimateReachAdGroupsRequestFieldLanguages)
-}
-
-// SetPlatform sets the Platform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EstimateReachAdGroupsRequest) SetPlatform(platform EstimateReachAdGroupsRequestPlatform) {
-	e.Platform = platform
-	e.require(estimateReachAdGroupsRequestFieldPlatform)
-}
-
-// SetRegions sets the Regions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EstimateReachAdGroupsRequest) SetRegions(regions *AdGroupRegionsBody) {
-	e.Regions = regions
-	e.require(estimateReachAdGroupsRequestFieldRegions)
-}
-
-func (e *EstimateReachAdGroupsRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler EstimateReachAdGroupsRequest
-	var body unmarshaler
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	*e = EstimateReachAdGroupsRequest(body)
-	return nil
-}
-
-func (e *EstimateReachAdGroupsRequest) MarshalJSON() ([]byte, error) {
-	type embed EstimateReachAdGroupsRequest
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*e),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
 	return json.Marshal(explicitMarshaler)
 }
 
@@ -535,7 +356,7 @@ type ListAdGroupsRequest struct {
 	Status *ListAdGroupsRequestStatus `json:"-" url:"status,omitempty"`
 	// Filter ad groups by a title or ID substring.
 	Query *string `json:"-" url:"query,omitempty"`
-	// The field to sort by. Defaults to created_at. Stat columns (spend, impressions, …) rank over the stats_from/stats_to window across the whole list, not just the current page. results, cost_per_result and return_on_ad_spend rank by the same Whop pixel-attributed values the response reports.
+	// The field to sort by. Defaults to created_at. Stat columns (spend, impressions, …) rank over the stats_from/stats_to window across the whole list, not just the current page. results, cost_per_result and return_on_ad_spend rank by the same Whop pixel-attributed values the response reports, and link_clicks by the same Whop pixel page views.
 	Order *ListAdGroupsRequestOrder `json:"-" url:"order,omitempty"`
 	// The sort direction. Defaults to desc.
 	Direction *ListAdGroupsRequestDirection `json:"-" url:"direction,omitempty"`
@@ -551,13 +372,13 @@ type ListAdGroupsRequest struct {
 	TimeZone *string `json:"-" url:"time_zone,omitempty"`
 	// Attribution model the conversion stats count under (defaults to last_touch). Under both models a journey with any whop ad touch attributes to whop; the model picks which whop touch credits the entity and which non-whop source wins otherwise.
 	AttributionModel *ListAdGroupsRequestAttributionModel `json:"-" url:"attribution_model,omitempty"`
-	// The number of ad groups to return.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor to fetch the page after (from page_info.end_cursor).
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of ad groups to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// Cursor to fetch the page before (from page_info.start_cursor).
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -565,10 +386,12 @@ type ListAdGroupsRequest struct {
 }
 
 func (l *ListAdGroupsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -703,10 +526,12 @@ type PauseAdGroupsRequest struct {
 }
 
 func (p *PauseAdGroupsRequest) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -741,10 +566,12 @@ type RetrieveAdGroupsRequest struct {
 }
 
 func (r *RetrieveAdGroupsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -783,165 +610,108 @@ func (r *RetrieveAdGroupsRequest) SetAttributionModel(attributionModel *Retrieve
 }
 
 var (
-	searchTargetingOptionsAdGroupsRequestFieldAccountID     = big.NewInt(1 << 0)
-	searchTargetingOptionsAdGroupsRequestFieldPlatform      = big.NewInt(1 << 1)
-	searchTargetingOptionsAdGroupsRequestFieldQuery         = big.NewInt(1 << 2)
-	searchTargetingOptionsAdGroupsRequestFieldTypes         = big.NewInt(1 << 3)
-	searchTargetingOptionsAdGroupsRequestFieldLocationTypes = big.NewInt(1 << 4)
-	searchTargetingOptionsAdGroupsRequestFieldCountry       = big.NewInt(1 << 5)
-	searchTargetingOptionsAdGroupsRequestFieldLimit         = big.NewInt(1 << 6)
-)
-
-type SearchTargetingOptionsAdGroupsRequest struct {
-	// Account to search on behalf of. Defaults to the authenticated account.
-	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// The ad network whose targeting taxonomy to search.
-	Platform SearchTargetingOptionsAdGroupsRequestPlatform `json:"-" url:"platform"`
-	// The search term. Blank browses the fixed lists; interests, work employers, job titles, schools, majors, and locations return nothing without one.
-	Query *string `json:"-" url:"query,omitempty"`
-	// Kinds of targeting options to search. Defaults to all of them.
-	Types []*SearchTargetingOptionsAdGroupsRequestTypesItem `json:"-" url:"types,omitempty"`
-	// Narrow location results to these kinds of places. Only applies when `types` includes `locations`.
-	LocationTypes []*SearchTargetingOptionsAdGroupsRequestLocationTypesItem `json:"-" url:"location_types,omitempty"`
-	// Narrow location results to one country, as an ISO 3166-1 code such as `US`. Only applies when `types` includes `locations`.
-	Country *string `json:"-" url:"country,omitempty"`
-	// Maximum number of results per requested type.
-	Limit *int `json:"-" url:"limit,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (s *SearchTargetingOptionsAdGroupsRequest) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
-	}
-	s.explicitFields.Or(s.explicitFields, field)
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SearchTargetingOptionsAdGroupsRequest) SetAccountID(accountID *string) {
-	s.AccountID = accountID
-	s.require(searchTargetingOptionsAdGroupsRequestFieldAccountID)
-}
-
-// SetPlatform sets the Platform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SearchTargetingOptionsAdGroupsRequest) SetPlatform(platform SearchTargetingOptionsAdGroupsRequestPlatform) {
-	s.Platform = platform
-	s.require(searchTargetingOptionsAdGroupsRequestFieldPlatform)
-}
-
-// SetQuery sets the Query field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SearchTargetingOptionsAdGroupsRequest) SetQuery(query *string) {
-	s.Query = query
-	s.require(searchTargetingOptionsAdGroupsRequestFieldQuery)
-}
-
-// SetTypes sets the Types field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SearchTargetingOptionsAdGroupsRequest) SetTypes(types []*SearchTargetingOptionsAdGroupsRequestTypesItem) {
-	s.Types = types
-	s.require(searchTargetingOptionsAdGroupsRequestFieldTypes)
-}
-
-// SetLocationTypes sets the LocationTypes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SearchTargetingOptionsAdGroupsRequest) SetLocationTypes(locationTypes []*SearchTargetingOptionsAdGroupsRequestLocationTypesItem) {
-	s.LocationTypes = locationTypes
-	s.require(searchTargetingOptionsAdGroupsRequestFieldLocationTypes)
-}
-
-// SetCountry sets the Country field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SearchTargetingOptionsAdGroupsRequest) SetCountry(country *string) {
-	s.Country = country
-	s.require(searchTargetingOptionsAdGroupsRequestFieldCountry)
-}
-
-// SetLimit sets the Limit field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SearchTargetingOptionsAdGroupsRequest) SetLimit(limit *int) {
-	s.Limit = limit
-	s.require(searchTargetingOptionsAdGroupsRequestFieldLimit)
-}
-
-var (
 	adGroupFieldAdCampaign                   = big.NewInt(1 << 0)
 	adGroupFieldAddedToCartValue             = big.NewInt(1 << 1)
 	adGroupFieldAddedToCarts                 = big.NewInt(1 << 2)
 	adGroupFieldAudiences                    = big.NewInt(1 << 3)
 	adGroupFieldBidType                      = big.NewInt(1 << 4)
 	adGroupFieldBudgetAmount                 = big.NewInt(1 << 5)
-	adGroupFieldBudgetType                   = big.NewInt(1 << 6)
-	adGroupFieldClickThroughRate             = big.NewInt(1 << 7)
-	adGroupFieldClicks                       = big.NewInt(1 << 8)
-	adGroupFieldCompletedRegistrationValue   = big.NewInt(1 << 9)
-	adGroupFieldCompletedRegistrations       = big.NewInt(1 << 10)
-	adGroupFieldContactValue                 = big.NewInt(1 << 11)
-	adGroupFieldContacts                     = big.NewInt(1 << 12)
-	adGroupFieldConversionEvent              = big.NewInt(1 << 13)
-	adGroupFieldConversionLocation           = big.NewInt(1 << 14)
-	adGroupFieldCostPerAddedToCart           = big.NewInt(1 << 15)
-	adGroupFieldCostPerClick                 = big.NewInt(1 << 16)
-	adGroupFieldCostPerCompletedRegistration = big.NewInt(1 << 17)
-	adGroupFieldCostPerContact               = big.NewInt(1 << 18)
-	adGroupFieldCostPerLead                  = big.NewInt(1 << 19)
-	adGroupFieldCostPerMille                 = big.NewInt(1 << 20)
-	adGroupFieldCostPerPurchase              = big.NewInt(1 << 21)
-	adGroupFieldCostPerResult                = big.NewInt(1 << 22)
-	adGroupFieldCostPerSchedule              = big.NewInt(1 << 23)
-	adGroupFieldCostPerSubmittedApplication  = big.NewInt(1 << 24)
-	adGroupFieldCostPerUniqueClick           = big.NewInt(1 << 25)
-	adGroupFieldCostPerViewedContent         = big.NewInt(1 << 26)
-	adGroupFieldCreatedAt                    = big.NewInt(1 << 27)
-	adGroupFieldCustomConversions            = big.NewInt(1 << 28)
-	adGroupFieldCustomEventCounts            = big.NewInt(1 << 29)
-	adGroupFieldCustomEventValues            = big.NewInt(1 << 30)
-	adGroupFieldDeliveryStatus               = big.NewInt(1 << 31)
-	adGroupFieldDemographics                 = big.NewInt(1 << 32)
-	adGroupFieldDesiredCostPerResult         = big.NewInt(1 << 33)
-	adGroupFieldDetailedTargeting            = big.NewInt(1 << 34)
-	adGroupFieldDevices                      = big.NewInt(1 << 35)
-	adGroupFieldDynamicCreative              = big.NewInt(1 << 36)
+	adGroupFieldBudgetAmountLocal            = big.NewInt(1 << 6)
+	adGroupFieldBudgetCurrency               = big.NewInt(1 << 7)
+	adGroupFieldBudgetType                   = big.NewInt(1 << 8)
+	adGroupFieldClickThroughRate             = big.NewInt(1 << 9)
+	adGroupFieldClicks                       = big.NewInt(1 << 10)
+	adGroupFieldCompletedRegistrationValue   = big.NewInt(1 << 11)
+	adGroupFieldCompletedRegistrations       = big.NewInt(1 << 12)
+	adGroupFieldContactValue                 = big.NewInt(1 << 13)
+	adGroupFieldContacts                     = big.NewInt(1 << 14)
+	adGroupFieldConversionEvent              = big.NewInt(1 << 15)
+	adGroupFieldCostPerAddedToCart           = big.NewInt(1 << 16)
+	adGroupFieldCostPerClick                 = big.NewInt(1 << 17)
+	adGroupFieldCostPerCompletedRegistration = big.NewInt(1 << 18)
+	adGroupFieldCostPerContact               = big.NewInt(1 << 19)
+	adGroupFieldCostPerLead                  = big.NewInt(1 << 20)
+	adGroupFieldCostPerMille                 = big.NewInt(1 << 21)
+	adGroupFieldCostPerPurchase              = big.NewInt(1 << 22)
+	adGroupFieldCostPerResult                = big.NewInt(1 << 23)
+	adGroupFieldCostPerSchedule              = big.NewInt(1 << 24)
+	adGroupFieldCostPerSubmittedApplication  = big.NewInt(1 << 25)
+	adGroupFieldCostPerUniqueClick           = big.NewInt(1 << 26)
+	adGroupFieldCostPerViewedContent         = big.NewInt(1 << 27)
+	adGroupFieldCreatedAt                    = big.NewInt(1 << 28)
+	adGroupFieldCustomConversions            = big.NewInt(1 << 29)
+	adGroupFieldCustomEventCounts            = big.NewInt(1 << 30)
+	adGroupFieldCustomEventValues            = big.NewInt(1 << 31)
+	adGroupFieldDeliverySchedule             = big.NewInt(1 << 32)
+	adGroupFieldDeliveryStatus               = big.NewInt(1 << 33)
+	adGroupFieldDemographics                 = big.NewInt(1 << 34)
+	adGroupFieldDesiredCostPerResult         = big.NewInt(1 << 35)
+	adGroupFieldDevices                      = big.NewInt(1 << 36)
 	adGroupFieldEndsAt                       = big.NewInt(1 << 37)
 	adGroupFieldFrequency                    = big.NewInt(1 << 38)
-	adGroupFieldFrequencyCap                 = big.NewInt(1 << 39)
-	adGroupFieldID                           = big.NewInt(1 << 40)
-	adGroupFieldImpressions                  = big.NewInt(1 << 41)
-	adGroupFieldIssues                       = big.NewInt(1 << 42)
+	adGroupFieldID                           = big.NewInt(1 << 39)
+	adGroupFieldImpressions                  = big.NewInt(1 << 40)
+	adGroupFieldIssues                       = big.NewInt(1 << 41)
+	adGroupFieldKeywords                     = big.NewInt(1 << 42)
 	adGroupFieldLanguages                    = big.NewInt(1 << 43)
 	adGroupFieldLeadValue                    = big.NewInt(1 << 44)
 	adGroupFieldLeads                        = big.NewInt(1 << 45)
-	adGroupFieldMessageApps                  = big.NewInt(1 << 46)
-	adGroupFieldMinimumDailySpend            = big.NewInt(1 << 47)
-	adGroupFieldOptimizationGoal             = big.NewInt(1 << 48)
-	adGroupFieldPlacements                   = big.NewInt(1 << 49)
-	adGroupFieldPurchaseValue                = big.NewInt(1 << 50)
-	adGroupFieldPurchases                    = big.NewInt(1 << 51)
-	adGroupFieldReach                        = big.NewInt(1 << 52)
-	adGroupFieldRegions                      = big.NewInt(1 << 53)
-	adGroupFieldResultEvent                  = big.NewInt(1 << 54)
-	adGroupFieldResultEventName              = big.NewInt(1 << 55)
-	adGroupFieldResults                      = big.NewInt(1 << 56)
-	adGroupFieldReturnOnAdSpend              = big.NewInt(1 << 57)
-	adGroupFieldScheduleValue                = big.NewInt(1 << 58)
-	adGroupFieldSchedules                    = big.NewInt(1 << 59)
-	adGroupFieldSpend                        = big.NewInt(1 << 60)
-	adGroupFieldSpendCurrency                = big.NewInt(1 << 61)
-	adGroupFieldStartsAt                     = big.NewInt(1 << 62)
-	adGroupFieldStatus                       = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	adGroupFieldSubmittedApplicationValue    = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	adGroupFieldSubmittedApplications        = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	adGroupFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	adGroupFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	adGroupFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	adGroupFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	adGroupFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	adGroupFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	adGroupFieldLearningProgress             = big.NewInt(1 << 46)
+	adGroupFieldLinkClicks                   = big.NewInt(1 << 47)
+	adGroupFieldPurchaseValue                = big.NewInt(1 << 48)
+	adGroupFieldPurchases                    = big.NewInt(1 << 49)
+	adGroupFieldReach                        = big.NewInt(1 << 50)
+	adGroupFieldRegions                      = big.NewInt(1 << 51)
+	adGroupFieldResultEvent                  = big.NewInt(1 << 52)
+	adGroupFieldResultEventName              = big.NewInt(1 << 53)
+	adGroupFieldResults                      = big.NewInt(1 << 54)
+	adGroupFieldReturnOnAdSpend              = big.NewInt(1 << 55)
+	adGroupFieldScheduleValue                = big.NewInt(1 << 56)
+	adGroupFieldSchedules                    = big.NewInt(1 << 57)
+	adGroupFieldSpend                        = big.NewInt(1 << 58)
+	adGroupFieldSpendCurrency                = big.NewInt(1 << 59)
+	adGroupFieldStartsAt                     = big.NewInt(1 << 60)
+	adGroupFieldStatus                       = big.NewInt(1 << 61)
+	adGroupFieldSubmittedApplicationValue    = big.NewInt(1 << 62)
+	adGroupFieldSubmittedApplications        = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adGroupFieldTitle                        = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	adGroupFieldUniqueClickThroughRate       = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	adGroupFieldUniqueClicks                 = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	adGroupFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	adGroupFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	adGroupFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 69)
 )
+
+// adGroupNullableFields maps the wire names of AdGroup's nullable fields (required or optional) to their field bits.
+var adGroupNullableFields = map[string]*big.Int{
+	"bid_type":                        adGroupFieldBidType,
+	"budget_amount":                   adGroupFieldBudgetAmount,
+	"budget_amount_local":             adGroupFieldBudgetAmountLocal,
+	"budget_type":                     adGroupFieldBudgetType,
+	"conversion_event":                adGroupFieldConversionEvent,
+	"cost_per_added_to_cart":          adGroupFieldCostPerAddedToCart,
+	"cost_per_completed_registration": adGroupFieldCostPerCompletedRegistration,
+	"cost_per_contact":                adGroupFieldCostPerContact,
+	"cost_per_lead":                   adGroupFieldCostPerLead,
+	"cost_per_purchase":               adGroupFieldCostPerPurchase,
+	"cost_per_result":                 adGroupFieldCostPerResult,
+	"cost_per_schedule":               adGroupFieldCostPerSchedule,
+	"cost_per_submitted_application":  adGroupFieldCostPerSubmittedApplication,
+	"cost_per_unique_click":           adGroupFieldCostPerUniqueClick,
+	"cost_per_viewed_content":         adGroupFieldCostPerViewedContent,
+	"delivery_schedule":               adGroupFieldDeliverySchedule,
+	"desired_cost_per_result":         adGroupFieldDesiredCostPerResult,
+	"ends_at":                         adGroupFieldEndsAt,
+	"frequency":                       adGroupFieldFrequency,
+	"learning_progress":               adGroupFieldLearningProgress,
+	"result_event":                    adGroupFieldResultEvent,
+	"result_event_name":               adGroupFieldResultEventName,
+	"results":                         adGroupFieldResults,
+	"spend_currency":                  adGroupFieldSpendCurrency,
+	"starts_at":                       adGroupFieldStartsAt,
+	"title":                           adGroupFieldTitle,
+	"unique_click_through_rate":       adGroupFieldUniqueClickThroughRate,
+}
 
 type AdGroup struct {
 	// The ad campaign this ad group belongs to.
@@ -954,9 +724,13 @@ type AdGroup struct {
 	Audiences *AdGroupAudiences `json:"audiences" url:"audiences"`
 	// How delivery bids are set in the ad auction. Target-based strategies use `desired_cost_per_result`.
 	BidType *AdGroupBidType `json:"bid_type,omitempty" url:"bid_type,omitempty"`
-	// This ad group's budget, in the ad account's currency. `null` when the budget is set on the campaign instead.
+	// This ad group's budget in USD, which is what it is stored and billed in. `null` when the budget is set on the campaign instead.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"budget_amount,omitempty"`
-	// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`).
+	// The same budget stated in `budget_currency` at today's exchange rate, for display in the account's ads reporting currency. `null` when `budget_amount` is.
+	BudgetAmountLocal *float64 `json:"budget_amount_local,omitempty" url:"budget_amount_local,omitempty"`
+	// The ISO 4217 code `budget_amount_local` is in: the account's `ads_reporting_currency` preference. `usd` unless the account changed it.
+	BudgetCurrency string `json:"budget_currency" url:"budget_currency"`
+	// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`). A `lifetime` ad group also needs `ends_at`, at least 24 hours after it starts.
 	BudgetType *AdGroupBudgetType `json:"budget_type,omitempty" url:"budget_type,omitempty"`
 	// Clicks divided by impressions, between 0 and 1.
 	ClickThroughRate float64 `json:"click_through_rate" url:"click_through_rate"`
@@ -971,8 +745,6 @@ type AdGroup struct {
 	// Whop pixel-attributed contact events, last-click.
 	Contacts        float64          `json:"contacts" url:"contacts"`
 	ConversionEvent *ConversionEvent `json:"conversion_event,omitempty" url:"conversion_event,omitempty"`
-	// Where the outcome being optimized for occurs, such as a website visit, social-profile visit, messaging conversation, ad interaction, or lead-form submission.
-	ConversionLocation *AdGroupConversionLocation `json:"conversion_location,omitempty" url:"conversion_location,omitempty"`
 	// Spend divided by attributed add-to-cart events; null when they are not the goal and none are attributed.
 	CostPerAddedToCart *float64 `json:"cost_per_added_to_cart,omitempty" url:"cost_per_added_to_cart,omitempty"`
 	// Spend divided by clicks; 0 when there are no clicks.
@@ -1005,40 +777,35 @@ type AdGroup struct {
 	CustomEventCounts map[string]any `json:"custom_event_counts" url:"custom_event_counts"`
 	// Conversion value attributed to each custom event, keyed by event name like custom_event_counts. Sums the value passed to whop.track, normalized to USD; events fired without a value contribute 0.
 	CustomEventValues map[string]any `json:"custom_event_values" url:"custom_event_values"`
+	// Hours the ad group delivers in each week, keyed by day. Days it doesn't deliver are omitted. `null` when it delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+	DeliverySchedule *AdGroupDeliverySchedule `json:"delivery_schedule,omitempty" url:"delivery_schedule,omitempty"`
 	// Whether ads in this ad group are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus AdGroupDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	// Age, gender, and automatic-audience targeting.
 	Demographics *AdGroupDemographics `json:"demographics" url:"demographics"`
 	// Cost per result to aim for (`average_target`) or never exceed (`maximum_target`). `null` for `minimum_cost` bidding.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
-	// Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. Entries across interests, behaviors, and demographics are OR'd together (anyone matching any entry is reached), matching Ads Manager's detailed-targeting box. Can't be combined with automatic audience targeting, and unavailable to campaigns with special_ad_categories.
-	DetailedTargeting *AdGroupDetailedTargeting `json:"detailed_targeting" url:"detailed_targeting"`
 	// Device platforms and operating systems targeted.
 	Devices *AdGroupDevices `json:"devices" url:"devices"`
-	// Whether the ad platform automatically mixes and matches this ad group's creatives and copy to find the best-performing combinations.
-	DynamicCreative *bool `json:"dynamic_creative,omitempty" url:"dynamic_creative,omitempty"`
 	// When the ad group stops delivering, as an ISO 8601 timestamp. `null` when it runs until paused.
 	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
-	// Platform-reported impressions divided by reach.
+	// Impressions divided by reach.
 	Frequency *float64 `json:"frequency,omitempty" url:"frequency,omitempty"`
-	// Cap on how often one person sees ads from this ad group. Only available on campaigns with the `awareness` objective; `null` when uncapped.
-	FrequencyCap *AdGroupFrequencyCap `json:"frequency_cap,omitempty" url:"frequency_cap,omitempty"`
 	// Unique identifier for the ad group, prefixed `adgrp_`.
 	ID string `json:"id" url:"id"`
 	// The number of impressions.
 	Impressions float64            `json:"impressions" url:"impressions"`
 	Issues      []*AdPlatformIssue `json:"issues" url:"issues"`
+	Keywords    []*AdGroupKeyword  `json:"keywords,omitempty" url:"keywords,omitempty"`
 	Languages   []string           `json:"languages" url:"languages"`
 	// USD value attributed to lead events. Sums the value sent with each event, normalized to USD; events without a value contribute 0.
 	LeadValue float64 `json:"lead_value" url:"lead_value"`
 	// Whop pixel-attributed leads, last-click.
-	Leads       float64                  `json:"leads" url:"leads"`
-	MessageApps []AdGroupMessageAppsItem `json:"message_apps,omitempty" url:"message_apps,omitempty"`
-	// Minimum the ad group tries to spend each day. `null` when no floor is set.
-	MinimumDailySpend *float64 `json:"minimum_daily_spend,omitempty" url:"minimum_daily_spend,omitempty"`
-	// The result the ad group's delivery is optimized to get the most of.
-	OptimizationGoal *AdGroupOptimizationGoal `json:"optimization_goal,omitempty" url:"optimization_goal,omitempty"`
-	Placements       []*AdGroupPlacement      `json:"placements" url:"placements"`
+	Leads float64 `json:"leads" url:"leads"`
+	// Progress toward the conversions this ad group's learning phase needs. Null unless it is learning or learning limited and valid counts are available. Reaching the threshold does not determine delivery status.
+	LearningProgress *AdGroupLearningProgress `json:"learning_progress,omitempty" url:"learning_progress,omitempty"`
+	// Page views on your destination from people who clicked the ad, recorded by the Whop pixel. Counted the same way on every ad platform.
+	LinkClicks float64 `json:"link_clicks" url:"link_clicks"`
 	// USD value of pixel-attributed purchases.
 	PurchaseValue float64 `json:"purchase_value" url:"purchase_value"`
 	// Whop pixel-attributed purchases, last-click.
@@ -1133,6 +900,20 @@ func (a *AdGroup) GetBudgetAmount() *float64 {
 	return a.BudgetAmount
 }
 
+func (a *AdGroup) GetBudgetAmountLocal() *float64 {
+	if a == nil {
+		return nil
+	}
+	return a.BudgetAmountLocal
+}
+
+func (a *AdGroup) GetBudgetCurrency() string {
+	if a == nil {
+		return ""
+	}
+	return a.BudgetCurrency
+}
+
 func (a *AdGroup) GetBudgetType() *AdGroupBudgetType {
 	if a == nil {
 		return nil
@@ -1187,13 +968,6 @@ func (a *AdGroup) GetConversionEvent() *ConversionEvent {
 		return nil
 	}
 	return a.ConversionEvent
-}
-
-func (a *AdGroup) GetConversionLocation() *AdGroupConversionLocation {
-	if a == nil {
-		return nil
-	}
-	return a.ConversionLocation
 }
 
 func (a *AdGroup) GetCostPerAddedToCart() *float64 {
@@ -1308,6 +1082,13 @@ func (a *AdGroup) GetCustomEventValues() map[string]any {
 	return a.CustomEventValues
 }
 
+func (a *AdGroup) GetDeliverySchedule() *AdGroupDeliverySchedule {
+	if a == nil {
+		return nil
+	}
+	return a.DeliverySchedule
+}
+
 func (a *AdGroup) GetDeliveryStatus() AdGroupDeliveryStatus {
 	if a == nil {
 		return ""
@@ -1329,25 +1110,11 @@ func (a *AdGroup) GetDesiredCostPerResult() *float64 {
 	return a.DesiredCostPerResult
 }
 
-func (a *AdGroup) GetDetailedTargeting() *AdGroupDetailedTargeting {
-	if a == nil {
-		return nil
-	}
-	return a.DetailedTargeting
-}
-
 func (a *AdGroup) GetDevices() *AdGroupDevices {
 	if a == nil {
 		return nil
 	}
 	return a.Devices
-}
-
-func (a *AdGroup) GetDynamicCreative() *bool {
-	if a == nil {
-		return nil
-	}
-	return a.DynamicCreative
 }
 
 func (a *AdGroup) GetEndsAt() *string {
@@ -1362,13 +1129,6 @@ func (a *AdGroup) GetFrequency() *float64 {
 		return nil
 	}
 	return a.Frequency
-}
-
-func (a *AdGroup) GetFrequencyCap() *AdGroupFrequencyCap {
-	if a == nil {
-		return nil
-	}
-	return a.FrequencyCap
 }
 
 func (a *AdGroup) GetID() string {
@@ -1392,6 +1152,13 @@ func (a *AdGroup) GetIssues() []*AdPlatformIssue {
 	return a.Issues
 }
 
+func (a *AdGroup) GetKeywords() []*AdGroupKeyword {
+	if a == nil {
+		return nil
+	}
+	return a.Keywords
+}
+
 func (a *AdGroup) GetLanguages() []string {
 	if a == nil {
 		return nil
@@ -1413,32 +1180,18 @@ func (a *AdGroup) GetLeads() float64 {
 	return a.Leads
 }
 
-func (a *AdGroup) GetMessageApps() []AdGroupMessageAppsItem {
+func (a *AdGroup) GetLearningProgress() *AdGroupLearningProgress {
 	if a == nil {
 		return nil
 	}
-	return a.MessageApps
+	return a.LearningProgress
 }
 
-func (a *AdGroup) GetMinimumDailySpend() *float64 {
+func (a *AdGroup) GetLinkClicks() float64 {
 	if a == nil {
-		return nil
+		return 0
 	}
-	return a.MinimumDailySpend
-}
-
-func (a *AdGroup) GetOptimizationGoal() *AdGroupOptimizationGoal {
-	if a == nil {
-		return nil
-	}
-	return a.OptimizationGoal
-}
-
-func (a *AdGroup) GetPlacements() []*AdGroupPlacement {
-	if a == nil {
-		return nil
-	}
-	return a.Placements
+	return a.LinkClicks
 }
 
 func (a *AdGroup) GetPurchaseValue() float64 {
@@ -1603,10 +1356,12 @@ func (a *AdGroup) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroup) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAdCampaign sets the AdCampaign field and marks it as non-optional;
@@ -1649,6 +1404,20 @@ func (a *AdGroup) SetBidType(bidType *AdGroupBidType) {
 func (a *AdGroup) SetBudgetAmount(budgetAmount *float64) {
 	a.BudgetAmount = budgetAmount
 	a.require(adGroupFieldBudgetAmount)
+}
+
+// SetBudgetAmountLocal sets the BudgetAmountLocal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroup) SetBudgetAmountLocal(budgetAmountLocal *float64) {
+	a.BudgetAmountLocal = budgetAmountLocal
+	a.require(adGroupFieldBudgetAmountLocal)
+}
+
+// SetBudgetCurrency sets the BudgetCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroup) SetBudgetCurrency(budgetCurrency string) {
+	a.BudgetCurrency = budgetCurrency
+	a.require(adGroupFieldBudgetCurrency)
 }
 
 // SetBudgetType sets the BudgetType field and marks it as non-optional;
@@ -1705,13 +1474,6 @@ func (a *AdGroup) SetContacts(contacts float64) {
 func (a *AdGroup) SetConversionEvent(conversionEvent *ConversionEvent) {
 	a.ConversionEvent = conversionEvent
 	a.require(adGroupFieldConversionEvent)
-}
-
-// SetConversionLocation sets the ConversionLocation field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroup) SetConversionLocation(conversionLocation *AdGroupConversionLocation) {
-	a.ConversionLocation = conversionLocation
-	a.require(adGroupFieldConversionLocation)
 }
 
 // SetCostPerAddedToCart sets the CostPerAddedToCart field and marks it as non-optional;
@@ -1826,6 +1588,13 @@ func (a *AdGroup) SetCustomEventValues(customEventValues map[string]any) {
 	a.require(adGroupFieldCustomEventValues)
 }
 
+// SetDeliverySchedule sets the DeliverySchedule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroup) SetDeliverySchedule(deliverySchedule *AdGroupDeliverySchedule) {
+	a.DeliverySchedule = deliverySchedule
+	a.require(adGroupFieldDeliverySchedule)
+}
+
 // SetDeliveryStatus sets the DeliveryStatus field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AdGroup) SetDeliveryStatus(deliveryStatus AdGroupDeliveryStatus) {
@@ -1847,25 +1616,11 @@ func (a *AdGroup) SetDesiredCostPerResult(desiredCostPerResult *float64) {
 	a.require(adGroupFieldDesiredCostPerResult)
 }
 
-// SetDetailedTargeting sets the DetailedTargeting field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroup) SetDetailedTargeting(detailedTargeting *AdGroupDetailedTargeting) {
-	a.DetailedTargeting = detailedTargeting
-	a.require(adGroupFieldDetailedTargeting)
-}
-
 // SetDevices sets the Devices field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AdGroup) SetDevices(devices *AdGroupDevices) {
 	a.Devices = devices
 	a.require(adGroupFieldDevices)
-}
-
-// SetDynamicCreative sets the DynamicCreative field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroup) SetDynamicCreative(dynamicCreative *bool) {
-	a.DynamicCreative = dynamicCreative
-	a.require(adGroupFieldDynamicCreative)
 }
 
 // SetEndsAt sets the EndsAt field and marks it as non-optional;
@@ -1880,13 +1635,6 @@ func (a *AdGroup) SetEndsAt(endsAt *string) {
 func (a *AdGroup) SetFrequency(frequency *float64) {
 	a.Frequency = frequency
 	a.require(adGroupFieldFrequency)
-}
-
-// SetFrequencyCap sets the FrequencyCap field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroup) SetFrequencyCap(frequencyCap *AdGroupFrequencyCap) {
-	a.FrequencyCap = frequencyCap
-	a.require(adGroupFieldFrequencyCap)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1910,6 +1658,13 @@ func (a *AdGroup) SetIssues(issues []*AdPlatformIssue) {
 	a.require(adGroupFieldIssues)
 }
 
+// SetKeywords sets the Keywords field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroup) SetKeywords(keywords []*AdGroupKeyword) {
+	a.Keywords = keywords
+	a.require(adGroupFieldKeywords)
+}
+
 // SetLanguages sets the Languages field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AdGroup) SetLanguages(languages []string) {
@@ -1931,32 +1686,18 @@ func (a *AdGroup) SetLeads(leads float64) {
 	a.require(adGroupFieldLeads)
 }
 
-// SetMessageApps sets the MessageApps field and marks it as non-optional;
+// SetLearningProgress sets the LearningProgress field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroup) SetMessageApps(messageApps []AdGroupMessageAppsItem) {
-	a.MessageApps = messageApps
-	a.require(adGroupFieldMessageApps)
+func (a *AdGroup) SetLearningProgress(learningProgress *AdGroupLearningProgress) {
+	a.LearningProgress = learningProgress
+	a.require(adGroupFieldLearningProgress)
 }
 
-// SetMinimumDailySpend sets the MinimumDailySpend field and marks it as non-optional;
+// SetLinkClicks sets the LinkClicks field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroup) SetMinimumDailySpend(minimumDailySpend *float64) {
-	a.MinimumDailySpend = minimumDailySpend
-	a.require(adGroupFieldMinimumDailySpend)
-}
-
-// SetOptimizationGoal sets the OptimizationGoal field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroup) SetOptimizationGoal(optimizationGoal *AdGroupOptimizationGoal) {
-	a.OptimizationGoal = optimizationGoal
-	a.require(adGroupFieldOptimizationGoal)
-}
-
-// SetPlacements sets the Placements field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroup) SetPlacements(placements []*AdGroupPlacement) {
-	a.Placements = placements
-	a.require(adGroupFieldPlacements)
+func (a *AdGroup) SetLinkClicks(linkClicks float64) {
+	a.LinkClicks = linkClicks
+	a.require(adGroupFieldLinkClicks)
 }
 
 // SetPurchaseValue sets the PurchaseValue field and marks it as non-optional;
@@ -2125,6 +1866,13 @@ func (a *AdGroup) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adGroupNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2193,10 +1941,12 @@ func (a *AdGroupAudiences) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupAudiences) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetExclude sets the Exclude field and marks it as non-optional;
@@ -2255,12 +2005,12 @@ func (a *AdGroupAudiences) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Saved audiences to deliver to or exclude. Can't be combined with demographics.automatic.
 var (
 	adGroupAudiencesBodyFieldExclude = big.NewInt(1 << 0)
 	adGroupAudiencesBodyFieldInclude = big.NewInt(1 << 1)
 )
 
+// Saved audiences to deliver to or exclude. Can't be combined with demographics.automatic.
 type AdGroupAudiencesBody struct {
 	// IDs of saved audiences to exclude from delivery, prefixed `adaud_`.
 	Exclude []string `json:"exclude,omitempty" url:"exclude,omitempty"`
@@ -2296,10 +2046,12 @@ func (a *AdGroupAudiencesBody) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupAudiencesBody) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetExclude sets the Exclude field and marks it as non-optional;
@@ -2358,168 +2110,6 @@ func (a *AdGroupAudiencesBody) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-var (
-	adGroupBehaviorCategoryFieldBehaviorType = big.NewInt(1 << 0)
-	adGroupBehaviorCategoryFieldID           = big.NewInt(1 << 1)
-	adGroupBehaviorCategoryFieldName         = big.NewInt(1 << 2)
-	adGroupBehaviorCategoryFieldPeriod       = big.NewInt(1 << 3)
-)
-
-type AdGroupBehaviorCategory struct {
-	// On ad platforms that scope behavior categories, what this one is measured on. Send back the value the targeting_options endpoint returned alongside the id. Absent on platforms that don't scope them.
-	BehaviorType *AdGroupBehaviorCategoryBehaviorType `json:"behavior_type,omitempty" url:"behavior_type,omitempty"`
-	// The ad platform's ID for the category in its targeting taxonomy.
-	ID string `json:"id" url:"id"`
-	// Category name, such as `Frequent travelers`.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// On ad platforms that scope behavior categories, how many days of activity the category covers. Absent on platforms that don't scope them.
-	Period *float64 `json:"period,omitempty" url:"period,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AdGroupBehaviorCategory) GetBehaviorType() *AdGroupBehaviorCategoryBehaviorType {
-	if a == nil {
-		return nil
-	}
-	return a.BehaviorType
-}
-
-func (a *AdGroupBehaviorCategory) GetID() string {
-	if a == nil {
-		return ""
-	}
-	return a.ID
-}
-
-func (a *AdGroupBehaviorCategory) GetName() *string {
-	if a == nil {
-		return nil
-	}
-	return a.Name
-}
-
-func (a *AdGroupBehaviorCategory) GetPeriod() *float64 {
-	if a == nil {
-		return nil
-	}
-	return a.Period
-}
-
-func (a *AdGroupBehaviorCategory) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AdGroupBehaviorCategory) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
-	}
-	a.explicitFields.Or(a.explicitFields, field)
-}
-
-// SetBehaviorType sets the BehaviorType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupBehaviorCategory) SetBehaviorType(behaviorType *AdGroupBehaviorCategoryBehaviorType) {
-	a.BehaviorType = behaviorType
-	a.require(adGroupBehaviorCategoryFieldBehaviorType)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupBehaviorCategory) SetID(id string) {
-	a.ID = id
-	a.require(adGroupBehaviorCategoryFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupBehaviorCategory) SetName(name *string) {
-	a.Name = name
-	a.require(adGroupBehaviorCategoryFieldName)
-}
-
-// SetPeriod sets the Period field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupBehaviorCategory) SetPeriod(period *float64) {
-	a.Period = period
-	a.require(adGroupBehaviorCategoryFieldPeriod)
-}
-
-func (a *AdGroupBehaviorCategory) UnmarshalJSON(data []byte) error {
-	type unmarshaler AdGroupBehaviorCategory
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AdGroupBehaviorCategory(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AdGroupBehaviorCategory) MarshalJSON() ([]byte, error) {
-	type embed AdGroupBehaviorCategory
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AdGroupBehaviorCategory) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-// On ad platforms that scope behavior categories, what this one is measured on. Send back the value the targeting_options endpoint returned alongside the id. Absent on platforms that don't scope them.
-type AdGroupBehaviorCategoryBehaviorType string
-
-const (
-	AdGroupBehaviorCategoryBehaviorTypeVideo   AdGroupBehaviorCategoryBehaviorType = "video"
-	AdGroupBehaviorCategoryBehaviorTypeCreator AdGroupBehaviorCategoryBehaviorType = "creator"
-	AdGroupBehaviorCategoryBehaviorTypeHashtag AdGroupBehaviorCategoryBehaviorType = "hashtag"
-)
-
-func NewAdGroupBehaviorCategoryBehaviorTypeFromString(s string) (AdGroupBehaviorCategoryBehaviorType, error) {
-	switch s {
-	case "video":
-		return AdGroupBehaviorCategoryBehaviorTypeVideo, nil
-	case "creator":
-		return AdGroupBehaviorCategoryBehaviorTypeCreator, nil
-	case "hashtag":
-		return AdGroupBehaviorCategoryBehaviorTypeHashtag, nil
-	}
-	var t AdGroupBehaviorCategoryBehaviorType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdGroupBehaviorCategoryBehaviorType) Ptr() *AdGroupBehaviorCategoryBehaviorType {
-	return &a
-}
-
 // How delivery bids are set in the ad auction. Target-based strategies use `desired_cost_per_result`.
 type AdGroupBidType string
 
@@ -2546,7 +2136,7 @@ func (a AdGroupBidType) Ptr() *AdGroupBidType {
 	return &a
 }
 
-// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`).
+// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`). A `lifetime` ad group also needs `ends_at`, at least 24 hours after it starts.
 type AdGroupBudgetType string
 
 const (
@@ -2575,9 +2165,9 @@ var (
 )
 
 type AdGroupCity struct {
-	// The ad platform's key for the city in its location taxonomy.
+	// The city's key in the location taxonomy.
 	Key string `json:"key" url:"key"`
-	// City name, such as `Austin`. Absent when the platform doesn't return one.
+	// City name, such as `Austin`. Absent when the location taxonomy has none.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2609,10 +2199,12 @@ func (a *AdGroupCity) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupCity) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetKey sets the Key field and marks it as non-optional;
@@ -2671,59 +2263,18 @@ func (a *AdGroupCity) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Where the outcome being optimized for occurs, such as a website visit, social-profile visit, messaging conversation, ad interaction, or lead-form submission.
-type AdGroupConversionLocation string
-
-const (
-	AdGroupConversionLocationWebsite                  AdGroupConversionLocation = "website"
-	AdGroupConversionLocationProfile                  AdGroupConversionLocation = "profile"
-	AdGroupConversionLocationInstagramAndFacebook     AdGroupConversionLocation = "instagram_and_facebook"
-	AdGroupConversionLocationInstagramProfile         AdGroupConversionLocation = "instagram_profile"
-	AdGroupConversionLocationMessaging                AdGroupConversionLocation = "messaging"
-	AdGroupConversionLocationOnAd                     AdGroupConversionLocation = "on_ad"
-	AdGroupConversionLocationInstantForms             AdGroupConversionLocation = "instant_forms"
-	AdGroupConversionLocationInstantFormsAndMessenger AdGroupConversionLocation = "instant_forms_and_messenger"
-	AdGroupConversionLocationWebsiteAndInstantForms   AdGroupConversionLocation = "website_and_instant_forms"
-)
-
-func NewAdGroupConversionLocationFromString(s string) (AdGroupConversionLocation, error) {
-	switch s {
-	case "website":
-		return AdGroupConversionLocationWebsite, nil
-	case "profile":
-		return AdGroupConversionLocationProfile, nil
-	case "instagram_and_facebook":
-		return AdGroupConversionLocationInstagramAndFacebook, nil
-	case "instagram_profile":
-		return AdGroupConversionLocationInstagramProfile, nil
-	case "messaging":
-		return AdGroupConversionLocationMessaging, nil
-	case "on_ad":
-		return AdGroupConversionLocationOnAd, nil
-	case "instant_forms":
-		return AdGroupConversionLocationInstantForms, nil
-	case "instant_forms_and_messenger":
-		return AdGroupConversionLocationInstantFormsAndMessenger, nil
-	case "website_and_instant_forms":
-		return AdGroupConversionLocationWebsiteAndInstantForms, nil
-	}
-	var t AdGroupConversionLocation
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdGroupConversionLocation) Ptr() *AdGroupConversionLocation {
-	return &a
-}
-
 var (
-	adGroupCustomLocationFieldDistanceUnit = big.NewInt(1 << 0)
-	adGroupCustomLocationFieldLatitude     = big.NewInt(1 << 1)
-	adGroupCustomLocationFieldLongitude    = big.NewInt(1 << 2)
-	adGroupCustomLocationFieldName         = big.NewInt(1 << 3)
-	adGroupCustomLocationFieldRadius       = big.NewInt(1 << 4)
+	adGroupCustomLocationFieldCountryCode  = big.NewInt(1 << 0)
+	adGroupCustomLocationFieldDistanceUnit = big.NewInt(1 << 1)
+	adGroupCustomLocationFieldLatitude     = big.NewInt(1 << 2)
+	adGroupCustomLocationFieldLongitude    = big.NewInt(1 << 3)
+	adGroupCustomLocationFieldName         = big.NewInt(1 << 4)
+	adGroupCustomLocationFieldRadius       = big.NewInt(1 << 5)
 )
 
 type AdGroupCustomLocation struct {
+	// ISO 3166-1 alpha-2 country the point falls in. Send it under a special ad category, where the campaign must declare the countries its ad sets reach.
+	CountryCode *string `json:"country_code,omitempty" url:"country_code,omitempty"`
 	// Unit for `radius`.
 	DistanceUnit AdGroupCustomLocationDistanceUnit `json:"distance_unit" url:"distance_unit"`
 	// Latitude of the center point.
@@ -2740,6 +2291,13 @@ type AdGroupCustomLocation struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AdGroupCustomLocation) GetCountryCode() *string {
+	if a == nil {
+		return nil
+	}
+	return a.CountryCode
 }
 
 func (a *AdGroupCustomLocation) GetDistanceUnit() AdGroupCustomLocationDistanceUnit {
@@ -2785,10 +2343,19 @@ func (a *AdGroupCustomLocation) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupCustomLocation) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetCountryCode sets the CountryCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupCustomLocation) SetCountryCode(countryCode *string) {
+	a.CountryCode = countryCode
+	a.require(adGroupCustomLocationFieldCountryCode)
 }
 
 // SetDistanceUnit sets the DistanceUnit field and marks it as non-optional;
@@ -2891,10 +2458,193 @@ func (a AdGroupCustomLocationDistanceUnit) Ptr() *AdGroupCustomLocationDistanceU
 	return &a
 }
 
+var (
+	adGroupDeliveryScheduleFieldFriday    = big.NewInt(1 << 0)
+	adGroupDeliveryScheduleFieldMonday    = big.NewInt(1 << 1)
+	adGroupDeliveryScheduleFieldSaturday  = big.NewInt(1 << 2)
+	adGroupDeliveryScheduleFieldSunday    = big.NewInt(1 << 3)
+	adGroupDeliveryScheduleFieldThursday  = big.NewInt(1 << 4)
+	adGroupDeliveryScheduleFieldTuesday   = big.NewInt(1 << 5)
+	adGroupDeliveryScheduleFieldWednesday = big.NewInt(1 << 6)
+)
+
+type AdGroupDeliverySchedule struct {
+	Friday    []*AdGroupDeliveryWindow `json:"friday,omitempty" url:"friday,omitempty"`
+	Monday    []*AdGroupDeliveryWindow `json:"monday,omitempty" url:"monday,omitempty"`
+	Saturday  []*AdGroupDeliveryWindow `json:"saturday,omitempty" url:"saturday,omitempty"`
+	Sunday    []*AdGroupDeliveryWindow `json:"sunday,omitempty" url:"sunday,omitempty"`
+	Thursday  []*AdGroupDeliveryWindow `json:"thursday,omitempty" url:"thursday,omitempty"`
+	Tuesday   []*AdGroupDeliveryWindow `json:"tuesday,omitempty" url:"tuesday,omitempty"`
+	Wednesday []*AdGroupDeliveryWindow `json:"wednesday,omitempty" url:"wednesday,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AdGroupDeliverySchedule) GetFriday() []*AdGroupDeliveryWindow {
+	if a == nil {
+		return nil
+	}
+	return a.Friday
+}
+
+func (a *AdGroupDeliverySchedule) GetMonday() []*AdGroupDeliveryWindow {
+	if a == nil {
+		return nil
+	}
+	return a.Monday
+}
+
+func (a *AdGroupDeliverySchedule) GetSaturday() []*AdGroupDeliveryWindow {
+	if a == nil {
+		return nil
+	}
+	return a.Saturday
+}
+
+func (a *AdGroupDeliverySchedule) GetSunday() []*AdGroupDeliveryWindow {
+	if a == nil {
+		return nil
+	}
+	return a.Sunday
+}
+
+func (a *AdGroupDeliverySchedule) GetThursday() []*AdGroupDeliveryWindow {
+	if a == nil {
+		return nil
+	}
+	return a.Thursday
+}
+
+func (a *AdGroupDeliverySchedule) GetTuesday() []*AdGroupDeliveryWindow {
+	if a == nil {
+		return nil
+	}
+	return a.Tuesday
+}
+
+func (a *AdGroupDeliverySchedule) GetWednesday() []*AdGroupDeliveryWindow {
+	if a == nil {
+		return nil
+	}
+	return a.Wednesday
+}
+
+func (a *AdGroupDeliverySchedule) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AdGroupDeliverySchedule) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetFriday sets the Friday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupDeliverySchedule) SetFriday(friday []*AdGroupDeliveryWindow) {
+	a.Friday = friday
+	a.require(adGroupDeliveryScheduleFieldFriday)
+}
+
+// SetMonday sets the Monday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupDeliverySchedule) SetMonday(monday []*AdGroupDeliveryWindow) {
+	a.Monday = monday
+	a.require(adGroupDeliveryScheduleFieldMonday)
+}
+
+// SetSaturday sets the Saturday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupDeliverySchedule) SetSaturday(saturday []*AdGroupDeliveryWindow) {
+	a.Saturday = saturday
+	a.require(adGroupDeliveryScheduleFieldSaturday)
+}
+
+// SetSunday sets the Sunday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupDeliverySchedule) SetSunday(sunday []*AdGroupDeliveryWindow) {
+	a.Sunday = sunday
+	a.require(adGroupDeliveryScheduleFieldSunday)
+}
+
+// SetThursday sets the Thursday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupDeliverySchedule) SetThursday(thursday []*AdGroupDeliveryWindow) {
+	a.Thursday = thursday
+	a.require(adGroupDeliveryScheduleFieldThursday)
+}
+
+// SetTuesday sets the Tuesday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupDeliverySchedule) SetTuesday(tuesday []*AdGroupDeliveryWindow) {
+	a.Tuesday = tuesday
+	a.require(adGroupDeliveryScheduleFieldTuesday)
+}
+
+// SetWednesday sets the Wednesday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupDeliverySchedule) SetWednesday(wednesday []*AdGroupDeliveryWindow) {
+	a.Wednesday = wednesday
+	a.require(adGroupDeliveryScheduleFieldWednesday)
+}
+
+func (a *AdGroupDeliverySchedule) UnmarshalJSON(data []byte) error {
+	type unmarshaler AdGroupDeliverySchedule
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AdGroupDeliverySchedule(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AdGroupDeliverySchedule) MarshalJSON() ([]byte, error) {
+	type embed AdGroupDeliverySchedule
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AdGroupDeliverySchedule) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
 // Whether ads in this ad group are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
 type AdGroupDeliveryStatus string
 
 const (
+	AdGroupDeliveryStatusInAppeal        AdGroupDeliveryStatus = "in_appeal"
 	AdGroupDeliveryStatusAllAdsRejected  AdGroupDeliveryStatus = "all_ads_rejected"
 	AdGroupDeliveryStatusRejected        AdGroupDeliveryStatus = "rejected"
 	AdGroupDeliveryStatusDraft           AdGroupDeliveryStatus = "draft"
@@ -2913,6 +2663,8 @@ const (
 
 func NewAdGroupDeliveryStatusFromString(s string) (AdGroupDeliveryStatus, error) {
 	switch s {
+	case "in_appeal":
+		return AdGroupDeliveryStatusInAppeal, nil
 	case "all_ads_rejected":
 		return AdGroupDeliveryStatusAllAdsRejected, nil
 	case "rejected":
@@ -2951,18 +2703,15 @@ func (a AdGroupDeliveryStatus) Ptr() *AdGroupDeliveryStatus {
 }
 
 var (
-	adGroupDemographicCategoryFieldID   = big.NewInt(1 << 0)
-	adGroupDemographicCategoryFieldName = big.NewInt(1 << 1)
-	adGroupDemographicCategoryFieldType = big.NewInt(1 << 2)
+	adGroupDeliveryWindowFieldEnd   = big.NewInt(1 << 0)
+	adGroupDeliveryWindowFieldStart = big.NewInt(1 << 1)
 )
 
-type AdGroupDemographicCategory struct {
-	// The ad platform's ID for the category in its targeting taxonomy.
-	ID string `json:"id" url:"id"`
-	// Category name, such as `Recently moved`.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// Kind of demographic the category belongs to.
-	Type AdGroupDemographicCategoryType `json:"type" url:"type"`
+type AdGroupDeliveryWindow struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`; a window past midnight is split across two days.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2971,69 +2720,57 @@ type AdGroupDemographicCategory struct {
 	rawJSON         json.RawMessage
 }
 
-func (a *AdGroupDemographicCategory) GetID() string {
+func (a *AdGroupDeliveryWindow) GetEnd() string {
 	if a == nil {
 		return ""
 	}
-	return a.ID
+	return a.End
 }
 
-func (a *AdGroupDemographicCategory) GetName() *string {
-	if a == nil {
-		return nil
-	}
-	return a.Name
-}
-
-func (a *AdGroupDemographicCategory) GetType() AdGroupDemographicCategoryType {
+func (a *AdGroupDeliveryWindow) GetStart() string {
 	if a == nil {
 		return ""
 	}
-	return a.Type
+	return a.Start
 }
 
-func (a *AdGroupDemographicCategory) GetExtraProperties() map[string]interface{} {
+func (a *AdGroupDeliveryWindow) GetExtraProperties() map[string]interface{} {
 	if a == nil {
 		return nil
 	}
 	return a.extraProperties
 }
 
-func (a *AdGroupDemographicCategory) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+func (a *AdGroupDeliveryWindow) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
-// SetID sets the ID field and marks it as non-optional;
+// SetEnd sets the End field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDemographicCategory) SetID(id string) {
-	a.ID = id
-	a.require(adGroupDemographicCategoryFieldID)
+func (a *AdGroupDeliveryWindow) SetEnd(end string) {
+	a.End = end
+	a.require(adGroupDeliveryWindowFieldEnd)
 }
 
-// SetName sets the Name field and marks it as non-optional;
+// SetStart sets the Start field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDemographicCategory) SetName(name *string) {
-	a.Name = name
-	a.require(adGroupDemographicCategoryFieldName)
+func (a *AdGroupDeliveryWindow) SetStart(start string) {
+	a.Start = start
+	a.require(adGroupDeliveryWindowFieldStart)
 }
 
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDemographicCategory) SetType(type_ AdGroupDemographicCategoryType) {
-	a.Type = type_
-	a.require(adGroupDemographicCategoryFieldType)
-}
-
-func (a *AdGroupDemographicCategory) UnmarshalJSON(data []byte) error {
-	type unmarshaler AdGroupDemographicCategory
+func (a *AdGroupDeliveryWindow) UnmarshalJSON(data []byte) error {
+	type unmarshaler AdGroupDeliveryWindow
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*a = AdGroupDemographicCategory(value)
+	*a = AdGroupDeliveryWindow(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *a)
 	if err != nil {
 		return err
@@ -3043,8 +2780,8 @@ func (a *AdGroupDemographicCategory) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (a *AdGroupDemographicCategory) MarshalJSON() ([]byte, error) {
-	type embed AdGroupDemographicCategory
+func (a *AdGroupDeliveryWindow) MarshalJSON() ([]byte, error) {
+	type embed AdGroupDeliveryWindow
 	var marshaler = struct {
 		embed
 	}{
@@ -3054,7 +2791,7 @@ func (a *AdGroupDemographicCategory) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (a *AdGroupDemographicCategory) String() string {
+func (a *AdGroupDeliveryWindow) String() string {
 	if a == nil {
 		return "<nil>"
 	}
@@ -3069,47 +2806,6 @@ func (a *AdGroupDemographicCategory) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Kind of demographic the category belongs to.
-type AdGroupDemographicCategoryType string
-
-const (
-	AdGroupDemographicCategoryTypeLifeEvents       AdGroupDemographicCategoryType = "life_events"
-	AdGroupDemographicCategoryTypeIndustries       AdGroupDemographicCategoryType = "industries"
-	AdGroupDemographicCategoryTypeIncome           AdGroupDemographicCategoryType = "income"
-	AdGroupDemographicCategoryTypeFamilyStatuses   AdGroupDemographicCategoryType = "family_statuses"
-	AdGroupDemographicCategoryTypeWorkEmployers    AdGroupDemographicCategoryType = "work_employers"
-	AdGroupDemographicCategoryTypeWorkPositions    AdGroupDemographicCategoryType = "work_positions"
-	AdGroupDemographicCategoryTypeEducationSchools AdGroupDemographicCategoryType = "education_schools"
-	AdGroupDemographicCategoryTypeEducationMajors  AdGroupDemographicCategoryType = "education_majors"
-)
-
-func NewAdGroupDemographicCategoryTypeFromString(s string) (AdGroupDemographicCategoryType, error) {
-	switch s {
-	case "life_events":
-		return AdGroupDemographicCategoryTypeLifeEvents, nil
-	case "industries":
-		return AdGroupDemographicCategoryTypeIndustries, nil
-	case "income":
-		return AdGroupDemographicCategoryTypeIncome, nil
-	case "family_statuses":
-		return AdGroupDemographicCategoryTypeFamilyStatuses, nil
-	case "work_employers":
-		return AdGroupDemographicCategoryTypeWorkEmployers, nil
-	case "work_positions":
-		return AdGroupDemographicCategoryTypeWorkPositions, nil
-	case "education_schools":
-		return AdGroupDemographicCategoryTypeEducationSchools, nil
-	case "education_majors":
-		return AdGroupDemographicCategoryTypeEducationMajors, nil
-	}
-	var t AdGroupDemographicCategoryType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdGroupDemographicCategoryType) Ptr() *AdGroupDemographicCategoryType {
-	return &a
-}
-
 var (
 	adGroupDemographicsFieldAutomatic  = big.NewInt(1 << 0)
 	adGroupDemographicsFieldGender     = big.NewInt(1 << 1)
@@ -3117,8 +2813,14 @@ var (
 	adGroupDemographicsFieldMinimumAge = big.NewInt(1 << 3)
 )
 
+// adGroupDemographicsNullableFields maps the wire names of AdGroupDemographics's nullable fields (required or optional) to their field bits.
+var adGroupDemographicsNullableFields = map[string]*big.Int{
+	"maximum_age": adGroupDemographicsFieldMaximumAge,
+	"minimum_age": adGroupDemographicsFieldMinimumAge,
+}
+
 type AdGroupDemographics struct {
-	// Whether automatic audience targeting is on (Advantage+ on Meta). When `true`, the platform can deliver beyond the ages, genders, and detailed targeting you set, treating them as suggestions.
+	// Whether automatic audience targeting is on. When `true`, delivery can reach beyond the ages and genders you set, treating them as suggestions.
 	Automatic bool `json:"automatic" url:"automatic"`
 	// Gender targeted.
 	Gender AdGroupDemographicsGender `json:"gender" url:"gender"`
@@ -3170,10 +2872,12 @@ func (a *AdGroupDemographics) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupDemographics) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAutomatic sets the Automatic field and marks it as non-optional;
@@ -3216,6 +2920,13 @@ func (a *AdGroupDemographics) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adGroupDemographicsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3246,7 +2957,6 @@ func (a *AdGroupDemographics) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Age, gender, and automatic-audience targeting.
 var (
 	adGroupDemographicsBodyFieldAutomatic  = big.NewInt(1 << 0)
 	adGroupDemographicsBodyFieldGender     = big.NewInt(1 << 1)
@@ -3254,8 +2964,9 @@ var (
 	adGroupDemographicsBodyFieldMinimumAge = big.NewInt(1 << 3)
 )
 
+// Age, gender, and automatic-audience targeting.
 type AdGroupDemographicsBody struct {
-	// Turn on automatic audience targeting (Advantage+ on Meta): the platform can deliver beyond the ages, genders, and detailed targeting you set, treating them as suggestions.
+	// Turn on automatic audience targeting: delivery can reach beyond the ages and genders you set, treating them as suggestions.
 	Automatic *bool `json:"automatic,omitempty" url:"automatic,omitempty"`
 	// Gender to target.
 	Gender *AdGroupDemographicsBodyGender `json:"gender,omitempty" url:"gender,omitempty"`
@@ -3307,10 +3018,12 @@ func (a *AdGroupDemographicsBody) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupDemographicsBody) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAutomatic sets the Automatic field and marks it as non-optional;
@@ -3436,666 +3149,6 @@ func (a AdGroupDemographicsGender) Ptr() *AdGroupDemographicsGender {
 }
 
 var (
-	adGroupDetailedTargetingFieldBehaviors    = big.NewInt(1 << 0)
-	adGroupDetailedTargetingFieldDemographics = big.NewInt(1 << 1)
-	adGroupDetailedTargetingFieldInterests    = big.NewInt(1 << 2)
-)
-
-type AdGroupDetailedTargeting struct {
-	Behaviors    []*AdGroupBehaviorCategory    `json:"behaviors" url:"behaviors"`
-	Demographics []*AdGroupDemographicCategory `json:"demographics" url:"demographics"`
-	Interests    []*AdGroupTargetingCategory   `json:"interests" url:"interests"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AdGroupDetailedTargeting) GetBehaviors() []*AdGroupBehaviorCategory {
-	if a == nil {
-		return nil
-	}
-	return a.Behaviors
-}
-
-func (a *AdGroupDetailedTargeting) GetDemographics() []*AdGroupDemographicCategory {
-	if a == nil {
-		return nil
-	}
-	return a.Demographics
-}
-
-func (a *AdGroupDetailedTargeting) GetInterests() []*AdGroupTargetingCategory {
-	if a == nil {
-		return nil
-	}
-	return a.Interests
-}
-
-func (a *AdGroupDetailedTargeting) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AdGroupDetailedTargeting) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
-	}
-	a.explicitFields.Or(a.explicitFields, field)
-}
-
-// SetBehaviors sets the Behaviors field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDetailedTargeting) SetBehaviors(behaviors []*AdGroupBehaviorCategory) {
-	a.Behaviors = behaviors
-	a.require(adGroupDetailedTargetingFieldBehaviors)
-}
-
-// SetDemographics sets the Demographics field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDetailedTargeting) SetDemographics(demographics []*AdGroupDemographicCategory) {
-	a.Demographics = demographics
-	a.require(adGroupDetailedTargetingFieldDemographics)
-}
-
-// SetInterests sets the Interests field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDetailedTargeting) SetInterests(interests []*AdGroupTargetingCategory) {
-	a.Interests = interests
-	a.require(adGroupDetailedTargetingFieldInterests)
-}
-
-func (a *AdGroupDetailedTargeting) UnmarshalJSON(data []byte) error {
-	type unmarshaler AdGroupDetailedTargeting
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AdGroupDetailedTargeting(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AdGroupDetailedTargeting) MarshalJSON() ([]byte, error) {
-	type embed AdGroupDetailedTargeting
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AdGroupDetailedTargeting) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-// Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. Entries across interests, behaviors, and demographics are OR'd together (anyone matching any entry is reached), matching Ads Manager's detailed-targeting box. At most 100 entries per section. Can't be combined with demographics.automatic, and unavailable to campaigns with special_ad_categories.
-var (
-	adGroupDetailedTargetingBodyFieldBehaviors    = big.NewInt(1 << 0)
-	adGroupDetailedTargetingBodyFieldDemographics = big.NewInt(1 << 1)
-	adGroupDetailedTargetingBodyFieldInterests    = big.NewInt(1 << 2)
-)
-
-type AdGroupDetailedTargetingBody struct {
-	// Behavior categories to target, such as frequent travelers.
-	Behaviors []*AdGroupDetailedTargetingBodyBehaviorsItem `json:"behaviors,omitempty" url:"behaviors,omitempty"`
-	// Demographic categories to target, such as life events, industries, work employers, job titles, schools, or majors.
-	Demographics []*AdGroupDetailedTargetingBodyDemographicsItem `json:"demographics,omitempty" url:"demographics,omitempty"`
-	// Interest categories to target, such as an interest in movies.
-	Interests []*AdGroupDetailedTargetingBodyInterestsItem `json:"interests,omitempty" url:"interests,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AdGroupDetailedTargetingBody) GetBehaviors() []*AdGroupDetailedTargetingBodyBehaviorsItem {
-	if a == nil {
-		return nil
-	}
-	return a.Behaviors
-}
-
-func (a *AdGroupDetailedTargetingBody) GetDemographics() []*AdGroupDetailedTargetingBodyDemographicsItem {
-	if a == nil {
-		return nil
-	}
-	return a.Demographics
-}
-
-func (a *AdGroupDetailedTargetingBody) GetInterests() []*AdGroupDetailedTargetingBodyInterestsItem {
-	if a == nil {
-		return nil
-	}
-	return a.Interests
-}
-
-func (a *AdGroupDetailedTargetingBody) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AdGroupDetailedTargetingBody) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
-	}
-	a.explicitFields.Or(a.explicitFields, field)
-}
-
-// SetBehaviors sets the Behaviors field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDetailedTargetingBody) SetBehaviors(behaviors []*AdGroupDetailedTargetingBodyBehaviorsItem) {
-	a.Behaviors = behaviors
-	a.require(adGroupDetailedTargetingBodyFieldBehaviors)
-}
-
-// SetDemographics sets the Demographics field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDetailedTargetingBody) SetDemographics(demographics []*AdGroupDetailedTargetingBodyDemographicsItem) {
-	a.Demographics = demographics
-	a.require(adGroupDetailedTargetingBodyFieldDemographics)
-}
-
-// SetInterests sets the Interests field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDetailedTargetingBody) SetInterests(interests []*AdGroupDetailedTargetingBodyInterestsItem) {
-	a.Interests = interests
-	a.require(adGroupDetailedTargetingBodyFieldInterests)
-}
-
-func (a *AdGroupDetailedTargetingBody) UnmarshalJSON(data []byte) error {
-	type unmarshaler AdGroupDetailedTargetingBody
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AdGroupDetailedTargetingBody(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AdGroupDetailedTargetingBody) MarshalJSON() ([]byte, error) {
-	type embed AdGroupDetailedTargetingBody
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AdGroupDetailedTargetingBody) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-var (
-	adGroupDetailedTargetingBodyBehaviorsItemFieldBehaviorType = big.NewInt(1 << 0)
-	adGroupDetailedTargetingBodyBehaviorsItemFieldID           = big.NewInt(1 << 1)
-	adGroupDetailedTargetingBodyBehaviorsItemFieldName         = big.NewInt(1 << 2)
-	adGroupDetailedTargetingBodyBehaviorsItemFieldPeriod       = big.NewInt(1 << 3)
-)
-
-type AdGroupDetailedTargetingBodyBehaviorsItem struct {
-	// On ad platforms that scope behavior categories, what this one is measured on. Send back the value the targeting_options endpoint returned alongside the id.
-	BehaviorType *AdGroupDetailedTargetingBodyBehaviorsItemBehaviorType `json:"behavior_type,omitempty" url:"behavior_type,omitempty"`
-	// The ad platform's ID for the category in its targeting taxonomy.
-	ID string `json:"id" url:"id"`
-	// Category name, such as `Frequent travelers`.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// On ad platforms that scope behavior categories, how many days of activity the category covers.
-	Period *int `json:"period,omitempty" url:"period,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AdGroupDetailedTargetingBodyBehaviorsItem) GetBehaviorType() *AdGroupDetailedTargetingBodyBehaviorsItemBehaviorType {
-	if a == nil {
-		return nil
-	}
-	return a.BehaviorType
-}
-
-func (a *AdGroupDetailedTargetingBodyBehaviorsItem) GetID() string {
-	if a == nil {
-		return ""
-	}
-	return a.ID
-}
-
-func (a *AdGroupDetailedTargetingBodyBehaviorsItem) GetName() *string {
-	if a == nil {
-		return nil
-	}
-	return a.Name
-}
-
-func (a *AdGroupDetailedTargetingBodyBehaviorsItem) GetPeriod() *int {
-	if a == nil {
-		return nil
-	}
-	return a.Period
-}
-
-func (a *AdGroupDetailedTargetingBodyBehaviorsItem) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AdGroupDetailedTargetingBodyBehaviorsItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
-	}
-	a.explicitFields.Or(a.explicitFields, field)
-}
-
-// SetBehaviorType sets the BehaviorType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDetailedTargetingBodyBehaviorsItem) SetBehaviorType(behaviorType *AdGroupDetailedTargetingBodyBehaviorsItemBehaviorType) {
-	a.BehaviorType = behaviorType
-	a.require(adGroupDetailedTargetingBodyBehaviorsItemFieldBehaviorType)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDetailedTargetingBodyBehaviorsItem) SetID(id string) {
-	a.ID = id
-	a.require(adGroupDetailedTargetingBodyBehaviorsItemFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDetailedTargetingBodyBehaviorsItem) SetName(name *string) {
-	a.Name = name
-	a.require(adGroupDetailedTargetingBodyBehaviorsItemFieldName)
-}
-
-// SetPeriod sets the Period field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDetailedTargetingBodyBehaviorsItem) SetPeriod(period *int) {
-	a.Period = period
-	a.require(adGroupDetailedTargetingBodyBehaviorsItemFieldPeriod)
-}
-
-func (a *AdGroupDetailedTargetingBodyBehaviorsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler AdGroupDetailedTargetingBodyBehaviorsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AdGroupDetailedTargetingBodyBehaviorsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AdGroupDetailedTargetingBodyBehaviorsItem) MarshalJSON() ([]byte, error) {
-	type embed AdGroupDetailedTargetingBodyBehaviorsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AdGroupDetailedTargetingBodyBehaviorsItem) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-// On ad platforms that scope behavior categories, what this one is measured on. Send back the value the targeting_options endpoint returned alongside the id.
-type AdGroupDetailedTargetingBodyBehaviorsItemBehaviorType string
-
-const (
-	AdGroupDetailedTargetingBodyBehaviorsItemBehaviorTypeVideo   AdGroupDetailedTargetingBodyBehaviorsItemBehaviorType = "video"
-	AdGroupDetailedTargetingBodyBehaviorsItemBehaviorTypeCreator AdGroupDetailedTargetingBodyBehaviorsItemBehaviorType = "creator"
-	AdGroupDetailedTargetingBodyBehaviorsItemBehaviorTypeHashtag AdGroupDetailedTargetingBodyBehaviorsItemBehaviorType = "hashtag"
-)
-
-func NewAdGroupDetailedTargetingBodyBehaviorsItemBehaviorTypeFromString(s string) (AdGroupDetailedTargetingBodyBehaviorsItemBehaviorType, error) {
-	switch s {
-	case "video":
-		return AdGroupDetailedTargetingBodyBehaviorsItemBehaviorTypeVideo, nil
-	case "creator":
-		return AdGroupDetailedTargetingBodyBehaviorsItemBehaviorTypeCreator, nil
-	case "hashtag":
-		return AdGroupDetailedTargetingBodyBehaviorsItemBehaviorTypeHashtag, nil
-	}
-	var t AdGroupDetailedTargetingBodyBehaviorsItemBehaviorType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdGroupDetailedTargetingBodyBehaviorsItemBehaviorType) Ptr() *AdGroupDetailedTargetingBodyBehaviorsItemBehaviorType {
-	return &a
-}
-
-var (
-	adGroupDetailedTargetingBodyDemographicsItemFieldID   = big.NewInt(1 << 0)
-	adGroupDetailedTargetingBodyDemographicsItemFieldName = big.NewInt(1 << 1)
-	adGroupDetailedTargetingBodyDemographicsItemFieldType = big.NewInt(1 << 2)
-)
-
-type AdGroupDetailedTargetingBodyDemographicsItem struct {
-	// The ad platform's ID for the category in its targeting taxonomy.
-	ID string `json:"id" url:"id"`
-	// Category name, such as `Recently moved`.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// Kind of demographic the category belongs to.
-	Type AdGroupDetailedTargetingBodyDemographicsItemType `json:"type" url:"type"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AdGroupDetailedTargetingBodyDemographicsItem) GetID() string {
-	if a == nil {
-		return ""
-	}
-	return a.ID
-}
-
-func (a *AdGroupDetailedTargetingBodyDemographicsItem) GetName() *string {
-	if a == nil {
-		return nil
-	}
-	return a.Name
-}
-
-func (a *AdGroupDetailedTargetingBodyDemographicsItem) GetType() AdGroupDetailedTargetingBodyDemographicsItemType {
-	if a == nil {
-		return ""
-	}
-	return a.Type
-}
-
-func (a *AdGroupDetailedTargetingBodyDemographicsItem) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AdGroupDetailedTargetingBodyDemographicsItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
-	}
-	a.explicitFields.Or(a.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDetailedTargetingBodyDemographicsItem) SetID(id string) {
-	a.ID = id
-	a.require(adGroupDetailedTargetingBodyDemographicsItemFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDetailedTargetingBodyDemographicsItem) SetName(name *string) {
-	a.Name = name
-	a.require(adGroupDetailedTargetingBodyDemographicsItemFieldName)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDetailedTargetingBodyDemographicsItem) SetType(type_ AdGroupDetailedTargetingBodyDemographicsItemType) {
-	a.Type = type_
-	a.require(adGroupDetailedTargetingBodyDemographicsItemFieldType)
-}
-
-func (a *AdGroupDetailedTargetingBodyDemographicsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler AdGroupDetailedTargetingBodyDemographicsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AdGroupDetailedTargetingBodyDemographicsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AdGroupDetailedTargetingBodyDemographicsItem) MarshalJSON() ([]byte, error) {
-	type embed AdGroupDetailedTargetingBodyDemographicsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AdGroupDetailedTargetingBodyDemographicsItem) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-// Kind of demographic the category belongs to.
-type AdGroupDetailedTargetingBodyDemographicsItemType string
-
-const (
-	AdGroupDetailedTargetingBodyDemographicsItemTypeLifeEvents       AdGroupDetailedTargetingBodyDemographicsItemType = "life_events"
-	AdGroupDetailedTargetingBodyDemographicsItemTypeIndustries       AdGroupDetailedTargetingBodyDemographicsItemType = "industries"
-	AdGroupDetailedTargetingBodyDemographicsItemTypeIncome           AdGroupDetailedTargetingBodyDemographicsItemType = "income"
-	AdGroupDetailedTargetingBodyDemographicsItemTypeFamilyStatuses   AdGroupDetailedTargetingBodyDemographicsItemType = "family_statuses"
-	AdGroupDetailedTargetingBodyDemographicsItemTypeWorkEmployers    AdGroupDetailedTargetingBodyDemographicsItemType = "work_employers"
-	AdGroupDetailedTargetingBodyDemographicsItemTypeWorkPositions    AdGroupDetailedTargetingBodyDemographicsItemType = "work_positions"
-	AdGroupDetailedTargetingBodyDemographicsItemTypeEducationSchools AdGroupDetailedTargetingBodyDemographicsItemType = "education_schools"
-	AdGroupDetailedTargetingBodyDemographicsItemTypeEducationMajors  AdGroupDetailedTargetingBodyDemographicsItemType = "education_majors"
-)
-
-func NewAdGroupDetailedTargetingBodyDemographicsItemTypeFromString(s string) (AdGroupDetailedTargetingBodyDemographicsItemType, error) {
-	switch s {
-	case "life_events":
-		return AdGroupDetailedTargetingBodyDemographicsItemTypeLifeEvents, nil
-	case "industries":
-		return AdGroupDetailedTargetingBodyDemographicsItemTypeIndustries, nil
-	case "income":
-		return AdGroupDetailedTargetingBodyDemographicsItemTypeIncome, nil
-	case "family_statuses":
-		return AdGroupDetailedTargetingBodyDemographicsItemTypeFamilyStatuses, nil
-	case "work_employers":
-		return AdGroupDetailedTargetingBodyDemographicsItemTypeWorkEmployers, nil
-	case "work_positions":
-		return AdGroupDetailedTargetingBodyDemographicsItemTypeWorkPositions, nil
-	case "education_schools":
-		return AdGroupDetailedTargetingBodyDemographicsItemTypeEducationSchools, nil
-	case "education_majors":
-		return AdGroupDetailedTargetingBodyDemographicsItemTypeEducationMajors, nil
-	}
-	var t AdGroupDetailedTargetingBodyDemographicsItemType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdGroupDetailedTargetingBodyDemographicsItemType) Ptr() *AdGroupDetailedTargetingBodyDemographicsItemType {
-	return &a
-}
-
-var (
-	adGroupDetailedTargetingBodyInterestsItemFieldID   = big.NewInt(1 << 0)
-	adGroupDetailedTargetingBodyInterestsItemFieldName = big.NewInt(1 << 1)
-)
-
-type AdGroupDetailedTargetingBodyInterestsItem struct {
-	// The ad platform's ID for the category in its targeting taxonomy.
-	ID string `json:"id" url:"id"`
-	// Category name, such as `Movies`.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AdGroupDetailedTargetingBodyInterestsItem) GetID() string {
-	if a == nil {
-		return ""
-	}
-	return a.ID
-}
-
-func (a *AdGroupDetailedTargetingBodyInterestsItem) GetName() *string {
-	if a == nil {
-		return nil
-	}
-	return a.Name
-}
-
-func (a *AdGroupDetailedTargetingBodyInterestsItem) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AdGroupDetailedTargetingBodyInterestsItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
-	}
-	a.explicitFields.Or(a.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDetailedTargetingBodyInterestsItem) SetID(id string) {
-	a.ID = id
-	a.require(adGroupDetailedTargetingBodyInterestsItemFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupDetailedTargetingBodyInterestsItem) SetName(name *string) {
-	a.Name = name
-	a.require(adGroupDetailedTargetingBodyInterestsItemFieldName)
-}
-
-func (a *AdGroupDetailedTargetingBodyInterestsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler AdGroupDetailedTargetingBodyInterestsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AdGroupDetailedTargetingBodyInterestsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AdGroupDetailedTargetingBodyInterestsItem) MarshalJSON() ([]byte, error) {
-	type embed AdGroupDetailedTargetingBodyInterestsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AdGroupDetailedTargetingBodyInterestsItem) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-var (
 	adGroupDevicesFieldOperatingSystems = big.NewInt(1 << 0)
 	adGroupDevicesFieldPlatforms        = big.NewInt(1 << 1)
 )
@@ -4133,10 +3186,12 @@ func (a *AdGroupDevices) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupDevices) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetOperatingSystems sets the OperatingSystems field and marks it as non-optional;
@@ -4195,12 +3250,12 @@ func (a *AdGroupDevices) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Device platforms and operating systems to target.
 var (
 	adGroupDevicesBodyFieldOperatingSystems = big.NewInt(1 << 0)
 	adGroupDevicesBodyFieldPlatforms        = big.NewInt(1 << 1)
 )
 
+// Device platforms and operating systems to target.
 type AdGroupDevicesBody struct {
 	// Operating systems to target. Empty targets all operating systems.
 	OperatingSystems []*AdGroupDevicesBodyOperatingSystemsItem `json:"operating_systems,omitempty" url:"operating_systems,omitempty"`
@@ -4236,10 +3291,12 @@ func (a *AdGroupDevicesBody) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupDevicesBody) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetOperatingSystems sets the OperatingSystems field and marks it as non-optional;
@@ -4338,10 +3395,12 @@ func (a *AdGroupDevicesBodyOperatingSystemsItem) GetExtraProperties() map[string
 }
 
 func (a *AdGroupDevicesBodyOperatingSystemsItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetMinimumVersion sets the MinimumVersion field and marks it as non-optional;
@@ -4469,108 +3528,6 @@ func (a AdGroupDevicesPlatformsItem) Ptr() *AdGroupDevicesPlatformsItem {
 }
 
 var (
-	adGroupFrequencyCapFieldMaximumImpressions = big.NewInt(1 << 0)
-	adGroupFrequencyCapFieldPerDays            = big.NewInt(1 << 1)
-)
-
-type AdGroupFrequencyCap struct {
-	// Most times one person can be shown ads from this ad group within the window.
-	MaximumImpressions float64 `json:"maximum_impressions" url:"maximum_impressions"`
-	// Length of the rolling window, in days.
-	PerDays *float64 `json:"per_days,omitempty" url:"per_days,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AdGroupFrequencyCap) GetMaximumImpressions() float64 {
-	if a == nil {
-		return 0
-	}
-	return a.MaximumImpressions
-}
-
-func (a *AdGroupFrequencyCap) GetPerDays() *float64 {
-	if a == nil {
-		return nil
-	}
-	return a.PerDays
-}
-
-func (a *AdGroupFrequencyCap) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AdGroupFrequencyCap) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
-	}
-	a.explicitFields.Or(a.explicitFields, field)
-}
-
-// SetMaximumImpressions sets the MaximumImpressions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupFrequencyCap) SetMaximumImpressions(maximumImpressions float64) {
-	a.MaximumImpressions = maximumImpressions
-	a.require(adGroupFrequencyCapFieldMaximumImpressions)
-}
-
-// SetPerDays sets the PerDays field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupFrequencyCap) SetPerDays(perDays *float64) {
-	a.PerDays = perDays
-	a.require(adGroupFrequencyCapFieldPerDays)
-}
-
-func (a *AdGroupFrequencyCap) UnmarshalJSON(data []byte) error {
-	type unmarshaler AdGroupFrequencyCap
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AdGroupFrequencyCap(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AdGroupFrequencyCap) MarshalJSON() ([]byte, error) {
-	type embed AdGroupFrequencyCap
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AdGroupFrequencyCap) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-var (
 	adGroupGeoLocationsFieldCities          = big.NewInt(1 << 0)
 	adGroupGeoLocationsFieldCountries       = big.NewInt(1 << 1)
 	adGroupGeoLocationsFieldCountryGroups   = big.NewInt(1 << 2)
@@ -4644,10 +3601,12 @@ func (a *AdGroupGeoLocations) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupGeoLocations) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetCities sets the Cities field and marks it as non-optional;
@@ -4744,7 +3703,7 @@ var (
 )
 
 type AdGroupGeoLocationsBody struct {
-	// Cities, keyed by the ad platform's location taxonomy.
+	// Cities, keyed by the location taxonomy.
 	Cities []*AdGroupGeoLocationsBodyCitiesItem `json:"cities,omitempty" url:"cities,omitempty"`
 	// Countries, as ISO 3166-1 alpha-2 codes such as `US`.
 	Countries []string `json:"countries,omitempty" url:"countries,omitempty"`
@@ -4754,7 +3713,7 @@ type AdGroupGeoLocationsBody struct {
 	CustomLocations []*AdGroupGeoLocationsBodyCustomLocationsItem `json:"custom_locations,omitempty" url:"custom_locations,omitempty"`
 	// US states and DC, as ISO 3166-2 codes such as `US-CA`. US territories (`PR`, `GU`, `VI`, `AS`, `MP`) and everywhere outside the US are targeted through `countries`.
 	Regions []string `json:"regions,omitempty" url:"regions,omitempty"`
-	// ZIP and postal codes, as bare strings or objects with a key.
+	// ZIP and postal codes, keyed as `COUNTRY:CODE`, such as `US:78756`. Include the country: a bare code is ambiguous, because the same one exists in several countries.
 	Zips []*AdGroupGeoLocationsBodyZipsItem `json:"zips,omitempty" url:"zips,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -4814,10 +3773,12 @@ func (a *AdGroupGeoLocationsBody) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupGeoLocationsBody) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetCities sets the Cities field and marks it as non-optional;
@@ -4910,7 +3871,7 @@ var (
 )
 
 type AdGroupGeoLocationsBodyCitiesItem struct {
-	// The ad platform's key for the city in its location taxonomy.
+	// The city's key in the location taxonomy.
 	Key string `json:"key" url:"key"`
 	// City name, such as `Austin`.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
@@ -4944,10 +3905,12 @@ func (a *AdGroupGeoLocationsBodyCitiesItem) GetExtraProperties() map[string]inte
 }
 
 func (a *AdGroupGeoLocationsBodyCitiesItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetKey sets the Key field and marks it as non-optional;
@@ -5007,14 +3970,17 @@ func (a *AdGroupGeoLocationsBodyCitiesItem) String() string {
 }
 
 var (
-	adGroupGeoLocationsBodyCustomLocationsItemFieldDistanceUnit = big.NewInt(1 << 0)
-	adGroupGeoLocationsBodyCustomLocationsItemFieldLatitude     = big.NewInt(1 << 1)
-	adGroupGeoLocationsBodyCustomLocationsItemFieldLongitude    = big.NewInt(1 << 2)
-	adGroupGeoLocationsBodyCustomLocationsItemFieldName         = big.NewInt(1 << 3)
-	adGroupGeoLocationsBodyCustomLocationsItemFieldRadius       = big.NewInt(1 << 4)
+	adGroupGeoLocationsBodyCustomLocationsItemFieldCountryCode  = big.NewInt(1 << 0)
+	adGroupGeoLocationsBodyCustomLocationsItemFieldDistanceUnit = big.NewInt(1 << 1)
+	adGroupGeoLocationsBodyCustomLocationsItemFieldLatitude     = big.NewInt(1 << 2)
+	adGroupGeoLocationsBodyCustomLocationsItemFieldLongitude    = big.NewInt(1 << 3)
+	adGroupGeoLocationsBodyCustomLocationsItemFieldName         = big.NewInt(1 << 4)
+	adGroupGeoLocationsBodyCustomLocationsItemFieldRadius       = big.NewInt(1 << 5)
 )
 
 type AdGroupGeoLocationsBodyCustomLocationsItem struct {
+	// ISO 3166-1 alpha-2 country the point falls in, as `DE`. Send it under a special ad category: the campaign must declare the countries its ad sets reach, and a coordinate names none.
+	CountryCode *string `json:"country_code,omitempty" url:"country_code,omitempty"`
 	// Unit for `radius`. Defaults to `mile`.
 	DistanceUnit *AdGroupGeoLocationsBodyCustomLocationsItemDistanceUnit `json:"distance_unit,omitempty" url:"distance_unit,omitempty"`
 	// Latitude of the center point.
@@ -5031,6 +3997,13 @@ type AdGroupGeoLocationsBodyCustomLocationsItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AdGroupGeoLocationsBodyCustomLocationsItem) GetCountryCode() *string {
+	if a == nil {
+		return nil
+	}
+	return a.CountryCode
 }
 
 func (a *AdGroupGeoLocationsBodyCustomLocationsItem) GetDistanceUnit() *AdGroupGeoLocationsBodyCustomLocationsItemDistanceUnit {
@@ -5076,10 +4049,19 @@ func (a *AdGroupGeoLocationsBodyCustomLocationsItem) GetExtraProperties() map[st
 }
 
 func (a *AdGroupGeoLocationsBodyCustomLocationsItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetCountryCode sets the CountryCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupGeoLocationsBodyCustomLocationsItem) SetCountryCode(countryCode *string) {
+	a.CountryCode = countryCode
+	a.require(adGroupGeoLocationsBodyCustomLocationsItemFieldCountryCode)
 }
 
 // SetDistanceUnit sets the DistanceUnit field and marks it as non-optional;
@@ -5210,6 +4192,22 @@ func (a *AdGroupGeoLocationsBodyZipsItem) UnmarshalJSON(data []byte) error {
 		a.String = valueString
 		return nil
 	}
+	if internal.MatchesObjectKeys(data, []string{"key"}, []string{"key"}) {
+		valueAdGroupGeoLocationsBodyZipsItemKey := new(AdGroupGeoLocationsBodyZipsItemKey)
+		if err := json.Unmarshal(data, &valueAdGroupGeoLocationsBodyZipsItemKey); err == nil {
+			a.typ = "AdGroupGeoLocationsBodyZipsItemKey"
+			a.AdGroupGeoLocationsBodyZipsItemKey = valueAdGroupGeoLocationsBodyZipsItemKey
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"key"}) {
+		valueAdGroupGeoLocationsBodyZipsItemKey := new(AdGroupGeoLocationsBodyZipsItemKey)
+		if err := json.Unmarshal(data, &valueAdGroupGeoLocationsBodyZipsItemKey); err == nil {
+			a.typ = "AdGroupGeoLocationsBodyZipsItemKey"
+			a.AdGroupGeoLocationsBodyZipsItemKey = valueAdGroupGeoLocationsBodyZipsItemKey
+			return nil
+		}
+	}
 	valueAdGroupGeoLocationsBodyZipsItemKey := new(AdGroupGeoLocationsBodyZipsItemKey)
 	if err := json.Unmarshal(data, &valueAdGroupGeoLocationsBodyZipsItemKey); err == nil {
 		a.typ = "AdGroupGeoLocationsBodyZipsItemKey"
@@ -5249,7 +4247,7 @@ var (
 )
 
 type AdGroupGeoLocationsBodyZipsItemKey struct {
-	// The ZIP or postal code.
+	// The ZIP or postal code's key, as `COUNTRY:CODE`.
 	Key string `json:"key" url:"key"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -5274,10 +4272,12 @@ func (a *AdGroupGeoLocationsBodyZipsItemKey) GetExtraProperties() map[string]int
 }
 
 func (a *AdGroupGeoLocationsBodyZipsItemKey) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetKey sets the Key field and marks it as non-optional;
@@ -5329,30 +4329,272 @@ func (a *AdGroupGeoLocationsBodyZipsItemKey) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Apps the conversation opens in when `conversion_location` is `messaging`. Empty for other conversion locations.
-type AdGroupMessageAppsItem string
-
-const (
-	AdGroupMessageAppsItemMessenger AdGroupMessageAppsItem = "messenger"
-	AdGroupMessageAppsItemInstagram AdGroupMessageAppsItem = "instagram"
-	AdGroupMessageAppsItemWhatsapp  AdGroupMessageAppsItem = "whatsapp"
+var (
+	adGroupKeywordFieldMatchType = big.NewInt(1 << 0)
+	adGroupKeywordFieldNegative  = big.NewInt(1 << 1)
+	adGroupKeywordFieldText      = big.NewInt(1 << 2)
 )
 
-func NewAdGroupMessageAppsItemFromString(s string) (AdGroupMessageAppsItem, error) {
-	switch s {
-	case "messenger":
-		return AdGroupMessageAppsItemMessenger, nil
-	case "instagram":
-		return AdGroupMessageAppsItemInstagram, nil
-	case "whatsapp":
-		return AdGroupMessageAppsItemWhatsapp, nil
+type AdGroupKeyword struct {
+	// How closely a search has to match: `broad` also reaches related searches, `phrase` needs the meaning of the phrase, and `exact` needs the same meaning as the term. Defaults to `broad`.
+	MatchType AdGroupKeywordMatchType `json:"match_type" url:"match_type"`
+	// Whether this term keeps the ads from showing instead of making them eligible. Defaults to `false`.
+	Negative bool `json:"negative" url:"negative"`
+	// The search term, up to 80 characters and 10 words.
+	Text string `json:"text" url:"text"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AdGroupKeyword) GetMatchType() AdGroupKeywordMatchType {
+	if a == nil {
+		return ""
 	}
-	var t AdGroupMessageAppsItem
+	return a.MatchType
+}
+
+func (a *AdGroupKeyword) GetNegative() bool {
+	if a == nil {
+		return false
+	}
+	return a.Negative
+}
+
+func (a *AdGroupKeyword) GetText() string {
+	if a == nil {
+		return ""
+	}
+	return a.Text
+}
+
+func (a *AdGroupKeyword) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AdGroupKeyword) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetMatchType sets the MatchType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupKeyword) SetMatchType(matchType AdGroupKeywordMatchType) {
+	a.MatchType = matchType
+	a.require(adGroupKeywordFieldMatchType)
+}
+
+// SetNegative sets the Negative field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupKeyword) SetNegative(negative bool) {
+	a.Negative = negative
+	a.require(adGroupKeywordFieldNegative)
+}
+
+// SetText sets the Text field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupKeyword) SetText(text string) {
+	a.Text = text
+	a.require(adGroupKeywordFieldText)
+}
+
+func (a *AdGroupKeyword) UnmarshalJSON(data []byte) error {
+	type unmarshaler AdGroupKeyword
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AdGroupKeyword(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AdGroupKeyword) MarshalJSON() ([]byte, error) {
+	type embed AdGroupKeyword
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AdGroupKeyword) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// How closely a search has to match: `broad` also reaches related searches, `phrase` needs the meaning of the phrase, and `exact` needs the same meaning as the term. Defaults to `broad`.
+type AdGroupKeywordMatchType string
+
+const (
+	AdGroupKeywordMatchTypeBroad  AdGroupKeywordMatchType = "broad"
+	AdGroupKeywordMatchTypePhrase AdGroupKeywordMatchType = "phrase"
+	AdGroupKeywordMatchTypeExact  AdGroupKeywordMatchType = "exact"
+)
+
+func NewAdGroupKeywordMatchTypeFromString(s string) (AdGroupKeywordMatchType, error) {
+	switch s {
+	case "broad":
+		return AdGroupKeywordMatchTypeBroad, nil
+	case "phrase":
+		return AdGroupKeywordMatchTypePhrase, nil
+	case "exact":
+		return AdGroupKeywordMatchTypeExact, nil
+	}
+	var t AdGroupKeywordMatchType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (a AdGroupMessageAppsItem) Ptr() *AdGroupMessageAppsItem {
+func (a AdGroupKeywordMatchType) Ptr() *AdGroupKeywordMatchType {
 	return &a
+}
+
+var (
+	adGroupLearningProgressFieldConversionThreshold = big.NewInt(1 << 0)
+	adGroupLearningProgressFieldConversions         = big.NewInt(1 << 1)
+	adGroupLearningProgressFieldProgressPercent     = big.NewInt(1 << 2)
+)
+
+type AdGroupLearningProgress struct {
+	// The conversions this ad group's learning phase needs. It can change during delivery.
+	ConversionThreshold int `json:"conversion_threshold" url:"conversion_threshold"`
+	// Conversions counted since the last significant edit during this ad group's learning phase.
+	Conversions int `json:"conversions" url:"conversions"`
+	// Conversions divided by the threshold, as a percentage clamped to 0–100. The ad group's `delivery_status` remains authoritative.
+	ProgressPercent float64 `json:"progress_percent" url:"progress_percent"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AdGroupLearningProgress) GetConversionThreshold() int {
+	if a == nil {
+		return 0
+	}
+	return a.ConversionThreshold
+}
+
+func (a *AdGroupLearningProgress) GetConversions() int {
+	if a == nil {
+		return 0
+	}
+	return a.Conversions
+}
+
+func (a *AdGroupLearningProgress) GetProgressPercent() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.ProgressPercent
+}
+
+func (a *AdGroupLearningProgress) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AdGroupLearningProgress) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetConversionThreshold sets the ConversionThreshold field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupLearningProgress) SetConversionThreshold(conversionThreshold int) {
+	a.ConversionThreshold = conversionThreshold
+	a.require(adGroupLearningProgressFieldConversionThreshold)
+}
+
+// SetConversions sets the Conversions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupLearningProgress) SetConversions(conversions int) {
+	a.Conversions = conversions
+	a.require(adGroupLearningProgressFieldConversions)
+}
+
+// SetProgressPercent sets the ProgressPercent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdGroupLearningProgress) SetProgressPercent(progressPercent float64) {
+	a.ProgressPercent = progressPercent
+	a.require(adGroupLearningProgressFieldProgressPercent)
+}
+
+func (a *AdGroupLearningProgress) UnmarshalJSON(data []byte) error {
+	type unmarshaler AdGroupLearningProgress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AdGroupLearningProgress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AdGroupLearningProgress) MarshalJSON() ([]byte, error) {
+	type embed AdGroupLearningProgress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AdGroupLearningProgress) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
 }
 
 var (
@@ -5395,10 +4637,12 @@ func (a *AdGroupOperatingSystem) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupOperatingSystem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetMinimumVersion sets the MinimumVersion field and marks it as non-optional;
@@ -5480,213 +4724,6 @@ func (a AdGroupOperatingSystemOs) Ptr() *AdGroupOperatingSystemOs {
 	return &a
 }
 
-// The result the ad group's delivery is optimized to get the most of.
-type AdGroupOptimizationGoal string
-
-const (
-	AdGroupOptimizationGoalConversions              AdGroupOptimizationGoal = "conversions"
-	AdGroupOptimizationGoalLinkClicks               AdGroupOptimizationGoal = "link_clicks"
-	AdGroupOptimizationGoalLandingPageViews         AdGroupOptimizationGoal = "landing_page_views"
-	AdGroupOptimizationGoalReach                    AdGroupOptimizationGoal = "reach"
-	AdGroupOptimizationGoalImpressions              AdGroupOptimizationGoal = "impressions"
-	AdGroupOptimizationGoalEngagement               AdGroupOptimizationGoal = "engagement"
-	AdGroupOptimizationGoalConversations            AdGroupOptimizationGoal = "conversations"
-	AdGroupOptimizationGoalVideoViews               AdGroupOptimizationGoal = "video_views"
-	AdGroupOptimizationGoalTwoSecondViews           AdGroupOptimizationGoal = "two_second_views"
-	AdGroupOptimizationGoalPageLikes                AdGroupOptimizationGoal = "page_likes"
-	AdGroupOptimizationGoalSocialProfile            AdGroupOptimizationGoal = "social_profile"
-	AdGroupOptimizationGoalAdRecallLift             AdGroupOptimizationGoal = "ad_recall_lift"
-	AdGroupOptimizationGoalEventResponses           AdGroupOptimizationGoal = "event_responses"
-	AdGroupOptimizationGoalRemindersSet             AdGroupOptimizationGoal = "reminders_set"
-	AdGroupOptimizationGoalLeadGeneration           AdGroupOptimizationGoal = "lead_generation"
-	AdGroupOptimizationGoalQualityLead              AdGroupOptimizationGoal = "quality_lead"
-	AdGroupOptimizationGoalValue                    AdGroupOptimizationGoal = "value"
-	AdGroupOptimizationGoalProfileAndPageEngagement AdGroupOptimizationGoal = "profile_and_page_engagement"
-)
-
-func NewAdGroupOptimizationGoalFromString(s string) (AdGroupOptimizationGoal, error) {
-	switch s {
-	case "conversions":
-		return AdGroupOptimizationGoalConversions, nil
-	case "link_clicks":
-		return AdGroupOptimizationGoalLinkClicks, nil
-	case "landing_page_views":
-		return AdGroupOptimizationGoalLandingPageViews, nil
-	case "reach":
-		return AdGroupOptimizationGoalReach, nil
-	case "impressions":
-		return AdGroupOptimizationGoalImpressions, nil
-	case "engagement":
-		return AdGroupOptimizationGoalEngagement, nil
-	case "conversations":
-		return AdGroupOptimizationGoalConversations, nil
-	case "video_views":
-		return AdGroupOptimizationGoalVideoViews, nil
-	case "two_second_views":
-		return AdGroupOptimizationGoalTwoSecondViews, nil
-	case "page_likes":
-		return AdGroupOptimizationGoalPageLikes, nil
-	case "social_profile":
-		return AdGroupOptimizationGoalSocialProfile, nil
-	case "ad_recall_lift":
-		return AdGroupOptimizationGoalAdRecallLift, nil
-	case "event_responses":
-		return AdGroupOptimizationGoalEventResponses, nil
-	case "reminders_set":
-		return AdGroupOptimizationGoalRemindersSet, nil
-	case "lead_generation":
-		return AdGroupOptimizationGoalLeadGeneration, nil
-	case "quality_lead":
-		return AdGroupOptimizationGoalQualityLead, nil
-	case "value":
-		return AdGroupOptimizationGoalValue, nil
-	case "profile_and_page_engagement":
-		return AdGroupOptimizationGoalProfileAndPageEngagement, nil
-	}
-	var t AdGroupOptimizationGoal
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdGroupOptimizationGoal) Ptr() *AdGroupOptimizationGoal {
-	return &a
-}
-
-var (
-	adGroupPlacementFieldPlatform  = big.NewInt(1 << 0)
-	adGroupPlacementFieldPositions = big.NewInt(1 << 1)
-)
-
-type AdGroupPlacement struct {
-	// Publisher platform where the ad is eligible to appear.
-	Platform  AdGroupPlacementPlatform `json:"platform" url:"platform"`
-	Positions []string                 `json:"positions" url:"positions"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AdGroupPlacement) GetPlatform() AdGroupPlacementPlatform {
-	if a == nil {
-		return ""
-	}
-	return a.Platform
-}
-
-func (a *AdGroupPlacement) GetPositions() []string {
-	if a == nil {
-		return nil
-	}
-	return a.Positions
-}
-
-func (a *AdGroupPlacement) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AdGroupPlacement) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
-	}
-	a.explicitFields.Or(a.explicitFields, field)
-}
-
-// SetPlatform sets the Platform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupPlacement) SetPlatform(platform AdGroupPlacementPlatform) {
-	a.Platform = platform
-	a.require(adGroupPlacementFieldPlatform)
-}
-
-// SetPositions sets the Positions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupPlacement) SetPositions(positions []string) {
-	a.Positions = positions
-	a.require(adGroupPlacementFieldPositions)
-}
-
-func (a *AdGroupPlacement) UnmarshalJSON(data []byte) error {
-	type unmarshaler AdGroupPlacement
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AdGroupPlacement(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AdGroupPlacement) MarshalJSON() ([]byte, error) {
-	type embed AdGroupPlacement
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AdGroupPlacement) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-// Publisher platform where the ad is eligible to appear.
-type AdGroupPlacementPlatform string
-
-const (
-	AdGroupPlacementPlatformFacebook        AdGroupPlacementPlatform = "facebook"
-	AdGroupPlacementPlatformInstagram       AdGroupPlacementPlatform = "instagram"
-	AdGroupPlacementPlatformMessenger       AdGroupPlacementPlatform = "messenger"
-	AdGroupPlacementPlatformAudienceNetwork AdGroupPlacementPlatform = "audience_network"
-	AdGroupPlacementPlatformThreads         AdGroupPlacementPlatform = "threads"
-	AdGroupPlacementPlatformWhatsapp        AdGroupPlacementPlatform = "whatsapp"
-)
-
-func NewAdGroupPlacementPlatformFromString(s string) (AdGroupPlacementPlatform, error) {
-	switch s {
-	case "facebook":
-		return AdGroupPlacementPlatformFacebook, nil
-	case "instagram":
-		return AdGroupPlacementPlatformInstagram, nil
-	case "messenger":
-		return AdGroupPlacementPlatformMessenger, nil
-	case "audience_network":
-		return AdGroupPlacementPlatformAudienceNetwork, nil
-	case "threads":
-		return AdGroupPlacementPlatformThreads, nil
-	case "whatsapp":
-		return AdGroupPlacementPlatformWhatsapp, nil
-	}
-	var t AdGroupPlacementPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdGroupPlacementPlatform) Ptr() *AdGroupPlacementPlatform {
-	return &a
-}
-
 var (
 	adGroupRegionsFieldExclude = big.NewInt(1 << 0)
 	adGroupRegionsFieldInclude = big.NewInt(1 << 1)
@@ -5727,10 +4764,12 @@ func (a *AdGroupRegions) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupRegions) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetExclude sets the Exclude field and marks it as non-optional;
@@ -5789,12 +4828,12 @@ func (a *AdGroupRegions) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Locations to target and exclude.
 var (
 	adGroupRegionsBodyFieldExclude = big.NewInt(1 << 0)
 	adGroupRegionsBodyFieldInclude = big.NewInt(1 << 1)
 )
 
+// Locations to target and exclude.
 type AdGroupRegionsBody struct {
 	// Locations excluded from targeting. Country groups can't be excluded.
 	Exclude *AdGroupGeoLocationsBody `json:"exclude,omitempty" url:"exclude,omitempty"`
@@ -5830,10 +4869,12 @@ func (a *AdGroupRegionsBody) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdGroupRegionsBody) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetExclude sets the Exclude field and marks it as non-optional;
@@ -5968,108 +5009,6 @@ func (a AdGroupStatus) Ptr() *AdGroupStatus {
 	return &a
 }
 
-var (
-	adGroupTargetingCategoryFieldID   = big.NewInt(1 << 0)
-	adGroupTargetingCategoryFieldName = big.NewInt(1 << 1)
-)
-
-type AdGroupTargetingCategory struct {
-	// The ad platform's ID for the category in its targeting taxonomy.
-	ID string `json:"id" url:"id"`
-	// Category name, such as `Movies`.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AdGroupTargetingCategory) GetID() string {
-	if a == nil {
-		return ""
-	}
-	return a.ID
-}
-
-func (a *AdGroupTargetingCategory) GetName() *string {
-	if a == nil {
-		return nil
-	}
-	return a.Name
-}
-
-func (a *AdGroupTargetingCategory) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AdGroupTargetingCategory) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
-	}
-	a.explicitFields.Or(a.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupTargetingCategory) SetID(id string) {
-	a.ID = id
-	a.require(adGroupTargetingCategoryFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdGroupTargetingCategory) SetName(name *string) {
-	a.Name = name
-	a.require(adGroupTargetingCategoryFieldName)
-}
-
-func (a *AdGroupTargetingCategory) UnmarshalJSON(data []byte) error {
-	type unmarshaler AdGroupTargetingCategory
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AdGroupTargetingCategory(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AdGroupTargetingCategory) MarshalJSON() ([]byte, error) {
-	type embed AdGroupTargetingCategory
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AdGroupTargetingCategory) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
 // The pixel event optimized for. A standard event, or any custom pixel event name.
 type ConversionEvent struct {
 	ConversionEventZero ConversionEventZero
@@ -6197,1004 +5136,6 @@ func (c ConversionEventZero) Ptr() *ConversionEventZero {
 	return &c
 }
 
-var (
-	detailedTargetingOptionFieldAudienceSizeLowerBound = big.NewInt(1 << 0)
-	detailedTargetingOptionFieldAudienceSizeUpperBound = big.NewInt(1 << 1)
-	detailedTargetingOptionFieldBehaviorType           = big.NewInt(1 << 2)
-	detailedTargetingOptionFieldDescription            = big.NewInt(1 << 3)
-	detailedTargetingOptionFieldID                     = big.NewInt(1 << 4)
-	detailedTargetingOptionFieldName                   = big.NewInt(1 << 5)
-)
-
-type DetailedTargetingOption struct {
-	// Low end of the ad platform's estimate of how many people this option can reach. Null when the platform doesn't publish one.
-	AudienceSizeLowerBound *float64 `json:"audience_size_lower_bound,omitempty" url:"audience_size_lower_bound,omitempty"`
-	// High end of the ad platform's estimate of how many people this option can reach. Null when the platform doesn't publish one.
-	AudienceSizeUpperBound *float64 `json:"audience_size_upper_bound,omitempty" url:"audience_size_upper_bound,omitempty"`
-	// What a behavior category is measured on, on ad platforms that scope them. Send it back on the `detailed_targeting.behaviors` entry alongside the id. Null for options that aren't scoped.
-	BehaviorType *DetailedTargetingOptionBehaviorType `json:"behavior_type,omitempty" url:"behavior_type,omitempty"`
-	// The ad platform's description of who the option covers, when it publishes one.
-	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	// The ad platform's ID for the option in its targeting taxonomy. Use it as the `id` of a `detailed_targeting` entry.
-	ID string `json:"id" url:"id"`
-	// Display name, such as `Movies`.
-	Name string `json:"name" url:"name"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (d *DetailedTargetingOption) GetAudienceSizeLowerBound() *float64 {
-	if d == nil {
-		return nil
-	}
-	return d.AudienceSizeLowerBound
-}
-
-func (d *DetailedTargetingOption) GetAudienceSizeUpperBound() *float64 {
-	if d == nil {
-		return nil
-	}
-	return d.AudienceSizeUpperBound
-}
-
-func (d *DetailedTargetingOption) GetBehaviorType() *DetailedTargetingOptionBehaviorType {
-	if d == nil {
-		return nil
-	}
-	return d.BehaviorType
-}
-
-func (d *DetailedTargetingOption) GetDescription() *string {
-	if d == nil {
-		return nil
-	}
-	return d.Description
-}
-
-func (d *DetailedTargetingOption) GetID() string {
-	if d == nil {
-		return ""
-	}
-	return d.ID
-}
-
-func (d *DetailedTargetingOption) GetName() string {
-	if d == nil {
-		return ""
-	}
-	return d.Name
-}
-
-func (d *DetailedTargetingOption) GetExtraProperties() map[string]interface{} {
-	if d == nil {
-		return nil
-	}
-	return d.extraProperties
-}
-
-func (d *DetailedTargetingOption) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetAudienceSizeLowerBound sets the AudienceSizeLowerBound field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DetailedTargetingOption) SetAudienceSizeLowerBound(audienceSizeLowerBound *float64) {
-	d.AudienceSizeLowerBound = audienceSizeLowerBound
-	d.require(detailedTargetingOptionFieldAudienceSizeLowerBound)
-}
-
-// SetAudienceSizeUpperBound sets the AudienceSizeUpperBound field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DetailedTargetingOption) SetAudienceSizeUpperBound(audienceSizeUpperBound *float64) {
-	d.AudienceSizeUpperBound = audienceSizeUpperBound
-	d.require(detailedTargetingOptionFieldAudienceSizeUpperBound)
-}
-
-// SetBehaviorType sets the BehaviorType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DetailedTargetingOption) SetBehaviorType(behaviorType *DetailedTargetingOptionBehaviorType) {
-	d.BehaviorType = behaviorType
-	d.require(detailedTargetingOptionFieldBehaviorType)
-}
-
-// SetDescription sets the Description field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DetailedTargetingOption) SetDescription(description *string) {
-	d.Description = description
-	d.require(detailedTargetingOptionFieldDescription)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DetailedTargetingOption) SetID(id string) {
-	d.ID = id
-	d.require(detailedTargetingOptionFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DetailedTargetingOption) SetName(name string) {
-	d.Name = name
-	d.require(detailedTargetingOptionFieldName)
-}
-
-func (d *DetailedTargetingOption) UnmarshalJSON(data []byte) error {
-	type unmarshaler DetailedTargetingOption
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*d = DetailedTargetingOption(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *d)
-	if err != nil {
-		return err
-	}
-	d.extraProperties = extraProperties
-	d.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d *DetailedTargetingOption) MarshalJSON() ([]byte, error) {
-	type embed DetailedTargetingOption
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*d),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (d *DetailedTargetingOption) String() string {
-	if d == nil {
-		return "<nil>"
-	}
-	if len(d.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(d); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", d)
-}
-
-// What a behavior category is measured on, on ad platforms that scope them. Send it back on the `detailed_targeting.behaviors` entry alongside the id. Null for options that aren't scoped.
-type DetailedTargetingOptionBehaviorType string
-
-const (
-	DetailedTargetingOptionBehaviorTypeVideo   DetailedTargetingOptionBehaviorType = "video"
-	DetailedTargetingOptionBehaviorTypeCreator DetailedTargetingOptionBehaviorType = "creator"
-	DetailedTargetingOptionBehaviorTypeHashtag DetailedTargetingOptionBehaviorType = "hashtag"
-)
-
-func NewDetailedTargetingOptionBehaviorTypeFromString(s string) (DetailedTargetingOptionBehaviorType, error) {
-	switch s {
-	case "video":
-		return DetailedTargetingOptionBehaviorTypeVideo, nil
-	case "creator":
-		return DetailedTargetingOptionBehaviorTypeCreator, nil
-	case "hashtag":
-		return DetailedTargetingOptionBehaviorTypeHashtag, nil
-	}
-	var t DetailedTargetingOptionBehaviorType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (d DetailedTargetingOptionBehaviorType) Ptr() *DetailedTargetingOptionBehaviorType {
-	return &d
-}
-
-var (
-	languageTargetingOptionFieldCode = big.NewInt(1 << 0)
-	languageTargetingOptionFieldName = big.NewInt(1 << 1)
-)
-
-type LanguageTargetingOption struct {
-	// ISO 639 code the ad-group `languages` field takes, such as `en`.
-	Code string `json:"code" url:"code"`
-	// Display name, such as `English`.
-	Name string `json:"name" url:"name"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LanguageTargetingOption) GetCode() string {
-	if l == nil {
-		return ""
-	}
-	return l.Code
-}
-
-func (l *LanguageTargetingOption) GetName() string {
-	if l == nil {
-		return ""
-	}
-	return l.Name
-}
-
-func (l *LanguageTargetingOption) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LanguageTargetingOption) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetCode sets the Code field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LanguageTargetingOption) SetCode(code string) {
-	l.Code = code
-	l.require(languageTargetingOptionFieldCode)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LanguageTargetingOption) SetName(name string) {
-	l.Name = name
-	l.require(languageTargetingOptionFieldName)
-}
-
-func (l *LanguageTargetingOption) UnmarshalJSON(data []byte) error {
-	type unmarshaler LanguageTargetingOption
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = LanguageTargetingOption(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LanguageTargetingOption) MarshalJSON() ([]byte, error) {
-	type embed LanguageTargetingOption
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LanguageTargetingOption) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-var (
-	locationTargetingOptionFieldCode         = big.NewInt(1 << 0)
-	locationTargetingOptionFieldCountryCode  = big.NewInt(1 << 1)
-	locationTargetingOptionFieldCountryName  = big.NewInt(1 << 2)
-	locationTargetingOptionFieldKey          = big.NewInt(1 << 3)
-	locationTargetingOptionFieldLocationType = big.NewInt(1 << 4)
-	locationTargetingOptionFieldName         = big.NewInt(1 << 5)
-	locationTargetingOptionFieldRegion       = big.NewInt(1 << 6)
-)
-
-type LocationTargetingOption struct {
-	// The standardized code the ad-group `regions` field takes: an ISO 3166-1 code for countries (`US`) or an ISO 3166-2 code for states and provinces (`US-CA`, `CA-ON`). Null for a location that has no standard code, such as a city or a metro area — target those by `key` in the `regions` cities list instead.
-	Code *string `json:"code,omitempty" url:"code,omitempty"`
-	// ISO 3166-1 code of the country the location sits in.
-	CountryCode *string `json:"country_code,omitempty" url:"country_code,omitempty"`
-	// Name of the country the location sits in.
-	CountryName *string `json:"country_name,omitempty" url:"country_name,omitempty"`
-	// The ad platform's key for the location in its location taxonomy. Use it as the `key` of a `regions` city or zip entry.
-	Key string `json:"key" url:"key"`
-	// Granularity of the location. Which of these an ad platform reports depends on how finely it divides its location taxonomy.
-	LocationType LocationTargetingOptionLocationType `json:"location_type" url:"location_type"`
-	// Display name, such as `California`.
-	Name string `json:"name" url:"name"`
-	// Name of the state or province a city sits in. Null for everything but cities.
-	Region *string `json:"region,omitempty" url:"region,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LocationTargetingOption) GetCode() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Code
-}
-
-func (l *LocationTargetingOption) GetCountryCode() *string {
-	if l == nil {
-		return nil
-	}
-	return l.CountryCode
-}
-
-func (l *LocationTargetingOption) GetCountryName() *string {
-	if l == nil {
-		return nil
-	}
-	return l.CountryName
-}
-
-func (l *LocationTargetingOption) GetKey() string {
-	if l == nil {
-		return ""
-	}
-	return l.Key
-}
-
-func (l *LocationTargetingOption) GetLocationType() LocationTargetingOptionLocationType {
-	if l == nil {
-		return ""
-	}
-	return l.LocationType
-}
-
-func (l *LocationTargetingOption) GetName() string {
-	if l == nil {
-		return ""
-	}
-	return l.Name
-}
-
-func (l *LocationTargetingOption) GetRegion() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Region
-}
-
-func (l *LocationTargetingOption) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LocationTargetingOption) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetCode sets the Code field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LocationTargetingOption) SetCode(code *string) {
-	l.Code = code
-	l.require(locationTargetingOptionFieldCode)
-}
-
-// SetCountryCode sets the CountryCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LocationTargetingOption) SetCountryCode(countryCode *string) {
-	l.CountryCode = countryCode
-	l.require(locationTargetingOptionFieldCountryCode)
-}
-
-// SetCountryName sets the CountryName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LocationTargetingOption) SetCountryName(countryName *string) {
-	l.CountryName = countryName
-	l.require(locationTargetingOptionFieldCountryName)
-}
-
-// SetKey sets the Key field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LocationTargetingOption) SetKey(key string) {
-	l.Key = key
-	l.require(locationTargetingOptionFieldKey)
-}
-
-// SetLocationType sets the LocationType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LocationTargetingOption) SetLocationType(locationType LocationTargetingOptionLocationType) {
-	l.LocationType = locationType
-	l.require(locationTargetingOptionFieldLocationType)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LocationTargetingOption) SetName(name string) {
-	l.Name = name
-	l.require(locationTargetingOptionFieldName)
-}
-
-// SetRegion sets the Region field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LocationTargetingOption) SetRegion(region *string) {
-	l.Region = region
-	l.require(locationTargetingOptionFieldRegion)
-}
-
-func (l *LocationTargetingOption) UnmarshalJSON(data []byte) error {
-	type unmarshaler LocationTargetingOption
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = LocationTargetingOption(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LocationTargetingOption) MarshalJSON() ([]byte, error) {
-	type embed LocationTargetingOption
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LocationTargetingOption) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-// Granularity of the location. Which of these an ad platform reports depends on how finely it divides its location taxonomy.
-type LocationTargetingOptionLocationType string
-
-const (
-	LocationTargetingOptionLocationTypeCountry       LocationTargetingOptionLocationType = "country"
-	LocationTargetingOptionLocationTypeRegion        LocationTargetingOptionLocationType = "region"
-	LocationTargetingOptionLocationTypeCity          LocationTargetingOptionLocationType = "city"
-	LocationTargetingOptionLocationTypeZip           LocationTargetingOptionLocationType = "zip"
-	LocationTargetingOptionLocationTypeNeighborhood  LocationTargetingOptionLocationType = "neighborhood"
-	LocationTargetingOptionLocationTypeSubcity       LocationTargetingOptionLocationType = "subcity"
-	LocationTargetingOptionLocationTypeMediumGeoArea LocationTargetingOptionLocationType = "medium_geo_area"
-	LocationTargetingOptionLocationTypeDistrict      LocationTargetingOptionLocationType = "district"
-	LocationTargetingOptionLocationTypeDma           LocationTargetingOptionLocationType = "dma"
-)
-
-func NewLocationTargetingOptionLocationTypeFromString(s string) (LocationTargetingOptionLocationType, error) {
-	switch s {
-	case "country":
-		return LocationTargetingOptionLocationTypeCountry, nil
-	case "region":
-		return LocationTargetingOptionLocationTypeRegion, nil
-	case "city":
-		return LocationTargetingOptionLocationTypeCity, nil
-	case "zip":
-		return LocationTargetingOptionLocationTypeZip, nil
-	case "neighborhood":
-		return LocationTargetingOptionLocationTypeNeighborhood, nil
-	case "subcity":
-		return LocationTargetingOptionLocationTypeSubcity, nil
-	case "medium_geo_area":
-		return LocationTargetingOptionLocationTypeMediumGeoArea, nil
-	case "district":
-		return LocationTargetingOptionLocationTypeDistrict, nil
-	case "dma":
-		return LocationTargetingOptionLocationTypeDma, nil
-	}
-	var t LocationTargetingOptionLocationType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (l LocationTargetingOptionLocationType) Ptr() *LocationTargetingOptionLocationType {
-	return &l
-}
-
-var (
-	reachEstimateFieldUsersLowerBound = big.NewInt(1 << 0)
-	reachEstimateFieldUsersUpperBound = big.NewInt(1 << 1)
-)
-
-type ReachEstimate struct {
-	// Low end of how many people the targeting can reach. Null when the platform couldn't produce an estimate.
-	UsersLowerBound *float64 `json:"users_lower_bound,omitempty" url:"users_lower_bound,omitempty"`
-	// High end of how many people the targeting can reach. Null when the platform couldn't produce an estimate.
-	UsersUpperBound *float64 `json:"users_upper_bound,omitempty" url:"users_upper_bound,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (r *ReachEstimate) GetUsersLowerBound() *float64 {
-	if r == nil {
-		return nil
-	}
-	return r.UsersLowerBound
-}
-
-func (r *ReachEstimate) GetUsersUpperBound() *float64 {
-	if r == nil {
-		return nil
-	}
-	return r.UsersUpperBound
-}
-
-func (r *ReachEstimate) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *ReachEstimate) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
-	}
-	r.explicitFields.Or(r.explicitFields, field)
-}
-
-// SetUsersLowerBound sets the UsersLowerBound field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReachEstimate) SetUsersLowerBound(usersLowerBound *float64) {
-	r.UsersLowerBound = usersLowerBound
-	r.require(reachEstimateFieldUsersLowerBound)
-}
-
-// SetUsersUpperBound sets the UsersUpperBound field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReachEstimate) SetUsersUpperBound(usersUpperBound *float64) {
-	r.UsersUpperBound = usersUpperBound
-	r.require(reachEstimateFieldUsersUpperBound)
-}
-
-func (r *ReachEstimate) UnmarshalJSON(data []byte) error {
-	type unmarshaler ReachEstimate
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*r = ReachEstimate(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *ReachEstimate) MarshalJSON() ([]byte, error) {
-	type embed ReachEstimate
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*r),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *ReachEstimate) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
-}
-
-// One result from the ad-group targeting-options search. `type` picks the shape: detailed-targeting taxonomy options carry the ad platform's `id`, languages carry an ISO 639 `code`, and locations carry the platform `key` plus geographic context.
-type TargetingOption struct {
-	Type             string
-	Behaviors        *DetailedTargetingOption
-	EducationMajors  *DetailedTargetingOption
-	EducationSchools *DetailedTargetingOption
-	FamilyStatuses   *DetailedTargetingOption
-	Income           *DetailedTargetingOption
-	Industries       *DetailedTargetingOption
-	Interests        *DetailedTargetingOption
-	Languages        *LanguageTargetingOption
-	LifeEvents       *DetailedTargetingOption
-	Locations        *LocationTargetingOption
-	WorkEmployers    *DetailedTargetingOption
-	WorkPositions    *DetailedTargetingOption
-
-	rawJSON json.RawMessage
-}
-
-func (t *TargetingOption) GetType() string {
-	if t == nil {
-		return ""
-	}
-	return t.Type
-}
-
-func (t *TargetingOption) GetBehaviors() *DetailedTargetingOption {
-	if t == nil {
-		return nil
-	}
-	return t.Behaviors
-}
-
-func (t *TargetingOption) GetEducationMajors() *DetailedTargetingOption {
-	if t == nil {
-		return nil
-	}
-	return t.EducationMajors
-}
-
-func (t *TargetingOption) GetEducationSchools() *DetailedTargetingOption {
-	if t == nil {
-		return nil
-	}
-	return t.EducationSchools
-}
-
-func (t *TargetingOption) GetFamilyStatuses() *DetailedTargetingOption {
-	if t == nil {
-		return nil
-	}
-	return t.FamilyStatuses
-}
-
-func (t *TargetingOption) GetIncome() *DetailedTargetingOption {
-	if t == nil {
-		return nil
-	}
-	return t.Income
-}
-
-func (t *TargetingOption) GetIndustries() *DetailedTargetingOption {
-	if t == nil {
-		return nil
-	}
-	return t.Industries
-}
-
-func (t *TargetingOption) GetInterests() *DetailedTargetingOption {
-	if t == nil {
-		return nil
-	}
-	return t.Interests
-}
-
-func (t *TargetingOption) GetLanguages() *LanguageTargetingOption {
-	if t == nil {
-		return nil
-	}
-	return t.Languages
-}
-
-func (t *TargetingOption) GetLifeEvents() *DetailedTargetingOption {
-	if t == nil {
-		return nil
-	}
-	return t.LifeEvents
-}
-
-func (t *TargetingOption) GetLocations() *LocationTargetingOption {
-	if t == nil {
-		return nil
-	}
-	return t.Locations
-}
-
-func (t *TargetingOption) GetWorkEmployers() *DetailedTargetingOption {
-	if t == nil {
-		return nil
-	}
-	return t.WorkEmployers
-}
-
-func (t *TargetingOption) GetWorkPositions() *DetailedTargetingOption {
-	if t == nil {
-		return nil
-	}
-	return t.WorkPositions
-}
-
-func (t *TargetingOption) UnmarshalJSON(data []byte) error {
-	var unmarshaler struct {
-		Type string `json:"type"`
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	t.Type = unmarshaler.Type
-	if unmarshaler.Type == "" {
-		return fmt.Errorf("%T did not include discriminant type", t)
-	}
-	switch unmarshaler.Type {
-	case "behaviors":
-		value := new(DetailedTargetingOption)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		t.Behaviors = value
-	case "education_majors":
-		value := new(DetailedTargetingOption)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		t.EducationMajors = value
-	case "education_schools":
-		value := new(DetailedTargetingOption)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		t.EducationSchools = value
-	case "family_statuses":
-		value := new(DetailedTargetingOption)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		t.FamilyStatuses = value
-	case "income":
-		value := new(DetailedTargetingOption)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		t.Income = value
-	case "industries":
-		value := new(DetailedTargetingOption)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		t.Industries = value
-	case "interests":
-		value := new(DetailedTargetingOption)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		t.Interests = value
-	case "languages":
-		value := new(LanguageTargetingOption)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		t.Languages = value
-	case "life_events":
-		value := new(DetailedTargetingOption)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		t.LifeEvents = value
-	case "locations":
-		value := new(LocationTargetingOption)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		t.Locations = value
-	case "work_employers":
-		value := new(DetailedTargetingOption)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		t.WorkEmployers = value
-	case "work_positions":
-		value := new(DetailedTargetingOption)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		t.WorkPositions = value
-	}
-	t.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (t TargetingOption) MarshalJSON() ([]byte, error) {
-	if err := t.validate(); err != nil {
-		return nil, err
-	}
-	if t.Behaviors != nil {
-		return internal.MarshalJSONWithExtraProperty(t.Behaviors, "type", "behaviors")
-	}
-	if t.EducationMajors != nil {
-		return internal.MarshalJSONWithExtraProperty(t.EducationMajors, "type", "education_majors")
-	}
-	if t.EducationSchools != nil {
-		return internal.MarshalJSONWithExtraProperty(t.EducationSchools, "type", "education_schools")
-	}
-	if t.FamilyStatuses != nil {
-		return internal.MarshalJSONWithExtraProperty(t.FamilyStatuses, "type", "family_statuses")
-	}
-	if t.Income != nil {
-		return internal.MarshalJSONWithExtraProperty(t.Income, "type", "income")
-	}
-	if t.Industries != nil {
-		return internal.MarshalJSONWithExtraProperty(t.Industries, "type", "industries")
-	}
-	if t.Interests != nil {
-		return internal.MarshalJSONWithExtraProperty(t.Interests, "type", "interests")
-	}
-	if t.Languages != nil {
-		return internal.MarshalJSONWithExtraProperty(t.Languages, "type", "languages")
-	}
-	if t.LifeEvents != nil {
-		return internal.MarshalJSONWithExtraProperty(t.LifeEvents, "type", "life_events")
-	}
-	if t.Locations != nil {
-		return internal.MarshalJSONWithExtraProperty(t.Locations, "type", "locations")
-	}
-	if t.WorkEmployers != nil {
-		return internal.MarshalJSONWithExtraProperty(t.WorkEmployers, "type", "work_employers")
-	}
-	if t.WorkPositions != nil {
-		return internal.MarshalJSONWithExtraProperty(t.WorkPositions, "type", "work_positions")
-	}
-	if len(t.rawJSON) > 0 {
-		return t.rawJSON, nil
-	}
-	return nil, fmt.Errorf("type %T does not define a non-empty union type", t)
-}
-
-type TargetingOptionVisitor interface {
-	VisitBehaviors(*DetailedTargetingOption) error
-	VisitEducationMajors(*DetailedTargetingOption) error
-	VisitEducationSchools(*DetailedTargetingOption) error
-	VisitFamilyStatuses(*DetailedTargetingOption) error
-	VisitIncome(*DetailedTargetingOption) error
-	VisitIndustries(*DetailedTargetingOption) error
-	VisitInterests(*DetailedTargetingOption) error
-	VisitLanguages(*LanguageTargetingOption) error
-	VisitLifeEvents(*DetailedTargetingOption) error
-	VisitLocations(*LocationTargetingOption) error
-	VisitWorkEmployers(*DetailedTargetingOption) error
-	VisitWorkPositions(*DetailedTargetingOption) error
-}
-
-func (t *TargetingOption) Accept(visitor TargetingOptionVisitor) error {
-	if t.Behaviors != nil {
-		return visitor.VisitBehaviors(t.Behaviors)
-	}
-	if t.EducationMajors != nil {
-		return visitor.VisitEducationMajors(t.EducationMajors)
-	}
-	if t.EducationSchools != nil {
-		return visitor.VisitEducationSchools(t.EducationSchools)
-	}
-	if t.FamilyStatuses != nil {
-		return visitor.VisitFamilyStatuses(t.FamilyStatuses)
-	}
-	if t.Income != nil {
-		return visitor.VisitIncome(t.Income)
-	}
-	if t.Industries != nil {
-		return visitor.VisitIndustries(t.Industries)
-	}
-	if t.Interests != nil {
-		return visitor.VisitInterests(t.Interests)
-	}
-	if t.Languages != nil {
-		return visitor.VisitLanguages(t.Languages)
-	}
-	if t.LifeEvents != nil {
-		return visitor.VisitLifeEvents(t.LifeEvents)
-	}
-	if t.Locations != nil {
-		return visitor.VisitLocations(t.Locations)
-	}
-	if t.WorkEmployers != nil {
-		return visitor.VisitWorkEmployers(t.WorkEmployers)
-	}
-	if t.WorkPositions != nil {
-		return visitor.VisitWorkPositions(t.WorkPositions)
-	}
-	return fmt.Errorf("type %T does not define a non-empty union type", t)
-}
-
-func (t *TargetingOption) validate() error {
-	if t == nil {
-		return fmt.Errorf("type %T is nil", t)
-	}
-	var fields []string
-	if t.Behaviors != nil {
-		fields = append(fields, "behaviors")
-	}
-	if t.EducationMajors != nil {
-		fields = append(fields, "education_majors")
-	}
-	if t.EducationSchools != nil {
-		fields = append(fields, "education_schools")
-	}
-	if t.FamilyStatuses != nil {
-		fields = append(fields, "family_statuses")
-	}
-	if t.Income != nil {
-		fields = append(fields, "income")
-	}
-	if t.Industries != nil {
-		fields = append(fields, "industries")
-	}
-	if t.Interests != nil {
-		fields = append(fields, "interests")
-	}
-	if t.Languages != nil {
-		fields = append(fields, "languages")
-	}
-	if t.LifeEvents != nil {
-		fields = append(fields, "life_events")
-	}
-	if t.Locations != nil {
-		fields = append(fields, "locations")
-	}
-	if t.WorkEmployers != nil {
-		fields = append(fields, "work_employers")
-	}
-	if t.WorkPositions != nil {
-		fields = append(fields, "work_positions")
-	}
-	if len(fields) == 0 {
-		if t.Type != "" {
-			if len(t.rawJSON) > 0 {
-				return nil
-			}
-			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", t, t.Type)
-		}
-		return fmt.Errorf("type %T is empty", t)
-	}
-	if len(fields) > 1 {
-		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", t, fields)
-	}
-	if t.Type != "" {
-		field := fields[0]
-		if t.Type != field {
-			return fmt.Errorf(
-				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
-				t,
-				t.Type,
-				t,
-			)
-		}
-	}
-	return nil
-}
-
 // How delivery bids are set in the ad auction. Target-based strategies use `desired_cost_per_result`.
 type CreateAdGroupsRequestBidType string
 
@@ -7244,61 +5185,32 @@ func (c CreateAdGroupsRequestBudgetType) Ptr() *CreateAdGroupsRequestBudgetType 
 	return &c
 }
 
-// Where the outcome being optimized for occurs, such as a website visit, social-profile visit, messaging conversation, ad interaction, or lead-form submission. The lead form itself is set on the ad.
-type CreateAdGroupsRequestConversionLocation string
-
-const (
-	CreateAdGroupsRequestConversionLocationWebsite                  CreateAdGroupsRequestConversionLocation = "website"
-	CreateAdGroupsRequestConversionLocationProfile                  CreateAdGroupsRequestConversionLocation = "profile"
-	CreateAdGroupsRequestConversionLocationInstagramAndFacebook     CreateAdGroupsRequestConversionLocation = "instagram_and_facebook"
-	CreateAdGroupsRequestConversionLocationInstagramProfile         CreateAdGroupsRequestConversionLocation = "instagram_profile"
-	CreateAdGroupsRequestConversionLocationMessaging                CreateAdGroupsRequestConversionLocation = "messaging"
-	CreateAdGroupsRequestConversionLocationOnAd                     CreateAdGroupsRequestConversionLocation = "on_ad"
-	CreateAdGroupsRequestConversionLocationInstantForms             CreateAdGroupsRequestConversionLocation = "instant_forms"
-	CreateAdGroupsRequestConversionLocationInstantFormsAndMessenger CreateAdGroupsRequestConversionLocation = "instant_forms_and_messenger"
-	CreateAdGroupsRequestConversionLocationWebsiteAndInstantForms   CreateAdGroupsRequestConversionLocation = "website_and_instant_forms"
-)
-
-func NewCreateAdGroupsRequestConversionLocationFromString(s string) (CreateAdGroupsRequestConversionLocation, error) {
-	switch s {
-	case "website":
-		return CreateAdGroupsRequestConversionLocationWebsite, nil
-	case "profile":
-		return CreateAdGroupsRequestConversionLocationProfile, nil
-	case "instagram_and_facebook":
-		return CreateAdGroupsRequestConversionLocationInstagramAndFacebook, nil
-	case "instagram_profile":
-		return CreateAdGroupsRequestConversionLocationInstagramProfile, nil
-	case "messaging":
-		return CreateAdGroupsRequestConversionLocationMessaging, nil
-	case "on_ad":
-		return CreateAdGroupsRequestConversionLocationOnAd, nil
-	case "instant_forms":
-		return CreateAdGroupsRequestConversionLocationInstantForms, nil
-	case "instant_forms_and_messenger":
-		return CreateAdGroupsRequestConversionLocationInstantFormsAndMessenger, nil
-	case "website_and_instant_forms":
-		return CreateAdGroupsRequestConversionLocationWebsiteAndInstantForms, nil
-	}
-	var t CreateAdGroupsRequestConversionLocation
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateAdGroupsRequestConversionLocation) Ptr() *CreateAdGroupsRequestConversionLocation {
-	return &c
-}
-
-// Cap on how often one person sees ads from this ad group. Only available on campaigns with the `awareness` objective.
 var (
-	createAdGroupsRequestFrequencyCapFieldMaximumImpressions = big.NewInt(1 << 0)
-	createAdGroupsRequestFrequencyCapFieldPerDays            = big.NewInt(1 << 1)
+	createAdGroupsRequestDeliveryScheduleFieldFriday    = big.NewInt(1 << 0)
+	createAdGroupsRequestDeliveryScheduleFieldMonday    = big.NewInt(1 << 1)
+	createAdGroupsRequestDeliveryScheduleFieldSaturday  = big.NewInt(1 << 2)
+	createAdGroupsRequestDeliveryScheduleFieldSunday    = big.NewInt(1 << 3)
+	createAdGroupsRequestDeliveryScheduleFieldThursday  = big.NewInt(1 << 4)
+	createAdGroupsRequestDeliveryScheduleFieldTuesday   = big.NewInt(1 << 5)
+	createAdGroupsRequestDeliveryScheduleFieldWednesday = big.NewInt(1 << 6)
 )
 
-type CreateAdGroupsRequestFrequencyCap struct {
-	// Most times one person can be shown ads from this ad group within the window.
-	MaximumImpressions *int `json:"maximum_impressions,omitempty" url:"maximum_impressions,omitempty"`
-	// Length of the rolling window, in days.
-	PerDays *int `json:"per_days,omitempty" url:"per_days,omitempty"`
+// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+type CreateAdGroupsRequestDeliverySchedule struct {
+	// Windows the ad group delivers in on Friday.
+	Friday []*CreateAdGroupsRequestDeliveryScheduleFridayItem `json:"friday,omitempty" url:"friday,omitempty"`
+	// Windows the ad group delivers in on Monday.
+	Monday []*CreateAdGroupsRequestDeliveryScheduleMondayItem `json:"monday,omitempty" url:"monday,omitempty"`
+	// Windows the ad group delivers in on Saturday.
+	Saturday []*CreateAdGroupsRequestDeliveryScheduleSaturdayItem `json:"saturday,omitempty" url:"saturday,omitempty"`
+	// Windows the ad group delivers in on Sunday.
+	Sunday []*CreateAdGroupsRequestDeliveryScheduleSundayItem `json:"sunday,omitempty" url:"sunday,omitempty"`
+	// Windows the ad group delivers in on Thursday.
+	Thursday []*CreateAdGroupsRequestDeliveryScheduleThursdayItem `json:"thursday,omitempty" url:"thursday,omitempty"`
+	// Windows the ad group delivers in on Tuesday.
+	Tuesday []*CreateAdGroupsRequestDeliveryScheduleTuesdayItem `json:"tuesday,omitempty" url:"tuesday,omitempty"`
+	// Windows the ad group delivers in on Wednesday.
+	Wednesday []*CreateAdGroupsRequestDeliveryScheduleWednesdayItem `json:"wednesday,omitempty" url:"wednesday,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -7307,55 +5219,127 @@ type CreateAdGroupsRequestFrequencyCap struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateAdGroupsRequestFrequencyCap) GetMaximumImpressions() *int {
+func (c *CreateAdGroupsRequestDeliverySchedule) GetFriday() []*CreateAdGroupsRequestDeliveryScheduleFridayItem {
 	if c == nil {
 		return nil
 	}
-	return c.MaximumImpressions
+	return c.Friday
 }
 
-func (c *CreateAdGroupsRequestFrequencyCap) GetPerDays() *int {
+func (c *CreateAdGroupsRequestDeliverySchedule) GetMonday() []*CreateAdGroupsRequestDeliveryScheduleMondayItem {
 	if c == nil {
 		return nil
 	}
-	return c.PerDays
+	return c.Monday
 }
 
-func (c *CreateAdGroupsRequestFrequencyCap) GetExtraProperties() map[string]interface{} {
+func (c *CreateAdGroupsRequestDeliverySchedule) GetSaturday() []*CreateAdGroupsRequestDeliveryScheduleSaturdayItem {
+	if c == nil {
+		return nil
+	}
+	return c.Saturday
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) GetSunday() []*CreateAdGroupsRequestDeliveryScheduleSundayItem {
+	if c == nil {
+		return nil
+	}
+	return c.Sunday
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) GetThursday() []*CreateAdGroupsRequestDeliveryScheduleThursdayItem {
+	if c == nil {
+		return nil
+	}
+	return c.Thursday
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) GetTuesday() []*CreateAdGroupsRequestDeliveryScheduleTuesdayItem {
+	if c == nil {
+		return nil
+	}
+	return c.Tuesday
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) GetWednesday() []*CreateAdGroupsRequestDeliveryScheduleWednesdayItem {
+	if c == nil {
+		return nil
+	}
+	return c.Wednesday
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreateAdGroupsRequestFrequencyCap) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+func (c *CreateAdGroupsRequestDeliverySchedule) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
-// SetMaximumImpressions sets the MaximumImpressions field and marks it as non-optional;
+// SetFriday sets the Friday field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdGroupsRequestFrequencyCap) SetMaximumImpressions(maximumImpressions *int) {
-	c.MaximumImpressions = maximumImpressions
-	c.require(createAdGroupsRequestFrequencyCapFieldMaximumImpressions)
+func (c *CreateAdGroupsRequestDeliverySchedule) SetFriday(friday []*CreateAdGroupsRequestDeliveryScheduleFridayItem) {
+	c.Friday = friday
+	c.require(createAdGroupsRequestDeliveryScheduleFieldFriday)
 }
 
-// SetPerDays sets the PerDays field and marks it as non-optional;
+// SetMonday sets the Monday field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdGroupsRequestFrequencyCap) SetPerDays(perDays *int) {
-	c.PerDays = perDays
-	c.require(createAdGroupsRequestFrequencyCapFieldPerDays)
+func (c *CreateAdGroupsRequestDeliverySchedule) SetMonday(monday []*CreateAdGroupsRequestDeliveryScheduleMondayItem) {
+	c.Monday = monday
+	c.require(createAdGroupsRequestDeliveryScheduleFieldMonday)
 }
 
-func (c *CreateAdGroupsRequestFrequencyCap) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAdGroupsRequestFrequencyCap
+// SetSaturday sets the Saturday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliverySchedule) SetSaturday(saturday []*CreateAdGroupsRequestDeliveryScheduleSaturdayItem) {
+	c.Saturday = saturday
+	c.require(createAdGroupsRequestDeliveryScheduleFieldSaturday)
+}
+
+// SetSunday sets the Sunday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliverySchedule) SetSunday(sunday []*CreateAdGroupsRequestDeliveryScheduleSundayItem) {
+	c.Sunday = sunday
+	c.require(createAdGroupsRequestDeliveryScheduleFieldSunday)
+}
+
+// SetThursday sets the Thursday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliverySchedule) SetThursday(thursday []*CreateAdGroupsRequestDeliveryScheduleThursdayItem) {
+	c.Thursday = thursday
+	c.require(createAdGroupsRequestDeliveryScheduleFieldThursday)
+}
+
+// SetTuesday sets the Tuesday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliverySchedule) SetTuesday(tuesday []*CreateAdGroupsRequestDeliveryScheduleTuesdayItem) {
+	c.Tuesday = tuesday
+	c.require(createAdGroupsRequestDeliveryScheduleFieldTuesday)
+}
+
+// SetWednesday sets the Wednesday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliverySchedule) SetWednesday(wednesday []*CreateAdGroupsRequestDeliveryScheduleWednesdayItem) {
+	c.Wednesday = wednesday
+	c.require(createAdGroupsRequestDeliveryScheduleFieldWednesday)
+}
+
+func (c *CreateAdGroupsRequestDeliverySchedule) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestDeliverySchedule
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreateAdGroupsRequestFrequencyCap(value)
+	*c = CreateAdGroupsRequestDeliverySchedule(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
@@ -7365,8 +5349,8 @@ func (c *CreateAdGroupsRequestFrequencyCap) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c *CreateAdGroupsRequestFrequencyCap) MarshalJSON() ([]byte, error) {
-	type embed CreateAdGroupsRequestFrequencyCap
+func (c *CreateAdGroupsRequestDeliverySchedule) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestDeliverySchedule
 	var marshaler = struct {
 		embed
 	}{
@@ -7376,7 +5360,7 @@ func (c *CreateAdGroupsRequestFrequencyCap) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreateAdGroupsRequestFrequencyCap) String() string {
+func (c *CreateAdGroupsRequestDeliverySchedule) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -7391,184 +5375,16 @@ func (c *CreateAdGroupsRequestFrequencyCap) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-type CreateAdGroupsRequestMessageAppsItem string
-
-const (
-	CreateAdGroupsRequestMessageAppsItemMessenger CreateAdGroupsRequestMessageAppsItem = "messenger"
-	CreateAdGroupsRequestMessageAppsItemInstagram CreateAdGroupsRequestMessageAppsItem = "instagram"
-	CreateAdGroupsRequestMessageAppsItemWhatsapp  CreateAdGroupsRequestMessageAppsItem = "whatsapp"
-)
-
-func NewCreateAdGroupsRequestMessageAppsItemFromString(s string) (CreateAdGroupsRequestMessageAppsItem, error) {
-	switch s {
-	case "messenger":
-		return CreateAdGroupsRequestMessageAppsItemMessenger, nil
-	case "instagram":
-		return CreateAdGroupsRequestMessageAppsItemInstagram, nil
-	case "whatsapp":
-		return CreateAdGroupsRequestMessageAppsItemWhatsapp, nil
-	}
-	var t CreateAdGroupsRequestMessageAppsItem
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateAdGroupsRequestMessageAppsItem) Ptr() *CreateAdGroupsRequestMessageAppsItem {
-	return &c
-}
-
-// The result the ad group's delivery is optimized to get the most of.
-type CreateAdGroupsRequestOptimizationGoal string
-
-const (
-	CreateAdGroupsRequestOptimizationGoalConversions              CreateAdGroupsRequestOptimizationGoal = "conversions"
-	CreateAdGroupsRequestOptimizationGoalLinkClicks               CreateAdGroupsRequestOptimizationGoal = "link_clicks"
-	CreateAdGroupsRequestOptimizationGoalLandingPageViews         CreateAdGroupsRequestOptimizationGoal = "landing_page_views"
-	CreateAdGroupsRequestOptimizationGoalReach                    CreateAdGroupsRequestOptimizationGoal = "reach"
-	CreateAdGroupsRequestOptimizationGoalImpressions              CreateAdGroupsRequestOptimizationGoal = "impressions"
-	CreateAdGroupsRequestOptimizationGoalEngagement               CreateAdGroupsRequestOptimizationGoal = "engagement"
-	CreateAdGroupsRequestOptimizationGoalConversations            CreateAdGroupsRequestOptimizationGoal = "conversations"
-	CreateAdGroupsRequestOptimizationGoalVideoViews               CreateAdGroupsRequestOptimizationGoal = "video_views"
-	CreateAdGroupsRequestOptimizationGoalTwoSecondViews           CreateAdGroupsRequestOptimizationGoal = "two_second_views"
-	CreateAdGroupsRequestOptimizationGoalPageLikes                CreateAdGroupsRequestOptimizationGoal = "page_likes"
-	CreateAdGroupsRequestOptimizationGoalSocialProfile            CreateAdGroupsRequestOptimizationGoal = "social_profile"
-	CreateAdGroupsRequestOptimizationGoalAdRecallLift             CreateAdGroupsRequestOptimizationGoal = "ad_recall_lift"
-	CreateAdGroupsRequestOptimizationGoalEventResponses           CreateAdGroupsRequestOptimizationGoal = "event_responses"
-	CreateAdGroupsRequestOptimizationGoalRemindersSet             CreateAdGroupsRequestOptimizationGoal = "reminders_set"
-	CreateAdGroupsRequestOptimizationGoalLeadGeneration           CreateAdGroupsRequestOptimizationGoal = "lead_generation"
-	CreateAdGroupsRequestOptimizationGoalQualityLead              CreateAdGroupsRequestOptimizationGoal = "quality_lead"
-	CreateAdGroupsRequestOptimizationGoalValue                    CreateAdGroupsRequestOptimizationGoal = "value"
-	CreateAdGroupsRequestOptimizationGoalProfileAndPageEngagement CreateAdGroupsRequestOptimizationGoal = "profile_and_page_engagement"
-)
-
-func NewCreateAdGroupsRequestOptimizationGoalFromString(s string) (CreateAdGroupsRequestOptimizationGoal, error) {
-	switch s {
-	case "conversions":
-		return CreateAdGroupsRequestOptimizationGoalConversions, nil
-	case "link_clicks":
-		return CreateAdGroupsRequestOptimizationGoalLinkClicks, nil
-	case "landing_page_views":
-		return CreateAdGroupsRequestOptimizationGoalLandingPageViews, nil
-	case "reach":
-		return CreateAdGroupsRequestOptimizationGoalReach, nil
-	case "impressions":
-		return CreateAdGroupsRequestOptimizationGoalImpressions, nil
-	case "engagement":
-		return CreateAdGroupsRequestOptimizationGoalEngagement, nil
-	case "conversations":
-		return CreateAdGroupsRequestOptimizationGoalConversations, nil
-	case "video_views":
-		return CreateAdGroupsRequestOptimizationGoalVideoViews, nil
-	case "two_second_views":
-		return CreateAdGroupsRequestOptimizationGoalTwoSecondViews, nil
-	case "page_likes":
-		return CreateAdGroupsRequestOptimizationGoalPageLikes, nil
-	case "social_profile":
-		return CreateAdGroupsRequestOptimizationGoalSocialProfile, nil
-	case "ad_recall_lift":
-		return CreateAdGroupsRequestOptimizationGoalAdRecallLift, nil
-	case "event_responses":
-		return CreateAdGroupsRequestOptimizationGoalEventResponses, nil
-	case "reminders_set":
-		return CreateAdGroupsRequestOptimizationGoalRemindersSet, nil
-	case "lead_generation":
-		return CreateAdGroupsRequestOptimizationGoalLeadGeneration, nil
-	case "quality_lead":
-		return CreateAdGroupsRequestOptimizationGoalQualityLead, nil
-	case "value":
-		return CreateAdGroupsRequestOptimizationGoalValue, nil
-	case "profile_and_page_engagement":
-		return CreateAdGroupsRequestOptimizationGoalProfileAndPageEngagement, nil
-	}
-	var t CreateAdGroupsRequestOptimizationGoal
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateAdGroupsRequestOptimizationGoal) Ptr() *CreateAdGroupsRequestOptimizationGoal {
-	return &c
-}
-
-// `automatic` to let the ad platform choose placements, or the list of platforms and positions to target. Omit a platform's positions to target all of them.
-//
-// Valid positions per platform:
-//
-// - `facebook`: `feed`, `right_hand_column`, `marketplace`, `search`, `profile_feed`, `notification`, `story`, `instream_video`, `facebook_reels`, `facebook_reels_overlay`, `biz_disco_feed`
-// - `instagram`: `stream`, `story`, `explore`, `explore_home`, `reels`, `profile_feed`, `profile_reels`, `ig_search`
-// - `messenger`: `story`
-// - `audience_network`: `classic`, `rewarded_video`
-// - `threads`: `threads_stream`
-// - `whatsapp`: `status`
-type CreateAdGroupsRequestPlacements struct {
-	CreateAdGroupsRequestPlacementsZero        CreateAdGroupsRequestPlacementsZero
-	CreateAdGroupsRequestPlacementsOneItemList []*CreateAdGroupsRequestPlacementsOneItem
-
-	typ string
-}
-
-func (c *CreateAdGroupsRequestPlacements) GetCreateAdGroupsRequestPlacementsZero() CreateAdGroupsRequestPlacementsZero {
-	if c == nil {
-		return ""
-	}
-	return c.CreateAdGroupsRequestPlacementsZero
-}
-
-func (c *CreateAdGroupsRequestPlacements) GetCreateAdGroupsRequestPlacementsOneItemList() []*CreateAdGroupsRequestPlacementsOneItem {
-	if c == nil {
-		return nil
-	}
-	return c.CreateAdGroupsRequestPlacementsOneItemList
-}
-
-func (c *CreateAdGroupsRequestPlacements) UnmarshalJSON(data []byte) error {
-	var valueCreateAdGroupsRequestPlacementsZero CreateAdGroupsRequestPlacementsZero
-	if err := json.Unmarshal(data, &valueCreateAdGroupsRequestPlacementsZero); err == nil {
-		c.typ = "CreateAdGroupsRequestPlacementsZero"
-		c.CreateAdGroupsRequestPlacementsZero = valueCreateAdGroupsRequestPlacementsZero
-		return nil
-	}
-	var valueCreateAdGroupsRequestPlacementsOneItemList []*CreateAdGroupsRequestPlacementsOneItem
-	if err := json.Unmarshal(data, &valueCreateAdGroupsRequestPlacementsOneItemList); err == nil {
-		c.typ = "CreateAdGroupsRequestPlacementsOneItemList"
-		c.CreateAdGroupsRequestPlacementsOneItemList = valueCreateAdGroupsRequestPlacementsOneItemList
-		return nil
-	}
-	return fmt.Errorf("%s cannot be deserialized as a %T", data, c)
-}
-
-func (c CreateAdGroupsRequestPlacements) MarshalJSON() ([]byte, error) {
-	if c.typ == "CreateAdGroupsRequestPlacementsZero" || c.CreateAdGroupsRequestPlacementsZero != "" {
-		return json.Marshal(c.CreateAdGroupsRequestPlacementsZero)
-	}
-	if c.typ == "CreateAdGroupsRequestPlacementsOneItemList" || c.CreateAdGroupsRequestPlacementsOneItemList != nil {
-		return json.Marshal(c.CreateAdGroupsRequestPlacementsOneItemList)
-	}
-	return nil, fmt.Errorf("type %T does not include a non-empty union type", c)
-}
-
-type CreateAdGroupsRequestPlacementsVisitor interface {
-	VisitCreateAdGroupsRequestPlacementsZero(CreateAdGroupsRequestPlacementsZero) error
-	VisitCreateAdGroupsRequestPlacementsOneItemList([]*CreateAdGroupsRequestPlacementsOneItem) error
-}
-
-func (c *CreateAdGroupsRequestPlacements) Accept(visitor CreateAdGroupsRequestPlacementsVisitor) error {
-	if c.typ == "CreateAdGroupsRequestPlacementsZero" || c.CreateAdGroupsRequestPlacementsZero != "" {
-		return visitor.VisitCreateAdGroupsRequestPlacementsZero(c.CreateAdGroupsRequestPlacementsZero)
-	}
-	if c.typ == "CreateAdGroupsRequestPlacementsOneItemList" || c.CreateAdGroupsRequestPlacementsOneItemList != nil {
-		return visitor.VisitCreateAdGroupsRequestPlacementsOneItemList(c.CreateAdGroupsRequestPlacementsOneItemList)
-	}
-	return fmt.Errorf("type %T does not include a non-empty union type", c)
-}
-
 var (
-	createAdGroupsRequestPlacementsOneItemFieldPlatform  = big.NewInt(1 << 0)
-	createAdGroupsRequestPlacementsOneItemFieldPositions = big.NewInt(1 << 1)
+	createAdGroupsRequestDeliveryScheduleFridayItemFieldEnd   = big.NewInt(1 << 0)
+	createAdGroupsRequestDeliveryScheduleFridayItemFieldStart = big.NewInt(1 << 1)
 )
 
-type CreateAdGroupsRequestPlacementsOneItem struct {
-	// Platform the ads run on.
-	Platform CreateAdGroupsRequestPlacementsOneItemPlatform `json:"platform" url:"platform"`
-	// Positions to target within the platform, such as `feed` or `story`. Omit to target all of the platform's positions.
-	Positions []string `json:"positions,omitempty" url:"positions,omitempty"`
+type CreateAdGroupsRequestDeliveryScheduleFridayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -7577,55 +5393,57 @@ type CreateAdGroupsRequestPlacementsOneItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateAdGroupsRequestPlacementsOneItem) GetPlatform() CreateAdGroupsRequestPlacementsOneItemPlatform {
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) GetEnd() string {
 	if c == nil {
 		return ""
 	}
-	return c.Platform
+	return c.End
 }
 
-func (c *CreateAdGroupsRequestPlacementsOneItem) GetPositions() []string {
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) GetStart() string {
 	if c == nil {
-		return nil
+		return ""
 	}
-	return c.Positions
+	return c.Start
 }
 
-func (c *CreateAdGroupsRequestPlacementsOneItem) GetExtraProperties() map[string]interface{} {
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreateAdGroupsRequestPlacementsOneItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
-// SetPlatform sets the Platform field and marks it as non-optional;
+// SetEnd sets the End field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdGroupsRequestPlacementsOneItem) SetPlatform(platform CreateAdGroupsRequestPlacementsOneItemPlatform) {
-	c.Platform = platform
-	c.require(createAdGroupsRequestPlacementsOneItemFieldPlatform)
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) SetEnd(end string) {
+	c.End = end
+	c.require(createAdGroupsRequestDeliveryScheduleFridayItemFieldEnd)
 }
 
-// SetPositions sets the Positions field and marks it as non-optional;
+// SetStart sets the Start field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdGroupsRequestPlacementsOneItem) SetPositions(positions []string) {
-	c.Positions = positions
-	c.require(createAdGroupsRequestPlacementsOneItemFieldPositions)
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) SetStart(start string) {
+	c.Start = start
+	c.require(createAdGroupsRequestDeliveryScheduleFridayItemFieldStart)
 }
 
-func (c *CreateAdGroupsRequestPlacementsOneItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAdGroupsRequestPlacementsOneItem
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestDeliveryScheduleFridayItem
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreateAdGroupsRequestPlacementsOneItem(value)
+	*c = CreateAdGroupsRequestDeliveryScheduleFridayItem(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
@@ -7635,8 +5453,8 @@ func (c *CreateAdGroupsRequestPlacementsOneItem) UnmarshalJSON(data []byte) erro
 	return nil
 }
 
-func (c *CreateAdGroupsRequestPlacementsOneItem) MarshalJSON() ([]byte, error) {
-	type embed CreateAdGroupsRequestPlacementsOneItem
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestDeliveryScheduleFridayItem
 	var marshaler = struct {
 		embed
 	}{
@@ -7646,7 +5464,7 @@ func (c *CreateAdGroupsRequestPlacementsOneItem) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreateAdGroupsRequestPlacementsOneItem) String() string {
+func (c *CreateAdGroupsRequestDeliveryScheduleFridayItem) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -7661,57 +5479,774 @@ func (c *CreateAdGroupsRequestPlacementsOneItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Platform the ads run on.
-type CreateAdGroupsRequestPlacementsOneItemPlatform string
-
-const (
-	CreateAdGroupsRequestPlacementsOneItemPlatformFacebook        CreateAdGroupsRequestPlacementsOneItemPlatform = "facebook"
-	CreateAdGroupsRequestPlacementsOneItemPlatformInstagram       CreateAdGroupsRequestPlacementsOneItemPlatform = "instagram"
-	CreateAdGroupsRequestPlacementsOneItemPlatformMessenger       CreateAdGroupsRequestPlacementsOneItemPlatform = "messenger"
-	CreateAdGroupsRequestPlacementsOneItemPlatformAudienceNetwork CreateAdGroupsRequestPlacementsOneItemPlatform = "audience_network"
-	CreateAdGroupsRequestPlacementsOneItemPlatformThreads         CreateAdGroupsRequestPlacementsOneItemPlatform = "threads"
-	CreateAdGroupsRequestPlacementsOneItemPlatformWhatsapp        CreateAdGroupsRequestPlacementsOneItemPlatform = "whatsapp"
+var (
+	createAdGroupsRequestDeliveryScheduleMondayItemFieldEnd   = big.NewInt(1 << 0)
+	createAdGroupsRequestDeliveryScheduleMondayItemFieldStart = big.NewInt(1 << 1)
 )
 
-func NewCreateAdGroupsRequestPlacementsOneItemPlatformFromString(s string) (CreateAdGroupsRequestPlacementsOneItemPlatform, error) {
-	switch s {
-	case "facebook":
-		return CreateAdGroupsRequestPlacementsOneItemPlatformFacebook, nil
-	case "instagram":
-		return CreateAdGroupsRequestPlacementsOneItemPlatformInstagram, nil
-	case "messenger":
-		return CreateAdGroupsRequestPlacementsOneItemPlatformMessenger, nil
-	case "audience_network":
-		return CreateAdGroupsRequestPlacementsOneItemPlatformAudienceNetwork, nil
-	case "threads":
-		return CreateAdGroupsRequestPlacementsOneItemPlatformThreads, nil
-	case "whatsapp":
-		return CreateAdGroupsRequestPlacementsOneItemPlatformWhatsapp, nil
+type CreateAdGroupsRequestDeliveryScheduleMondayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) GetEnd() string {
+	if c == nil {
+		return ""
 	}
-	var t CreateAdGroupsRequestPlacementsOneItemPlatform
+	return c.End
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) GetStart() string {
+	if c == nil {
+		return ""
+	}
+	return c.Start
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) SetEnd(end string) {
+	c.End = end
+	c.require(createAdGroupsRequestDeliveryScheduleMondayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) SetStart(start string) {
+	c.Start = start
+	c.require(createAdGroupsRequestDeliveryScheduleMondayItemFieldStart)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestDeliveryScheduleMondayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdGroupsRequestDeliveryScheduleMondayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestDeliveryScheduleMondayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleMondayItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createAdGroupsRequestDeliveryScheduleSaturdayItemFieldEnd   = big.NewInt(1 << 0)
+	createAdGroupsRequestDeliveryScheduleSaturdayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type CreateAdGroupsRequestDeliveryScheduleSaturdayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) GetEnd() string {
+	if c == nil {
+		return ""
+	}
+	return c.End
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) GetStart() string {
+	if c == nil {
+		return ""
+	}
+	return c.Start
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) SetEnd(end string) {
+	c.End = end
+	c.require(createAdGroupsRequestDeliveryScheduleSaturdayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) SetStart(start string) {
+	c.Start = start
+	c.require(createAdGroupsRequestDeliveryScheduleSaturdayItemFieldStart)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestDeliveryScheduleSaturdayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdGroupsRequestDeliveryScheduleSaturdayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestDeliveryScheduleSaturdayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSaturdayItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createAdGroupsRequestDeliveryScheduleSundayItemFieldEnd   = big.NewInt(1 << 0)
+	createAdGroupsRequestDeliveryScheduleSundayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type CreateAdGroupsRequestDeliveryScheduleSundayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) GetEnd() string {
+	if c == nil {
+		return ""
+	}
+	return c.End
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) GetStart() string {
+	if c == nil {
+		return ""
+	}
+	return c.Start
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) SetEnd(end string) {
+	c.End = end
+	c.require(createAdGroupsRequestDeliveryScheduleSundayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) SetStart(start string) {
+	c.Start = start
+	c.require(createAdGroupsRequestDeliveryScheduleSundayItemFieldStart)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestDeliveryScheduleSundayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdGroupsRequestDeliveryScheduleSundayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestDeliveryScheduleSundayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleSundayItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createAdGroupsRequestDeliveryScheduleThursdayItemFieldEnd   = big.NewInt(1 << 0)
+	createAdGroupsRequestDeliveryScheduleThursdayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type CreateAdGroupsRequestDeliveryScheduleThursdayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) GetEnd() string {
+	if c == nil {
+		return ""
+	}
+	return c.End
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) GetStart() string {
+	if c == nil {
+		return ""
+	}
+	return c.Start
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) SetEnd(end string) {
+	c.End = end
+	c.require(createAdGroupsRequestDeliveryScheduleThursdayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) SetStart(start string) {
+	c.Start = start
+	c.require(createAdGroupsRequestDeliveryScheduleThursdayItemFieldStart)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestDeliveryScheduleThursdayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdGroupsRequestDeliveryScheduleThursdayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestDeliveryScheduleThursdayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleThursdayItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createAdGroupsRequestDeliveryScheduleTuesdayItemFieldEnd   = big.NewInt(1 << 0)
+	createAdGroupsRequestDeliveryScheduleTuesdayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type CreateAdGroupsRequestDeliveryScheduleTuesdayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) GetEnd() string {
+	if c == nil {
+		return ""
+	}
+	return c.End
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) GetStart() string {
+	if c == nil {
+		return ""
+	}
+	return c.Start
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) SetEnd(end string) {
+	c.End = end
+	c.require(createAdGroupsRequestDeliveryScheduleTuesdayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) SetStart(start string) {
+	c.Start = start
+	c.require(createAdGroupsRequestDeliveryScheduleTuesdayItemFieldStart)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestDeliveryScheduleTuesdayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdGroupsRequestDeliveryScheduleTuesdayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestDeliveryScheduleTuesdayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleTuesdayItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createAdGroupsRequestDeliveryScheduleWednesdayItemFieldEnd   = big.NewInt(1 << 0)
+	createAdGroupsRequestDeliveryScheduleWednesdayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type CreateAdGroupsRequestDeliveryScheduleWednesdayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) GetEnd() string {
+	if c == nil {
+		return ""
+	}
+	return c.End
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) GetStart() string {
+	if c == nil {
+		return ""
+	}
+	return c.Start
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) SetEnd(end string) {
+	c.End = end
+	c.require(createAdGroupsRequestDeliveryScheduleWednesdayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) SetStart(start string) {
+	c.Start = start
+	c.require(createAdGroupsRequestDeliveryScheduleWednesdayItemFieldStart)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestDeliveryScheduleWednesdayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdGroupsRequestDeliveryScheduleWednesdayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestDeliveryScheduleWednesdayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdGroupsRequestDeliveryScheduleWednesdayItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createAdGroupsRequestKeywordsItemFieldMatchType = big.NewInt(1 << 0)
+	createAdGroupsRequestKeywordsItemFieldNegative  = big.NewInt(1 << 1)
+	createAdGroupsRequestKeywordsItemFieldText      = big.NewInt(1 << 2)
+)
+
+type CreateAdGroupsRequestKeywordsItem struct {
+	// How closely a search has to match: `broad` also reaches related searches, `phrase` needs the meaning of the phrase, and `exact` needs the same meaning as the term. Defaults to `broad`.
+	MatchType *CreateAdGroupsRequestKeywordsItemMatchType `json:"match_type,omitempty" url:"match_type,omitempty"`
+	// Set to `true` to keep the ads from showing for this term instead. Defaults to `false`.
+	Negative *bool `json:"negative,omitempty" url:"negative,omitempty"`
+	// The search term, up to 80 characters and 10 words. Symbols such as ! @ % , * = ^ ; ~ | < > ? ( ) { } and quotes aren't allowed: set the match with match_type instead.
+	Text string `json:"text" url:"text"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAdGroupsRequestKeywordsItem) GetMatchType() *CreateAdGroupsRequestKeywordsItemMatchType {
+	if c == nil {
+		return nil
+	}
+	return c.MatchType
+}
+
+func (c *CreateAdGroupsRequestKeywordsItem) GetNegative() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.Negative
+}
+
+func (c *CreateAdGroupsRequestKeywordsItem) GetText() string {
+	if c == nil {
+		return ""
+	}
+	return c.Text
+}
+
+func (c *CreateAdGroupsRequestKeywordsItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAdGroupsRequestKeywordsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetMatchType sets the MatchType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestKeywordsItem) SetMatchType(matchType *CreateAdGroupsRequestKeywordsItemMatchType) {
+	c.MatchType = matchType
+	c.require(createAdGroupsRequestKeywordsItemFieldMatchType)
+}
+
+// SetNegative sets the Negative field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestKeywordsItem) SetNegative(negative *bool) {
+	c.Negative = negative
+	c.require(createAdGroupsRequestKeywordsItemFieldNegative)
+}
+
+// SetText sets the Text field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdGroupsRequestKeywordsItem) SetText(text string) {
+	c.Text = text
+	c.require(createAdGroupsRequestKeywordsItemFieldText)
+}
+
+func (c *CreateAdGroupsRequestKeywordsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdGroupsRequestKeywordsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAdGroupsRequestKeywordsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAdGroupsRequestKeywordsItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdGroupsRequestKeywordsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAdGroupsRequestKeywordsItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// How closely a search has to match: `broad` also reaches related searches, `phrase` needs the meaning of the phrase, and `exact` needs the same meaning as the term. Defaults to `broad`.
+type CreateAdGroupsRequestKeywordsItemMatchType string
+
+const (
+	CreateAdGroupsRequestKeywordsItemMatchTypeBroad  CreateAdGroupsRequestKeywordsItemMatchType = "broad"
+	CreateAdGroupsRequestKeywordsItemMatchTypePhrase CreateAdGroupsRequestKeywordsItemMatchType = "phrase"
+	CreateAdGroupsRequestKeywordsItemMatchTypeExact  CreateAdGroupsRequestKeywordsItemMatchType = "exact"
+)
+
+func NewCreateAdGroupsRequestKeywordsItemMatchTypeFromString(s string) (CreateAdGroupsRequestKeywordsItemMatchType, error) {
+	switch s {
+	case "broad":
+		return CreateAdGroupsRequestKeywordsItemMatchTypeBroad, nil
+	case "phrase":
+		return CreateAdGroupsRequestKeywordsItemMatchTypePhrase, nil
+	case "exact":
+		return CreateAdGroupsRequestKeywordsItemMatchTypeExact, nil
+	}
+	var t CreateAdGroupsRequestKeywordsItemMatchType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (c CreateAdGroupsRequestPlacementsOneItemPlatform) Ptr() *CreateAdGroupsRequestPlacementsOneItemPlatform {
-	return &c
-}
-
-type CreateAdGroupsRequestPlacementsZero string
-
-const (
-	CreateAdGroupsRequestPlacementsZeroAutomatic CreateAdGroupsRequestPlacementsZero = "automatic"
-)
-
-func NewCreateAdGroupsRequestPlacementsZeroFromString(s string) (CreateAdGroupsRequestPlacementsZero, error) {
-	switch s {
-	case "automatic":
-		return CreateAdGroupsRequestPlacementsZeroAutomatic, nil
-	}
-	var t CreateAdGroupsRequestPlacementsZero
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateAdGroupsRequestPlacementsZero) Ptr() *CreateAdGroupsRequestPlacementsZero {
+func (c CreateAdGroupsRequestKeywordsItemMatchType) Ptr() *CreateAdGroupsRequestKeywordsItemMatchType {
 	return &c
 }
 
@@ -7778,10 +6313,12 @@ func (d *DeleteAdGroupsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeleteAdGroupsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -7869,10 +6406,12 @@ func (d *DuplicateAdGroupsResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (d *DuplicateAdGroupsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -7922,26 +6461,6 @@ func (d *DuplicateAdGroupsResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", d)
-}
-
-// The ad network the estimate runs on.
-type EstimateReachAdGroupsRequestPlatform string
-
-const (
-	EstimateReachAdGroupsRequestPlatformMeta EstimateReachAdGroupsRequestPlatform = "meta"
-)
-
-func NewEstimateReachAdGroupsRequestPlatformFromString(s string) (EstimateReachAdGroupsRequestPlatform, error) {
-	switch s {
-	case "meta":
-		return EstimateReachAdGroupsRequestPlatformMeta, nil
-	}
-	var t EstimateReachAdGroupsRequestPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (e EstimateReachAdGroupsRequestPlatform) Ptr() *EstimateReachAdGroupsRequestPlatform {
-	return &e
 }
 
 type ListAdGroupsRequestAttributionModel string
@@ -7997,6 +6516,7 @@ const (
 	ListAdGroupsRequestOrderImpressions      ListAdGroupsRequestOrder = "impressions"
 	ListAdGroupsRequestOrderReach            ListAdGroupsRequestOrder = "reach"
 	ListAdGroupsRequestOrderClicks           ListAdGroupsRequestOrder = "clicks"
+	ListAdGroupsRequestOrderLinkClicks       ListAdGroupsRequestOrder = "link_clicks"
 	ListAdGroupsRequestOrderUniqueClicks     ListAdGroupsRequestOrder = "unique_clicks"
 	ListAdGroupsRequestOrderFrequency        ListAdGroupsRequestOrder = "frequency"
 	ListAdGroupsRequestOrderClickThroughRate ListAdGroupsRequestOrder = "click_through_rate"
@@ -8021,6 +6541,8 @@ func NewListAdGroupsRequestOrderFromString(s string) (ListAdGroupsRequestOrder, 
 		return ListAdGroupsRequestOrderReach, nil
 	case "clicks":
 		return ListAdGroupsRequestOrderClicks, nil
+	case "link_clicks":
+		return ListAdGroupsRequestOrderLinkClicks, nil
 	case "unique_clicks":
 		return ListAdGroupsRequestOrderUniqueClicks, nil
 	case "frequency":
@@ -8112,10 +6634,12 @@ func (l *ListAdGroupsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAdGroupsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -8181,6 +6705,12 @@ var (
 	listAdGroupsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listAdGroupsResponsePageInfoNullableFields maps the wire names of ListAdGroupsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listAdGroupsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listAdGroupsResponsePageInfoFieldEndCursor,
+	"start_cursor": listAdGroupsResponsePageInfoFieldStartCursor,
+}
+
 type ListAdGroupsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -8230,10 +6760,12 @@ func (l *ListAdGroupsResponsePageInfo) GetExtraProperties() map[string]interface
 }
 
 func (l *ListAdGroupsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -8276,6 +6808,13 @@ func (l *ListAdGroupsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listAdGroupsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8306,6 +6845,925 @@ func (l *ListAdGroupsResponsePageInfo) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
+var (
+	postAdGroupUpdatedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postAdGroupUpdatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postAdGroupUpdatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postAdGroupUpdatedPayloadFieldData               = big.NewInt(1 << 3)
+	postAdGroupUpdatedPayloadFieldID                 = big.NewInt(1 << 4)
+	postAdGroupUpdatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postAdGroupUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postAdGroupUpdatedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+// postAdGroupUpdatedPayloadNullableFields maps the wire names of PostAdGroupUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postAdGroupUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postAdGroupUpdatedPayloadFieldAccountID,
+	"api_version_date": postAdGroupUpdatedPayloadFieldAPIVersionDate,
+}
+
+type PostAdGroupUpdatedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostAdGroupUpdatedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string                        `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *PostAdGroupUpdatedPayloadData `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostAdGroupUpdatedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostAdGroupUpdatedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostAdGroupUpdatedPayload) GetAPIVersion() PostAdGroupUpdatedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostAdGroupUpdatedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostAdGroupUpdatedPayload) GetData() *PostAdGroupUpdatedPayloadData {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostAdGroupUpdatedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostAdGroupUpdatedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostAdGroupUpdatedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostAdGroupUpdatedPayload) GetType() PostAdGroupUpdatedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostAdGroupUpdatedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostAdGroupUpdatedPayload) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postAdGroupUpdatedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayload) SetAPIVersion(apiVersion PostAdGroupUpdatedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postAdGroupUpdatedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postAdGroupUpdatedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayload) SetData(data *PostAdGroupUpdatedPayloadData) {
+	p.Data = data
+	p.require(postAdGroupUpdatedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postAdGroupUpdatedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postAdGroupUpdatedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postAdGroupUpdatedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayload) SetType(type_ PostAdGroupUpdatedPayloadType) {
+	p.Type = type_
+	p.require(postAdGroupUpdatedPayloadFieldType)
+}
+
+func (p *PostAdGroupUpdatedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostAdGroupUpdatedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostAdGroupUpdatedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAdGroupUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostAdGroupUpdatedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostAdGroupUpdatedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostAdGroupUpdatedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostAdGroupUpdatedPayloadAPIVersion string
+
+const (
+	PostAdGroupUpdatedPayloadAPIVersionV1 PostAdGroupUpdatedPayloadAPIVersion = "v1"
+)
+
+func NewPostAdGroupUpdatedPayloadAPIVersionFromString(s string) (PostAdGroupUpdatedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostAdGroupUpdatedPayloadAPIVersionV1, nil
+	}
+	var t PostAdGroupUpdatedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdGroupUpdatedPayloadAPIVersion) Ptr() *PostAdGroupUpdatedPayloadAPIVersion {
+	return &p
+}
+
+var (
+	postAdGroupUpdatedPayloadDataFieldAdCampaign           = big.NewInt(1 << 0)
+	postAdGroupUpdatedPayloadDataFieldAudiences            = big.NewInt(1 << 1)
+	postAdGroupUpdatedPayloadDataFieldBidType              = big.NewInt(1 << 2)
+	postAdGroupUpdatedPayloadDataFieldBudgetAmount         = big.NewInt(1 << 3)
+	postAdGroupUpdatedPayloadDataFieldBudgetAmountLocal    = big.NewInt(1 << 4)
+	postAdGroupUpdatedPayloadDataFieldBudgetCurrency       = big.NewInt(1 << 5)
+	postAdGroupUpdatedPayloadDataFieldBudgetType           = big.NewInt(1 << 6)
+	postAdGroupUpdatedPayloadDataFieldConversionEvent      = big.NewInt(1 << 7)
+	postAdGroupUpdatedPayloadDataFieldCreatedAt            = big.NewInt(1 << 8)
+	postAdGroupUpdatedPayloadDataFieldDeliverySchedule     = big.NewInt(1 << 9)
+	postAdGroupUpdatedPayloadDataFieldDeliveryStatus       = big.NewInt(1 << 10)
+	postAdGroupUpdatedPayloadDataFieldDemographics         = big.NewInt(1 << 11)
+	postAdGroupUpdatedPayloadDataFieldDesiredCostPerResult = big.NewInt(1 << 12)
+	postAdGroupUpdatedPayloadDataFieldDevices              = big.NewInt(1 << 13)
+	postAdGroupUpdatedPayloadDataFieldEndsAt               = big.NewInt(1 << 14)
+	postAdGroupUpdatedPayloadDataFieldID                   = big.NewInt(1 << 15)
+	postAdGroupUpdatedPayloadDataFieldIssues               = big.NewInt(1 << 16)
+	postAdGroupUpdatedPayloadDataFieldKeywords             = big.NewInt(1 << 17)
+	postAdGroupUpdatedPayloadDataFieldLanguages            = big.NewInt(1 << 18)
+	postAdGroupUpdatedPayloadDataFieldLearningProgress     = big.NewInt(1 << 19)
+	postAdGroupUpdatedPayloadDataFieldRegions              = big.NewInt(1 << 20)
+	postAdGroupUpdatedPayloadDataFieldStartsAt             = big.NewInt(1 << 21)
+	postAdGroupUpdatedPayloadDataFieldStatus               = big.NewInt(1 << 22)
+	postAdGroupUpdatedPayloadDataFieldTitle                = big.NewInt(1 << 23)
+	postAdGroupUpdatedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 24)
+)
+
+// postAdGroupUpdatedPayloadDataNullableFields maps the wire names of PostAdGroupUpdatedPayloadData's nullable fields (required or optional) to their field bits.
+var postAdGroupUpdatedPayloadDataNullableFields = map[string]*big.Int{
+	"bid_type":                postAdGroupUpdatedPayloadDataFieldBidType,
+	"budget_amount":           postAdGroupUpdatedPayloadDataFieldBudgetAmount,
+	"budget_amount_local":     postAdGroupUpdatedPayloadDataFieldBudgetAmountLocal,
+	"budget_type":             postAdGroupUpdatedPayloadDataFieldBudgetType,
+	"conversion_event":        postAdGroupUpdatedPayloadDataFieldConversionEvent,
+	"delivery_schedule":       postAdGroupUpdatedPayloadDataFieldDeliverySchedule,
+	"desired_cost_per_result": postAdGroupUpdatedPayloadDataFieldDesiredCostPerResult,
+	"ends_at":                 postAdGroupUpdatedPayloadDataFieldEndsAt,
+	"learning_progress":       postAdGroupUpdatedPayloadDataFieldLearningProgress,
+	"starts_at":               postAdGroupUpdatedPayloadDataFieldStartsAt,
+	"title":                   postAdGroupUpdatedPayloadDataFieldTitle,
+}
+
+type PostAdGroupUpdatedPayloadData struct {
+	// The ad campaign this ad group belongs to.
+	AdCampaign *AdEntityReference `json:"ad_campaign" url:"ad_campaign"`
+	// Saved audiences this ad group delivers to or excludes.
+	Audiences *AdGroupAudiences `json:"audiences" url:"audiences"`
+	// How delivery bids are set in the ad auction. Target-based strategies use `desired_cost_per_result`.
+	BidType *PostAdGroupUpdatedPayloadDataBidType `json:"bid_type,omitempty" url:"bid_type,omitempty"`
+	// This ad group's budget in USD, which is what it is stored and billed in. `null` when the budget is set on the campaign instead.
+	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"budget_amount,omitempty"`
+	// The same budget stated in `budget_currency` at today's exchange rate, for display in the account's ads reporting currency. `null` when `budget_amount` is.
+	BudgetAmountLocal *float64 `json:"budget_amount_local,omitempty" url:"budget_amount_local,omitempty"`
+	// The ISO 4217 code `budget_amount_local` is in: the account's `ads_reporting_currency` preference. `usd` unless the account changed it.
+	BudgetCurrency string `json:"budget_currency" url:"budget_currency"`
+	// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`). A `lifetime` ad group also needs `ends_at`, at least 24 hours after it starts.
+	BudgetType      *PostAdGroupUpdatedPayloadDataBudgetType `json:"budget_type,omitempty" url:"budget_type,omitempty"`
+	ConversionEvent *ConversionEvent                         `json:"conversion_event,omitempty" url:"conversion_event,omitempty"`
+	// When the ad group was created, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
+	// Hours the ad group delivers in each week, keyed by day. Days it doesn't deliver are omitted. `null` when it delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+	DeliverySchedule *AdGroupDeliverySchedule `json:"delivery_schedule,omitempty" url:"delivery_schedule,omitempty"`
+	// Whether ads in this ad group are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+	DeliveryStatus PostAdGroupUpdatedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
+	// Age, gender, and automatic-audience targeting.
+	Demographics *AdGroupDemographics `json:"demographics" url:"demographics"`
+	// Cost per result to aim for (`average_target`) or never exceed (`maximum_target`). `null` for `minimum_cost` bidding.
+	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
+	// Device platforms and operating systems targeted.
+	Devices *AdGroupDevices `json:"devices" url:"devices"`
+	// When the ad group stops delivering, as an ISO 8601 timestamp. `null` when it runs until paused.
+	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
+	// Unique identifier for the ad group, prefixed `adgrp_`.
+	ID        string             `json:"id" url:"id"`
+	Issues    []*AdPlatformIssue `json:"issues" url:"issues"`
+	Keywords  []*AdGroupKeyword  `json:"keywords,omitempty" url:"keywords,omitempty"`
+	Languages []string           `json:"languages" url:"languages"`
+	// Progress toward the conversions this ad group's learning phase needs. Null unless it is learning or learning limited and valid counts are available. Reaching the threshold does not determine delivery status.
+	LearningProgress *AdGroupLearningProgress `json:"learning_progress,omitempty" url:"learning_progress,omitempty"`
+	// Locations targeted and excluded.
+	Regions *AdGroupRegions `json:"regions" url:"regions"`
+	// When the ad group starts delivering, as an ISO 8601 timestamp. `null` when it starts as soon as it's active.
+	StartsAt *string `json:"starts_at,omitempty" url:"starts_at,omitempty"`
+	// Whether the ad group is enabled. `active` and `paused` are set by you; `rejected` means it failed ad review; `duplicating` is a copy still being filled in.
+	Status PostAdGroupUpdatedPayloadDataStatus `json:"status" url:"status"`
+	// Display name of the ad group.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+	// When the ad group was last updated, as an ISO 8601 timestamp.
+	UpdatedAt string `json:"updated_at" url:"updated_at"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetAdCampaign() *AdEntityReference {
+	if p == nil {
+		return nil
+	}
+	return p.AdCampaign
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetAudiences() *AdGroupAudiences {
+	if p == nil {
+		return nil
+	}
+	return p.Audiences
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetBidType() *PostAdGroupUpdatedPayloadDataBidType {
+	if p == nil {
+		return nil
+	}
+	return p.BidType
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetBudgetAmount() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.BudgetAmount
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetBudgetAmountLocal() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.BudgetAmountLocal
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetBudgetCurrency() string {
+	if p == nil {
+		return ""
+	}
+	return p.BudgetCurrency
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetBudgetType() *PostAdGroupUpdatedPayloadDataBudgetType {
+	if p == nil {
+		return nil
+	}
+	return p.BudgetType
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetConversionEvent() *ConversionEvent {
+	if p == nil {
+		return nil
+	}
+	return p.ConversionEvent
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetCreatedAt() string {
+	if p == nil {
+		return ""
+	}
+	return p.CreatedAt
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetDeliverySchedule() *AdGroupDeliverySchedule {
+	if p == nil {
+		return nil
+	}
+	return p.DeliverySchedule
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetDeliveryStatus() PostAdGroupUpdatedPayloadDataDeliveryStatus {
+	if p == nil {
+		return ""
+	}
+	return p.DeliveryStatus
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetDemographics() *AdGroupDemographics {
+	if p == nil {
+		return nil
+	}
+	return p.Demographics
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetDesiredCostPerResult() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.DesiredCostPerResult
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetDevices() *AdGroupDevices {
+	if p == nil {
+		return nil
+	}
+	return p.Devices
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetEndsAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.EndsAt
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetIssues() []*AdPlatformIssue {
+	if p == nil {
+		return nil
+	}
+	return p.Issues
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetKeywords() []*AdGroupKeyword {
+	if p == nil {
+		return nil
+	}
+	return p.Keywords
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetLanguages() []string {
+	if p == nil {
+		return nil
+	}
+	return p.Languages
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetLearningProgress() *AdGroupLearningProgress {
+	if p == nil {
+		return nil
+	}
+	return p.LearningProgress
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetRegions() *AdGroupRegions {
+	if p == nil {
+		return nil
+	}
+	return p.Regions
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetStartsAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.StartsAt
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetStatus() PostAdGroupUpdatedPayloadDataStatus {
+	if p == nil {
+		return ""
+	}
+	return p.Status
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetTitle() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Title
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetUpdatedAt() string {
+	if p == nil {
+		return ""
+	}
+	return p.UpdatedAt
+}
+
+func (p *PostAdGroupUpdatedPayloadData) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostAdGroupUpdatedPayloadData) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAdCampaign sets the AdCampaign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetAdCampaign(adCampaign *AdEntityReference) {
+	p.AdCampaign = adCampaign
+	p.require(postAdGroupUpdatedPayloadDataFieldAdCampaign)
+}
+
+// SetAudiences sets the Audiences field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetAudiences(audiences *AdGroupAudiences) {
+	p.Audiences = audiences
+	p.require(postAdGroupUpdatedPayloadDataFieldAudiences)
+}
+
+// SetBidType sets the BidType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetBidType(bidType *PostAdGroupUpdatedPayloadDataBidType) {
+	p.BidType = bidType
+	p.require(postAdGroupUpdatedPayloadDataFieldBidType)
+}
+
+// SetBudgetAmount sets the BudgetAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetBudgetAmount(budgetAmount *float64) {
+	p.BudgetAmount = budgetAmount
+	p.require(postAdGroupUpdatedPayloadDataFieldBudgetAmount)
+}
+
+// SetBudgetAmountLocal sets the BudgetAmountLocal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetBudgetAmountLocal(budgetAmountLocal *float64) {
+	p.BudgetAmountLocal = budgetAmountLocal
+	p.require(postAdGroupUpdatedPayloadDataFieldBudgetAmountLocal)
+}
+
+// SetBudgetCurrency sets the BudgetCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetBudgetCurrency(budgetCurrency string) {
+	p.BudgetCurrency = budgetCurrency
+	p.require(postAdGroupUpdatedPayloadDataFieldBudgetCurrency)
+}
+
+// SetBudgetType sets the BudgetType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetBudgetType(budgetType *PostAdGroupUpdatedPayloadDataBudgetType) {
+	p.BudgetType = budgetType
+	p.require(postAdGroupUpdatedPayloadDataFieldBudgetType)
+}
+
+// SetConversionEvent sets the ConversionEvent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetConversionEvent(conversionEvent *ConversionEvent) {
+	p.ConversionEvent = conversionEvent
+	p.require(postAdGroupUpdatedPayloadDataFieldConversionEvent)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetCreatedAt(createdAt string) {
+	p.CreatedAt = createdAt
+	p.require(postAdGroupUpdatedPayloadDataFieldCreatedAt)
+}
+
+// SetDeliverySchedule sets the DeliverySchedule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetDeliverySchedule(deliverySchedule *AdGroupDeliverySchedule) {
+	p.DeliverySchedule = deliverySchedule
+	p.require(postAdGroupUpdatedPayloadDataFieldDeliverySchedule)
+}
+
+// SetDeliveryStatus sets the DeliveryStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetDeliveryStatus(deliveryStatus PostAdGroupUpdatedPayloadDataDeliveryStatus) {
+	p.DeliveryStatus = deliveryStatus
+	p.require(postAdGroupUpdatedPayloadDataFieldDeliveryStatus)
+}
+
+// SetDemographics sets the Demographics field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetDemographics(demographics *AdGroupDemographics) {
+	p.Demographics = demographics
+	p.require(postAdGroupUpdatedPayloadDataFieldDemographics)
+}
+
+// SetDesiredCostPerResult sets the DesiredCostPerResult field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetDesiredCostPerResult(desiredCostPerResult *float64) {
+	p.DesiredCostPerResult = desiredCostPerResult
+	p.require(postAdGroupUpdatedPayloadDataFieldDesiredCostPerResult)
+}
+
+// SetDevices sets the Devices field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetDevices(devices *AdGroupDevices) {
+	p.Devices = devices
+	p.require(postAdGroupUpdatedPayloadDataFieldDevices)
+}
+
+// SetEndsAt sets the EndsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetEndsAt(endsAt *string) {
+	p.EndsAt = endsAt
+	p.require(postAdGroupUpdatedPayloadDataFieldEndsAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetID(id string) {
+	p.ID = id
+	p.require(postAdGroupUpdatedPayloadDataFieldID)
+}
+
+// SetIssues sets the Issues field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetIssues(issues []*AdPlatformIssue) {
+	p.Issues = issues
+	p.require(postAdGroupUpdatedPayloadDataFieldIssues)
+}
+
+// SetKeywords sets the Keywords field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetKeywords(keywords []*AdGroupKeyword) {
+	p.Keywords = keywords
+	p.require(postAdGroupUpdatedPayloadDataFieldKeywords)
+}
+
+// SetLanguages sets the Languages field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetLanguages(languages []string) {
+	p.Languages = languages
+	p.require(postAdGroupUpdatedPayloadDataFieldLanguages)
+}
+
+// SetLearningProgress sets the LearningProgress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetLearningProgress(learningProgress *AdGroupLearningProgress) {
+	p.LearningProgress = learningProgress
+	p.require(postAdGroupUpdatedPayloadDataFieldLearningProgress)
+}
+
+// SetRegions sets the Regions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetRegions(regions *AdGroupRegions) {
+	p.Regions = regions
+	p.require(postAdGroupUpdatedPayloadDataFieldRegions)
+}
+
+// SetStartsAt sets the StartsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetStartsAt(startsAt *string) {
+	p.StartsAt = startsAt
+	p.require(postAdGroupUpdatedPayloadDataFieldStartsAt)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetStatus(status PostAdGroupUpdatedPayloadDataStatus) {
+	p.Status = status
+	p.require(postAdGroupUpdatedPayloadDataFieldStatus)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetTitle(title *string) {
+	p.Title = title
+	p.require(postAdGroupUpdatedPayloadDataFieldTitle)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdGroupUpdatedPayloadData) SetUpdatedAt(updatedAt string) {
+	p.UpdatedAt = updatedAt
+	p.require(postAdGroupUpdatedPayloadDataFieldUpdatedAt)
+}
+
+func (p *PostAdGroupUpdatedPayloadData) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostAdGroupUpdatedPayloadData
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PostAdGroupUpdatedPayloadData(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAdGroupUpdatedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostAdGroupUpdatedPayloadData) MarshalJSON() ([]byte, error) {
+	type embed PostAdGroupUpdatedPayloadData
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostAdGroupUpdatedPayloadData) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// How delivery bids are set in the ad auction. Target-based strategies use `desired_cost_per_result`.
+type PostAdGroupUpdatedPayloadDataBidType string
+
+const (
+	PostAdGroupUpdatedPayloadDataBidTypeMinimumCost   PostAdGroupUpdatedPayloadDataBidType = "minimum_cost"
+	PostAdGroupUpdatedPayloadDataBidTypeAverageTarget PostAdGroupUpdatedPayloadDataBidType = "average_target"
+	PostAdGroupUpdatedPayloadDataBidTypeMaximumTarget PostAdGroupUpdatedPayloadDataBidType = "maximum_target"
+)
+
+func NewPostAdGroupUpdatedPayloadDataBidTypeFromString(s string) (PostAdGroupUpdatedPayloadDataBidType, error) {
+	switch s {
+	case "minimum_cost":
+		return PostAdGroupUpdatedPayloadDataBidTypeMinimumCost, nil
+	case "average_target":
+		return PostAdGroupUpdatedPayloadDataBidTypeAverageTarget, nil
+	case "maximum_target":
+		return PostAdGroupUpdatedPayloadDataBidTypeMaximumTarget, nil
+	}
+	var t PostAdGroupUpdatedPayloadDataBidType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdGroupUpdatedPayloadDataBidType) Ptr() *PostAdGroupUpdatedPayloadDataBidType {
+	return &p
+}
+
+// Whether `budget_amount` is spent per day (`daily`) or over the ad group's full run (`lifetime`). A `lifetime` ad group also needs `ends_at`, at least 24 hours after it starts.
+type PostAdGroupUpdatedPayloadDataBudgetType string
+
+const (
+	PostAdGroupUpdatedPayloadDataBudgetTypeDaily    PostAdGroupUpdatedPayloadDataBudgetType = "daily"
+	PostAdGroupUpdatedPayloadDataBudgetTypeLifetime PostAdGroupUpdatedPayloadDataBudgetType = "lifetime"
+)
+
+func NewPostAdGroupUpdatedPayloadDataBudgetTypeFromString(s string) (PostAdGroupUpdatedPayloadDataBudgetType, error) {
+	switch s {
+	case "daily":
+		return PostAdGroupUpdatedPayloadDataBudgetTypeDaily, nil
+	case "lifetime":
+		return PostAdGroupUpdatedPayloadDataBudgetTypeLifetime, nil
+	}
+	var t PostAdGroupUpdatedPayloadDataBudgetType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdGroupUpdatedPayloadDataBudgetType) Ptr() *PostAdGroupUpdatedPayloadDataBudgetType {
+	return &p
+}
+
+// Whether ads in this ad group are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+type PostAdGroupUpdatedPayloadDataDeliveryStatus string
+
+const (
+	PostAdGroupUpdatedPayloadDataDeliveryStatusInAppeal        PostAdGroupUpdatedPayloadDataDeliveryStatus = "in_appeal"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusAllAdsRejected  PostAdGroupUpdatedPayloadDataDeliveryStatus = "all_ads_rejected"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusRejected        PostAdGroupUpdatedPayloadDataDeliveryStatus = "rejected"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusDraft           PostAdGroupUpdatedPayloadDataDeliveryStatus = "draft"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusNoAds           PostAdGroupUpdatedPayloadDataDeliveryStatus = "no_ads"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusCampaignPaused  PostAdGroupUpdatedPayloadDataDeliveryStatus = "campaign_paused"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusPaused          PostAdGroupUpdatedPayloadDataDeliveryStatus = "paused"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusProcessing      PostAdGroupUpdatedPayloadDataDeliveryStatus = "processing"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusIssues          PostAdGroupUpdatedPayloadDataDeliveryStatus = "issues"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusScheduled       PostAdGroupUpdatedPayloadDataDeliveryStatus = "scheduled"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusCompleted       PostAdGroupUpdatedPayloadDataDeliveryStatus = "completed"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusAdsOff          PostAdGroupUpdatedPayloadDataDeliveryStatus = "ads_off"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusLearningLimited PostAdGroupUpdatedPayloadDataDeliveryStatus = "learning_limited"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusLearning        PostAdGroupUpdatedPayloadDataDeliveryStatus = "learning"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusActive          PostAdGroupUpdatedPayloadDataDeliveryStatus = "active"
+)
+
+func NewPostAdGroupUpdatedPayloadDataDeliveryStatusFromString(s string) (PostAdGroupUpdatedPayloadDataDeliveryStatus, error) {
+	switch s {
+	case "in_appeal":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusInAppeal, nil
+	case "all_ads_rejected":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusAllAdsRejected, nil
+	case "rejected":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusRejected, nil
+	case "draft":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusDraft, nil
+	case "no_ads":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusNoAds, nil
+	case "campaign_paused":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusCampaignPaused, nil
+	case "paused":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusPaused, nil
+	case "processing":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusProcessing, nil
+	case "issues":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusIssues, nil
+	case "scheduled":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusScheduled, nil
+	case "completed":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusCompleted, nil
+	case "ads_off":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusAdsOff, nil
+	case "learning_limited":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusLearningLimited, nil
+	case "learning":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusLearning, nil
+	case "active":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusActive, nil
+	}
+	var t PostAdGroupUpdatedPayloadDataDeliveryStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdGroupUpdatedPayloadDataDeliveryStatus) Ptr() *PostAdGroupUpdatedPayloadDataDeliveryStatus {
+	return &p
+}
+
+// Whether the ad group is enabled. `active` and `paused` are set by you; `rejected` means it failed ad review; `duplicating` is a copy still being filled in.
+type PostAdGroupUpdatedPayloadDataStatus string
+
+const (
+	PostAdGroupUpdatedPayloadDataStatusActive      PostAdGroupUpdatedPayloadDataStatus = "active"
+	PostAdGroupUpdatedPayloadDataStatusPaused      PostAdGroupUpdatedPayloadDataStatus = "paused"
+	PostAdGroupUpdatedPayloadDataStatusRejected    PostAdGroupUpdatedPayloadDataStatus = "rejected"
+	PostAdGroupUpdatedPayloadDataStatusDuplicating PostAdGroupUpdatedPayloadDataStatus = "duplicating"
+)
+
+func NewPostAdGroupUpdatedPayloadDataStatusFromString(s string) (PostAdGroupUpdatedPayloadDataStatus, error) {
+	switch s {
+	case "active":
+		return PostAdGroupUpdatedPayloadDataStatusActive, nil
+	case "paused":
+		return PostAdGroupUpdatedPayloadDataStatusPaused, nil
+	case "rejected":
+		return PostAdGroupUpdatedPayloadDataStatusRejected, nil
+	case "duplicating":
+		return PostAdGroupUpdatedPayloadDataStatusDuplicating, nil
+	}
+	var t PostAdGroupUpdatedPayloadDataStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdGroupUpdatedPayloadDataStatus) Ptr() *PostAdGroupUpdatedPayloadDataStatus {
+	return &p
+}
+
+// The webhook event type
+type PostAdGroupUpdatedPayloadType string
+
+const (
+	PostAdGroupUpdatedPayloadTypeAdGroupUpdated PostAdGroupUpdatedPayloadType = "ad_group.updated"
+)
+
+func NewPostAdGroupUpdatedPayloadTypeFromString(s string) (PostAdGroupUpdatedPayloadType, error) {
+	switch s {
+	case "ad_group.updated":
+		return PostAdGroupUpdatedPayloadTypeAdGroupUpdated, nil
+	}
+	var t PostAdGroupUpdatedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdGroupUpdatedPayloadType) Ptr() *PostAdGroupUpdatedPayloadType {
+	return &p
+}
+
 type RetrieveAdGroupsRequestAttributionModel string
 
 const (
@@ -8326,198 +7784,6 @@ func NewRetrieveAdGroupsRequestAttributionModelFromString(s string) (RetrieveAdG
 
 func (r RetrieveAdGroupsRequestAttributionModel) Ptr() *RetrieveAdGroupsRequestAttributionModel {
 	return &r
-}
-
-type SearchTargetingOptionsAdGroupsRequestLocationTypesItem string
-
-const (
-	SearchTargetingOptionsAdGroupsRequestLocationTypesItemCountry       SearchTargetingOptionsAdGroupsRequestLocationTypesItem = "country"
-	SearchTargetingOptionsAdGroupsRequestLocationTypesItemRegion        SearchTargetingOptionsAdGroupsRequestLocationTypesItem = "region"
-	SearchTargetingOptionsAdGroupsRequestLocationTypesItemCity          SearchTargetingOptionsAdGroupsRequestLocationTypesItem = "city"
-	SearchTargetingOptionsAdGroupsRequestLocationTypesItemZip           SearchTargetingOptionsAdGroupsRequestLocationTypesItem = "zip"
-	SearchTargetingOptionsAdGroupsRequestLocationTypesItemNeighborhood  SearchTargetingOptionsAdGroupsRequestLocationTypesItem = "neighborhood"
-	SearchTargetingOptionsAdGroupsRequestLocationTypesItemSubcity       SearchTargetingOptionsAdGroupsRequestLocationTypesItem = "subcity"
-	SearchTargetingOptionsAdGroupsRequestLocationTypesItemMediumGeoArea SearchTargetingOptionsAdGroupsRequestLocationTypesItem = "medium_geo_area"
-)
-
-func NewSearchTargetingOptionsAdGroupsRequestLocationTypesItemFromString(s string) (SearchTargetingOptionsAdGroupsRequestLocationTypesItem, error) {
-	switch s {
-	case "country":
-		return SearchTargetingOptionsAdGroupsRequestLocationTypesItemCountry, nil
-	case "region":
-		return SearchTargetingOptionsAdGroupsRequestLocationTypesItemRegion, nil
-	case "city":
-		return SearchTargetingOptionsAdGroupsRequestLocationTypesItemCity, nil
-	case "zip":
-		return SearchTargetingOptionsAdGroupsRequestLocationTypesItemZip, nil
-	case "neighborhood":
-		return SearchTargetingOptionsAdGroupsRequestLocationTypesItemNeighborhood, nil
-	case "subcity":
-		return SearchTargetingOptionsAdGroupsRequestLocationTypesItemSubcity, nil
-	case "medium_geo_area":
-		return SearchTargetingOptionsAdGroupsRequestLocationTypesItemMediumGeoArea, nil
-	}
-	var t SearchTargetingOptionsAdGroupsRequestLocationTypesItem
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (s SearchTargetingOptionsAdGroupsRequestLocationTypesItem) Ptr() *SearchTargetingOptionsAdGroupsRequestLocationTypesItem {
-	return &s
-}
-
-type SearchTargetingOptionsAdGroupsRequestPlatform string
-
-const (
-	SearchTargetingOptionsAdGroupsRequestPlatformMeta SearchTargetingOptionsAdGroupsRequestPlatform = "meta"
-)
-
-func NewSearchTargetingOptionsAdGroupsRequestPlatformFromString(s string) (SearchTargetingOptionsAdGroupsRequestPlatform, error) {
-	switch s {
-	case "meta":
-		return SearchTargetingOptionsAdGroupsRequestPlatformMeta, nil
-	}
-	var t SearchTargetingOptionsAdGroupsRequestPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (s SearchTargetingOptionsAdGroupsRequestPlatform) Ptr() *SearchTargetingOptionsAdGroupsRequestPlatform {
-	return &s
-}
-
-type SearchTargetingOptionsAdGroupsRequestTypesItem string
-
-const (
-	SearchTargetingOptionsAdGroupsRequestTypesItemInterests        SearchTargetingOptionsAdGroupsRequestTypesItem = "interests"
-	SearchTargetingOptionsAdGroupsRequestTypesItemBehaviors        SearchTargetingOptionsAdGroupsRequestTypesItem = "behaviors"
-	SearchTargetingOptionsAdGroupsRequestTypesItemLifeEvents       SearchTargetingOptionsAdGroupsRequestTypesItem = "life_events"
-	SearchTargetingOptionsAdGroupsRequestTypesItemIndustries       SearchTargetingOptionsAdGroupsRequestTypesItem = "industries"
-	SearchTargetingOptionsAdGroupsRequestTypesItemIncome           SearchTargetingOptionsAdGroupsRequestTypesItem = "income"
-	SearchTargetingOptionsAdGroupsRequestTypesItemFamilyStatuses   SearchTargetingOptionsAdGroupsRequestTypesItem = "family_statuses"
-	SearchTargetingOptionsAdGroupsRequestTypesItemWorkEmployers    SearchTargetingOptionsAdGroupsRequestTypesItem = "work_employers"
-	SearchTargetingOptionsAdGroupsRequestTypesItemWorkPositions    SearchTargetingOptionsAdGroupsRequestTypesItem = "work_positions"
-	SearchTargetingOptionsAdGroupsRequestTypesItemEducationSchools SearchTargetingOptionsAdGroupsRequestTypesItem = "education_schools"
-	SearchTargetingOptionsAdGroupsRequestTypesItemEducationMajors  SearchTargetingOptionsAdGroupsRequestTypesItem = "education_majors"
-	SearchTargetingOptionsAdGroupsRequestTypesItemLanguages        SearchTargetingOptionsAdGroupsRequestTypesItem = "languages"
-	SearchTargetingOptionsAdGroupsRequestTypesItemLocations        SearchTargetingOptionsAdGroupsRequestTypesItem = "locations"
-)
-
-func NewSearchTargetingOptionsAdGroupsRequestTypesItemFromString(s string) (SearchTargetingOptionsAdGroupsRequestTypesItem, error) {
-	switch s {
-	case "interests":
-		return SearchTargetingOptionsAdGroupsRequestTypesItemInterests, nil
-	case "behaviors":
-		return SearchTargetingOptionsAdGroupsRequestTypesItemBehaviors, nil
-	case "life_events":
-		return SearchTargetingOptionsAdGroupsRequestTypesItemLifeEvents, nil
-	case "industries":
-		return SearchTargetingOptionsAdGroupsRequestTypesItemIndustries, nil
-	case "income":
-		return SearchTargetingOptionsAdGroupsRequestTypesItemIncome, nil
-	case "family_statuses":
-		return SearchTargetingOptionsAdGroupsRequestTypesItemFamilyStatuses, nil
-	case "work_employers":
-		return SearchTargetingOptionsAdGroupsRequestTypesItemWorkEmployers, nil
-	case "work_positions":
-		return SearchTargetingOptionsAdGroupsRequestTypesItemWorkPositions, nil
-	case "education_schools":
-		return SearchTargetingOptionsAdGroupsRequestTypesItemEducationSchools, nil
-	case "education_majors":
-		return SearchTargetingOptionsAdGroupsRequestTypesItemEducationMajors, nil
-	case "languages":
-		return SearchTargetingOptionsAdGroupsRequestTypesItemLanguages, nil
-	case "locations":
-		return SearchTargetingOptionsAdGroupsRequestTypesItemLocations, nil
-	}
-	var t SearchTargetingOptionsAdGroupsRequestTypesItem
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (s SearchTargetingOptionsAdGroupsRequestTypesItem) Ptr() *SearchTargetingOptionsAdGroupsRequestTypesItem {
-	return &s
-}
-
-var (
-	searchTargetingOptionsAdGroupsResponseFieldData = big.NewInt(1 << 0)
-)
-
-type SearchTargetingOptionsAdGroupsResponse struct {
-	Data []*TargetingOption `json:"data" url:"data"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (s *SearchTargetingOptionsAdGroupsResponse) GetData() []*TargetingOption {
-	if s == nil {
-		return nil
-	}
-	return s.Data
-}
-
-func (s *SearchTargetingOptionsAdGroupsResponse) GetExtraProperties() map[string]interface{} {
-	if s == nil {
-		return nil
-	}
-	return s.extraProperties
-}
-
-func (s *SearchTargetingOptionsAdGroupsResponse) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
-	}
-	s.explicitFields.Or(s.explicitFields, field)
-}
-
-// SetData sets the Data field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SearchTargetingOptionsAdGroupsResponse) SetData(data []*TargetingOption) {
-	s.Data = data
-	s.require(searchTargetingOptionsAdGroupsResponseFieldData)
-}
-
-func (s *SearchTargetingOptionsAdGroupsResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler SearchTargetingOptionsAdGroupsResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*s = SearchTargetingOptionsAdGroupsResponse(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *s)
-	if err != nil {
-		return err
-	}
-	s.extraProperties = extraProperties
-	s.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (s *SearchTargetingOptionsAdGroupsResponse) MarshalJSON() ([]byte, error) {
-	type embed SearchTargetingOptionsAdGroupsResponse
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*s),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (s *SearchTargetingOptionsAdGroupsResponse) String() string {
-	if s == nil {
-		return "<nil>"
-	}
-	if len(s.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(s); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", s)
 }
 
 // How delivery bids are set in the ad auction. Target-based strategies use `desired_cost_per_result`.
@@ -8569,61 +7835,32 @@ func (u UpdateAdGroupsRequestBudgetType) Ptr() *UpdateAdGroupsRequestBudgetType 
 	return &u
 }
 
-// Where the outcome being optimized for occurs, such as a website visit, social-profile visit, messaging conversation, ad interaction, or lead-form submission. The lead form itself is set on the ad.
-type UpdateAdGroupsRequestConversionLocation string
-
-const (
-	UpdateAdGroupsRequestConversionLocationWebsite                  UpdateAdGroupsRequestConversionLocation = "website"
-	UpdateAdGroupsRequestConversionLocationProfile                  UpdateAdGroupsRequestConversionLocation = "profile"
-	UpdateAdGroupsRequestConversionLocationInstagramAndFacebook     UpdateAdGroupsRequestConversionLocation = "instagram_and_facebook"
-	UpdateAdGroupsRequestConversionLocationInstagramProfile         UpdateAdGroupsRequestConversionLocation = "instagram_profile"
-	UpdateAdGroupsRequestConversionLocationMessaging                UpdateAdGroupsRequestConversionLocation = "messaging"
-	UpdateAdGroupsRequestConversionLocationOnAd                     UpdateAdGroupsRequestConversionLocation = "on_ad"
-	UpdateAdGroupsRequestConversionLocationInstantForms             UpdateAdGroupsRequestConversionLocation = "instant_forms"
-	UpdateAdGroupsRequestConversionLocationInstantFormsAndMessenger UpdateAdGroupsRequestConversionLocation = "instant_forms_and_messenger"
-	UpdateAdGroupsRequestConversionLocationWebsiteAndInstantForms   UpdateAdGroupsRequestConversionLocation = "website_and_instant_forms"
-)
-
-func NewUpdateAdGroupsRequestConversionLocationFromString(s string) (UpdateAdGroupsRequestConversionLocation, error) {
-	switch s {
-	case "website":
-		return UpdateAdGroupsRequestConversionLocationWebsite, nil
-	case "profile":
-		return UpdateAdGroupsRequestConversionLocationProfile, nil
-	case "instagram_and_facebook":
-		return UpdateAdGroupsRequestConversionLocationInstagramAndFacebook, nil
-	case "instagram_profile":
-		return UpdateAdGroupsRequestConversionLocationInstagramProfile, nil
-	case "messaging":
-		return UpdateAdGroupsRequestConversionLocationMessaging, nil
-	case "on_ad":
-		return UpdateAdGroupsRequestConversionLocationOnAd, nil
-	case "instant_forms":
-		return UpdateAdGroupsRequestConversionLocationInstantForms, nil
-	case "instant_forms_and_messenger":
-		return UpdateAdGroupsRequestConversionLocationInstantFormsAndMessenger, nil
-	case "website_and_instant_forms":
-		return UpdateAdGroupsRequestConversionLocationWebsiteAndInstantForms, nil
-	}
-	var t UpdateAdGroupsRequestConversionLocation
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateAdGroupsRequestConversionLocation) Ptr() *UpdateAdGroupsRequestConversionLocation {
-	return &u
-}
-
-// Cap on how often one person sees ads from this ad group. Only available on campaigns with the `awareness` objective.
 var (
-	updateAdGroupsRequestFrequencyCapFieldMaximumImpressions = big.NewInt(1 << 0)
-	updateAdGroupsRequestFrequencyCapFieldPerDays            = big.NewInt(1 << 1)
+	updateAdGroupsRequestDeliveryScheduleFieldFriday    = big.NewInt(1 << 0)
+	updateAdGroupsRequestDeliveryScheduleFieldMonday    = big.NewInt(1 << 1)
+	updateAdGroupsRequestDeliveryScheduleFieldSaturday  = big.NewInt(1 << 2)
+	updateAdGroupsRequestDeliveryScheduleFieldSunday    = big.NewInt(1 << 3)
+	updateAdGroupsRequestDeliveryScheduleFieldThursday  = big.NewInt(1 << 4)
+	updateAdGroupsRequestDeliveryScheduleFieldTuesday   = big.NewInt(1 << 5)
+	updateAdGroupsRequestDeliveryScheduleFieldWednesday = big.NewInt(1 << 6)
 )
 
-type UpdateAdGroupsRequestFrequencyCap struct {
-	// Most times one person can be shown ads from this ad group within the window.
-	MaximumImpressions *int `json:"maximum_impressions,omitempty" url:"maximum_impressions,omitempty"`
-	// Length of the rolling window, in days.
-	PerDays *int `json:"per_days,omitempty" url:"per_days,omitempty"`
+// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+type UpdateAdGroupsRequestDeliverySchedule struct {
+	// Windows the ad group delivers in on Friday.
+	Friday []*UpdateAdGroupsRequestDeliveryScheduleFridayItem `json:"friday,omitempty" url:"friday,omitempty"`
+	// Windows the ad group delivers in on Monday.
+	Monday []*UpdateAdGroupsRequestDeliveryScheduleMondayItem `json:"monday,omitempty" url:"monday,omitempty"`
+	// Windows the ad group delivers in on Saturday.
+	Saturday []*UpdateAdGroupsRequestDeliveryScheduleSaturdayItem `json:"saturday,omitempty" url:"saturday,omitempty"`
+	// Windows the ad group delivers in on Sunday.
+	Sunday []*UpdateAdGroupsRequestDeliveryScheduleSundayItem `json:"sunday,omitempty" url:"sunday,omitempty"`
+	// Windows the ad group delivers in on Thursday.
+	Thursday []*UpdateAdGroupsRequestDeliveryScheduleThursdayItem `json:"thursday,omitempty" url:"thursday,omitempty"`
+	// Windows the ad group delivers in on Tuesday.
+	Tuesday []*UpdateAdGroupsRequestDeliveryScheduleTuesdayItem `json:"tuesday,omitempty" url:"tuesday,omitempty"`
+	// Windows the ad group delivers in on Wednesday.
+	Wednesday []*UpdateAdGroupsRequestDeliveryScheduleWednesdayItem `json:"wednesday,omitempty" url:"wednesday,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -8632,55 +7869,127 @@ type UpdateAdGroupsRequestFrequencyCap struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UpdateAdGroupsRequestFrequencyCap) GetMaximumImpressions() *int {
+func (u *UpdateAdGroupsRequestDeliverySchedule) GetFriday() []*UpdateAdGroupsRequestDeliveryScheduleFridayItem {
 	if u == nil {
 		return nil
 	}
-	return u.MaximumImpressions
+	return u.Friday
 }
 
-func (u *UpdateAdGroupsRequestFrequencyCap) GetPerDays() *int {
+func (u *UpdateAdGroupsRequestDeliverySchedule) GetMonday() []*UpdateAdGroupsRequestDeliveryScheduleMondayItem {
 	if u == nil {
 		return nil
 	}
-	return u.PerDays
+	return u.Monday
 }
 
-func (u *UpdateAdGroupsRequestFrequencyCap) GetExtraProperties() map[string]interface{} {
+func (u *UpdateAdGroupsRequestDeliverySchedule) GetSaturday() []*UpdateAdGroupsRequestDeliveryScheduleSaturdayItem {
+	if u == nil {
+		return nil
+	}
+	return u.Saturday
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) GetSunday() []*UpdateAdGroupsRequestDeliveryScheduleSundayItem {
+	if u == nil {
+		return nil
+	}
+	return u.Sunday
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) GetThursday() []*UpdateAdGroupsRequestDeliveryScheduleThursdayItem {
+	if u == nil {
+		return nil
+	}
+	return u.Thursday
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) GetTuesday() []*UpdateAdGroupsRequestDeliveryScheduleTuesdayItem {
+	if u == nil {
+		return nil
+	}
+	return u.Tuesday
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) GetWednesday() []*UpdateAdGroupsRequestDeliveryScheduleWednesdayItem {
+	if u == nil {
+		return nil
+	}
+	return u.Wednesday
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) GetExtraProperties() map[string]interface{} {
 	if u == nil {
 		return nil
 	}
 	return u.extraProperties
 }
 
-func (u *UpdateAdGroupsRequestFrequencyCap) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+func (u *UpdateAdGroupsRequestDeliverySchedule) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
-// SetMaximumImpressions sets the MaximumImpressions field and marks it as non-optional;
+// SetFriday sets the Friday field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdGroupsRequestFrequencyCap) SetMaximumImpressions(maximumImpressions *int) {
-	u.MaximumImpressions = maximumImpressions
-	u.require(updateAdGroupsRequestFrequencyCapFieldMaximumImpressions)
+func (u *UpdateAdGroupsRequestDeliverySchedule) SetFriday(friday []*UpdateAdGroupsRequestDeliveryScheduleFridayItem) {
+	u.Friday = friday
+	u.require(updateAdGroupsRequestDeliveryScheduleFieldFriday)
 }
 
-// SetPerDays sets the PerDays field and marks it as non-optional;
+// SetMonday sets the Monday field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdGroupsRequestFrequencyCap) SetPerDays(perDays *int) {
-	u.PerDays = perDays
-	u.require(updateAdGroupsRequestFrequencyCapFieldPerDays)
+func (u *UpdateAdGroupsRequestDeliverySchedule) SetMonday(monday []*UpdateAdGroupsRequestDeliveryScheduleMondayItem) {
+	u.Monday = monday
+	u.require(updateAdGroupsRequestDeliveryScheduleFieldMonday)
 }
 
-func (u *UpdateAdGroupsRequestFrequencyCap) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateAdGroupsRequestFrequencyCap
+// SetSaturday sets the Saturday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliverySchedule) SetSaturday(saturday []*UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) {
+	u.Saturday = saturday
+	u.require(updateAdGroupsRequestDeliveryScheduleFieldSaturday)
+}
+
+// SetSunday sets the Sunday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliverySchedule) SetSunday(sunday []*UpdateAdGroupsRequestDeliveryScheduleSundayItem) {
+	u.Sunday = sunday
+	u.require(updateAdGroupsRequestDeliveryScheduleFieldSunday)
+}
+
+// SetThursday sets the Thursday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliverySchedule) SetThursday(thursday []*UpdateAdGroupsRequestDeliveryScheduleThursdayItem) {
+	u.Thursday = thursday
+	u.require(updateAdGroupsRequestDeliveryScheduleFieldThursday)
+}
+
+// SetTuesday sets the Tuesday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliverySchedule) SetTuesday(tuesday []*UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) {
+	u.Tuesday = tuesday
+	u.require(updateAdGroupsRequestDeliveryScheduleFieldTuesday)
+}
+
+// SetWednesday sets the Wednesday field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliverySchedule) SetWednesday(wednesday []*UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) {
+	u.Wednesday = wednesday
+	u.require(updateAdGroupsRequestDeliveryScheduleFieldWednesday)
+}
+
+func (u *UpdateAdGroupsRequestDeliverySchedule) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestDeliverySchedule
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*u = UpdateAdGroupsRequestFrequencyCap(value)
+	*u = UpdateAdGroupsRequestDeliverySchedule(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *u)
 	if err != nil {
 		return err
@@ -8690,8 +7999,8 @@ func (u *UpdateAdGroupsRequestFrequencyCap) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (u *UpdateAdGroupsRequestFrequencyCap) MarshalJSON() ([]byte, error) {
-	type embed UpdateAdGroupsRequestFrequencyCap
+func (u *UpdateAdGroupsRequestDeliverySchedule) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestDeliverySchedule
 	var marshaler = struct {
 		embed
 	}{
@@ -8701,7 +8010,7 @@ func (u *UpdateAdGroupsRequestFrequencyCap) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (u *UpdateAdGroupsRequestFrequencyCap) String() string {
+func (u *UpdateAdGroupsRequestDeliverySchedule) String() string {
 	if u == nil {
 		return "<nil>"
 	}
@@ -8716,184 +8025,16 @@ func (u *UpdateAdGroupsRequestFrequencyCap) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-type UpdateAdGroupsRequestMessageAppsItem string
-
-const (
-	UpdateAdGroupsRequestMessageAppsItemMessenger UpdateAdGroupsRequestMessageAppsItem = "messenger"
-	UpdateAdGroupsRequestMessageAppsItemInstagram UpdateAdGroupsRequestMessageAppsItem = "instagram"
-	UpdateAdGroupsRequestMessageAppsItemWhatsapp  UpdateAdGroupsRequestMessageAppsItem = "whatsapp"
-)
-
-func NewUpdateAdGroupsRequestMessageAppsItemFromString(s string) (UpdateAdGroupsRequestMessageAppsItem, error) {
-	switch s {
-	case "messenger":
-		return UpdateAdGroupsRequestMessageAppsItemMessenger, nil
-	case "instagram":
-		return UpdateAdGroupsRequestMessageAppsItemInstagram, nil
-	case "whatsapp":
-		return UpdateAdGroupsRequestMessageAppsItemWhatsapp, nil
-	}
-	var t UpdateAdGroupsRequestMessageAppsItem
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateAdGroupsRequestMessageAppsItem) Ptr() *UpdateAdGroupsRequestMessageAppsItem {
-	return &u
-}
-
-// The result the ad group's delivery is optimized to get the most of.
-type UpdateAdGroupsRequestOptimizationGoal string
-
-const (
-	UpdateAdGroupsRequestOptimizationGoalConversions              UpdateAdGroupsRequestOptimizationGoal = "conversions"
-	UpdateAdGroupsRequestOptimizationGoalLinkClicks               UpdateAdGroupsRequestOptimizationGoal = "link_clicks"
-	UpdateAdGroupsRequestOptimizationGoalLandingPageViews         UpdateAdGroupsRequestOptimizationGoal = "landing_page_views"
-	UpdateAdGroupsRequestOptimizationGoalReach                    UpdateAdGroupsRequestOptimizationGoal = "reach"
-	UpdateAdGroupsRequestOptimizationGoalImpressions              UpdateAdGroupsRequestOptimizationGoal = "impressions"
-	UpdateAdGroupsRequestOptimizationGoalEngagement               UpdateAdGroupsRequestOptimizationGoal = "engagement"
-	UpdateAdGroupsRequestOptimizationGoalConversations            UpdateAdGroupsRequestOptimizationGoal = "conversations"
-	UpdateAdGroupsRequestOptimizationGoalVideoViews               UpdateAdGroupsRequestOptimizationGoal = "video_views"
-	UpdateAdGroupsRequestOptimizationGoalTwoSecondViews           UpdateAdGroupsRequestOptimizationGoal = "two_second_views"
-	UpdateAdGroupsRequestOptimizationGoalPageLikes                UpdateAdGroupsRequestOptimizationGoal = "page_likes"
-	UpdateAdGroupsRequestOptimizationGoalSocialProfile            UpdateAdGroupsRequestOptimizationGoal = "social_profile"
-	UpdateAdGroupsRequestOptimizationGoalAdRecallLift             UpdateAdGroupsRequestOptimizationGoal = "ad_recall_lift"
-	UpdateAdGroupsRequestOptimizationGoalEventResponses           UpdateAdGroupsRequestOptimizationGoal = "event_responses"
-	UpdateAdGroupsRequestOptimizationGoalRemindersSet             UpdateAdGroupsRequestOptimizationGoal = "reminders_set"
-	UpdateAdGroupsRequestOptimizationGoalLeadGeneration           UpdateAdGroupsRequestOptimizationGoal = "lead_generation"
-	UpdateAdGroupsRequestOptimizationGoalQualityLead              UpdateAdGroupsRequestOptimizationGoal = "quality_lead"
-	UpdateAdGroupsRequestOptimizationGoalValue                    UpdateAdGroupsRequestOptimizationGoal = "value"
-	UpdateAdGroupsRequestOptimizationGoalProfileAndPageEngagement UpdateAdGroupsRequestOptimizationGoal = "profile_and_page_engagement"
-)
-
-func NewUpdateAdGroupsRequestOptimizationGoalFromString(s string) (UpdateAdGroupsRequestOptimizationGoal, error) {
-	switch s {
-	case "conversions":
-		return UpdateAdGroupsRequestOptimizationGoalConversions, nil
-	case "link_clicks":
-		return UpdateAdGroupsRequestOptimizationGoalLinkClicks, nil
-	case "landing_page_views":
-		return UpdateAdGroupsRequestOptimizationGoalLandingPageViews, nil
-	case "reach":
-		return UpdateAdGroupsRequestOptimizationGoalReach, nil
-	case "impressions":
-		return UpdateAdGroupsRequestOptimizationGoalImpressions, nil
-	case "engagement":
-		return UpdateAdGroupsRequestOptimizationGoalEngagement, nil
-	case "conversations":
-		return UpdateAdGroupsRequestOptimizationGoalConversations, nil
-	case "video_views":
-		return UpdateAdGroupsRequestOptimizationGoalVideoViews, nil
-	case "two_second_views":
-		return UpdateAdGroupsRequestOptimizationGoalTwoSecondViews, nil
-	case "page_likes":
-		return UpdateAdGroupsRequestOptimizationGoalPageLikes, nil
-	case "social_profile":
-		return UpdateAdGroupsRequestOptimizationGoalSocialProfile, nil
-	case "ad_recall_lift":
-		return UpdateAdGroupsRequestOptimizationGoalAdRecallLift, nil
-	case "event_responses":
-		return UpdateAdGroupsRequestOptimizationGoalEventResponses, nil
-	case "reminders_set":
-		return UpdateAdGroupsRequestOptimizationGoalRemindersSet, nil
-	case "lead_generation":
-		return UpdateAdGroupsRequestOptimizationGoalLeadGeneration, nil
-	case "quality_lead":
-		return UpdateAdGroupsRequestOptimizationGoalQualityLead, nil
-	case "value":
-		return UpdateAdGroupsRequestOptimizationGoalValue, nil
-	case "profile_and_page_engagement":
-		return UpdateAdGroupsRequestOptimizationGoalProfileAndPageEngagement, nil
-	}
-	var t UpdateAdGroupsRequestOptimizationGoal
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateAdGroupsRequestOptimizationGoal) Ptr() *UpdateAdGroupsRequestOptimizationGoal {
-	return &u
-}
-
-// `automatic` to let the ad platform choose placements, or the list of platforms and positions to target. Omit a platform's positions to target all of them.
-//
-// Valid positions per platform:
-//
-// - `facebook`: `feed`, `right_hand_column`, `marketplace`, `search`, `profile_feed`, `notification`, `story`, `instream_video`, `facebook_reels`, `facebook_reels_overlay`, `biz_disco_feed`
-// - `instagram`: `stream`, `story`, `explore`, `explore_home`, `reels`, `profile_feed`, `profile_reels`, `ig_search`
-// - `messenger`: `story`
-// - `audience_network`: `classic`, `rewarded_video`
-// - `threads`: `threads_stream`
-// - `whatsapp`: `status`
-type UpdateAdGroupsRequestPlacements struct {
-	UpdateAdGroupsRequestPlacementsZero        UpdateAdGroupsRequestPlacementsZero
-	UpdateAdGroupsRequestPlacementsOneItemList []*UpdateAdGroupsRequestPlacementsOneItem
-
-	typ string
-}
-
-func (u *UpdateAdGroupsRequestPlacements) GetUpdateAdGroupsRequestPlacementsZero() UpdateAdGroupsRequestPlacementsZero {
-	if u == nil {
-		return ""
-	}
-	return u.UpdateAdGroupsRequestPlacementsZero
-}
-
-func (u *UpdateAdGroupsRequestPlacements) GetUpdateAdGroupsRequestPlacementsOneItemList() []*UpdateAdGroupsRequestPlacementsOneItem {
-	if u == nil {
-		return nil
-	}
-	return u.UpdateAdGroupsRequestPlacementsOneItemList
-}
-
-func (u *UpdateAdGroupsRequestPlacements) UnmarshalJSON(data []byte) error {
-	var valueUpdateAdGroupsRequestPlacementsZero UpdateAdGroupsRequestPlacementsZero
-	if err := json.Unmarshal(data, &valueUpdateAdGroupsRequestPlacementsZero); err == nil {
-		u.typ = "UpdateAdGroupsRequestPlacementsZero"
-		u.UpdateAdGroupsRequestPlacementsZero = valueUpdateAdGroupsRequestPlacementsZero
-		return nil
-	}
-	var valueUpdateAdGroupsRequestPlacementsOneItemList []*UpdateAdGroupsRequestPlacementsOneItem
-	if err := json.Unmarshal(data, &valueUpdateAdGroupsRequestPlacementsOneItemList); err == nil {
-		u.typ = "UpdateAdGroupsRequestPlacementsOneItemList"
-		u.UpdateAdGroupsRequestPlacementsOneItemList = valueUpdateAdGroupsRequestPlacementsOneItemList
-		return nil
-	}
-	return fmt.Errorf("%s cannot be deserialized as a %T", data, u)
-}
-
-func (u UpdateAdGroupsRequestPlacements) MarshalJSON() ([]byte, error) {
-	if u.typ == "UpdateAdGroupsRequestPlacementsZero" || u.UpdateAdGroupsRequestPlacementsZero != "" {
-		return json.Marshal(u.UpdateAdGroupsRequestPlacementsZero)
-	}
-	if u.typ == "UpdateAdGroupsRequestPlacementsOneItemList" || u.UpdateAdGroupsRequestPlacementsOneItemList != nil {
-		return json.Marshal(u.UpdateAdGroupsRequestPlacementsOneItemList)
-	}
-	return nil, fmt.Errorf("type %T does not include a non-empty union type", u)
-}
-
-type UpdateAdGroupsRequestPlacementsVisitor interface {
-	VisitUpdateAdGroupsRequestPlacementsZero(UpdateAdGroupsRequestPlacementsZero) error
-	VisitUpdateAdGroupsRequestPlacementsOneItemList([]*UpdateAdGroupsRequestPlacementsOneItem) error
-}
-
-func (u *UpdateAdGroupsRequestPlacements) Accept(visitor UpdateAdGroupsRequestPlacementsVisitor) error {
-	if u.typ == "UpdateAdGroupsRequestPlacementsZero" || u.UpdateAdGroupsRequestPlacementsZero != "" {
-		return visitor.VisitUpdateAdGroupsRequestPlacementsZero(u.UpdateAdGroupsRequestPlacementsZero)
-	}
-	if u.typ == "UpdateAdGroupsRequestPlacementsOneItemList" || u.UpdateAdGroupsRequestPlacementsOneItemList != nil {
-		return visitor.VisitUpdateAdGroupsRequestPlacementsOneItemList(u.UpdateAdGroupsRequestPlacementsOneItemList)
-	}
-	return fmt.Errorf("type %T does not include a non-empty union type", u)
-}
-
 var (
-	updateAdGroupsRequestPlacementsOneItemFieldPlatform  = big.NewInt(1 << 0)
-	updateAdGroupsRequestPlacementsOneItemFieldPositions = big.NewInt(1 << 1)
+	updateAdGroupsRequestDeliveryScheduleFridayItemFieldEnd   = big.NewInt(1 << 0)
+	updateAdGroupsRequestDeliveryScheduleFridayItemFieldStart = big.NewInt(1 << 1)
 )
 
-type UpdateAdGroupsRequestPlacementsOneItem struct {
-	// Platform the ads run on.
-	Platform UpdateAdGroupsRequestPlacementsOneItemPlatform `json:"platform" url:"platform"`
-	// Positions to target within the platform, such as `feed` or `story`. Omit to target all of the platform's positions.
-	Positions []string `json:"positions,omitempty" url:"positions,omitempty"`
+type UpdateAdGroupsRequestDeliveryScheduleFridayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -8902,55 +8043,57 @@ type UpdateAdGroupsRequestPlacementsOneItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UpdateAdGroupsRequestPlacementsOneItem) GetPlatform() UpdateAdGroupsRequestPlacementsOneItemPlatform {
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) GetEnd() string {
 	if u == nil {
 		return ""
 	}
-	return u.Platform
+	return u.End
 }
 
-func (u *UpdateAdGroupsRequestPlacementsOneItem) GetPositions() []string {
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) GetStart() string {
 	if u == nil {
-		return nil
+		return ""
 	}
-	return u.Positions
+	return u.Start
 }
 
-func (u *UpdateAdGroupsRequestPlacementsOneItem) GetExtraProperties() map[string]interface{} {
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) GetExtraProperties() map[string]interface{} {
 	if u == nil {
 		return nil
 	}
 	return u.extraProperties
 }
 
-func (u *UpdateAdGroupsRequestPlacementsOneItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
-// SetPlatform sets the Platform field and marks it as non-optional;
+// SetEnd sets the End field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdGroupsRequestPlacementsOneItem) SetPlatform(platform UpdateAdGroupsRequestPlacementsOneItemPlatform) {
-	u.Platform = platform
-	u.require(updateAdGroupsRequestPlacementsOneItemFieldPlatform)
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) SetEnd(end string) {
+	u.End = end
+	u.require(updateAdGroupsRequestDeliveryScheduleFridayItemFieldEnd)
 }
 
-// SetPositions sets the Positions field and marks it as non-optional;
+// SetStart sets the Start field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdGroupsRequestPlacementsOneItem) SetPositions(positions []string) {
-	u.Positions = positions
-	u.require(updateAdGroupsRequestPlacementsOneItemFieldPositions)
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) SetStart(start string) {
+	u.Start = start
+	u.require(updateAdGroupsRequestDeliveryScheduleFridayItemFieldStart)
 }
 
-func (u *UpdateAdGroupsRequestPlacementsOneItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateAdGroupsRequestPlacementsOneItem
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestDeliveryScheduleFridayItem
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*u = UpdateAdGroupsRequestPlacementsOneItem(value)
+	*u = UpdateAdGroupsRequestDeliveryScheduleFridayItem(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *u)
 	if err != nil {
 		return err
@@ -8960,8 +8103,8 @@ func (u *UpdateAdGroupsRequestPlacementsOneItem) UnmarshalJSON(data []byte) erro
 	return nil
 }
 
-func (u *UpdateAdGroupsRequestPlacementsOneItem) MarshalJSON() ([]byte, error) {
-	type embed UpdateAdGroupsRequestPlacementsOneItem
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestDeliveryScheduleFridayItem
 	var marshaler = struct {
 		embed
 	}{
@@ -8971,7 +8114,7 @@ func (u *UpdateAdGroupsRequestPlacementsOneItem) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (u *UpdateAdGroupsRequestPlacementsOneItem) String() string {
+func (u *UpdateAdGroupsRequestDeliveryScheduleFridayItem) String() string {
 	if u == nil {
 		return "<nil>"
 	}
@@ -8986,57 +8129,774 @@ func (u *UpdateAdGroupsRequestPlacementsOneItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Platform the ads run on.
-type UpdateAdGroupsRequestPlacementsOneItemPlatform string
-
-const (
-	UpdateAdGroupsRequestPlacementsOneItemPlatformFacebook        UpdateAdGroupsRequestPlacementsOneItemPlatform = "facebook"
-	UpdateAdGroupsRequestPlacementsOneItemPlatformInstagram       UpdateAdGroupsRequestPlacementsOneItemPlatform = "instagram"
-	UpdateAdGroupsRequestPlacementsOneItemPlatformMessenger       UpdateAdGroupsRequestPlacementsOneItemPlatform = "messenger"
-	UpdateAdGroupsRequestPlacementsOneItemPlatformAudienceNetwork UpdateAdGroupsRequestPlacementsOneItemPlatform = "audience_network"
-	UpdateAdGroupsRequestPlacementsOneItemPlatformThreads         UpdateAdGroupsRequestPlacementsOneItemPlatform = "threads"
-	UpdateAdGroupsRequestPlacementsOneItemPlatformWhatsapp        UpdateAdGroupsRequestPlacementsOneItemPlatform = "whatsapp"
+var (
+	updateAdGroupsRequestDeliveryScheduleMondayItemFieldEnd   = big.NewInt(1 << 0)
+	updateAdGroupsRequestDeliveryScheduleMondayItemFieldStart = big.NewInt(1 << 1)
 )
 
-func NewUpdateAdGroupsRequestPlacementsOneItemPlatformFromString(s string) (UpdateAdGroupsRequestPlacementsOneItemPlatform, error) {
-	switch s {
-	case "facebook":
-		return UpdateAdGroupsRequestPlacementsOneItemPlatformFacebook, nil
-	case "instagram":
-		return UpdateAdGroupsRequestPlacementsOneItemPlatformInstagram, nil
-	case "messenger":
-		return UpdateAdGroupsRequestPlacementsOneItemPlatformMessenger, nil
-	case "audience_network":
-		return UpdateAdGroupsRequestPlacementsOneItemPlatformAudienceNetwork, nil
-	case "threads":
-		return UpdateAdGroupsRequestPlacementsOneItemPlatformThreads, nil
-	case "whatsapp":
-		return UpdateAdGroupsRequestPlacementsOneItemPlatformWhatsapp, nil
+type UpdateAdGroupsRequestDeliveryScheduleMondayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) GetEnd() string {
+	if u == nil {
+		return ""
 	}
-	var t UpdateAdGroupsRequestPlacementsOneItemPlatform
+	return u.End
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) GetStart() string {
+	if u == nil {
+		return ""
+	}
+	return u.Start
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) SetEnd(end string) {
+	u.End = end
+	u.require(updateAdGroupsRequestDeliveryScheduleMondayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) SetStart(start string) {
+	u.Start = start
+	u.require(updateAdGroupsRequestDeliveryScheduleMondayItemFieldStart)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestDeliveryScheduleMondayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdGroupsRequestDeliveryScheduleMondayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestDeliveryScheduleMondayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleMondayItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAdGroupsRequestDeliveryScheduleSaturdayItemFieldEnd   = big.NewInt(1 << 0)
+	updateAdGroupsRequestDeliveryScheduleSaturdayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type UpdateAdGroupsRequestDeliveryScheduleSaturdayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) GetEnd() string {
+	if u == nil {
+		return ""
+	}
+	return u.End
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) GetStart() string {
+	if u == nil {
+		return ""
+	}
+	return u.Start
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) SetEnd(end string) {
+	u.End = end
+	u.require(updateAdGroupsRequestDeliveryScheduleSaturdayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) SetStart(start string) {
+	u.Start = start
+	u.require(updateAdGroupsRequestDeliveryScheduleSaturdayItemFieldStart)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestDeliveryScheduleSaturdayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdGroupsRequestDeliveryScheduleSaturdayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestDeliveryScheduleSaturdayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSaturdayItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAdGroupsRequestDeliveryScheduleSundayItemFieldEnd   = big.NewInt(1 << 0)
+	updateAdGroupsRequestDeliveryScheduleSundayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type UpdateAdGroupsRequestDeliveryScheduleSundayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) GetEnd() string {
+	if u == nil {
+		return ""
+	}
+	return u.End
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) GetStart() string {
+	if u == nil {
+		return ""
+	}
+	return u.Start
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) SetEnd(end string) {
+	u.End = end
+	u.require(updateAdGroupsRequestDeliveryScheduleSundayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) SetStart(start string) {
+	u.Start = start
+	u.require(updateAdGroupsRequestDeliveryScheduleSundayItemFieldStart)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestDeliveryScheduleSundayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdGroupsRequestDeliveryScheduleSundayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestDeliveryScheduleSundayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleSundayItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAdGroupsRequestDeliveryScheduleThursdayItemFieldEnd   = big.NewInt(1 << 0)
+	updateAdGroupsRequestDeliveryScheduleThursdayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type UpdateAdGroupsRequestDeliveryScheduleThursdayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) GetEnd() string {
+	if u == nil {
+		return ""
+	}
+	return u.End
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) GetStart() string {
+	if u == nil {
+		return ""
+	}
+	return u.Start
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) SetEnd(end string) {
+	u.End = end
+	u.require(updateAdGroupsRequestDeliveryScheduleThursdayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) SetStart(start string) {
+	u.Start = start
+	u.require(updateAdGroupsRequestDeliveryScheduleThursdayItemFieldStart)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestDeliveryScheduleThursdayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdGroupsRequestDeliveryScheduleThursdayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestDeliveryScheduleThursdayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleThursdayItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAdGroupsRequestDeliveryScheduleTuesdayItemFieldEnd   = big.NewInt(1 << 0)
+	updateAdGroupsRequestDeliveryScheduleTuesdayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type UpdateAdGroupsRequestDeliveryScheduleTuesdayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) GetEnd() string {
+	if u == nil {
+		return ""
+	}
+	return u.End
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) GetStart() string {
+	if u == nil {
+		return ""
+	}
+	return u.Start
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) SetEnd(end string) {
+	u.End = end
+	u.require(updateAdGroupsRequestDeliveryScheduleTuesdayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) SetStart(start string) {
+	u.Start = start
+	u.require(updateAdGroupsRequestDeliveryScheduleTuesdayItemFieldStart)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestDeliveryScheduleTuesdayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdGroupsRequestDeliveryScheduleTuesdayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestDeliveryScheduleTuesdayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleTuesdayItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAdGroupsRequestDeliveryScheduleWednesdayItemFieldEnd   = big.NewInt(1 << 0)
+	updateAdGroupsRequestDeliveryScheduleWednesdayItemFieldStart = big.NewInt(1 << 1)
+)
+
+type UpdateAdGroupsRequestDeliveryScheduleWednesdayItem struct {
+	// When delivery stops, as a 24-hour `HH:00` time up to `24:00` for midnight. Later than `start`.
+	End string `json:"end" url:"end"`
+	// When delivery starts, as a 24-hour `HH:00` time from `00:00` to `23:00`.
+	Start string `json:"start" url:"start"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) GetEnd() string {
+	if u == nil {
+		return ""
+	}
+	return u.End
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) GetStart() string {
+	if u == nil {
+		return ""
+	}
+	return u.Start
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetEnd sets the End field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) SetEnd(end string) {
+	u.End = end
+	u.require(updateAdGroupsRequestDeliveryScheduleWednesdayItemFieldEnd)
+}
+
+// SetStart sets the Start field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) SetStart(start string) {
+	u.Start = start
+	u.require(updateAdGroupsRequestDeliveryScheduleWednesdayItemFieldStart)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestDeliveryScheduleWednesdayItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdGroupsRequestDeliveryScheduleWednesdayItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestDeliveryScheduleWednesdayItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdGroupsRequestDeliveryScheduleWednesdayItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAdGroupsRequestKeywordsItemFieldMatchType = big.NewInt(1 << 0)
+	updateAdGroupsRequestKeywordsItemFieldNegative  = big.NewInt(1 << 1)
+	updateAdGroupsRequestKeywordsItemFieldText      = big.NewInt(1 << 2)
+)
+
+type UpdateAdGroupsRequestKeywordsItem struct {
+	// How closely a search has to match: `broad` also reaches related searches, `phrase` needs the meaning of the phrase, and `exact` needs the same meaning as the term. Defaults to `broad`.
+	MatchType *UpdateAdGroupsRequestKeywordsItemMatchType `json:"match_type,omitempty" url:"match_type,omitempty"`
+	// Set to `true` to keep the ads from showing for this term instead. Defaults to `false`.
+	Negative *bool `json:"negative,omitempty" url:"negative,omitempty"`
+	// The search term, up to 80 characters and 10 words. Symbols such as ! @ % , * = ^ ; ~ | < > ? ( ) { } and quotes aren't allowed: set the match with match_type instead.
+	Text string `json:"text" url:"text"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAdGroupsRequestKeywordsItem) GetMatchType() *UpdateAdGroupsRequestKeywordsItemMatchType {
+	if u == nil {
+		return nil
+	}
+	return u.MatchType
+}
+
+func (u *UpdateAdGroupsRequestKeywordsItem) GetNegative() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.Negative
+}
+
+func (u *UpdateAdGroupsRequestKeywordsItem) GetText() string {
+	if u == nil {
+		return ""
+	}
+	return u.Text
+}
+
+func (u *UpdateAdGroupsRequestKeywordsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAdGroupsRequestKeywordsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetMatchType sets the MatchType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestKeywordsItem) SetMatchType(matchType *UpdateAdGroupsRequestKeywordsItemMatchType) {
+	u.MatchType = matchType
+	u.require(updateAdGroupsRequestKeywordsItemFieldMatchType)
+}
+
+// SetNegative sets the Negative field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestKeywordsItem) SetNegative(negative *bool) {
+	u.Negative = negative
+	u.require(updateAdGroupsRequestKeywordsItemFieldNegative)
+}
+
+// SetText sets the Text field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequestKeywordsItem) SetText(text string) {
+	u.Text = text
+	u.require(updateAdGroupsRequestKeywordsItemFieldText)
+}
+
+func (u *UpdateAdGroupsRequestKeywordsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdGroupsRequestKeywordsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAdGroupsRequestKeywordsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAdGroupsRequestKeywordsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdGroupsRequestKeywordsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAdGroupsRequestKeywordsItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// How closely a search has to match: `broad` also reaches related searches, `phrase` needs the meaning of the phrase, and `exact` needs the same meaning as the term. Defaults to `broad`.
+type UpdateAdGroupsRequestKeywordsItemMatchType string
+
+const (
+	UpdateAdGroupsRequestKeywordsItemMatchTypeBroad  UpdateAdGroupsRequestKeywordsItemMatchType = "broad"
+	UpdateAdGroupsRequestKeywordsItemMatchTypePhrase UpdateAdGroupsRequestKeywordsItemMatchType = "phrase"
+	UpdateAdGroupsRequestKeywordsItemMatchTypeExact  UpdateAdGroupsRequestKeywordsItemMatchType = "exact"
+)
+
+func NewUpdateAdGroupsRequestKeywordsItemMatchTypeFromString(s string) (UpdateAdGroupsRequestKeywordsItemMatchType, error) {
+	switch s {
+	case "broad":
+		return UpdateAdGroupsRequestKeywordsItemMatchTypeBroad, nil
+	case "phrase":
+		return UpdateAdGroupsRequestKeywordsItemMatchTypePhrase, nil
+	case "exact":
+		return UpdateAdGroupsRequestKeywordsItemMatchTypeExact, nil
+	}
+	var t UpdateAdGroupsRequestKeywordsItemMatchType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (u UpdateAdGroupsRequestPlacementsOneItemPlatform) Ptr() *UpdateAdGroupsRequestPlacementsOneItemPlatform {
-	return &u
-}
-
-type UpdateAdGroupsRequestPlacementsZero string
-
-const (
-	UpdateAdGroupsRequestPlacementsZeroAutomatic UpdateAdGroupsRequestPlacementsZero = "automatic"
-)
-
-func NewUpdateAdGroupsRequestPlacementsZeroFromString(s string) (UpdateAdGroupsRequestPlacementsZero, error) {
-	switch s {
-	case "automatic":
-		return UpdateAdGroupsRequestPlacementsZeroAutomatic, nil
-	}
-	var t UpdateAdGroupsRequestPlacementsZero
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateAdGroupsRequestPlacementsZero) Ptr() *UpdateAdGroupsRequestPlacementsZero {
+func (u UpdateAdGroupsRequestKeywordsItemMatchType) Ptr() *UpdateAdGroupsRequestKeywordsItemMatchType {
 	return &u
 }
 
@@ -9076,10 +8936,12 @@ type UnpauseAdGroupsRequest struct {
 }
 
 func (u *UnpauseAdGroupsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -9094,24 +8956,20 @@ var (
 	updateAdGroupsRequestFieldAudiences            = big.NewInt(1 << 1)
 	updateAdGroupsRequestFieldBidType              = big.NewInt(1 << 2)
 	updateAdGroupsRequestFieldBudgetAmount         = big.NewInt(1 << 3)
-	updateAdGroupsRequestFieldBudgetType           = big.NewInt(1 << 4)
-	updateAdGroupsRequestFieldConversionEvent      = big.NewInt(1 << 5)
-	updateAdGroupsRequestFieldConversionLocation   = big.NewInt(1 << 6)
-	updateAdGroupsRequestFieldDemographics         = big.NewInt(1 << 7)
-	updateAdGroupsRequestFieldDesiredCostPerResult = big.NewInt(1 << 8)
-	updateAdGroupsRequestFieldDetailedTargeting    = big.NewInt(1 << 9)
+	updateAdGroupsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 4)
+	updateAdGroupsRequestFieldBudgetType           = big.NewInt(1 << 5)
+	updateAdGroupsRequestFieldConversionEvent      = big.NewInt(1 << 6)
+	updateAdGroupsRequestFieldDeliverySchedule     = big.NewInt(1 << 7)
+	updateAdGroupsRequestFieldDemographics         = big.NewInt(1 << 8)
+	updateAdGroupsRequestFieldDesiredCostPerResult = big.NewInt(1 << 9)
 	updateAdGroupsRequestFieldDevices              = big.NewInt(1 << 10)
 	updateAdGroupsRequestFieldEndsAt               = big.NewInt(1 << 11)
-	updateAdGroupsRequestFieldFrequencyCap         = big.NewInt(1 << 12)
+	updateAdGroupsRequestFieldKeywords             = big.NewInt(1 << 12)
 	updateAdGroupsRequestFieldLanguages            = big.NewInt(1 << 13)
-	updateAdGroupsRequestFieldMessageApps          = big.NewInt(1 << 14)
-	updateAdGroupsRequestFieldMinimumDailySpend    = big.NewInt(1 << 15)
-	updateAdGroupsRequestFieldOptimizationGoal     = big.NewInt(1 << 16)
-	updateAdGroupsRequestFieldPlacements           = big.NewInt(1 << 17)
-	updateAdGroupsRequestFieldRegions              = big.NewInt(1 << 18)
-	updateAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 19)
-	updateAdGroupsRequestFieldStatus               = big.NewInt(1 << 20)
-	updateAdGroupsRequestFieldTitle                = big.NewInt(1 << 21)
+	updateAdGroupsRequestFieldRegions              = big.NewInt(1 << 14)
+	updateAdGroupsRequestFieldStartsAt             = big.NewInt(1 << 15)
+	updateAdGroupsRequestFieldStatus               = big.NewInt(1 << 16)
+	updateAdGroupsRequestFieldTitle                = big.NewInt(1 << 17)
 )
 
 type UpdateAdGroupsRequest struct {
@@ -9121,44 +8979,27 @@ type UpdateAdGroupsRequest struct {
 	Audiences *AdGroupAudiencesBody `json:"audiences,omitempty" url:"-"`
 	// How delivery bids are set in the ad auction. Target-based strategies use `desired_cost_per_result`.
 	BidType *UpdateAdGroupsRequestBidType `json:"bid_type,omitempty" url:"-"`
-	// This ad group's budget, in the ad account's currency. Omit when the budget is set on the campaign instead.
+	// This ad group's budget in USD, which is what it is stored and billed in. Omit when the budget is set on the campaign instead.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"-"`
+	// This ad group's budget stated in the account's ads reporting currency (`budget_currency` on the response) instead of USD. Converted to USD at the current exchange rate and stored as budget_amount; on an update, an amount equal to the current budget_amount_local keeps the stored USD budget as is. Provide this or budget_amount, not both.
+	BudgetAmountLocal *float64 `json:"budget_amount_local,omitempty" url:"-"`
 	// Whether budget_amount is spent per day (`daily`) or over the ad group's full run (`lifetime`).
 	BudgetType      *UpdateAdGroupsRequestBudgetType `json:"budget_type,omitempty" url:"-"`
 	ConversionEvent *ConversionEvent                 `json:"conversion_event,omitempty" url:"-"`
-	// Where the outcome being optimized for occurs, such as a website visit, social-profile visit, messaging conversation, ad interaction, or lead-form submission. The lead form itself is set on the ad.
-	ConversionLocation *UpdateAdGroupsRequestConversionLocation `json:"conversion_location,omitempty" url:"-"`
+	// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+	DeliverySchedule *UpdateAdGroupsRequestDeliverySchedule `json:"delivery_schedule,omitempty" url:"-"`
 	// Age, gender, and automatic-audience targeting.
 	Demographics *AdGroupDemographicsBody `json:"demographics,omitempty" url:"-"`
 	// Cost per result to aim for (`average_target`) or never exceed (`maximum_target`).
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"-"`
-	// Interest, behavior, and demographic targeting, using categories from the ad platform's targeting taxonomy. Entries across interests, behaviors, and demographics are OR'd together (anyone matching any entry is reached), matching Ads Manager's detailed-targeting box. At most 100 entries per section. Can't be combined with demographics.automatic, and unavailable to campaigns with special_ad_categories. Send the complete intended state — a section you omit is cleared.
-	DetailedTargeting *AdGroupDetailedTargetingBody `json:"detailed_targeting,omitempty" url:"-"`
 	// Device platforms and operating systems to target.
 	Devices *AdGroupDevicesBody `json:"devices,omitempty" url:"-"`
 	// When the ad group stops delivering, as an ISO 8601 timestamp. Omit to run until paused.
 	EndsAt *string `json:"ends_at,omitempty" url:"-"`
-	// Cap on how often one person sees ads from this ad group. Only available on campaigns with the `awareness` objective.
-	FrequencyCap *UpdateAdGroupsRequestFrequencyCap `json:"frequency_cap,omitempty" url:"-"`
+	// Search terms the ad group's ads can show for, and terms they never show for. Only search campaigns take keywords, and each of their ad groups needs at least one before launch. Replaces the stored list; omit to keep it.
+	Keywords []*UpdateAdGroupsRequestKeywordsItem `json:"keywords,omitempty" url:"-"`
 	// Languages to target, as ISO 639 codes such as `en` or `es`. Empty or omitted targets all languages.
 	Languages []string `json:"languages,omitempty" url:"-"`
-	// Apps the conversation opens in. Required when setting `conversion_location` to `messaging`, and rejected unless the ad group's conversion location is `messaging`.
-	MessageApps []UpdateAdGroupsRequestMessageAppsItem `json:"message_apps,omitempty" url:"-"`
-	// Minimum the ad group tries to spend each day.
-	MinimumDailySpend *float64 `json:"minimum_daily_spend,omitempty" url:"-"`
-	// The result the ad group's delivery is optimized to get the most of.
-	OptimizationGoal *UpdateAdGroupsRequestOptimizationGoal `json:"optimization_goal,omitempty" url:"-"`
-	// `automatic` to let the ad platform choose placements, or the list of platforms and positions to target. Omit a platform's positions to target all of them.
-	//
-	// Valid positions per platform:
-	//
-	// - `facebook`: `feed`, `right_hand_column`, `marketplace`, `search`, `profile_feed`, `notification`, `story`, `instream_video`, `facebook_reels`, `facebook_reels_overlay`, `biz_disco_feed`
-	// - `instagram`: `stream`, `story`, `explore`, `explore_home`, `reels`, `profile_feed`, `profile_reels`, `ig_search`
-	// - `messenger`: `story`
-	// - `audience_network`: `classic`, `rewarded_video`
-	// - `threads`: `threads_stream`
-	// - `whatsapp`: `status`
-	Placements *UpdateAdGroupsRequestPlacements `json:"placements,omitempty" url:"-"`
 	// Locations to target and exclude.
 	Regions *AdGroupRegionsBody `json:"regions,omitempty" url:"-"`
 	// When the ad group starts delivering, as an ISO 8601 timestamp. Omit to start as soon as it's active.
@@ -9173,10 +9014,12 @@ type UpdateAdGroupsRequest struct {
 }
 
 func (u *UpdateAdGroupsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -9207,6 +9050,13 @@ func (u *UpdateAdGroupsRequest) SetBudgetAmount(budgetAmount *float64) {
 	u.require(updateAdGroupsRequestFieldBudgetAmount)
 }
 
+// SetBudgetAmountLocal sets the BudgetAmountLocal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdGroupsRequest) SetBudgetAmountLocal(budgetAmountLocal *float64) {
+	u.BudgetAmountLocal = budgetAmountLocal
+	u.require(updateAdGroupsRequestFieldBudgetAmountLocal)
+}
+
 // SetBudgetType sets the BudgetType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAdGroupsRequest) SetBudgetType(budgetType *UpdateAdGroupsRequestBudgetType) {
@@ -9221,11 +9071,11 @@ func (u *UpdateAdGroupsRequest) SetConversionEvent(conversionEvent *ConversionEv
 	u.require(updateAdGroupsRequestFieldConversionEvent)
 }
 
-// SetConversionLocation sets the ConversionLocation field and marks it as non-optional;
+// SetDeliverySchedule sets the DeliverySchedule field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdGroupsRequest) SetConversionLocation(conversionLocation *UpdateAdGroupsRequestConversionLocation) {
-	u.ConversionLocation = conversionLocation
-	u.require(updateAdGroupsRequestFieldConversionLocation)
+func (u *UpdateAdGroupsRequest) SetDeliverySchedule(deliverySchedule *UpdateAdGroupsRequestDeliverySchedule) {
+	u.DeliverySchedule = deliverySchedule
+	u.require(updateAdGroupsRequestFieldDeliverySchedule)
 }
 
 // SetDemographics sets the Demographics field and marks it as non-optional;
@@ -9242,13 +9092,6 @@ func (u *UpdateAdGroupsRequest) SetDesiredCostPerResult(desiredCostPerResult *fl
 	u.require(updateAdGroupsRequestFieldDesiredCostPerResult)
 }
 
-// SetDetailedTargeting sets the DetailedTargeting field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdGroupsRequest) SetDetailedTargeting(detailedTargeting *AdGroupDetailedTargetingBody) {
-	u.DetailedTargeting = detailedTargeting
-	u.require(updateAdGroupsRequestFieldDetailedTargeting)
-}
-
 // SetDevices sets the Devices field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAdGroupsRequest) SetDevices(devices *AdGroupDevicesBody) {
@@ -9263,11 +9106,11 @@ func (u *UpdateAdGroupsRequest) SetEndsAt(endsAt *string) {
 	u.require(updateAdGroupsRequestFieldEndsAt)
 }
 
-// SetFrequencyCap sets the FrequencyCap field and marks it as non-optional;
+// SetKeywords sets the Keywords field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdGroupsRequest) SetFrequencyCap(frequencyCap *UpdateAdGroupsRequestFrequencyCap) {
-	u.FrequencyCap = frequencyCap
-	u.require(updateAdGroupsRequestFieldFrequencyCap)
+func (u *UpdateAdGroupsRequest) SetKeywords(keywords []*UpdateAdGroupsRequestKeywordsItem) {
+	u.Keywords = keywords
+	u.require(updateAdGroupsRequestFieldKeywords)
 }
 
 // SetLanguages sets the Languages field and marks it as non-optional;
@@ -9275,34 +9118,6 @@ func (u *UpdateAdGroupsRequest) SetFrequencyCap(frequencyCap *UpdateAdGroupsRequ
 func (u *UpdateAdGroupsRequest) SetLanguages(languages []string) {
 	u.Languages = languages
 	u.require(updateAdGroupsRequestFieldLanguages)
-}
-
-// SetMessageApps sets the MessageApps field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdGroupsRequest) SetMessageApps(messageApps []UpdateAdGroupsRequestMessageAppsItem) {
-	u.MessageApps = messageApps
-	u.require(updateAdGroupsRequestFieldMessageApps)
-}
-
-// SetMinimumDailySpend sets the MinimumDailySpend field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdGroupsRequest) SetMinimumDailySpend(minimumDailySpend *float64) {
-	u.MinimumDailySpend = minimumDailySpend
-	u.require(updateAdGroupsRequestFieldMinimumDailySpend)
-}
-
-// SetOptimizationGoal sets the OptimizationGoal field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdGroupsRequest) SetOptimizationGoal(optimizationGoal *UpdateAdGroupsRequestOptimizationGoal) {
-	u.OptimizationGoal = optimizationGoal
-	u.require(updateAdGroupsRequestFieldOptimizationGoal)
-}
-
-// SetPlacements sets the Placements field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdGroupsRequest) SetPlacements(placements *UpdateAdGroupsRequestPlacements) {
-	u.Placements = placements
-	u.require(updateAdGroupsRequestFieldPlacements)
 }
 
 // SetRegions sets the Regions field and marks it as non-optional;

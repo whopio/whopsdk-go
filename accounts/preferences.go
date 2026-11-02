@@ -5,7 +5,8 @@ package accounts
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	v2 "github.com/whopio/whopsdk-go/v2"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 
@@ -22,10 +23,12 @@ type RetrievePreferencesRequest struct {
 }
 
 func (r *RetrievePreferencesRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -36,30 +39,88 @@ func (r *RetrievePreferencesRequest) SetAccountID(accountID string) {
 }
 
 var (
-	retrievePreferencesResponseFieldAdsAgreement              = big.NewInt(1 << 0)
-	retrievePreferencesResponseFieldAdsPaymentMethods         = big.NewInt(1 << 1)
-	retrievePreferencesResponseFieldAdsReportingCurrency      = big.NewInt(1 << 2)
-	retrievePreferencesResponseFieldAdsSchedulingTimezone     = big.NewInt(1 << 3)
-	retrievePreferencesResponseFieldAdsTripleWhaleIntegration = big.NewInt(1 << 4)
-	retrievePreferencesResponseFieldCardsAutoTopUp            = big.NewInt(1 << 5)
-	retrievePreferencesResponseFieldDisputeFighterEnabled     = big.NewInt(1 << 6)
+	retrievePreferencesResponseFieldAdsAgreement                            = big.NewInt(1 << 0)
+	retrievePreferencesResponseFieldAdsCertifications                       = big.NewInt(1 << 1)
+	retrievePreferencesResponseFieldAdsPaymentMethods                       = big.NewInt(1 << 2)
+	retrievePreferencesResponseFieldAdsReportingCurrency                    = big.NewInt(1 << 3)
+	retrievePreferencesResponseFieldAdsSchedulingTimezone                   = big.NewInt(1 << 4)
+	retrievePreferencesResponseFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 5)
+	retrievePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
+	retrievePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 7)
+	retrievePreferencesResponseFieldCoversConnectedAccountNegativeBalances  = big.NewInt(1 << 8)
+	retrievePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 9)
+	retrievePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 10)
+	retrievePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 11)
+	retrievePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 12)
+	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 13)
+	retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 14)
+	retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 15)
+	retrievePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 16)
+	retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 17)
+	retrievePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 18)
+	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 19)
+	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 20)
+	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 21)
 )
+
+// retrievePreferencesResponseNullableFields maps the wire names of RetrievePreferencesResponse's nullable fields (required or optional) to their field bits.
+var retrievePreferencesResponseNullableFields = map[string]*big.Int{
+	"ads_payment_methods":                         retrievePreferencesResponseFieldAdsPaymentMethods,
+	"covers_connected_account_negative_balances":  retrievePreferencesResponseFieldCoversConnectedAccountNegativeBalances,
+	"customer_tracking":                           retrievePreferencesResponseFieldCustomerTracking,
+	"economic_intelligence_ends_at":               retrievePreferencesResponseFieldEconomicIntelligenceEndsAt,
+	"economic_intelligence_fee_percentage":        retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage,
+	"economic_intelligence_first_renewal_at":      retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt,
+	"economic_intelligence_previous_period":       retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod,
+	"preferred_settlement_currency":               retrievePreferencesResponseFieldPreferredSettlementCurrency,
+	"preferred_settlement_currency_changeable_at": retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt,
+}
 
 type RetrievePreferencesResponse struct {
 	// The account's Whop Ads services and payment authorization agreement. While `pending_signature`, campaign launch is blocked; sign by answering `requested_information` via `PATCH /verifications/{id}`.
 	AdsAgreement *RetrievePreferencesResponseAdsAgreement `json:"ads_agreement" url:"ads_agreement"`
+	// The account's advertising certifications, one entry per certification type Whop offers. Start an application by setting a type's `status` to `pending_information` via `PATCH`, then answer the fields it requests via `GET`/`PATCH /verifications/{id}`.
+	AdsCertifications []*RetrievePreferencesResponseAdsCertificationsItem `json:"ads_certifications" url:"ads_certifications"`
 	// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails. `null` until ads billing has been configured.
 	AdsPaymentMethods *RetrievePreferencesResponseAdsPaymentMethods `json:"ads_payment_methods,omitempty" url:"ads_payment_methods,omitempty"`
 	// Lowercase ISO currency code, such as `usd` or `eur`, used to display ad spend and stats. Defaults to `usd`.
 	AdsReportingCurrency string `json:"ads_reporting_currency" url:"ads_reporting_currency"`
 	// IANA timezone (e.g. `America/New_York`) used to interpret campaign start/end times and to bucket reports. Defaults to `America/New_York` until explicitly overridden.
 	AdsSchedulingTimezone string `json:"ads_scheduling_timezone" url:"ads_scheduling_timezone"`
-	// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel.
+	// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, or a custom checkout — by setting `shop_domain`. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
 	AdsTripleWhaleIntegration *RetrievePreferencesResponseAdsTripleWhaleIntegration `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
 	// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
+	// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
+	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
+	// Whether this account covers its connected accounts' negative balances. When a connected account's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Refunds on its connected accounts may also take them negative by up to this account's available balance. `null` when the account has no connected accounts.
+	CoversConnectedAccountNegativeBalances *bool `json:"covers_connected_account_negative_balances,omitempty" url:"covers_connected_account_negative_balances,omitempty"`
+	// The saved customer tracking settings for the hosted tracking page and Element, exactly as saved. `null` until set; tracking is off unless `enabled` is `true`.
+	CustomerTracking *v2.CustomerTrackingPreferences `json:"customer_tracking,omitempty" url:"customer_tracking,omitempty"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
+	// Whether Economic Intelligence is on for the account. It turns off automatically at `economic_intelligence_ends_at`.
+	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
+	// Whether Economic Intelligence renews itself every week, with no end date. Turn it on with the `weekly` offer. Set it to `false` to stop renewing, which keeps Economic Intelligence on until the end of the current week, shown in `economic_intelligence_ends_at`; stopping before the first renewal charges the rest of that week at the `7_days` offer's fee. Set it back to `true` before then to keep renewing at the weekly fee.
+	EconomicIntelligenceAutoRenew bool `json:"economic_intelligence_auto_renew" url:"economic_intelligence_auto_renew"`
+	// When the account's committed Economic Intelligence period ends, as an ISO 8601 timestamp. Economic Intelligence can't be turned off before then. `null` when Economic Intelligence is off or renews automatically.
+	EconomicIntelligenceEndsAt *string `json:"economic_intelligence_ends_at,omitempty" url:"economic_intelligence_ends_at,omitempty"`
+	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%. `null` when Economic Intelligence is off.
+	EconomicIntelligenceFeePercentage *float64 `json:"economic_intelligence_fee_percentage,omitempty" url:"economic_intelligence_fee_percentage,omitempty"`
+	// When auto-renew first renews, as an ISO 8601 timestamp. Turning auto-renew off before then charges the rest of that week at the `7_days` offer's fee. `null` when auto-renew is off.
+	EconomicIntelligenceFirstRenewalAt *string `json:"economic_intelligence_first_renewal_at,omitempty" url:"economic_intelligence_first_renewal_at,omitempty"`
+	// What the account can choose now to turn on Economic Intelligence, each with its fee. Every offer while Economic Intelligence is off; only the `weekly` auto-renew offer while a committed period is running, as an upgrade; empty while it renews automatically.
+	EconomicIntelligenceOffers []*RetrievePreferencesResponseEconomicIntelligenceOffersItem `json:"economic_intelligence_offers" url:"economic_intelligence_offers"`
+	// The account's last Economic Intelligence period, once it has ended. `null` while Economic Intelligence is on, or when it has never been on.
+	EconomicIntelligencePreviousPeriod *RetrievePreferencesResponseEconomicIntelligencePreviousPeriod `json:"economic_intelligence_previous_period,omitempty" url:"economic_intelligence_previous_period,omitempty"`
+	// The account's own cancel reasons, in the order members see them when they cancel. Each is filed under a standard category, saved as the membership's `cancel_option`, so reports keep grouping cancellations. Empty when the account uses Whop's default reasons.
+	FeedbackOptions []*RetrievePreferencesResponseFeedbackOptionsItem `json:"feedback_options" url:"feedback_options"`
+	// Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
+	PreferredSettlementCurrency *RetrievePreferencesResponsePreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"preferred_settlement_currency,omitempty"`
+	// When `preferred_settlement_currency` may next be changed or turned off, as an ISO 8601 timestamp. It can change at most once a day. `null` when it may change now.
+	PreferredSettlementCurrencyChangeableAt *string `json:"preferred_settlement_currency_changeable_at,omitempty" url:"preferred_settlement_currency_changeable_at,omitempty"`
+	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
+	SubscriptionFailureBehavior RetrievePreferencesResponseSubscriptionFailureBehavior `json:"subscription_failure_behavior" url:"subscription_failure_behavior"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -73,6 +134,13 @@ func (r *RetrievePreferencesResponse) GetAdsAgreement() *RetrievePreferencesResp
 		return nil
 	}
 	return r.AdsAgreement
+}
+
+func (r *RetrievePreferencesResponse) GetAdsCertifications() []*RetrievePreferencesResponseAdsCertificationsItem {
+	if r == nil {
+		return nil
+	}
+	return r.AdsCertifications
 }
 
 func (r *RetrievePreferencesResponse) GetAdsPaymentMethods() *RetrievePreferencesResponseAdsPaymentMethods {
@@ -110,11 +178,109 @@ func (r *RetrievePreferencesResponse) GetCardsAutoTopUp() bool {
 	return r.CardsAutoTopUp
 }
 
+func (r *RetrievePreferencesResponse) GetCardsNotifications() bool {
+	if r == nil {
+		return false
+	}
+	return r.CardsNotifications
+}
+
+func (r *RetrievePreferencesResponse) GetCoversConnectedAccountNegativeBalances() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.CoversConnectedAccountNegativeBalances
+}
+
+func (r *RetrievePreferencesResponse) GetCustomerTracking() *v2.CustomerTrackingPreferences {
+	if r == nil {
+		return nil
+	}
+	return r.CustomerTracking
+}
+
 func (r *RetrievePreferencesResponse) GetDisputeFighterEnabled() bool {
 	if r == nil {
 		return false
 	}
 	return r.DisputeFighterEnabled
+}
+
+func (r *RetrievePreferencesResponse) GetEconomicIntelligence() bool {
+	if r == nil {
+		return false
+	}
+	return r.EconomicIntelligence
+}
+
+func (r *RetrievePreferencesResponse) GetEconomicIntelligenceAutoRenew() bool {
+	if r == nil {
+		return false
+	}
+	return r.EconomicIntelligenceAutoRenew
+}
+
+func (r *RetrievePreferencesResponse) GetEconomicIntelligenceEndsAt() *string {
+	if r == nil {
+		return nil
+	}
+	return r.EconomicIntelligenceEndsAt
+}
+
+func (r *RetrievePreferencesResponse) GetEconomicIntelligenceFeePercentage() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.EconomicIntelligenceFeePercentage
+}
+
+func (r *RetrievePreferencesResponse) GetEconomicIntelligenceFirstRenewalAt() *string {
+	if r == nil {
+		return nil
+	}
+	return r.EconomicIntelligenceFirstRenewalAt
+}
+
+func (r *RetrievePreferencesResponse) GetEconomicIntelligenceOffers() []*RetrievePreferencesResponseEconomicIntelligenceOffersItem {
+	if r == nil {
+		return nil
+	}
+	return r.EconomicIntelligenceOffers
+}
+
+func (r *RetrievePreferencesResponse) GetEconomicIntelligencePreviousPeriod() *RetrievePreferencesResponseEconomicIntelligencePreviousPeriod {
+	if r == nil {
+		return nil
+	}
+	return r.EconomicIntelligencePreviousPeriod
+}
+
+func (r *RetrievePreferencesResponse) GetFeedbackOptions() []*RetrievePreferencesResponseFeedbackOptionsItem {
+	if r == nil {
+		return nil
+	}
+	return r.FeedbackOptions
+}
+
+func (r *RetrievePreferencesResponse) GetPreferredSettlementCurrency() *RetrievePreferencesResponsePreferredSettlementCurrency {
+	if r == nil {
+		return nil
+	}
+	return r.PreferredSettlementCurrency
+}
+
+func (r *RetrievePreferencesResponse) GetPreferredSettlementCurrencyChangeableAt() *string {
+	if r == nil {
+		return nil
+	}
+	return r.PreferredSettlementCurrencyChangeableAt
+}
+
+func (r *RetrievePreferencesResponse) GetSubscriptionFailureBehavior() RetrievePreferencesResponseSubscriptionFailureBehavior {
+	if r == nil {
+		return ""
+	}
+	return r.SubscriptionFailureBehavior
 }
 
 func (r *RetrievePreferencesResponse) GetExtraProperties() map[string]interface{} {
@@ -125,10 +291,12 @@ func (r *RetrievePreferencesResponse) GetExtraProperties() map[string]interface{
 }
 
 func (r *RetrievePreferencesResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAdsAgreement sets the AdsAgreement field and marks it as non-optional;
@@ -136,6 +304,13 @@ func (r *RetrievePreferencesResponse) require(field *big.Int) {
 func (r *RetrievePreferencesResponse) SetAdsAgreement(adsAgreement *RetrievePreferencesResponseAdsAgreement) {
 	r.AdsAgreement = adsAgreement
 	r.require(retrievePreferencesResponseFieldAdsAgreement)
+}
+
+// SetAdsCertifications sets the AdsCertifications field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetAdsCertifications(adsCertifications []*RetrievePreferencesResponseAdsCertificationsItem) {
+	r.AdsCertifications = adsCertifications
+	r.require(retrievePreferencesResponseFieldAdsCertifications)
 }
 
 // SetAdsPaymentMethods sets the AdsPaymentMethods field and marks it as non-optional;
@@ -173,11 +348,109 @@ func (r *RetrievePreferencesResponse) SetCardsAutoTopUp(cardsAutoTopUp bool) {
 	r.require(retrievePreferencesResponseFieldCardsAutoTopUp)
 }
 
+// SetCardsNotifications sets the CardsNotifications field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetCardsNotifications(cardsNotifications bool) {
+	r.CardsNotifications = cardsNotifications
+	r.require(retrievePreferencesResponseFieldCardsNotifications)
+}
+
+// SetCoversConnectedAccountNegativeBalances sets the CoversConnectedAccountNegativeBalances field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetCoversConnectedAccountNegativeBalances(coversConnectedAccountNegativeBalances *bool) {
+	r.CoversConnectedAccountNegativeBalances = coversConnectedAccountNegativeBalances
+	r.require(retrievePreferencesResponseFieldCoversConnectedAccountNegativeBalances)
+}
+
+// SetCustomerTracking sets the CustomerTracking field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetCustomerTracking(customerTracking *v2.CustomerTrackingPreferences) {
+	r.CustomerTracking = customerTracking
+	r.require(retrievePreferencesResponseFieldCustomerTracking)
+}
+
 // SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (r *RetrievePreferencesResponse) SetDisputeFighterEnabled(disputeFighterEnabled bool) {
 	r.DisputeFighterEnabled = disputeFighterEnabled
 	r.require(retrievePreferencesResponseFieldDisputeFighterEnabled)
+}
+
+// SetEconomicIntelligence sets the EconomicIntelligence field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetEconomicIntelligence(economicIntelligence bool) {
+	r.EconomicIntelligence = economicIntelligence
+	r.require(retrievePreferencesResponseFieldEconomicIntelligence)
+}
+
+// SetEconomicIntelligenceAutoRenew sets the EconomicIntelligenceAutoRenew field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetEconomicIntelligenceAutoRenew(economicIntelligenceAutoRenew bool) {
+	r.EconomicIntelligenceAutoRenew = economicIntelligenceAutoRenew
+	r.require(retrievePreferencesResponseFieldEconomicIntelligenceAutoRenew)
+}
+
+// SetEconomicIntelligenceEndsAt sets the EconomicIntelligenceEndsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetEconomicIntelligenceEndsAt(economicIntelligenceEndsAt *string) {
+	r.EconomicIntelligenceEndsAt = economicIntelligenceEndsAt
+	r.require(retrievePreferencesResponseFieldEconomicIntelligenceEndsAt)
+}
+
+// SetEconomicIntelligenceFeePercentage sets the EconomicIntelligenceFeePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetEconomicIntelligenceFeePercentage(economicIntelligenceFeePercentage *float64) {
+	r.EconomicIntelligenceFeePercentage = economicIntelligenceFeePercentage
+	r.require(retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage)
+}
+
+// SetEconomicIntelligenceFirstRenewalAt sets the EconomicIntelligenceFirstRenewalAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetEconomicIntelligenceFirstRenewalAt(economicIntelligenceFirstRenewalAt *string) {
+	r.EconomicIntelligenceFirstRenewalAt = economicIntelligenceFirstRenewalAt
+	r.require(retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt)
+}
+
+// SetEconomicIntelligenceOffers sets the EconomicIntelligenceOffers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetEconomicIntelligenceOffers(economicIntelligenceOffers []*RetrievePreferencesResponseEconomicIntelligenceOffersItem) {
+	r.EconomicIntelligenceOffers = economicIntelligenceOffers
+	r.require(retrievePreferencesResponseFieldEconomicIntelligenceOffers)
+}
+
+// SetEconomicIntelligencePreviousPeriod sets the EconomicIntelligencePreviousPeriod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetEconomicIntelligencePreviousPeriod(economicIntelligencePreviousPeriod *RetrievePreferencesResponseEconomicIntelligencePreviousPeriod) {
+	r.EconomicIntelligencePreviousPeriod = economicIntelligencePreviousPeriod
+	r.require(retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod)
+}
+
+// SetFeedbackOptions sets the FeedbackOptions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetFeedbackOptions(feedbackOptions []*RetrievePreferencesResponseFeedbackOptionsItem) {
+	r.FeedbackOptions = feedbackOptions
+	r.require(retrievePreferencesResponseFieldFeedbackOptions)
+}
+
+// SetPreferredSettlementCurrency sets the PreferredSettlementCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetPreferredSettlementCurrency(preferredSettlementCurrency *RetrievePreferencesResponsePreferredSettlementCurrency) {
+	r.PreferredSettlementCurrency = preferredSettlementCurrency
+	r.require(retrievePreferencesResponseFieldPreferredSettlementCurrency)
+}
+
+// SetPreferredSettlementCurrencyChangeableAt sets the PreferredSettlementCurrencyChangeableAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetPreferredSettlementCurrencyChangeableAt(preferredSettlementCurrencyChangeableAt *string) {
+	r.PreferredSettlementCurrencyChangeableAt = preferredSettlementCurrencyChangeableAt
+	r.require(retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt)
+}
+
+// SetSubscriptionFailureBehavior sets the SubscriptionFailureBehavior field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetSubscriptionFailureBehavior(subscriptionFailureBehavior RetrievePreferencesResponseSubscriptionFailureBehavior) {
+	r.SubscriptionFailureBehavior = subscriptionFailureBehavior
+	r.require(retrievePreferencesResponseFieldSubscriptionFailureBehavior)
 }
 
 func (r *RetrievePreferencesResponse) UnmarshalJSON(data []byte) error {
@@ -192,6 +465,13 @@ func (r *RetrievePreferencesResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePreferencesResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -222,7 +502,6 @@ func (r *RetrievePreferencesResponse) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The account's Whop Ads services and payment authorization agreement. While `pending_signature`, campaign launch is blocked; sign by answering `requested_information` via `PATCH /verifications/{id}`.
 var (
 	retrievePreferencesResponseAdsAgreementFieldAcceptedAt       = big.NewInt(1 << 0)
 	retrievePreferencesResponseAdsAgreementFieldAgreementVersion = big.NewInt(1 << 1)
@@ -230,6 +509,14 @@ var (
 	retrievePreferencesResponseAdsAgreementFieldStatus           = big.NewInt(1 << 3)
 )
 
+// retrievePreferencesResponseAdsAgreementNullableFields maps the wire names of RetrievePreferencesResponseAdsAgreement's nullable fields (required or optional) to their field bits.
+var retrievePreferencesResponseAdsAgreementNullableFields = map[string]*big.Int{
+	"accepted_at":       retrievePreferencesResponseAdsAgreementFieldAcceptedAt,
+	"agreement_version": retrievePreferencesResponseAdsAgreementFieldAgreementVersion,
+	"printed_name":      retrievePreferencesResponseAdsAgreementFieldPrintedName,
+}
+
+// The account's Whop Ads services and payment authorization agreement. While `pending_signature`, campaign launch is blocked; sign by answering `requested_information` via `PATCH /verifications/{id}`.
 type RetrievePreferencesResponseAdsAgreement struct {
 	// When the agreement was signed, as an ISO 8601 timestamp. `null` until signed.
 	AcceptedAt *string `json:"accepted_at,omitempty" url:"accepted_at,omitempty"`
@@ -283,10 +570,12 @@ func (r *RetrievePreferencesResponseAdsAgreement) GetExtraProperties() map[strin
 }
 
 func (r *RetrievePreferencesResponseAdsAgreement) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetAcceptedAt sets the AcceptedAt field and marks it as non-optional;
@@ -329,6 +618,13 @@ func (r *RetrievePreferencesResponseAdsAgreement) UnmarshalJSON(data []byte) err
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePreferencesResponseAdsAgreementNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -385,12 +681,335 @@ func (r RetrievePreferencesResponseAdsAgreementStatus) Ptr() *RetrievePreference
 	return &r
 }
 
-// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails. `null` until ads billing has been configured.
+var (
+	retrievePreferencesResponseAdsCertificationsItemFieldApprovedCountries = big.NewInt(1 << 0)
+	retrievePreferencesResponseAdsCertificationsItemFieldBusinessName      = big.NewInt(1 << 1)
+	retrievePreferencesResponseAdsCertificationsItemFieldBusinessType      = big.NewInt(1 << 2)
+	retrievePreferencesResponseAdsCertificationsItemFieldCertificationType = big.NewInt(1 << 3)
+	retrievePreferencesResponseAdsCertificationsItemFieldCountries         = big.NewInt(1 << 4)
+	retrievePreferencesResponseAdsCertificationsItemFieldDenialReason      = big.NewInt(1 << 5)
+	retrievePreferencesResponseAdsCertificationsItemFieldRequestID         = big.NewInt(1 << 6)
+	retrievePreferencesResponseAdsCertificationsItemFieldStatus            = big.NewInt(1 << 7)
+	retrievePreferencesResponseAdsCertificationsItemFieldURL               = big.NewInt(1 << 8)
+)
+
+// retrievePreferencesResponseAdsCertificationsItemNullableFields maps the wire names of RetrievePreferencesResponseAdsCertificationsItem's nullable fields (required or optional) to their field bits.
+var retrievePreferencesResponseAdsCertificationsItemNullableFields = map[string]*big.Int{
+	"business_name": retrievePreferencesResponseAdsCertificationsItemFieldBusinessName,
+	"business_type": retrievePreferencesResponseAdsCertificationsItemFieldBusinessType,
+	"denial_reason": retrievePreferencesResponseAdsCertificationsItemFieldDenialReason,
+	"request_id":    retrievePreferencesResponseAdsCertificationsItemFieldRequestID,
+	"url":           retrievePreferencesResponseAdsCertificationsItemFieldURL,
+}
+
+type RetrievePreferencesResponseAdsCertificationsItem struct {
+	// Countries every approved application of this type covers, as ISO 3166-1 alpha-2 codes. Ads targeting only these countries are exempt from the category's restrictions.
+	ApprovedCountries []string `json:"approved_countries" url:"approved_countries"`
+	// The business name on the latest application.
+	BusinessName *string `json:"business_name,omitempty" url:"business_name,omitempty"`
+	// The kind of business on the latest application. `null` until the account applies.
+	BusinessType *RetrievePreferencesResponseAdsCertificationsItemBusinessType `json:"business_type,omitempty" url:"business_type,omitempty"`
+	// The certification this entry describes.
+	CertificationType RetrievePreferencesResponseAdsCertificationsItemCertificationType `json:"certification_type" url:"certification_type"`
+	// Countries the latest application covers, as ISO 3166-1 alpha-2 codes.
+	Countries []string `json:"countries" url:"countries"`
+	// Why the latest application was denied. `null` unless `status` is `denied`.
+	DenialReason *string `json:"denial_reason,omitempty" url:"denial_reason,omitempty"`
+	// The latest application's request ID, prefixed `inrq_`. `null` until the account applies.
+	RequestID *string `json:"request_id,omitempty" url:"request_id,omitempty"`
+	// `not_started` until the account applies; `pending_information` while an application waits for answers; `in_review` once submitted; then `approved` or `denied`.
+	Status RetrievePreferencesResponseAdsCertificationsItemStatus `json:"status" url:"status"`
+	// The website on the latest application.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetApprovedCountries() []string {
+	if r == nil {
+		return nil
+	}
+	return r.ApprovedCountries
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetBusinessName() *string {
+	if r == nil {
+		return nil
+	}
+	return r.BusinessName
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetBusinessType() *RetrievePreferencesResponseAdsCertificationsItemBusinessType {
+	if r == nil {
+		return nil
+	}
+	return r.BusinessType
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetCertificationType() RetrievePreferencesResponseAdsCertificationsItemCertificationType {
+	if r == nil {
+		return ""
+	}
+	return r.CertificationType
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetCountries() []string {
+	if r == nil {
+		return nil
+	}
+	return r.Countries
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetDenialReason() *string {
+	if r == nil {
+		return nil
+	}
+	return r.DenialReason
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetRequestID() *string {
+	if r == nil {
+		return nil
+	}
+	return r.RequestID
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetStatus() RetrievePreferencesResponseAdsCertificationsItemStatus {
+	if r == nil {
+		return ""
+	}
+	return r.Status
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetURL() *string {
+	if r == nil {
+		return nil
+	}
+	return r.URL
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetApprovedCountries sets the ApprovedCountries field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetApprovedCountries(approvedCountries []string) {
+	r.ApprovedCountries = approvedCountries
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldApprovedCountries)
+}
+
+// SetBusinessName sets the BusinessName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetBusinessName(businessName *string) {
+	r.BusinessName = businessName
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldBusinessName)
+}
+
+// SetBusinessType sets the BusinessType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetBusinessType(businessType *RetrievePreferencesResponseAdsCertificationsItemBusinessType) {
+	r.BusinessType = businessType
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldBusinessType)
+}
+
+// SetCertificationType sets the CertificationType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetCertificationType(certificationType RetrievePreferencesResponseAdsCertificationsItemCertificationType) {
+	r.CertificationType = certificationType
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldCertificationType)
+}
+
+// SetCountries sets the Countries field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetCountries(countries []string) {
+	r.Countries = countries
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldCountries)
+}
+
+// SetDenialReason sets the DenialReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetDenialReason(denialReason *string) {
+	r.DenialReason = denialReason
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldDenialReason)
+}
+
+// SetRequestID sets the RequestID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetRequestID(requestID *string) {
+	r.RequestID = requestID
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldRequestID)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetStatus(status RetrievePreferencesResponseAdsCertificationsItemStatus) {
+	r.Status = status
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldStatus)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseAdsCertificationsItem) SetURL(url *string) {
+	r.URL = url
+	r.require(retrievePreferencesResponseAdsCertificationsItemFieldURL)
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrievePreferencesResponseAdsCertificationsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrievePreferencesResponseAdsCertificationsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePreferencesResponseAdsCertificationsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) MarshalJSON() ([]byte, error) {
+	type embed RetrievePreferencesResponseAdsCertificationsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrievePreferencesResponseAdsCertificationsItem) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+// The kind of business on the latest application. `null` until the account applies.
+type RetrievePreferencesResponseAdsCertificationsItemBusinessType string
+
+const (
+	RetrievePreferencesResponseAdsCertificationsItemBusinessTypeOnlinePharmacy             RetrievePreferencesResponseAdsCertificationsItemBusinessType = "online_pharmacy"
+	RetrievePreferencesResponseAdsCertificationsItemBusinessTypePharmaceuticalManufacturer RetrievePreferencesResponseAdsCertificationsItemBusinessType = "pharmaceutical_manufacturer"
+	RetrievePreferencesResponseAdsCertificationsItemBusinessTypeTelehealthProvider         RetrievePreferencesResponseAdsCertificationsItemBusinessType = "telehealth_provider"
+)
+
+func NewRetrievePreferencesResponseAdsCertificationsItemBusinessTypeFromString(s string) (RetrievePreferencesResponseAdsCertificationsItemBusinessType, error) {
+	switch s {
+	case "online_pharmacy":
+		return RetrievePreferencesResponseAdsCertificationsItemBusinessTypeOnlinePharmacy, nil
+	case "pharmaceutical_manufacturer":
+		return RetrievePreferencesResponseAdsCertificationsItemBusinessTypePharmaceuticalManufacturer, nil
+	case "telehealth_provider":
+		return RetrievePreferencesResponseAdsCertificationsItemBusinessTypeTelehealthProvider, nil
+	}
+	var t RetrievePreferencesResponseAdsCertificationsItemBusinessType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePreferencesResponseAdsCertificationsItemBusinessType) Ptr() *RetrievePreferencesResponseAdsCertificationsItemBusinessType {
+	return &r
+}
+
+// The certification this entry describes.
+type RetrievePreferencesResponseAdsCertificationsItemCertificationType string
+
+const (
+	RetrievePreferencesResponseAdsCertificationsItemCertificationTypePrescriptionDrugAds RetrievePreferencesResponseAdsCertificationsItemCertificationType = "prescription_drug_ads"
+)
+
+func NewRetrievePreferencesResponseAdsCertificationsItemCertificationTypeFromString(s string) (RetrievePreferencesResponseAdsCertificationsItemCertificationType, error) {
+	switch s {
+	case "prescription_drug_ads":
+		return RetrievePreferencesResponseAdsCertificationsItemCertificationTypePrescriptionDrugAds, nil
+	}
+	var t RetrievePreferencesResponseAdsCertificationsItemCertificationType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePreferencesResponseAdsCertificationsItemCertificationType) Ptr() *RetrievePreferencesResponseAdsCertificationsItemCertificationType {
+	return &r
+}
+
+// `not_started` until the account applies; `pending_information` while an application waits for answers; `in_review` once submitted; then `approved` or `denied`.
+type RetrievePreferencesResponseAdsCertificationsItemStatus string
+
+const (
+	RetrievePreferencesResponseAdsCertificationsItemStatusNotStarted         RetrievePreferencesResponseAdsCertificationsItemStatus = "not_started"
+	RetrievePreferencesResponseAdsCertificationsItemStatusPendingInformation RetrievePreferencesResponseAdsCertificationsItemStatus = "pending_information"
+	RetrievePreferencesResponseAdsCertificationsItemStatusInReview           RetrievePreferencesResponseAdsCertificationsItemStatus = "in_review"
+	RetrievePreferencesResponseAdsCertificationsItemStatusApproved           RetrievePreferencesResponseAdsCertificationsItemStatus = "approved"
+	RetrievePreferencesResponseAdsCertificationsItemStatusDenied             RetrievePreferencesResponseAdsCertificationsItemStatus = "denied"
+)
+
+func NewRetrievePreferencesResponseAdsCertificationsItemStatusFromString(s string) (RetrievePreferencesResponseAdsCertificationsItemStatus, error) {
+	switch s {
+	case "not_started":
+		return RetrievePreferencesResponseAdsCertificationsItemStatusNotStarted, nil
+	case "pending_information":
+		return RetrievePreferencesResponseAdsCertificationsItemStatusPendingInformation, nil
+	case "in_review":
+		return RetrievePreferencesResponseAdsCertificationsItemStatusInReview, nil
+	case "approved":
+		return RetrievePreferencesResponseAdsCertificationsItemStatusApproved, nil
+	case "denied":
+		return RetrievePreferencesResponseAdsCertificationsItemStatusDenied, nil
+	}
+	var t RetrievePreferencesResponseAdsCertificationsItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePreferencesResponseAdsCertificationsItemStatus) Ptr() *RetrievePreferencesResponseAdsCertificationsItemStatus {
+	return &r
+}
+
 var (
 	retrievePreferencesResponseAdsPaymentMethodsFieldBackup  = big.NewInt(1 << 0)
 	retrievePreferencesResponseAdsPaymentMethodsFieldPrimary = big.NewInt(1 << 1)
 )
 
+// retrievePreferencesResponseAdsPaymentMethodsNullableFields maps the wire names of RetrievePreferencesResponseAdsPaymentMethods's nullable fields (required or optional) to their field bits.
+var retrievePreferencesResponseAdsPaymentMethodsNullableFields = map[string]*big.Int{
+	"backup":  retrievePreferencesResponseAdsPaymentMethodsFieldBackup,
+	"primary": retrievePreferencesResponseAdsPaymentMethodsFieldPrimary,
+}
+
+// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails. `null` until ads billing has been configured.
 type RetrievePreferencesResponseAdsPaymentMethods struct {
 	Backup  *RetrievePreferencesResponseAdsPaymentMethodsBackup  `json:"backup,omitempty" url:"backup,omitempty"`
 	Primary *RetrievePreferencesResponseAdsPaymentMethodsPrimary `json:"primary,omitempty" url:"primary,omitempty"`
@@ -424,10 +1043,12 @@ func (r *RetrievePreferencesResponseAdsPaymentMethods) GetExtraProperties() map[
 }
 
 func (r *RetrievePreferencesResponseAdsPaymentMethods) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetBackup sets the Backup field and marks it as non-optional;
@@ -456,6 +1077,13 @@ func (r *RetrievePreferencesResponseAdsPaymentMethods) UnmarshalJSON(data []byte
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePreferencesResponseAdsPaymentMethodsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -496,6 +1124,16 @@ var (
 	retrievePreferencesResponseAdsPaymentMethodsBackupFieldTitle     = big.NewInt(1 << 6)
 	retrievePreferencesResponseAdsPaymentMethodsBackupFieldType      = big.NewInt(1 << 7)
 )
+
+// retrievePreferencesResponseAdsPaymentMethodsBackupNullableFields maps the wire names of RetrievePreferencesResponseAdsPaymentMethodsBackup's nullable fields (required or optional) to their field bits.
+var retrievePreferencesResponseAdsPaymentMethodsBackupNullableFields = map[string]*big.Int{
+	"card_brand": retrievePreferencesResponseAdsPaymentMethodsBackupFieldCardBrand,
+	"exp_month":  retrievePreferencesResponseAdsPaymentMethodsBackupFieldExpMonth,
+	"exp_year":   retrievePreferencesResponseAdsPaymentMethodsBackupFieldExpYear,
+	"icon_url":   retrievePreferencesResponseAdsPaymentMethodsBackupFieldIconURL,
+	"last4":      retrievePreferencesResponseAdsPaymentMethodsBackupFieldLast4,
+	"title":      retrievePreferencesResponseAdsPaymentMethodsBackupFieldTitle,
+}
 
 type RetrievePreferencesResponseAdsPaymentMethodsBackup struct {
 	// Card brand, present for `card` entries.
@@ -586,10 +1224,12 @@ func (r *RetrievePreferencesResponseAdsPaymentMethodsBackup) GetExtraProperties(
 }
 
 func (r *RetrievePreferencesResponseAdsPaymentMethodsBackup) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetCardBrand sets the CardBrand field and marks it as non-optional;
@@ -660,6 +1300,13 @@ func (r *RetrievePreferencesResponseAdsPaymentMethodsBackup) UnmarshalJSON(data 
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePreferencesResponseAdsPaymentMethodsBackupNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -723,6 +1370,16 @@ var (
 	retrievePreferencesResponseAdsPaymentMethodsPrimaryFieldTitle     = big.NewInt(1 << 6)
 	retrievePreferencesResponseAdsPaymentMethodsPrimaryFieldType      = big.NewInt(1 << 7)
 )
+
+// retrievePreferencesResponseAdsPaymentMethodsPrimaryNullableFields maps the wire names of RetrievePreferencesResponseAdsPaymentMethodsPrimary's nullable fields (required or optional) to their field bits.
+var retrievePreferencesResponseAdsPaymentMethodsPrimaryNullableFields = map[string]*big.Int{
+	"card_brand": retrievePreferencesResponseAdsPaymentMethodsPrimaryFieldCardBrand,
+	"exp_month":  retrievePreferencesResponseAdsPaymentMethodsPrimaryFieldExpMonth,
+	"exp_year":   retrievePreferencesResponseAdsPaymentMethodsPrimaryFieldExpYear,
+	"icon_url":   retrievePreferencesResponseAdsPaymentMethodsPrimaryFieldIconURL,
+	"last4":      retrievePreferencesResponseAdsPaymentMethodsPrimaryFieldLast4,
+	"title":      retrievePreferencesResponseAdsPaymentMethodsPrimaryFieldTitle,
+}
 
 type RetrievePreferencesResponseAdsPaymentMethodsPrimary struct {
 	// Card brand, present for `card` entries.
@@ -813,10 +1470,12 @@ func (r *RetrievePreferencesResponseAdsPaymentMethodsPrimary) GetExtraProperties
 }
 
 func (r *RetrievePreferencesResponseAdsPaymentMethodsPrimary) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetCardBrand sets the CardBrand field and marks it as non-optional;
@@ -887,6 +1546,13 @@ func (r *RetrievePreferencesResponseAdsPaymentMethodsPrimary) UnmarshalJSON(data
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePreferencesResponseAdsPaymentMethodsPrimaryNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -940,19 +1606,25 @@ func (r RetrievePreferencesResponseAdsPaymentMethodsPrimaryType) Ptr() *Retrieve
 	return &r
 }
 
-// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel.
 var (
 	retrievePreferencesResponseAdsTripleWhaleIntegrationFieldMaskedAPIKey = big.NewInt(1 << 0)
 	retrievePreferencesResponseAdsTripleWhaleIntegrationFieldShopDomain   = big.NewInt(1 << 1)
 	retrievePreferencesResponseAdsTripleWhaleIntegrationFieldStatus       = big.NewInt(1 << 2)
 )
 
+// retrievePreferencesResponseAdsTripleWhaleIntegrationNullableFields maps the wire names of RetrievePreferencesResponseAdsTripleWhaleIntegration's nullable fields (required or optional) to their field bits.
+var retrievePreferencesResponseAdsTripleWhaleIntegrationNullableFields = map[string]*big.Int{
+	"masked_api_key": retrievePreferencesResponseAdsTripleWhaleIntegrationFieldMaskedAPIKey,
+	"shop_domain":    retrievePreferencesResponseAdsTripleWhaleIntegrationFieldShopDomain,
+}
+
+// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, or a custom checkout — by setting `shop_domain`. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
 type RetrievePreferencesResponseAdsTripleWhaleIntegration struct {
 	// The leading characters of the stored Data-In API key, followed by asterisks. The full key is never returned. `null` when no key is stored.
 	MaskedAPIKey *string `json:"masked_api_key,omitempty" url:"masked_api_key,omitempty"`
-	// The connected Shopify store domain spend is reported for, such as `acme.myshopify.com`. `null` when no store is connected.
+	// The shop domain spend is reported for, such as `acme.myshopify.com` or a custom domain for a non-Shopify store. `null` when none is set.
 	ShopDomain *string `json:"shop_domain,omitempty" url:"shop_domain,omitempty"`
-	// Where the integration stands. `requires_shopify_store` means no Shopify store is connected — Triple Whale keys records by Shopify shop, so no spend is reported until one is.
+	// Where the integration stands. `requires_shop_domain` means no shop domain is configured — set `shop_domain` before spend can be reported.
 	Status RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus `json:"status" url:"status"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -991,10 +1663,12 @@ func (r *RetrievePreferencesResponseAdsTripleWhaleIntegration) GetExtraPropertie
 }
 
 func (r *RetrievePreferencesResponseAdsTripleWhaleIntegration) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetMaskedAPIKey sets the MaskedAPIKey field and marks it as non-optional;
@@ -1030,6 +1704,13 @@ func (r *RetrievePreferencesResponseAdsTripleWhaleIntegration) UnmarshalJSON(dat
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrievePreferencesResponseAdsTripleWhaleIntegrationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1060,13 +1741,13 @@ func (r *RetrievePreferencesResponseAdsTripleWhaleIntegration) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// Where the integration stands. `requires_shopify_store` means no Shopify store is connected — Triple Whale keys records by Shopify shop, so no spend is reported until one is.
+// Where the integration stands. `requires_shop_domain` means no shop domain is configured — set `shop_domain` before spend can be reported.
 type RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus string
 
 const (
-	RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusConnected            RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus = "connected"
-	RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusNotConnected         RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus = "not_connected"
-	RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusRequiresShopifyStore RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus = "requires_shopify_store"
+	RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusConnected          RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus = "connected"
+	RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusNotConnected       RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus = "not_connected"
+	RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusRequiresShopDomain RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus = "requires_shop_domain"
 )
 
 func NewRetrievePreferencesResponseAdsTripleWhaleIntegrationStatusFromString(s string) (RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus, error) {
@@ -1075,8 +1756,8 @@ func NewRetrievePreferencesResponseAdsTripleWhaleIntegrationStatusFromString(s s
 		return RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusConnected, nil
 	case "not_connected":
 		return RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusNotConnected, nil
-	case "requires_shopify_store":
-		return RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusRequiresShopifyStore, nil
+	case "requires_shop_domain":
+		return RetrievePreferencesResponseAdsTripleWhaleIntegrationStatusRequiresShopDomain, nil
 	}
 	var t RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1086,12 +1767,662 @@ func (r RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus) Ptr() *Retri
 	return &r
 }
 
-// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails.
+var (
+	retrievePreferencesResponseEconomicIntelligenceOffersItemFieldAutoRenew     = big.NewInt(1 << 0)
+	retrievePreferencesResponseEconomicIntelligenceOffersItemFieldDuration      = big.NewInt(1 << 1)
+	retrievePreferencesResponseEconomicIntelligenceOffersItemFieldDurationUnit  = big.NewInt(1 << 2)
+	retrievePreferencesResponseEconomicIntelligenceOffersItemFieldFeePercentage = big.NewInt(1 << 3)
+	retrievePreferencesResponseEconomicIntelligenceOffersItemFieldKey           = big.NewInt(1 << 4)
+	retrievePreferencesResponseEconomicIntelligenceOffersItemFieldRecommended   = big.NewInt(1 << 5)
+)
+
+type RetrievePreferencesResponseEconomicIntelligenceOffersItem struct {
+	// Whether this offer renews every period until auto-renew is turned off, rather than ending after one.
+	AutoRenew bool `json:"auto_renew" url:"auto_renew"`
+	// What period of time Economic Intelligence stays on. For an auto-renew offer, the length of each period it renews for.
+	Duration int `json:"duration" url:"duration"`
+	// The unit of time the duration is in (hours or days)
+	DurationUnit RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit `json:"duration_unit" url:"duration_unit"`
+	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%.
+	FeePercentage float64 `json:"fee_percentage" url:"fee_percentage"`
+	// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on.
+	Key RetrievePreferencesResponseEconomicIntelligenceOffersItemKey `json:"key" url:"key"`
+	// Whether Whop recommends this offer. At most one offer is recommended.
+	Recommended bool `json:"recommended" url:"recommended"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetAutoRenew() bool {
+	if r == nil {
+		return false
+	}
+	return r.AutoRenew
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetDuration() int {
+	if r == nil {
+		return 0
+	}
+	return r.Duration
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetDurationUnit() RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit {
+	if r == nil {
+		return ""
+	}
+	return r.DurationUnit
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetFeePercentage() float64 {
+	if r == nil {
+		return 0
+	}
+	return r.FeePercentage
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetKey() RetrievePreferencesResponseEconomicIntelligenceOffersItemKey {
+	if r == nil {
+		return ""
+	}
+	return r.Key
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetRecommended() bool {
+	if r == nil {
+		return false
+	}
+	return r.Recommended
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetAutoRenew sets the AutoRenew field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) SetAutoRenew(autoRenew bool) {
+	r.AutoRenew = autoRenew
+	r.require(retrievePreferencesResponseEconomicIntelligenceOffersItemFieldAutoRenew)
+}
+
+// SetDuration sets the Duration field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) SetDuration(duration int) {
+	r.Duration = duration
+	r.require(retrievePreferencesResponseEconomicIntelligenceOffersItemFieldDuration)
+}
+
+// SetDurationUnit sets the DurationUnit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) SetDurationUnit(durationUnit RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit) {
+	r.DurationUnit = durationUnit
+	r.require(retrievePreferencesResponseEconomicIntelligenceOffersItemFieldDurationUnit)
+}
+
+// SetFeePercentage sets the FeePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) SetFeePercentage(feePercentage float64) {
+	r.FeePercentage = feePercentage
+	r.require(retrievePreferencesResponseEconomicIntelligenceOffersItemFieldFeePercentage)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) SetKey(key RetrievePreferencesResponseEconomicIntelligenceOffersItemKey) {
+	r.Key = key
+	r.require(retrievePreferencesResponseEconomicIntelligenceOffersItemFieldKey)
+}
+
+// SetRecommended sets the Recommended field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) SetRecommended(recommended bool) {
+	r.Recommended = recommended
+	r.require(retrievePreferencesResponseEconomicIntelligenceOffersItemFieldRecommended)
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrievePreferencesResponseEconomicIntelligenceOffersItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrievePreferencesResponseEconomicIntelligenceOffersItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) MarshalJSON() ([]byte, error) {
+	type embed RetrievePreferencesResponseEconomicIntelligenceOffersItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligenceOffersItem) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+// The unit of time the duration is in (hours or days)
+type RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit string
+
+const (
+	RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnitHours RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit = "hours"
+	RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnitDays  RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit = "days"
+)
+
+func NewRetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnitFromString(s string) (RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit, error) {
+	switch s {
+	case "hours":
+		return RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnitHours, nil
+	case "days":
+		return RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnitDays, nil
+	}
+	var t RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit) Ptr() *RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit {
+	return &r
+}
+
+// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on.
+type RetrievePreferencesResponseEconomicIntelligenceOffersItemKey string
+
+const (
+	RetrievePreferencesResponseEconomicIntelligenceOffersItemKeyWeekly    RetrievePreferencesResponseEconomicIntelligenceOffersItemKey = "weekly"
+	RetrievePreferencesResponseEconomicIntelligenceOffersItemKeySevenDays RetrievePreferencesResponseEconomicIntelligenceOffersItemKey = "7_days"
+	RetrievePreferencesResponseEconomicIntelligenceOffersItemKeyOneDay    RetrievePreferencesResponseEconomicIntelligenceOffersItemKey = "1_day"
+	RetrievePreferencesResponseEconomicIntelligenceOffersItemKeyOneHour   RetrievePreferencesResponseEconomicIntelligenceOffersItemKey = "1_hour"
+)
+
+func NewRetrievePreferencesResponseEconomicIntelligenceOffersItemKeyFromString(s string) (RetrievePreferencesResponseEconomicIntelligenceOffersItemKey, error) {
+	switch s {
+	case "weekly":
+		return RetrievePreferencesResponseEconomicIntelligenceOffersItemKeyWeekly, nil
+	case "7_days":
+		return RetrievePreferencesResponseEconomicIntelligenceOffersItemKeySevenDays, nil
+	case "1_day":
+		return RetrievePreferencesResponseEconomicIntelligenceOffersItemKeyOneDay, nil
+	case "1_hour":
+		return RetrievePreferencesResponseEconomicIntelligenceOffersItemKeyOneHour, nil
+	}
+	var t RetrievePreferencesResponseEconomicIntelligenceOffersItemKey
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePreferencesResponseEconomicIntelligenceOffersItemKey) Ptr() *RetrievePreferencesResponseEconomicIntelligenceOffersItemKey {
+	return &r
+}
+
+var (
+	retrievePreferencesResponseEconomicIntelligencePreviousPeriodFieldEndedAt       = big.NewInt(1 << 0)
+	retrievePreferencesResponseEconomicIntelligencePreviousPeriodFieldFeePercentage = big.NewInt(1 << 1)
+)
+
+// The account's last Economic Intelligence period, once it has ended. `null` while Economic Intelligence is on, or when it has never been on.
+type RetrievePreferencesResponseEconomicIntelligencePreviousPeriod struct {
+	// When the period ended, as an ISO 8601 timestamp.
+	EndedAt string `json:"ended_at" url:"ended_at"`
+	// Percentage of volume charged during the period, such as `3` for 3%.
+	FeePercentage float64 `json:"fee_percentage" url:"fee_percentage"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligencePreviousPeriod) GetEndedAt() string {
+	if r == nil {
+		return ""
+	}
+	return r.EndedAt
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligencePreviousPeriod) GetFeePercentage() float64 {
+	if r == nil {
+		return 0
+	}
+	return r.FeePercentage
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligencePreviousPeriod) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligencePreviousPeriod) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetEndedAt sets the EndedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseEconomicIntelligencePreviousPeriod) SetEndedAt(endedAt string) {
+	r.EndedAt = endedAt
+	r.require(retrievePreferencesResponseEconomicIntelligencePreviousPeriodFieldEndedAt)
+}
+
+// SetFeePercentage sets the FeePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseEconomicIntelligencePreviousPeriod) SetFeePercentage(feePercentage float64) {
+	r.FeePercentage = feePercentage
+	r.require(retrievePreferencesResponseEconomicIntelligencePreviousPeriodFieldFeePercentage)
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligencePreviousPeriod) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrievePreferencesResponseEconomicIntelligencePreviousPeriod
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrievePreferencesResponseEconomicIntelligencePreviousPeriod(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligencePreviousPeriod) MarshalJSON() ([]byte, error) {
+	type embed RetrievePreferencesResponseEconomicIntelligencePreviousPeriod
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrievePreferencesResponseEconomicIntelligencePreviousPeriod) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	retrievePreferencesResponseFeedbackOptionsItemFieldCategory = big.NewInt(1 << 0)
+	retrievePreferencesResponseFeedbackOptionsItemFieldID       = big.NewInt(1 << 1)
+	retrievePreferencesResponseFeedbackOptionsItemFieldLabel    = big.NewInt(1 << 2)
+)
+
+type RetrievePreferencesResponseFeedbackOptionsItem struct {
+	// The category saved as the membership's `cancel_option` when a member picks this option.
+	Category RetrievePreferencesResponseFeedbackOptionsItemCategory `json:"category" url:"category"`
+	// Feedback option ID, prefixed `fo_`. Pass it as `feedback_option_id` when canceling a membership, or back in `feedback_options` to keep the option when changing the list.
+	ID string `json:"id" url:"id"`
+	// The cancel reason as members see it. Up to 100 characters.
+	Label string `json:"label" url:"label"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) GetCategory() RetrievePreferencesResponseFeedbackOptionsItemCategory {
+	if r == nil {
+		return ""
+	}
+	return r.Category
+}
+
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) GetLabel() string {
+	if r == nil {
+		return ""
+	}
+	return r.Label
+}
+
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetCategory sets the Category field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) SetCategory(category RetrievePreferencesResponseFeedbackOptionsItemCategory) {
+	r.Category = category
+	r.require(retrievePreferencesResponseFeedbackOptionsItemFieldCategory)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) SetID(id string) {
+	r.ID = id
+	r.require(retrievePreferencesResponseFeedbackOptionsItemFieldID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) SetLabel(label string) {
+	r.Label = label
+	r.require(retrievePreferencesResponseFeedbackOptionsItemFieldLabel)
+}
+
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrievePreferencesResponseFeedbackOptionsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrievePreferencesResponseFeedbackOptionsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) MarshalJSON() ([]byte, error) {
+	type embed RetrievePreferencesResponseFeedbackOptionsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrievePreferencesResponseFeedbackOptionsItem) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+// The category saved as the membership's `cancel_option` when a member picks this option.
+type RetrievePreferencesResponseFeedbackOptionsItemCategory string
+
+const (
+	RetrievePreferencesResponseFeedbackOptionsItemCategoryTooExpensive    RetrievePreferencesResponseFeedbackOptionsItemCategory = "too_expensive"
+	RetrievePreferencesResponseFeedbackOptionsItemCategorySwitching       RetrievePreferencesResponseFeedbackOptionsItemCategory = "switching"
+	RetrievePreferencesResponseFeedbackOptionsItemCategoryMissingFeatures RetrievePreferencesResponseFeedbackOptionsItemCategory = "missing_features"
+	RetrievePreferencesResponseFeedbackOptionsItemCategoryTechnicalIssues RetrievePreferencesResponseFeedbackOptionsItemCategory = "technical_issues"
+	RetrievePreferencesResponseFeedbackOptionsItemCategoryBadExperience   RetrievePreferencesResponseFeedbackOptionsItemCategory = "bad_experience"
+	RetrievePreferencesResponseFeedbackOptionsItemCategoryUnused          RetrievePreferencesResponseFeedbackOptionsItemCategory = "unused"
+	RetrievePreferencesResponseFeedbackOptionsItemCategoryOther           RetrievePreferencesResponseFeedbackOptionsItemCategory = "other"
+)
+
+func NewRetrievePreferencesResponseFeedbackOptionsItemCategoryFromString(s string) (RetrievePreferencesResponseFeedbackOptionsItemCategory, error) {
+	switch s {
+	case "too_expensive":
+		return RetrievePreferencesResponseFeedbackOptionsItemCategoryTooExpensive, nil
+	case "switching":
+		return RetrievePreferencesResponseFeedbackOptionsItemCategorySwitching, nil
+	case "missing_features":
+		return RetrievePreferencesResponseFeedbackOptionsItemCategoryMissingFeatures, nil
+	case "technical_issues":
+		return RetrievePreferencesResponseFeedbackOptionsItemCategoryTechnicalIssues, nil
+	case "bad_experience":
+		return RetrievePreferencesResponseFeedbackOptionsItemCategoryBadExperience, nil
+	case "unused":
+		return RetrievePreferencesResponseFeedbackOptionsItemCategoryUnused, nil
+	case "other":
+		return RetrievePreferencesResponseFeedbackOptionsItemCategoryOther, nil
+	}
+	var t RetrievePreferencesResponseFeedbackOptionsItemCategory
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePreferencesResponseFeedbackOptionsItemCategory) Ptr() *RetrievePreferencesResponseFeedbackOptionsItemCategory {
+	return &r
+}
+
+// Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
+type RetrievePreferencesResponsePreferredSettlementCurrency string
+
+const (
+	RetrievePreferencesResponsePreferredSettlementCurrencyUsd RetrievePreferencesResponsePreferredSettlementCurrency = "usd"
+	RetrievePreferencesResponsePreferredSettlementCurrencyEur RetrievePreferencesResponsePreferredSettlementCurrency = "eur"
+	RetrievePreferencesResponsePreferredSettlementCurrencyGbp RetrievePreferencesResponsePreferredSettlementCurrency = "gbp"
+	RetrievePreferencesResponsePreferredSettlementCurrencyCad RetrievePreferencesResponsePreferredSettlementCurrency = "cad"
+	RetrievePreferencesResponsePreferredSettlementCurrencyAud RetrievePreferencesResponsePreferredSettlementCurrency = "aud"
+)
+
+func NewRetrievePreferencesResponsePreferredSettlementCurrencyFromString(s string) (RetrievePreferencesResponsePreferredSettlementCurrency, error) {
+	switch s {
+	case "usd":
+		return RetrievePreferencesResponsePreferredSettlementCurrencyUsd, nil
+	case "eur":
+		return RetrievePreferencesResponsePreferredSettlementCurrencyEur, nil
+	case "gbp":
+		return RetrievePreferencesResponsePreferredSettlementCurrencyGbp, nil
+	case "cad":
+		return RetrievePreferencesResponsePreferredSettlementCurrencyCad, nil
+	case "aud":
+		return RetrievePreferencesResponsePreferredSettlementCurrencyAud, nil
+	}
+	var t RetrievePreferencesResponsePreferredSettlementCurrency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePreferencesResponsePreferredSettlementCurrency) Ptr() *RetrievePreferencesResponsePreferredSettlementCurrency {
+	return &r
+}
+
+// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
+type RetrievePreferencesResponseSubscriptionFailureBehavior string
+
+const (
+	RetrievePreferencesResponseSubscriptionFailureBehaviorCancel RetrievePreferencesResponseSubscriptionFailureBehavior = "cancel"
+	RetrievePreferencesResponseSubscriptionFailureBehaviorNone   RetrievePreferencesResponseSubscriptionFailureBehavior = "none"
+)
+
+func NewRetrievePreferencesResponseSubscriptionFailureBehaviorFromString(s string) (RetrievePreferencesResponseSubscriptionFailureBehavior, error) {
+	switch s {
+	case "cancel":
+		return RetrievePreferencesResponseSubscriptionFailureBehaviorCancel, nil
+	case "none":
+		return RetrievePreferencesResponseSubscriptionFailureBehaviorNone, nil
+	}
+	var t RetrievePreferencesResponseSubscriptionFailureBehavior
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePreferencesResponseSubscriptionFailureBehavior) Ptr() *RetrievePreferencesResponseSubscriptionFailureBehavior {
+	return &r
+}
+
+var (
+	updatePreferencesRequestAdsCertificationsValueFieldStatus = big.NewInt(1 << 0)
+)
+
+type UpdatePreferencesRequestAdsCertificationsValue struct {
+	// Must be `pending_information`.
+	Status UpdatePreferencesRequestAdsCertificationsValueStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePreferencesRequestAdsCertificationsValue) GetStatus() UpdatePreferencesRequestAdsCertificationsValueStatus {
+	if u == nil {
+		return ""
+	}
+	return u.Status
+}
+
+func (u *UpdatePreferencesRequestAdsCertificationsValue) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePreferencesRequestAdsCertificationsValue) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestAdsCertificationsValue) SetStatus(status UpdatePreferencesRequestAdsCertificationsValueStatus) {
+	u.Status = status
+	u.require(updatePreferencesRequestAdsCertificationsValueFieldStatus)
+}
+
+func (u *UpdatePreferencesRequestAdsCertificationsValue) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePreferencesRequestAdsCertificationsValue
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePreferencesRequestAdsCertificationsValue(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePreferencesRequestAdsCertificationsValue) MarshalJSON() ([]byte, error) {
+	type embed UpdatePreferencesRequestAdsCertificationsValue
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePreferencesRequestAdsCertificationsValue) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// Must be `pending_information`.
+type UpdatePreferencesRequestAdsCertificationsValueStatus string
+
+const (
+	UpdatePreferencesRequestAdsCertificationsValueStatusPendingInformation UpdatePreferencesRequestAdsCertificationsValueStatus = "pending_information"
+)
+
+func NewUpdatePreferencesRequestAdsCertificationsValueStatusFromString(s string) (UpdatePreferencesRequestAdsCertificationsValueStatus, error) {
+	switch s {
+	case "pending_information":
+		return UpdatePreferencesRequestAdsCertificationsValueStatusPendingInformation, nil
+	}
+	var t UpdatePreferencesRequestAdsCertificationsValueStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesRequestAdsCertificationsValueStatus) Ptr() *UpdatePreferencesRequestAdsCertificationsValueStatus {
+	return &u
+}
+
 var (
 	updatePreferencesRequestAdsPaymentMethodsFieldBackup  = big.NewInt(1 << 0)
 	updatePreferencesRequestAdsPaymentMethodsFieldPrimary = big.NewInt(1 << 1)
 )
 
+// How the account pays for Whop Ads spend. Requires `primary`; `backup` is optional and covers the charge when the primary fails. Requires the `ad_campaign:create` scope on your API key. Configuring a `card` requires a user token; account API keys can configure only `platform_balance` sources.
 type UpdatePreferencesRequestAdsPaymentMethods struct {
 	// Optional second method charged if the primary fails. Any pairing is allowed (two cards, card+balance, balance+card); omit it to run on a single method. Must differ from the primary.
 	Backup  *UpdatePreferencesRequestAdsPaymentMethodsBackup  `json:"backup,omitempty" url:"backup,omitempty"`
@@ -1126,10 +2457,12 @@ func (u *UpdatePreferencesRequestAdsPaymentMethods) GetExtraProperties() map[str
 }
 
 func (u *UpdatePreferencesRequestAdsPaymentMethods) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBackup sets the Backup field and marks it as non-optional;
@@ -1188,12 +2521,12 @@ func (u *UpdatePreferencesRequestAdsPaymentMethods) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Optional second method charged if the primary fails. Any pairing is allowed (two cards, card+balance, balance+card); omit it to run on a single method. Must differ from the primary.
 var (
 	updatePreferencesRequestAdsPaymentMethodsBackupFieldID   = big.NewInt(1 << 0)
 	updatePreferencesRequestAdsPaymentMethodsBackupFieldType = big.NewInt(1 << 1)
 )
 
+// Optional second method charged if the primary fails. Any pairing is allowed (two cards, card+balance, balance+card); omit it to run on a single method. Must differ from the primary.
 type UpdatePreferencesRequestAdsPaymentMethodsBackup struct {
 	// The funding source ID: a Whop balance (`ldgr_`) for `platform_balance`, or a payment method (`payt_`) for `card`. Optional for `platform_balance` — defaults to the account's default Whop balance. Required for `card`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
@@ -1229,10 +2562,12 @@ func (u *UpdatePreferencesRequestAdsPaymentMethodsBackup) GetExtraProperties() m
 }
 
 func (u *UpdatePreferencesRequestAdsPaymentMethodsBackup) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1354,10 +2689,12 @@ func (u *UpdatePreferencesRequestAdsPaymentMethodsPrimary) GetExtraProperties() 
 }
 
 func (u *UpdatePreferencesRequestAdsPaymentMethodsPrimary) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1439,14 +2776,22 @@ func (u UpdatePreferencesRequestAdsPaymentMethodsPrimaryType) Ptr() *UpdatePrefe
 	return &u
 }
 
-// Connects or disconnects the Triple Whale integration. Requires a connected Shopify store, since Triple Whale keys spend records by Shopify shop.
 var (
-	updatePreferencesRequestAdsTripleWhaleIntegrationFieldAPIKey = big.NewInt(1 << 0)
+	updatePreferencesRequestAdsTripleWhaleIntegrationFieldAPIKey     = big.NewInt(1 << 0)
+	updatePreferencesRequestAdsTripleWhaleIntegrationFieldShopDomain = big.NewInt(1 << 1)
 )
 
+// updatePreferencesRequestAdsTripleWhaleIntegrationNullableFields maps the wire names of UpdatePreferencesRequestAdsTripleWhaleIntegration's nullable fields (required or optional) to their field bits.
+var updatePreferencesRequestAdsTripleWhaleIntegrationNullableFields = map[string]*big.Int{
+	"api_key": updatePreferencesRequestAdsTripleWhaleIntegrationFieldAPIKey,
+}
+
+// Connects or disconnects the Triple Whale integration, or changes the shop it reports to. Requires the `ad_campaign:create` scope on your API key. Connecting requires a `shop_domain` to report spend against.
 type UpdatePreferencesRequestAdsTripleWhaleIntegration struct {
-	// A Triple Whale Data-In API key with the `Data-In Write: Ads` scope, validated against Triple Whale before it is stored. Pass `null` to disconnect. Connecting for the first time backfills the account's existing ad spend.
+	// A Triple Whale Data-In API key with the `Ads: Write` scope, validated against Triple Whale before it is stored. Pass `null` to disconnect. Connecting for the first time backfills the account's existing ad spend. Required unless you are only changing `shop_domain` on an already connected integration, in which case the stored key is reused.
 	APIKey *string `json:"api_key,omitempty" url:"api_key,omitempty"`
+	// The exact shop domain configured in Triple Whale's Settings → Store (for Shopify this is the `.myshopify.com` domain; for a custom sales platform it's whatever domain Triple Whale assigned when the shop was set up there). A leading `https://` and trailing `/` are stripped, and what remains must be a bare hostname with no path or spaces. Validated against Triple Whale — the API key must have access to it — before it is stored. Changing it on a connected integration backfills the account's ad spend onto the new shop. Omit to keep the stored domain; there is no way to clear a stored value, only to overwrite it with a new domain.
+	ShopDomain *string `json:"shop_domain,omitempty" url:"shop_domain,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1462,6 +2807,13 @@ func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) GetAPIKey() *string 
 	return u.APIKey
 }
 
+func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) GetShopDomain() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ShopDomain
+}
+
 func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) GetExtraProperties() map[string]interface{} {
 	if u == nil {
 		return nil
@@ -1470,10 +2822,12 @@ func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) GetExtraProperties()
 }
 
 func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAPIKey sets the APIKey field and marks it as non-optional;
@@ -1481,6 +2835,13 @@ func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) require(field *big.I
 func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) SetAPIKey(apiKey *string) {
 	u.APIKey = apiKey
 	u.require(updatePreferencesRequestAdsTripleWhaleIntegrationFieldAPIKey)
+}
+
+// SetShopDomain sets the ShopDomain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) SetShopDomain(shopDomain *string) {
+	u.ShopDomain = shopDomain
+	u.require(updatePreferencesRequestAdsTripleWhaleIntegrationFieldShopDomain)
 }
 
 func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) UnmarshalJSON(data []byte) error {
@@ -1495,6 +2856,13 @@ func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) UnmarshalJSON(data [
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesRequestAdsTripleWhaleIntegrationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1526,30 +2894,521 @@ func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) String() string {
 }
 
 var (
-	updatePreferencesResponseFieldAdsAgreement              = big.NewInt(1 << 0)
-	updatePreferencesResponseFieldAdsPaymentMethods         = big.NewInt(1 << 1)
-	updatePreferencesResponseFieldAdsReportingCurrency      = big.NewInt(1 << 2)
-	updatePreferencesResponseFieldAdsSchedulingTimezone     = big.NewInt(1 << 3)
-	updatePreferencesResponseFieldAdsTripleWhaleIntegration = big.NewInt(1 << 4)
-	updatePreferencesResponseFieldCardsAutoTopUp            = big.NewInt(1 << 5)
-	updatePreferencesResponseFieldDisputeFighterEnabled     = big.NewInt(1 << 6)
+	updatePreferencesRequestCustomerTrackingFieldAccentColor      = big.NewInt(1 << 0)
+	updatePreferencesRequestCustomerTrackingFieldEnabled          = big.NewInt(1 << 1)
+	updatePreferencesRequestCustomerTrackingFieldShowBusinessName = big.NewInt(1 << 2)
+	updatePreferencesRequestCustomerTrackingFieldShowLogo         = big.NewInt(1 << 3)
+	updatePreferencesRequestCustomerTrackingFieldSupportEmail     = big.NewInt(1 << 4)
+	updatePreferencesRequestCustomerTrackingFieldSupportURL       = big.NewInt(1 << 5)
 )
+
+// updatePreferencesRequestCustomerTrackingNullableFields maps the wire names of UpdatePreferencesRequestCustomerTracking's nullable fields (required or optional) to their field bits.
+var updatePreferencesRequestCustomerTrackingNullableFields = map[string]*big.Int{
+	"accent_color":       updatePreferencesRequestCustomerTrackingFieldAccentColor,
+	"enabled":            updatePreferencesRequestCustomerTrackingFieldEnabled,
+	"show_business_name": updatePreferencesRequestCustomerTrackingFieldShowBusinessName,
+	"show_logo":          updatePreferencesRequestCustomerTrackingFieldShowLogo,
+	"support_email":      updatePreferencesRequestCustomerTrackingFieldSupportEmail,
+	"support_url":        updatePreferencesRequestCustomerTrackingFieldSupportURL,
+}
+
+// Customer tracking settings for the hosted tracking page and Element, replaced as a whole: fields left out are saved as unset. Pass null to clear them, which turns tracking off. Tracking is off unless `enabled` is `true`. Requires the `company:manage_checkout` scope on your API key.
+type UpdatePreferencesRequestCustomerTracking struct {
+	// Accent color, as a `#rrggbb` hex color. Unset uses the default.
+	AccentColor *string `json:"accent_color,omitempty" url:"accent_color,omitempty"`
+	// Turns the public tracking page and guest lookup on. Unset is off.
+	Enabled *bool `json:"enabled,omitempty" url:"enabled,omitempty"`
+	// Show the business name on the tracking page and Element. Unset shows it.
+	ShowBusinessName *bool `json:"show_business_name,omitempty" url:"show_business_name,omitempty"`
+	// Show the account logo on the tracking page and Element. Unset shows it.
+	ShowLogo *bool `json:"show_logo,omitempty" url:"show_logo,omitempty"`
+	// Customer support email address.
+	SupportEmail *string `json:"support_email,omitempty" url:"support_email,omitempty"`
+	// HTTPS customer support URL.
+	SupportURL *string `json:"support_url,omitempty" url:"support_url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) GetAccentColor() *string {
+	if u == nil {
+		return nil
+	}
+	return u.AccentColor
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) GetEnabled() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.Enabled
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) GetShowBusinessName() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.ShowBusinessName
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) GetShowLogo() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.ShowLogo
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) GetSupportEmail() *string {
+	if u == nil {
+		return nil
+	}
+	return u.SupportEmail
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) GetSupportURL() *string {
+	if u == nil {
+		return nil
+	}
+	return u.SupportURL
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetAccentColor sets the AccentColor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestCustomerTracking) SetAccentColor(accentColor *string) {
+	u.AccentColor = accentColor
+	u.require(updatePreferencesRequestCustomerTrackingFieldAccentColor)
+}
+
+// SetEnabled sets the Enabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestCustomerTracking) SetEnabled(enabled *bool) {
+	u.Enabled = enabled
+	u.require(updatePreferencesRequestCustomerTrackingFieldEnabled)
+}
+
+// SetShowBusinessName sets the ShowBusinessName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestCustomerTracking) SetShowBusinessName(showBusinessName *bool) {
+	u.ShowBusinessName = showBusinessName
+	u.require(updatePreferencesRequestCustomerTrackingFieldShowBusinessName)
+}
+
+// SetShowLogo sets the ShowLogo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestCustomerTracking) SetShowLogo(showLogo *bool) {
+	u.ShowLogo = showLogo
+	u.require(updatePreferencesRequestCustomerTrackingFieldShowLogo)
+}
+
+// SetSupportEmail sets the SupportEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestCustomerTracking) SetSupportEmail(supportEmail *string) {
+	u.SupportEmail = supportEmail
+	u.require(updatePreferencesRequestCustomerTrackingFieldSupportEmail)
+}
+
+// SetSupportURL sets the SupportURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestCustomerTracking) SetSupportURL(supportURL *string) {
+	u.SupportURL = supportURL
+	u.require(updatePreferencesRequestCustomerTrackingFieldSupportURL)
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePreferencesRequestCustomerTracking
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePreferencesRequestCustomerTracking(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesRequestCustomerTrackingNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) MarshalJSON() ([]byte, error) {
+	type embed UpdatePreferencesRequestCustomerTracking
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePreferencesRequestCustomerTracking) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// Turns on Economic Intelligence with the offer that has this `key` in `economic_intelligence_offers`, at that offer's fee. A committed duration can't be changed or turned off until `economic_intelligence_ends_at`, except to upgrade to `weekly`, which switches to auto-renew right away. Requires the `company:update` scope on your API key.
+type UpdatePreferencesRequestEconomicIntelligenceDurationKey string
+
+const (
+	UpdatePreferencesRequestEconomicIntelligenceDurationKeyWeekly    UpdatePreferencesRequestEconomicIntelligenceDurationKey = "weekly"
+	UpdatePreferencesRequestEconomicIntelligenceDurationKeySevenDays UpdatePreferencesRequestEconomicIntelligenceDurationKey = "7_days"
+	UpdatePreferencesRequestEconomicIntelligenceDurationKeyOneDay    UpdatePreferencesRequestEconomicIntelligenceDurationKey = "1_day"
+	UpdatePreferencesRequestEconomicIntelligenceDurationKeyOneHour   UpdatePreferencesRequestEconomicIntelligenceDurationKey = "1_hour"
+)
+
+func NewUpdatePreferencesRequestEconomicIntelligenceDurationKeyFromString(s string) (UpdatePreferencesRequestEconomicIntelligenceDurationKey, error) {
+	switch s {
+	case "weekly":
+		return UpdatePreferencesRequestEconomicIntelligenceDurationKeyWeekly, nil
+	case "7_days":
+		return UpdatePreferencesRequestEconomicIntelligenceDurationKeySevenDays, nil
+	case "1_day":
+		return UpdatePreferencesRequestEconomicIntelligenceDurationKeyOneDay, nil
+	case "1_hour":
+		return UpdatePreferencesRequestEconomicIntelligenceDurationKeyOneHour, nil
+	}
+	var t UpdatePreferencesRequestEconomicIntelligenceDurationKey
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesRequestEconomicIntelligenceDurationKey) Ptr() *UpdatePreferencesRequestEconomicIntelligenceDurationKey {
+	return &u
+}
+
+var (
+	updatePreferencesRequestFeedbackOptionsItemFieldCategory = big.NewInt(1 << 0)
+	updatePreferencesRequestFeedbackOptionsItemFieldID       = big.NewInt(1 << 1)
+	updatePreferencesRequestFeedbackOptionsItemFieldLabel    = big.NewInt(1 << 2)
+)
+
+type UpdatePreferencesRequestFeedbackOptionsItem struct {
+	// The category saved as the membership's `cancel_option` when a member picks this option, so reports keep grouping cancellations.
+	Category UpdatePreferencesRequestFeedbackOptionsItemCategory `json:"category" url:"category"`
+	// The ID of an option to keep. Omit it to add a new option.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// The cancel reason as members see it.
+	Label string `json:"label" url:"label"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) GetCategory() UpdatePreferencesRequestFeedbackOptionsItemCategory {
+	if u == nil {
+		return ""
+	}
+	return u.Category
+}
+
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) GetLabel() string {
+	if u == nil {
+		return ""
+	}
+	return u.Label
+}
+
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetCategory sets the Category field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) SetCategory(category UpdatePreferencesRequestFeedbackOptionsItemCategory) {
+	u.Category = category
+	u.require(updatePreferencesRequestFeedbackOptionsItemFieldCategory)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) SetID(id *string) {
+	u.ID = id
+	u.require(updatePreferencesRequestFeedbackOptionsItemFieldID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) SetLabel(label string) {
+	u.Label = label
+	u.require(updatePreferencesRequestFeedbackOptionsItemFieldLabel)
+}
+
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePreferencesRequestFeedbackOptionsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePreferencesRequestFeedbackOptionsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdatePreferencesRequestFeedbackOptionsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePreferencesRequestFeedbackOptionsItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// The category saved as the membership's `cancel_option` when a member picks this option, so reports keep grouping cancellations.
+type UpdatePreferencesRequestFeedbackOptionsItemCategory string
+
+const (
+	UpdatePreferencesRequestFeedbackOptionsItemCategoryTooExpensive    UpdatePreferencesRequestFeedbackOptionsItemCategory = "too_expensive"
+	UpdatePreferencesRequestFeedbackOptionsItemCategorySwitching       UpdatePreferencesRequestFeedbackOptionsItemCategory = "switching"
+	UpdatePreferencesRequestFeedbackOptionsItemCategoryMissingFeatures UpdatePreferencesRequestFeedbackOptionsItemCategory = "missing_features"
+	UpdatePreferencesRequestFeedbackOptionsItemCategoryTechnicalIssues UpdatePreferencesRequestFeedbackOptionsItemCategory = "technical_issues"
+	UpdatePreferencesRequestFeedbackOptionsItemCategoryBadExperience   UpdatePreferencesRequestFeedbackOptionsItemCategory = "bad_experience"
+	UpdatePreferencesRequestFeedbackOptionsItemCategoryUnused          UpdatePreferencesRequestFeedbackOptionsItemCategory = "unused"
+	UpdatePreferencesRequestFeedbackOptionsItemCategoryOther           UpdatePreferencesRequestFeedbackOptionsItemCategory = "other"
+)
+
+func NewUpdatePreferencesRequestFeedbackOptionsItemCategoryFromString(s string) (UpdatePreferencesRequestFeedbackOptionsItemCategory, error) {
+	switch s {
+	case "too_expensive":
+		return UpdatePreferencesRequestFeedbackOptionsItemCategoryTooExpensive, nil
+	case "switching":
+		return UpdatePreferencesRequestFeedbackOptionsItemCategorySwitching, nil
+	case "missing_features":
+		return UpdatePreferencesRequestFeedbackOptionsItemCategoryMissingFeatures, nil
+	case "technical_issues":
+		return UpdatePreferencesRequestFeedbackOptionsItemCategoryTechnicalIssues, nil
+	case "bad_experience":
+		return UpdatePreferencesRequestFeedbackOptionsItemCategoryBadExperience, nil
+	case "unused":
+		return UpdatePreferencesRequestFeedbackOptionsItemCategoryUnused, nil
+	case "other":
+		return UpdatePreferencesRequestFeedbackOptionsItemCategoryOther, nil
+	}
+	var t UpdatePreferencesRequestFeedbackOptionsItemCategory
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesRequestFeedbackOptionsItemCategory) Ptr() *UpdatePreferencesRequestFeedbackOptionsItemCategory {
+	return &u
+}
+
+// Settle every new sale into this currency, regardless of the plan's currency or what the buyer paid in; sales converted this way carry an additional 0.5% FX fee. Pass `null` to go back to settling each sale in its plan's currency. Changing it never converts money already in your balances, and it can change at most once a day (see `preferred_settlement_currency_changeable_at`). Requires the `payout:account:update` scope on your API key.
+type UpdatePreferencesRequestPreferredSettlementCurrency string
+
+const (
+	UpdatePreferencesRequestPreferredSettlementCurrencyUsd UpdatePreferencesRequestPreferredSettlementCurrency = "usd"
+	UpdatePreferencesRequestPreferredSettlementCurrencyEur UpdatePreferencesRequestPreferredSettlementCurrency = "eur"
+	UpdatePreferencesRequestPreferredSettlementCurrencyGbp UpdatePreferencesRequestPreferredSettlementCurrency = "gbp"
+	UpdatePreferencesRequestPreferredSettlementCurrencyCad UpdatePreferencesRequestPreferredSettlementCurrency = "cad"
+	UpdatePreferencesRequestPreferredSettlementCurrencyAud UpdatePreferencesRequestPreferredSettlementCurrency = "aud"
+)
+
+func NewUpdatePreferencesRequestPreferredSettlementCurrencyFromString(s string) (UpdatePreferencesRequestPreferredSettlementCurrency, error) {
+	switch s {
+	case "usd":
+		return UpdatePreferencesRequestPreferredSettlementCurrencyUsd, nil
+	case "eur":
+		return UpdatePreferencesRequestPreferredSettlementCurrencyEur, nil
+	case "gbp":
+		return UpdatePreferencesRequestPreferredSettlementCurrencyGbp, nil
+	case "cad":
+		return UpdatePreferencesRequestPreferredSettlementCurrencyCad, nil
+	case "aud":
+		return UpdatePreferencesRequestPreferredSettlementCurrencyAud, nil
+	}
+	var t UpdatePreferencesRequestPreferredSettlementCurrency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesRequestPreferredSettlementCurrency) Ptr() *UpdatePreferencesRequestPreferredSettlementCurrency {
+	return &u
+}
+
+// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting. Requires company:manage_checkout permission.
+type UpdatePreferencesRequestSubscriptionFailureBehavior string
+
+const (
+	UpdatePreferencesRequestSubscriptionFailureBehaviorCancel UpdatePreferencesRequestSubscriptionFailureBehavior = "cancel"
+	UpdatePreferencesRequestSubscriptionFailureBehaviorNone   UpdatePreferencesRequestSubscriptionFailureBehavior = "none"
+)
+
+func NewUpdatePreferencesRequestSubscriptionFailureBehaviorFromString(s string) (UpdatePreferencesRequestSubscriptionFailureBehavior, error) {
+	switch s {
+	case "cancel":
+		return UpdatePreferencesRequestSubscriptionFailureBehaviorCancel, nil
+	case "none":
+		return UpdatePreferencesRequestSubscriptionFailureBehaviorNone, nil
+	}
+	var t UpdatePreferencesRequestSubscriptionFailureBehavior
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesRequestSubscriptionFailureBehavior) Ptr() *UpdatePreferencesRequestSubscriptionFailureBehavior {
+	return &u
+}
+
+var (
+	updatePreferencesResponseFieldAdsAgreement                            = big.NewInt(1 << 0)
+	updatePreferencesResponseFieldAdsCertifications                       = big.NewInt(1 << 1)
+	updatePreferencesResponseFieldAdsPaymentMethods                       = big.NewInt(1 << 2)
+	updatePreferencesResponseFieldAdsReportingCurrency                    = big.NewInt(1 << 3)
+	updatePreferencesResponseFieldAdsSchedulingTimezone                   = big.NewInt(1 << 4)
+	updatePreferencesResponseFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 5)
+	updatePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
+	updatePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 7)
+	updatePreferencesResponseFieldCoversConnectedAccountNegativeBalances  = big.NewInt(1 << 8)
+	updatePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 9)
+	updatePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 10)
+	updatePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 11)
+	updatePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 12)
+	updatePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 13)
+	updatePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 14)
+	updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 15)
+	updatePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 16)
+	updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 17)
+	updatePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 18)
+	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 19)
+	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 20)
+	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 21)
+)
+
+// updatePreferencesResponseNullableFields maps the wire names of UpdatePreferencesResponse's nullable fields (required or optional) to their field bits.
+var updatePreferencesResponseNullableFields = map[string]*big.Int{
+	"ads_payment_methods":                         updatePreferencesResponseFieldAdsPaymentMethods,
+	"covers_connected_account_negative_balances":  updatePreferencesResponseFieldCoversConnectedAccountNegativeBalances,
+	"customer_tracking":                           updatePreferencesResponseFieldCustomerTracking,
+	"economic_intelligence_ends_at":               updatePreferencesResponseFieldEconomicIntelligenceEndsAt,
+	"economic_intelligence_fee_percentage":        updatePreferencesResponseFieldEconomicIntelligenceFeePercentage,
+	"economic_intelligence_first_renewal_at":      updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt,
+	"economic_intelligence_previous_period":       updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod,
+	"preferred_settlement_currency":               updatePreferencesResponseFieldPreferredSettlementCurrency,
+	"preferred_settlement_currency_changeable_at": updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt,
+}
 
 type UpdatePreferencesResponse struct {
 	// The account's Whop Ads services and payment authorization agreement. While `pending_signature`, campaign launch is blocked; sign by answering `requested_information` via `PATCH /verifications/{id}`.
 	AdsAgreement *UpdatePreferencesResponseAdsAgreement `json:"ads_agreement" url:"ads_agreement"`
+	// The account's advertising certifications, one entry per certification type Whop offers. Start an application by setting a type's `status` to `pending_information` via `PATCH`, then answer the fields it requests via `GET`/`PATCH /verifications/{id}`.
+	AdsCertifications []*UpdatePreferencesResponseAdsCertificationsItem `json:"ads_certifications" url:"ads_certifications"`
 	// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails. `null` until ads billing has been configured.
 	AdsPaymentMethods *UpdatePreferencesResponseAdsPaymentMethods `json:"ads_payment_methods,omitempty" url:"ads_payment_methods,omitempty"`
 	// Lowercase ISO currency code, such as `usd` or `eur`, used to display ad spend and stats. Defaults to `usd`.
 	AdsReportingCurrency string `json:"ads_reporting_currency" url:"ads_reporting_currency"`
 	// IANA timezone (e.g. `America/New_York`) used to interpret campaign start/end times and to bucket reports. Defaults to `America/New_York` until explicitly overridden.
 	AdsSchedulingTimezone string `json:"ads_scheduling_timezone" url:"ads_scheduling_timezone"`
-	// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel.
+	// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, or a custom checkout — by setting `shop_domain`. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
 	AdsTripleWhaleIntegration *UpdatePreferencesResponseAdsTripleWhaleIntegration `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
 	// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
+	// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
+	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
+	// Whether this account covers its connected accounts' negative balances. When a connected account's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Refunds on its connected accounts may also take them negative by up to this account's available balance. `null` when the account has no connected accounts.
+	CoversConnectedAccountNegativeBalances *bool `json:"covers_connected_account_negative_balances,omitempty" url:"covers_connected_account_negative_balances,omitempty"`
+	// The saved customer tracking settings for the hosted tracking page and Element, exactly as saved. `null` until set; tracking is off unless `enabled` is `true`.
+	CustomerTracking *v2.CustomerTrackingPreferences `json:"customer_tracking,omitempty" url:"customer_tracking,omitempty"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
+	// Whether Economic Intelligence is on for the account. It turns off automatically at `economic_intelligence_ends_at`.
+	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
+	// Whether Economic Intelligence renews itself every week, with no end date. Turn it on with the `weekly` offer. Set it to `false` to stop renewing, which keeps Economic Intelligence on until the end of the current week, shown in `economic_intelligence_ends_at`; stopping before the first renewal charges the rest of that week at the `7_days` offer's fee. Set it back to `true` before then to keep renewing at the weekly fee.
+	EconomicIntelligenceAutoRenew bool `json:"economic_intelligence_auto_renew" url:"economic_intelligence_auto_renew"`
+	// When the account's committed Economic Intelligence period ends, as an ISO 8601 timestamp. Economic Intelligence can't be turned off before then. `null` when Economic Intelligence is off or renews automatically.
+	EconomicIntelligenceEndsAt *string `json:"economic_intelligence_ends_at,omitempty" url:"economic_intelligence_ends_at,omitempty"`
+	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%. `null` when Economic Intelligence is off.
+	EconomicIntelligenceFeePercentage *float64 `json:"economic_intelligence_fee_percentage,omitempty" url:"economic_intelligence_fee_percentage,omitempty"`
+	// When auto-renew first renews, as an ISO 8601 timestamp. Turning auto-renew off before then charges the rest of that week at the `7_days` offer's fee. `null` when auto-renew is off.
+	EconomicIntelligenceFirstRenewalAt *string `json:"economic_intelligence_first_renewal_at,omitempty" url:"economic_intelligence_first_renewal_at,omitempty"`
+	// What the account can choose now to turn on Economic Intelligence, each with its fee. Every offer while Economic Intelligence is off; only the `weekly` auto-renew offer while a committed period is running, as an upgrade; empty while it renews automatically.
+	EconomicIntelligenceOffers []*UpdatePreferencesResponseEconomicIntelligenceOffersItem `json:"economic_intelligence_offers" url:"economic_intelligence_offers"`
+	// The account's last Economic Intelligence period, once it has ended. `null` while Economic Intelligence is on, or when it has never been on.
+	EconomicIntelligencePreviousPeriod *UpdatePreferencesResponseEconomicIntelligencePreviousPeriod `json:"economic_intelligence_previous_period,omitempty" url:"economic_intelligence_previous_period,omitempty"`
+	// The account's own cancel reasons, in the order members see them when they cancel. Each is filed under a standard category, saved as the membership's `cancel_option`, so reports keep grouping cancellations. Empty when the account uses Whop's default reasons.
+	FeedbackOptions []*UpdatePreferencesResponseFeedbackOptionsItem `json:"feedback_options" url:"feedback_options"`
+	// Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
+	PreferredSettlementCurrency *UpdatePreferencesResponsePreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"preferred_settlement_currency,omitempty"`
+	// When `preferred_settlement_currency` may next be changed or turned off, as an ISO 8601 timestamp. It can change at most once a day. `null` when it may change now.
+	PreferredSettlementCurrencyChangeableAt *string `json:"preferred_settlement_currency_changeable_at,omitempty" url:"preferred_settlement_currency_changeable_at,omitempty"`
+	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
+	SubscriptionFailureBehavior UpdatePreferencesResponseSubscriptionFailureBehavior `json:"subscription_failure_behavior" url:"subscription_failure_behavior"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1563,6 +3422,13 @@ func (u *UpdatePreferencesResponse) GetAdsAgreement() *UpdatePreferencesResponse
 		return nil
 	}
 	return u.AdsAgreement
+}
+
+func (u *UpdatePreferencesResponse) GetAdsCertifications() []*UpdatePreferencesResponseAdsCertificationsItem {
+	if u == nil {
+		return nil
+	}
+	return u.AdsCertifications
 }
 
 func (u *UpdatePreferencesResponse) GetAdsPaymentMethods() *UpdatePreferencesResponseAdsPaymentMethods {
@@ -1600,11 +3466,109 @@ func (u *UpdatePreferencesResponse) GetCardsAutoTopUp() bool {
 	return u.CardsAutoTopUp
 }
 
+func (u *UpdatePreferencesResponse) GetCardsNotifications() bool {
+	if u == nil {
+		return false
+	}
+	return u.CardsNotifications
+}
+
+func (u *UpdatePreferencesResponse) GetCoversConnectedAccountNegativeBalances() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.CoversConnectedAccountNegativeBalances
+}
+
+func (u *UpdatePreferencesResponse) GetCustomerTracking() *v2.CustomerTrackingPreferences {
+	if u == nil {
+		return nil
+	}
+	return u.CustomerTracking
+}
+
 func (u *UpdatePreferencesResponse) GetDisputeFighterEnabled() bool {
 	if u == nil {
 		return false
 	}
 	return u.DisputeFighterEnabled
+}
+
+func (u *UpdatePreferencesResponse) GetEconomicIntelligence() bool {
+	if u == nil {
+		return false
+	}
+	return u.EconomicIntelligence
+}
+
+func (u *UpdatePreferencesResponse) GetEconomicIntelligenceAutoRenew() bool {
+	if u == nil {
+		return false
+	}
+	return u.EconomicIntelligenceAutoRenew
+}
+
+func (u *UpdatePreferencesResponse) GetEconomicIntelligenceEndsAt() *string {
+	if u == nil {
+		return nil
+	}
+	return u.EconomicIntelligenceEndsAt
+}
+
+func (u *UpdatePreferencesResponse) GetEconomicIntelligenceFeePercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.EconomicIntelligenceFeePercentage
+}
+
+func (u *UpdatePreferencesResponse) GetEconomicIntelligenceFirstRenewalAt() *string {
+	if u == nil {
+		return nil
+	}
+	return u.EconomicIntelligenceFirstRenewalAt
+}
+
+func (u *UpdatePreferencesResponse) GetEconomicIntelligenceOffers() []*UpdatePreferencesResponseEconomicIntelligenceOffersItem {
+	if u == nil {
+		return nil
+	}
+	return u.EconomicIntelligenceOffers
+}
+
+func (u *UpdatePreferencesResponse) GetEconomicIntelligencePreviousPeriod() *UpdatePreferencesResponseEconomicIntelligencePreviousPeriod {
+	if u == nil {
+		return nil
+	}
+	return u.EconomicIntelligencePreviousPeriod
+}
+
+func (u *UpdatePreferencesResponse) GetFeedbackOptions() []*UpdatePreferencesResponseFeedbackOptionsItem {
+	if u == nil {
+		return nil
+	}
+	return u.FeedbackOptions
+}
+
+func (u *UpdatePreferencesResponse) GetPreferredSettlementCurrency() *UpdatePreferencesResponsePreferredSettlementCurrency {
+	if u == nil {
+		return nil
+	}
+	return u.PreferredSettlementCurrency
+}
+
+func (u *UpdatePreferencesResponse) GetPreferredSettlementCurrencyChangeableAt() *string {
+	if u == nil {
+		return nil
+	}
+	return u.PreferredSettlementCurrencyChangeableAt
+}
+
+func (u *UpdatePreferencesResponse) GetSubscriptionFailureBehavior() UpdatePreferencesResponseSubscriptionFailureBehavior {
+	if u == nil {
+		return ""
+	}
+	return u.SubscriptionFailureBehavior
 }
 
 func (u *UpdatePreferencesResponse) GetExtraProperties() map[string]interface{} {
@@ -1615,10 +3579,12 @@ func (u *UpdatePreferencesResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (u *UpdatePreferencesResponse) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAdsAgreement sets the AdsAgreement field and marks it as non-optional;
@@ -1626,6 +3592,13 @@ func (u *UpdatePreferencesResponse) require(field *big.Int) {
 func (u *UpdatePreferencesResponse) SetAdsAgreement(adsAgreement *UpdatePreferencesResponseAdsAgreement) {
 	u.AdsAgreement = adsAgreement
 	u.require(updatePreferencesResponseFieldAdsAgreement)
+}
+
+// SetAdsCertifications sets the AdsCertifications field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetAdsCertifications(adsCertifications []*UpdatePreferencesResponseAdsCertificationsItem) {
+	u.AdsCertifications = adsCertifications
+	u.require(updatePreferencesResponseFieldAdsCertifications)
 }
 
 // SetAdsPaymentMethods sets the AdsPaymentMethods field and marks it as non-optional;
@@ -1663,11 +3636,109 @@ func (u *UpdatePreferencesResponse) SetCardsAutoTopUp(cardsAutoTopUp bool) {
 	u.require(updatePreferencesResponseFieldCardsAutoTopUp)
 }
 
+// SetCardsNotifications sets the CardsNotifications field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetCardsNotifications(cardsNotifications bool) {
+	u.CardsNotifications = cardsNotifications
+	u.require(updatePreferencesResponseFieldCardsNotifications)
+}
+
+// SetCoversConnectedAccountNegativeBalances sets the CoversConnectedAccountNegativeBalances field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetCoversConnectedAccountNegativeBalances(coversConnectedAccountNegativeBalances *bool) {
+	u.CoversConnectedAccountNegativeBalances = coversConnectedAccountNegativeBalances
+	u.require(updatePreferencesResponseFieldCoversConnectedAccountNegativeBalances)
+}
+
+// SetCustomerTracking sets the CustomerTracking field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetCustomerTracking(customerTracking *v2.CustomerTrackingPreferences) {
+	u.CustomerTracking = customerTracking
+	u.require(updatePreferencesResponseFieldCustomerTracking)
+}
+
 // SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdatePreferencesResponse) SetDisputeFighterEnabled(disputeFighterEnabled bool) {
 	u.DisputeFighterEnabled = disputeFighterEnabled
 	u.require(updatePreferencesResponseFieldDisputeFighterEnabled)
+}
+
+// SetEconomicIntelligence sets the EconomicIntelligence field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetEconomicIntelligence(economicIntelligence bool) {
+	u.EconomicIntelligence = economicIntelligence
+	u.require(updatePreferencesResponseFieldEconomicIntelligence)
+}
+
+// SetEconomicIntelligenceAutoRenew sets the EconomicIntelligenceAutoRenew field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetEconomicIntelligenceAutoRenew(economicIntelligenceAutoRenew bool) {
+	u.EconomicIntelligenceAutoRenew = economicIntelligenceAutoRenew
+	u.require(updatePreferencesResponseFieldEconomicIntelligenceAutoRenew)
+}
+
+// SetEconomicIntelligenceEndsAt sets the EconomicIntelligenceEndsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetEconomicIntelligenceEndsAt(economicIntelligenceEndsAt *string) {
+	u.EconomicIntelligenceEndsAt = economicIntelligenceEndsAt
+	u.require(updatePreferencesResponseFieldEconomicIntelligenceEndsAt)
+}
+
+// SetEconomicIntelligenceFeePercentage sets the EconomicIntelligenceFeePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetEconomicIntelligenceFeePercentage(economicIntelligenceFeePercentage *float64) {
+	u.EconomicIntelligenceFeePercentage = economicIntelligenceFeePercentage
+	u.require(updatePreferencesResponseFieldEconomicIntelligenceFeePercentage)
+}
+
+// SetEconomicIntelligenceFirstRenewalAt sets the EconomicIntelligenceFirstRenewalAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetEconomicIntelligenceFirstRenewalAt(economicIntelligenceFirstRenewalAt *string) {
+	u.EconomicIntelligenceFirstRenewalAt = economicIntelligenceFirstRenewalAt
+	u.require(updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt)
+}
+
+// SetEconomicIntelligenceOffers sets the EconomicIntelligenceOffers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetEconomicIntelligenceOffers(economicIntelligenceOffers []*UpdatePreferencesResponseEconomicIntelligenceOffersItem) {
+	u.EconomicIntelligenceOffers = economicIntelligenceOffers
+	u.require(updatePreferencesResponseFieldEconomicIntelligenceOffers)
+}
+
+// SetEconomicIntelligencePreviousPeriod sets the EconomicIntelligencePreviousPeriod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetEconomicIntelligencePreviousPeriod(economicIntelligencePreviousPeriod *UpdatePreferencesResponseEconomicIntelligencePreviousPeriod) {
+	u.EconomicIntelligencePreviousPeriod = economicIntelligencePreviousPeriod
+	u.require(updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod)
+}
+
+// SetFeedbackOptions sets the FeedbackOptions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetFeedbackOptions(feedbackOptions []*UpdatePreferencesResponseFeedbackOptionsItem) {
+	u.FeedbackOptions = feedbackOptions
+	u.require(updatePreferencesResponseFieldFeedbackOptions)
+}
+
+// SetPreferredSettlementCurrency sets the PreferredSettlementCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetPreferredSettlementCurrency(preferredSettlementCurrency *UpdatePreferencesResponsePreferredSettlementCurrency) {
+	u.PreferredSettlementCurrency = preferredSettlementCurrency
+	u.require(updatePreferencesResponseFieldPreferredSettlementCurrency)
+}
+
+// SetPreferredSettlementCurrencyChangeableAt sets the PreferredSettlementCurrencyChangeableAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetPreferredSettlementCurrencyChangeableAt(preferredSettlementCurrencyChangeableAt *string) {
+	u.PreferredSettlementCurrencyChangeableAt = preferredSettlementCurrencyChangeableAt
+	u.require(updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt)
+}
+
+// SetSubscriptionFailureBehavior sets the SubscriptionFailureBehavior field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetSubscriptionFailureBehavior(subscriptionFailureBehavior UpdatePreferencesResponseSubscriptionFailureBehavior) {
+	u.SubscriptionFailureBehavior = subscriptionFailureBehavior
+	u.require(updatePreferencesResponseFieldSubscriptionFailureBehavior)
 }
 
 func (u *UpdatePreferencesResponse) UnmarshalJSON(data []byte) error {
@@ -1682,6 +3753,13 @@ func (u *UpdatePreferencesResponse) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1712,7 +3790,6 @@ func (u *UpdatePreferencesResponse) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The account's Whop Ads services and payment authorization agreement. While `pending_signature`, campaign launch is blocked; sign by answering `requested_information` via `PATCH /verifications/{id}`.
 var (
 	updatePreferencesResponseAdsAgreementFieldAcceptedAt       = big.NewInt(1 << 0)
 	updatePreferencesResponseAdsAgreementFieldAgreementVersion = big.NewInt(1 << 1)
@@ -1720,6 +3797,14 @@ var (
 	updatePreferencesResponseAdsAgreementFieldStatus           = big.NewInt(1 << 3)
 )
 
+// updatePreferencesResponseAdsAgreementNullableFields maps the wire names of UpdatePreferencesResponseAdsAgreement's nullable fields (required or optional) to their field bits.
+var updatePreferencesResponseAdsAgreementNullableFields = map[string]*big.Int{
+	"accepted_at":       updatePreferencesResponseAdsAgreementFieldAcceptedAt,
+	"agreement_version": updatePreferencesResponseAdsAgreementFieldAgreementVersion,
+	"printed_name":      updatePreferencesResponseAdsAgreementFieldPrintedName,
+}
+
+// The account's Whop Ads services and payment authorization agreement. While `pending_signature`, campaign launch is blocked; sign by answering `requested_information` via `PATCH /verifications/{id}`.
 type UpdatePreferencesResponseAdsAgreement struct {
 	// When the agreement was signed, as an ISO 8601 timestamp. `null` until signed.
 	AcceptedAt *string `json:"accepted_at,omitempty" url:"accepted_at,omitempty"`
@@ -1773,10 +3858,12 @@ func (u *UpdatePreferencesResponseAdsAgreement) GetExtraProperties() map[string]
 }
 
 func (u *UpdatePreferencesResponseAdsAgreement) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAcceptedAt sets the AcceptedAt field and marks it as non-optional;
@@ -1819,6 +3906,13 @@ func (u *UpdatePreferencesResponseAdsAgreement) UnmarshalJSON(data []byte) error
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesResponseAdsAgreementNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1875,12 +3969,335 @@ func (u UpdatePreferencesResponseAdsAgreementStatus) Ptr() *UpdatePreferencesRes
 	return &u
 }
 
-// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails. `null` until ads billing has been configured.
+var (
+	updatePreferencesResponseAdsCertificationsItemFieldApprovedCountries = big.NewInt(1 << 0)
+	updatePreferencesResponseAdsCertificationsItemFieldBusinessName      = big.NewInt(1 << 1)
+	updatePreferencesResponseAdsCertificationsItemFieldBusinessType      = big.NewInt(1 << 2)
+	updatePreferencesResponseAdsCertificationsItemFieldCertificationType = big.NewInt(1 << 3)
+	updatePreferencesResponseAdsCertificationsItemFieldCountries         = big.NewInt(1 << 4)
+	updatePreferencesResponseAdsCertificationsItemFieldDenialReason      = big.NewInt(1 << 5)
+	updatePreferencesResponseAdsCertificationsItemFieldRequestID         = big.NewInt(1 << 6)
+	updatePreferencesResponseAdsCertificationsItemFieldStatus            = big.NewInt(1 << 7)
+	updatePreferencesResponseAdsCertificationsItemFieldURL               = big.NewInt(1 << 8)
+)
+
+// updatePreferencesResponseAdsCertificationsItemNullableFields maps the wire names of UpdatePreferencesResponseAdsCertificationsItem's nullable fields (required or optional) to their field bits.
+var updatePreferencesResponseAdsCertificationsItemNullableFields = map[string]*big.Int{
+	"business_name": updatePreferencesResponseAdsCertificationsItemFieldBusinessName,
+	"business_type": updatePreferencesResponseAdsCertificationsItemFieldBusinessType,
+	"denial_reason": updatePreferencesResponseAdsCertificationsItemFieldDenialReason,
+	"request_id":    updatePreferencesResponseAdsCertificationsItemFieldRequestID,
+	"url":           updatePreferencesResponseAdsCertificationsItemFieldURL,
+}
+
+type UpdatePreferencesResponseAdsCertificationsItem struct {
+	// Countries every approved application of this type covers, as ISO 3166-1 alpha-2 codes. Ads targeting only these countries are exempt from the category's restrictions.
+	ApprovedCountries []string `json:"approved_countries" url:"approved_countries"`
+	// The business name on the latest application.
+	BusinessName *string `json:"business_name,omitempty" url:"business_name,omitempty"`
+	// The kind of business on the latest application. `null` until the account applies.
+	BusinessType *UpdatePreferencesResponseAdsCertificationsItemBusinessType `json:"business_type,omitempty" url:"business_type,omitempty"`
+	// The certification this entry describes.
+	CertificationType UpdatePreferencesResponseAdsCertificationsItemCertificationType `json:"certification_type" url:"certification_type"`
+	// Countries the latest application covers, as ISO 3166-1 alpha-2 codes.
+	Countries []string `json:"countries" url:"countries"`
+	// Why the latest application was denied. `null` unless `status` is `denied`.
+	DenialReason *string `json:"denial_reason,omitempty" url:"denial_reason,omitempty"`
+	// The latest application's request ID, prefixed `inrq_`. `null` until the account applies.
+	RequestID *string `json:"request_id,omitempty" url:"request_id,omitempty"`
+	// `not_started` until the account applies; `pending_information` while an application waits for answers; `in_review` once submitted; then `approved` or `denied`.
+	Status UpdatePreferencesResponseAdsCertificationsItemStatus `json:"status" url:"status"`
+	// The website on the latest application.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetApprovedCountries() []string {
+	if u == nil {
+		return nil
+	}
+	return u.ApprovedCountries
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetBusinessName() *string {
+	if u == nil {
+		return nil
+	}
+	return u.BusinessName
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetBusinessType() *UpdatePreferencesResponseAdsCertificationsItemBusinessType {
+	if u == nil {
+		return nil
+	}
+	return u.BusinessType
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetCertificationType() UpdatePreferencesResponseAdsCertificationsItemCertificationType {
+	if u == nil {
+		return ""
+	}
+	return u.CertificationType
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetCountries() []string {
+	if u == nil {
+		return nil
+	}
+	return u.Countries
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetDenialReason() *string {
+	if u == nil {
+		return nil
+	}
+	return u.DenialReason
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetRequestID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.RequestID
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetStatus() UpdatePreferencesResponseAdsCertificationsItemStatus {
+	if u == nil {
+		return ""
+	}
+	return u.Status
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetURL() *string {
+	if u == nil {
+		return nil
+	}
+	return u.URL
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetApprovedCountries sets the ApprovedCountries field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetApprovedCountries(approvedCountries []string) {
+	u.ApprovedCountries = approvedCountries
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldApprovedCountries)
+}
+
+// SetBusinessName sets the BusinessName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetBusinessName(businessName *string) {
+	u.BusinessName = businessName
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldBusinessName)
+}
+
+// SetBusinessType sets the BusinessType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetBusinessType(businessType *UpdatePreferencesResponseAdsCertificationsItemBusinessType) {
+	u.BusinessType = businessType
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldBusinessType)
+}
+
+// SetCertificationType sets the CertificationType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetCertificationType(certificationType UpdatePreferencesResponseAdsCertificationsItemCertificationType) {
+	u.CertificationType = certificationType
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldCertificationType)
+}
+
+// SetCountries sets the Countries field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetCountries(countries []string) {
+	u.Countries = countries
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldCountries)
+}
+
+// SetDenialReason sets the DenialReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetDenialReason(denialReason *string) {
+	u.DenialReason = denialReason
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldDenialReason)
+}
+
+// SetRequestID sets the RequestID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetRequestID(requestID *string) {
+	u.RequestID = requestID
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldRequestID)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetStatus(status UpdatePreferencesResponseAdsCertificationsItemStatus) {
+	u.Status = status
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldStatus)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseAdsCertificationsItem) SetURL(url *string) {
+	u.URL = url
+	u.require(updatePreferencesResponseAdsCertificationsItemFieldURL)
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePreferencesResponseAdsCertificationsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePreferencesResponseAdsCertificationsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesResponseAdsCertificationsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdatePreferencesResponseAdsCertificationsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePreferencesResponseAdsCertificationsItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// The kind of business on the latest application. `null` until the account applies.
+type UpdatePreferencesResponseAdsCertificationsItemBusinessType string
+
+const (
+	UpdatePreferencesResponseAdsCertificationsItemBusinessTypeOnlinePharmacy             UpdatePreferencesResponseAdsCertificationsItemBusinessType = "online_pharmacy"
+	UpdatePreferencesResponseAdsCertificationsItemBusinessTypePharmaceuticalManufacturer UpdatePreferencesResponseAdsCertificationsItemBusinessType = "pharmaceutical_manufacturer"
+	UpdatePreferencesResponseAdsCertificationsItemBusinessTypeTelehealthProvider         UpdatePreferencesResponseAdsCertificationsItemBusinessType = "telehealth_provider"
+)
+
+func NewUpdatePreferencesResponseAdsCertificationsItemBusinessTypeFromString(s string) (UpdatePreferencesResponseAdsCertificationsItemBusinessType, error) {
+	switch s {
+	case "online_pharmacy":
+		return UpdatePreferencesResponseAdsCertificationsItemBusinessTypeOnlinePharmacy, nil
+	case "pharmaceutical_manufacturer":
+		return UpdatePreferencesResponseAdsCertificationsItemBusinessTypePharmaceuticalManufacturer, nil
+	case "telehealth_provider":
+		return UpdatePreferencesResponseAdsCertificationsItemBusinessTypeTelehealthProvider, nil
+	}
+	var t UpdatePreferencesResponseAdsCertificationsItemBusinessType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesResponseAdsCertificationsItemBusinessType) Ptr() *UpdatePreferencesResponseAdsCertificationsItemBusinessType {
+	return &u
+}
+
+// The certification this entry describes.
+type UpdatePreferencesResponseAdsCertificationsItemCertificationType string
+
+const (
+	UpdatePreferencesResponseAdsCertificationsItemCertificationTypePrescriptionDrugAds UpdatePreferencesResponseAdsCertificationsItemCertificationType = "prescription_drug_ads"
+)
+
+func NewUpdatePreferencesResponseAdsCertificationsItemCertificationTypeFromString(s string) (UpdatePreferencesResponseAdsCertificationsItemCertificationType, error) {
+	switch s {
+	case "prescription_drug_ads":
+		return UpdatePreferencesResponseAdsCertificationsItemCertificationTypePrescriptionDrugAds, nil
+	}
+	var t UpdatePreferencesResponseAdsCertificationsItemCertificationType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesResponseAdsCertificationsItemCertificationType) Ptr() *UpdatePreferencesResponseAdsCertificationsItemCertificationType {
+	return &u
+}
+
+// `not_started` until the account applies; `pending_information` while an application waits for answers; `in_review` once submitted; then `approved` or `denied`.
+type UpdatePreferencesResponseAdsCertificationsItemStatus string
+
+const (
+	UpdatePreferencesResponseAdsCertificationsItemStatusNotStarted         UpdatePreferencesResponseAdsCertificationsItemStatus = "not_started"
+	UpdatePreferencesResponseAdsCertificationsItemStatusPendingInformation UpdatePreferencesResponseAdsCertificationsItemStatus = "pending_information"
+	UpdatePreferencesResponseAdsCertificationsItemStatusInReview           UpdatePreferencesResponseAdsCertificationsItemStatus = "in_review"
+	UpdatePreferencesResponseAdsCertificationsItemStatusApproved           UpdatePreferencesResponseAdsCertificationsItemStatus = "approved"
+	UpdatePreferencesResponseAdsCertificationsItemStatusDenied             UpdatePreferencesResponseAdsCertificationsItemStatus = "denied"
+)
+
+func NewUpdatePreferencesResponseAdsCertificationsItemStatusFromString(s string) (UpdatePreferencesResponseAdsCertificationsItemStatus, error) {
+	switch s {
+	case "not_started":
+		return UpdatePreferencesResponseAdsCertificationsItemStatusNotStarted, nil
+	case "pending_information":
+		return UpdatePreferencesResponseAdsCertificationsItemStatusPendingInformation, nil
+	case "in_review":
+		return UpdatePreferencesResponseAdsCertificationsItemStatusInReview, nil
+	case "approved":
+		return UpdatePreferencesResponseAdsCertificationsItemStatusApproved, nil
+	case "denied":
+		return UpdatePreferencesResponseAdsCertificationsItemStatusDenied, nil
+	}
+	var t UpdatePreferencesResponseAdsCertificationsItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesResponseAdsCertificationsItemStatus) Ptr() *UpdatePreferencesResponseAdsCertificationsItemStatus {
+	return &u
+}
+
 var (
 	updatePreferencesResponseAdsPaymentMethodsFieldBackup  = big.NewInt(1 << 0)
 	updatePreferencesResponseAdsPaymentMethodsFieldPrimary = big.NewInt(1 << 1)
 )
 
+// updatePreferencesResponseAdsPaymentMethodsNullableFields maps the wire names of UpdatePreferencesResponseAdsPaymentMethods's nullable fields (required or optional) to their field bits.
+var updatePreferencesResponseAdsPaymentMethodsNullableFields = map[string]*big.Int{
+	"backup":  updatePreferencesResponseAdsPaymentMethodsFieldBackup,
+	"primary": updatePreferencesResponseAdsPaymentMethodsFieldPrimary,
+}
+
+// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails. `null` until ads billing has been configured.
 type UpdatePreferencesResponseAdsPaymentMethods struct {
 	Backup  *UpdatePreferencesResponseAdsPaymentMethodsBackup  `json:"backup,omitempty" url:"backup,omitempty"`
 	Primary *UpdatePreferencesResponseAdsPaymentMethodsPrimary `json:"primary,omitempty" url:"primary,omitempty"`
@@ -1914,10 +4331,12 @@ func (u *UpdatePreferencesResponseAdsPaymentMethods) GetExtraProperties() map[st
 }
 
 func (u *UpdatePreferencesResponseAdsPaymentMethods) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBackup sets the Backup field and marks it as non-optional;
@@ -1946,6 +4365,13 @@ func (u *UpdatePreferencesResponseAdsPaymentMethods) UnmarshalJSON(data []byte) 
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesResponseAdsPaymentMethodsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1986,6 +4412,16 @@ var (
 	updatePreferencesResponseAdsPaymentMethodsBackupFieldTitle     = big.NewInt(1 << 6)
 	updatePreferencesResponseAdsPaymentMethodsBackupFieldType      = big.NewInt(1 << 7)
 )
+
+// updatePreferencesResponseAdsPaymentMethodsBackupNullableFields maps the wire names of UpdatePreferencesResponseAdsPaymentMethodsBackup's nullable fields (required or optional) to their field bits.
+var updatePreferencesResponseAdsPaymentMethodsBackupNullableFields = map[string]*big.Int{
+	"card_brand": updatePreferencesResponseAdsPaymentMethodsBackupFieldCardBrand,
+	"exp_month":  updatePreferencesResponseAdsPaymentMethodsBackupFieldExpMonth,
+	"exp_year":   updatePreferencesResponseAdsPaymentMethodsBackupFieldExpYear,
+	"icon_url":   updatePreferencesResponseAdsPaymentMethodsBackupFieldIconURL,
+	"last4":      updatePreferencesResponseAdsPaymentMethodsBackupFieldLast4,
+	"title":      updatePreferencesResponseAdsPaymentMethodsBackupFieldTitle,
+}
 
 type UpdatePreferencesResponseAdsPaymentMethodsBackup struct {
 	// Card brand, present for `card` entries.
@@ -2076,10 +4512,12 @@ func (u *UpdatePreferencesResponseAdsPaymentMethodsBackup) GetExtraProperties() 
 }
 
 func (u *UpdatePreferencesResponseAdsPaymentMethodsBackup) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCardBrand sets the CardBrand field and marks it as non-optional;
@@ -2150,6 +4588,13 @@ func (u *UpdatePreferencesResponseAdsPaymentMethodsBackup) UnmarshalJSON(data []
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesResponseAdsPaymentMethodsBackupNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2213,6 +4658,16 @@ var (
 	updatePreferencesResponseAdsPaymentMethodsPrimaryFieldTitle     = big.NewInt(1 << 6)
 	updatePreferencesResponseAdsPaymentMethodsPrimaryFieldType      = big.NewInt(1 << 7)
 )
+
+// updatePreferencesResponseAdsPaymentMethodsPrimaryNullableFields maps the wire names of UpdatePreferencesResponseAdsPaymentMethodsPrimary's nullable fields (required or optional) to their field bits.
+var updatePreferencesResponseAdsPaymentMethodsPrimaryNullableFields = map[string]*big.Int{
+	"card_brand": updatePreferencesResponseAdsPaymentMethodsPrimaryFieldCardBrand,
+	"exp_month":  updatePreferencesResponseAdsPaymentMethodsPrimaryFieldExpMonth,
+	"exp_year":   updatePreferencesResponseAdsPaymentMethodsPrimaryFieldExpYear,
+	"icon_url":   updatePreferencesResponseAdsPaymentMethodsPrimaryFieldIconURL,
+	"last4":      updatePreferencesResponseAdsPaymentMethodsPrimaryFieldLast4,
+	"title":      updatePreferencesResponseAdsPaymentMethodsPrimaryFieldTitle,
+}
 
 type UpdatePreferencesResponseAdsPaymentMethodsPrimary struct {
 	// Card brand, present for `card` entries.
@@ -2303,10 +4758,12 @@ func (u *UpdatePreferencesResponseAdsPaymentMethodsPrimary) GetExtraProperties()
 }
 
 func (u *UpdatePreferencesResponseAdsPaymentMethodsPrimary) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCardBrand sets the CardBrand field and marks it as non-optional;
@@ -2377,6 +4834,13 @@ func (u *UpdatePreferencesResponseAdsPaymentMethodsPrimary) UnmarshalJSON(data [
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesResponseAdsPaymentMethodsPrimaryNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2430,19 +4894,25 @@ func (u UpdatePreferencesResponseAdsPaymentMethodsPrimaryType) Ptr() *UpdatePref
 	return &u
 }
 
-// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel.
 var (
 	updatePreferencesResponseAdsTripleWhaleIntegrationFieldMaskedAPIKey = big.NewInt(1 << 0)
 	updatePreferencesResponseAdsTripleWhaleIntegrationFieldShopDomain   = big.NewInt(1 << 1)
 	updatePreferencesResponseAdsTripleWhaleIntegrationFieldStatus       = big.NewInt(1 << 2)
 )
 
+// updatePreferencesResponseAdsTripleWhaleIntegrationNullableFields maps the wire names of UpdatePreferencesResponseAdsTripleWhaleIntegration's nullable fields (required or optional) to their field bits.
+var updatePreferencesResponseAdsTripleWhaleIntegrationNullableFields = map[string]*big.Int{
+	"masked_api_key": updatePreferencesResponseAdsTripleWhaleIntegrationFieldMaskedAPIKey,
+	"shop_domain":    updatePreferencesResponseAdsTripleWhaleIntegrationFieldShopDomain,
+}
+
+// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, or a custom checkout — by setting `shop_domain`. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
 type UpdatePreferencesResponseAdsTripleWhaleIntegration struct {
 	// The leading characters of the stored Data-In API key, followed by asterisks. The full key is never returned. `null` when no key is stored.
 	MaskedAPIKey *string `json:"masked_api_key,omitempty" url:"masked_api_key,omitempty"`
-	// The connected Shopify store domain spend is reported for, such as `acme.myshopify.com`. `null` when no store is connected.
+	// The shop domain spend is reported for, such as `acme.myshopify.com` or a custom domain for a non-Shopify store. `null` when none is set.
 	ShopDomain *string `json:"shop_domain,omitempty" url:"shop_domain,omitempty"`
-	// Where the integration stands. `requires_shopify_store` means no Shopify store is connected — Triple Whale keys records by Shopify shop, so no spend is reported until one is.
+	// Where the integration stands. `requires_shop_domain` means no shop domain is configured — set `shop_domain` before spend can be reported.
 	Status UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus `json:"status" url:"status"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2481,10 +4951,12 @@ func (u *UpdatePreferencesResponseAdsTripleWhaleIntegration) GetExtraProperties(
 }
 
 func (u *UpdatePreferencesResponseAdsTripleWhaleIntegration) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetMaskedAPIKey sets the MaskedAPIKey field and marks it as non-optional;
@@ -2520,6 +4992,13 @@ func (u *UpdatePreferencesResponseAdsTripleWhaleIntegration) UnmarshalJSON(data 
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesResponseAdsTripleWhaleIntegrationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2550,13 +5029,13 @@ func (u *UpdatePreferencesResponseAdsTripleWhaleIntegration) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Where the integration stands. `requires_shopify_store` means no Shopify store is connected — Triple Whale keys records by Shopify shop, so no spend is reported until one is.
+// Where the integration stands. `requires_shop_domain` means no shop domain is configured — set `shop_domain` before spend can be reported.
 type UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus string
 
 const (
-	UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusConnected            UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus = "connected"
-	UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusNotConnected         UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus = "not_connected"
-	UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusRequiresShopifyStore UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus = "requires_shopify_store"
+	UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusConnected          UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus = "connected"
+	UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusNotConnected       UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus = "not_connected"
+	UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusRequiresShopDomain UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus = "requires_shop_domain"
 )
 
 func NewUpdatePreferencesResponseAdsTripleWhaleIntegrationStatusFromString(s string) (UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus, error) {
@@ -2565,8 +5044,8 @@ func NewUpdatePreferencesResponseAdsTripleWhaleIntegrationStatusFromString(s str
 		return UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusConnected, nil
 	case "not_connected":
 		return UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusNotConnected, nil
-	case "requires_shopify_store":
-		return UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusRequiresShopifyStore, nil
+	case "requires_shop_domain":
+		return UpdatePreferencesResponseAdsTripleWhaleIntegrationStatusRequiresShopDomain, nil
 	}
 	var t UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2577,40 +5056,612 @@ func (u UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus) Ptr() *UpdateP
 }
 
 var (
-	updatePreferencesRequestFieldAccountID                 = big.NewInt(1 << 0)
-	updatePreferencesRequestFieldAdsPaymentMethods         = big.NewInt(1 << 1)
-	updatePreferencesRequestFieldAdsReportingCurrency      = big.NewInt(1 << 2)
-	updatePreferencesRequestFieldAdsSchedulingTimezone     = big.NewInt(1 << 3)
-	updatePreferencesRequestFieldAdsTripleWhaleIntegration = big.NewInt(1 << 4)
-	updatePreferencesRequestFieldCardsAutoTopUp            = big.NewInt(1 << 5)
-	updatePreferencesRequestFieldDisputeFighterEnabled     = big.NewInt(1 << 6)
+	updatePreferencesResponseEconomicIntelligenceOffersItemFieldAutoRenew     = big.NewInt(1 << 0)
+	updatePreferencesResponseEconomicIntelligenceOffersItemFieldDuration      = big.NewInt(1 << 1)
+	updatePreferencesResponseEconomicIntelligenceOffersItemFieldDurationUnit  = big.NewInt(1 << 2)
+	updatePreferencesResponseEconomicIntelligenceOffersItemFieldFeePercentage = big.NewInt(1 << 3)
+	updatePreferencesResponseEconomicIntelligenceOffersItemFieldKey           = big.NewInt(1 << 4)
+	updatePreferencesResponseEconomicIntelligenceOffersItemFieldRecommended   = big.NewInt(1 << 5)
+)
+
+type UpdatePreferencesResponseEconomicIntelligenceOffersItem struct {
+	// Whether this offer renews every period until auto-renew is turned off, rather than ending after one.
+	AutoRenew bool `json:"auto_renew" url:"auto_renew"`
+	// What period of time Economic Intelligence stays on. For an auto-renew offer, the length of each period it renews for.
+	Duration int `json:"duration" url:"duration"`
+	// The unit of time the duration is in (hours or days)
+	DurationUnit UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit `json:"duration_unit" url:"duration_unit"`
+	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%.
+	FeePercentage float64 `json:"fee_percentage" url:"fee_percentage"`
+	// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on.
+	Key UpdatePreferencesResponseEconomicIntelligenceOffersItemKey `json:"key" url:"key"`
+	// Whether Whop recommends this offer. At most one offer is recommended.
+	Recommended bool `json:"recommended" url:"recommended"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetAutoRenew() bool {
+	if u == nil {
+		return false
+	}
+	return u.AutoRenew
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetDuration() int {
+	if u == nil {
+		return 0
+	}
+	return u.Duration
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetDurationUnit() UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit {
+	if u == nil {
+		return ""
+	}
+	return u.DurationUnit
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetFeePercentage() float64 {
+	if u == nil {
+		return 0
+	}
+	return u.FeePercentage
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetKey() UpdatePreferencesResponseEconomicIntelligenceOffersItemKey {
+	if u == nil {
+		return ""
+	}
+	return u.Key
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetRecommended() bool {
+	if u == nil {
+		return false
+	}
+	return u.Recommended
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetAutoRenew sets the AutoRenew field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) SetAutoRenew(autoRenew bool) {
+	u.AutoRenew = autoRenew
+	u.require(updatePreferencesResponseEconomicIntelligenceOffersItemFieldAutoRenew)
+}
+
+// SetDuration sets the Duration field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) SetDuration(duration int) {
+	u.Duration = duration
+	u.require(updatePreferencesResponseEconomicIntelligenceOffersItemFieldDuration)
+}
+
+// SetDurationUnit sets the DurationUnit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) SetDurationUnit(durationUnit UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit) {
+	u.DurationUnit = durationUnit
+	u.require(updatePreferencesResponseEconomicIntelligenceOffersItemFieldDurationUnit)
+}
+
+// SetFeePercentage sets the FeePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) SetFeePercentage(feePercentage float64) {
+	u.FeePercentage = feePercentage
+	u.require(updatePreferencesResponseEconomicIntelligenceOffersItemFieldFeePercentage)
+}
+
+// SetKey sets the Key field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) SetKey(key UpdatePreferencesResponseEconomicIntelligenceOffersItemKey) {
+	u.Key = key
+	u.require(updatePreferencesResponseEconomicIntelligenceOffersItemFieldKey)
+}
+
+// SetRecommended sets the Recommended field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) SetRecommended(recommended bool) {
+	u.Recommended = recommended
+	u.require(updatePreferencesResponseEconomicIntelligenceOffersItemFieldRecommended)
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePreferencesResponseEconomicIntelligenceOffersItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePreferencesResponseEconomicIntelligenceOffersItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) MarshalJSON() ([]byte, error) {
+	type embed UpdatePreferencesResponseEconomicIntelligenceOffersItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligenceOffersItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// The unit of time the duration is in (hours or days)
+type UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit string
+
+const (
+	UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnitHours UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit = "hours"
+	UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnitDays  UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit = "days"
+)
+
+func NewUpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnitFromString(s string) (UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit, error) {
+	switch s {
+	case "hours":
+		return UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnitHours, nil
+	case "days":
+		return UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnitDays, nil
+	}
+	var t UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit) Ptr() *UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit {
+	return &u
+}
+
+// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on.
+type UpdatePreferencesResponseEconomicIntelligenceOffersItemKey string
+
+const (
+	UpdatePreferencesResponseEconomicIntelligenceOffersItemKeyWeekly    UpdatePreferencesResponseEconomicIntelligenceOffersItemKey = "weekly"
+	UpdatePreferencesResponseEconomicIntelligenceOffersItemKeySevenDays UpdatePreferencesResponseEconomicIntelligenceOffersItemKey = "7_days"
+	UpdatePreferencesResponseEconomicIntelligenceOffersItemKeyOneDay    UpdatePreferencesResponseEconomicIntelligenceOffersItemKey = "1_day"
+	UpdatePreferencesResponseEconomicIntelligenceOffersItemKeyOneHour   UpdatePreferencesResponseEconomicIntelligenceOffersItemKey = "1_hour"
+)
+
+func NewUpdatePreferencesResponseEconomicIntelligenceOffersItemKeyFromString(s string) (UpdatePreferencesResponseEconomicIntelligenceOffersItemKey, error) {
+	switch s {
+	case "weekly":
+		return UpdatePreferencesResponseEconomicIntelligenceOffersItemKeyWeekly, nil
+	case "7_days":
+		return UpdatePreferencesResponseEconomicIntelligenceOffersItemKeySevenDays, nil
+	case "1_day":
+		return UpdatePreferencesResponseEconomicIntelligenceOffersItemKeyOneDay, nil
+	case "1_hour":
+		return UpdatePreferencesResponseEconomicIntelligenceOffersItemKeyOneHour, nil
+	}
+	var t UpdatePreferencesResponseEconomicIntelligenceOffersItemKey
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesResponseEconomicIntelligenceOffersItemKey) Ptr() *UpdatePreferencesResponseEconomicIntelligenceOffersItemKey {
+	return &u
+}
+
+var (
+	updatePreferencesResponseEconomicIntelligencePreviousPeriodFieldEndedAt       = big.NewInt(1 << 0)
+	updatePreferencesResponseEconomicIntelligencePreviousPeriodFieldFeePercentage = big.NewInt(1 << 1)
+)
+
+// The account's last Economic Intelligence period, once it has ended. `null` while Economic Intelligence is on, or when it has never been on.
+type UpdatePreferencesResponseEconomicIntelligencePreviousPeriod struct {
+	// When the period ended, as an ISO 8601 timestamp.
+	EndedAt string `json:"ended_at" url:"ended_at"`
+	// Percentage of volume charged during the period, such as `3` for 3%.
+	FeePercentage float64 `json:"fee_percentage" url:"fee_percentage"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligencePreviousPeriod) GetEndedAt() string {
+	if u == nil {
+		return ""
+	}
+	return u.EndedAt
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligencePreviousPeriod) GetFeePercentage() float64 {
+	if u == nil {
+		return 0
+	}
+	return u.FeePercentage
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligencePreviousPeriod) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligencePreviousPeriod) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetEndedAt sets the EndedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseEconomicIntelligencePreviousPeriod) SetEndedAt(endedAt string) {
+	u.EndedAt = endedAt
+	u.require(updatePreferencesResponseEconomicIntelligencePreviousPeriodFieldEndedAt)
+}
+
+// SetFeePercentage sets the FeePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseEconomicIntelligencePreviousPeriod) SetFeePercentage(feePercentage float64) {
+	u.FeePercentage = feePercentage
+	u.require(updatePreferencesResponseEconomicIntelligencePreviousPeriodFieldFeePercentage)
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligencePreviousPeriod) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePreferencesResponseEconomicIntelligencePreviousPeriod
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePreferencesResponseEconomicIntelligencePreviousPeriod(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligencePreviousPeriod) MarshalJSON() ([]byte, error) {
+	type embed UpdatePreferencesResponseEconomicIntelligencePreviousPeriod
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePreferencesResponseEconomicIntelligencePreviousPeriod) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updatePreferencesResponseFeedbackOptionsItemFieldCategory = big.NewInt(1 << 0)
+	updatePreferencesResponseFeedbackOptionsItemFieldID       = big.NewInt(1 << 1)
+	updatePreferencesResponseFeedbackOptionsItemFieldLabel    = big.NewInt(1 << 2)
+)
+
+type UpdatePreferencesResponseFeedbackOptionsItem struct {
+	// The category saved as the membership's `cancel_option` when a member picks this option.
+	Category UpdatePreferencesResponseFeedbackOptionsItemCategory `json:"category" url:"category"`
+	// Feedback option ID, prefixed `fo_`. Pass it as `feedback_option_id` when canceling a membership, or back in `feedback_options` to keep the option when changing the list.
+	ID string `json:"id" url:"id"`
+	// The cancel reason as members see it. Up to 100 characters.
+	Label string `json:"label" url:"label"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) GetCategory() UpdatePreferencesResponseFeedbackOptionsItemCategory {
+	if u == nil {
+		return ""
+	}
+	return u.Category
+}
+
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) GetID() string {
+	if u == nil {
+		return ""
+	}
+	return u.ID
+}
+
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) GetLabel() string {
+	if u == nil {
+		return ""
+	}
+	return u.Label
+}
+
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetCategory sets the Category field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) SetCategory(category UpdatePreferencesResponseFeedbackOptionsItemCategory) {
+	u.Category = category
+	u.require(updatePreferencesResponseFeedbackOptionsItemFieldCategory)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) SetID(id string) {
+	u.ID = id
+	u.require(updatePreferencesResponseFeedbackOptionsItemFieldID)
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) SetLabel(label string) {
+	u.Label = label
+	u.require(updatePreferencesResponseFeedbackOptionsItemFieldLabel)
+}
+
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePreferencesResponseFeedbackOptionsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePreferencesResponseFeedbackOptionsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdatePreferencesResponseFeedbackOptionsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePreferencesResponseFeedbackOptionsItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// The category saved as the membership's `cancel_option` when a member picks this option.
+type UpdatePreferencesResponseFeedbackOptionsItemCategory string
+
+const (
+	UpdatePreferencesResponseFeedbackOptionsItemCategoryTooExpensive    UpdatePreferencesResponseFeedbackOptionsItemCategory = "too_expensive"
+	UpdatePreferencesResponseFeedbackOptionsItemCategorySwitching       UpdatePreferencesResponseFeedbackOptionsItemCategory = "switching"
+	UpdatePreferencesResponseFeedbackOptionsItemCategoryMissingFeatures UpdatePreferencesResponseFeedbackOptionsItemCategory = "missing_features"
+	UpdatePreferencesResponseFeedbackOptionsItemCategoryTechnicalIssues UpdatePreferencesResponseFeedbackOptionsItemCategory = "technical_issues"
+	UpdatePreferencesResponseFeedbackOptionsItemCategoryBadExperience   UpdatePreferencesResponseFeedbackOptionsItemCategory = "bad_experience"
+	UpdatePreferencesResponseFeedbackOptionsItemCategoryUnused          UpdatePreferencesResponseFeedbackOptionsItemCategory = "unused"
+	UpdatePreferencesResponseFeedbackOptionsItemCategoryOther           UpdatePreferencesResponseFeedbackOptionsItemCategory = "other"
+)
+
+func NewUpdatePreferencesResponseFeedbackOptionsItemCategoryFromString(s string) (UpdatePreferencesResponseFeedbackOptionsItemCategory, error) {
+	switch s {
+	case "too_expensive":
+		return UpdatePreferencesResponseFeedbackOptionsItemCategoryTooExpensive, nil
+	case "switching":
+		return UpdatePreferencesResponseFeedbackOptionsItemCategorySwitching, nil
+	case "missing_features":
+		return UpdatePreferencesResponseFeedbackOptionsItemCategoryMissingFeatures, nil
+	case "technical_issues":
+		return UpdatePreferencesResponseFeedbackOptionsItemCategoryTechnicalIssues, nil
+	case "bad_experience":
+		return UpdatePreferencesResponseFeedbackOptionsItemCategoryBadExperience, nil
+	case "unused":
+		return UpdatePreferencesResponseFeedbackOptionsItemCategoryUnused, nil
+	case "other":
+		return UpdatePreferencesResponseFeedbackOptionsItemCategoryOther, nil
+	}
+	var t UpdatePreferencesResponseFeedbackOptionsItemCategory
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesResponseFeedbackOptionsItemCategory) Ptr() *UpdatePreferencesResponseFeedbackOptionsItemCategory {
+	return &u
+}
+
+// Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
+type UpdatePreferencesResponsePreferredSettlementCurrency string
+
+const (
+	UpdatePreferencesResponsePreferredSettlementCurrencyUsd UpdatePreferencesResponsePreferredSettlementCurrency = "usd"
+	UpdatePreferencesResponsePreferredSettlementCurrencyEur UpdatePreferencesResponsePreferredSettlementCurrency = "eur"
+	UpdatePreferencesResponsePreferredSettlementCurrencyGbp UpdatePreferencesResponsePreferredSettlementCurrency = "gbp"
+	UpdatePreferencesResponsePreferredSettlementCurrencyCad UpdatePreferencesResponsePreferredSettlementCurrency = "cad"
+	UpdatePreferencesResponsePreferredSettlementCurrencyAud UpdatePreferencesResponsePreferredSettlementCurrency = "aud"
+)
+
+func NewUpdatePreferencesResponsePreferredSettlementCurrencyFromString(s string) (UpdatePreferencesResponsePreferredSettlementCurrency, error) {
+	switch s {
+	case "usd":
+		return UpdatePreferencesResponsePreferredSettlementCurrencyUsd, nil
+	case "eur":
+		return UpdatePreferencesResponsePreferredSettlementCurrencyEur, nil
+	case "gbp":
+		return UpdatePreferencesResponsePreferredSettlementCurrencyGbp, nil
+	case "cad":
+		return UpdatePreferencesResponsePreferredSettlementCurrencyCad, nil
+	case "aud":
+		return UpdatePreferencesResponsePreferredSettlementCurrencyAud, nil
+	}
+	var t UpdatePreferencesResponsePreferredSettlementCurrency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesResponsePreferredSettlementCurrency) Ptr() *UpdatePreferencesResponsePreferredSettlementCurrency {
+	return &u
+}
+
+// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
+type UpdatePreferencesResponseSubscriptionFailureBehavior string
+
+const (
+	UpdatePreferencesResponseSubscriptionFailureBehaviorCancel UpdatePreferencesResponseSubscriptionFailureBehavior = "cancel"
+	UpdatePreferencesResponseSubscriptionFailureBehaviorNone   UpdatePreferencesResponseSubscriptionFailureBehavior = "none"
+)
+
+func NewUpdatePreferencesResponseSubscriptionFailureBehaviorFromString(s string) (UpdatePreferencesResponseSubscriptionFailureBehavior, error) {
+	switch s {
+	case "cancel":
+		return UpdatePreferencesResponseSubscriptionFailureBehaviorCancel, nil
+	case "none":
+		return UpdatePreferencesResponseSubscriptionFailureBehaviorNone, nil
+	}
+	var t UpdatePreferencesResponseSubscriptionFailureBehavior
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesResponseSubscriptionFailureBehavior) Ptr() *UpdatePreferencesResponseSubscriptionFailureBehavior {
+	return &u
+}
+
+var (
+	updatePreferencesRequestFieldAccountID                              = big.NewInt(1 << 0)
+	updatePreferencesRequestFieldAdsCertifications                      = big.NewInt(1 << 1)
+	updatePreferencesRequestFieldAdsPaymentMethods                      = big.NewInt(1 << 2)
+	updatePreferencesRequestFieldAdsReportingCurrency                   = big.NewInt(1 << 3)
+	updatePreferencesRequestFieldAdsSchedulingTimezone                  = big.NewInt(1 << 4)
+	updatePreferencesRequestFieldAdsTripleWhaleIntegration              = big.NewInt(1 << 5)
+	updatePreferencesRequestFieldCardsAutoTopUp                         = big.NewInt(1 << 6)
+	updatePreferencesRequestFieldCardsNotifications                     = big.NewInt(1 << 7)
+	updatePreferencesRequestFieldCoversConnectedAccountNegativeBalances = big.NewInt(1 << 8)
+	updatePreferencesRequestFieldCustomerTracking                       = big.NewInt(1 << 9)
+	updatePreferencesRequestFieldDisputeFighterEnabled                  = big.NewInt(1 << 10)
+	updatePreferencesRequestFieldEconomicIntelligenceAutoRenew          = big.NewInt(1 << 11)
+	updatePreferencesRequestFieldEconomicIntelligenceDurationKey        = big.NewInt(1 << 12)
+	updatePreferencesRequestFieldFeedbackOptions                        = big.NewInt(1 << 13)
+	updatePreferencesRequestFieldPreferredSettlementCurrency            = big.NewInt(1 << 14)
+	updatePreferencesRequestFieldSubscriptionFailureBehavior            = big.NewInt(1 << 15)
 )
 
 type UpdatePreferencesRequest struct {
 	// Account ID, prefixed `biz_`.
 	AccountID string `json:"-" url:"-"`
-	// How the account pays for Whop Ads spend. `primary` is charged first; `backup` covers the charge when the primary fails.
+	// Opens an advertising certification application. Keyed by certification type (`prescription_drug_ads`); set the entry's `status` to `pending_information` to start, then answer the requested fields via `PATCH /verifications/{id}`. Only one application per type can be open at a time; every other status is set by Whop's review. Requires the `ad_campaign:create` scope on your API key.
+	AdsCertifications map[string]*UpdatePreferencesRequestAdsCertificationsValue `json:"ads_certifications,omitempty" url:"-"`
+	// How the account pays for Whop Ads spend. Requires `primary`; `backup` is optional and covers the charge when the primary fails. Requires the `ad_campaign:create` scope on your API key. Configuring a `card` requires a user token; account API keys can configure only `platform_balance` sources.
 	AdsPaymentMethods *UpdatePreferencesRequestAdsPaymentMethods `json:"ads_payment_methods,omitempty" url:"-"`
-	// Lowercase ISO currency code, such as `usd` or `eur`, used to display ad spend and stats. Defaults to `usd`.
+	// Lowercase ISO currency code, such as `usd` or `eur`, used to display ad spend and stats. Defaults to `usd`. Requires the `ad_campaign:create` scope on your API key.
 	AdsReportingCurrency *string `json:"ads_reporting_currency,omitempty" url:"-"`
-	// IANA timezone (e.g. `America/New_York`) used to interpret campaign start/end times and to bucket reports. Cannot be cleared once set — pass a new value to change it.
+	// IANA timezone (e.g. `America/New_York`) used to interpret campaign start/end times and to bucket reports. Cannot be cleared once set — pass a new value to change it. Requires the `ad_campaign:create` scope on your API key.
 	AdsSchedulingTimezone *string `json:"ads_scheduling_timezone,omitempty" url:"-"`
-	// Connects or disconnects the Triple Whale integration. Requires a connected Shopify store, since Triple Whale keys spend records by Shopify shop.
+	// Connects or disconnects the Triple Whale integration, or changes the shop it reports to. Requires the `ad_campaign:create` scope on your API key. Connecting requires a `shop_domain` to report spend against.
 	AdsTripleWhaleIntegration *UpdatePreferencesRequestAdsTripleWhaleIntegration `json:"ads_triple_whale_integration,omitempty" url:"-"`
-	// Whether incoming funds are automatically moved to the account's cards balance. Requires a cards balance on the account.
+	// Whether incoming funds are automatically moved to the account's cards balance. Requires a cards balance on the account and the `payout:account:update` scope on your API key.
 	CardsAutoTopUp *bool `json:"cards_auto_top_up,omitempty" url:"-"`
-	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
+	// Whether Whop Card notifications reach this account's team. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected. Requires a cards balance on the account and the `payout:account:update` scope on your API key.
+	CardsNotifications *bool `json:"cards_notifications,omitempty" url:"-"`
+	// Whether this account covers its connected accounts' negative balances. When a connected account's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Only accounts with connected accounts can set it. Requires the `payout:account:update` scope on your API key.
+	CoversConnectedAccountNegativeBalances *bool `json:"covers_connected_account_negative_balances,omitempty" url:"-"`
+	// Customer tracking settings for the hosted tracking page and Element, replaced as a whole: fields left out are saved as unset. Pass null to clear them, which turns tracking off. Tracking is off unless `enabled` is `true`. Requires the `company:manage_checkout` scope on your API key.
+	CustomerTracking *UpdatePreferencesRequestCustomerTracking `json:"customer_tracking,omitempty" url:"-"`
+	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins. Requires the `payment:dispute` scope on your API key.
 	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
+	// `false` stops renewing: Economic Intelligence stays on until the end of the current week, and stopping before the first renewal charges the rest of that week at the `7_days` offer's fee. `true` keeps it renewing again before then, or turns it on like the `weekly` offer. Can't be combined with `economic_intelligence_duration_key`. Requires the `company:update` scope on your API key.
+	EconomicIntelligenceAutoRenew *bool `json:"economic_intelligence_auto_renew,omitempty" url:"-"`
+	// Turns on Economic Intelligence with the offer that has this `key` in `economic_intelligence_offers`, at that offer's fee. A committed duration can't be changed or turned off until `economic_intelligence_ends_at`, except to upgrade to `weekly`, which switches to auto-renew right away. Requires the `company:update` scope on your API key.
+	EconomicIntelligenceDurationKey *UpdatePreferencesRequestEconomicIntelligenceDurationKey `json:"economic_intelligence_duration_key,omitempty" url:"-"`
+	// Replaces the account's own cancel reasons, shown to members in this order when they cancel. Pass an option's `id` to keep it, for example when renaming it; options without an `id` are added, and options left out are removed. Pass an empty array to go back to Whop's default reasons. Members who already picked an option keep the label they saw. Requires the `company:manage_checkout` scope on your API key.
+	FeedbackOptions []*UpdatePreferencesRequestFeedbackOptionsItem `json:"feedback_options,omitempty" url:"-"`
+	// Settle every new sale into this currency, regardless of the plan's currency or what the buyer paid in; sales converted this way carry an additional 0.5% FX fee. Pass `null` to go back to settling each sale in its plan's currency. Changing it never converts money already in your balances, and it can change at most once a day (see `preferred_settlement_currency_changeable_at`). Requires the `payout:account:update` scope on your API key.
+	PreferredSettlementCurrency *UpdatePreferencesRequestPreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"-"`
+	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting. Requires company:manage_checkout permission.
+	SubscriptionFailureBehavior *UpdatePreferencesRequestSubscriptionFailureBehavior `json:"subscription_failure_behavior,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (u *UpdatePreferencesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -2618,6 +5669,13 @@ func (u *UpdatePreferencesRequest) require(field *big.Int) {
 func (u *UpdatePreferencesRequest) SetAccountID(accountID string) {
 	u.AccountID = accountID
 	u.require(updatePreferencesRequestFieldAccountID)
+}
+
+// SetAdsCertifications sets the AdsCertifications field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetAdsCertifications(adsCertifications map[string]*UpdatePreferencesRequestAdsCertificationsValue) {
+	u.AdsCertifications = adsCertifications
+	u.require(updatePreferencesRequestFieldAdsCertifications)
 }
 
 // SetAdsPaymentMethods sets the AdsPaymentMethods field and marks it as non-optional;
@@ -2655,11 +5713,67 @@ func (u *UpdatePreferencesRequest) SetCardsAutoTopUp(cardsAutoTopUp *bool) {
 	u.require(updatePreferencesRequestFieldCardsAutoTopUp)
 }
 
+// SetCardsNotifications sets the CardsNotifications field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetCardsNotifications(cardsNotifications *bool) {
+	u.CardsNotifications = cardsNotifications
+	u.require(updatePreferencesRequestFieldCardsNotifications)
+}
+
+// SetCoversConnectedAccountNegativeBalances sets the CoversConnectedAccountNegativeBalances field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetCoversConnectedAccountNegativeBalances(coversConnectedAccountNegativeBalances *bool) {
+	u.CoversConnectedAccountNegativeBalances = coversConnectedAccountNegativeBalances
+	u.require(updatePreferencesRequestFieldCoversConnectedAccountNegativeBalances)
+}
+
+// SetCustomerTracking sets the CustomerTracking field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetCustomerTracking(customerTracking *UpdatePreferencesRequestCustomerTracking) {
+	u.CustomerTracking = customerTracking
+	u.require(updatePreferencesRequestFieldCustomerTracking)
+}
+
 // SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdatePreferencesRequest) SetDisputeFighterEnabled(disputeFighterEnabled *bool) {
 	u.DisputeFighterEnabled = disputeFighterEnabled
 	u.require(updatePreferencesRequestFieldDisputeFighterEnabled)
+}
+
+// SetEconomicIntelligenceAutoRenew sets the EconomicIntelligenceAutoRenew field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetEconomicIntelligenceAutoRenew(economicIntelligenceAutoRenew *bool) {
+	u.EconomicIntelligenceAutoRenew = economicIntelligenceAutoRenew
+	u.require(updatePreferencesRequestFieldEconomicIntelligenceAutoRenew)
+}
+
+// SetEconomicIntelligenceDurationKey sets the EconomicIntelligenceDurationKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetEconomicIntelligenceDurationKey(economicIntelligenceDurationKey *UpdatePreferencesRequestEconomicIntelligenceDurationKey) {
+	u.EconomicIntelligenceDurationKey = economicIntelligenceDurationKey
+	u.require(updatePreferencesRequestFieldEconomicIntelligenceDurationKey)
+}
+
+// SetFeedbackOptions sets the FeedbackOptions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetFeedbackOptions(feedbackOptions []*UpdatePreferencesRequestFeedbackOptionsItem) {
+	u.FeedbackOptions = feedbackOptions
+	u.require(updatePreferencesRequestFieldFeedbackOptions)
+}
+
+// SetPreferredSettlementCurrency sets the PreferredSettlementCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetPreferredSettlementCurrency(preferredSettlementCurrency *UpdatePreferencesRequestPreferredSettlementCurrency) {
+	u.PreferredSettlementCurrency = preferredSettlementCurrency
+	u.require(updatePreferencesRequestFieldPreferredSettlementCurrency)
+}
+
+// SetSubscriptionFailureBehavior sets the SubscriptionFailureBehavior field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetSubscriptionFailureBehavior(subscriptionFailureBehavior *UpdatePreferencesRequestSubscriptionFailureBehavior) {
+	u.SubscriptionFailureBehavior = subscriptionFailureBehavior
+	u.require(updatePreferencesRequestFieldSubscriptionFailureBehavior)
 }
 
 func (u *UpdatePreferencesRequest) UnmarshalJSON(data []byte) error {

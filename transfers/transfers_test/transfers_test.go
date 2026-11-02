@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -112,9 +112,13 @@ func TestTransfersCreateWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.CreateTransfersRequest{
-		Amount:   25,
-		OriginID: "biz_xxxxxxxxxxxxxx",
+	request := &whopsdk.CreateTransfersRequestBody{
+		Balance: &whopsdk.CreateTransfersRequestBodyBalance{
+			Amount:        25,
+			Currency:      "usd",
+			DestinationID: "user_xxxxxxxxxxxxxx",
+			OriginID:      "biz_xxxxxxxxxxxxxx",
+		},
 	}
 	_, invocationErr := client.Transfers.Create(
 		context.TODO(),

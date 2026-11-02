@@ -174,6 +174,14 @@ func TestSettersCreateAudiencesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSourceType", func(t *testing.T) {
+		obj := &CreateAudiencesRequest{}
+		var fernTestValueSourceType *CreateAudiencesRequestSourceType
+		obj.SetSourceType(fernTestValueSourceType)
+		assert.Equal(t, fernTestValueSourceType, obj.SourceType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestSettersMarkExplicitCreateAudiencesRequest(t *testing.T) {
@@ -464,6 +472,37 @@ func TestSettersMarkExplicitCreateAudiencesRequest(t *testing.T) {
 
 		// Act
 		obj.SetSourceAudienceID(fernTestValueSourceAudienceID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSourceType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAudiencesRequest{}
+		var fernTestValueSourceType *CreateAudiencesRequestSourceType
+
+		// Act
+		obj.SetSourceType(fernTestValueSourceType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3836,6 +3875,143 @@ func TestJSONMarshalingListAudiencesResponsePageInfo(t *testing.T) {
 	})
 }
 
+func TestRequiredNullableRoundTripAudience(t *testing.T) {
+	requiredNullableKeys := []string{
+		"error_message",
+		"filters",
+		"last_refreshed_at",
+		"lookalike_ratio",
+		"lookalike_starting_ratio",
+		"source_audience_id",
+	}
+	marshalToMap := func(t *testing.T, obj *Audience) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj Audience
+		require.NoError(t, json.Unmarshal([]byte(`{"error_message":null,"filters":null,"last_refreshed_at":null,"lookalike_ratio":null,"lookalike_starting_ratio":null,"source_audience_id":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj Audience
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &Audience{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripAudienceMatchRate(t *testing.T) {
+	requiredNullableKeys := []string{
+		"lower_bound",
+		"status",
+		"upper_bound",
+	}
+	marshalToMap := func(t *testing.T, obj *AudienceMatchRate) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj AudienceMatchRate
+		require.NoError(t, json.Unmarshal([]byte(`{"lower_bound":null,"status":null,"upper_bound":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj AudienceMatchRate
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &AudienceMatchRate{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripListAudiencesResponsePageInfo(t *testing.T) {
+	requiredNullableKeys := []string{
+		"end_cursor",
+		"start_cursor",
+	}
+	marshalToMap := func(t *testing.T, obj *ListAudiencesResponsePageInfo) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj ListAudiencesResponsePageInfo
+		require.NoError(t, json.Unmarshal([]byte(`{"end_cursor":null,"start_cursor":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj ListAudiencesResponsePageInfo
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &ListAudiencesResponsePageInfo{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestStringAudience(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -4050,6 +4226,13 @@ func TestEnumAudienceSourceType(t *testing.T) {
 		assert.Equal(t, AudienceSourceType("people_filter"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_engagement", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAudienceSourceTypeFromString("engagement")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AudienceSourceType("engagement"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewAudienceSourceTypeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -4150,6 +4333,35 @@ func TestEnumCreateAudiencesRequestAudienceType(t *testing.T) {
 	})
 }
 
+func TestEnumCreateAudiencesRequestSourceType(t *testing.T) {
+	t.Run("NewFromString_csv_upload", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAudiencesRequestSourceTypeFromString("csv_upload")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAudiencesRequestSourceType("csv_upload"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_people_filter", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAudiencesRequestSourceTypeFromString("people_filter")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAudiencesRequestSourceType("people_filter"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateAudiencesRequestSourceTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateAudiencesRequestSourceTypeFromString("csv_upload")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumListAudiencesRequestAudienceType(t *testing.T) {
 	t.Run("NewFromString_custom", func(t *testing.T) {
 		t.Parallel()
@@ -4192,6 +4404,13 @@ func TestEnumListAudiencesRequestSourceType(t *testing.T) {
 		val, err := NewListAudiencesRequestSourceTypeFromString("people_filter")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListAudiencesRequestSourceType("people_filter"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_engagement", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListAudiencesRequestSourceTypeFromString("engagement")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListAudiencesRequestSourceType("engagement"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

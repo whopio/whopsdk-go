@@ -5,23 +5,26 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
 
 var (
-	createAiChatsRequestFieldCurrentCompanyID   = big.NewInt(1 << 0)
-	createAiChatsRequestFieldMessageAttachments = big.NewInt(1 << 1)
-	createAiChatsRequestFieldMessageSource      = big.NewInt(1 << 2)
-	createAiChatsRequestFieldMessageText        = big.NewInt(1 << 3)
-	createAiChatsRequestFieldSuggestionType     = big.NewInt(1 << 4)
-	createAiChatsRequestFieldTitle              = big.NewInt(1 << 5)
+	createAiChatsRequestFieldAgentIdentifier    = big.NewInt(1 << 0)
+	createAiChatsRequestFieldCurrentAccountID   = big.NewInt(1 << 1)
+	createAiChatsRequestFieldMessageAttachments = big.NewInt(1 << 2)
+	createAiChatsRequestFieldMessageSource      = big.NewInt(1 << 3)
+	createAiChatsRequestFieldMessageText        = big.NewInt(1 << 4)
+	createAiChatsRequestFieldSuggestionType     = big.NewInt(1 << 5)
+	createAiChatsRequestFieldTitle              = big.NewInt(1 << 6)
 )
 
 type CreateAiChatsRequest struct {
-	// The unique identifier of the company to set as context for the AI chat (e.g., "biz_XXXXX").
-	CurrentCompanyID *string `json:"current_company_id,omitempty" url:"-"`
+	// The AI agent that handles the chat. Defaults to `support`.
+	AgentIdentifier *AiChatAgentIdentifiers `json:"agent_identifier,omitempty" url:"-"`
+	// The unique identifier of the account to set as context for the AI chat (e.g., "biz_XXXXX").
+	CurrentAccountID *string `json:"current_account_id,omitempty" url:"-"`
 	// A list of previously uploaded file attachments to include with the first message.
 	MessageAttachments []*CreateAiChatsRequestMessageAttachmentsItem `json:"message_attachments,omitempty" url:"-"`
 	// The source of the message.
@@ -38,17 +41,26 @@ type CreateAiChatsRequest struct {
 }
 
 func (c *CreateAiChatsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
-// SetCurrentCompanyID sets the CurrentCompanyID field and marks it as non-optional;
+// SetAgentIdentifier sets the AgentIdentifier field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAiChatsRequest) SetCurrentCompanyID(currentCompanyID *string) {
-	c.CurrentCompanyID = currentCompanyID
-	c.require(createAiChatsRequestFieldCurrentCompanyID)
+func (c *CreateAiChatsRequest) SetAgentIdentifier(agentIdentifier *AiChatAgentIdentifiers) {
+	c.AgentIdentifier = agentIdentifier
+	c.require(createAiChatsRequestFieldAgentIdentifier)
+}
+
+// SetCurrentAccountID sets the CurrentAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAiChatsRequest) SetCurrentAccountID(currentAccountID *string) {
+	c.CurrentAccountID = currentAccountID
+	c.require(createAiChatsRequestFieldCurrentAccountID)
 }
 
 // SetMessageAttachments sets the MessageAttachments field and marks it as non-optional;
@@ -120,10 +132,12 @@ type DeleteAiChatsRequest struct {
 }
 
 func (d *DeleteAiChatsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -138,7 +152,8 @@ var (
 	listAiChatsRequestFieldBefore          = big.NewInt(1 << 1)
 	listAiChatsRequestFieldFirst           = big.NewInt(1 << 2)
 	listAiChatsRequestFieldLast            = big.NewInt(1 << 3)
-	listAiChatsRequestFieldOnlyActiveCrons = big.NewInt(1 << 4)
+	listAiChatsRequestFieldAgentIdentifier = big.NewInt(1 << 4)
+	listAiChatsRequestFieldOnlyActiveCrons = big.NewInt(1 << 5)
 )
 
 type ListAiChatsRequest struct {
@@ -149,7 +164,8 @@ type ListAiChatsRequest struct {
 	// Returns the first _n_ elements from the list.
 	First *int `json:"-" url:"first,omitempty"`
 	// Returns the last _n_ elements from the list.
-	Last *int `json:"-" url:"last,omitempty"`
+	Last            *int                    `json:"-" url:"last,omitempty"`
+	AgentIdentifier *AiChatAgentIdentifiers `json:"-" url:"agent_identifier,omitempty"`
 	// When true, returns only chats with an active cron schedule
 	OnlyActiveCrons *bool `json:"-" url:"only_active_crons,omitempty"`
 
@@ -158,10 +174,12 @@ type ListAiChatsRequest struct {
 }
 
 func (l *ListAiChatsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -192,6 +210,13 @@ func (l *ListAiChatsRequest) SetLast(last *int) {
 	l.require(listAiChatsRequestFieldLast)
 }
 
+// SetAgentIdentifier sets the AgentIdentifier field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAiChatsRequest) SetAgentIdentifier(agentIdentifier *AiChatAgentIdentifiers) {
+	l.AgentIdentifier = agentIdentifier
+	l.require(listAiChatsRequestFieldAgentIdentifier)
+}
+
 // SetOnlyActiveCrons sets the OnlyActiveCrons field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListAiChatsRequest) SetOnlyActiveCrons(onlyActiveCrons *bool) {
@@ -212,10 +237,12 @@ type RetrieveAiChatsRequest struct {
 }
 
 func (r *RetrieveAiChatsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -225,20 +252,29 @@ func (r *RetrieveAiChatsRequest) SetID(id string) {
 	r.require(retrieveAiChatsRequestFieldID)
 }
 
-// An AI-powered chat conversation belonging to a user, with optional scheduled automation.
 var (
-	aiChatFieldBlendedTokenUsage      = big.NewInt(1 << 0)
-	aiChatFieldCreatedAt              = big.NewInt(1 << 1)
-	aiChatFieldID                     = big.NewInt(1 << 2)
-	aiChatFieldLastMessageAt          = big.NewInt(1 << 3)
-	aiChatFieldMessageCount           = big.NewInt(1 << 4)
-	aiChatFieldNotificationPreference = big.NewInt(1 << 5)
-	aiChatFieldTitle                  = big.NewInt(1 << 6)
-	aiChatFieldUpdatedAt              = big.NewInt(1 << 7)
-	aiChatFieldUser                   = big.NewInt(1 << 8)
+	aiChatFieldAgentIdentifier        = big.NewInt(1 << 0)
+	aiChatFieldBlendedTokenUsage      = big.NewInt(1 << 1)
+	aiChatFieldCreatedAt              = big.NewInt(1 << 2)
+	aiChatFieldID                     = big.NewInt(1 << 3)
+	aiChatFieldLastMessageAt          = big.NewInt(1 << 4)
+	aiChatFieldMessageCount           = big.NewInt(1 << 5)
+	aiChatFieldNotificationPreference = big.NewInt(1 << 6)
+	aiChatFieldTitle                  = big.NewInt(1 << 7)
+	aiChatFieldUpdatedAt              = big.NewInt(1 << 8)
+	aiChatFieldUser                   = big.NewInt(1 << 9)
 )
 
+// aiChatNullableFields maps the wire names of AiChat's nullable fields (required or optional) to their field bits.
+var aiChatNullableFields = map[string]*big.Int{
+	"last_message_at": aiChatFieldLastMessageAt,
+	"title":           aiChatFieldTitle,
+}
+
+// An AI-powered chat conversation belonging to a user, with optional scheduled automation.
 type AiChat struct {
+	// The AI agent that handles this chat. Set when the chat is created and fixed for its lifetime.
+	AgentIdentifier AiChatAgentIdentifiers `json:"agent_identifier" url:"agent_identifier"`
 	// The total number of tokens consumed across all messages in this conversation.
 	BlendedTokenUsage string `json:"blended_token_usage" url:"blended_token_usage"`
 	// The datetime the ai chat was created.
@@ -263,6 +299,13 @@ type AiChat struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AiChat) GetAgentIdentifier() AiChatAgentIdentifiers {
+	if a == nil {
+		return ""
+	}
+	return a.AgentIdentifier
 }
 
 func (a *AiChat) GetBlendedTokenUsage() string {
@@ -336,10 +379,19 @@ func (a *AiChat) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AiChat) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetAgentIdentifier sets the AgentIdentifier field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AiChat) SetAgentIdentifier(agentIdentifier AiChatAgentIdentifiers) {
+	a.AgentIdentifier = agentIdentifier
+	a.require(aiChatFieldAgentIdentifier)
 }
 
 // SetBlendedTokenUsage sets the BlendedTokenUsage field and marks it as non-optional;
@@ -427,6 +479,13 @@ func (a *AiChat) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, aiChatNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -463,20 +522,52 @@ func (a *AiChat) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// An AI-powered chat conversation belonging to a user, with optional scheduled automation.
-var (
-	aiChatListItemFieldBlendedTokenUsage      = big.NewInt(1 << 0)
-	aiChatListItemFieldCreatedAt              = big.NewInt(1 << 1)
-	aiChatListItemFieldID                     = big.NewInt(1 << 2)
-	aiChatListItemFieldLastMessageAt          = big.NewInt(1 << 3)
-	aiChatListItemFieldMessageCount           = big.NewInt(1 << 4)
-	aiChatListItemFieldNotificationPreference = big.NewInt(1 << 5)
-	aiChatListItemFieldTitle                  = big.NewInt(1 << 6)
-	aiChatListItemFieldUpdatedAt              = big.NewInt(1 << 7)
-	aiChatListItemFieldUser                   = big.NewInt(1 << 8)
+// The AI agent that handles an AI chat.
+type AiChatAgentIdentifiers string
+
+const (
+	AiChatAgentIdentifiersGeneral AiChatAgentIdentifiers = "general"
+	AiChatAgentIdentifiersSupport AiChatAgentIdentifiers = "support"
 )
 
+func NewAiChatAgentIdentifiersFromString(s string) (AiChatAgentIdentifiers, error) {
+	switch s {
+	case "general":
+		return AiChatAgentIdentifiersGeneral, nil
+	case "support":
+		return AiChatAgentIdentifiersSupport, nil
+	}
+	var t AiChatAgentIdentifiers
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AiChatAgentIdentifiers) Ptr() *AiChatAgentIdentifiers {
+	return &a
+}
+
+var (
+	aiChatListItemFieldAgentIdentifier        = big.NewInt(1 << 0)
+	aiChatListItemFieldBlendedTokenUsage      = big.NewInt(1 << 1)
+	aiChatListItemFieldCreatedAt              = big.NewInt(1 << 2)
+	aiChatListItemFieldID                     = big.NewInt(1 << 3)
+	aiChatListItemFieldLastMessageAt          = big.NewInt(1 << 4)
+	aiChatListItemFieldMessageCount           = big.NewInt(1 << 5)
+	aiChatListItemFieldNotificationPreference = big.NewInt(1 << 6)
+	aiChatListItemFieldTitle                  = big.NewInt(1 << 7)
+	aiChatListItemFieldUpdatedAt              = big.NewInt(1 << 8)
+	aiChatListItemFieldUser                   = big.NewInt(1 << 9)
+)
+
+// aiChatListItemNullableFields maps the wire names of AiChatListItem's nullable fields (required or optional) to their field bits.
+var aiChatListItemNullableFields = map[string]*big.Int{
+	"last_message_at": aiChatListItemFieldLastMessageAt,
+	"title":           aiChatListItemFieldTitle,
+}
+
+// An AI-powered chat conversation belonging to a user, with optional scheduled automation.
 type AiChatListItem struct {
+	// The AI agent that handles this chat. Set when the chat is created and fixed for its lifetime.
+	AgentIdentifier AiChatAgentIdentifiers `json:"agent_identifier" url:"agent_identifier"`
 	// The total number of tokens consumed across all messages in this conversation.
 	BlendedTokenUsage string `json:"blended_token_usage" url:"blended_token_usage"`
 	// The datetime the ai chat was created.
@@ -501,6 +592,13 @@ type AiChatListItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AiChatListItem) GetAgentIdentifier() AiChatAgentIdentifiers {
+	if a == nil {
+		return ""
+	}
+	return a.AgentIdentifier
 }
 
 func (a *AiChatListItem) GetBlendedTokenUsage() string {
@@ -574,10 +672,19 @@ func (a *AiChatListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AiChatListItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetAgentIdentifier sets the AgentIdentifier field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AiChatListItem) SetAgentIdentifier(agentIdentifier AiChatAgentIdentifiers) {
+	a.AgentIdentifier = agentIdentifier
+	a.require(aiChatListItemFieldAgentIdentifier)
 }
 
 // SetBlendedTokenUsage sets the BlendedTokenUsage field and marks it as non-optional;
@@ -665,6 +772,13 @@ func (a *AiChatListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, aiChatListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -701,11 +815,11 @@ func (a *AiChatListItem) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// The user who owns this AI chat conversation.
 var (
 	aiChatListItemUserFieldID = big.NewInt(1 << 0)
 )
 
+// The user who owns this AI chat conversation.
 type AiChatListItemUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -732,10 +846,12 @@ func (a *AiChatListItemUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AiChatListItemUser) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -836,11 +952,11 @@ func (a AiChatNotificationPreferences) Ptr() *AiChatNotificationPreferences {
 	return &a
 }
 
-// The user who owns this AI chat conversation.
 var (
 	aiChatUserFieldID = big.NewInt(1 << 0)
 )
 
+// The user who owns this AI chat conversation.
 type AiChatUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -867,10 +983,12 @@ func (a *AiChatUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AiChatUser) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -922,11 +1040,11 @@ func (a *AiChatUser) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Input for an attachment
 var (
 	createAiChatsRequestMessageAttachmentsItemFieldID = big.NewInt(1 << 0)
 )
 
+// Input for an attachment
 type CreateAiChatsRequestMessageAttachmentsItem struct {
 	// The ID of an existing file object.
 	ID string `json:"id" url:"id"`
@@ -953,10 +1071,12 @@ func (c *CreateAiChatsRequestMessageAttachmentsItem) GetExtraProperties() map[st
 }
 
 func (c *CreateAiChatsRequestMessageAttachmentsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1008,12 +1128,12 @@ func (c *CreateAiChatsRequestMessageAttachmentsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The connection type for AiChat.
 var (
 	listAiChatsResponseFieldData     = big.NewInt(1 << 0)
 	listAiChatsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for AiChat.
 type ListAiChatsResponse struct {
 	// A list of nodes.
 	Data []*AiChatListItem `json:"data" url:"data"`
@@ -1049,10 +1169,12 @@ func (l *ListAiChatsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAiChatsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1113,7 +1235,7 @@ func (l *ListAiChatsResponse) String() string {
 
 var (
 	updateAiChatsRequestFieldID                     = big.NewInt(1 << 0)
-	updateAiChatsRequestFieldCurrentCompanyID       = big.NewInt(1 << 1)
+	updateAiChatsRequestFieldCurrentAccountID       = big.NewInt(1 << 1)
 	updateAiChatsRequestFieldNotificationPreference = big.NewInt(1 << 2)
 	updateAiChatsRequestFieldTitle                  = big.NewInt(1 << 3)
 )
@@ -1121,8 +1243,8 @@ var (
 type UpdateAiChatsRequest struct {
 	// The unique identifier of the AI chat to update (e.g., "ai_chat_XXXXX").
 	ID string `json:"-" url:"-"`
-	// The unique identifier of the company to set as context for the AI chat (e.g., "biz_XXXXX").
-	CurrentCompanyID *string `json:"current_company_id,omitempty" url:"-"`
+	// The unique identifier of the account to set as context for the AI chat (e.g., "biz_XXXXX").
+	CurrentAccountID *string `json:"current_account_id,omitempty" url:"-"`
 	// The notification preference for the AI chat.
 	NotificationPreference *AiChatNotificationPreferences `json:"notification_preference,omitempty" url:"-"`
 	// The new display title for the AI chat thread (e.g., "Help with billing").
@@ -1133,10 +1255,12 @@ type UpdateAiChatsRequest struct {
 }
 
 func (u *UpdateAiChatsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1146,11 +1270,11 @@ func (u *UpdateAiChatsRequest) SetID(id string) {
 	u.require(updateAiChatsRequestFieldID)
 }
 
-// SetCurrentCompanyID sets the CurrentCompanyID field and marks it as non-optional;
+// SetCurrentAccountID sets the CurrentAccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAiChatsRequest) SetCurrentCompanyID(currentCompanyID *string) {
-	u.CurrentCompanyID = currentCompanyID
-	u.require(updateAiChatsRequestFieldCurrentCompanyID)
+func (u *UpdateAiChatsRequest) SetCurrentAccountID(currentAccountID *string) {
+	u.CurrentAccountID = currentAccountID
+	u.require(updateAiChatsRequestFieldCurrentAccountID)
 }
 
 // SetNotificationPreference sets the NotificationPreference field and marks it as non-optional;

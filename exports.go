@@ -5,7 +5,7 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
@@ -23,7 +23,7 @@ type CreateExportsRequest struct {
 	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// Column keys to include. Empty means all columns for the resource.
 	Columns []string `json:"columns,omitempty" url:"-"`
-	// Resource-specific filters. For native REST resources (`payouts`, `transfers`, `memberships`) these are the resource's own list query params; for dashboard tables they mirror the dashboard table filters.
+	// Resource-specific filters. For native REST resources (`payouts`, `transfers`, `products`) these are the resource's own list query params; for dashboard tables they mirror the dashboard table filters.
 	Filters map[string]any `json:"filters,omitempty" url:"-"`
 	// The resource to export, e.g. `payouts`, `receipts`, or `members`.
 	Resource CreateExportsRequestResource `json:"resource" url:"-"`
@@ -35,10 +35,12 @@ type CreateExportsRequest struct {
 }
 
 func (c *CreateExportsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -128,10 +130,12 @@ type ListExportsRequest struct {
 }
 
 func (l *ListExportsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -196,10 +200,12 @@ type RetrieveExportsRequest struct {
 }
 
 func (r *RetrieveExportsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -220,12 +226,18 @@ var (
 	exportFieldUpdatedAt       = big.NewInt(1 << 7)
 )
 
+// exportNullableFields maps the wire names of Export's nullable fields (required or optional) to their field bits.
+var exportNullableFields = map[string]*big.Int{
+	"download_url":     exportFieldDownloadURL,
+	"progress_percent": exportFieldProgressPercent,
+}
+
 type Export struct {
 	// When the export was requested, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// A short-lived link to download the finished CSV. `null` until `status` is `completed`, and again once the export has expired.
+	// A short-lived link to download the finished file. `null` until `status` is `completed`, and again once the export has expired.
 	DownloadURL *string `json:"download_url,omitempty" url:"download_url,omitempty"`
-	// When the CSV is deleted and the export moves to `expired`, as an ISO 8601 timestamp. Exports are retained for 30 days.
+	// When the file is deleted and the export moves to `expired`, as an ISO 8601 timestamp. Exports are retained for 30 days.
 	ExpiresAt string `json:"expires_at" url:"expires_at"`
 	// Export ID, prefixed `exprt_`.
 	ID string `json:"id" url:"id"`
@@ -233,7 +245,7 @@ type Export struct {
 	ProgressPercent *int `json:"progress_percent,omitempty" url:"progress_percent,omitempty"`
 	// The resource that was exported, e.g. `receipts`, `members`, or `payouts`.
 	Resource ExportResource `json:"resource" url:"resource"`
-	// `pending` or `processing` while the CSV is generated, `completed` when the download is ready, `failed` if it errored, `expired` once the CSV has been deleted.
+	// `pending` or `processing` while the file is generated, `completed` when the download is ready, `failed` if it errored, `expired` once the file has been deleted.
 	Status ExportStatus `json:"status" url:"status"`
 	// When the export last changed, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
@@ -309,10 +321,12 @@ func (e *Export) GetExtraProperties() map[string]interface{} {
 }
 
 func (e *Export) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -383,6 +397,13 @@ func (e *Export) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, exportNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
 	e.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -417,44 +438,45 @@ func (e *Export) String() string {
 type ExportResource string
 
 const (
-	ExportResourceAdCampaigns               ExportResource = "ad_campaigns"
-	ExportResourceAdGroups                  ExportResource = "ad_groups"
-	ExportResourceAds                       ExportResource = "ads"
-	ExportResourceApps                      ExportResource = "apps"
-	ExportResourceAudiences                 ExportResource = "audiences"
-	ExportResourceBounties                  ExportResource = "bounties"
-	ExportResourceBountySubmissions         ExportResource = "bounty_submissions"
-	ExportResourceCardTransactions          ExportResource = "card_transactions"
-	ExportResourceCheckoutConfigurations    ExportResource = "checkout_configurations"
-	ExportResourceDisputes                  ExportResource = "disputes"
-	ExportResourceEvents                    ExportResource = "events"
-	ExportResourceFinancialActivity         ExportResource = "financial-activity"
-	ExportResourceMembers                   ExportResource = "members"
-	ExportResourceMemberships               ExportResource = "memberships"
-	ExportResourcePayoutMethods             ExportResource = "payout_methods"
-	ExportResourcePayouts                   ExportResource = "payouts"
-	ExportResourcePeople                    ExportResource = "people"
-	ExportResourcePlans                     ExportResource = "plans"
-	ExportResourceProducts                  ExportResource = "products"
-	ExportResourceResolutionCenterCases     ExportResource = "resolution_center_cases"
-	ExportResourceShipments                 ExportResource = "shipments"
-	ExportResourceSocialAccounts            ExportResource = "social_accounts"
-	ExportResourceTeamMembers               ExportResource = "team_members"
-	ExportResourceTransfers                 ExportResource = "transfers"
-	ExportResourceWebhooks                  ExportResource = "webhooks"
-	ExportResourceReceipts                  ExportResource = "receipts"
-	ExportResourceUnclaimedMemberships      ExportResource = "unclaimed_memberships"
-	ExportResourceTrackingLinks             ExportResource = "tracking_links"
-	ExportResourcePromoCodes                ExportResource = "promo_codes"
-	ExportResourceResolutions               ExportResource = "resolutions"
-	ExportResourceEntries                   ExportResource = "entries"
-	ExportResourceLeads                     ExportResource = "leads"
-	ExportResourceContentRewardsSubmissions ExportResource = "content_rewards_submissions"
-	ExportResourceInvoices                  ExportResource = "invoices"
-	ExportResourceCancelationReasons        ExportResource = "cancelation_reasons"
-	ExportResourceChildCompanies            ExportResource = "child_companies"
-	ExportResourceLedgerLines               ExportResource = "ledger_lines"
-	ExportResourceWithdrawalLines           ExportResource = "withdrawal_lines"
+	ExportResourceAdCampaigns            ExportResource = "ad_campaigns"
+	ExportResourceAdGroups               ExportResource = "ad_groups"
+	ExportResourceAds                    ExportResource = "ads"
+	ExportResourceApps                   ExportResource = "apps"
+	ExportResourceAudiences              ExportResource = "audiences"
+	ExportResourceBounties               ExportResource = "bounties"
+	ExportResourceBountySubmissions      ExportResource = "bounty_submissions"
+	ExportResourceCardTransactions       ExportResource = "card_transactions"
+	ExportResourceCheckoutConfigurations ExportResource = "checkout_configurations"
+	ExportResourceDisputes               ExportResource = "disputes"
+	ExportResourceEvents                 ExportResource = "events"
+	ExportResourceExternalAccounts       ExportResource = "external_accounts"
+	ExportResourceFinancialActivity      ExportResource = "financial-activity"
+	ExportResourcePayoutMethods          ExportResource = "payout_methods"
+	ExportResourcePayouts                ExportResource = "payouts"
+	ExportResourcePeople                 ExportResource = "people"
+	ExportResourcePlans                  ExportResource = "plans"
+	ExportResourceProducts               ExportResource = "products"
+	ExportResourceReceiptInvoices        ExportResource = "receipt_invoices"
+	ExportResourceResolutionCenterCases  ExportResource = "resolution_center_cases"
+	ExportResourceShipments              ExportResource = "shipments"
+	ExportResourceSocialAccounts         ExportResource = "social_accounts"
+	ExportResourceTeamMembers            ExportResource = "team_members"
+	ExportResourceTransfers              ExportResource = "transfers"
+	ExportResourceWebhooks               ExportResource = "webhooks"
+	ExportResourceMembers                ExportResource = "members"
+	ExportResourceReceipts               ExportResource = "receipts"
+	ExportResourceUnclaimedMemberships   ExportResource = "unclaimed_memberships"
+	ExportResourceMemberships            ExportResource = "memberships"
+	ExportResourceTrackingLinks          ExportResource = "tracking_links"
+	ExportResourcePromoCodes             ExportResource = "promo_codes"
+	ExportResourceResolutions            ExportResource = "resolutions"
+	ExportResourceEntries                ExportResource = "entries"
+	ExportResourceLeads                  ExportResource = "leads"
+	ExportResourceInvoices               ExportResource = "invoices"
+	ExportResourceCancelationReasons     ExportResource = "cancelation_reasons"
+	ExportResourceChildCompanies         ExportResource = "child_companies"
+	ExportResourceLedgerLines            ExportResource = "ledger_lines"
+	ExportResourceWithdrawalLines        ExportResource = "withdrawal_lines"
 )
 
 func NewExportResourceFromString(s string) (ExportResource, error) {
@@ -481,12 +503,10 @@ func NewExportResourceFromString(s string) (ExportResource, error) {
 		return ExportResourceDisputes, nil
 	case "events":
 		return ExportResourceEvents, nil
+	case "external_accounts":
+		return ExportResourceExternalAccounts, nil
 	case "financial-activity":
 		return ExportResourceFinancialActivity, nil
-	case "members":
-		return ExportResourceMembers, nil
-	case "memberships":
-		return ExportResourceMemberships, nil
 	case "payout_methods":
 		return ExportResourcePayoutMethods, nil
 	case "payouts":
@@ -497,6 +517,8 @@ func NewExportResourceFromString(s string) (ExportResource, error) {
 		return ExportResourcePlans, nil
 	case "products":
 		return ExportResourceProducts, nil
+	case "receipt_invoices":
+		return ExportResourceReceiptInvoices, nil
 	case "resolution_center_cases":
 		return ExportResourceResolutionCenterCases, nil
 	case "shipments":
@@ -509,10 +531,14 @@ func NewExportResourceFromString(s string) (ExportResource, error) {
 		return ExportResourceTransfers, nil
 	case "webhooks":
 		return ExportResourceWebhooks, nil
+	case "members":
+		return ExportResourceMembers, nil
 	case "receipts":
 		return ExportResourceReceipts, nil
 	case "unclaimed_memberships":
 		return ExportResourceUnclaimedMemberships, nil
+	case "memberships":
+		return ExportResourceMemberships, nil
 	case "tracking_links":
 		return ExportResourceTrackingLinks, nil
 	case "promo_codes":
@@ -523,8 +549,6 @@ func NewExportResourceFromString(s string) (ExportResource, error) {
 		return ExportResourceEntries, nil
 	case "leads":
 		return ExportResourceLeads, nil
-	case "content_rewards_submissions":
-		return ExportResourceContentRewardsSubmissions, nil
 	case "invoices":
 		return ExportResourceInvoices, nil
 	case "cancelation_reasons":
@@ -544,7 +568,7 @@ func (e ExportResource) Ptr() *ExportResource {
 	return &e
 }
 
-// `pending` or `processing` while the CSV is generated, `completed` when the download is ready, `failed` if it errored, `expired` once the CSV has been deleted.
+// `pending` or `processing` while the file is generated, `completed` when the download is ready, `failed` if it errored, `expired` once the file has been deleted.
 type ExportStatus string
 
 const (
@@ -580,42 +604,43 @@ func (e ExportStatus) Ptr() *ExportStatus {
 type CreateExportsRequestResource string
 
 const (
-	CreateExportsRequestResourceAdCampaigns               CreateExportsRequestResource = "ad_campaigns"
-	CreateExportsRequestResourceAdGroups                  CreateExportsRequestResource = "ad_groups"
-	CreateExportsRequestResourceAds                       CreateExportsRequestResource = "ads"
-	CreateExportsRequestResourceApps                      CreateExportsRequestResource = "apps"
-	CreateExportsRequestResourceAudiences                 CreateExportsRequestResource = "audiences"
-	CreateExportsRequestResourceBounties                  CreateExportsRequestResource = "bounties"
-	CreateExportsRequestResourceBountySubmissions         CreateExportsRequestResource = "bounty_submissions"
-	CreateExportsRequestResourceCardTransactions          CreateExportsRequestResource = "card_transactions"
-	CreateExportsRequestResourceCheckoutConfigurations    CreateExportsRequestResource = "checkout_configurations"
-	CreateExportsRequestResourceDisputes                  CreateExportsRequestResource = "disputes"
-	CreateExportsRequestResourceEvents                    CreateExportsRequestResource = "events"
-	CreateExportsRequestResourceFinancialActivity         CreateExportsRequestResource = "financial-activity"
-	CreateExportsRequestResourceMembers                   CreateExportsRequestResource = "members"
-	CreateExportsRequestResourceMemberships               CreateExportsRequestResource = "memberships"
-	CreateExportsRequestResourcePayoutMethods             CreateExportsRequestResource = "payout_methods"
-	CreateExportsRequestResourcePayouts                   CreateExportsRequestResource = "payouts"
-	CreateExportsRequestResourcePeople                    CreateExportsRequestResource = "people"
-	CreateExportsRequestResourcePlans                     CreateExportsRequestResource = "plans"
-	CreateExportsRequestResourceProducts                  CreateExportsRequestResource = "products"
-	CreateExportsRequestResourceResolutionCenterCases     CreateExportsRequestResource = "resolution_center_cases"
-	CreateExportsRequestResourceShipments                 CreateExportsRequestResource = "shipments"
-	CreateExportsRequestResourceSocialAccounts            CreateExportsRequestResource = "social_accounts"
-	CreateExportsRequestResourceTeamMembers               CreateExportsRequestResource = "team_members"
-	CreateExportsRequestResourceTransfers                 CreateExportsRequestResource = "transfers"
-	CreateExportsRequestResourceWebhooks                  CreateExportsRequestResource = "webhooks"
-	CreateExportsRequestResourceReceipts                  CreateExportsRequestResource = "receipts"
-	CreateExportsRequestResourceUnclaimedMemberships      CreateExportsRequestResource = "unclaimed_memberships"
-	CreateExportsRequestResourceTrackingLinks             CreateExportsRequestResource = "tracking_links"
-	CreateExportsRequestResourcePromoCodes                CreateExportsRequestResource = "promo_codes"
-	CreateExportsRequestResourceResolutions               CreateExportsRequestResource = "resolutions"
-	CreateExportsRequestResourceEntries                   CreateExportsRequestResource = "entries"
-	CreateExportsRequestResourceLeads                     CreateExportsRequestResource = "leads"
-	CreateExportsRequestResourceContentRewardsSubmissions CreateExportsRequestResource = "content_rewards_submissions"
-	CreateExportsRequestResourceInvoices                  CreateExportsRequestResource = "invoices"
-	CreateExportsRequestResourceCancelationReasons        CreateExportsRequestResource = "cancelation_reasons"
-	CreateExportsRequestResourceChildCompanies            CreateExportsRequestResource = "child_companies"
+	CreateExportsRequestResourceAdCampaigns            CreateExportsRequestResource = "ad_campaigns"
+	CreateExportsRequestResourceAdGroups               CreateExportsRequestResource = "ad_groups"
+	CreateExportsRequestResourceAds                    CreateExportsRequestResource = "ads"
+	CreateExportsRequestResourceApps                   CreateExportsRequestResource = "apps"
+	CreateExportsRequestResourceAudiences              CreateExportsRequestResource = "audiences"
+	CreateExportsRequestResourceBounties               CreateExportsRequestResource = "bounties"
+	CreateExportsRequestResourceBountySubmissions      CreateExportsRequestResource = "bounty_submissions"
+	CreateExportsRequestResourceCardTransactions       CreateExportsRequestResource = "card_transactions"
+	CreateExportsRequestResourceCheckoutConfigurations CreateExportsRequestResource = "checkout_configurations"
+	CreateExportsRequestResourceDisputes               CreateExportsRequestResource = "disputes"
+	CreateExportsRequestResourceEvents                 CreateExportsRequestResource = "events"
+	CreateExportsRequestResourceExternalAccounts       CreateExportsRequestResource = "external_accounts"
+	CreateExportsRequestResourceFinancialActivity      CreateExportsRequestResource = "financial-activity"
+	CreateExportsRequestResourcePayoutMethods          CreateExportsRequestResource = "payout_methods"
+	CreateExportsRequestResourcePayouts                CreateExportsRequestResource = "payouts"
+	CreateExportsRequestResourcePeople                 CreateExportsRequestResource = "people"
+	CreateExportsRequestResourcePlans                  CreateExportsRequestResource = "plans"
+	CreateExportsRequestResourceProducts               CreateExportsRequestResource = "products"
+	CreateExportsRequestResourceReceiptInvoices        CreateExportsRequestResource = "receipt_invoices"
+	CreateExportsRequestResourceResolutionCenterCases  CreateExportsRequestResource = "resolution_center_cases"
+	CreateExportsRequestResourceShipments              CreateExportsRequestResource = "shipments"
+	CreateExportsRequestResourceSocialAccounts         CreateExportsRequestResource = "social_accounts"
+	CreateExportsRequestResourceTeamMembers            CreateExportsRequestResource = "team_members"
+	CreateExportsRequestResourceTransfers              CreateExportsRequestResource = "transfers"
+	CreateExportsRequestResourceWebhooks               CreateExportsRequestResource = "webhooks"
+	CreateExportsRequestResourceMembers                CreateExportsRequestResource = "members"
+	CreateExportsRequestResourceReceipts               CreateExportsRequestResource = "receipts"
+	CreateExportsRequestResourceUnclaimedMemberships   CreateExportsRequestResource = "unclaimed_memberships"
+	CreateExportsRequestResourceMemberships            CreateExportsRequestResource = "memberships"
+	CreateExportsRequestResourceTrackingLinks          CreateExportsRequestResource = "tracking_links"
+	CreateExportsRequestResourcePromoCodes             CreateExportsRequestResource = "promo_codes"
+	CreateExportsRequestResourceResolutions            CreateExportsRequestResource = "resolutions"
+	CreateExportsRequestResourceEntries                CreateExportsRequestResource = "entries"
+	CreateExportsRequestResourceLeads                  CreateExportsRequestResource = "leads"
+	CreateExportsRequestResourceInvoices               CreateExportsRequestResource = "invoices"
+	CreateExportsRequestResourceCancelationReasons     CreateExportsRequestResource = "cancelation_reasons"
+	CreateExportsRequestResourceChildCompanies         CreateExportsRequestResource = "child_companies"
 )
 
 func NewCreateExportsRequestResourceFromString(s string) (CreateExportsRequestResource, error) {
@@ -642,12 +667,10 @@ func NewCreateExportsRequestResourceFromString(s string) (CreateExportsRequestRe
 		return CreateExportsRequestResourceDisputes, nil
 	case "events":
 		return CreateExportsRequestResourceEvents, nil
+	case "external_accounts":
+		return CreateExportsRequestResourceExternalAccounts, nil
 	case "financial-activity":
 		return CreateExportsRequestResourceFinancialActivity, nil
-	case "members":
-		return CreateExportsRequestResourceMembers, nil
-	case "memberships":
-		return CreateExportsRequestResourceMemberships, nil
 	case "payout_methods":
 		return CreateExportsRequestResourcePayoutMethods, nil
 	case "payouts":
@@ -658,6 +681,8 @@ func NewCreateExportsRequestResourceFromString(s string) (CreateExportsRequestRe
 		return CreateExportsRequestResourcePlans, nil
 	case "products":
 		return CreateExportsRequestResourceProducts, nil
+	case "receipt_invoices":
+		return CreateExportsRequestResourceReceiptInvoices, nil
 	case "resolution_center_cases":
 		return CreateExportsRequestResourceResolutionCenterCases, nil
 	case "shipments":
@@ -670,10 +695,14 @@ func NewCreateExportsRequestResourceFromString(s string) (CreateExportsRequestRe
 		return CreateExportsRequestResourceTransfers, nil
 	case "webhooks":
 		return CreateExportsRequestResourceWebhooks, nil
+	case "members":
+		return CreateExportsRequestResourceMembers, nil
 	case "receipts":
 		return CreateExportsRequestResourceReceipts, nil
 	case "unclaimed_memberships":
 		return CreateExportsRequestResourceUnclaimedMemberships, nil
+	case "memberships":
+		return CreateExportsRequestResourceMemberships, nil
 	case "tracking_links":
 		return CreateExportsRequestResourceTrackingLinks, nil
 	case "promo_codes":
@@ -684,8 +713,6 @@ func NewCreateExportsRequestResourceFromString(s string) (CreateExportsRequestRe
 		return CreateExportsRequestResourceEntries, nil
 	case "leads":
 		return CreateExportsRequestResourceLeads, nil
-	case "content_rewards_submissions":
-		return CreateExportsRequestResourceContentRewardsSubmissions, nil
 	case "invoices":
 		return CreateExportsRequestResourceInvoices, nil
 	case "cancelation_reasons":
@@ -745,44 +772,45 @@ func (l ListExportsRequestOrder) Ptr() *ListExportsRequestOrder {
 type ListExportsRequestResource string
 
 const (
-	ListExportsRequestResourceAdCampaigns               ListExportsRequestResource = "ad_campaigns"
-	ListExportsRequestResourceAdGroups                  ListExportsRequestResource = "ad_groups"
-	ListExportsRequestResourceAds                       ListExportsRequestResource = "ads"
-	ListExportsRequestResourceApps                      ListExportsRequestResource = "apps"
-	ListExportsRequestResourceAudiences                 ListExportsRequestResource = "audiences"
-	ListExportsRequestResourceBounties                  ListExportsRequestResource = "bounties"
-	ListExportsRequestResourceBountySubmissions         ListExportsRequestResource = "bounty_submissions"
-	ListExportsRequestResourceCardTransactions          ListExportsRequestResource = "card_transactions"
-	ListExportsRequestResourceCheckoutConfigurations    ListExportsRequestResource = "checkout_configurations"
-	ListExportsRequestResourceDisputes                  ListExportsRequestResource = "disputes"
-	ListExportsRequestResourceEvents                    ListExportsRequestResource = "events"
-	ListExportsRequestResourceFinancialActivity         ListExportsRequestResource = "financial-activity"
-	ListExportsRequestResourceMembers                   ListExportsRequestResource = "members"
-	ListExportsRequestResourceMemberships               ListExportsRequestResource = "memberships"
-	ListExportsRequestResourcePayoutMethods             ListExportsRequestResource = "payout_methods"
-	ListExportsRequestResourcePayouts                   ListExportsRequestResource = "payouts"
-	ListExportsRequestResourcePeople                    ListExportsRequestResource = "people"
-	ListExportsRequestResourcePlans                     ListExportsRequestResource = "plans"
-	ListExportsRequestResourceProducts                  ListExportsRequestResource = "products"
-	ListExportsRequestResourceResolutionCenterCases     ListExportsRequestResource = "resolution_center_cases"
-	ListExportsRequestResourceShipments                 ListExportsRequestResource = "shipments"
-	ListExportsRequestResourceSocialAccounts            ListExportsRequestResource = "social_accounts"
-	ListExportsRequestResourceTeamMembers               ListExportsRequestResource = "team_members"
-	ListExportsRequestResourceTransfers                 ListExportsRequestResource = "transfers"
-	ListExportsRequestResourceWebhooks                  ListExportsRequestResource = "webhooks"
-	ListExportsRequestResourceReceipts                  ListExportsRequestResource = "receipts"
-	ListExportsRequestResourceUnclaimedMemberships      ListExportsRequestResource = "unclaimed_memberships"
-	ListExportsRequestResourceTrackingLinks             ListExportsRequestResource = "tracking_links"
-	ListExportsRequestResourcePromoCodes                ListExportsRequestResource = "promo_codes"
-	ListExportsRequestResourceResolutions               ListExportsRequestResource = "resolutions"
-	ListExportsRequestResourceEntries                   ListExportsRequestResource = "entries"
-	ListExportsRequestResourceLeads                     ListExportsRequestResource = "leads"
-	ListExportsRequestResourceContentRewardsSubmissions ListExportsRequestResource = "content_rewards_submissions"
-	ListExportsRequestResourceInvoices                  ListExportsRequestResource = "invoices"
-	ListExportsRequestResourceCancelationReasons        ListExportsRequestResource = "cancelation_reasons"
-	ListExportsRequestResourceChildCompanies            ListExportsRequestResource = "child_companies"
-	ListExportsRequestResourceLedgerLines               ListExportsRequestResource = "ledger_lines"
-	ListExportsRequestResourceWithdrawalLines           ListExportsRequestResource = "withdrawal_lines"
+	ListExportsRequestResourceAdCampaigns            ListExportsRequestResource = "ad_campaigns"
+	ListExportsRequestResourceAdGroups               ListExportsRequestResource = "ad_groups"
+	ListExportsRequestResourceAds                    ListExportsRequestResource = "ads"
+	ListExportsRequestResourceApps                   ListExportsRequestResource = "apps"
+	ListExportsRequestResourceAudiences              ListExportsRequestResource = "audiences"
+	ListExportsRequestResourceBounties               ListExportsRequestResource = "bounties"
+	ListExportsRequestResourceBountySubmissions      ListExportsRequestResource = "bounty_submissions"
+	ListExportsRequestResourceCardTransactions       ListExportsRequestResource = "card_transactions"
+	ListExportsRequestResourceCheckoutConfigurations ListExportsRequestResource = "checkout_configurations"
+	ListExportsRequestResourceDisputes               ListExportsRequestResource = "disputes"
+	ListExportsRequestResourceEvents                 ListExportsRequestResource = "events"
+	ListExportsRequestResourceExternalAccounts       ListExportsRequestResource = "external_accounts"
+	ListExportsRequestResourceFinancialActivity      ListExportsRequestResource = "financial-activity"
+	ListExportsRequestResourcePayoutMethods          ListExportsRequestResource = "payout_methods"
+	ListExportsRequestResourcePayouts                ListExportsRequestResource = "payouts"
+	ListExportsRequestResourcePeople                 ListExportsRequestResource = "people"
+	ListExportsRequestResourcePlans                  ListExportsRequestResource = "plans"
+	ListExportsRequestResourceProducts               ListExportsRequestResource = "products"
+	ListExportsRequestResourceReceiptInvoices        ListExportsRequestResource = "receipt_invoices"
+	ListExportsRequestResourceResolutionCenterCases  ListExportsRequestResource = "resolution_center_cases"
+	ListExportsRequestResourceShipments              ListExportsRequestResource = "shipments"
+	ListExportsRequestResourceSocialAccounts         ListExportsRequestResource = "social_accounts"
+	ListExportsRequestResourceTeamMembers            ListExportsRequestResource = "team_members"
+	ListExportsRequestResourceTransfers              ListExportsRequestResource = "transfers"
+	ListExportsRequestResourceWebhooks               ListExportsRequestResource = "webhooks"
+	ListExportsRequestResourceMembers                ListExportsRequestResource = "members"
+	ListExportsRequestResourceReceipts               ListExportsRequestResource = "receipts"
+	ListExportsRequestResourceUnclaimedMemberships   ListExportsRequestResource = "unclaimed_memberships"
+	ListExportsRequestResourceMemberships            ListExportsRequestResource = "memberships"
+	ListExportsRequestResourceTrackingLinks          ListExportsRequestResource = "tracking_links"
+	ListExportsRequestResourcePromoCodes             ListExportsRequestResource = "promo_codes"
+	ListExportsRequestResourceResolutions            ListExportsRequestResource = "resolutions"
+	ListExportsRequestResourceEntries                ListExportsRequestResource = "entries"
+	ListExportsRequestResourceLeads                  ListExportsRequestResource = "leads"
+	ListExportsRequestResourceInvoices               ListExportsRequestResource = "invoices"
+	ListExportsRequestResourceCancelationReasons     ListExportsRequestResource = "cancelation_reasons"
+	ListExportsRequestResourceChildCompanies         ListExportsRequestResource = "child_companies"
+	ListExportsRequestResourceLedgerLines            ListExportsRequestResource = "ledger_lines"
+	ListExportsRequestResourceWithdrawalLines        ListExportsRequestResource = "withdrawal_lines"
 )
 
 func NewListExportsRequestResourceFromString(s string) (ListExportsRequestResource, error) {
@@ -809,12 +837,10 @@ func NewListExportsRequestResourceFromString(s string) (ListExportsRequestResour
 		return ListExportsRequestResourceDisputes, nil
 	case "events":
 		return ListExportsRequestResourceEvents, nil
+	case "external_accounts":
+		return ListExportsRequestResourceExternalAccounts, nil
 	case "financial-activity":
 		return ListExportsRequestResourceFinancialActivity, nil
-	case "members":
-		return ListExportsRequestResourceMembers, nil
-	case "memberships":
-		return ListExportsRequestResourceMemberships, nil
 	case "payout_methods":
 		return ListExportsRequestResourcePayoutMethods, nil
 	case "payouts":
@@ -825,6 +851,8 @@ func NewListExportsRequestResourceFromString(s string) (ListExportsRequestResour
 		return ListExportsRequestResourcePlans, nil
 	case "products":
 		return ListExportsRequestResourceProducts, nil
+	case "receipt_invoices":
+		return ListExportsRequestResourceReceiptInvoices, nil
 	case "resolution_center_cases":
 		return ListExportsRequestResourceResolutionCenterCases, nil
 	case "shipments":
@@ -837,10 +865,14 @@ func NewListExportsRequestResourceFromString(s string) (ListExportsRequestResour
 		return ListExportsRequestResourceTransfers, nil
 	case "webhooks":
 		return ListExportsRequestResourceWebhooks, nil
+	case "members":
+		return ListExportsRequestResourceMembers, nil
 	case "receipts":
 		return ListExportsRequestResourceReceipts, nil
 	case "unclaimed_memberships":
 		return ListExportsRequestResourceUnclaimedMemberships, nil
+	case "memberships":
+		return ListExportsRequestResourceMemberships, nil
 	case "tracking_links":
 		return ListExportsRequestResourceTrackingLinks, nil
 	case "promo_codes":
@@ -851,8 +883,6 @@ func NewListExportsRequestResourceFromString(s string) (ListExportsRequestResour
 		return ListExportsRequestResourceEntries, nil
 	case "leads":
 		return ListExportsRequestResourceLeads, nil
-	case "content_rewards_submissions":
-		return ListExportsRequestResourceContentRewardsSubmissions, nil
 	case "invoices":
 		return ListExportsRequestResourceInvoices, nil
 	case "cancelation_reasons":
@@ -941,10 +971,12 @@ func (l *ListExportsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListExportsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1010,6 +1042,12 @@ var (
 	listExportsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listExportsResponsePageInfoNullableFields maps the wire names of ListExportsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listExportsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listExportsResponsePageInfoFieldEndCursor,
+	"start_cursor": listExportsResponsePageInfoFieldStartCursor,
+}
+
 type ListExportsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1059,10 +1097,12 @@ func (l *ListExportsResponsePageInfo) GetExtraProperties() map[string]interface{
 }
 
 func (l *ListExportsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1105,6 +1145,13 @@ func (l *ListExportsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listExportsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1145,6 +1192,12 @@ var (
 	postExportCompletedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postExportCompletedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postExportCompletedPayloadNullableFields maps the wire names of PostExportCompletedPayload's nullable fields (required or optional) to their field bits.
+var postExportCompletedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postExportCompletedPayloadFieldAccountID,
+	"api_version_date": postExportCompletedPayloadFieldAPIVersionDate,
+}
 
 type PostExportCompletedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -1234,10 +1287,12 @@ func (p *PostExportCompletedPayload) GetExtraProperties() map[string]interface{}
 }
 
 func (p *PostExportCompletedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1314,6 +1369,13 @@ func (p *PostExportCompletedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postExportCompletedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1396,6 +1458,12 @@ var (
 	postExportFailedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postExportFailedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postExportFailedPayloadNullableFields maps the wire names of PostExportFailedPayload's nullable fields (required or optional) to their field bits.
+var postExportFailedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postExportFailedPayloadFieldAccountID,
+	"api_version_date": postExportFailedPayloadFieldAPIVersionDate,
+}
 
 type PostExportFailedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -1485,10 +1553,12 @@ func (p *PostExportFailedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostExportFailedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1565,6 +1635,13 @@ func (p *PostExportFailedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postExportFailedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }

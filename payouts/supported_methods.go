@@ -5,7 +5,8 @@ package payouts
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	v2 "github.com/whopio/whopsdk-go/v2"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
@@ -18,10 +19,11 @@ var (
 	listSupportedMethodsRequestFieldCurrency                = big.NewInt(1 << 4)
 	listSupportedMethodsRequestFieldSupportedPayoutMethodID = big.NewInt(1 << 5)
 	listSupportedMethodsRequestFieldDestinationCurrency     = big.NewInt(1 << 6)
-	listSupportedMethodsRequestFieldFirst                   = big.NewInt(1 << 7)
-	listSupportedMethodsRequestFieldAfter                   = big.NewInt(1 << 8)
-	listSupportedMethodsRequestFieldLast                    = big.NewInt(1 << 9)
-	listSupportedMethodsRequestFieldBefore                  = big.NewInt(1 << 10)
+	listSupportedMethodsRequestFieldPartyType               = big.NewInt(1 << 7)
+	listSupportedMethodsRequestFieldFirst                   = big.NewInt(1 << 8)
+	listSupportedMethodsRequestFieldAfter                   = big.NewInt(1 << 9)
+	listSupportedMethodsRequestFieldLast                    = big.NewInt(1 << 10)
+	listSupportedMethodsRequestFieldBefore                  = big.NewInt(1 << 11)
 )
 
 type ListSupportedMethodsRequest struct {
@@ -31,7 +33,7 @@ type ListSupportedMethodsRequest struct {
 	UserID *string `json:"-" url:"user_id,omitempty"`
 	// ISO 3166-1 alpha-2 country code for the bank account or wallet, such as `US`. Defaults to the country of supported_payout_method_id when one is given, otherwise the payout account's country.
 	Country *string `json:"-" url:"country,omitempty"`
-	// Optional withdrawal amount in whole currency units, for example `250.00`. When provided, each destination includes per-currency fee and delivery quotes.
+	// Optional payout amount in whole currency units, for example `250.00`. When provided, each destination includes per-currency fee and delivery quotes.
 	Amount *float64 `json:"-" url:"amount,omitempty"`
 	// Currency code of the amount, for example `usd`. Only meaningful with amount.
 	Currency *string `json:"-" url:"currency,omitempty"`
@@ -39,13 +41,15 @@ type ListSupportedMethodsRequest struct {
 	SupportedPayoutMethodID *string `json:"-" url:"supported_payout_method_id,omitempty"`
 	// Currency the supported payout method would deliver payouts in. Only meaningful with supported_payout_method_id; required fields vary by destination currency.
 	DestinationCurrency *string `json:"-" url:"destination_currency,omitempty"`
-	// Number of supported payout methods to return from the start of the window.
+	// Who will own the payout method. `first_party` is the account itself. `third_party` is a recipient the account pays, saved with `recipient` on `POST /payouts/methods`, which needs no identity fields. Only meaningful with supported_payout_method_id.
+	PartyType *ListSupportedMethodsRequestPartyType `json:"-" url:"party_type,omitempty"`
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor to fetch the page after (from page_info.end_cursor).
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// Number of supported payout methods to return from the end of the window.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// Cursor to fetch the page before (from page_info.start_cursor).
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -53,10 +57,12 @@ type ListSupportedMethodsRequest struct {
 }
 
 func (l *ListSupportedMethodsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -108,6 +114,13 @@ func (l *ListSupportedMethodsRequest) SetDestinationCurrency(destinationCurrency
 	l.require(listSupportedMethodsRequestFieldDestinationCurrency)
 }
 
+// SetPartyType sets the PartyType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportedMethodsRequest) SetPartyType(partyType *ListSupportedMethodsRequestPartyType) {
+	l.PartyType = partyType
+	l.require(listSupportedMethodsRequestFieldPartyType)
+}
+
 // SetFirst sets the First field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListSupportedMethodsRequest) SetFirst(first *int) {
@@ -134,6 +147,28 @@ func (l *ListSupportedMethodsRequest) SetLast(last *int) {
 func (l *ListSupportedMethodsRequest) SetBefore(before *string) {
 	l.Before = before
 	l.require(listSupportedMethodsRequestFieldBefore)
+}
+
+type ListSupportedMethodsRequestPartyType string
+
+const (
+	ListSupportedMethodsRequestPartyTypeFirstParty ListSupportedMethodsRequestPartyType = "first_party"
+	ListSupportedMethodsRequestPartyTypeThirdParty ListSupportedMethodsRequestPartyType = "third_party"
+)
+
+func NewListSupportedMethodsRequestPartyTypeFromString(s string) (ListSupportedMethodsRequestPartyType, error) {
+	switch s {
+	case "first_party":
+		return ListSupportedMethodsRequestPartyTypeFirstParty, nil
+	case "third_party":
+		return ListSupportedMethodsRequestPartyTypeThirdParty, nil
+	}
+	var t ListSupportedMethodsRequestPartyType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListSupportedMethodsRequestPartyType) Ptr() *ListSupportedMethodsRequestPartyType {
+	return &l
 }
 
 var (
@@ -174,10 +209,12 @@ func (l *ListSupportedMethodsResponse) GetExtraProperties() map[string]interface
 }
 
 func (l *ListSupportedMethodsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -238,19 +275,31 @@ func (l *ListSupportedMethodsResponse) String() string {
 
 var (
 	listSupportedMethodsResponseDataItemFieldDeliveryType             = big.NewInt(1 << 0)
-	listSupportedMethodsResponseDataItemFieldIconURL                  = big.NewInt(1 << 1)
-	listSupportedMethodsResponseDataItemFieldID                       = big.NewInt(1 << 2)
-	listSupportedMethodsResponseDataItemFieldName                     = big.NewInt(1 << 3)
-	listSupportedMethodsResponseDataItemFieldObject                   = big.NewInt(1 << 4)
-	listSupportedMethodsResponseDataItemFieldQuotes                   = big.NewInt(1 << 5)
-	listSupportedMethodsResponseDataItemFieldRequiredFields           = big.NewInt(1 << 6)
-	listSupportedMethodsResponseDataItemFieldSupportsInstantDelivery  = big.NewInt(1 << 7)
-	listSupportedMethodsResponseDataItemFieldSupportsStandardDelivery = big.NewInt(1 << 8)
+	listSupportedMethodsResponseDataItemFieldFeeStructure             = big.NewInt(1 << 1)
+	listSupportedMethodsResponseDataItemFieldIconURL                  = big.NewInt(1 << 2)
+	listSupportedMethodsResponseDataItemFieldID                       = big.NewInt(1 << 3)
+	listSupportedMethodsResponseDataItemFieldName                     = big.NewInt(1 << 4)
+	listSupportedMethodsResponseDataItemFieldObject                   = big.NewInt(1 << 5)
+	listSupportedMethodsResponseDataItemFieldQuotes                   = big.NewInt(1 << 6)
+	listSupportedMethodsResponseDataItemFieldRequiredFields           = big.NewInt(1 << 7)
+	listSupportedMethodsResponseDataItemFieldSupportsInstantDelivery  = big.NewInt(1 << 8)
+	listSupportedMethodsResponseDataItemFieldSupportsPaypalLogin      = big.NewInt(1 << 9)
+	listSupportedMethodsResponseDataItemFieldSupportsStandardDelivery = big.NewInt(1 << 10)
 )
+
+// listSupportedMethodsResponseDataItemNullableFields maps the wire names of ListSupportedMethodsResponseDataItem's nullable fields (required or optional) to their field bits.
+var listSupportedMethodsResponseDataItemNullableFields = map[string]*big.Int{
+	"icon_url":        listSupportedMethodsResponseDataItemFieldIconURL,
+	"name":            listSupportedMethodsResponseDataItemFieldName,
+	"quotes":          listSupportedMethodsResponseDataItemFieldQuotes,
+	"required_fields": listSupportedMethodsResponseDataItemFieldRequiredFields,
+}
 
 type ListSupportedMethodsResponseDataItem struct {
 	// How funds are delivered, for example `bank_deposit`.
 	DeliveryType ListSupportedMethodsResponseDataItemDeliveryType `json:"delivery_type" url:"delivery_type"`
+	// Fee terms for payouts to this method: a percentage of the payout amount plus a fixed fee. The quotes carry the exact fee for a specific amount.
+	FeeStructure *ListSupportedMethodsResponseDataItemFeeStructure `json:"fee_structure" url:"fee_structure"`
 	// Supported payout method icon URL.
 	IconURL *string `json:"icon_url,omitempty" url:"icon_url,omitempty"`
 	// Supported payout method ID.
@@ -261,9 +310,11 @@ type ListSupportedMethodsResponseDataItem struct {
 	// Fee and delivery estimates for the requested amount, one per destination currency. Null unless an amount was provided.
 	Quotes []*ListSupportedMethodsResponseDataItemQuotesItem `json:"quotes,omitempty" url:"quotes,omitempty"`
 	// Fields to collect before saving this supported payout method. Present only when supported_payout_method_id narrows the request to one method.
-	RequiredFields           []*ListSupportedMethodsResponseDataItemRequiredFieldsItem `json:"required_fields,omitempty" url:"required_fields,omitempty"`
-	SupportsInstantDelivery  bool                                                      `json:"supports_instant_delivery" url:"supports_instant_delivery"`
-	SupportsStandardDelivery bool                                                      `json:"supports_standard_delivery" url:"supports_standard_delivery"`
+	RequiredFields          []*ListSupportedMethodsResponseDataItemRequiredFieldsItem `json:"required_fields,omitempty" url:"required_fields,omitempty"`
+	SupportsInstantDelivery bool                                                      `json:"supports_instant_delivery" url:"supports_instant_delivery"`
+	// Whether the payer can add this method by logging in to PayPal through `POST /payouts/paypal_link_sessions`, which confirms the PayPal account is verified and owned by the payee. True only for the PayPal method, and only once PayPal login is enabled for the account.
+	SupportsPaypalLogin      *bool `json:"supports_paypal_login,omitempty" url:"supports_paypal_login,omitempty"`
+	SupportsStandardDelivery bool  `json:"supports_standard_delivery" url:"supports_standard_delivery"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -277,6 +328,13 @@ func (l *ListSupportedMethodsResponseDataItem) GetDeliveryType() ListSupportedMe
 		return ""
 	}
 	return l.DeliveryType
+}
+
+func (l *ListSupportedMethodsResponseDataItem) GetFeeStructure() *ListSupportedMethodsResponseDataItemFeeStructure {
+	if l == nil {
+		return nil
+	}
+	return l.FeeStructure
 }
 
 func (l *ListSupportedMethodsResponseDataItem) GetIconURL() *string {
@@ -328,6 +386,13 @@ func (l *ListSupportedMethodsResponseDataItem) GetSupportsInstantDelivery() bool
 	return l.SupportsInstantDelivery
 }
 
+func (l *ListSupportedMethodsResponseDataItem) GetSupportsPaypalLogin() *bool {
+	if l == nil {
+		return nil
+	}
+	return l.SupportsPaypalLogin
+}
+
 func (l *ListSupportedMethodsResponseDataItem) GetSupportsStandardDelivery() bool {
 	if l == nil {
 		return false
@@ -343,10 +408,12 @@ func (l *ListSupportedMethodsResponseDataItem) GetExtraProperties() map[string]i
 }
 
 func (l *ListSupportedMethodsResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetDeliveryType sets the DeliveryType field and marks it as non-optional;
@@ -354,6 +421,13 @@ func (l *ListSupportedMethodsResponseDataItem) require(field *big.Int) {
 func (l *ListSupportedMethodsResponseDataItem) SetDeliveryType(deliveryType ListSupportedMethodsResponseDataItemDeliveryType) {
 	l.DeliveryType = deliveryType
 	l.require(listSupportedMethodsResponseDataItemFieldDeliveryType)
+}
+
+// SetFeeStructure sets the FeeStructure field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportedMethodsResponseDataItem) SetFeeStructure(feeStructure *ListSupportedMethodsResponseDataItemFeeStructure) {
+	l.FeeStructure = feeStructure
+	l.require(listSupportedMethodsResponseDataItemFieldFeeStructure)
 }
 
 // SetIconURL sets the IconURL field and marks it as non-optional;
@@ -405,6 +479,13 @@ func (l *ListSupportedMethodsResponseDataItem) SetSupportsInstantDelivery(suppor
 	l.require(listSupportedMethodsResponseDataItemFieldSupportsInstantDelivery)
 }
 
+// SetSupportsPaypalLogin sets the SupportsPaypalLogin field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportedMethodsResponseDataItem) SetSupportsPaypalLogin(supportsPaypalLogin *bool) {
+	l.SupportsPaypalLogin = supportsPaypalLogin
+	l.require(listSupportedMethodsResponseDataItemFieldSupportsPaypalLogin)
+}
+
 // SetSupportsStandardDelivery sets the SupportsStandardDelivery field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListSupportedMethodsResponseDataItem) SetSupportsStandardDelivery(supportsStandardDelivery bool) {
@@ -424,6 +505,13 @@ func (l *ListSupportedMethodsResponseDataItem) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listSupportedMethodsResponseDataItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -462,11 +550,10 @@ const (
 	ListSupportedMethodsResponseDataItemDeliveryTypeBankDeposit    ListSupportedMethodsResponseDataItemDeliveryType = "bank_deposit"
 	ListSupportedMethodsResponseDataItemDeliveryTypeHomeDelivery   ListSupportedMethodsResponseDataItemDeliveryType = "home_delivery"
 	ListSupportedMethodsResponseDataItemDeliveryTypeMobileWallet   ListSupportedMethodsResponseDataItemDeliveryType = "mobile_wallet"
-	ListSupportedMethodsResponseDataItemDeliveryTypeMasspayCard    ListSupportedMethodsResponseDataItemDeliveryType = "masspay_card"
-	ListSupportedMethodsResponseDataItemDeliveryTypePaperCheck     ListSupportedMethodsResponseDataItemDeliveryType = "paper_check"
+	ListSupportedMethodsResponseDataItemDeliveryTypeCard           ListSupportedMethodsResponseDataItemDeliveryType = "card"
+	ListSupportedMethodsResponseDataItemDeliveryTypeCheck          ListSupportedMethodsResponseDataItemDeliveryType = "check"
 	ListSupportedMethodsResponseDataItemDeliveryTypeBill           ListSupportedMethodsResponseDataItemDeliveryType = "bill"
 	ListSupportedMethodsResponseDataItemDeliveryTypeCryptocurrency ListSupportedMethodsResponseDataItemDeliveryType = "cryptocurrency"
-	ListSupportedMethodsResponseDataItemDeliveryTypeUnknown        ListSupportedMethodsResponseDataItemDeliveryType = "unknown"
 )
 
 func NewListSupportedMethodsResponseDataItemDeliveryTypeFromString(s string) (ListSupportedMethodsResponseDataItemDeliveryType, error) {
@@ -479,16 +566,14 @@ func NewListSupportedMethodsResponseDataItemDeliveryTypeFromString(s string) (Li
 		return ListSupportedMethodsResponseDataItemDeliveryTypeHomeDelivery, nil
 	case "mobile_wallet":
 		return ListSupportedMethodsResponseDataItemDeliveryTypeMobileWallet, nil
-	case "masspay_card":
-		return ListSupportedMethodsResponseDataItemDeliveryTypeMasspayCard, nil
-	case "paper_check":
-		return ListSupportedMethodsResponseDataItemDeliveryTypePaperCheck, nil
+	case "card":
+		return ListSupportedMethodsResponseDataItemDeliveryTypeCard, nil
+	case "check":
+		return ListSupportedMethodsResponseDataItemDeliveryTypeCheck, nil
 	case "bill":
 		return ListSupportedMethodsResponseDataItemDeliveryTypeBill, nil
 	case "cryptocurrency":
 		return ListSupportedMethodsResponseDataItemDeliveryTypeCryptocurrency, nil
-	case "unknown":
-		return ListSupportedMethodsResponseDataItemDeliveryTypeUnknown, nil
 	}
 	var t ListSupportedMethodsResponseDataItemDeliveryType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -496,6 +581,111 @@ func NewListSupportedMethodsResponseDataItemDeliveryTypeFromString(s string) (Li
 
 func (l ListSupportedMethodsResponseDataItemDeliveryType) Ptr() *ListSupportedMethodsResponseDataItemDeliveryType {
 	return &l
+}
+
+var (
+	listSupportedMethodsResponseDataItemFeeStructureFieldFixed      = big.NewInt(1 << 0)
+	listSupportedMethodsResponseDataItemFeeStructureFieldPercentage = big.NewInt(1 << 1)
+)
+
+// Fee terms for payouts to this method: a percentage of the payout amount plus a fixed fee. The quotes carry the exact fee for a specific amount.
+type ListSupportedMethodsResponseDataItemFeeStructure struct {
+	// Fixed fee charged on every payout, on top of the percentage.
+	Fixed *v2.Money `json:"fixed" url:"fixed"`
+	// Percentage of the payout amount charged as a fee.
+	Percentage float64 `json:"percentage" url:"percentage"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) GetFixed() *v2.Money {
+	if l == nil {
+		return nil
+	}
+	return l.Fixed
+}
+
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) GetPercentage() float64 {
+	if l == nil {
+		return 0
+	}
+	return l.Percentage
+}
+
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) SetFixed(fixed *v2.Money) {
+	l.Fixed = fixed
+	l.require(listSupportedMethodsResponseDataItemFeeStructureFieldFixed)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) SetPercentage(percentage float64) {
+	l.Percentage = percentage
+	l.require(listSupportedMethodsResponseDataItemFeeStructureFieldPercentage)
+}
+
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListSupportedMethodsResponseDataItemFeeStructure
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListSupportedMethodsResponseDataItemFeeStructure(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) MarshalJSON() ([]byte, error) {
+	type embed ListSupportedMethodsResponseDataItemFeeStructure
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListSupportedMethodsResponseDataItemFeeStructure) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
 }
 
 type ListSupportedMethodsResponseDataItemObject string
@@ -528,20 +718,27 @@ var (
 	listSupportedMethodsResponseDataItemQuotesItemFieldStandard            = big.NewInt(1 << 7)
 )
 
+// listSupportedMethodsResponseDataItemQuotesItemNullableFields maps the wire names of ListSupportedMethodsResponseDataItemQuotesItem's nullable fields (required or optional) to their field bits.
+var listSupportedMethodsResponseDataItemQuotesItemNullableFields = map[string]*big.Int{
+	"instant":   listSupportedMethodsResponseDataItemQuotesItemFieldInstant,
+	"max_limit": listSupportedMethodsResponseDataItemQuotesItemFieldMaxLimit,
+	"standard":  listSupportedMethodsResponseDataItemQuotesItemFieldStandard,
+}
+
 type ListSupportedMethodsResponseDataItemQuotesItem struct {
-	// The withdrawal amount the quote is for.
+	// The payout amount the quote is for.
 	Amount float64 `json:"amount" url:"amount"`
 	// Currency of the quoted amount.
 	Currency string `json:"currency" url:"currency"`
 	// Currency the funds are delivered in.
 	DestinationCurrency string `json:"destination_currency" url:"destination_currency"`
-	// Exchange rate from the withdrawal currency to the destination currency.
+	// Exchange rate from the payout currency to the destination currency.
 	ExchangeRate float64 `json:"exchange_rate" url:"exchange_rate"`
 	// Instant-delivery estimate. Null if unsupported, unavailable for the account, or the amount does not cover the fee.
 	Instant *ListSupportedMethodsResponseDataItemQuotesItemInstant `json:"instant,omitempty" url:"instant,omitempty"`
-	// Maximum withdrawal amount, in the withdrawal currency.
+	// Maximum payout amount, in the payout currency.
 	MaxLimit *float64 `json:"max_limit,omitempty" url:"max_limit,omitempty"`
-	// Minimum withdrawal amount, in the withdrawal currency.
+	// Minimum payout amount, in the payout currency.
 	MinLimit float64 `json:"min_limit" url:"min_limit"`
 	// Standard-delivery estimate. Null if unsupported or the amount does not cover the fee.
 	Standard *ListSupportedMethodsResponseDataItemQuotesItemStandard `json:"standard,omitempty" url:"standard,omitempty"`
@@ -617,10 +814,12 @@ func (l *ListSupportedMethodsResponseDataItemQuotesItem) GetExtraProperties() ma
 }
 
 func (l *ListSupportedMethodsResponseDataItemQuotesItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -691,6 +890,13 @@ func (l *ListSupportedMethodsResponseDataItemQuotesItem) UnmarshalJSON(data []by
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listSupportedMethodsResponseDataItemQuotesItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -721,13 +927,13 @@ func (l *ListSupportedMethodsResponseDataItemQuotesItem) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Instant-delivery estimate. Null if unsupported, unavailable for the account, or the amount does not cover the fee.
 var (
 	listSupportedMethodsResponseDataItemQuotesItemInstantFieldEstimatedArrival = big.NewInt(1 << 0)
 	listSupportedMethodsResponseDataItemQuotesItemInstantFieldFee              = big.NewInt(1 << 1)
 	listSupportedMethodsResponseDataItemQuotesItemInstantFieldTotalReceived    = big.NewInt(1 << 2)
 )
 
+// Instant-delivery estimate. Null if unsupported, unavailable for the account, or the amount does not cover the fee.
 type ListSupportedMethodsResponseDataItemQuotesItemInstant struct {
 	EstimatedArrival time.Time `json:"estimated_arrival" url:"estimated_arrival"`
 	Fee              float64   `json:"fee" url:"fee"`
@@ -769,10 +975,12 @@ func (l *ListSupportedMethodsResponseDataItemQuotesItemInstant) GetExtraProperti
 }
 
 func (l *ListSupportedMethodsResponseDataItemQuotesItemInstant) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEstimatedArrival sets the EstimatedArrival field and marks it as non-optional;
@@ -846,13 +1054,13 @@ func (l *ListSupportedMethodsResponseDataItemQuotesItemInstant) String() string 
 	return fmt.Sprintf("%#v", l)
 }
 
-// Standard-delivery estimate. Null if unsupported or the amount does not cover the fee.
 var (
 	listSupportedMethodsResponseDataItemQuotesItemStandardFieldEstimatedArrival = big.NewInt(1 << 0)
 	listSupportedMethodsResponseDataItemQuotesItemStandardFieldFee              = big.NewInt(1 << 1)
 	listSupportedMethodsResponseDataItemQuotesItemStandardFieldTotalReceived    = big.NewInt(1 << 2)
 )
 
+// Standard-delivery estimate. Null if unsupported or the amount does not cover the fee.
 type ListSupportedMethodsResponseDataItemQuotesItemStandard struct {
 	EstimatedArrival time.Time `json:"estimated_arrival" url:"estimated_arrival"`
 	Fee              float64   `json:"fee" url:"fee"`
@@ -894,10 +1102,12 @@ func (l *ListSupportedMethodsResponseDataItemQuotesItemStandard) GetExtraPropert
 }
 
 func (l *ListSupportedMethodsResponseDataItemQuotesItemStandard) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEstimatedArrival sets the EstimatedArrival field and marks it as non-optional;
@@ -983,6 +1193,13 @@ var (
 	listSupportedMethodsResponseDataItemRequiredFieldsItemFieldType        = big.NewInt(1 << 8)
 	listSupportedMethodsResponseDataItemRequiredFieldsItemFieldValidation  = big.NewInt(1 << 9)
 )
+
+// listSupportedMethodsResponseDataItemRequiredFieldsItemNullableFields maps the wire names of ListSupportedMethodsResponseDataItemRequiredFieldsItem's nullable fields (required or optional) to their field bits.
+var listSupportedMethodsResponseDataItemRequiredFieldsItemNullableFields = map[string]*big.Int{
+	"options":     listSupportedMethodsResponseDataItemRequiredFieldsItemFieldOptions,
+	"placeholder": listSupportedMethodsResponseDataItemRequiredFieldsItemFieldPlaceholder,
+	"validation":  listSupportedMethodsResponseDataItemRequiredFieldsItemFieldValidation,
+}
 
 type ListSupportedMethodsResponseDataItemRequiredFieldsItem struct {
 	// Stable field ID (`fld_` + the semantic type), used as the field key when creating the payout method. Safe to hardcode — it never changes for a given field.
@@ -1090,10 +1307,12 @@ func (l *ListSupportedMethodsResponseDataItemRequiredFieldsItem) GetExtraPropert
 }
 
 func (l *ListSupportedMethodsResponseDataItemRequiredFieldsItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1178,6 +1397,13 @@ func (l *ListSupportedMethodsResponseDataItemRequiredFieldsItem) UnmarshalJSON(d
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listSupportedMethodsResponseDataItemRequiredFieldsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1234,6 +1460,12 @@ var (
 	listSupportedMethodsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listSupportedMethodsResponsePageInfoNullableFields maps the wire names of ListSupportedMethodsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listSupportedMethodsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listSupportedMethodsResponsePageInfoFieldEndCursor,
+	"start_cursor": listSupportedMethodsResponsePageInfoFieldStartCursor,
+}
+
 type ListSupportedMethodsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1283,10 +1515,12 @@ func (l *ListSupportedMethodsResponsePageInfo) GetExtraProperties() map[string]i
 }
 
 func (l *ListSupportedMethodsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1329,6 +1563,13 @@ func (l *ListSupportedMethodsResponsePageInfo) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listSupportedMethodsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

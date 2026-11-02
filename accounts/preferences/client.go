@@ -5,10 +5,10 @@ package preferences
 import (
 	context "context"
 
-	accounts "github.com/whopio/whopsdk-go/accounts"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	accounts "github.com/whopio/whopsdk-go/v2/accounts"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -21,7 +21,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -65,7 +65,19 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Updates the account's preferences. Each top-level key present in the body is replaced as a whole; omitted keys are left untouched. `ads_triple_whale_integration` takes the Data-In API key to connect with, or `null` to disconnect. `ads_payment_methods` always requires a `primary` entry. `backup` is optional and any pairing is allowed — two cards, `card`+`platform_balance`, or a single method — so a card-only advertiser can fund ads without a platform balance. The `primary` and `backup` must be different sources. A `platform_balance` entry may omit `id` to use the account's default Whop balance. Configuring a `card` requires a user token; account API keys can set up platform-balance billing only.
+// Updates the account's preferences. Each top-level key present in the body is replaced as a whole; omitted keys are left untouched.
+//
+// Required scopes depend on the preferences being updated:
+//
+// | Preferences | Required scope |
+// | --- | --- |
+// | `ads_payment_methods`, `ads_reporting_currency`, `ads_scheduling_timezone`, `ads_triple_whale_integration`, `ads_certifications` | `ad_campaign:create` |
+// | `cards_auto_top_up`, `cards_notifications`, `covers_connected_account_negative_balances` | `payout:account:update` |
+// | `dispute_fighter_enabled` | `payment:dispute` |
+// | `economic_intelligence_duration_key`, `economic_intelligence_auto_renew` | `company:update` |
+// | `feedback_options`, `customer_tracking` | `company:manage_checkout` |
+//
+// When updating preferences from multiple rows, all corresponding scopes are required for the account.
 //
 // Example:
 //

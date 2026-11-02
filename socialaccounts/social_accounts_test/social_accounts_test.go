@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -112,8 +112,8 @@ func TestSocialAccountsCreateWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.CreateSocialAccountsRequest{
-		Platform: whopsdk.CreateSocialAccountsRequestPlatformFacebook,
+	request := &whopsdk.CreateSocialAccountsRequestBody{
+		Facebook: &whopsdk.CreateSocialAccountsRequestBodyFacebook{},
 	}
 	_, invocationErr := client.SocialAccounts.Create(
 		context.TODO(),
@@ -139,7 +139,8 @@ func TestSocialAccountsConnectWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.ConnectSocialAccountsRequest{
-		Platform: whopsdk.ConnectSocialAccountsRequestPlatformMetaBusiness,
+		Platform:    whopsdk.ConnectSocialAccountsRequestPlatformTiktok,
+		RedirectURL: "https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/ads/settings",
 	}
 	_, invocationErr := client.SocialAccounts.Connect(
 		context.TODO(),
@@ -179,7 +180,7 @@ func TestSocialAccountsDeleteWithWireMock(
 	VerifyRequestCount(t, "TestSocialAccountsDeleteWithWireMock", "DELETE", "/social_accounts/id", nil, 1)
 }
 
-func TestSocialAccountsLeadFormsWithWireMock(
+func TestSocialAccountsRefreshWithWireMock(
 	t *testing.T,
 ) {
 	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
@@ -190,45 +191,17 @@ func TestSocialAccountsLeadFormsWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.LeadFormsSocialAccountsRequest{
-		ID:        "id",
-		AccountID: "account_id",
+	request := &whopsdk.RefreshSocialAccountsRequest{
+		ID: "id",
 	}
-	_, invocationErr := client.SocialAccounts.LeadForms(
+	_, invocationErr := client.SocialAccounts.Refresh(
 		context.TODO(),
 		request,
 		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestSocialAccountsLeadFormsWithWireMock"}},
+			http.Header{"X-Test-Id": []string{"TestSocialAccountsRefreshWithWireMock"}},
 		),
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestSocialAccountsLeadFormsWithWireMock", "GET", "/social_accounts/id/lead_forms", map[string]interface{}{"account_id": "account_id"}, 1)
-}
-
-func TestSocialAccountsPostsWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.PostsSocialAccountsRequest{
-		ID:        "id",
-		AccountID: "account_id",
-	}
-	_, invocationErr := client.SocialAccounts.Posts(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestSocialAccountsPostsWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestSocialAccountsPostsWithWireMock", "GET", "/social_accounts/id/posts", map[string]interface{}{"account_id": "account_id"}, 1)
+	VerifyRequestCount(t, "TestSocialAccountsRefreshWithWireMock", "POST", "/social_accounts/id/refresh", nil, 1)
 }

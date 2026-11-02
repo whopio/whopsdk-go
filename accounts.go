@@ -5,40 +5,57 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
 
 var (
-	createAccountsRequestFieldAffiliateCode = big.NewInt(1 << 0)
-	createAccountsRequestFieldCountry       = big.NewInt(1 << 1)
-	createAccountsRequestFieldEmail         = big.NewInt(1 << 2)
-	createAccountsRequestFieldMetadata      = big.NewInt(1 << 3)
-	createAccountsRequestFieldTitle         = big.NewInt(1 << 4)
+	createAccountsRequestFieldAffiliateCode         = big.NewInt(1 << 0)
+	createAccountsRequestFieldBlueprintID           = big.NewInt(1 << 1)
+	createAccountsRequestFieldCountry               = big.NewInt(1 << 2)
+	createAccountsRequestFieldDisputeFighterEnabled = big.NewInt(1 << 3)
+	createAccountsRequestFieldEmail                 = big.NewInt(1 << 4)
+	createAccountsRequestFieldMetadata              = big.NewInt(1 << 5)
+	createAccountsRequestFieldOrchestrationEnabled  = big.NewInt(1 << 6)
+	createAccountsRequestFieldSendCustomerEmails    = big.NewInt(1 << 7)
+	createAccountsRequestFieldTitle                 = big.NewInt(1 << 8)
+	createAccountsRequestFieldWebsite               = big.NewInt(1 << 9)
 )
 
 type CreateAccountsRequest struct {
-	// The username, if any, of the partner who referred this account
+	// A saved partner referral link code for this new business account. An existing primary user referral takes priority. Used with user tokens creating top-level accounts.
 	AffiliateCode *string `json:"affiliate_code,omitempty" url:"-"`
+	// The blueprint App ID, prefixed `app_`. Creates a hosted website for the account and queues its deployment asynchronously; the Account response does not report deployment completion.
+	BlueprintID *string `json:"blueprint_id,omitempty" url:"-"`
 	// The ISO 3166-1 alpha-2 country code where the account's business is located (e.g. `US`). Defaults to the parent account's country for connected accounts.
 	Country *string `json:"country,omitempty" url:"-"`
-	// The email address of the account owner. Required for Account API key requests.
+	// Whether Whop assembles and files dispute evidence for this account. Enabling it opts into the success fee charged on disputes it wins. Requires payment:dispute. Omit to preserve the existing setting or creation default.
+	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
+	// The email address of the account owner. Required when creating a connected account.
 	Email *string `json:"email,omitempty" url:"-"`
 	// Arbitrary key/value metadata to store on the account.
 	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
+	// Whether payment orchestration is enabled for this account. Requires payout:account:update. Omit to preserve the existing setting or creation default.
+	OrchestrationEnabled *bool `json:"orchestration_enabled,omitempty" url:"-"`
+	// Whether Whop sends transactional emails to customers on behalf of the connected account.
+	SendCustomerEmails *bool `json:"send_customer_emails,omitempty" url:"-"`
 	// The display name of the account. Defaults to `metadata.external_id` or the owner's email when omitted.
 	Title *string `json:"title,omitempty" url:"-"`
+	// The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry.
+	Website *string `json:"website,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (c *CreateAccountsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAffiliateCode sets the AffiliateCode field and marks it as non-optional;
@@ -48,11 +65,25 @@ func (c *CreateAccountsRequest) SetAffiliateCode(affiliateCode *string) {
 	c.require(createAccountsRequestFieldAffiliateCode)
 }
 
+// SetBlueprintID sets the BlueprintID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAccountsRequest) SetBlueprintID(blueprintID *string) {
+	c.BlueprintID = blueprintID
+	c.require(createAccountsRequestFieldBlueprintID)
+}
+
 // SetCountry sets the Country field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateAccountsRequest) SetCountry(country *string) {
 	c.Country = country
 	c.require(createAccountsRequestFieldCountry)
+}
+
+// SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAccountsRequest) SetDisputeFighterEnabled(disputeFighterEnabled *bool) {
+	c.DisputeFighterEnabled = disputeFighterEnabled
+	c.require(createAccountsRequestFieldDisputeFighterEnabled)
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -69,11 +100,32 @@ func (c *CreateAccountsRequest) SetMetadata(metadata map[string]any) {
 	c.require(createAccountsRequestFieldMetadata)
 }
 
+// SetOrchestrationEnabled sets the OrchestrationEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAccountsRequest) SetOrchestrationEnabled(orchestrationEnabled *bool) {
+	c.OrchestrationEnabled = orchestrationEnabled
+	c.require(createAccountsRequestFieldOrchestrationEnabled)
+}
+
+// SetSendCustomerEmails sets the SendCustomerEmails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAccountsRequest) SetSendCustomerEmails(sendCustomerEmails *bool) {
+	c.SendCustomerEmails = sendCustomerEmails
+	c.require(createAccountsRequestFieldSendCustomerEmails)
+}
+
 // SetTitle sets the Title field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateAccountsRequest) SetTitle(title *string) {
 	c.Title = title
 	c.require(createAccountsRequestFieldTitle)
+}
+
+// SetWebsite sets the Website field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAccountsRequest) SetWebsite(website *string) {
+	c.Website = website
+	c.require(createAccountsRequestFieldWebsite)
 }
 
 func (c *CreateAccountsRequest) UnmarshalJSON(data []byte) error {
@@ -98,21 +150,46 @@ func (c *CreateAccountsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	deleteAccountsRequestFieldID = big.NewInt(1 << 0)
+)
+
+type DeleteAccountsRequest struct {
+	// Connected account ID, prefixed `biz_`.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (d *DeleteAccountsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
+	}
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteAccountsRequest) SetID(id string) {
+	d.ID = id
+	d.require(deleteAccountsRequestFieldID)
+}
+
+var (
 	formCompanyAccountsRequestFieldID                 = big.NewInt(1 << 0)
 	formCompanyAccountsRequestFieldBusinessAddress    = big.NewInt(1 << 1)
 	formCompanyAccountsRequestFieldBusinessName       = big.NewInt(1 << 2)
 	formCompanyAccountsRequestFieldBusinessPhone      = big.NewInt(1 << 3)
-	formCompanyAccountsRequestFieldBusinessType       = big.NewInt(1 << 4)
-	formCompanyAccountsRequestFieldBusinessWebsite    = big.NewInt(1 << 5)
-	formCompanyAccountsRequestFieldEntitySuffix       = big.NewInt(1 << 6)
-	formCompanyAccountsRequestFieldEntityType         = big.NewInt(1 << 7)
-	formCompanyAccountsRequestFieldExpediteEin        = big.NewInt(1 << 8)
-	formCompanyAccountsRequestFieldFormationState     = big.NewInt(1 << 9)
-	formCompanyAccountsRequestFieldFounders           = big.NewInt(1 << 10)
-	formCompanyAccountsRequestFieldIndustryGroup      = big.NewInt(1 << 11)
-	formCompanyAccountsRequestFieldIndustryType       = big.NewInt(1 << 12)
-	formCompanyAccountsRequestFieldShareStructure     = big.NewInt(1 << 13)
-	formCompanyAccountsRequestFieldUseRegisteredAgent = big.NewInt(1 << 14)
+	formCompanyAccountsRequestFieldBusinessWebsite    = big.NewInt(1 << 4)
+	formCompanyAccountsRequestFieldEntitySuffix       = big.NewInt(1 << 5)
+	formCompanyAccountsRequestFieldEntityType         = big.NewInt(1 << 6)
+	formCompanyAccountsRequestFieldExpediteEin        = big.NewInt(1 << 7)
+	formCompanyAccountsRequestFieldFormationState     = big.NewInt(1 << 8)
+	formCompanyAccountsRequestFieldFounders           = big.NewInt(1 << 9)
+	formCompanyAccountsRequestFieldShareStructure     = big.NewInt(1 << 10)
+	formCompanyAccountsRequestFieldUseRegisteredAgent = big.NewInt(1 << 11)
 )
 
 type FormCompanyAccountsRequest struct {
@@ -124,8 +201,6 @@ type FormCompanyAccountsRequest struct {
 	BusinessName string `json:"business_name" url:"-"`
 	// Business phone number in E.164 format, for example `+12125550100`. Required unless `use_registered_agent` is `true`.
 	BusinessPhone *string `json:"business_phone,omitempty" url:"-"`
-	// High-level business category, from the Whop business taxonomy. Valid values are listed on [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary).
-	BusinessType string `json:"business_type" url:"-"`
 	// Company website URL.
 	BusinessWebsite *string `json:"business_website,omitempty" url:"-"`
 	// Legal entity ending appended to `business_name`. LLC formations accept `LLC`, `L.L.C`, `L.L.C.` or `Limited Liability Company` and default to `LLC`; C-Corp formations accept `Inc`, `Inc.`, `Incorporated`, `Corp.`, `Corporation`, `C Corp`, `C Corporation`, `CCorp` or `Company` and default to `Inc.`. Unrecognized values fall back to the default for the entity type.
@@ -134,14 +209,10 @@ type FormCompanyAccountsRequest struct {
 	EntityType *FormCompanyAccountsRequestEntityType `json:"entity_type,omitempty" url:"-"`
 	// Request expedited EIN processing for an additional fee. Available only when no founder supplies an SSN.
 	ExpediteEin *bool `json:"expedite_ein,omitempty" url:"-"`
-	// Two-letter code of the US state (or `DC`) to form the company in.
+	// Two-letter code of the US state (or `DC`) to form the company in. We recommend `WY` because Wyoming formations are completed the same day.
 	FormationState FormCompanyAccountsRequestFormationState `json:"formation_state" url:"-"`
 	// The company's founders. Exactly one must be marked `is_primary` — the responsible party for the filing.
 	Founders []*FormCompanyAccountsRequestFoundersItem `json:"founders" url:"-"`
-	// Industry group, from the Whop business taxonomy. Valid values are listed on [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary).
-	IndustryGroup string `json:"industry_group" url:"-"`
-	// Specific industry vertical, from the Whop business taxonomy. Valid values are listed on [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary).
-	IndustryType string `json:"industry_type" url:"-"`
 	// Authorized share structure. Required when `entity_type` is `c_corp`; ignored for LLCs.
 	ShareStructure *FormCompanyAccountsRequestShareStructure `json:"share_structure,omitempty" url:"-"`
 	// Use the registered agent's address as the company address instead of `business_address`.
@@ -152,10 +223,12 @@ type FormCompanyAccountsRequest struct {
 }
 
 func (f *FormCompanyAccountsRequest) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -184,13 +257,6 @@ func (f *FormCompanyAccountsRequest) SetBusinessName(businessName string) {
 func (f *FormCompanyAccountsRequest) SetBusinessPhone(businessPhone *string) {
 	f.BusinessPhone = businessPhone
 	f.require(formCompanyAccountsRequestFieldBusinessPhone)
-}
-
-// SetBusinessType sets the BusinessType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (f *FormCompanyAccountsRequest) SetBusinessType(businessType string) {
-	f.BusinessType = businessType
-	f.require(formCompanyAccountsRequestFieldBusinessType)
 }
 
 // SetBusinessWebsite sets the BusinessWebsite field and marks it as non-optional;
@@ -233,20 +299,6 @@ func (f *FormCompanyAccountsRequest) SetFormationState(formationState FormCompan
 func (f *FormCompanyAccountsRequest) SetFounders(founders []*FormCompanyAccountsRequestFoundersItem) {
 	f.Founders = founders
 	f.require(formCompanyAccountsRequestFieldFounders)
-}
-
-// SetIndustryGroup sets the IndustryGroup field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (f *FormCompanyAccountsRequest) SetIndustryGroup(industryGroup string) {
-	f.IndustryGroup = industryGroup
-	f.require(formCompanyAccountsRequestFieldIndustryGroup)
-}
-
-// SetIndustryType sets the IndustryType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (f *FormCompanyAccountsRequest) SetIndustryType(industryType string) {
-	f.IndustryType = industryType
-	f.require(formCompanyAccountsRequestFieldIndustryType)
 }
 
 // SetShareStructure sets the ShareStructure field and marks it as non-optional;
@@ -298,16 +350,17 @@ var (
 	listAccountsRequestFieldVolumeMin       = big.NewInt(1 << 10)
 	listAccountsRequestFieldVolumeMax       = big.NewInt(1 << 11)
 	listAccountsRequestFieldParentAccountID = big.NewInt(1 << 12)
+	listAccountsRequestFieldOwnerID         = big.NewInt(1 << 13)
 )
 
 type ListAccountsRequest struct {
-	// The number of accounts to return (default 10, max 50).
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor; returns accounts after this position.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of accounts to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// A cursor; returns accounts before this position.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 	// The field to sort accounts by. `volume` requires `stats:read` on the parent account.
 	Order *ListAccountsRequestOrder `json:"-" url:"order,omitempty"`
@@ -327,16 +380,20 @@ type ListAccountsRequest struct {
 	VolumeMax *float64 `json:"-" url:"volume_max,omitempty"`
 	// For platforms: the parent account ID whose direct connected accounts to return. Requires `payout:account:read` on the parent account.
 	ParentAccountID *string `json:"-" url:"parent_account_id,omitempty"`
+	// Return only accounts owned by this user (`user_...`), the account's `owner`. Cannot be combined with `parent_account_id`.
+	OwnerID *string `json:"-" url:"owner_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (l *ListAccountsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetFirst sets the First field and marks it as non-optional;
@@ -430,23 +487,63 @@ func (l *ListAccountsRequest) SetParentAccountID(parentAccountID *string) {
 	l.require(listAccountsRequestFieldParentAccountID)
 }
 
+// SetOwnerID sets the OwnerID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAccountsRequest) SetOwnerID(ownerID *string) {
+	l.OwnerID = ownerID
+	l.require(listAccountsRequestFieldOwnerID)
+}
+
 var (
-	retrieveAccountsRequestFieldID = big.NewInt(1 << 0)
+	meAccountsRequestFieldIncludeTrading = big.NewInt(1 << 0)
+)
+
+type MeAccountsRequest struct {
+	// Also return the trading account under `trading`: its address and its Hyperliquid WebSocket subscriptions. Requires crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet; null otherwise.
+	IncludeTrading *bool `json:"-" url:"include_trading,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (m *MeAccountsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
+	}
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetIncludeTrading sets the IncludeTrading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MeAccountsRequest) SetIncludeTrading(includeTrading *bool) {
+	m.IncludeTrading = includeTrading
+	m.require(meAccountsRequestFieldIncludeTrading)
+}
+
+var (
+	retrieveAccountsRequestFieldID             = big.NewInt(1 << 0)
+	retrieveAccountsRequestFieldIncludeTrading = big.NewInt(1 << 1)
 )
 
 type RetrieveAccountsRequest struct {
-	// Account ID, prefixed `biz_`, its public route, or `me` for the account associated with the current API key.
+	// Account ID, prefixed `biz_`, its public route, or `me` for the account associated with the current Account API key. User tokens have no single account, so they cannot use `me`.
 	ID string `json:"-" url:"-"`
+	// Also return the trading account under `trading`: its address and its Hyperliquid WebSocket subscriptions. Requires crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet; null otherwise.
+	IncludeTrading *bool `json:"-" url:"include_trading,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (r *RetrieveAccountsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -456,10 +553,164 @@ func (r *RetrieveAccountsRequest) SetID(id string) {
 	r.require(retrieveAccountsRequestFieldID)
 }
 
+// SetIncludeTrading sets the IncludeTrading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveAccountsRequest) SetIncludeTrading(includeTrading *bool) {
+	r.IncludeTrading = includeTrading
+	r.require(retrieveAccountsRequestFieldIncludeTrading)
+}
+
 var (
-	transferOwnershipAccountsRequestFieldID         = big.NewInt(1 << 0)
-	transferOwnershipAccountsRequestFieldAsPartner  = big.NewInt(1 << 1)
-	transferOwnershipAccountsRequestFieldIdentifier = big.NewInt(1 << 2)
+	retryAdsPaymentAccountsRequestFieldID = big.NewInt(1 << 0)
+)
+
+type RetryAdsPaymentAccountsRequest struct {
+	// Account ID, prefixed `biz_`.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *RetryAdsPaymentAccountsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetryAdsPaymentAccountsRequest) SetID(id string) {
+	r.ID = id
+	r.require(retryAdsPaymentAccountsRequestFieldID)
+}
+
+var (
+	searchAccountsRequestFieldFirst     = big.NewInt(1 << 0)
+	searchAccountsRequestFieldAfter     = big.NewInt(1 << 1)
+	searchAccountsRequestFieldLast      = big.NewInt(1 << 2)
+	searchAccountsRequestFieldBefore    = big.NewInt(1 << 3)
+	searchAccountsRequestFieldQuery     = big.NewInt(1 << 4)
+	searchAccountsRequestFieldOrder     = big.NewInt(1 << 5)
+	searchAccountsRequestFieldDirection = big.NewInt(1 << 6)
+)
+
+type SearchAccountsRequest struct {
+	// Number of results to return from the start of the range.
+	First *int `json:"-" url:"first,omitempty"`
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+	After *string `json:"-" url:"after,omitempty"`
+	// Number of results to return from the end of the range.
+	Last *int `json:"-" url:"last,omitempty"`
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+	Before *string `json:"-" url:"before,omitempty"`
+	// The account name to search for.
+	Query string `json:"-" url:"query"`
+	// Sort field. Without it, support searches return the best match first and other searches return the newest account first.
+	Order *SearchAccountsRequestOrder `json:"-" url:"order,omitempty"`
+	// Sort direction.
+	Direction *SearchAccountsRequestDirection `json:"-" url:"direction,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *SearchAccountsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetFirst sets the First field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsRequest) SetFirst(first *int) {
+	s.First = first
+	s.require(searchAccountsRequestFieldFirst)
+}
+
+// SetAfter sets the After field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsRequest) SetAfter(after *string) {
+	s.After = after
+	s.require(searchAccountsRequestFieldAfter)
+}
+
+// SetLast sets the Last field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsRequest) SetLast(last *int) {
+	s.Last = last
+	s.require(searchAccountsRequestFieldLast)
+}
+
+// SetBefore sets the Before field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsRequest) SetBefore(before *string) {
+	s.Before = before
+	s.require(searchAccountsRequestFieldBefore)
+}
+
+// SetQuery sets the Query field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsRequest) SetQuery(query string) {
+	s.Query = query
+	s.require(searchAccountsRequestFieldQuery)
+}
+
+// SetOrder sets the Order field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsRequest) SetOrder(order *SearchAccountsRequestOrder) {
+	s.Order = order
+	s.require(searchAccountsRequestFieldOrder)
+}
+
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsRequest) SetDirection(direction *SearchAccountsRequestDirection) {
+	s.Direction = direction
+	s.require(searchAccountsRequestFieldDirection)
+}
+
+var (
+	suspendAccountsRequestFieldID = big.NewInt(1 << 0)
+)
+
+type SuspendAccountsRequest struct {
+	// Connected account ID, prefixed `biz_`.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *SuspendAccountsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SuspendAccountsRequest) SetID(id string) {
+	s.ID = id
+	s.require(suspendAccountsRequestFieldID)
+}
+
+var (
+	transferOwnershipAccountsRequestFieldID               = big.NewInt(1 << 0)
+	transferOwnershipAccountsRequestFieldAsPartner        = big.NewInt(1 << 1)
+	transferOwnershipAccountsRequestFieldAuthorizedUserID = big.NewInt(1 << 2)
+	transferOwnershipAccountsRequestFieldIdentifier       = big.NewInt(1 << 3)
+	transferOwnershipAccountsRequestFieldMemberID         = big.NewInt(1 << 4)
+	transferOwnershipAccountsRequestFieldMessage          = big.NewInt(1 << 5)
 )
 
 type TransferOwnershipAccountsRequest struct {
@@ -467,18 +718,26 @@ type TransferOwnershipAccountsRequest struct {
 	ID string `json:"-" url:"-"`
 	// If true, the current owner is credited as the account's Whop partner, earning partner commission on its sales. Requires the current owner to already be an enrolled Whop partner. Skipped if the account already has an active partner.
 	AsPartner *bool `json:"as_partner,omitempty" url:"-"`
+	// Your team membership on the business this referral is made for, prefixed `ausr_`. The referral then credits that team instead of you personally. Requires `as_partner`.
+	AuthorizedUserID *string `json:"authorized_user_id,omitempty" url:"-"`
 	// The user to transfer ownership to: a user ID (`user_*`) or an email address. An email address with no Whop account yet is sent an invite to create one.
 	Identifier string `json:"identifier" url:"-"`
+	// Your member record on the business this referral is made for, prefixed `mber_`, when your role there is held on your member record. Send this or `authorized_user_id`, not both. Requires `as_partner`.
+	MemberID *string `json:"member_id,omitempty" url:"-"`
+	// A note from the partner, shown as a quote in the invite email and signed with their name. Requires `as_partner`; sending it on an ordinary transfer is a 400. Omit it and the email sends without a note.
+	Message *string `json:"message,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (t *TransferOwnershipAccountsRequest) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -495,11 +754,32 @@ func (t *TransferOwnershipAccountsRequest) SetAsPartner(asPartner *bool) {
 	t.require(transferOwnershipAccountsRequestFieldAsPartner)
 }
 
+// SetAuthorizedUserID sets the AuthorizedUserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TransferOwnershipAccountsRequest) SetAuthorizedUserID(authorizedUserID *string) {
+	t.AuthorizedUserID = authorizedUserID
+	t.require(transferOwnershipAccountsRequestFieldAuthorizedUserID)
+}
+
 // SetIdentifier sets the Identifier field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (t *TransferOwnershipAccountsRequest) SetIdentifier(identifier string) {
 	t.Identifier = identifier
 	t.require(transferOwnershipAccountsRequestFieldIdentifier)
+}
+
+// SetMemberID sets the MemberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TransferOwnershipAccountsRequest) SetMemberID(memberID *string) {
+	t.MemberID = memberID
+	t.require(transferOwnershipAccountsRequestFieldMemberID)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TransferOwnershipAccountsRequest) SetMessage(message *string) {
+	t.Message = message
+	t.require(transferOwnershipAccountsRequestFieldMessage)
 }
 
 func (t *TransferOwnershipAccountsRequest) UnmarshalJSON(data []byte) error {
@@ -524,66 +804,138 @@ func (t *TransferOwnershipAccountsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	accountFieldBalances                            = big.NewInt(1 << 0)
-	accountFieldBannerImageURL                      = big.NewInt(1 << 1)
-	accountFieldBusinessAddress                     = big.NewInt(1 << 2)
-	accountFieldBusinessName                        = big.NewInt(1 << 3)
-	accountFieldBusinessType                        = big.NewInt(1 << 4)
-	accountFieldCanTransferPendingBalanceToChildren = big.NewInt(1 << 5)
-	accountFieldCapabilities                        = big.NewInt(1 << 6)
-	accountFieldCards                               = big.NewInt(1 << 7)
-	accountFieldCollectVatID                        = big.NewInt(1 << 8)
-	accountFieldCompanyFormation                    = big.NewInt(1 << 9)
-	accountFieldCountry                             = big.NewInt(1 << 10)
-	accountFieldCreatedAt                           = big.NewInt(1 << 11)
-	accountFieldDescription                         = big.NewInt(1 << 12)
-	accountFieldEmail                               = big.NewInt(1 << 13)
-	accountFieldHomePreferences                     = big.NewInt(1 << 14)
-	accountFieldID                                  = big.NewInt(1 << 15)
-	accountFieldIndustryGroup                       = big.NewInt(1 << 16)
-	accountFieldIndustryType                        = big.NewInt(1 << 17)
-	accountFieldInvoicePrefix                       = big.NewInt(1 << 18)
-	accountFieldLogoURL                             = big.NewInt(1 << 19)
-	accountFieldMetadata                            = big.NewInt(1 << 20)
-	accountFieldOnboardingType                      = big.NewInt(1 << 21)
-	accountFieldOpengraphImageURL                   = big.NewInt(1 << 22)
-	accountFieldOpengraphImageVariant               = big.NewInt(1 << 23)
-	accountFieldOtherBusinessDescription            = big.NewInt(1 << 24)
-	accountFieldOtherIndustryDescription            = big.NewInt(1 << 25)
-	accountFieldOwner                               = big.NewInt(1 << 26)
-	accountFieldParentAccount                       = big.NewInt(1 << 27)
-	accountFieldPaymentControls                     = big.NewInt(1 << 28)
-	accountFieldProductTaxCode                      = big.NewInt(1 << 29)
-	accountFieldRecommendedActions                  = big.NewInt(1 << 30)
-	accountFieldRequire2Fa                          = big.NewInt(1 << 31)
-	accountFieldRequiredActions                     = big.NewInt(1 << 32)
-	accountFieldRoute                               = big.NewInt(1 << 33)
-	accountFieldSendCustomerEmails                  = big.NewInt(1 << 34)
-	accountFieldShowJoinedWhops                     = big.NewInt(1 << 35)
-	accountFieldShowReviewsDtc                      = big.NewInt(1 << 36)
-	accountFieldShowUserDirectory                   = big.NewInt(1 << 37)
-	accountFieldSocialLinks                         = big.NewInt(1 << 38)
-	accountFieldStablecoinRails                     = big.NewInt(1 << 39)
-	accountFieldStatus                              = big.NewInt(1 << 40)
-	accountFieldStatusReason                        = big.NewInt(1 << 41)
-	accountFieldStorePageConfig                     = big.NewInt(1 << 42)
-	accountFieldTargetAudience                      = big.NewInt(1 << 43)
-	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 44)
-	accountFieldTaxIdentifiers                      = big.NewInt(1 << 45)
-	accountFieldTaxRemittedBy                       = big.NewInt(1 << 46)
-	accountFieldTaxType                             = big.NewInt(1 << 47)
-	accountFieldThreeDsLevel                        = big.NewInt(1 << 48)
-	accountFieldTitle                               = big.NewInt(1 << 49)
-	accountFieldTotalEarnedUsd                      = big.NewInt(1 << 50)
-	accountFieldTotalUsd                            = big.NewInt(1 << 51)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(1 << 52)
-	accountFieldVerification                        = big.NewInt(1 << 53)
-	accountFieldVolumeUsd                           = big.NewInt(1 << 54)
-	accountFieldWallet                              = big.NewInt(1 << 55)
+	accountFieldAdsSpendUsd                         = big.NewInt(1 << 0)
+	accountFieldBalances                            = big.NewInt(1 << 1)
+	accountFieldBannerImageURL                      = big.NewInt(1 << 2)
+	accountFieldBusinessAddress                     = big.NewInt(1 << 3)
+	accountFieldBusinessName                        = big.NewInt(1 << 4)
+	accountFieldBusinessType                        = big.NewInt(1 << 5)
+	accountFieldCanTransferPendingBalanceToChildren = big.NewInt(1 << 6)
+	accountFieldCancellationPolicy                  = big.NewInt(1 << 7)
+	accountFieldCapabilities                        = big.NewInt(1 << 8)
+	accountFieldCards                               = big.NewInt(1 << 9)
+	accountFieldCollectVatID                        = big.NewInt(1 << 10)
+	accountFieldCompanyFormation                    = big.NewInt(1 << 11)
+	accountFieldCountry                             = big.NewInt(1 << 12)
+	accountFieldCreatedAt                           = big.NewInt(1 << 13)
+	accountFieldCustomersL30D                       = big.NewInt(1 << 14)
+	accountFieldDescription                         = big.NewInt(1 << 15)
+	accountFieldDirectReportsCount                  = big.NewInt(1 << 16)
+	accountFieldDisputeFighterEnabled               = big.NewInt(1 << 17)
+	accountFieldEconomicIntelligence                = big.NewInt(1 << 18)
+	accountFieldEmail                               = big.NewInt(1 << 19)
+	accountFieldEula                                = big.NewInt(1 << 20)
+	accountFieldFinancing                           = big.NewInt(1 << 21)
+	accountFieldHomePreferences                     = big.NewInt(1 << 22)
+	accountFieldID                                  = big.NewInt(1 << 23)
+	accountFieldIndustryType                        = big.NewInt(1 << 24)
+	accountFieldInvoicePrefix                       = big.NewInt(1 << 25)
+	accountFieldLevel                               = big.NewInt(1 << 26)
+	accountFieldLogoURL                             = big.NewInt(1 << 27)
+	accountFieldMetadata                            = big.NewInt(1 << 28)
+	accountFieldOnboardingType                      = big.NewInt(1 << 29)
+	accountFieldOpengraphImageURL                   = big.NewInt(1 << 30)
+	accountFieldOpengraphImageVariant               = big.NewInt(1 << 31)
+	accountFieldOrchestrationEnabled                = big.NewInt(1 << 32)
+	accountFieldOtherBusinessDescription            = big.NewInt(1 << 33)
+	accountFieldOtherIndustryDescription            = big.NewInt(1 << 34)
+	accountFieldOwner                               = big.NewInt(1 << 35)
+	accountFieldParentAccount                       = big.NewInt(1 << 36)
+	accountFieldPartner                             = big.NewInt(1 << 37)
+	accountFieldPaymentControls                     = big.NewInt(1 << 38)
+	accountFieldPlatformCredits                     = big.NewInt(1 << 39)
+	accountFieldPrivacyPolicy                       = big.NewInt(1 << 40)
+	accountFieldProductTaxCode                      = big.NewInt(1 << 41)
+	accountFieldRecommendedActions                  = big.NewInt(1 << 42)
+	accountFieldRequire2Fa                          = big.NewInt(1 << 43)
+	accountFieldRequiredActions                     = big.NewInt(1 << 44)
+	accountFieldReturnPolicy                        = big.NewInt(1 << 45)
+	accountFieldRewards                             = big.NewInt(1 << 46)
+	accountFieldRoute                               = big.NewInt(1 << 47)
+	accountFieldSendCustomerEmails                  = big.NewInt(1 << 48)
+	accountFieldShippingPolicy                      = big.NewInt(1 << 49)
+	accountFieldShowJoinedWhops                     = big.NewInt(1 << 50)
+	accountFieldShowReviewsDtc                      = big.NewInt(1 << 51)
+	accountFieldShowUserDirectory                   = big.NewInt(1 << 52)
+	accountFieldSocialLinks                         = big.NewInt(1 << 53)
+	accountFieldStatus                              = big.NewInt(1 << 54)
+	accountFieldStatusReason                        = big.NewInt(1 << 55)
+	accountFieldStorePageConfig                     = big.NewInt(1 << 56)
+	accountFieldTargetAudience                      = big.NewInt(1 << 57)
+	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 58)
+	accountFieldTaxIdentifiers                      = big.NewInt(1 << 59)
+	accountFieldTaxRemittedBy                       = big.NewInt(1 << 60)
+	accountFieldTaxType                             = big.NewInt(1 << 61)
+	accountFieldTermsOfService                      = big.NewInt(1 << 62)
+	accountFieldThreeDsLevel                        = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	accountFieldTitle                               = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	accountFieldVolumeL30DUsd                       = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 73)
+	accountFieldWhopPartnerEnabledAt                = big.NewInt(0).Lsh(big.NewInt(1), 74)
 )
 
+// accountNullableFields maps the wire names of Account's nullable fields (required or optional) to their field bits.
+var accountNullableFields = map[string]*big.Int{
+	"ads_spend_usd":              accountFieldAdsSpendUsd,
+	"banner_image_url":           accountFieldBannerImageURL,
+	"business_address":           accountFieldBusinessAddress,
+	"business_name":              accountFieldBusinessName,
+	"business_type":              accountFieldBusinessType,
+	"cancellation_policy":        accountFieldCancellationPolicy,
+	"capabilities":               accountFieldCapabilities,
+	"cards":                      accountFieldCards,
+	"country":                    accountFieldCountry,
+	"customers_l30d":             accountFieldCustomersL30D,
+	"description":                accountFieldDescription,
+	"email":                      accountFieldEmail,
+	"eula":                       accountFieldEula,
+	"financing":                  accountFieldFinancing,
+	"industry_type":              accountFieldIndustryType,
+	"invoice_prefix":             accountFieldInvoicePrefix,
+	"level":                      accountFieldLevel,
+	"logo_url":                   accountFieldLogoURL,
+	"onboarding_type":            accountFieldOnboardingType,
+	"opengraph_image_url":        accountFieldOpengraphImageURL,
+	"opengraph_image_variant":    accountFieldOpengraphImageVariant,
+	"other_business_description": accountFieldOtherBusinessDescription,
+	"other_industry_description": accountFieldOtherIndustryDescription,
+	"parent_account":             accountFieldParentAccount,
+	"partner":                    accountFieldPartner,
+	"payment_controls":           accountFieldPaymentControls,
+	"privacy_policy":             accountFieldPrivacyPolicy,
+	"product_tax_code":           accountFieldProductTaxCode,
+	"recommended_actions":        accountFieldRecommendedActions,
+	"required_actions":           accountFieldRequiredActions,
+	"return_policy":              accountFieldReturnPolicy,
+	"shipping_policy":            accountFieldShippingPolicy,
+	"status":                     accountFieldStatus,
+	"status_reason":              accountFieldStatusReason,
+	"target_audience":            accountFieldTargetAudience,
+	"tax_remitted_by":            accountFieldTaxRemittedBy,
+	"tax_type":                   accountFieldTaxType,
+	"terms_of_service":           accountFieldTermsOfService,
+	"three_ds_level":             accountFieldThreeDsLevel,
+	"total_earned_usd":           accountFieldTotalEarnedUsd,
+	"total_usd":                  accountFieldTotalUsd,
+	"trading":                    accountFieldTrading,
+	"volume_l30d_usd":            accountFieldVolumeL30DUsd,
+	"volume_usd":                 accountFieldVolumeUsd,
+	"wallet":                     accountFieldWallet,
+	"website":                    accountFieldWebsite,
+	"whop_partner_enabled_at":    accountFieldWhopPartnerEnabledAt,
+}
+
 type Account struct {
-	Balances []*AccountBalanceToken `json:"balances" url:"balances"`
+	// Lifetime charged ad spend for the account, in USD. Computed only on `list` for callers with `stats:read` on the account; `null` otherwise.
+	AdsSpendUsd *float64               `json:"ads_spend_usd,omitempty" url:"ads_spend_usd,omitempty"`
+	Balances    []*AccountBalanceToken `json:"balances" url:"balances"`
 	// Account banner image URL.
 	BannerImageURL *string `json:"banner_image_url,omitempty" url:"banner_image_url,omitempty"`
 	// Account business address used to calculate tax, with `line1`, `line2`, `city`, `state`, `postal_code`, and `country`. `null` when no address is set.
@@ -591,12 +943,14 @@ type Account struct {
 	// The account's legal business name used with its tax address.
 	BusinessName *string `json:"business_name,omitempty" url:"business_name,omitempty"`
 	// High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
-	BusinessType *AccountBusinessType `json:"business_type,omitempty" url:"business_type,omitempty"`
+	BusinessType *string `json:"business_type,omitempty" url:"business_type,omitempty"`
 	// Whether pending funds may be transferred from this platform account to its connected accounts.
 	CanTransferPendingBalanceToChildren bool `json:"can_transfer_pending_balance_to_children" url:"can_transfer_pending_balance_to_children"`
+	// The account's cancellation policy document, or `null` if they have not published one.
+	CancellationPolicy *File `json:"cancellation_policy,omitempty" url:"cancellation_policy,omitempty"`
 	// Payment rails enabled for this account, each `active`, `inactive`, or `pending` (onboarding or review in progress). Computed only on `retrieve` and `me` for callers with `company:balance:read` scope; `null` otherwise.
 	Capabilities *AccountCapabilities `json:"capabilities,omitempty" url:"capabilities,omitempty"`
-	// Whop Cards application details for the account. Computed only on `retrieve` and `me` for callers with `company:balance:read` scope; `null` otherwise, or when the account has no card application.
+	// Whop Cards application details for the account. Returned on `list`, `retrieve`, and `me` for callers with `company:balance:read` scope; `null` otherwise, or when the account has no card application or blocking application review.
 	Cards *AccountCards `json:"cards,omitempty" url:"cards,omitempty"`
 	// Whether checkout shows a VAT/tax ID field for buyers to optionally enter. Does not require a VAT ID to purchase.
 	CollectVatID bool `json:"collect_vat_id" url:"collect_vat_id"`
@@ -606,19 +960,31 @@ type Account struct {
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
 	// When the account was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
+	// Distinct customers with a paid receipt at the account in the last 30 days, refreshed every few hours. Computed only on `retrieve` for callers with `stats:read` on the account; `null` otherwise, and when the count is unavailable.
+	CustomersL30D *int `json:"customers_l30d,omitempty" url:"customers_l30d,omitempty"`
 	// Account promotional description.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// How many team members report to the business directly, with no manager above them. Present on single-account reads.
+	DirectReportsCount *int `json:"direct_reports_count,omitempty" url:"direct_reports_count,omitempty"`
+	// Whether Whop assembles and files dispute evidence for this account. Enabling it opts the account into the success fee charged on disputes it wins.
+	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
+	// Whether Economic Intelligence is on for the account. It turns off automatically when its committed period ends.
+	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
 	// Account owner email address.
-	Email           *string                      `json:"email,omitempty" url:"email,omitempty"`
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The account's end-user license agreement document, or `null` if they have not published one.
+	Eula *File `json:"eula,omitempty" url:"eula,omitempty"`
+	// The account's most recent financing application. Computed only on `retrieve` and `me` for callers with `company:balance:read` scope; `null` otherwise, or when the account has never applied for financing.
+	Financing       *AccountFinancing            `json:"financing,omitempty" url:"financing,omitempty"`
 	HomePreferences []AccountHomePreferencesItem `json:"home_preferences" url:"home_preferences"`
 	// Account ID, prefixed `biz_`.
 	ID string `json:"id" url:"id"`
-	// Account industry group. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
-	IndustryGroup *AccountIndustryGroup `json:"industry_group,omitempty" url:"industry_group,omitempty"`
 	// Specific industry vertical for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
 	IndustryType *string `json:"industry_type,omitempty" url:"industry_type,omitempty"`
 	// Prefix used for account invoices.
 	InvoicePrefix *string `json:"invoice_prefix,omitempty" url:"invoice_prefix,omitempty"`
+	// The Whop Levels progress of the account's `owner`, counted across every account they own, so all of them show the same level. Computed only on `retrieve` and `me` for callers with `company:basic:read` scope; `null` otherwise, and when the account is not in Whop Levels.
+	Level *AccountLevel `json:"level,omitempty" url:"level,omitempty"`
 	// Account logo image URL.
 	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
 	// Arbitrary key/value metadata supplied at account creation.
@@ -629,6 +995,8 @@ type Account struct {
 	OpengraphImageURL *string `json:"opengraph_image_url,omitempty" url:"opengraph_image_url,omitempty"`
 	// Account Open Graph image variant.
 	OpengraphImageVariant *AccountOpengraphImageVariant `json:"opengraph_image_variant,omitempty" url:"opengraph_image_variant,omitempty"`
+	// Whether payment orchestration is enabled for this account.
+	OrchestrationEnabled bool `json:"orchestration_enabled" url:"orchestration_enabled"`
 	// Business type details when business_type is `other`.
 	OtherBusinessDescription *string `json:"other_business_description,omitempty" url:"other_business_description,omitempty"`
 	// Industry details when industry_type is `other`.
@@ -637,19 +1005,29 @@ type Account struct {
 	Owner *UserSummary `json:"owner" url:"owner"`
 	// Parent account for connected accounts, or `null` for standalone accounts.
 	ParentAccount *AccountParent `json:"parent_account,omitempty" url:"parent_account,omitempty"`
+	// The account's active first-tier partner. Present on retrieve responses; null when no active first-tier partner is attributed to the account. Omitted from other responses.
+	Partner *AccountPartner `json:"partner,omitempty" url:"partner,omitempty"`
 	// Payment health controls currently applied to the account. Computed only on `retrieve` and `me` for callers with `company:balance:read` scope; `null` otherwise.
 	PaymentControls *AccountPaymentControls `json:"payment_controls,omitempty" url:"payment_controls,omitempty"`
+	PlatformCredits []*Money                `json:"platform_credits" url:"platform_credits"`
+	// The account's privacy policy document, or `null` if they have not published one.
+	PrivacyPolicy *File `json:"privacy_policy,omitempty" url:"privacy_policy,omitempty"`
 	// Tax classification code applied by default to the account's products, with `id`, `name`, and `product_type`. `null` when no default is set.
 	ProductTaxCode map[string]any `json:"product_tax_code,omitempty" url:"product_tax_code,omitempty"`
-	// DEPRECATED: Use the `GET /recommended_actions?account_id={account_id}` endpoint instead.
+	// DEPRECATED: Use the `GET /economic_intelligence?account_id={account_id}` endpoint instead.
 	RecommendedActions []*AccountRecommendedAction `json:"recommended_actions,omitempty" url:"recommended_actions,omitempty"`
 	// Whether authorized users must enable two-factor authentication.
 	Require2Fa      bool                     `json:"require_2fa" url:"require_2fa"`
 	RequiredActions []*AccountRequiredAction `json:"required_actions,omitempty" url:"required_actions,omitempty"`
+	// The account's return policy document, or `null` if they have not published one.
+	ReturnPolicy *File                   `json:"return_policy,omitempty" url:"return_policy,omitempty"`
+	Rewards      []*AccountPartnerReward `json:"rewards,omitempty" url:"rewards,omitempty"`
 	// Account public route identifier.
 	Route string `json:"route" url:"route"`
 	// Whether Whop sends transactional emails to customers on behalf of this account.
 	SendCustomerEmails bool `json:"send_customer_emails" url:"send_customer_emails"`
+	// The account's shipping policy document, or `null` if they have not published one.
+	ShippingPolicy *File `json:"shipping_policy,omitempty" url:"shipping_policy,omitempty"`
 	// Whether the account appears in joined whops on other accounts.
 	ShowJoinedWhops bool `json:"show_joined_whops" url:"show_joined_whops"`
 	// Whether reviews are displayed on direct-to-consumer product pages.
@@ -657,11 +1035,9 @@ type Account struct {
 	// Whether the account shows users in the user directory.
 	ShowUserDirectory bool                 `json:"show_user_directory" url:"show_user_directory"`
 	SocialLinks       []*AccountSocialLink `json:"social_links" url:"social_links"`
-	// Whether the account settles on stablecoin rails — its balance is held on-chain as USDT and paid out over crypto, rather than as fiat cash.
-	StablecoinRails bool `json:"stablecoin_rails" url:"stablecoin_rails"`
-	// Whether the account can operate on Whop: `active` or `suspended`. Computed on `list`, `retrieve`, and `me`; `null` otherwise.
+	// Whether the account can operate on Whop: `active` or `suspended`. Computed on `list`, `retrieve`, `me`, and `suspend`; `null` otherwise.
 	Status *string `json:"status,omitempty" url:"status,omitempty"`
-	// Why the account was suspended, in language safe to show the account owner. Computed only on `retrieve` and `me`; `null` otherwise, when `status` is not `suspended`, and when the suspension was recorded without a reason.
+	// Why the account was suspended, as the label shown to the account owner, such as `Suspended - Fraudulent activity`. Computed on `retrieve`, `me`, and `suspend`; `null` otherwise, when `status` is not `suspended`, and when the suspension was recorded without a reason.
 	StatusReason *string `json:"status_reason,omitempty" url:"status_reason,omitempty"`
 	// Account store page display configuration.
 	StorePageConfig *AccountStorePageConfig `json:"store_page_config" url:"store_page_config"`
@@ -673,7 +1049,9 @@ type Account struct {
 	TaxRemittedBy *AccountTaxRemittedBy `json:"tax_remitted_by,omitempty" url:"tax_remitted_by,omitempty"`
 	// How tax is applied to the account's prices: `inclusive` (tax included in the listed price) or `exclusive` (tax added on top). Defaults to `exclusive` when unset; `null` only when the account has no payment connection.
 	TaxType *AccountTaxType `json:"tax_type,omitempty" url:"tax_type,omitempty"`
-	// Account-level 3D Secure behavior. `mandate_challenge` requires cardholder verification on supported card payments; `null` uses the standard checkout flow.
+	// The account's terms of service document, or `null` if they have not published one.
+	TermsOfService *File `json:"terms_of_service,omitempty" url:"terms_of_service,omitempty"`
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` uses the standard checkout flow.
 	ThreeDsLevel *AccountThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
 	// Account display name.
 	Title string `json:"title" url:"title"`
@@ -681,20 +1059,35 @@ type Account struct {
 	TotalEarnedUsd *float64 `json:"total_earned_usd,omitempty" url:"total_earned_usd,omitempty"`
 	// Total USD value across balances with known exchange rates. Computed only on single-account reads (`retrieve` and `me`); `null` on list responses, writes, missing balance-read permission, or unavailable balance source.
 	TotalUsd *string `json:"total_usd,omitempty" url:"total_usd,omitempty"`
+	// The trading account address and its WebSocket subscriptions. Opt in with `include_trading=true` on single-account reads. `null` otherwise, without trading permission, or without an Ethereum wallet.
+	Trading *TradingAccount `json:"trading,omitempty" url:"trading,omitempty"`
 	// Whether the account uses its logo as the fallback Open Graph image.
 	UseLogoAsOpengraphImageFallback bool `json:"use_logo_as_opengraph_image_fallback" url:"use_logo_as_opengraph_image_fallback"`
 	// Account identity verification status for the `individual` (KYC) and `business` (KYB) profiles. Each is `null` until created, otherwise a `status` of `not_started`, `pending`, `manual_review`, `approved`, or `rejected`.
 	Verification map[string]any `json:"verification" url:"verification"`
+	// Volume through the account in the last 30 days (GMV from paid receipts), normalized to USD. Computed only on `list` for callers with `stats:read` on the account; `null` otherwise.
+	VolumeL30DUsd *float64 `json:"volume_l30d_usd,omitempty" url:"volume_l30d_usd,omitempty"`
 	// Lifetime volume through the account — sales plus transfers received — normalized to USD. Computed only on `list` for callers with `stats:read` on the account; `null` otherwise.
 	VolumeUsd *float64 `json:"volume_usd,omitempty" url:"volume_usd,omitempty"`
 	// Account primary crypto wallet, or `null` if none has been provisioned.
 	Wallet *AccountWallet `json:"wallet,omitempty" url:"wallet,omitempty"`
+	// The account's business website URL, or `null` if none has been provided. Setting it also adds a `website` entry to `social_links`.
+	Website *string `json:"website,omitempty" url:"website,omitempty"`
+	// When the account turned on Whop Partner mode, as an ISO 8601 timestamp. Present on single-account reads and update responses; `null` until the account turns Whop Partner mode on by sending `whop_partner_enabled: true` on update.
+	WhopPartnerEnabledAt *string `json:"whop_partner_enabled_at,omitempty" url:"whop_partner_enabled_at,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *Account) GetAdsSpendUsd() *float64 {
+	if a == nil {
+		return nil
+	}
+	return a.AdsSpendUsd
 }
 
 func (a *Account) GetBalances() []*AccountBalanceToken {
@@ -725,7 +1118,7 @@ func (a *Account) GetBusinessName() *string {
 	return a.BusinessName
 }
 
-func (a *Account) GetBusinessType() *AccountBusinessType {
+func (a *Account) GetBusinessType() *string {
 	if a == nil {
 		return nil
 	}
@@ -737,6 +1130,13 @@ func (a *Account) GetCanTransferPendingBalanceToChildren() bool {
 		return false
 	}
 	return a.CanTransferPendingBalanceToChildren
+}
+
+func (a *Account) GetCancellationPolicy() *File {
+	if a == nil {
+		return nil
+	}
+	return a.CancellationPolicy
 }
 
 func (a *Account) GetCapabilities() *AccountCapabilities {
@@ -781,6 +1181,13 @@ func (a *Account) GetCreatedAt() string {
 	return a.CreatedAt
 }
 
+func (a *Account) GetCustomersL30D() *int {
+	if a == nil {
+		return nil
+	}
+	return a.CustomersL30D
+}
+
 func (a *Account) GetDescription() *string {
 	if a == nil {
 		return nil
@@ -788,11 +1195,46 @@ func (a *Account) GetDescription() *string {
 	return a.Description
 }
 
+func (a *Account) GetDirectReportsCount() *int {
+	if a == nil {
+		return nil
+	}
+	return a.DirectReportsCount
+}
+
+func (a *Account) GetDisputeFighterEnabled() bool {
+	if a == nil {
+		return false
+	}
+	return a.DisputeFighterEnabled
+}
+
+func (a *Account) GetEconomicIntelligence() bool {
+	if a == nil {
+		return false
+	}
+	return a.EconomicIntelligence
+}
+
 func (a *Account) GetEmail() *string {
 	if a == nil {
 		return nil
 	}
 	return a.Email
+}
+
+func (a *Account) GetEula() *File {
+	if a == nil {
+		return nil
+	}
+	return a.Eula
+}
+
+func (a *Account) GetFinancing() *AccountFinancing {
+	if a == nil {
+		return nil
+	}
+	return a.Financing
 }
 
 func (a *Account) GetHomePreferences() []AccountHomePreferencesItem {
@@ -809,13 +1251,6 @@ func (a *Account) GetID() string {
 	return a.ID
 }
 
-func (a *Account) GetIndustryGroup() *AccountIndustryGroup {
-	if a == nil {
-		return nil
-	}
-	return a.IndustryGroup
-}
-
 func (a *Account) GetIndustryType() *string {
 	if a == nil {
 		return nil
@@ -828,6 +1263,13 @@ func (a *Account) GetInvoicePrefix() *string {
 		return nil
 	}
 	return a.InvoicePrefix
+}
+
+func (a *Account) GetLevel() *AccountLevel {
+	if a == nil {
+		return nil
+	}
+	return a.Level
 }
 
 func (a *Account) GetLogoURL() *string {
@@ -865,6 +1307,13 @@ func (a *Account) GetOpengraphImageVariant() *AccountOpengraphImageVariant {
 	return a.OpengraphImageVariant
 }
 
+func (a *Account) GetOrchestrationEnabled() bool {
+	if a == nil {
+		return false
+	}
+	return a.OrchestrationEnabled
+}
+
 func (a *Account) GetOtherBusinessDescription() *string {
 	if a == nil {
 		return nil
@@ -893,11 +1342,32 @@ func (a *Account) GetParentAccount() *AccountParent {
 	return a.ParentAccount
 }
 
+func (a *Account) GetPartner() *AccountPartner {
+	if a == nil {
+		return nil
+	}
+	return a.Partner
+}
+
 func (a *Account) GetPaymentControls() *AccountPaymentControls {
 	if a == nil {
 		return nil
 	}
 	return a.PaymentControls
+}
+
+func (a *Account) GetPlatformCredits() []*Money {
+	if a == nil {
+		return nil
+	}
+	return a.PlatformCredits
+}
+
+func (a *Account) GetPrivacyPolicy() *File {
+	if a == nil {
+		return nil
+	}
+	return a.PrivacyPolicy
 }
 
 func (a *Account) GetProductTaxCode() map[string]any {
@@ -928,6 +1398,20 @@ func (a *Account) GetRequiredActions() []*AccountRequiredAction {
 	return a.RequiredActions
 }
 
+func (a *Account) GetReturnPolicy() *File {
+	if a == nil {
+		return nil
+	}
+	return a.ReturnPolicy
+}
+
+func (a *Account) GetRewards() []*AccountPartnerReward {
+	if a == nil {
+		return nil
+	}
+	return a.Rewards
+}
+
 func (a *Account) GetRoute() string {
 	if a == nil {
 		return ""
@@ -940,6 +1424,13 @@ func (a *Account) GetSendCustomerEmails() bool {
 		return false
 	}
 	return a.SendCustomerEmails
+}
+
+func (a *Account) GetShippingPolicy() *File {
+	if a == nil {
+		return nil
+	}
+	return a.ShippingPolicy
 }
 
 func (a *Account) GetShowJoinedWhops() bool {
@@ -968,13 +1459,6 @@ func (a *Account) GetSocialLinks() []*AccountSocialLink {
 		return nil
 	}
 	return a.SocialLinks
-}
-
-func (a *Account) GetStablecoinRails() bool {
-	if a == nil {
-		return false
-	}
-	return a.StablecoinRails
 }
 
 func (a *Account) GetStatus() *string {
@@ -1033,6 +1517,13 @@ func (a *Account) GetTaxType() *AccountTaxType {
 	return a.TaxType
 }
 
+func (a *Account) GetTermsOfService() *File {
+	if a == nil {
+		return nil
+	}
+	return a.TermsOfService
+}
+
 func (a *Account) GetThreeDsLevel() *AccountThreeDsLevel {
 	if a == nil {
 		return nil
@@ -1061,6 +1552,13 @@ func (a *Account) GetTotalUsd() *string {
 	return a.TotalUsd
 }
 
+func (a *Account) GetTrading() *TradingAccount {
+	if a == nil {
+		return nil
+	}
+	return a.Trading
+}
+
 func (a *Account) GetUseLogoAsOpengraphImageFallback() bool {
 	if a == nil {
 		return false
@@ -1073,6 +1571,13 @@ func (a *Account) GetVerification() map[string]any {
 		return nil
 	}
 	return a.Verification
+}
+
+func (a *Account) GetVolumeL30DUsd() *float64 {
+	if a == nil {
+		return nil
+	}
+	return a.VolumeL30DUsd
 }
 
 func (a *Account) GetVolumeUsd() *float64 {
@@ -1089,6 +1594,20 @@ func (a *Account) GetWallet() *AccountWallet {
 	return a.Wallet
 }
 
+func (a *Account) GetWebsite() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Website
+}
+
+func (a *Account) GetWhopPartnerEnabledAt() *string {
+	if a == nil {
+		return nil
+	}
+	return a.WhopPartnerEnabledAt
+}
+
 func (a *Account) GetExtraProperties() map[string]interface{} {
 	if a == nil {
 		return nil
@@ -1097,10 +1616,19 @@ func (a *Account) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *Account) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetAdsSpendUsd sets the AdsSpendUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetAdsSpendUsd(adsSpendUsd *float64) {
+	a.AdsSpendUsd = adsSpendUsd
+	a.require(accountFieldAdsSpendUsd)
 }
 
 // SetBalances sets the Balances field and marks it as non-optional;
@@ -1133,7 +1661,7 @@ func (a *Account) SetBusinessName(businessName *string) {
 
 // SetBusinessType sets the BusinessType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Account) SetBusinessType(businessType *AccountBusinessType) {
+func (a *Account) SetBusinessType(businessType *string) {
 	a.BusinessType = businessType
 	a.require(accountFieldBusinessType)
 }
@@ -1143,6 +1671,13 @@ func (a *Account) SetBusinessType(businessType *AccountBusinessType) {
 func (a *Account) SetCanTransferPendingBalanceToChildren(canTransferPendingBalanceToChildren bool) {
 	a.CanTransferPendingBalanceToChildren = canTransferPendingBalanceToChildren
 	a.require(accountFieldCanTransferPendingBalanceToChildren)
+}
+
+// SetCancellationPolicy sets the CancellationPolicy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetCancellationPolicy(cancellationPolicy *File) {
+	a.CancellationPolicy = cancellationPolicy
+	a.require(accountFieldCancellationPolicy)
 }
 
 // SetCapabilities sets the Capabilities field and marks it as non-optional;
@@ -1187,6 +1722,13 @@ func (a *Account) SetCreatedAt(createdAt string) {
 	a.require(accountFieldCreatedAt)
 }
 
+// SetCustomersL30D sets the CustomersL30D field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetCustomersL30D(customersL30D *int) {
+	a.CustomersL30D = customersL30D
+	a.require(accountFieldCustomersL30D)
+}
+
 // SetDescription sets the Description field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *Account) SetDescription(description *string) {
@@ -1194,11 +1736,46 @@ func (a *Account) SetDescription(description *string) {
 	a.require(accountFieldDescription)
 }
 
+// SetDirectReportsCount sets the DirectReportsCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetDirectReportsCount(directReportsCount *int) {
+	a.DirectReportsCount = directReportsCount
+	a.require(accountFieldDirectReportsCount)
+}
+
+// SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetDisputeFighterEnabled(disputeFighterEnabled bool) {
+	a.DisputeFighterEnabled = disputeFighterEnabled
+	a.require(accountFieldDisputeFighterEnabled)
+}
+
+// SetEconomicIntelligence sets the EconomicIntelligence field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetEconomicIntelligence(economicIntelligence bool) {
+	a.EconomicIntelligence = economicIntelligence
+	a.require(accountFieldEconomicIntelligence)
+}
+
 // SetEmail sets the Email field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *Account) SetEmail(email *string) {
 	a.Email = email
 	a.require(accountFieldEmail)
+}
+
+// SetEula sets the Eula field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetEula(eula *File) {
+	a.Eula = eula
+	a.require(accountFieldEula)
+}
+
+// SetFinancing sets the Financing field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetFinancing(financing *AccountFinancing) {
+	a.Financing = financing
+	a.require(accountFieldFinancing)
 }
 
 // SetHomePreferences sets the HomePreferences field and marks it as non-optional;
@@ -1215,13 +1792,6 @@ func (a *Account) SetID(id string) {
 	a.require(accountFieldID)
 }
 
-// SetIndustryGroup sets the IndustryGroup field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Account) SetIndustryGroup(industryGroup *AccountIndustryGroup) {
-	a.IndustryGroup = industryGroup
-	a.require(accountFieldIndustryGroup)
-}
-
 // SetIndustryType sets the IndustryType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *Account) SetIndustryType(industryType *string) {
@@ -1234,6 +1804,13 @@ func (a *Account) SetIndustryType(industryType *string) {
 func (a *Account) SetInvoicePrefix(invoicePrefix *string) {
 	a.InvoicePrefix = invoicePrefix
 	a.require(accountFieldInvoicePrefix)
+}
+
+// SetLevel sets the Level field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetLevel(level *AccountLevel) {
+	a.Level = level
+	a.require(accountFieldLevel)
 }
 
 // SetLogoURL sets the LogoURL field and marks it as non-optional;
@@ -1271,6 +1848,13 @@ func (a *Account) SetOpengraphImageVariant(opengraphImageVariant *AccountOpengra
 	a.require(accountFieldOpengraphImageVariant)
 }
 
+// SetOrchestrationEnabled sets the OrchestrationEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetOrchestrationEnabled(orchestrationEnabled bool) {
+	a.OrchestrationEnabled = orchestrationEnabled
+	a.require(accountFieldOrchestrationEnabled)
+}
+
 // SetOtherBusinessDescription sets the OtherBusinessDescription field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *Account) SetOtherBusinessDescription(otherBusinessDescription *string) {
@@ -1299,11 +1883,32 @@ func (a *Account) SetParentAccount(parentAccount *AccountParent) {
 	a.require(accountFieldParentAccount)
 }
 
+// SetPartner sets the Partner field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetPartner(partner *AccountPartner) {
+	a.Partner = partner
+	a.require(accountFieldPartner)
+}
+
 // SetPaymentControls sets the PaymentControls field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *Account) SetPaymentControls(paymentControls *AccountPaymentControls) {
 	a.PaymentControls = paymentControls
 	a.require(accountFieldPaymentControls)
+}
+
+// SetPlatformCredits sets the PlatformCredits field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetPlatformCredits(platformCredits []*Money) {
+	a.PlatformCredits = platformCredits
+	a.require(accountFieldPlatformCredits)
+}
+
+// SetPrivacyPolicy sets the PrivacyPolicy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetPrivacyPolicy(privacyPolicy *File) {
+	a.PrivacyPolicy = privacyPolicy
+	a.require(accountFieldPrivacyPolicy)
 }
 
 // SetProductTaxCode sets the ProductTaxCode field and marks it as non-optional;
@@ -1334,6 +1939,20 @@ func (a *Account) SetRequiredActions(requiredActions []*AccountRequiredAction) {
 	a.require(accountFieldRequiredActions)
 }
 
+// SetReturnPolicy sets the ReturnPolicy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetReturnPolicy(returnPolicy *File) {
+	a.ReturnPolicy = returnPolicy
+	a.require(accountFieldReturnPolicy)
+}
+
+// SetRewards sets the Rewards field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetRewards(rewards []*AccountPartnerReward) {
+	a.Rewards = rewards
+	a.require(accountFieldRewards)
+}
+
 // SetRoute sets the Route field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *Account) SetRoute(route string) {
@@ -1346,6 +1965,13 @@ func (a *Account) SetRoute(route string) {
 func (a *Account) SetSendCustomerEmails(sendCustomerEmails bool) {
 	a.SendCustomerEmails = sendCustomerEmails
 	a.require(accountFieldSendCustomerEmails)
+}
+
+// SetShippingPolicy sets the ShippingPolicy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetShippingPolicy(shippingPolicy *File) {
+	a.ShippingPolicy = shippingPolicy
+	a.require(accountFieldShippingPolicy)
 }
 
 // SetShowJoinedWhops sets the ShowJoinedWhops field and marks it as non-optional;
@@ -1374,13 +2000,6 @@ func (a *Account) SetShowUserDirectory(showUserDirectory bool) {
 func (a *Account) SetSocialLinks(socialLinks []*AccountSocialLink) {
 	a.SocialLinks = socialLinks
 	a.require(accountFieldSocialLinks)
-}
-
-// SetStablecoinRails sets the StablecoinRails field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Account) SetStablecoinRails(stablecoinRails bool) {
-	a.StablecoinRails = stablecoinRails
-	a.require(accountFieldStablecoinRails)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -1439,6 +2058,13 @@ func (a *Account) SetTaxType(taxType *AccountTaxType) {
 	a.require(accountFieldTaxType)
 }
 
+// SetTermsOfService sets the TermsOfService field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetTermsOfService(termsOfService *File) {
+	a.TermsOfService = termsOfService
+	a.require(accountFieldTermsOfService)
+}
+
 // SetThreeDsLevel sets the ThreeDsLevel field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *Account) SetThreeDsLevel(threeDsLevel *AccountThreeDsLevel) {
@@ -1467,6 +2093,13 @@ func (a *Account) SetTotalUsd(totalUsd *string) {
 	a.require(accountFieldTotalUsd)
 }
 
+// SetTrading sets the Trading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetTrading(trading *TradingAccount) {
+	a.Trading = trading
+	a.require(accountFieldTrading)
+}
+
 // SetUseLogoAsOpengraphImageFallback sets the UseLogoAsOpengraphImageFallback field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *Account) SetUseLogoAsOpengraphImageFallback(useLogoAsOpengraphImageFallback bool) {
@@ -1479,6 +2112,13 @@ func (a *Account) SetUseLogoAsOpengraphImageFallback(useLogoAsOpengraphImageFall
 func (a *Account) SetVerification(verification map[string]any) {
 	a.Verification = verification
 	a.require(accountFieldVerification)
+}
+
+// SetVolumeL30DUsd sets the VolumeL30DUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetVolumeL30DUsd(volumeL30DUsd *float64) {
+	a.VolumeL30DUsd = volumeL30DUsd
+	a.require(accountFieldVolumeL30DUsd)
 }
 
 // SetVolumeUsd sets the VolumeUsd field and marks it as non-optional;
@@ -1495,6 +2135,20 @@ func (a *Account) SetWallet(wallet *AccountWallet) {
 	a.require(accountFieldWallet)
 }
 
+// SetWebsite sets the Website field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetWebsite(website *string) {
+	a.Website = website
+	a.require(accountFieldWebsite)
+}
+
+// SetWhopPartnerEnabledAt sets the WhopPartnerEnabledAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetWhopPartnerEnabledAt(whopPartnerEnabledAt *string) {
+	a.WhopPartnerEnabledAt = whopPartnerEnabledAt
+	a.require(accountFieldWhopPartnerEnabledAt)
+}
+
 func (a *Account) UnmarshalJSON(data []byte) error {
 	type unmarshaler Account
 	var value unmarshaler
@@ -1507,6 +2161,13 @@ func (a *Account) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1538,436 +2199,6 @@ func (a *Account) String() string {
 }
 
 var (
-	accountBalanceTokenFieldBalance   = big.NewInt(1 << 0)
-	accountBalanceTokenFieldBreakdown = big.NewInt(1 << 1)
-	accountBalanceTokenFieldIconURL   = big.NewInt(1 << 2)
-	accountBalanceTokenFieldName      = big.NewInt(1 << 3)
-	accountBalanceTokenFieldPriceUsd  = big.NewInt(1 << 4)
-	accountBalanceTokenFieldSymbol    = big.NewInt(1 << 5)
-	accountBalanceTokenFieldValueUsd  = big.NewInt(1 << 6)
-)
-
-type AccountBalanceToken struct {
-	// Total amount held in native units, as a decimal string.
-	Balance string `json:"balance" url:"balance"`
-	// Balance split into available, pending, and reserve amounts, as native-unit decimal strings, with the days the pending amount is expected to settle. On-chain crypto is entirely available; good_funds and fiat cash can have pending or reserve portions.
-	Breakdown *AccountBalanceBreakdown `json:"breakdown" url:"breakdown"`
-	// Holding icon URL.
-	IconURL *string `json:"icon_url,omitempty" url:"icon_url,omitempty"`
-	// The holding's display name
-	Name string `json:"name" url:"name"`
-	// USD price per unit, or `null` when no exchange rate is available.
-	PriceUsd *float64 `json:"price_usd,omitempty" url:"price_usd,omitempty"`
-	// Holding display symbol, such as `USDT`, `cbBTC`, or `EUR`.
-	Symbol string `json:"symbol" url:"symbol"`
-	// Holding USD value, or `null` when no exchange rate is available.
-	ValueUsd *string `json:"value_usd,omitempty" url:"value_usd,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AccountBalanceToken) GetBalance() string {
-	if a == nil {
-		return ""
-	}
-	return a.Balance
-}
-
-func (a *AccountBalanceToken) GetBreakdown() *AccountBalanceBreakdown {
-	if a == nil {
-		return nil
-	}
-	return a.Breakdown
-}
-
-func (a *AccountBalanceToken) GetIconURL() *string {
-	if a == nil {
-		return nil
-	}
-	return a.IconURL
-}
-
-func (a *AccountBalanceToken) GetName() string {
-	if a == nil {
-		return ""
-	}
-	return a.Name
-}
-
-func (a *AccountBalanceToken) GetPriceUsd() *float64 {
-	if a == nil {
-		return nil
-	}
-	return a.PriceUsd
-}
-
-func (a *AccountBalanceToken) GetSymbol() string {
-	if a == nil {
-		return ""
-	}
-	return a.Symbol
-}
-
-func (a *AccountBalanceToken) GetValueUsd() *string {
-	if a == nil {
-		return nil
-	}
-	return a.ValueUsd
-}
-
-func (a *AccountBalanceToken) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AccountBalanceToken) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
-	}
-	a.explicitFields.Or(a.explicitFields, field)
-}
-
-// SetBalance sets the Balance field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountBalanceToken) SetBalance(balance string) {
-	a.Balance = balance
-	a.require(accountBalanceTokenFieldBalance)
-}
-
-// SetBreakdown sets the Breakdown field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountBalanceToken) SetBreakdown(breakdown *AccountBalanceBreakdown) {
-	a.Breakdown = breakdown
-	a.require(accountBalanceTokenFieldBreakdown)
-}
-
-// SetIconURL sets the IconURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountBalanceToken) SetIconURL(iconURL *string) {
-	a.IconURL = iconURL
-	a.require(accountBalanceTokenFieldIconURL)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountBalanceToken) SetName(name string) {
-	a.Name = name
-	a.require(accountBalanceTokenFieldName)
-}
-
-// SetPriceUsd sets the PriceUsd field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountBalanceToken) SetPriceUsd(priceUsd *float64) {
-	a.PriceUsd = priceUsd
-	a.require(accountBalanceTokenFieldPriceUsd)
-}
-
-// SetSymbol sets the Symbol field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountBalanceToken) SetSymbol(symbol string) {
-	a.Symbol = symbol
-	a.require(accountBalanceTokenFieldSymbol)
-}
-
-// SetValueUsd sets the ValueUsd field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountBalanceToken) SetValueUsd(valueUsd *string) {
-	a.ValueUsd = valueUsd
-	a.require(accountBalanceTokenFieldValueUsd)
-}
-
-func (a *AccountBalanceToken) UnmarshalJSON(data []byte) error {
-	type unmarshaler AccountBalanceToken
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AccountBalanceToken(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AccountBalanceToken) MarshalJSON() ([]byte, error) {
-	type embed AccountBalanceToken
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AccountBalanceToken) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-// High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
-type AccountBusinessType string
-
-const (
-	AccountBusinessTypeEducationProgram      AccountBusinessType = "education_program"
-	AccountBusinessTypeCoaching              AccountBusinessType = "coaching"
-	AccountBusinessTypeSoftware              AccountBusinessType = "software"
-	AccountBusinessTypePaidGroup             AccountBusinessType = "paid_group"
-	AccountBusinessTypeNewsletter            AccountBusinessType = "newsletter"
-	AccountBusinessTypeAgency                AccountBusinessType = "agency"
-	AccountBusinessTypePhysicalProducts      AccountBusinessType = "physical_products"
-	AccountBusinessTypeBrickAndMortar        AccountBusinessType = "brick_and_mortar"
-	AccountBusinessTypeEvents                AccountBusinessType = "events"
-	AccountBusinessTypeCoachingAndCourses    AccountBusinessType = "coaching_and_courses"
-	AccountBusinessTypeOther                 AccountBusinessType = "other"
-	AccountBusinessTypeServices              AccountBusinessType = "services"
-	AccountBusinessTypeGigEconomy            AccountBusinessType = "gig_economy"
-	AccountBusinessTypeMarketplace           AccountBusinessType = "marketplace"
-	AccountBusinessTypeTelehealth            AccountBusinessType = "telehealth"
-	AccountBusinessTypeClassActionSettlement AccountBusinessType = "class_action_settlement"
-	AccountBusinessTypePhysicalProduct       AccountBusinessType = "physical_product"
-	AccountBusinessTypeSaas                  AccountBusinessType = "saas"
-	AccountBusinessTypeCourse                AccountBusinessType = "course"
-	AccountBusinessTypeCommunity             AccountBusinessType = "community"
-)
-
-func NewAccountBusinessTypeFromString(s string) (AccountBusinessType, error) {
-	switch s {
-	case "education_program":
-		return AccountBusinessTypeEducationProgram, nil
-	case "coaching":
-		return AccountBusinessTypeCoaching, nil
-	case "software":
-		return AccountBusinessTypeSoftware, nil
-	case "paid_group":
-		return AccountBusinessTypePaidGroup, nil
-	case "newsletter":
-		return AccountBusinessTypeNewsletter, nil
-	case "agency":
-		return AccountBusinessTypeAgency, nil
-	case "physical_products":
-		return AccountBusinessTypePhysicalProducts, nil
-	case "brick_and_mortar":
-		return AccountBusinessTypeBrickAndMortar, nil
-	case "events":
-		return AccountBusinessTypeEvents, nil
-	case "coaching_and_courses":
-		return AccountBusinessTypeCoachingAndCourses, nil
-	case "other":
-		return AccountBusinessTypeOther, nil
-	case "services":
-		return AccountBusinessTypeServices, nil
-	case "gig_economy":
-		return AccountBusinessTypeGigEconomy, nil
-	case "marketplace":
-		return AccountBusinessTypeMarketplace, nil
-	case "telehealth":
-		return AccountBusinessTypeTelehealth, nil
-	case "class_action_settlement":
-		return AccountBusinessTypeClassActionSettlement, nil
-	case "physical_product":
-		return AccountBusinessTypePhysicalProduct, nil
-	case "saas":
-		return AccountBusinessTypeSaas, nil
-	case "course":
-		return AccountBusinessTypeCourse, nil
-	case "community":
-		return AccountBusinessTypeCommunity, nil
-	}
-	var t AccountBusinessType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AccountBusinessType) Ptr() *AccountBusinessType {
-	return &a
-}
-
-var (
-	accountCardsFieldKind   = big.NewInt(1 << 0)
-	accountCardsFieldStatus = big.NewInt(1 << 1)
-)
-
-type AccountCards struct {
-	// Whether the card application verifies a business (`business`, KYB) or a person (`individual`, consumer identity). `null` when the application is not yet linked to a verification.
-	Kind *AccountCardsKind `json:"kind,omitempty" url:"kind,omitempty"`
-	// Where the card application stands. `approved` means cards can be issued. `needs_verification` means the applicant has not completed identity verification yet; `needs_information` means they did, but the documents were rejected for a fixable reason and must be resubmitted. `pending` and `manual_review` are in flight. `denied`, `locked`, and `canceled` are terminal.
-	Status AccountCardsStatus `json:"status" url:"status"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AccountCards) GetKind() *AccountCardsKind {
-	if a == nil {
-		return nil
-	}
-	return a.Kind
-}
-
-func (a *AccountCards) GetStatus() AccountCardsStatus {
-	if a == nil {
-		return ""
-	}
-	return a.Status
-}
-
-func (a *AccountCards) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AccountCards) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
-	}
-	a.explicitFields.Or(a.explicitFields, field)
-}
-
-// SetKind sets the Kind field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountCards) SetKind(kind *AccountCardsKind) {
-	a.Kind = kind
-	a.require(accountCardsFieldKind)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountCards) SetStatus(status AccountCardsStatus) {
-	a.Status = status
-	a.require(accountCardsFieldStatus)
-}
-
-func (a *AccountCards) UnmarshalJSON(data []byte) error {
-	type unmarshaler AccountCards
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AccountCards(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AccountCards) MarshalJSON() ([]byte, error) {
-	type embed AccountCards
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AccountCards) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-// Whether the card application verifies a business (`business`, KYB) or a person (`individual`, consumer identity). `null` when the application is not yet linked to a verification.
-type AccountCardsKind string
-
-const (
-	AccountCardsKindIndividual AccountCardsKind = "individual"
-	AccountCardsKindBusiness   AccountCardsKind = "business"
-)
-
-func NewAccountCardsKindFromString(s string) (AccountCardsKind, error) {
-	switch s {
-	case "individual":
-		return AccountCardsKindIndividual, nil
-	case "business":
-		return AccountCardsKindBusiness, nil
-	}
-	var t AccountCardsKind
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AccountCardsKind) Ptr() *AccountCardsKind {
-	return &a
-}
-
-// Where the card application stands. `approved` means cards can be issued. `needs_verification` means the applicant has not completed identity verification yet; `needs_information` means they did, but the documents were rejected for a fixable reason and must be resubmitted. `pending` and `manual_review` are in flight. `denied`, `locked`, and `canceled` are terminal.
-type AccountCardsStatus string
-
-const (
-	AccountCardsStatusApproved          AccountCardsStatus = "approved"
-	AccountCardsStatusPending           AccountCardsStatus = "pending"
-	AccountCardsStatusManualReview      AccountCardsStatus = "manual_review"
-	AccountCardsStatusDenied            AccountCardsStatus = "denied"
-	AccountCardsStatusLocked            AccountCardsStatus = "locked"
-	AccountCardsStatusCanceled          AccountCardsStatus = "canceled"
-	AccountCardsStatusNeedsVerification AccountCardsStatus = "needs_verification"
-	AccountCardsStatusNeedsInformation  AccountCardsStatus = "needs_information"
-)
-
-func NewAccountCardsStatusFromString(s string) (AccountCardsStatus, error) {
-	switch s {
-	case "approved":
-		return AccountCardsStatusApproved, nil
-	case "pending":
-		return AccountCardsStatusPending, nil
-	case "manual_review":
-		return AccountCardsStatusManualReview, nil
-	case "denied":
-		return AccountCardsStatusDenied, nil
-	case "locked":
-		return AccountCardsStatusLocked, nil
-	case "canceled":
-		return AccountCardsStatusCanceled, nil
-	case "needs_verification":
-		return AccountCardsStatusNeedsVerification, nil
-	case "needs_information":
-		return AccountCardsStatusNeedsInformation, nil
-	}
-	var t AccountCardsStatus
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AccountCardsStatus) Ptr() *AccountCardsStatus {
-	return &a
-}
-
-var (
 	accountCompanyFormationFieldDocuments       = big.NewInt(1 << 0)
 	accountCompanyFormationFieldEinRegistered   = big.NewInt(1 << 1)
 	accountCompanyFormationFieldLegalName       = big.NewInt(1 << 2)
@@ -1975,6 +2206,11 @@ var (
 	accountCompanyFormationFieldStateRegistered = big.NewInt(1 << 4)
 	accountCompanyFormationFieldStatus          = big.NewInt(1 << 5)
 )
+
+// accountCompanyFormationNullableFields maps the wire names of AccountCompanyFormation's nullable fields (required or optional) to their field bits.
+var accountCompanyFormationNullableFields = map[string]*big.Int{
+	"legal_name": accountCompanyFormationFieldLegalName,
+}
 
 type AccountCompanyFormation struct {
 	Documents []*AccountCompanyFormationDocument `json:"documents,omitempty" url:"documents,omitempty"`
@@ -2046,10 +2282,12 @@ func (a *AccountCompanyFormation) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountCompanyFormation) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetDocuments sets the Documents field and marks it as non-optional;
@@ -2110,6 +2348,13 @@ func (a *AccountCompanyFormation) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.ExtraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountCompanyFormationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2200,10 +2445,12 @@ func (a *AccountCompanyFormationDocument) GetExtraProperties() map[string]interf
 }
 
 func (a *AccountCompanyFormationDocument) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2283,11 +2530,11 @@ var (
 )
 
 type AccountCompanyFormationSignatureRequest struct {
-	// When the signing URL expires, as an ISO 8601 timestamp. Present while `status` is `pending`.
+	// When the signing URL expires, as an ISO 8601 timestamp. Present only when the signing URL is included.
 	ExpiresAt *string `json:"expires_at,omitempty" url:"expires_at,omitempty"`
 	// `pending` when a signing session is ready for the founder; `unknown` when the signature state could not be determined.
 	Status AccountCompanyFormationSignatureRequestStatus `json:"status" url:"status"`
-	// Hosted signing URL where the founder completes the form. Present while `status` is `pending`.
+	// Hosted signing URL where the founder completes the form. Present while `status` is `pending` and the caller has `incorporation:write`. Omitted from webhooks.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2326,10 +2573,12 @@ func (a *AccountCompanyFormationSignatureRequest) GetExtraProperties() map[strin
 }
 
 func (a *AccountCompanyFormationSignatureRequest) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
@@ -2459,10 +2708,12 @@ func (a *AccountCompanyFormationSignatures) GetExtraProperties() map[string]inte
 }
 
 func (a *AccountCompanyFormationSignatures) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetForm8821 sets the Form8821 field and marks it as non-optional;
@@ -2561,6 +2812,11 @@ var (
 	accountDisputeAlertAutoRefundControlFieldThresholdUsd = big.NewInt(1 << 1)
 )
 
+// accountDisputeAlertAutoRefundControlNullableFields maps the wire names of AccountDisputeAlertAutoRefundControl's nullable fields (required or optional) to their field bits.
+var accountDisputeAlertAutoRefundControlNullableFields = map[string]*big.Int{
+	"threshold_usd": accountDisputeAlertAutoRefundControlFieldThresholdUsd,
+}
+
 type AccountDisputeAlertAutoRefundControl struct {
 	// Whether the account owner is prevented from changing this threshold.
 	Locked bool `json:"locked" url:"locked"`
@@ -2596,10 +2852,12 @@ func (a *AccountDisputeAlertAutoRefundControl) GetExtraProperties() map[string]i
 }
 
 func (a *AccountDisputeAlertAutoRefundControl) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetLocked sets the Locked field and marks it as non-optional;
@@ -2628,6 +2886,13 @@ func (a *AccountDisputeAlertAutoRefundControl) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountDisputeAlertAutoRefundControlNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2658,6 +2923,142 @@ func (a *AccountDisputeAlertAutoRefundControl) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
+var (
+	accountFinancingFieldApplicationID = big.NewInt(1 << 0)
+	accountFinancingFieldStatus        = big.NewInt(1 << 1)
+)
+
+type AccountFinancing struct {
+	// The ID of the account's most recent financing application, starting with inrq_. Retrieve it for requirements and review feedback.
+	ApplicationID string `json:"application_id" url:"application_id"`
+	// The most recent financing application's review state: `requires_collection` (waiting on the merchant, including after a request for more information), `awaiting_review`, `approved`, `denied`, or `completed`. Whether financing payment methods are enabled is `capabilities.accept_bnpl_payments`.
+	Status AccountFinancingStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountFinancing) GetApplicationID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ApplicationID
+}
+
+func (a *AccountFinancing) GetStatus() AccountFinancingStatus {
+	if a == nil {
+		return ""
+	}
+	return a.Status
+}
+
+func (a *AccountFinancing) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountFinancing) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetApplicationID sets the ApplicationID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFinancing) SetApplicationID(applicationID string) {
+	a.ApplicationID = applicationID
+	a.require(accountFinancingFieldApplicationID)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFinancing) SetStatus(status AccountFinancingStatus) {
+	a.Status = status
+	a.require(accountFinancingFieldStatus)
+}
+
+func (a *AccountFinancing) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountFinancing
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountFinancing(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountFinancing) MarshalJSON() ([]byte, error) {
+	type embed AccountFinancing
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountFinancing) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// The most recent financing application's review state: `requires_collection` (waiting on the merchant, including after a request for more information), `awaiting_review`, `approved`, `denied`, or `completed`. Whether financing payment methods are enabled is `capabilities.accept_bnpl_payments`.
+type AccountFinancingStatus string
+
+const (
+	AccountFinancingStatusRequiresCollection AccountFinancingStatus = "requires_collection"
+	AccountFinancingStatusAwaitingReview     AccountFinancingStatus = "awaiting_review"
+	AccountFinancingStatusCompleted          AccountFinancingStatus = "completed"
+	AccountFinancingStatusApproved           AccountFinancingStatus = "approved"
+	AccountFinancingStatusDenied             AccountFinancingStatus = "denied"
+)
+
+func NewAccountFinancingStatusFromString(s string) (AccountFinancingStatus, error) {
+	switch s {
+	case "requires_collection":
+		return AccountFinancingStatusRequiresCollection, nil
+	case "awaiting_review":
+		return AccountFinancingStatusAwaitingReview, nil
+	case "completed":
+		return AccountFinancingStatusCompleted, nil
+	case "approved":
+		return AccountFinancingStatusApproved, nil
+	case "denied":
+		return AccountFinancingStatusDenied, nil
+	}
+	var t AccountFinancingStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountFinancingStatus) Ptr() *AccountFinancingStatus {
+	return &a
+}
+
 // Public account home page preferences.
 type AccountHomePreferencesItem string
 
@@ -2681,441 +3082,289 @@ func (a AccountHomePreferencesItem) Ptr() *AccountHomePreferencesItem {
 	return &a
 }
 
-// Account industry group. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
-type AccountIndustryGroup string
-
-const (
-	AccountIndustryGroupAcademicAndTestPrep                AccountIndustryGroup = "academic_and_test_prep"
-	AccountIndustryGroupAccessories                        AccountIndustryGroup = "accessories"
-	AccountIndustryGroupAgricultureAndFarming              AccountIndustryGroup = "agriculture_and_farming"
-	AccountIndustryGroupAiAndAutomationAgencies            AccountIndustryGroup = "ai_and_automation_agencies"
-	AccountIndustryGroupAiAndAutomationSoftware            AccountIndustryGroup = "ai_and_automation_software"
-	AccountIndustryGroupArtsAndCrafts                      AccountIndustryGroup = "arts_and_crafts"
-	AccountIndustryGroupAutomotive                         AccountIndustryGroup = "automotive"
-	AccountIndustryGroupB2BAndProfessionalMarketplaces     AccountIndustryGroup = "b2b_and_professional_marketplaces"
-	AccountIndustryGroupBabyAndKids                        AccountIndustryGroup = "baby_and_kids"
-	AccountIndustryGroupBarsAndBreweries                   AccountIndustryGroup = "bars_and_breweries"
-	AccountIndustryGroupBeautyAndPersonalCare              AccountIndustryGroup = "beauty_and_personal_care"
-	AccountIndustryGroupBeautyAndWellness                  AccountIndustryGroup = "beauty_and_wellness"
-	AccountIndustryGroupBusinessAndEntrepreneurship        AccountIndustryGroup = "business_and_entrepreneurship"
-	AccountIndustryGroupBusinessAndMoneyGroups             AccountIndustryGroup = "business_and_money_groups"
-	AccountIndustryGroupCafesAndQuickService               AccountIndustryGroup = "cafes_and_quick_service"
-	AccountIndustryGroupCareerAndProfessional              AccountIndustryGroup = "career_and_professional"
-	AccountIndustryGroupCharityAndCauseEvents              AccountIndustryGroup = "charity_and_cause_events"
-	AccountIndustryGroupClassActionSettlement              AccountIndustryGroup = "class_action_settlement"
-	AccountIndustryGroupClothingAndApparel                 AccountIndustryGroup = "clothing_and_apparel"
-	AccountIndustryGroupCommunicationAndMessagingSoftware  AccountIndustryGroup = "communication_and_messaging_software"
-	AccountIndustryGroupCommunityAndEducationSoftware      AccountIndustryGroup = "community_and_education_software"
-	AccountIndustryGroupConferenceAndExpoEvents            AccountIndustryGroup = "conference_and_expo_events"
-	AccountIndustryGroupConsulting                         AccountIndustryGroup = "consulting"
-	AccountIndustryGroupContentAndClippingAgencies         AccountIndustryGroup = "content_and_clipping_agencies"
-	AccountIndustryGroupCreativeAndContentCreation         AccountIndustryGroup = "creative_and_content_creation"
-	AccountIndustryGroupCreativeAndContentGroups           AccountIndustryGroup = "creative_and_content_groups"
-	AccountIndustryGroupCreativeAndEducation               AccountIndustryGroup = "creative_and_education"
-	AccountIndustryGroupCreativeGigs                       AccountIndustryGroup = "creative_gigs"
-	AccountIndustryGroupCreativeServices                   AccountIndustryGroup = "creative_services"
-	AccountIndustryGroupCustomerSupportAgencies            AccountIndustryGroup = "customer_support_agencies"
-	AccountIndustryGroupDatingAndRelationships             AccountIndustryGroup = "dating_and_relationships"
-	AccountIndustryGroupDeliveryAndLogistics               AccountIndustryGroup = "delivery_and_logistics"
-	AccountIndustryGroupDentalAndVision                    AccountIndustryGroup = "dental_and_vision"
-	AccountIndustryGroupDermatologyAndSkin                 AccountIndustryGroup = "dermatology_and_skin"
-	AccountIndustryGroupDesignAndCreativeAgencies          AccountIndustryGroup = "design_and_creative_agencies"
-	AccountIndustryGroupDeveloperAndTechnicalTools         AccountIndustryGroup = "developer_and_technical_tools"
-	AccountIndustryGroupDevelopmentAgencies                AccountIndustryGroup = "development_agencies"
-	AccountIndustryGroupDigitalAndEducationMarketplaces    AccountIndustryGroup = "digital_and_education_marketplaces"
-	AccountIndustryGroupDigitalGoodsAndAccounts            AccountIndustryGroup = "digital_goods_and_accounts"
-	AccountIndustryGroupECommerceSoftware                  AccountIndustryGroup = "e_commerce_software"
-	AccountIndustryGroupEducationAndChildcare              AccountIndustryGroup = "education_and_childcare"
-	AccountIndustryGroupEducationalTrainingEvents          AccountIndustryGroup = "educational_training_events"
-	AccountIndustryGroupElectronicsAndGadgets              AccountIndustryGroup = "electronics_and_gadgets"
-	AccountIndustryGroupEntertainmentAndLeisure            AccountIndustryGroup = "entertainment_and_leisure"
-	AccountIndustryGroupFamilyAndCommunityEvents           AccountIndustryGroup = "family_and_community_events"
-	AccountIndustryGroupFinanceAndInvesting                AccountIndustryGroup = "finance_and_investing"
-	AccountIndustryGroupFitnessAndAthletics                AccountIndustryGroup = "fitness_and_athletics"
-	AccountIndustryGroupFitnessAndHealthGroups             AccountIndustryGroup = "fitness_and_health_groups"
-	AccountIndustryGroupFitnessAndRecreation               AccountIndustryGroup = "fitness_and_recreation"
-	AccountIndustryGroupFitnessEquipmentAndGear            AccountIndustryGroup = "fitness_equipment_and_gear"
-	AccountIndustryGroupFoodAndBeverages                   AccountIndustryGroup = "food_and_beverages"
-	AccountIndustryGroupFoodAndHospitalityMarketplaces     AccountIndustryGroup = "food_and_hospitality_marketplaces"
-	AccountIndustryGroupFuneralAndDeathCare                AccountIndustryGroup = "funeral_and_death_care"
-	AccountIndustryGroupGamingAndEntertainmentSoftware     AccountIndustryGroup = "gaming_and_entertainment_software"
-	AccountIndustryGroupGamingGroups                       AccountIndustryGroup = "gaming_groups"
-	AccountIndustryGroupGeneticAndSpecialized              AccountIndustryGroup = "genetic_and_specialized"
-	AccountIndustryGroupGovernmentAndPublic                AccountIndustryGroup = "government_and_public"
-	AccountIndustryGroupHealthAndWellness                  AccountIndustryGroup = "health_and_wellness"
-	AccountIndustryGroupHealthAndWellnessServices          AccountIndustryGroup = "health_and_wellness_services"
-	AccountIndustryGroupHealthcare                         AccountIndustryGroup = "healthcare"
-	AccountIndustryGroupHealthcareAndWellnessSoftware      AccountIndustryGroup = "healthcare_and_wellness_software"
-	AccountIndustryGroupHobbiesAndLifestyle                AccountIndustryGroup = "hobbies_and_lifestyle"
-	AccountIndustryGroupHobbyAndInterestGroups             AccountIndustryGroup = "hobby_and_interest_groups"
-	AccountIndustryGroupHomeAndLiving                      AccountIndustryGroup = "home_and_living"
-	AccountIndustryGroupHomeAndTradeServices               AccountIndustryGroup = "home_and_trade_services"
-	AccountIndustryGroupHomeAndTradeStorefronts            AccountIndustryGroup = "home_and_trade_storefronts"
-	AccountIndustryGroupHomeImprovementAndTools            AccountIndustryGroup = "home_improvement_and_tools"
-	AccountIndustryGroupHomeServicesGigs                   AccountIndustryGroup = "home_services_gigs"
-	AccountIndustryGroupHospitalityAndLodging              AccountIndustryGroup = "hospitality_and_lodging"
-	AccountIndustryGroupIndustrialAndManufacturing         AccountIndustryGroup = "industrial_and_manufacturing"
-	AccountIndustryGroupIndustrySpecificSoftware           AccountIndustryGroup = "industry_specific_software"
-	AccountIndustryGroupLanguageAndCommunication           AccountIndustryGroup = "language_and_communication"
-	AccountIndustryGroupLegalAndCompliance                 AccountIndustryGroup = "legal_and_compliance"
-	AccountIndustryGroupLifestyleAndCulture                AccountIndustryGroup = "lifestyle_and_culture"
-	AccountIndustryGroupLifestyleAndPersonalGrowth         AccountIndustryGroup = "lifestyle_and_personal_growth"
-	AccountIndustryGroupLifestyleAndPersonalGrowthGroups   AccountIndustryGroup = "lifestyle_and_personal_growth_groups"
-	AccountIndustryGroupLifestyleAndWellnessEvents         AccountIndustryGroup = "lifestyle_and_wellness_events"
-	AccountIndustryGroupLogisticsAndTransportationServices AccountIndustryGroup = "logistics_and_transportation_services"
-	AccountIndustryGroupMarketingAgencies                  AccountIndustryGroup = "marketing_agencies"
-	AccountIndustryGroupMarketingAndAdvertising            AccountIndustryGroup = "marketing_and_advertising"
-	AccountIndustryGroupMarketingAndSalesSoftware          AccountIndustryGroup = "marketing_and_sales_software"
-	AccountIndustryGroupMediaAndPublishingCompanies        AccountIndustryGroup = "media_and_publishing_companies"
-	AccountIndustryGroupMentalHealthAndBehavioral          AccountIndustryGroup = "mental_health_and_behavioral"
-	AccountIndustryGroupMiscellaneous                      AccountIndustryGroup = "miscellaneous"
-	AccountIndustryGroupMusicAndPerformingArts             AccountIndustryGroup = "music_and_performing_arts"
-	AccountIndustryGroupNewsAndPolitics                    AccountIndustryGroup = "news_and_politics"
-	AccountIndustryGroupNonprofitAndCharity                AccountIndustryGroup = "nonprofit_and_charity"
-	AccountIndustryGroupOfficeAndBusinessSupplies          AccountIndustryGroup = "office_and_business_supplies"
-	AccountIndustryGroupOutdoorAndSports                   AccountIndustryGroup = "outdoor_and_sports"
-	AccountIndustryGroupPerformanceAndShowEvents           AccountIndustryGroup = "performance_and_show_events"
-	AccountIndustryGroupPersonalDevelopment                AccountIndustryGroup = "personal_development"
-	AccountIndustryGroupPersonalFinance                    AccountIndustryGroup = "personal_finance"
-	AccountIndustryGroupPersonalServices                   AccountIndustryGroup = "personal_services"
-	AccountIndustryGroupPetServices                        AccountIndustryGroup = "pet_services"
-	AccountIndustryGroupPetsAndAnimals                     AccountIndustryGroup = "pets_and_animals"
-	AccountIndustryGroupPrimaryAndGeneralCare              AccountIndustryGroup = "primary_and_general_care"
-	AccountIndustryGroupProductMarketplaces                AccountIndustryGroup = "product_marketplaces"
-	AccountIndustryGroupProductivityAndBusinessOps         AccountIndustryGroup = "productivity_and_business_ops"
-	AccountIndustryGroupProfessionalGigs                   AccountIndustryGroup = "professional_gigs"
-	AccountIndustryGroupProfessionalServices               AccountIndustryGroup = "professional_services"
-	AccountIndustryGroupProfessionalServicesStorefront     AccountIndustryGroup = "professional_services_storefront"
-	AccountIndustryGroupPublishingAndInfoProducts          AccountIndustryGroup = "publishing_and_info_products"
-	AccountIndustryGroupRealEstate                         AccountIndustryGroup = "real_estate"
-	AccountIndustryGroupRealEstateSoftware                 AccountIndustryGroup = "real_estate_software"
-	AccountIndustryGroupRecruitingAndStaffing              AccountIndustryGroup = "recruiting_and_staffing"
-	AccountIndustryGroupRehabilitationAndTherapy           AccountIndustryGroup = "rehabilitation_and_therapy"
-	AccountIndustryGroupReligionAndFaith                   AccountIndustryGroup = "religion_and_faith"
-	AccountIndustryGroupRentalMarketplaces                 AccountIndustryGroup = "rental_marketplaces"
-	AccountIndustryGroupRestaurants                        AccountIndustryGroup = "restaurants"
-	AccountIndustryGroupRetail                             AccountIndustryGroup = "retail"
-	AccountIndustryGroupSalesAgencies                      AccountIndustryGroup = "sales_agencies"
-	AccountIndustryGroupSalesAndRevenue                    AccountIndustryGroup = "sales_and_revenue"
-	AccountIndustryGroupSecurityAndInvestigations          AccountIndustryGroup = "security_and_investigations"
-	AccountIndustryGroupSecurityAndPrivacySoftware         AccountIndustryGroup = "security_and_privacy_software"
-	AccountIndustryGroupServiceMarketplaces                AccountIndustryGroup = "service_marketplaces"
-	AccountIndustryGroupSleepAndChronicConditions          AccountIndustryGroup = "sleep_and_chronic_conditions"
-	AccountIndustryGroupSocialAndNetworkingEvents          AccountIndustryGroup = "social_and_networking_events"
-	AccountIndustryGroupSocialEntertainmentEvents          AccountIndustryGroup = "social_entertainment_events"
-	AccountIndustryGroupSpecializedGigs                    AccountIndustryGroup = "specialized_gigs"
-	AccountIndustryGroupSpecialtyMedicalCare               AccountIndustryGroup = "specialty_medical_care"
-	AccountIndustryGroupSpiritualityAndMindfulness         AccountIndustryGroup = "spirituality_and_mindfulness"
-	AccountIndustryGroupSpiritualityAndPersonalGrowth      AccountIndustryGroup = "spirituality_and_personal_growth"
-	AccountIndustryGroupSportsAndFitnessEvents             AccountIndustryGroup = "sports_and_fitness_events"
-	AccountIndustryGroupSportsBettingAndGambling           AccountIndustryGroup = "sports_betting_and_gambling"
-	AccountIndustryGroupSportsBettingGroups                AccountIndustryGroup = "sports_betting_groups"
-	AccountIndustryGroupSupplementsAndNutrition            AccountIndustryGroup = "supplements_and_nutrition"
-	AccountIndustryGroupSustainabilityAndEcoProducts       AccountIndustryGroup = "sustainability_and_eco_products"
-	AccountIndustryGroupTaskAndErrands                     AccountIndustryGroup = "task_and_errands"
-	AccountIndustryGroupTechAndAi                          AccountIndustryGroup = "tech_and_ai"
-	AccountIndustryGroupTechAndDevGroups                   AccountIndustryGroup = "tech_and_dev_groups"
-	AccountIndustryGroupTechAndDevelopment                 AccountIndustryGroup = "tech_and_development"
-	AccountIndustryGroupTradingAndFinanceSoftware          AccountIndustryGroup = "trading_and_finance_software"
-	AccountIndustryGroupTradingAndInvesting                AccountIndustryGroup = "trading_and_investing"
-	AccountIndustryGroupTradingAndInvestingGroups          AccountIndustryGroup = "trading_and_investing_groups"
-	AccountIndustryGroupTransportation                     AccountIndustryGroup = "transportation"
-	AccountIndustryGroupVeterinary                         AccountIndustryGroup = "veterinary"
-	AccountIndustryGroupVideoGamesAndEsports               AccountIndustryGroup = "video_games_and_esports"
-	AccountIndustryGroupWeightAndMetabolicHealth           AccountIndustryGroup = "weight_and_metabolic_health"
-	AccountIndustryGroupWellnessAndAlternative             AccountIndustryGroup = "wellness_and_alternative"
-	AccountIndustryGroupWomensAndMensHealth                AccountIndustryGroup = "womens_and_mens_health"
+var (
+	accountLevelFieldBoosted                  = big.NewInt(1 << 0)
+	accountLevelFieldCurrent                  = big.NewInt(1 << 1)
+	accountLevelFieldLevels                   = big.NewInt(1 << 2)
+	accountLevelFieldMonthlyAdsSpend          = big.NewInt(1 << 3)
+	accountLevelFieldMonthlyCardSpend         = big.NewInt(1 << 4)
+	accountLevelFieldMonthlyQualifyingSpend   = big.NewInt(1 << 5)
+	accountLevelFieldMonthlyTradingVolume     = big.NewInt(1 << 6)
+	accountLevelFieldPoints                   = big.NewInt(1 << 7)
+	accountLevelFieldPointsBySource           = big.NewInt(1 << 8)
+	accountLevelFieldPointsToNext             = big.NewInt(1 << 9)
+	accountLevelFieldProcessingRatePercentage = big.NewInt(1 << 10)
+	accountLevelFieldResetsAt                 = big.NewInt(1 << 11)
 )
 
-func NewAccountIndustryGroupFromString(s string) (AccountIndustryGroup, error) {
-	switch s {
-	case "academic_and_test_prep":
-		return AccountIndustryGroupAcademicAndTestPrep, nil
-	case "accessories":
-		return AccountIndustryGroupAccessories, nil
-	case "agriculture_and_farming":
-		return AccountIndustryGroupAgricultureAndFarming, nil
-	case "ai_and_automation_agencies":
-		return AccountIndustryGroupAiAndAutomationAgencies, nil
-	case "ai_and_automation_software":
-		return AccountIndustryGroupAiAndAutomationSoftware, nil
-	case "arts_and_crafts":
-		return AccountIndustryGroupArtsAndCrafts, nil
-	case "automotive":
-		return AccountIndustryGroupAutomotive, nil
-	case "b2b_and_professional_marketplaces":
-		return AccountIndustryGroupB2BAndProfessionalMarketplaces, nil
-	case "baby_and_kids":
-		return AccountIndustryGroupBabyAndKids, nil
-	case "bars_and_breweries":
-		return AccountIndustryGroupBarsAndBreweries, nil
-	case "beauty_and_personal_care":
-		return AccountIndustryGroupBeautyAndPersonalCare, nil
-	case "beauty_and_wellness":
-		return AccountIndustryGroupBeautyAndWellness, nil
-	case "business_and_entrepreneurship":
-		return AccountIndustryGroupBusinessAndEntrepreneurship, nil
-	case "business_and_money_groups":
-		return AccountIndustryGroupBusinessAndMoneyGroups, nil
-	case "cafes_and_quick_service":
-		return AccountIndustryGroupCafesAndQuickService, nil
-	case "career_and_professional":
-		return AccountIndustryGroupCareerAndProfessional, nil
-	case "charity_and_cause_events":
-		return AccountIndustryGroupCharityAndCauseEvents, nil
-	case "class_action_settlement":
-		return AccountIndustryGroupClassActionSettlement, nil
-	case "clothing_and_apparel":
-		return AccountIndustryGroupClothingAndApparel, nil
-	case "communication_and_messaging_software":
-		return AccountIndustryGroupCommunicationAndMessagingSoftware, nil
-	case "community_and_education_software":
-		return AccountIndustryGroupCommunityAndEducationSoftware, nil
-	case "conference_and_expo_events":
-		return AccountIndustryGroupConferenceAndExpoEvents, nil
-	case "consulting":
-		return AccountIndustryGroupConsulting, nil
-	case "content_and_clipping_agencies":
-		return AccountIndustryGroupContentAndClippingAgencies, nil
-	case "creative_and_content_creation":
-		return AccountIndustryGroupCreativeAndContentCreation, nil
-	case "creative_and_content_groups":
-		return AccountIndustryGroupCreativeAndContentGroups, nil
-	case "creative_and_education":
-		return AccountIndustryGroupCreativeAndEducation, nil
-	case "creative_gigs":
-		return AccountIndustryGroupCreativeGigs, nil
-	case "creative_services":
-		return AccountIndustryGroupCreativeServices, nil
-	case "customer_support_agencies":
-		return AccountIndustryGroupCustomerSupportAgencies, nil
-	case "dating_and_relationships":
-		return AccountIndustryGroupDatingAndRelationships, nil
-	case "delivery_and_logistics":
-		return AccountIndustryGroupDeliveryAndLogistics, nil
-	case "dental_and_vision":
-		return AccountIndustryGroupDentalAndVision, nil
-	case "dermatology_and_skin":
-		return AccountIndustryGroupDermatologyAndSkin, nil
-	case "design_and_creative_agencies":
-		return AccountIndustryGroupDesignAndCreativeAgencies, nil
-	case "developer_and_technical_tools":
-		return AccountIndustryGroupDeveloperAndTechnicalTools, nil
-	case "development_agencies":
-		return AccountIndustryGroupDevelopmentAgencies, nil
-	case "digital_and_education_marketplaces":
-		return AccountIndustryGroupDigitalAndEducationMarketplaces, nil
-	case "digital_goods_and_accounts":
-		return AccountIndustryGroupDigitalGoodsAndAccounts, nil
-	case "e_commerce_software":
-		return AccountIndustryGroupECommerceSoftware, nil
-	case "education_and_childcare":
-		return AccountIndustryGroupEducationAndChildcare, nil
-	case "educational_training_events":
-		return AccountIndustryGroupEducationalTrainingEvents, nil
-	case "electronics_and_gadgets":
-		return AccountIndustryGroupElectronicsAndGadgets, nil
-	case "entertainment_and_leisure":
-		return AccountIndustryGroupEntertainmentAndLeisure, nil
-	case "family_and_community_events":
-		return AccountIndustryGroupFamilyAndCommunityEvents, nil
-	case "finance_and_investing":
-		return AccountIndustryGroupFinanceAndInvesting, nil
-	case "fitness_and_athletics":
-		return AccountIndustryGroupFitnessAndAthletics, nil
-	case "fitness_and_health_groups":
-		return AccountIndustryGroupFitnessAndHealthGroups, nil
-	case "fitness_and_recreation":
-		return AccountIndustryGroupFitnessAndRecreation, nil
-	case "fitness_equipment_and_gear":
-		return AccountIndustryGroupFitnessEquipmentAndGear, nil
-	case "food_and_beverages":
-		return AccountIndustryGroupFoodAndBeverages, nil
-	case "food_and_hospitality_marketplaces":
-		return AccountIndustryGroupFoodAndHospitalityMarketplaces, nil
-	case "funeral_and_death_care":
-		return AccountIndustryGroupFuneralAndDeathCare, nil
-	case "gaming_and_entertainment_software":
-		return AccountIndustryGroupGamingAndEntertainmentSoftware, nil
-	case "gaming_groups":
-		return AccountIndustryGroupGamingGroups, nil
-	case "genetic_and_specialized":
-		return AccountIndustryGroupGeneticAndSpecialized, nil
-	case "government_and_public":
-		return AccountIndustryGroupGovernmentAndPublic, nil
-	case "health_and_wellness":
-		return AccountIndustryGroupHealthAndWellness, nil
-	case "health_and_wellness_services":
-		return AccountIndustryGroupHealthAndWellnessServices, nil
-	case "healthcare":
-		return AccountIndustryGroupHealthcare, nil
-	case "healthcare_and_wellness_software":
-		return AccountIndustryGroupHealthcareAndWellnessSoftware, nil
-	case "hobbies_and_lifestyle":
-		return AccountIndustryGroupHobbiesAndLifestyle, nil
-	case "hobby_and_interest_groups":
-		return AccountIndustryGroupHobbyAndInterestGroups, nil
-	case "home_and_living":
-		return AccountIndustryGroupHomeAndLiving, nil
-	case "home_and_trade_services":
-		return AccountIndustryGroupHomeAndTradeServices, nil
-	case "home_and_trade_storefronts":
-		return AccountIndustryGroupHomeAndTradeStorefronts, nil
-	case "home_improvement_and_tools":
-		return AccountIndustryGroupHomeImprovementAndTools, nil
-	case "home_services_gigs":
-		return AccountIndustryGroupHomeServicesGigs, nil
-	case "hospitality_and_lodging":
-		return AccountIndustryGroupHospitalityAndLodging, nil
-	case "industrial_and_manufacturing":
-		return AccountIndustryGroupIndustrialAndManufacturing, nil
-	case "industry_specific_software":
-		return AccountIndustryGroupIndustrySpecificSoftware, nil
-	case "language_and_communication":
-		return AccountIndustryGroupLanguageAndCommunication, nil
-	case "legal_and_compliance":
-		return AccountIndustryGroupLegalAndCompliance, nil
-	case "lifestyle_and_culture":
-		return AccountIndustryGroupLifestyleAndCulture, nil
-	case "lifestyle_and_personal_growth":
-		return AccountIndustryGroupLifestyleAndPersonalGrowth, nil
-	case "lifestyle_and_personal_growth_groups":
-		return AccountIndustryGroupLifestyleAndPersonalGrowthGroups, nil
-	case "lifestyle_and_wellness_events":
-		return AccountIndustryGroupLifestyleAndWellnessEvents, nil
-	case "logistics_and_transportation_services":
-		return AccountIndustryGroupLogisticsAndTransportationServices, nil
-	case "marketing_agencies":
-		return AccountIndustryGroupMarketingAgencies, nil
-	case "marketing_and_advertising":
-		return AccountIndustryGroupMarketingAndAdvertising, nil
-	case "marketing_and_sales_software":
-		return AccountIndustryGroupMarketingAndSalesSoftware, nil
-	case "media_and_publishing_companies":
-		return AccountIndustryGroupMediaAndPublishingCompanies, nil
-	case "mental_health_and_behavioral":
-		return AccountIndustryGroupMentalHealthAndBehavioral, nil
-	case "miscellaneous":
-		return AccountIndustryGroupMiscellaneous, nil
-	case "music_and_performing_arts":
-		return AccountIndustryGroupMusicAndPerformingArts, nil
-	case "news_and_politics":
-		return AccountIndustryGroupNewsAndPolitics, nil
-	case "nonprofit_and_charity":
-		return AccountIndustryGroupNonprofitAndCharity, nil
-	case "office_and_business_supplies":
-		return AccountIndustryGroupOfficeAndBusinessSupplies, nil
-	case "outdoor_and_sports":
-		return AccountIndustryGroupOutdoorAndSports, nil
-	case "performance_and_show_events":
-		return AccountIndustryGroupPerformanceAndShowEvents, nil
-	case "personal_development":
-		return AccountIndustryGroupPersonalDevelopment, nil
-	case "personal_finance":
-		return AccountIndustryGroupPersonalFinance, nil
-	case "personal_services":
-		return AccountIndustryGroupPersonalServices, nil
-	case "pet_services":
-		return AccountIndustryGroupPetServices, nil
-	case "pets_and_animals":
-		return AccountIndustryGroupPetsAndAnimals, nil
-	case "primary_and_general_care":
-		return AccountIndustryGroupPrimaryAndGeneralCare, nil
-	case "product_marketplaces":
-		return AccountIndustryGroupProductMarketplaces, nil
-	case "productivity_and_business_ops":
-		return AccountIndustryGroupProductivityAndBusinessOps, nil
-	case "professional_gigs":
-		return AccountIndustryGroupProfessionalGigs, nil
-	case "professional_services":
-		return AccountIndustryGroupProfessionalServices, nil
-	case "professional_services_storefront":
-		return AccountIndustryGroupProfessionalServicesStorefront, nil
-	case "publishing_and_info_products":
-		return AccountIndustryGroupPublishingAndInfoProducts, nil
-	case "real_estate":
-		return AccountIndustryGroupRealEstate, nil
-	case "real_estate_software":
-		return AccountIndustryGroupRealEstateSoftware, nil
-	case "recruiting_and_staffing":
-		return AccountIndustryGroupRecruitingAndStaffing, nil
-	case "rehabilitation_and_therapy":
-		return AccountIndustryGroupRehabilitationAndTherapy, nil
-	case "religion_and_faith":
-		return AccountIndustryGroupReligionAndFaith, nil
-	case "rental_marketplaces":
-		return AccountIndustryGroupRentalMarketplaces, nil
-	case "restaurants":
-		return AccountIndustryGroupRestaurants, nil
-	case "retail":
-		return AccountIndustryGroupRetail, nil
-	case "sales_agencies":
-		return AccountIndustryGroupSalesAgencies, nil
-	case "sales_and_revenue":
-		return AccountIndustryGroupSalesAndRevenue, nil
-	case "security_and_investigations":
-		return AccountIndustryGroupSecurityAndInvestigations, nil
-	case "security_and_privacy_software":
-		return AccountIndustryGroupSecurityAndPrivacySoftware, nil
-	case "service_marketplaces":
-		return AccountIndustryGroupServiceMarketplaces, nil
-	case "sleep_and_chronic_conditions":
-		return AccountIndustryGroupSleepAndChronicConditions, nil
-	case "social_and_networking_events":
-		return AccountIndustryGroupSocialAndNetworkingEvents, nil
-	case "social_entertainment_events":
-		return AccountIndustryGroupSocialEntertainmentEvents, nil
-	case "specialized_gigs":
-		return AccountIndustryGroupSpecializedGigs, nil
-	case "specialty_medical_care":
-		return AccountIndustryGroupSpecialtyMedicalCare, nil
-	case "spirituality_and_mindfulness":
-		return AccountIndustryGroupSpiritualityAndMindfulness, nil
-	case "spirituality_and_personal_growth":
-		return AccountIndustryGroupSpiritualityAndPersonalGrowth, nil
-	case "sports_and_fitness_events":
-		return AccountIndustryGroupSportsAndFitnessEvents, nil
-	case "sports_betting_and_gambling":
-		return AccountIndustryGroupSportsBettingAndGambling, nil
-	case "sports_betting_groups":
-		return AccountIndustryGroupSportsBettingGroups, nil
-	case "supplements_and_nutrition":
-		return AccountIndustryGroupSupplementsAndNutrition, nil
-	case "sustainability_and_eco_products":
-		return AccountIndustryGroupSustainabilityAndEcoProducts, nil
-	case "task_and_errands":
-		return AccountIndustryGroupTaskAndErrands, nil
-	case "tech_and_ai":
-		return AccountIndustryGroupTechAndAi, nil
-	case "tech_and_dev_groups":
-		return AccountIndustryGroupTechAndDevGroups, nil
-	case "tech_and_development":
-		return AccountIndustryGroupTechAndDevelopment, nil
-	case "trading_and_finance_software":
-		return AccountIndustryGroupTradingAndFinanceSoftware, nil
-	case "trading_and_investing":
-		return AccountIndustryGroupTradingAndInvesting, nil
-	case "trading_and_investing_groups":
-		return AccountIndustryGroupTradingAndInvestingGroups, nil
-	case "transportation":
-		return AccountIndustryGroupTransportation, nil
-	case "veterinary":
-		return AccountIndustryGroupVeterinary, nil
-	case "video_games_and_esports":
-		return AccountIndustryGroupVideoGamesAndEsports, nil
-	case "weight_and_metabolic_health":
-		return AccountIndustryGroupWeightAndMetabolicHealth, nil
-	case "wellness_and_alternative":
-		return AccountIndustryGroupWellnessAndAlternative, nil
-	case "womens_and_mens_health":
-		return AccountIndustryGroupWomensAndMensHealth, nil
-	}
-	var t AccountIndustryGroup
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
+// accountLevelNullableFields maps the wire names of AccountLevel's nullable fields (required or optional) to their field bits.
+var accountLevelNullableFields = map[string]*big.Int{
+	"points_to_next": accountLevelFieldPointsToNext,
 }
 
-func (a AccountIndustryGroup) Ptr() *AccountIndustryGroup {
-	return &a
+type AccountLevel struct {
+	// `true` when this account's own points this month fall short of `current`, so the owner's other accounts lift it to this level.
+	Boosted bool `json:"boosted" url:"boosted"`
+	// Current level, from `0` before the first threshold up to `10`.
+	Current int                            `json:"current" url:"current"`
+	Levels  []*AccountProcessingOfferLevel `json:"levels" url:"levels"`
+	// Charged Whop Ads spend this calendar month across every account the owner owns, in USD.
+	MonthlyAdsSpend *Money `json:"monthly_ads_spend" url:"monthly_ads_spend"`
+	// Effective Whop Card spend this calendar month across every account the owner owns, in USD.
+	MonthlyCardSpend *Money `json:"monthly_card_spend" url:"monthly_card_spend"`
+	// Qualifying spend this calendar month across every account the owner owns, in USD: Whop Ads spend, Whop Card spend, and a tenth of perpetual trading volume.
+	MonthlyQualifyingSpend *Money `json:"monthly_qualifying_spend" url:"monthly_qualifying_spend"`
+	// Perpetual trading notional volume this calendar month across every account the owner owns, in USD.
+	MonthlyTradingVolume *Money `json:"monthly_trading_volume" url:"monthly_trading_volume"`
+	// Points earned this month across every account the owner owns.
+	Points int `json:"points" url:"points"`
+	// This month's points, split by where they were earned.
+	PointsBySource *OwnerLevelPoints `json:"points_by_source" url:"points_by_source"`
+	// Points still needed this month to reach the next level, or `null` at level `10`.
+	PointsToNext *int `json:"points_to_next,omitempty" url:"points_to_next,omitempty"`
+	// The standard US and Canada card processing percentage at `current`, before any account's custom rate.
+	ProcessingRatePercentage float64 `json:"processing_rate_percentage" url:"processing_rate_percentage"`
+	// When this month's points reset to zero, as an ISO 8601 timestamp.
+	ResetsAt string `json:"resets_at" url:"resets_at"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountLevel) GetBoosted() bool {
+	if a == nil {
+		return false
+	}
+	return a.Boosted
+}
+
+func (a *AccountLevel) GetCurrent() int {
+	if a == nil {
+		return 0
+	}
+	return a.Current
+}
+
+func (a *AccountLevel) GetLevels() []*AccountProcessingOfferLevel {
+	if a == nil {
+		return nil
+	}
+	return a.Levels
+}
+
+func (a *AccountLevel) GetMonthlyAdsSpend() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.MonthlyAdsSpend
+}
+
+func (a *AccountLevel) GetMonthlyCardSpend() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.MonthlyCardSpend
+}
+
+func (a *AccountLevel) GetMonthlyQualifyingSpend() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.MonthlyQualifyingSpend
+}
+
+func (a *AccountLevel) GetMonthlyTradingVolume() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.MonthlyTradingVolume
+}
+
+func (a *AccountLevel) GetPoints() int {
+	if a == nil {
+		return 0
+	}
+	return a.Points
+}
+
+func (a *AccountLevel) GetPointsBySource() *OwnerLevelPoints {
+	if a == nil {
+		return nil
+	}
+	return a.PointsBySource
+}
+
+func (a *AccountLevel) GetPointsToNext() *int {
+	if a == nil {
+		return nil
+	}
+	return a.PointsToNext
+}
+
+func (a *AccountLevel) GetProcessingRatePercentage() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.ProcessingRatePercentage
+}
+
+func (a *AccountLevel) GetResetsAt() string {
+	if a == nil {
+		return ""
+	}
+	return a.ResetsAt
+}
+
+func (a *AccountLevel) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountLevel) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetBoosted sets the Boosted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetBoosted(boosted bool) {
+	a.Boosted = boosted
+	a.require(accountLevelFieldBoosted)
+}
+
+// SetCurrent sets the Current field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetCurrent(current int) {
+	a.Current = current
+	a.require(accountLevelFieldCurrent)
+}
+
+// SetLevels sets the Levels field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetLevels(levels []*AccountProcessingOfferLevel) {
+	a.Levels = levels
+	a.require(accountLevelFieldLevels)
+}
+
+// SetMonthlyAdsSpend sets the MonthlyAdsSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetMonthlyAdsSpend(monthlyAdsSpend *Money) {
+	a.MonthlyAdsSpend = monthlyAdsSpend
+	a.require(accountLevelFieldMonthlyAdsSpend)
+}
+
+// SetMonthlyCardSpend sets the MonthlyCardSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetMonthlyCardSpend(monthlyCardSpend *Money) {
+	a.MonthlyCardSpend = monthlyCardSpend
+	a.require(accountLevelFieldMonthlyCardSpend)
+}
+
+// SetMonthlyQualifyingSpend sets the MonthlyQualifyingSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetMonthlyQualifyingSpend(monthlyQualifyingSpend *Money) {
+	a.MonthlyQualifyingSpend = monthlyQualifyingSpend
+	a.require(accountLevelFieldMonthlyQualifyingSpend)
+}
+
+// SetMonthlyTradingVolume sets the MonthlyTradingVolume field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetMonthlyTradingVolume(monthlyTradingVolume *Money) {
+	a.MonthlyTradingVolume = monthlyTradingVolume
+	a.require(accountLevelFieldMonthlyTradingVolume)
+}
+
+// SetPoints sets the Points field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetPoints(points int) {
+	a.Points = points
+	a.require(accountLevelFieldPoints)
+}
+
+// SetPointsBySource sets the PointsBySource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetPointsBySource(pointsBySource *OwnerLevelPoints) {
+	a.PointsBySource = pointsBySource
+	a.require(accountLevelFieldPointsBySource)
+}
+
+// SetPointsToNext sets the PointsToNext field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetPointsToNext(pointsToNext *int) {
+	a.PointsToNext = pointsToNext
+	a.require(accountLevelFieldPointsToNext)
+}
+
+// SetProcessingRatePercentage sets the ProcessingRatePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetProcessingRatePercentage(processingRatePercentage float64) {
+	a.ProcessingRatePercentage = processingRatePercentage
+	a.require(accountLevelFieldProcessingRatePercentage)
+}
+
+// SetResetsAt sets the ResetsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountLevel) SetResetsAt(resetsAt string) {
+	a.ResetsAt = resetsAt
+	a.require(accountLevelFieldResetsAt)
+}
+
+func (a *AccountLevel) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountLevel
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountLevel(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountLevelNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountLevel) MarshalJSON() ([]byte, error) {
+	type embed AccountLevel
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountLevel) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
 }
 
 // Type of onboarding the account has completed.
@@ -3168,6 +3417,422 @@ func (a AccountOpengraphImageVariant) Ptr() *AccountOpengraphImageVariant {
 }
 
 var (
+	accountPartnerFieldEmail                 = big.NewInt(1 << 0)
+	accountPartnerFieldID                    = big.NewInt(1 << 1)
+	accountPartnerFieldName                  = big.NewInt(1 << 2)
+	accountPartnerFieldProfilePicture        = big.NewInt(1 << 3)
+	accountPartnerFieldUsername              = big.NewInt(1 << 4)
+	accountPartnerFieldWhopPartnerVerifiedAt = big.NewInt(1 << 5)
+)
+
+// accountPartnerNullableFields maps the wire names of AccountPartner's nullable fields (required or optional) to their field bits.
+var accountPartnerNullableFields = map[string]*big.Int{
+	"email":                    accountPartnerFieldEmail,
+	"name":                     accountPartnerFieldName,
+	"whop_partner_verified_at": accountPartnerFieldWhopPartnerVerifiedAt,
+}
+
+type AccountPartner struct {
+	// Email address for contacting the partner. Null when the partner has not added their own email address.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// User ID, prefixed `user_`.
+	ID string `json:"id" url:"id"`
+	// Display name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// Avatar wrapper; its `url` is always present, using a generated placeholder when the user set no picture.
+	ProfilePicture *UserProfilePicture `json:"profile_picture" url:"profile_picture"`
+	// Public username.
+	Username string `json:"username" url:"username"`
+	// When the user became a verified Whop Partner, as an ISO 8601 timestamp. Null if not verified.
+	WhopPartnerVerifiedAt *string `json:"whop_partner_verified_at,omitempty" url:"whop_partner_verified_at,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountPartner) GetEmail() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Email
+}
+
+func (a *AccountPartner) GetID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ID
+}
+
+func (a *AccountPartner) GetName() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Name
+}
+
+func (a *AccountPartner) GetProfilePicture() *UserProfilePicture {
+	if a == nil {
+		return nil
+	}
+	return a.ProfilePicture
+}
+
+func (a *AccountPartner) GetUsername() string {
+	if a == nil {
+		return ""
+	}
+	return a.Username
+}
+
+func (a *AccountPartner) GetWhopPartnerVerifiedAt() *string {
+	if a == nil {
+		return nil
+	}
+	return a.WhopPartnerVerifiedAt
+}
+
+func (a *AccountPartner) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountPartner) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartner) SetEmail(email *string) {
+	a.Email = email
+	a.require(accountPartnerFieldEmail)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartner) SetID(id string) {
+	a.ID = id
+	a.require(accountPartnerFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartner) SetName(name *string) {
+	a.Name = name
+	a.require(accountPartnerFieldName)
+}
+
+// SetProfilePicture sets the ProfilePicture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartner) SetProfilePicture(profilePicture *UserProfilePicture) {
+	a.ProfilePicture = profilePicture
+	a.require(accountPartnerFieldProfilePicture)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartner) SetUsername(username string) {
+	a.Username = username
+	a.require(accountPartnerFieldUsername)
+}
+
+// SetWhopPartnerVerifiedAt sets the WhopPartnerVerifiedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartner) SetWhopPartnerVerifiedAt(whopPartnerVerifiedAt *string) {
+	a.WhopPartnerVerifiedAt = whopPartnerVerifiedAt
+	a.require(accountPartnerFieldWhopPartnerVerifiedAt)
+}
+
+func (a *AccountPartner) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountPartner
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountPartner(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountPartnerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountPartner) MarshalJSON() ([]byte, error) {
+	type embed AccountPartner
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountPartner) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
+	accountPartnerRewardFieldID                    = big.NewInt(1 << 0)
+	accountPartnerRewardFieldQualificationAmount   = big.NewInt(1 << 1)
+	accountPartnerRewardFieldQualificationProgress = big.NewInt(1 << 2)
+	accountPartnerRewardFieldQualificationType     = big.NewInt(1 << 3)
+	accountPartnerRewardFieldRewardAmount          = big.NewInt(1 << 4)
+	accountPartnerRewardFieldStatus                = big.NewInt(1 << 5)
+)
+
+type AccountPartnerReward struct {
+	// Reward definition ID, prefixed `prwd_`. Progress and status apply to the containing account.
+	ID string `json:"id" url:"id"`
+	// Qualifying USD volume required to earn this reward.
+	QualificationAmount *Money `json:"qualification_amount" url:"qualification_amount"`
+	// Qualifying USD volume for the reward’s activity accumulated by this account since attribution, calculated using the fulfillment rules.
+	QualificationProgress *Money `json:"qualification_progress" url:"qualification_progress"`
+	// Activity that qualifies this account for the reward.
+	QualificationType AccountPartnerRewardQualificationType `json:"qualification_type" url:"qualification_type"`
+	// USD amount credited for this reward. Uses the saved grant amount once fulfillment has started.
+	RewardAmount *Money `json:"reward_amount" url:"reward_amount"`
+	// This account's reward state. Credited requires a posted ledger entry; processing includes a met requirement awaiting fulfillment. Reversing and reversed reflect a subsequent reward reversal.
+	Status AccountPartnerRewardStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountPartnerReward) GetID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ID
+}
+
+func (a *AccountPartnerReward) GetQualificationAmount() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.QualificationAmount
+}
+
+func (a *AccountPartnerReward) GetQualificationProgress() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.QualificationProgress
+}
+
+func (a *AccountPartnerReward) GetQualificationType() AccountPartnerRewardQualificationType {
+	if a == nil {
+		return ""
+	}
+	return a.QualificationType
+}
+
+func (a *AccountPartnerReward) GetRewardAmount() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.RewardAmount
+}
+
+func (a *AccountPartnerReward) GetStatus() AccountPartnerRewardStatus {
+	if a == nil {
+		return ""
+	}
+	return a.Status
+}
+
+func (a *AccountPartnerReward) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountPartnerReward) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartnerReward) SetID(id string) {
+	a.ID = id
+	a.require(accountPartnerRewardFieldID)
+}
+
+// SetQualificationAmount sets the QualificationAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartnerReward) SetQualificationAmount(qualificationAmount *Money) {
+	a.QualificationAmount = qualificationAmount
+	a.require(accountPartnerRewardFieldQualificationAmount)
+}
+
+// SetQualificationProgress sets the QualificationProgress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartnerReward) SetQualificationProgress(qualificationProgress *Money) {
+	a.QualificationProgress = qualificationProgress
+	a.require(accountPartnerRewardFieldQualificationProgress)
+}
+
+// SetQualificationType sets the QualificationType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartnerReward) SetQualificationType(qualificationType AccountPartnerRewardQualificationType) {
+	a.QualificationType = qualificationType
+	a.require(accountPartnerRewardFieldQualificationType)
+}
+
+// SetRewardAmount sets the RewardAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartnerReward) SetRewardAmount(rewardAmount *Money) {
+	a.RewardAmount = rewardAmount
+	a.require(accountPartnerRewardFieldRewardAmount)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartnerReward) SetStatus(status AccountPartnerRewardStatus) {
+	a.Status = status
+	a.require(accountPartnerRewardFieldStatus)
+}
+
+func (a *AccountPartnerReward) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountPartnerReward
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountPartnerReward(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountPartnerReward) MarshalJSON() ([]byte, error) {
+	type embed AccountPartnerReward
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountPartnerReward) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// Activity that qualifies this account for the reward.
+type AccountPartnerRewardQualificationType string
+
+const (
+	AccountPartnerRewardQualificationTypeSales   AccountPartnerRewardQualificationType = "sales"
+	AccountPartnerRewardQualificationTypeAdSpend AccountPartnerRewardQualificationType = "ad_spend"
+)
+
+func NewAccountPartnerRewardQualificationTypeFromString(s string) (AccountPartnerRewardQualificationType, error) {
+	switch s {
+	case "sales":
+		return AccountPartnerRewardQualificationTypeSales, nil
+	case "ad_spend":
+		return AccountPartnerRewardQualificationTypeAdSpend, nil
+	}
+	var t AccountPartnerRewardQualificationType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountPartnerRewardQualificationType) Ptr() *AccountPartnerRewardQualificationType {
+	return &a
+}
+
+// This account's reward state. Credited requires a posted ledger entry; processing includes a met requirement awaiting fulfillment. Reversing and reversed reflect a subsequent reward reversal.
+type AccountPartnerRewardStatus string
+
+const (
+	AccountPartnerRewardStatusInProgress  AccountPartnerRewardStatus = "in_progress"
+	AccountPartnerRewardStatusProcessing  AccountPartnerRewardStatus = "processing"
+	AccountPartnerRewardStatusCredited    AccountPartnerRewardStatus = "credited"
+	AccountPartnerRewardStatusReversing   AccountPartnerRewardStatus = "reversing"
+	AccountPartnerRewardStatusReversed    AccountPartnerRewardStatus = "reversed"
+	AccountPartnerRewardStatusUnavailable AccountPartnerRewardStatus = "unavailable"
+)
+
+func NewAccountPartnerRewardStatusFromString(s string) (AccountPartnerRewardStatus, error) {
+	switch s {
+	case "in_progress":
+		return AccountPartnerRewardStatusInProgress, nil
+	case "processing":
+		return AccountPartnerRewardStatusProcessing, nil
+	case "credited":
+		return AccountPartnerRewardStatusCredited, nil
+	case "reversing":
+		return AccountPartnerRewardStatusReversing, nil
+	case "reversed":
+		return AccountPartnerRewardStatusReversed, nil
+	case "unavailable":
+		return AccountPartnerRewardStatusUnavailable, nil
+	}
+	var t AccountPartnerRewardStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountPartnerRewardStatus) Ptr() *AccountPartnerRewardStatus {
+	return &a
+}
+
+var (
 	accountPaymentControlsFieldDisputeAlertAutoRefund          = big.NewInt(1 << 0)
 	accountPaymentControlsFieldDisputeAlertFeeUsd              = big.NewInt(1 << 1)
 	accountPaymentControlsFieldEnforce3Ds                      = big.NewInt(1 << 2)
@@ -3178,7 +3843,15 @@ var (
 	accountPaymentControlsFieldReserve                         = big.NewInt(1 << 7)
 	accountPaymentControlsFieldResolutionCenterAutoRefund      = big.NewInt(1 << 8)
 	accountPaymentControlsFieldRestrictedPaymentMethods        = big.NewInt(1 << 9)
+	accountPaymentControlsFieldUndatedPendingReason            = big.NewInt(1 << 10)
+	accountPaymentControlsFieldWithdrawalSchedule              = big.NewInt(1 << 11)
 )
+
+// accountPaymentControlsNullableFields maps the wire names of AccountPaymentControls's nullable fields (required or optional) to their field bits.
+var accountPaymentControlsNullableFields = map[string]*big.Int{
+	"dispute_alert_fee_usd":  accountPaymentControlsFieldDisputeAlertFeeUsd,
+	"undated_pending_reason": accountPaymentControlsFieldUndatedPendingReason,
+}
 
 type AccountPaymentControls struct {
 	// Automatic refund settings for pre-chargeback dispute alerts.
@@ -3200,6 +3873,10 @@ type AccountPaymentControls struct {
 	// Automatic refund settings for resolution center cases.
 	ResolutionCenterAutoRefund *AccountResolutionCenterAutoRefundControl            `json:"resolution_center_auto_refund" url:"resolution_center_auto_refund"`
 	RestrictedPaymentMethods   []AccountPaymentControlsRestrictedPaymentMethodsItem `json:"restricted_payment_methods" url:"restricted_payment_methods"`
+	// Why pending funds without a settlement date aren't moving yet. `kyc_incomplete`, `pending_information_request`, and `update_payout_profile` are things the merchant can act on. `compliance_review` means a verification the merchant already submitted is being reviewed, so these funds stay pending until it clears. `withdrawals_disabled` means Whop has blocked withdrawals, so these funds cannot become available. `null` when there's no reason to show — still clearing, or held for a reason that isn't named here.
+	UndatedPendingReason *AccountPaymentControlsUndatedPendingReason `json:"undated_pending_reason,omitempty" url:"undated_pending_reason,omitempty"`
+	// How the account's balance automatically withdraws.
+	WithdrawalSchedule *AccountWithdrawalScheduleControl `json:"withdrawal_schedule" url:"withdrawal_schedule"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3278,6 +3955,20 @@ func (a *AccountPaymentControls) GetRestrictedPaymentMethods() []AccountPaymentC
 	return a.RestrictedPaymentMethods
 }
 
+func (a *AccountPaymentControls) GetUndatedPendingReason() *AccountPaymentControlsUndatedPendingReason {
+	if a == nil {
+		return nil
+	}
+	return a.UndatedPendingReason
+}
+
+func (a *AccountPaymentControls) GetWithdrawalSchedule() *AccountWithdrawalScheduleControl {
+	if a == nil {
+		return nil
+	}
+	return a.WithdrawalSchedule
+}
+
 func (a *AccountPaymentControls) GetExtraProperties() map[string]interface{} {
 	if a == nil {
 		return nil
@@ -3286,10 +3977,12 @@ func (a *AccountPaymentControls) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountPaymentControls) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetDisputeAlertAutoRefund sets the DisputeAlertAutoRefund field and marks it as non-optional;
@@ -3362,6 +4055,20 @@ func (a *AccountPaymentControls) SetRestrictedPaymentMethods(restrictedPaymentMe
 	a.require(accountPaymentControlsFieldRestrictedPaymentMethods)
 }
 
+// SetUndatedPendingReason sets the UndatedPendingReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPaymentControls) SetUndatedPendingReason(undatedPendingReason *AccountPaymentControlsUndatedPendingReason) {
+	a.UndatedPendingReason = undatedPendingReason
+	a.require(accountPaymentControlsFieldUndatedPendingReason)
+}
+
+// SetWithdrawalSchedule sets the WithdrawalSchedule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPaymentControls) SetWithdrawalSchedule(withdrawalSchedule *AccountWithdrawalScheduleControl) {
+	a.WithdrawalSchedule = withdrawalSchedule
+	a.require(accountPaymentControlsFieldWithdrawalSchedule)
+}
+
 func (a *AccountPaymentControls) UnmarshalJSON(data []byte) error {
 	type unmarshaler AccountPaymentControls
 	var value unmarshaler
@@ -3374,6 +4081,13 @@ func (a *AccountPaymentControls) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountPaymentControlsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3412,6 +4126,46 @@ const (
 	AccountPaymentControlsRestrictedPaymentMethodsItemCardMastercard            AccountPaymentControlsRestrictedPaymentMethodsItem = "card_mastercard"
 	AccountPaymentControlsRestrictedPaymentMethodsItemCardAmericanExpress       AccountPaymentControlsRestrictedPaymentMethodsItem = "card_american_express"
 	AccountPaymentControlsRestrictedPaymentMethodsItemCardDiscoverGlobalNetwork AccountPaymentControlsRestrictedPaymentMethodsItem = "card_discover_global_network"
+	AccountPaymentControlsRestrictedPaymentMethodsItemAddi                      AccountPaymentControlsRestrictedPaymentMethodsItem = "addi"
+	AccountPaymentControlsRestrictedPaymentMethodsItemAffirm                    AccountPaymentControlsRestrictedPaymentMethodsItem = "affirm"
+	AccountPaymentControlsRestrictedPaymentMethodsItemAfterpayClearpay          AccountPaymentControlsRestrictedPaymentMethodsItem = "afterpay_clearpay"
+	AccountPaymentControlsRestrictedPaymentMethodsItemAlma                      AccountPaymentControlsRestrictedPaymentMethodsItem = "alma"
+	AccountPaymentControlsRestrictedPaymentMethodsItemBillie                    AccountPaymentControlsRestrictedPaymentMethodsItem = "billie"
+	AccountPaymentControlsRestrictedPaymentMethodsItemCapchasePay               AccountPaymentControlsRestrictedPaymentMethodsItem = "capchase_pay"
+	AccountPaymentControlsRestrictedPaymentMethodsItemClaritypay                AccountPaymentControlsRestrictedPaymentMethodsItem = "claritypay"
+	AccountPaymentControlsRestrictedPaymentMethodsItemFlexPay                   AccountPaymentControlsRestrictedPaymentMethodsItem = "flex_pay"
+	AccountPaymentControlsRestrictedPaymentMethodsItemKlarna                    AccountPaymentControlsRestrictedPaymentMethodsItem = "klarna"
+	AccountPaymentControlsRestrictedPaymentMethodsItemKriya                     AccountPaymentControlsRestrictedPaymentMethodsItem = "kriya"
+	AccountPaymentControlsRestrictedPaymentMethodsItemKueski                    AccountPaymentControlsRestrictedPaymentMethodsItem = "kueski"
+	AccountPaymentControlsRestrictedPaymentMethodsItemMondu                     AccountPaymentControlsRestrictedPaymentMethodsItem = "mondu"
+	AccountPaymentControlsRestrictedPaymentMethodsItemOney                      AccountPaymentControlsRestrictedPaymentMethodsItem = "oney"
+	AccountPaymentControlsRestrictedPaymentMethodsItemScalapay                  AccountPaymentControlsRestrictedPaymentMethodsItem = "scalapay"
+	AccountPaymentControlsRestrictedPaymentMethodsItemSequra                    AccountPaymentControlsRestrictedPaymentMethodsItem = "sequra"
+	AccountPaymentControlsRestrictedPaymentMethodsItemSezzle                    AccountPaymentControlsRestrictedPaymentMethodsItem = "sezzle"
+	AccountPaymentControlsRestrictedPaymentMethodsItemSplitit                   AccountPaymentControlsRestrictedPaymentMethodsItem = "splitit"
+	AccountPaymentControlsRestrictedPaymentMethodsItemSunbit                    AccountPaymentControlsRestrictedPaymentMethodsItem = "sunbit"
+	AccountPaymentControlsRestrictedPaymentMethodsItemTabby                     AccountPaymentControlsRestrictedPaymentMethodsItem = "tabby"
+	AccountPaymentControlsRestrictedPaymentMethodsItemTamara                    AccountPaymentControlsRestrictedPaymentMethodsItem = "tamara"
+	AccountPaymentControlsRestrictedPaymentMethodsItemZip                       AccountPaymentControlsRestrictedPaymentMethodsItem = "zip"
+	AccountPaymentControlsRestrictedPaymentMethodsItemCardInstallmentsThree     AccountPaymentControlsRestrictedPaymentMethodsItem = "card_installments_three"
+	AccountPaymentControlsRestrictedPaymentMethodsItemCardInstallmentsSix       AccountPaymentControlsRestrictedPaymentMethodsItem = "card_installments_six"
+	AccountPaymentControlsRestrictedPaymentMethodsItemCardInstallmentsTwelve    AccountPaymentControlsRestrictedPaymentMethodsItem = "card_installments_twelve"
+	AccountPaymentControlsRestrictedPaymentMethodsItemOney3X                    AccountPaymentControlsRestrictedPaymentMethodsItem = "oney_3x"
+	AccountPaymentControlsRestrictedPaymentMethodsItemOney4X                    AccountPaymentControlsRestrictedPaymentMethodsItem = "oney_4x"
+	AccountPaymentControlsRestrictedPaymentMethodsItemKlarnaPayNow              AccountPaymentControlsRestrictedPaymentMethodsItem = "klarna_pay_now"
+	AccountPaymentControlsRestrictedPaymentMethodsItemUsBankAccount             AccountPaymentControlsRestrictedPaymentMethodsItem = "us_bank_account"
+	AccountPaymentControlsRestrictedPaymentMethodsItemSepaDebit                 AccountPaymentControlsRestrictedPaymentMethodsItem = "sepa_debit"
+	AccountPaymentControlsRestrictedPaymentMethodsItemBacsDebit                 AccountPaymentControlsRestrictedPaymentMethodsItem = "bacs_debit"
+	AccountPaymentControlsRestrictedPaymentMethodsItemAuBecsDebit               AccountPaymentControlsRestrictedPaymentMethodsItem = "au_becs_debit"
+	AccountPaymentControlsRestrictedPaymentMethodsItemAcssDebit                 AccountPaymentControlsRestrictedPaymentMethodsItem = "acss_debit"
+	AccountPaymentControlsRestrictedPaymentMethodsItemPayByBank                 AccountPaymentControlsRestrictedPaymentMethodsItem = "pay_by_bank"
+	AccountPaymentControlsRestrictedPaymentMethodsItemPayto                     AccountPaymentControlsRestrictedPaymentMethodsItem = "payto"
+	AccountPaymentControlsRestrictedPaymentMethodsItemPaypal                    AccountPaymentControlsRestrictedPaymentMethodsItem = "paypal"
+	AccountPaymentControlsRestrictedPaymentMethodsItemCashapp                   AccountPaymentControlsRestrictedPaymentMethodsItem = "cashapp"
+	AccountPaymentControlsRestrictedPaymentMethodsItemVenmo                     AccountPaymentControlsRestrictedPaymentMethodsItem = "venmo"
+	AccountPaymentControlsRestrictedPaymentMethodsItemAmazonPay                 AccountPaymentControlsRestrictedPaymentMethodsItem = "amazon_pay"
+	AccountPaymentControlsRestrictedPaymentMethodsItemLink                      AccountPaymentControlsRestrictedPaymentMethodsItem = "link"
+	AccountPaymentControlsRestrictedPaymentMethodsItemWechatPay                 AccountPaymentControlsRestrictedPaymentMethodsItem = "wechat_pay"
 )
 
 func NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString(s string) (AccountPaymentControlsRestrictedPaymentMethodsItem, error) {
@@ -3424,6 +4178,86 @@ func NewAccountPaymentControlsRestrictedPaymentMethodsItemFromString(s string) (
 		return AccountPaymentControlsRestrictedPaymentMethodsItemCardAmericanExpress, nil
 	case "card_discover_global_network":
 		return AccountPaymentControlsRestrictedPaymentMethodsItemCardDiscoverGlobalNetwork, nil
+	case "addi":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemAddi, nil
+	case "affirm":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemAffirm, nil
+	case "afterpay_clearpay":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemAfterpayClearpay, nil
+	case "alma":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemAlma, nil
+	case "billie":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemBillie, nil
+	case "capchase_pay":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemCapchasePay, nil
+	case "claritypay":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemClaritypay, nil
+	case "flex_pay":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemFlexPay, nil
+	case "klarna":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemKlarna, nil
+	case "kriya":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemKriya, nil
+	case "kueski":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemKueski, nil
+	case "mondu":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemMondu, nil
+	case "oney":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemOney, nil
+	case "scalapay":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemScalapay, nil
+	case "sequra":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemSequra, nil
+	case "sezzle":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemSezzle, nil
+	case "splitit":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemSplitit, nil
+	case "sunbit":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemSunbit, nil
+	case "tabby":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemTabby, nil
+	case "tamara":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemTamara, nil
+	case "zip":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemZip, nil
+	case "card_installments_three":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemCardInstallmentsThree, nil
+	case "card_installments_six":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemCardInstallmentsSix, nil
+	case "card_installments_twelve":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemCardInstallmentsTwelve, nil
+	case "oney_3x":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemOney3X, nil
+	case "oney_4x":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemOney4X, nil
+	case "klarna_pay_now":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemKlarnaPayNow, nil
+	case "us_bank_account":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemUsBankAccount, nil
+	case "sepa_debit":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemSepaDebit, nil
+	case "bacs_debit":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemBacsDebit, nil
+	case "au_becs_debit":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemAuBecsDebit, nil
+	case "acss_debit":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemAcssDebit, nil
+	case "pay_by_bank":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemPayByBank, nil
+	case "payto":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemPayto, nil
+	case "paypal":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemPaypal, nil
+	case "cashapp":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemCashapp, nil
+	case "venmo":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemVenmo, nil
+	case "amazon_pay":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemAmazonPay, nil
+	case "link":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemLink, nil
+	case "wechat_pay":
+		return AccountPaymentControlsRestrictedPaymentMethodsItemWechatPay, nil
 	}
 	var t AccountPaymentControlsRestrictedPaymentMethodsItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -3433,10 +4267,47 @@ func (a AccountPaymentControlsRestrictedPaymentMethodsItem) Ptr() *AccountPaymen
 	return &a
 }
 
+// Why pending funds without a settlement date aren't moving yet. `kyc_incomplete`, `pending_information_request`, and `update_payout_profile` are things the merchant can act on. `compliance_review` means a verification the merchant already submitted is being reviewed, so these funds stay pending until it clears. `withdrawals_disabled` means Whop has blocked withdrawals, so these funds cannot become available. `null` when there's no reason to show — still clearing, or held for a reason that isn't named here.
+type AccountPaymentControlsUndatedPendingReason string
+
+const (
+	AccountPaymentControlsUndatedPendingReasonKycIncomplete             AccountPaymentControlsUndatedPendingReason = "kyc_incomplete"
+	AccountPaymentControlsUndatedPendingReasonPendingInformationRequest AccountPaymentControlsUndatedPendingReason = "pending_information_request"
+	AccountPaymentControlsUndatedPendingReasonUpdatePayoutProfile       AccountPaymentControlsUndatedPendingReason = "update_payout_profile"
+	AccountPaymentControlsUndatedPendingReasonComplianceReview          AccountPaymentControlsUndatedPendingReason = "compliance_review"
+	AccountPaymentControlsUndatedPendingReasonWithdrawalsDisabled       AccountPaymentControlsUndatedPendingReason = "withdrawals_disabled"
+)
+
+func NewAccountPaymentControlsUndatedPendingReasonFromString(s string) (AccountPaymentControlsUndatedPendingReason, error) {
+	switch s {
+	case "kyc_incomplete":
+		return AccountPaymentControlsUndatedPendingReasonKycIncomplete, nil
+	case "pending_information_request":
+		return AccountPaymentControlsUndatedPendingReasonPendingInformationRequest, nil
+	case "update_payout_profile":
+		return AccountPaymentControlsUndatedPendingReasonUpdatePayoutProfile, nil
+	case "compliance_review":
+		return AccountPaymentControlsUndatedPendingReasonComplianceReview, nil
+	case "withdrawals_disabled":
+		return AccountPaymentControlsUndatedPendingReasonWithdrawalsDisabled, nil
+	}
+	var t AccountPaymentControlsUndatedPendingReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountPaymentControlsUndatedPendingReason) Ptr() *AccountPaymentControlsUndatedPendingReason {
+	return &a
+}
+
 var (
 	accountReserveControlFieldHoldPeriodDays = big.NewInt(1 << 0)
 	accountReserveControlFieldPercentage     = big.NewInt(1 << 1)
 )
+
+// accountReserveControlNullableFields maps the wire names of AccountReserveControl's nullable fields (required or optional) to their field bits.
+var accountReserveControlNullableFields = map[string]*big.Int{
+	"percentage": accountReserveControlFieldPercentage,
+}
 
 type AccountReserveControl struct {
 	// Number of days reserved funds are held before release.
@@ -3473,10 +4344,12 @@ func (a *AccountReserveControl) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountReserveControl) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetHoldPeriodDays sets the HoldPeriodDays field and marks it as non-optional;
@@ -3505,6 +4378,13 @@ func (a *AccountReserveControl) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountReserveControlNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3541,6 +4421,13 @@ var (
 	accountResolutionCenterAutoRefundControlFieldLocked                = big.NewInt(1 << 2)
 	accountResolutionCenterAutoRefundControlFieldPaypalThresholdUsd    = big.NewInt(1 << 3)
 )
+
+// accountResolutionCenterAutoRefundControlNullableFields maps the wire names of AccountResolutionCenterAutoRefundControl's nullable fields (required or optional) to their field bits.
+var accountResolutionCenterAutoRefundControlNullableFields = map[string]*big.Int{
+	"card_threshold_usd":      accountResolutionCenterAutoRefundControlFieldCardThresholdUsd,
+	"financing_threshold_usd": accountResolutionCenterAutoRefundControlFieldFinancingThresholdUsd,
+	"paypal_threshold_usd":    accountResolutionCenterAutoRefundControlFieldPaypalThresholdUsd,
+}
 
 type AccountResolutionCenterAutoRefundControl struct {
 	// Maximum card-funded resolution center case amount automatically refunded in USD. `null` when automatic refunds are disabled for cards.
@@ -3595,10 +4482,12 @@ func (a *AccountResolutionCenterAutoRefundControl) GetExtraProperties() map[stri
 }
 
 func (a *AccountResolutionCenterAutoRefundControl) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetCardThresholdUsd sets the CardThresholdUsd field and marks it as non-optional;
@@ -3641,6 +4530,13 @@ func (a *AccountResolutionCenterAutoRefundControl) UnmarshalJSON(data []byte) er
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountResolutionCenterAutoRefundControlNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3672,11 +4568,154 @@ func (a *AccountResolutionCenterAutoRefundControl) String() string {
 }
 
 var (
+	accountSearchResultFieldCreatedAt = big.NewInt(1 << 0)
+	accountSearchResultFieldID        = big.NewInt(1 << 1)
+	accountSearchResultFieldRoute     = big.NewInt(1 << 2)
+	accountSearchResultFieldTitle     = big.NewInt(1 << 3)
+)
+
+type AccountSearchResult struct {
+	// When the account was created, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
+	// Account ID, prefixed `biz_`.
+	ID string `json:"id" url:"id"`
+	// Account public route identifier.
+	Route string `json:"route" url:"route"`
+	// Account display name.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountSearchResult) GetCreatedAt() string {
+	if a == nil {
+		return ""
+	}
+	return a.CreatedAt
+}
+
+func (a *AccountSearchResult) GetID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ID
+}
+
+func (a *AccountSearchResult) GetRoute() string {
+	if a == nil {
+		return ""
+	}
+	return a.Route
+}
+
+func (a *AccountSearchResult) GetTitle() string {
+	if a == nil {
+		return ""
+	}
+	return a.Title
+}
+
+func (a *AccountSearchResult) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountSearchResult) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountSearchResult) SetCreatedAt(createdAt string) {
+	a.CreatedAt = createdAt
+	a.require(accountSearchResultFieldCreatedAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountSearchResult) SetID(id string) {
+	a.ID = id
+	a.require(accountSearchResultFieldID)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountSearchResult) SetRoute(route string) {
+	a.Route = route
+	a.require(accountSearchResultFieldRoute)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountSearchResult) SetTitle(title string) {
+	a.Title = title
+	a.require(accountSearchResultFieldTitle)
+}
+
+func (a *AccountSearchResult) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountSearchResult
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountSearchResult(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountSearchResult) MarshalJSON() ([]byte, error) {
+	type embed AccountSearchResult
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountSearchResult) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
 	accountSocialLinkFieldID      = big.NewInt(1 << 0)
 	accountSocialLinkFieldTitle   = big.NewInt(1 << 1)
 	accountSocialLinkFieldURL     = big.NewInt(1 << 2)
 	accountSocialLinkFieldWebsite = big.NewInt(1 << 3)
 )
+
+// accountSocialLinkNullableFields maps the wire names of AccountSocialLink's nullable fields (required or optional) to their field bits.
+var accountSocialLinkNullableFields = map[string]*big.Int{
+	"title": accountSocialLinkFieldTitle,
+}
 
 type AccountSocialLink struct {
 	// The ID of the social link
@@ -3731,10 +4770,12 @@ func (a *AccountSocialLink) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountSocialLink) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -3777,6 +4818,13 @@ func (a *AccountSocialLink) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountSocialLinkNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3858,6 +4906,13 @@ var (
 	accountStorePageConfigFieldWhopAffiliateLink = big.NewInt(1 << 3)
 )
 
+// accountStorePageConfigNullableFields maps the wire names of AccountStorePageConfig's nullable fields (required or optional) to their field bits.
+var accountStorePageConfigNullableFields = map[string]*big.Int{
+	"accent_color":    accountStorePageConfigFieldAccentColor,
+	"layout":          accountStorePageConfigFieldLayout,
+	"profile_variant": accountStorePageConfigFieldProfileVariant,
+}
+
 type AccountStorePageConfig struct {
 	// Accent color used on the account store page.
 	AccentColor *AccountStorePageConfigAccentColor `json:"accent_color,omitempty" url:"accent_color,omitempty"`
@@ -3911,10 +4966,12 @@ func (a *AccountStorePageConfig) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountStorePageConfig) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAccentColor sets the AccentColor field and marks it as non-optional;
@@ -3957,6 +5014,13 @@ func (a *AccountStorePageConfig) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountStorePageConfigNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4145,7 +5209,7 @@ type AccountTaxIdentifier struct {
 	ID string `json:"id" url:"id"`
 	// Tax ID type.
 	TaxIDType AccountTaxIdentifierTaxIDType `json:"tax_id_type" url:"tax_id_type"`
-	// Tax ID value.
+	// Tax ID value, for example `DE123456789`. See the [tax IDs guide](/developer/guides/tax-ids).
 	TaxIDValue string `json:"tax_id_value" url:"tax_id_value"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -4184,10 +5248,12 @@ func (a *AccountTaxIdentifier) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountTaxIdentifier) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4658,17 +5724,23 @@ func (a AccountTaxType) Ptr() *AccountTaxType {
 	return &a
 }
 
-// Account-level 3D Secure behavior. `mandate_challenge` requires cardholder verification on supported card payments; `null` uses the standard checkout flow.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` uses the standard checkout flow.
 type AccountThreeDsLevel string
 
 const (
-	AccountThreeDsLevelMandateChallenge AccountThreeDsLevel = "mandate_challenge"
+	AccountThreeDsLevelMandateChallenge       AccountThreeDsLevel = "mandate_challenge"
+	AccountThreeDsLevelMandateIfRequired      AccountThreeDsLevel = "mandate_if_required"
+	AccountThreeDsLevelFrictionlessIfRequired AccountThreeDsLevel = "frictionless_if_required"
 )
 
 func NewAccountThreeDsLevelFromString(s string) (AccountThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return AccountThreeDsLevelMandateChallenge, nil
+	case "mandate_if_required":
+		return AccountThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return AccountThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t AccountThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -4728,10 +5800,12 @@ func (a *AccountWallet) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountWallet) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -4823,7 +5897,273 @@ func (a AccountWalletNetwork) Ptr() *AccountWalletNetwork {
 	return &a
 }
 
-// Company mailing address. Required unless `use_registered_agent` is `true`.
+var (
+	accountWithdrawalScheduleControlFieldDay            = big.NewInt(1 << 0)
+	accountWithdrawalScheduleControlFieldFrequency      = big.NewInt(1 << 1)
+	accountWithdrawalScheduleControlFieldNextPayoutDate = big.NewInt(1 << 2)
+)
+
+// accountWithdrawalScheduleControlNullableFields maps the wire names of AccountWithdrawalScheduleControl's nullable fields (required or optional) to their field bits.
+var accountWithdrawalScheduleControlNullableFields = map[string]*big.Int{
+	"day":              accountWithdrawalScheduleControlFieldDay,
+	"next_payout_date": accountWithdrawalScheduleControlFieldNextPayoutDate,
+}
+
+type AccountWithdrawalScheduleControl struct {
+	// Day the automatic withdrawal runs on: 0-6 (Sunday-Saturday) for `weekly`, 1-31 for `monthly`. `null` for `manual` and `daily`.
+	Day *int `json:"day,omitempty" url:"day,omitempty"`
+	// How often the account's balance automatically withdraws.
+	Frequency AccountWithdrawalScheduleControlFrequency `json:"frequency" url:"frequency"`
+	// Next date the automatic withdrawal is scheduled to run, as an ISO 8601 date. `null` for `manual` and `daily`, where no single next date applies.
+	NextPayoutDate *string `json:"next_payout_date,omitempty" url:"next_payout_date,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountWithdrawalScheduleControl) GetDay() *int {
+	if a == nil {
+		return nil
+	}
+	return a.Day
+}
+
+func (a *AccountWithdrawalScheduleControl) GetFrequency() AccountWithdrawalScheduleControlFrequency {
+	if a == nil {
+		return ""
+	}
+	return a.Frequency
+}
+
+func (a *AccountWithdrawalScheduleControl) GetNextPayoutDate() *string {
+	if a == nil {
+		return nil
+	}
+	return a.NextPayoutDate
+}
+
+func (a *AccountWithdrawalScheduleControl) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountWithdrawalScheduleControl) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetDay sets the Day field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountWithdrawalScheduleControl) SetDay(day *int) {
+	a.Day = day
+	a.require(accountWithdrawalScheduleControlFieldDay)
+}
+
+// SetFrequency sets the Frequency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountWithdrawalScheduleControl) SetFrequency(frequency AccountWithdrawalScheduleControlFrequency) {
+	a.Frequency = frequency
+	a.require(accountWithdrawalScheduleControlFieldFrequency)
+}
+
+// SetNextPayoutDate sets the NextPayoutDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountWithdrawalScheduleControl) SetNextPayoutDate(nextPayoutDate *string) {
+	a.NextPayoutDate = nextPayoutDate
+	a.require(accountWithdrawalScheduleControlFieldNextPayoutDate)
+}
+
+func (a *AccountWithdrawalScheduleControl) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountWithdrawalScheduleControl
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountWithdrawalScheduleControl(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountWithdrawalScheduleControlNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountWithdrawalScheduleControl) MarshalJSON() ([]byte, error) {
+	type embed AccountWithdrawalScheduleControl
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountWithdrawalScheduleControl) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// How often the account's balance automatically withdraws.
+type AccountWithdrawalScheduleControlFrequency string
+
+const (
+	AccountWithdrawalScheduleControlFrequencyManual  AccountWithdrawalScheduleControlFrequency = "manual"
+	AccountWithdrawalScheduleControlFrequencyDaily   AccountWithdrawalScheduleControlFrequency = "daily"
+	AccountWithdrawalScheduleControlFrequencyWeekly  AccountWithdrawalScheduleControlFrequency = "weekly"
+	AccountWithdrawalScheduleControlFrequencyMonthly AccountWithdrawalScheduleControlFrequency = "monthly"
+)
+
+func NewAccountWithdrawalScheduleControlFrequencyFromString(s string) (AccountWithdrawalScheduleControlFrequency, error) {
+	switch s {
+	case "manual":
+		return AccountWithdrawalScheduleControlFrequencyManual, nil
+	case "daily":
+		return AccountWithdrawalScheduleControlFrequencyDaily, nil
+	case "weekly":
+		return AccountWithdrawalScheduleControlFrequencyWeekly, nil
+	case "monthly":
+		return AccountWithdrawalScheduleControlFrequencyMonthly, nil
+	}
+	var t AccountWithdrawalScheduleControlFrequency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountWithdrawalScheduleControlFrequency) Ptr() *AccountWithdrawalScheduleControlFrequency {
+	return &a
+}
+
+var (
+	deleteAccountsResponseFieldDeleted = big.NewInt(1 << 0)
+	deleteAccountsResponseFieldID      = big.NewInt(1 << 1)
+)
+
+type DeleteAccountsResponse struct {
+	// Always true.
+	Deleted bool `json:"deleted" url:"deleted"`
+	// ID of the deleted connected account.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DeleteAccountsResponse) GetDeleted() bool {
+	if d == nil {
+		return false
+	}
+	return d.Deleted
+}
+
+func (d *DeleteAccountsResponse) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DeleteAccountsResponse) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DeleteAccountsResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
+	}
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetDeleted sets the Deleted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteAccountsResponse) SetDeleted(deleted bool) {
+	d.Deleted = deleted
+	d.require(deleteAccountsResponseFieldDeleted)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteAccountsResponse) SetID(id string) {
+	d.ID = id
+	d.require(deleteAccountsResponseFieldID)
+}
+
+func (d *DeleteAccountsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler DeleteAccountsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DeleteAccountsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DeleteAccountsResponse) MarshalJSON() ([]byte, error) {
+	type embed DeleteAccountsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DeleteAccountsResponse) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
 var (
 	formCompanyAccountsRequestBusinessAddressFieldCity       = big.NewInt(1 << 0)
 	formCompanyAccountsRequestBusinessAddressFieldCountry    = big.NewInt(1 << 1)
@@ -4833,6 +6173,7 @@ var (
 	formCompanyAccountsRequestBusinessAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// Company mailing address. Required unless `use_registered_agent` is `true`.
 type FormCompanyAccountsRequestBusinessAddress struct {
 	City string `json:"city" url:"city"`
 	// Two-letter ISO 3166-1 country code, for example `US`.
@@ -4903,10 +6244,12 @@ func (f *FormCompanyAccountsRequestBusinessAddress) GetExtraProperties() map[str
 }
 
 func (f *FormCompanyAccountsRequestBusinessAddress) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -5072,7 +6415,7 @@ func (f FormCompanyAccountsRequestEntityType) Ptr() *FormCompanyAccountsRequestE
 	return &f
 }
 
-// Two-letter code of the US state (or `DC`) to form the company in.
+// Two-letter code of the US state (or `DC`) to form the company in. We recommend `WY` because Wyoming formations are completed the same day.
 type FormCompanyAccountsRequestFormationState string
 
 const (
@@ -5359,10 +6702,12 @@ func (f *FormCompanyAccountsRequestFoundersItem) GetExtraProperties() map[string
 }
 
 func (f *FormCompanyAccountsRequestFoundersItem) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetAddress sets the Address field and marks it as non-optional;
@@ -5477,7 +6822,6 @@ func (f *FormCompanyAccountsRequestFoundersItem) String() string {
 	return fmt.Sprintf("%#v", f)
 }
 
-// Founder's personal address.
 var (
 	formCompanyAccountsRequestFoundersItemAddressFieldCity       = big.NewInt(1 << 0)
 	formCompanyAccountsRequestFoundersItemAddressFieldCountry    = big.NewInt(1 << 1)
@@ -5487,6 +6831,7 @@ var (
 	formCompanyAccountsRequestFoundersItemAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// Founder's personal address.
 type FormCompanyAccountsRequestFoundersItemAddress struct {
 	City string `json:"city" url:"city"`
 	// Two-letter ISO 3166-1 country code, for example `US`.
@@ -5557,10 +6902,12 @@ func (f *FormCompanyAccountsRequestFoundersItemAddress) GetExtraProperties() map
 }
 
 func (f *FormCompanyAccountsRequestFoundersItemAddress) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -5675,12 +7022,12 @@ func (f FormCompanyAccountsRequestFoundersItemRolesItem) Ptr() *FormCompanyAccou
 	return &f
 }
 
-// Authorized share structure. Required when `entity_type` is `c_corp`; ignored for LLCs.
 var (
 	formCompanyAccountsRequestShareStructureFieldNumberOfShares = big.NewInt(1 << 0)
 	formCompanyAccountsRequestShareStructureFieldValue          = big.NewInt(1 << 1)
 )
 
+// Authorized share structure. Required when `entity_type` is `c_corp`; ignored for LLCs.
 type FormCompanyAccountsRequestShareStructure struct {
 	// Number of shares the company authorizes. Must be greater than `0`.
 	NumberOfShares int `json:"number_of_shares" url:"number_of_shares"`
@@ -5716,10 +7063,12 @@ func (f *FormCompanyAccountsRequestShareStructure) GetExtraProperties() map[stri
 }
 
 func (f *FormCompanyAccountsRequestShareStructure) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetNumberOfShares sets the NumberOfShares field and marks it as non-optional;
@@ -5838,10 +7187,12 @@ func (f *FormCompanyAccountsResponse) GetExtraProperties() map[string]interface{
 }
 
 func (f *FormCompanyAccountsResponse) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetCheckoutSessionID sets the CheckoutSessionID field and marks it as non-optional;
@@ -6018,10 +7369,12 @@ func (l *ListAccountsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAccountsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -6087,6 +7440,12 @@ var (
 	listAccountsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listAccountsResponsePageInfoNullableFields maps the wire names of ListAccountsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listAccountsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listAccountsResponsePageInfoFieldEndCursor,
+	"start_cursor": listAccountsResponsePageInfoFieldStartCursor,
+}
+
 type ListAccountsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -6136,10 +7495,12 @@ func (l *ListAccountsResponsePageInfo) GetExtraProperties() map[string]interface
 }
 
 func (l *ListAccountsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -6182,6 +7543,13 @@ func (l *ListAccountsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listAccountsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6222,6 +7590,12 @@ var (
 	postAccountUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postAccountUpdatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postAccountUpdatedPayloadNullableFields maps the wire names of PostAccountUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postAccountUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postAccountUpdatedPayloadFieldAccountID,
+	"api_version_date": postAccountUpdatedPayloadFieldAPIVersionDate,
+}
 
 type PostAccountUpdatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -6311,10 +7685,12 @@ func (p *PostAccountUpdatedPayload) GetExtraProperties() map[string]interface{} 
 }
 
 func (p *PostAccountUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -6391,6 +7767,13 @@ func (p *PostAccountUpdatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAccountUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6464,6 +7847,400 @@ func (p PostAccountUpdatedPayloadType) Ptr() *PostAccountUpdatedPayloadType {
 }
 
 var (
+	retryAdsPaymentAccountsResponseFieldAccountID = big.NewInt(1 << 0)
+	retryAdsPaymentAccountsResponseFieldQueued    = big.NewInt(1 << 1)
+)
+
+type RetryAdsPaymentAccountsResponse struct {
+	// The account whose ads payments will be retried.
+	AccountID string `json:"account_id" url:"account_id"`
+	// Whether the retry was accepted for background processing.
+	Queued bool `json:"queued" url:"queued"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetryAdsPaymentAccountsResponse) GetAccountID() string {
+	if r == nil {
+		return ""
+	}
+	return r.AccountID
+}
+
+func (r *RetryAdsPaymentAccountsResponse) GetQueued() bool {
+	if r == nil {
+		return false
+	}
+	return r.Queued
+}
+
+func (r *RetryAdsPaymentAccountsResponse) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetryAdsPaymentAccountsResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetryAdsPaymentAccountsResponse) SetAccountID(accountID string) {
+	r.AccountID = accountID
+	r.require(retryAdsPaymentAccountsResponseFieldAccountID)
+}
+
+// SetQueued sets the Queued field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetryAdsPaymentAccountsResponse) SetQueued(queued bool) {
+	r.Queued = queued
+	r.require(retryAdsPaymentAccountsResponseFieldQueued)
+}
+
+func (r *RetryAdsPaymentAccountsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetryAdsPaymentAccountsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetryAdsPaymentAccountsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetryAdsPaymentAccountsResponse) MarshalJSON() ([]byte, error) {
+	type embed RetryAdsPaymentAccountsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetryAdsPaymentAccountsResponse) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+type SearchAccountsRequestDirection string
+
+const (
+	SearchAccountsRequestDirectionAsc  SearchAccountsRequestDirection = "asc"
+	SearchAccountsRequestDirectionDesc SearchAccountsRequestDirection = "desc"
+)
+
+func NewSearchAccountsRequestDirectionFromString(s string) (SearchAccountsRequestDirection, error) {
+	switch s {
+	case "asc":
+		return SearchAccountsRequestDirectionAsc, nil
+	case "desc":
+		return SearchAccountsRequestDirectionDesc, nil
+	}
+	var t SearchAccountsRequestDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SearchAccountsRequestDirection) Ptr() *SearchAccountsRequestDirection {
+	return &s
+}
+
+type SearchAccountsRequestOrder string
+
+const (
+	SearchAccountsRequestOrderCreatedAt SearchAccountsRequestOrder = "created_at"
+)
+
+func NewSearchAccountsRequestOrderFromString(s string) (SearchAccountsRequestOrder, error) {
+	switch s {
+	case "created_at":
+		return SearchAccountsRequestOrderCreatedAt, nil
+	}
+	var t SearchAccountsRequestOrder
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SearchAccountsRequestOrder) Ptr() *SearchAccountsRequestOrder {
+	return &s
+}
+
+var (
+	searchAccountsResponseFieldData     = big.NewInt(1 << 0)
+	searchAccountsResponseFieldPageInfo = big.NewInt(1 << 1)
+)
+
+type SearchAccountsResponse struct {
+	Data     []*AccountSearchResult          `json:"data" url:"data"`
+	PageInfo *SearchAccountsResponsePageInfo `json:"page_info" url:"page_info"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SearchAccountsResponse) GetData() []*AccountSearchResult {
+	if s == nil {
+		return nil
+	}
+	return s.Data
+}
+
+func (s *SearchAccountsResponse) GetPageInfo() *SearchAccountsResponsePageInfo {
+	if s == nil {
+		return nil
+	}
+	return s.PageInfo
+}
+
+func (s *SearchAccountsResponse) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SearchAccountsResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsResponse) SetData(data []*AccountSearchResult) {
+	s.Data = data
+	s.require(searchAccountsResponseFieldData)
+}
+
+// SetPageInfo sets the PageInfo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsResponse) SetPageInfo(pageInfo *SearchAccountsResponsePageInfo) {
+	s.PageInfo = pageInfo
+	s.require(searchAccountsResponseFieldPageInfo)
+}
+
+func (s *SearchAccountsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler SearchAccountsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SearchAccountsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SearchAccountsResponse) MarshalJSON() ([]byte, error) {
+	type embed SearchAccountsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SearchAccountsResponse) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	searchAccountsResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
+	searchAccountsResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
+	searchAccountsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
+	searchAccountsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+)
+
+// searchAccountsResponsePageInfoNullableFields maps the wire names of SearchAccountsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var searchAccountsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   searchAccountsResponsePageInfoFieldEndCursor,
+	"start_cursor": searchAccountsResponsePageInfoFieldStartCursor,
+}
+
+type SearchAccountsResponsePageInfo struct {
+	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
+	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
+	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
+	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SearchAccountsResponsePageInfo) GetEndCursor() *string {
+	if s == nil {
+		return nil
+	}
+	return s.EndCursor
+}
+
+func (s *SearchAccountsResponsePageInfo) GetHasNextPage() bool {
+	if s == nil {
+		return false
+	}
+	return s.HasNextPage
+}
+
+func (s *SearchAccountsResponsePageInfo) GetHasPreviousPage() bool {
+	if s == nil {
+		return false
+	}
+	return s.HasPreviousPage
+}
+
+func (s *SearchAccountsResponsePageInfo) GetStartCursor() *string {
+	if s == nil {
+		return nil
+	}
+	return s.StartCursor
+}
+
+func (s *SearchAccountsResponsePageInfo) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SearchAccountsResponsePageInfo) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetEndCursor sets the EndCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsResponsePageInfo) SetEndCursor(endCursor *string) {
+	s.EndCursor = endCursor
+	s.require(searchAccountsResponsePageInfoFieldEndCursor)
+}
+
+// SetHasNextPage sets the HasNextPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsResponsePageInfo) SetHasNextPage(hasNextPage bool) {
+	s.HasNextPage = hasNextPage
+	s.require(searchAccountsResponsePageInfoFieldHasNextPage)
+}
+
+// SetHasPreviousPage sets the HasPreviousPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
+	s.HasPreviousPage = hasPreviousPage
+	s.require(searchAccountsResponsePageInfoFieldHasPreviousPage)
+}
+
+// SetStartCursor sets the StartCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SearchAccountsResponsePageInfo) SetStartCursor(startCursor *string) {
+	s.StartCursor = startCursor
+	s.require(searchAccountsResponsePageInfoFieldStartCursor)
+}
+
+func (s *SearchAccountsResponsePageInfo) UnmarshalJSON(data []byte) error {
+	type unmarshaler SearchAccountsResponsePageInfo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SearchAccountsResponsePageInfo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, searchAccountsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SearchAccountsResponsePageInfo) MarshalJSON() ([]byte, error) {
+	type embed SearchAccountsResponsePageInfo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SearchAccountsResponsePageInfo) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
 	transferOwnershipAccountsResponseFieldSuccess = big.NewInt(1 << 0)
 )
 
@@ -6492,10 +8269,12 @@ func (t *TransferOwnershipAccountsResponse) GetExtraProperties() map[string]inte
 }
 
 func (t *TransferOwnershipAccountsResponse) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;
@@ -6547,11 +8326,11 @@ func (t *TransferOwnershipAccountsResponse) String() string {
 	return fmt.Sprintf("%#v", t)
 }
 
-// Account banner image, used as the cover photo when creating a Whop-managed Facebook page. Image files up to 10 MB, except `image/gif`. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file).
 var (
 	updateAccountsRequestBannerImageFieldID = big.NewInt(1 << 0)
 )
 
+// Account banner image, used as the cover photo when creating a Whop-managed Facebook page. Image files up to 10 MB, except `image/gif`. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file).
 type UpdateAccountsRequestBannerImage struct {
 	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
@@ -6579,10 +8358,12 @@ func (u *UpdateAccountsRequestBannerImage) GetExtraProperties() map[string]inter
 }
 
 func (u *UpdateAccountsRequestBannerImage) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -6638,7 +8419,6 @@ func (u *UpdateAccountsRequestBannerImage) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Account business address used to calculate tax. A complete address in a supported country is required when `tax_remitted_by` is `self`.
 var (
 	updateAccountsRequestBusinessAddressFieldCity       = big.NewInt(1 << 0)
 	updateAccountsRequestBusinessAddressFieldCountry    = big.NewInt(1 << 1)
@@ -6648,6 +8428,15 @@ var (
 	updateAccountsRequestBusinessAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// updateAccountsRequestBusinessAddressNullableFields maps the wire names of UpdateAccountsRequestBusinessAddress's nullable fields (required or optional) to their field bits.
+var updateAccountsRequestBusinessAddressNullableFields = map[string]*big.Int{
+	"city":        updateAccountsRequestBusinessAddressFieldCity,
+	"line2":       updateAccountsRequestBusinessAddressFieldLine2,
+	"postal_code": updateAccountsRequestBusinessAddressFieldPostalCode,
+	"state":       updateAccountsRequestBusinessAddressFieldState,
+}
+
+// Account business address used to calculate tax. A complete address in a supported country is required when `tax_remitted_by` is `self`.
 type UpdateAccountsRequestBusinessAddress struct {
 	// City name.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
@@ -6719,10 +8508,12 @@ func (u *UpdateAccountsRequestBusinessAddress) GetExtraProperties() map[string]i
 }
 
 func (u *UpdateAccountsRequestBusinessAddress) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -6779,6 +8570,13 @@ func (u *UpdateAccountsRequestBusinessAddress) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateAccountsRequestBusinessAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -6809,81 +8607,190 @@ func (u *UpdateAccountsRequestBusinessAddress) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
-type UpdateAccountsRequestBusinessType string
-
-const (
-	UpdateAccountsRequestBusinessTypeEducationProgram      UpdateAccountsRequestBusinessType = "education_program"
-	UpdateAccountsRequestBusinessTypeCoaching              UpdateAccountsRequestBusinessType = "coaching"
-	UpdateAccountsRequestBusinessTypeSoftware              UpdateAccountsRequestBusinessType = "software"
-	UpdateAccountsRequestBusinessTypePaidGroup             UpdateAccountsRequestBusinessType = "paid_group"
-	UpdateAccountsRequestBusinessTypeNewsletter            UpdateAccountsRequestBusinessType = "newsletter"
-	UpdateAccountsRequestBusinessTypeAgency                UpdateAccountsRequestBusinessType = "agency"
-	UpdateAccountsRequestBusinessTypePhysicalProducts      UpdateAccountsRequestBusinessType = "physical_products"
-	UpdateAccountsRequestBusinessTypeBrickAndMortar        UpdateAccountsRequestBusinessType = "brick_and_mortar"
-	UpdateAccountsRequestBusinessTypeEvents                UpdateAccountsRequestBusinessType = "events"
-	UpdateAccountsRequestBusinessTypeCoachingAndCourses    UpdateAccountsRequestBusinessType = "coaching_and_courses"
-	UpdateAccountsRequestBusinessTypeOther                 UpdateAccountsRequestBusinessType = "other"
-	UpdateAccountsRequestBusinessTypeServices              UpdateAccountsRequestBusinessType = "services"
-	UpdateAccountsRequestBusinessTypeGigEconomy            UpdateAccountsRequestBusinessType = "gig_economy"
-	UpdateAccountsRequestBusinessTypeMarketplace           UpdateAccountsRequestBusinessType = "marketplace"
-	UpdateAccountsRequestBusinessTypeTelehealth            UpdateAccountsRequestBusinessType = "telehealth"
-	UpdateAccountsRequestBusinessTypeClassActionSettlement UpdateAccountsRequestBusinessType = "class_action_settlement"
-	UpdateAccountsRequestBusinessTypePhysicalProduct       UpdateAccountsRequestBusinessType = "physical_product"
-	UpdateAccountsRequestBusinessTypeSaas                  UpdateAccountsRequestBusinessType = "saas"
-	UpdateAccountsRequestBusinessTypeCourse                UpdateAccountsRequestBusinessType = "course"
-	UpdateAccountsRequestBusinessTypeCommunity             UpdateAccountsRequestBusinessType = "community"
+var (
+	updateAccountsRequestCancellationPolicyFieldID = big.NewInt(1 << 0)
 )
 
-func NewUpdateAccountsRequestBusinessTypeFromString(s string) (UpdateAccountsRequestBusinessType, error) {
-	switch s {
-	case "education_program":
-		return UpdateAccountsRequestBusinessTypeEducationProgram, nil
-	case "coaching":
-		return UpdateAccountsRequestBusinessTypeCoaching, nil
-	case "software":
-		return UpdateAccountsRequestBusinessTypeSoftware, nil
-	case "paid_group":
-		return UpdateAccountsRequestBusinessTypePaidGroup, nil
-	case "newsletter":
-		return UpdateAccountsRequestBusinessTypeNewsletter, nil
-	case "agency":
-		return UpdateAccountsRequestBusinessTypeAgency, nil
-	case "physical_products":
-		return UpdateAccountsRequestBusinessTypePhysicalProducts, nil
-	case "brick_and_mortar":
-		return UpdateAccountsRequestBusinessTypeBrickAndMortar, nil
-	case "events":
-		return UpdateAccountsRequestBusinessTypeEvents, nil
-	case "coaching_and_courses":
-		return UpdateAccountsRequestBusinessTypeCoachingAndCourses, nil
-	case "other":
-		return UpdateAccountsRequestBusinessTypeOther, nil
-	case "services":
-		return UpdateAccountsRequestBusinessTypeServices, nil
-	case "gig_economy":
-		return UpdateAccountsRequestBusinessTypeGigEconomy, nil
-	case "marketplace":
-		return UpdateAccountsRequestBusinessTypeMarketplace, nil
-	case "telehealth":
-		return UpdateAccountsRequestBusinessTypeTelehealth, nil
-	case "class_action_settlement":
-		return UpdateAccountsRequestBusinessTypeClassActionSettlement, nil
-	case "physical_product":
-		return UpdateAccountsRequestBusinessTypePhysicalProduct, nil
-	case "saas":
-		return UpdateAccountsRequestBusinessTypeSaas, nil
-	case "course":
-		return UpdateAccountsRequestBusinessTypeCourse, nil
-	case "community":
-		return UpdateAccountsRequestBusinessTypeCommunity, nil
-	}
-	var t UpdateAccountsRequestBusinessType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
+// The account's cancellation policy document. Attached to new disputes as the cancellation policy evidence, with the terms of service as the fallback. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+type UpdateAccountsRequestCancellationPolicy struct {
+	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+
+	rawJSON json.RawMessage
 }
 
-func (u UpdateAccountsRequestBusinessType) Ptr() *UpdateAccountsRequestBusinessType {
-	return &u
+func (u *UpdateAccountsRequestCancellationPolicy) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdateAccountsRequestCancellationPolicy) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.ExtraProperties
+}
+
+func (u *UpdateAccountsRequestCancellationPolicy) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestCancellationPolicy) SetID(id *string) {
+	u.ID = id
+	u.require(updateAccountsRequestCancellationPolicyFieldID)
+}
+
+func (u *UpdateAccountsRequestCancellationPolicy) UnmarshalJSON(data []byte) error {
+	type embed UpdateAccountsRequestCancellationPolicy
+	var unmarshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*u = UpdateAccountsRequestCancellationPolicy(unmarshaler.embed)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.ExtraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAccountsRequestCancellationPolicy) MarshalJSON() ([]byte, error) {
+	type embed UpdateAccountsRequestCancellationPolicy
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, u.ExtraProperties)
+}
+
+func (u *UpdateAccountsRequestCancellationPolicy) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAccountsRequestEulaFieldID = big.NewInt(1 << 0)
+)
+
+// The account's end-user license agreement document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+type UpdateAccountsRequestEula struct {
+	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+
+	rawJSON json.RawMessage
+}
+
+func (u *UpdateAccountsRequestEula) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdateAccountsRequestEula) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.ExtraProperties
+}
+
+func (u *UpdateAccountsRequestEula) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestEula) SetID(id *string) {
+	u.ID = id
+	u.require(updateAccountsRequestEulaFieldID)
+}
+
+func (u *UpdateAccountsRequestEula) UnmarshalJSON(data []byte) error {
+	type embed UpdateAccountsRequestEula
+	var unmarshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*u = UpdateAccountsRequestEula(unmarshaler.embed)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.ExtraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAccountsRequestEula) MarshalJSON() ([]byte, error) {
+	type embed UpdateAccountsRequestEula
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, u.ExtraProperties)
+}
+
+func (u *UpdateAccountsRequestEula) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
 }
 
 type UpdateAccountsRequestHomePreferencesItem string
@@ -6908,448 +8815,11 @@ func (u UpdateAccountsRequestHomePreferencesItem) Ptr() *UpdateAccountsRequestHo
 	return &u
 }
 
-// Account industry group. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
-type UpdateAccountsRequestIndustryGroup string
-
-const (
-	UpdateAccountsRequestIndustryGroupAcademicAndTestPrep                UpdateAccountsRequestIndustryGroup = "academic_and_test_prep"
-	UpdateAccountsRequestIndustryGroupAccessories                        UpdateAccountsRequestIndustryGroup = "accessories"
-	UpdateAccountsRequestIndustryGroupAgricultureAndFarming              UpdateAccountsRequestIndustryGroup = "agriculture_and_farming"
-	UpdateAccountsRequestIndustryGroupAiAndAutomationAgencies            UpdateAccountsRequestIndustryGroup = "ai_and_automation_agencies"
-	UpdateAccountsRequestIndustryGroupAiAndAutomationSoftware            UpdateAccountsRequestIndustryGroup = "ai_and_automation_software"
-	UpdateAccountsRequestIndustryGroupArtsAndCrafts                      UpdateAccountsRequestIndustryGroup = "arts_and_crafts"
-	UpdateAccountsRequestIndustryGroupAutomotive                         UpdateAccountsRequestIndustryGroup = "automotive"
-	UpdateAccountsRequestIndustryGroupB2BAndProfessionalMarketplaces     UpdateAccountsRequestIndustryGroup = "b2b_and_professional_marketplaces"
-	UpdateAccountsRequestIndustryGroupBabyAndKids                        UpdateAccountsRequestIndustryGroup = "baby_and_kids"
-	UpdateAccountsRequestIndustryGroupBarsAndBreweries                   UpdateAccountsRequestIndustryGroup = "bars_and_breweries"
-	UpdateAccountsRequestIndustryGroupBeautyAndPersonalCare              UpdateAccountsRequestIndustryGroup = "beauty_and_personal_care"
-	UpdateAccountsRequestIndustryGroupBeautyAndWellness                  UpdateAccountsRequestIndustryGroup = "beauty_and_wellness"
-	UpdateAccountsRequestIndustryGroupBusinessAndEntrepreneurship        UpdateAccountsRequestIndustryGroup = "business_and_entrepreneurship"
-	UpdateAccountsRequestIndustryGroupBusinessAndMoneyGroups             UpdateAccountsRequestIndustryGroup = "business_and_money_groups"
-	UpdateAccountsRequestIndustryGroupCafesAndQuickService               UpdateAccountsRequestIndustryGroup = "cafes_and_quick_service"
-	UpdateAccountsRequestIndustryGroupCareerAndProfessional              UpdateAccountsRequestIndustryGroup = "career_and_professional"
-	UpdateAccountsRequestIndustryGroupCharityAndCauseEvents              UpdateAccountsRequestIndustryGroup = "charity_and_cause_events"
-	UpdateAccountsRequestIndustryGroupClassActionSettlement              UpdateAccountsRequestIndustryGroup = "class_action_settlement"
-	UpdateAccountsRequestIndustryGroupClothingAndApparel                 UpdateAccountsRequestIndustryGroup = "clothing_and_apparel"
-	UpdateAccountsRequestIndustryGroupCommunicationAndMessagingSoftware  UpdateAccountsRequestIndustryGroup = "communication_and_messaging_software"
-	UpdateAccountsRequestIndustryGroupCommunityAndEducationSoftware      UpdateAccountsRequestIndustryGroup = "community_and_education_software"
-	UpdateAccountsRequestIndustryGroupConferenceAndExpoEvents            UpdateAccountsRequestIndustryGroup = "conference_and_expo_events"
-	UpdateAccountsRequestIndustryGroupConsulting                         UpdateAccountsRequestIndustryGroup = "consulting"
-	UpdateAccountsRequestIndustryGroupContentAndClippingAgencies         UpdateAccountsRequestIndustryGroup = "content_and_clipping_agencies"
-	UpdateAccountsRequestIndustryGroupCreativeAndContentCreation         UpdateAccountsRequestIndustryGroup = "creative_and_content_creation"
-	UpdateAccountsRequestIndustryGroupCreativeAndContentGroups           UpdateAccountsRequestIndustryGroup = "creative_and_content_groups"
-	UpdateAccountsRequestIndustryGroupCreativeAndEducation               UpdateAccountsRequestIndustryGroup = "creative_and_education"
-	UpdateAccountsRequestIndustryGroupCreativeGigs                       UpdateAccountsRequestIndustryGroup = "creative_gigs"
-	UpdateAccountsRequestIndustryGroupCreativeServices                   UpdateAccountsRequestIndustryGroup = "creative_services"
-	UpdateAccountsRequestIndustryGroupCustomerSupportAgencies            UpdateAccountsRequestIndustryGroup = "customer_support_agencies"
-	UpdateAccountsRequestIndustryGroupDatingAndRelationships             UpdateAccountsRequestIndustryGroup = "dating_and_relationships"
-	UpdateAccountsRequestIndustryGroupDeliveryAndLogistics               UpdateAccountsRequestIndustryGroup = "delivery_and_logistics"
-	UpdateAccountsRequestIndustryGroupDentalAndVision                    UpdateAccountsRequestIndustryGroup = "dental_and_vision"
-	UpdateAccountsRequestIndustryGroupDermatologyAndSkin                 UpdateAccountsRequestIndustryGroup = "dermatology_and_skin"
-	UpdateAccountsRequestIndustryGroupDesignAndCreativeAgencies          UpdateAccountsRequestIndustryGroup = "design_and_creative_agencies"
-	UpdateAccountsRequestIndustryGroupDeveloperAndTechnicalTools         UpdateAccountsRequestIndustryGroup = "developer_and_technical_tools"
-	UpdateAccountsRequestIndustryGroupDevelopmentAgencies                UpdateAccountsRequestIndustryGroup = "development_agencies"
-	UpdateAccountsRequestIndustryGroupDigitalAndEducationMarketplaces    UpdateAccountsRequestIndustryGroup = "digital_and_education_marketplaces"
-	UpdateAccountsRequestIndustryGroupDigitalGoodsAndAccounts            UpdateAccountsRequestIndustryGroup = "digital_goods_and_accounts"
-	UpdateAccountsRequestIndustryGroupECommerceSoftware                  UpdateAccountsRequestIndustryGroup = "e_commerce_software"
-	UpdateAccountsRequestIndustryGroupEducationAndChildcare              UpdateAccountsRequestIndustryGroup = "education_and_childcare"
-	UpdateAccountsRequestIndustryGroupEducationalTrainingEvents          UpdateAccountsRequestIndustryGroup = "educational_training_events"
-	UpdateAccountsRequestIndustryGroupElectronicsAndGadgets              UpdateAccountsRequestIndustryGroup = "electronics_and_gadgets"
-	UpdateAccountsRequestIndustryGroupEntertainmentAndLeisure            UpdateAccountsRequestIndustryGroup = "entertainment_and_leisure"
-	UpdateAccountsRequestIndustryGroupFamilyAndCommunityEvents           UpdateAccountsRequestIndustryGroup = "family_and_community_events"
-	UpdateAccountsRequestIndustryGroupFinanceAndInvesting                UpdateAccountsRequestIndustryGroup = "finance_and_investing"
-	UpdateAccountsRequestIndustryGroupFitnessAndAthletics                UpdateAccountsRequestIndustryGroup = "fitness_and_athletics"
-	UpdateAccountsRequestIndustryGroupFitnessAndHealthGroups             UpdateAccountsRequestIndustryGroup = "fitness_and_health_groups"
-	UpdateAccountsRequestIndustryGroupFitnessAndRecreation               UpdateAccountsRequestIndustryGroup = "fitness_and_recreation"
-	UpdateAccountsRequestIndustryGroupFitnessEquipmentAndGear            UpdateAccountsRequestIndustryGroup = "fitness_equipment_and_gear"
-	UpdateAccountsRequestIndustryGroupFoodAndBeverages                   UpdateAccountsRequestIndustryGroup = "food_and_beverages"
-	UpdateAccountsRequestIndustryGroupFoodAndHospitalityMarketplaces     UpdateAccountsRequestIndustryGroup = "food_and_hospitality_marketplaces"
-	UpdateAccountsRequestIndustryGroupFuneralAndDeathCare                UpdateAccountsRequestIndustryGroup = "funeral_and_death_care"
-	UpdateAccountsRequestIndustryGroupGamingAndEntertainmentSoftware     UpdateAccountsRequestIndustryGroup = "gaming_and_entertainment_software"
-	UpdateAccountsRequestIndustryGroupGamingGroups                       UpdateAccountsRequestIndustryGroup = "gaming_groups"
-	UpdateAccountsRequestIndustryGroupGeneticAndSpecialized              UpdateAccountsRequestIndustryGroup = "genetic_and_specialized"
-	UpdateAccountsRequestIndustryGroupGovernmentAndPublic                UpdateAccountsRequestIndustryGroup = "government_and_public"
-	UpdateAccountsRequestIndustryGroupHealthAndWellness                  UpdateAccountsRequestIndustryGroup = "health_and_wellness"
-	UpdateAccountsRequestIndustryGroupHealthAndWellnessServices          UpdateAccountsRequestIndustryGroup = "health_and_wellness_services"
-	UpdateAccountsRequestIndustryGroupHealthcare                         UpdateAccountsRequestIndustryGroup = "healthcare"
-	UpdateAccountsRequestIndustryGroupHealthcareAndWellnessSoftware      UpdateAccountsRequestIndustryGroup = "healthcare_and_wellness_software"
-	UpdateAccountsRequestIndustryGroupHobbiesAndLifestyle                UpdateAccountsRequestIndustryGroup = "hobbies_and_lifestyle"
-	UpdateAccountsRequestIndustryGroupHobbyAndInterestGroups             UpdateAccountsRequestIndustryGroup = "hobby_and_interest_groups"
-	UpdateAccountsRequestIndustryGroupHomeAndLiving                      UpdateAccountsRequestIndustryGroup = "home_and_living"
-	UpdateAccountsRequestIndustryGroupHomeAndTradeServices               UpdateAccountsRequestIndustryGroup = "home_and_trade_services"
-	UpdateAccountsRequestIndustryGroupHomeAndTradeStorefronts            UpdateAccountsRequestIndustryGroup = "home_and_trade_storefronts"
-	UpdateAccountsRequestIndustryGroupHomeImprovementAndTools            UpdateAccountsRequestIndustryGroup = "home_improvement_and_tools"
-	UpdateAccountsRequestIndustryGroupHomeServicesGigs                   UpdateAccountsRequestIndustryGroup = "home_services_gigs"
-	UpdateAccountsRequestIndustryGroupHospitalityAndLodging              UpdateAccountsRequestIndustryGroup = "hospitality_and_lodging"
-	UpdateAccountsRequestIndustryGroupIndustrialAndManufacturing         UpdateAccountsRequestIndustryGroup = "industrial_and_manufacturing"
-	UpdateAccountsRequestIndustryGroupIndustrySpecificSoftware           UpdateAccountsRequestIndustryGroup = "industry_specific_software"
-	UpdateAccountsRequestIndustryGroupLanguageAndCommunication           UpdateAccountsRequestIndustryGroup = "language_and_communication"
-	UpdateAccountsRequestIndustryGroupLegalAndCompliance                 UpdateAccountsRequestIndustryGroup = "legal_and_compliance"
-	UpdateAccountsRequestIndustryGroupLifestyleAndCulture                UpdateAccountsRequestIndustryGroup = "lifestyle_and_culture"
-	UpdateAccountsRequestIndustryGroupLifestyleAndPersonalGrowth         UpdateAccountsRequestIndustryGroup = "lifestyle_and_personal_growth"
-	UpdateAccountsRequestIndustryGroupLifestyleAndPersonalGrowthGroups   UpdateAccountsRequestIndustryGroup = "lifestyle_and_personal_growth_groups"
-	UpdateAccountsRequestIndustryGroupLifestyleAndWellnessEvents         UpdateAccountsRequestIndustryGroup = "lifestyle_and_wellness_events"
-	UpdateAccountsRequestIndustryGroupLogisticsAndTransportationServices UpdateAccountsRequestIndustryGroup = "logistics_and_transportation_services"
-	UpdateAccountsRequestIndustryGroupMarketingAgencies                  UpdateAccountsRequestIndustryGroup = "marketing_agencies"
-	UpdateAccountsRequestIndustryGroupMarketingAndAdvertising            UpdateAccountsRequestIndustryGroup = "marketing_and_advertising"
-	UpdateAccountsRequestIndustryGroupMarketingAndSalesSoftware          UpdateAccountsRequestIndustryGroup = "marketing_and_sales_software"
-	UpdateAccountsRequestIndustryGroupMediaAndPublishingCompanies        UpdateAccountsRequestIndustryGroup = "media_and_publishing_companies"
-	UpdateAccountsRequestIndustryGroupMentalHealthAndBehavioral          UpdateAccountsRequestIndustryGroup = "mental_health_and_behavioral"
-	UpdateAccountsRequestIndustryGroupMiscellaneous                      UpdateAccountsRequestIndustryGroup = "miscellaneous"
-	UpdateAccountsRequestIndustryGroupMusicAndPerformingArts             UpdateAccountsRequestIndustryGroup = "music_and_performing_arts"
-	UpdateAccountsRequestIndustryGroupNewsAndPolitics                    UpdateAccountsRequestIndustryGroup = "news_and_politics"
-	UpdateAccountsRequestIndustryGroupNonprofitAndCharity                UpdateAccountsRequestIndustryGroup = "nonprofit_and_charity"
-	UpdateAccountsRequestIndustryGroupOfficeAndBusinessSupplies          UpdateAccountsRequestIndustryGroup = "office_and_business_supplies"
-	UpdateAccountsRequestIndustryGroupOutdoorAndSports                   UpdateAccountsRequestIndustryGroup = "outdoor_and_sports"
-	UpdateAccountsRequestIndustryGroupPerformanceAndShowEvents           UpdateAccountsRequestIndustryGroup = "performance_and_show_events"
-	UpdateAccountsRequestIndustryGroupPersonalDevelopment                UpdateAccountsRequestIndustryGroup = "personal_development"
-	UpdateAccountsRequestIndustryGroupPersonalFinance                    UpdateAccountsRequestIndustryGroup = "personal_finance"
-	UpdateAccountsRequestIndustryGroupPersonalServices                   UpdateAccountsRequestIndustryGroup = "personal_services"
-	UpdateAccountsRequestIndustryGroupPetServices                        UpdateAccountsRequestIndustryGroup = "pet_services"
-	UpdateAccountsRequestIndustryGroupPetsAndAnimals                     UpdateAccountsRequestIndustryGroup = "pets_and_animals"
-	UpdateAccountsRequestIndustryGroupPrimaryAndGeneralCare              UpdateAccountsRequestIndustryGroup = "primary_and_general_care"
-	UpdateAccountsRequestIndustryGroupProductMarketplaces                UpdateAccountsRequestIndustryGroup = "product_marketplaces"
-	UpdateAccountsRequestIndustryGroupProductivityAndBusinessOps         UpdateAccountsRequestIndustryGroup = "productivity_and_business_ops"
-	UpdateAccountsRequestIndustryGroupProfessionalGigs                   UpdateAccountsRequestIndustryGroup = "professional_gigs"
-	UpdateAccountsRequestIndustryGroupProfessionalServices               UpdateAccountsRequestIndustryGroup = "professional_services"
-	UpdateAccountsRequestIndustryGroupProfessionalServicesStorefront     UpdateAccountsRequestIndustryGroup = "professional_services_storefront"
-	UpdateAccountsRequestIndustryGroupPublishingAndInfoProducts          UpdateAccountsRequestIndustryGroup = "publishing_and_info_products"
-	UpdateAccountsRequestIndustryGroupRealEstate                         UpdateAccountsRequestIndustryGroup = "real_estate"
-	UpdateAccountsRequestIndustryGroupRealEstateSoftware                 UpdateAccountsRequestIndustryGroup = "real_estate_software"
-	UpdateAccountsRequestIndustryGroupRecruitingAndStaffing              UpdateAccountsRequestIndustryGroup = "recruiting_and_staffing"
-	UpdateAccountsRequestIndustryGroupRehabilitationAndTherapy           UpdateAccountsRequestIndustryGroup = "rehabilitation_and_therapy"
-	UpdateAccountsRequestIndustryGroupReligionAndFaith                   UpdateAccountsRequestIndustryGroup = "religion_and_faith"
-	UpdateAccountsRequestIndustryGroupRentalMarketplaces                 UpdateAccountsRequestIndustryGroup = "rental_marketplaces"
-	UpdateAccountsRequestIndustryGroupRestaurants                        UpdateAccountsRequestIndustryGroup = "restaurants"
-	UpdateAccountsRequestIndustryGroupRetail                             UpdateAccountsRequestIndustryGroup = "retail"
-	UpdateAccountsRequestIndustryGroupSalesAgencies                      UpdateAccountsRequestIndustryGroup = "sales_agencies"
-	UpdateAccountsRequestIndustryGroupSalesAndRevenue                    UpdateAccountsRequestIndustryGroup = "sales_and_revenue"
-	UpdateAccountsRequestIndustryGroupSecurityAndInvestigations          UpdateAccountsRequestIndustryGroup = "security_and_investigations"
-	UpdateAccountsRequestIndustryGroupSecurityAndPrivacySoftware         UpdateAccountsRequestIndustryGroup = "security_and_privacy_software"
-	UpdateAccountsRequestIndustryGroupServiceMarketplaces                UpdateAccountsRequestIndustryGroup = "service_marketplaces"
-	UpdateAccountsRequestIndustryGroupSleepAndChronicConditions          UpdateAccountsRequestIndustryGroup = "sleep_and_chronic_conditions"
-	UpdateAccountsRequestIndustryGroupSocialAndNetworkingEvents          UpdateAccountsRequestIndustryGroup = "social_and_networking_events"
-	UpdateAccountsRequestIndustryGroupSocialEntertainmentEvents          UpdateAccountsRequestIndustryGroup = "social_entertainment_events"
-	UpdateAccountsRequestIndustryGroupSpecializedGigs                    UpdateAccountsRequestIndustryGroup = "specialized_gigs"
-	UpdateAccountsRequestIndustryGroupSpecialtyMedicalCare               UpdateAccountsRequestIndustryGroup = "specialty_medical_care"
-	UpdateAccountsRequestIndustryGroupSpiritualityAndMindfulness         UpdateAccountsRequestIndustryGroup = "spirituality_and_mindfulness"
-	UpdateAccountsRequestIndustryGroupSpiritualityAndPersonalGrowth      UpdateAccountsRequestIndustryGroup = "spirituality_and_personal_growth"
-	UpdateAccountsRequestIndustryGroupSportsAndFitnessEvents             UpdateAccountsRequestIndustryGroup = "sports_and_fitness_events"
-	UpdateAccountsRequestIndustryGroupSportsBettingAndGambling           UpdateAccountsRequestIndustryGroup = "sports_betting_and_gambling"
-	UpdateAccountsRequestIndustryGroupSportsBettingGroups                UpdateAccountsRequestIndustryGroup = "sports_betting_groups"
-	UpdateAccountsRequestIndustryGroupSupplementsAndNutrition            UpdateAccountsRequestIndustryGroup = "supplements_and_nutrition"
-	UpdateAccountsRequestIndustryGroupSustainabilityAndEcoProducts       UpdateAccountsRequestIndustryGroup = "sustainability_and_eco_products"
-	UpdateAccountsRequestIndustryGroupTaskAndErrands                     UpdateAccountsRequestIndustryGroup = "task_and_errands"
-	UpdateAccountsRequestIndustryGroupTechAndAi                          UpdateAccountsRequestIndustryGroup = "tech_and_ai"
-	UpdateAccountsRequestIndustryGroupTechAndDevGroups                   UpdateAccountsRequestIndustryGroup = "tech_and_dev_groups"
-	UpdateAccountsRequestIndustryGroupTechAndDevelopment                 UpdateAccountsRequestIndustryGroup = "tech_and_development"
-	UpdateAccountsRequestIndustryGroupTradingAndFinanceSoftware          UpdateAccountsRequestIndustryGroup = "trading_and_finance_software"
-	UpdateAccountsRequestIndustryGroupTradingAndInvesting                UpdateAccountsRequestIndustryGroup = "trading_and_investing"
-	UpdateAccountsRequestIndustryGroupTradingAndInvestingGroups          UpdateAccountsRequestIndustryGroup = "trading_and_investing_groups"
-	UpdateAccountsRequestIndustryGroupTransportation                     UpdateAccountsRequestIndustryGroup = "transportation"
-	UpdateAccountsRequestIndustryGroupVeterinary                         UpdateAccountsRequestIndustryGroup = "veterinary"
-	UpdateAccountsRequestIndustryGroupVideoGamesAndEsports               UpdateAccountsRequestIndustryGroup = "video_games_and_esports"
-	UpdateAccountsRequestIndustryGroupWeightAndMetabolicHealth           UpdateAccountsRequestIndustryGroup = "weight_and_metabolic_health"
-	UpdateAccountsRequestIndustryGroupWellnessAndAlternative             UpdateAccountsRequestIndustryGroup = "wellness_and_alternative"
-	UpdateAccountsRequestIndustryGroupWomensAndMensHealth                UpdateAccountsRequestIndustryGroup = "womens_and_mens_health"
-)
-
-func NewUpdateAccountsRequestIndustryGroupFromString(s string) (UpdateAccountsRequestIndustryGroup, error) {
-	switch s {
-	case "academic_and_test_prep":
-		return UpdateAccountsRequestIndustryGroupAcademicAndTestPrep, nil
-	case "accessories":
-		return UpdateAccountsRequestIndustryGroupAccessories, nil
-	case "agriculture_and_farming":
-		return UpdateAccountsRequestIndustryGroupAgricultureAndFarming, nil
-	case "ai_and_automation_agencies":
-		return UpdateAccountsRequestIndustryGroupAiAndAutomationAgencies, nil
-	case "ai_and_automation_software":
-		return UpdateAccountsRequestIndustryGroupAiAndAutomationSoftware, nil
-	case "arts_and_crafts":
-		return UpdateAccountsRequestIndustryGroupArtsAndCrafts, nil
-	case "automotive":
-		return UpdateAccountsRequestIndustryGroupAutomotive, nil
-	case "b2b_and_professional_marketplaces":
-		return UpdateAccountsRequestIndustryGroupB2BAndProfessionalMarketplaces, nil
-	case "baby_and_kids":
-		return UpdateAccountsRequestIndustryGroupBabyAndKids, nil
-	case "bars_and_breweries":
-		return UpdateAccountsRequestIndustryGroupBarsAndBreweries, nil
-	case "beauty_and_personal_care":
-		return UpdateAccountsRequestIndustryGroupBeautyAndPersonalCare, nil
-	case "beauty_and_wellness":
-		return UpdateAccountsRequestIndustryGroupBeautyAndWellness, nil
-	case "business_and_entrepreneurship":
-		return UpdateAccountsRequestIndustryGroupBusinessAndEntrepreneurship, nil
-	case "business_and_money_groups":
-		return UpdateAccountsRequestIndustryGroupBusinessAndMoneyGroups, nil
-	case "cafes_and_quick_service":
-		return UpdateAccountsRequestIndustryGroupCafesAndQuickService, nil
-	case "career_and_professional":
-		return UpdateAccountsRequestIndustryGroupCareerAndProfessional, nil
-	case "charity_and_cause_events":
-		return UpdateAccountsRequestIndustryGroupCharityAndCauseEvents, nil
-	case "class_action_settlement":
-		return UpdateAccountsRequestIndustryGroupClassActionSettlement, nil
-	case "clothing_and_apparel":
-		return UpdateAccountsRequestIndustryGroupClothingAndApparel, nil
-	case "communication_and_messaging_software":
-		return UpdateAccountsRequestIndustryGroupCommunicationAndMessagingSoftware, nil
-	case "community_and_education_software":
-		return UpdateAccountsRequestIndustryGroupCommunityAndEducationSoftware, nil
-	case "conference_and_expo_events":
-		return UpdateAccountsRequestIndustryGroupConferenceAndExpoEvents, nil
-	case "consulting":
-		return UpdateAccountsRequestIndustryGroupConsulting, nil
-	case "content_and_clipping_agencies":
-		return UpdateAccountsRequestIndustryGroupContentAndClippingAgencies, nil
-	case "creative_and_content_creation":
-		return UpdateAccountsRequestIndustryGroupCreativeAndContentCreation, nil
-	case "creative_and_content_groups":
-		return UpdateAccountsRequestIndustryGroupCreativeAndContentGroups, nil
-	case "creative_and_education":
-		return UpdateAccountsRequestIndustryGroupCreativeAndEducation, nil
-	case "creative_gigs":
-		return UpdateAccountsRequestIndustryGroupCreativeGigs, nil
-	case "creative_services":
-		return UpdateAccountsRequestIndustryGroupCreativeServices, nil
-	case "customer_support_agencies":
-		return UpdateAccountsRequestIndustryGroupCustomerSupportAgencies, nil
-	case "dating_and_relationships":
-		return UpdateAccountsRequestIndustryGroupDatingAndRelationships, nil
-	case "delivery_and_logistics":
-		return UpdateAccountsRequestIndustryGroupDeliveryAndLogistics, nil
-	case "dental_and_vision":
-		return UpdateAccountsRequestIndustryGroupDentalAndVision, nil
-	case "dermatology_and_skin":
-		return UpdateAccountsRequestIndustryGroupDermatologyAndSkin, nil
-	case "design_and_creative_agencies":
-		return UpdateAccountsRequestIndustryGroupDesignAndCreativeAgencies, nil
-	case "developer_and_technical_tools":
-		return UpdateAccountsRequestIndustryGroupDeveloperAndTechnicalTools, nil
-	case "development_agencies":
-		return UpdateAccountsRequestIndustryGroupDevelopmentAgencies, nil
-	case "digital_and_education_marketplaces":
-		return UpdateAccountsRequestIndustryGroupDigitalAndEducationMarketplaces, nil
-	case "digital_goods_and_accounts":
-		return UpdateAccountsRequestIndustryGroupDigitalGoodsAndAccounts, nil
-	case "e_commerce_software":
-		return UpdateAccountsRequestIndustryGroupECommerceSoftware, nil
-	case "education_and_childcare":
-		return UpdateAccountsRequestIndustryGroupEducationAndChildcare, nil
-	case "educational_training_events":
-		return UpdateAccountsRequestIndustryGroupEducationalTrainingEvents, nil
-	case "electronics_and_gadgets":
-		return UpdateAccountsRequestIndustryGroupElectronicsAndGadgets, nil
-	case "entertainment_and_leisure":
-		return UpdateAccountsRequestIndustryGroupEntertainmentAndLeisure, nil
-	case "family_and_community_events":
-		return UpdateAccountsRequestIndustryGroupFamilyAndCommunityEvents, nil
-	case "finance_and_investing":
-		return UpdateAccountsRequestIndustryGroupFinanceAndInvesting, nil
-	case "fitness_and_athletics":
-		return UpdateAccountsRequestIndustryGroupFitnessAndAthletics, nil
-	case "fitness_and_health_groups":
-		return UpdateAccountsRequestIndustryGroupFitnessAndHealthGroups, nil
-	case "fitness_and_recreation":
-		return UpdateAccountsRequestIndustryGroupFitnessAndRecreation, nil
-	case "fitness_equipment_and_gear":
-		return UpdateAccountsRequestIndustryGroupFitnessEquipmentAndGear, nil
-	case "food_and_beverages":
-		return UpdateAccountsRequestIndustryGroupFoodAndBeverages, nil
-	case "food_and_hospitality_marketplaces":
-		return UpdateAccountsRequestIndustryGroupFoodAndHospitalityMarketplaces, nil
-	case "funeral_and_death_care":
-		return UpdateAccountsRequestIndustryGroupFuneralAndDeathCare, nil
-	case "gaming_and_entertainment_software":
-		return UpdateAccountsRequestIndustryGroupGamingAndEntertainmentSoftware, nil
-	case "gaming_groups":
-		return UpdateAccountsRequestIndustryGroupGamingGroups, nil
-	case "genetic_and_specialized":
-		return UpdateAccountsRequestIndustryGroupGeneticAndSpecialized, nil
-	case "government_and_public":
-		return UpdateAccountsRequestIndustryGroupGovernmentAndPublic, nil
-	case "health_and_wellness":
-		return UpdateAccountsRequestIndustryGroupHealthAndWellness, nil
-	case "health_and_wellness_services":
-		return UpdateAccountsRequestIndustryGroupHealthAndWellnessServices, nil
-	case "healthcare":
-		return UpdateAccountsRequestIndustryGroupHealthcare, nil
-	case "healthcare_and_wellness_software":
-		return UpdateAccountsRequestIndustryGroupHealthcareAndWellnessSoftware, nil
-	case "hobbies_and_lifestyle":
-		return UpdateAccountsRequestIndustryGroupHobbiesAndLifestyle, nil
-	case "hobby_and_interest_groups":
-		return UpdateAccountsRequestIndustryGroupHobbyAndInterestGroups, nil
-	case "home_and_living":
-		return UpdateAccountsRequestIndustryGroupHomeAndLiving, nil
-	case "home_and_trade_services":
-		return UpdateAccountsRequestIndustryGroupHomeAndTradeServices, nil
-	case "home_and_trade_storefronts":
-		return UpdateAccountsRequestIndustryGroupHomeAndTradeStorefronts, nil
-	case "home_improvement_and_tools":
-		return UpdateAccountsRequestIndustryGroupHomeImprovementAndTools, nil
-	case "home_services_gigs":
-		return UpdateAccountsRequestIndustryGroupHomeServicesGigs, nil
-	case "hospitality_and_lodging":
-		return UpdateAccountsRequestIndustryGroupHospitalityAndLodging, nil
-	case "industrial_and_manufacturing":
-		return UpdateAccountsRequestIndustryGroupIndustrialAndManufacturing, nil
-	case "industry_specific_software":
-		return UpdateAccountsRequestIndustryGroupIndustrySpecificSoftware, nil
-	case "language_and_communication":
-		return UpdateAccountsRequestIndustryGroupLanguageAndCommunication, nil
-	case "legal_and_compliance":
-		return UpdateAccountsRequestIndustryGroupLegalAndCompliance, nil
-	case "lifestyle_and_culture":
-		return UpdateAccountsRequestIndustryGroupLifestyleAndCulture, nil
-	case "lifestyle_and_personal_growth":
-		return UpdateAccountsRequestIndustryGroupLifestyleAndPersonalGrowth, nil
-	case "lifestyle_and_personal_growth_groups":
-		return UpdateAccountsRequestIndustryGroupLifestyleAndPersonalGrowthGroups, nil
-	case "lifestyle_and_wellness_events":
-		return UpdateAccountsRequestIndustryGroupLifestyleAndWellnessEvents, nil
-	case "logistics_and_transportation_services":
-		return UpdateAccountsRequestIndustryGroupLogisticsAndTransportationServices, nil
-	case "marketing_agencies":
-		return UpdateAccountsRequestIndustryGroupMarketingAgencies, nil
-	case "marketing_and_advertising":
-		return UpdateAccountsRequestIndustryGroupMarketingAndAdvertising, nil
-	case "marketing_and_sales_software":
-		return UpdateAccountsRequestIndustryGroupMarketingAndSalesSoftware, nil
-	case "media_and_publishing_companies":
-		return UpdateAccountsRequestIndustryGroupMediaAndPublishingCompanies, nil
-	case "mental_health_and_behavioral":
-		return UpdateAccountsRequestIndustryGroupMentalHealthAndBehavioral, nil
-	case "miscellaneous":
-		return UpdateAccountsRequestIndustryGroupMiscellaneous, nil
-	case "music_and_performing_arts":
-		return UpdateAccountsRequestIndustryGroupMusicAndPerformingArts, nil
-	case "news_and_politics":
-		return UpdateAccountsRequestIndustryGroupNewsAndPolitics, nil
-	case "nonprofit_and_charity":
-		return UpdateAccountsRequestIndustryGroupNonprofitAndCharity, nil
-	case "office_and_business_supplies":
-		return UpdateAccountsRequestIndustryGroupOfficeAndBusinessSupplies, nil
-	case "outdoor_and_sports":
-		return UpdateAccountsRequestIndustryGroupOutdoorAndSports, nil
-	case "performance_and_show_events":
-		return UpdateAccountsRequestIndustryGroupPerformanceAndShowEvents, nil
-	case "personal_development":
-		return UpdateAccountsRequestIndustryGroupPersonalDevelopment, nil
-	case "personal_finance":
-		return UpdateAccountsRequestIndustryGroupPersonalFinance, nil
-	case "personal_services":
-		return UpdateAccountsRequestIndustryGroupPersonalServices, nil
-	case "pet_services":
-		return UpdateAccountsRequestIndustryGroupPetServices, nil
-	case "pets_and_animals":
-		return UpdateAccountsRequestIndustryGroupPetsAndAnimals, nil
-	case "primary_and_general_care":
-		return UpdateAccountsRequestIndustryGroupPrimaryAndGeneralCare, nil
-	case "product_marketplaces":
-		return UpdateAccountsRequestIndustryGroupProductMarketplaces, nil
-	case "productivity_and_business_ops":
-		return UpdateAccountsRequestIndustryGroupProductivityAndBusinessOps, nil
-	case "professional_gigs":
-		return UpdateAccountsRequestIndustryGroupProfessionalGigs, nil
-	case "professional_services":
-		return UpdateAccountsRequestIndustryGroupProfessionalServices, nil
-	case "professional_services_storefront":
-		return UpdateAccountsRequestIndustryGroupProfessionalServicesStorefront, nil
-	case "publishing_and_info_products":
-		return UpdateAccountsRequestIndustryGroupPublishingAndInfoProducts, nil
-	case "real_estate":
-		return UpdateAccountsRequestIndustryGroupRealEstate, nil
-	case "real_estate_software":
-		return UpdateAccountsRequestIndustryGroupRealEstateSoftware, nil
-	case "recruiting_and_staffing":
-		return UpdateAccountsRequestIndustryGroupRecruitingAndStaffing, nil
-	case "rehabilitation_and_therapy":
-		return UpdateAccountsRequestIndustryGroupRehabilitationAndTherapy, nil
-	case "religion_and_faith":
-		return UpdateAccountsRequestIndustryGroupReligionAndFaith, nil
-	case "rental_marketplaces":
-		return UpdateAccountsRequestIndustryGroupRentalMarketplaces, nil
-	case "restaurants":
-		return UpdateAccountsRequestIndustryGroupRestaurants, nil
-	case "retail":
-		return UpdateAccountsRequestIndustryGroupRetail, nil
-	case "sales_agencies":
-		return UpdateAccountsRequestIndustryGroupSalesAgencies, nil
-	case "sales_and_revenue":
-		return UpdateAccountsRequestIndustryGroupSalesAndRevenue, nil
-	case "security_and_investigations":
-		return UpdateAccountsRequestIndustryGroupSecurityAndInvestigations, nil
-	case "security_and_privacy_software":
-		return UpdateAccountsRequestIndustryGroupSecurityAndPrivacySoftware, nil
-	case "service_marketplaces":
-		return UpdateAccountsRequestIndustryGroupServiceMarketplaces, nil
-	case "sleep_and_chronic_conditions":
-		return UpdateAccountsRequestIndustryGroupSleepAndChronicConditions, nil
-	case "social_and_networking_events":
-		return UpdateAccountsRequestIndustryGroupSocialAndNetworkingEvents, nil
-	case "social_entertainment_events":
-		return UpdateAccountsRequestIndustryGroupSocialEntertainmentEvents, nil
-	case "specialized_gigs":
-		return UpdateAccountsRequestIndustryGroupSpecializedGigs, nil
-	case "specialty_medical_care":
-		return UpdateAccountsRequestIndustryGroupSpecialtyMedicalCare, nil
-	case "spirituality_and_mindfulness":
-		return UpdateAccountsRequestIndustryGroupSpiritualityAndMindfulness, nil
-	case "spirituality_and_personal_growth":
-		return UpdateAccountsRequestIndustryGroupSpiritualityAndPersonalGrowth, nil
-	case "sports_and_fitness_events":
-		return UpdateAccountsRequestIndustryGroupSportsAndFitnessEvents, nil
-	case "sports_betting_and_gambling":
-		return UpdateAccountsRequestIndustryGroupSportsBettingAndGambling, nil
-	case "sports_betting_groups":
-		return UpdateAccountsRequestIndustryGroupSportsBettingGroups, nil
-	case "supplements_and_nutrition":
-		return UpdateAccountsRequestIndustryGroupSupplementsAndNutrition, nil
-	case "sustainability_and_eco_products":
-		return UpdateAccountsRequestIndustryGroupSustainabilityAndEcoProducts, nil
-	case "task_and_errands":
-		return UpdateAccountsRequestIndustryGroupTaskAndErrands, nil
-	case "tech_and_ai":
-		return UpdateAccountsRequestIndustryGroupTechAndAi, nil
-	case "tech_and_dev_groups":
-		return UpdateAccountsRequestIndustryGroupTechAndDevGroups, nil
-	case "tech_and_development":
-		return UpdateAccountsRequestIndustryGroupTechAndDevelopment, nil
-	case "trading_and_finance_software":
-		return UpdateAccountsRequestIndustryGroupTradingAndFinanceSoftware, nil
-	case "trading_and_investing":
-		return UpdateAccountsRequestIndustryGroupTradingAndInvesting, nil
-	case "trading_and_investing_groups":
-		return UpdateAccountsRequestIndustryGroupTradingAndInvestingGroups, nil
-	case "transportation":
-		return UpdateAccountsRequestIndustryGroupTransportation, nil
-	case "veterinary":
-		return UpdateAccountsRequestIndustryGroupVeterinary, nil
-	case "video_games_and_esports":
-		return UpdateAccountsRequestIndustryGroupVideoGamesAndEsports, nil
-	case "weight_and_metabolic_health":
-		return UpdateAccountsRequestIndustryGroupWeightAndMetabolicHealth, nil
-	case "wellness_and_alternative":
-		return UpdateAccountsRequestIndustryGroupWellnessAndAlternative, nil
-	case "womens_and_mens_health":
-		return UpdateAccountsRequestIndustryGroupWomensAndMensHealth, nil
-	}
-	var t UpdateAccountsRequestIndustryGroup
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateAccountsRequestIndustryGroup) Ptr() *UpdateAccountsRequestIndustryGroup {
-	return &u
-}
-
-// Account logo, used as the profile picture when creating a Whop-managed Facebook page. Image files up to 5 MB. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file).
 var (
 	updateAccountsRequestLogoFieldID = big.NewInt(1 << 0)
 )
 
+// Account logo, used as the profile picture when creating a Whop-managed Facebook page. Image files up to 5 MB. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file).
 type UpdateAccountsRequestLogo struct {
 	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
@@ -7377,10 +8847,12 @@ func (u *UpdateAccountsRequestLogo) GetExtraProperties() map[string]interface{} 
 }
 
 func (u *UpdateAccountsRequestLogo) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -7459,11 +8931,11 @@ func (u UpdateAccountsRequestOnboardingType) Ptr() *UpdateAccountsRequestOnboard
 	return &u
 }
 
-// Open Graph preview media used when the account is shared. Image and video files up to 5 MB. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file).
 var (
 	updateAccountsRequestOpengraphImageFieldID = big.NewInt(1 << 0)
 )
 
+// Open Graph preview media used when the account is shared. Image and video files up to 5 MB. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file).
 type UpdateAccountsRequestOpengraphImage struct {
 	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
@@ -7491,10 +8963,12 @@ func (u *UpdateAccountsRequestOpengraphImage) GetExtraProperties() map[string]in
 }
 
 func (u *UpdateAccountsRequestOpengraphImage) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -7576,7 +9050,285 @@ func (u UpdateAccountsRequestOpengraphImageVariant) Ptr() *UpdateAccountsRequest
 	return &u
 }
 
-// Account store page display configuration.
+var (
+	updateAccountsRequestPrivacyPolicyFieldID = big.NewInt(1 << 0)
+)
+
+// The account's privacy policy document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+type UpdateAccountsRequestPrivacyPolicy struct {
+	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+
+	rawJSON json.RawMessage
+}
+
+func (u *UpdateAccountsRequestPrivacyPolicy) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdateAccountsRequestPrivacyPolicy) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.ExtraProperties
+}
+
+func (u *UpdateAccountsRequestPrivacyPolicy) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestPrivacyPolicy) SetID(id *string) {
+	u.ID = id
+	u.require(updateAccountsRequestPrivacyPolicyFieldID)
+}
+
+func (u *UpdateAccountsRequestPrivacyPolicy) UnmarshalJSON(data []byte) error {
+	type embed UpdateAccountsRequestPrivacyPolicy
+	var unmarshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*u = UpdateAccountsRequestPrivacyPolicy(unmarshaler.embed)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.ExtraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAccountsRequestPrivacyPolicy) MarshalJSON() ([]byte, error) {
+	type embed UpdateAccountsRequestPrivacyPolicy
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, u.ExtraProperties)
+}
+
+func (u *UpdateAccountsRequestPrivacyPolicy) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAccountsRequestReturnPolicyFieldID = big.NewInt(1 << 0)
+)
+
+// The account's return and refund policy document. Attached to new disputes as the refund policy evidence, with the terms of service as the fallback. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+type UpdateAccountsRequestReturnPolicy struct {
+	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+
+	rawJSON json.RawMessage
+}
+
+func (u *UpdateAccountsRequestReturnPolicy) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdateAccountsRequestReturnPolicy) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.ExtraProperties
+}
+
+func (u *UpdateAccountsRequestReturnPolicy) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestReturnPolicy) SetID(id *string) {
+	u.ID = id
+	u.require(updateAccountsRequestReturnPolicyFieldID)
+}
+
+func (u *UpdateAccountsRequestReturnPolicy) UnmarshalJSON(data []byte) error {
+	type embed UpdateAccountsRequestReturnPolicy
+	var unmarshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*u = UpdateAccountsRequestReturnPolicy(unmarshaler.embed)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.ExtraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAccountsRequestReturnPolicy) MarshalJSON() ([]byte, error) {
+	type embed UpdateAccountsRequestReturnPolicy
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, u.ExtraProperties)
+}
+
+func (u *UpdateAccountsRequestReturnPolicy) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAccountsRequestShippingPolicyFieldID = big.NewInt(1 << 0)
+)
+
+// The account's shipping policy document. Sent with physical-goods dispute evidence. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+type UpdateAccountsRequestShippingPolicy struct {
+	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+
+	rawJSON json.RawMessage
+}
+
+func (u *UpdateAccountsRequestShippingPolicy) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdateAccountsRequestShippingPolicy) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.ExtraProperties
+}
+
+func (u *UpdateAccountsRequestShippingPolicy) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestShippingPolicy) SetID(id *string) {
+	u.ID = id
+	u.require(updateAccountsRequestShippingPolicyFieldID)
+}
+
+func (u *UpdateAccountsRequestShippingPolicy) UnmarshalJSON(data []byte) error {
+	type embed UpdateAccountsRequestShippingPolicy
+	var unmarshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*u = UpdateAccountsRequestShippingPolicy(unmarshaler.embed)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.ExtraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAccountsRequestShippingPolicy) MarshalJSON() ([]byte, error) {
+	type embed UpdateAccountsRequestShippingPolicy
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, u.ExtraProperties)
+}
+
+func (u *UpdateAccountsRequestShippingPolicy) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
 var (
 	updateAccountsRequestStorePageConfigFieldAccentColor       = big.NewInt(1 << 0)
 	updateAccountsRequestStorePageConfigFieldLayout            = big.NewInt(1 << 1)
@@ -7584,6 +9336,14 @@ var (
 	updateAccountsRequestStorePageConfigFieldWhopAffiliateLink = big.NewInt(1 << 3)
 )
 
+// updateAccountsRequestStorePageConfigNullableFields maps the wire names of UpdateAccountsRequestStorePageConfig's nullable fields (required or optional) to their field bits.
+var updateAccountsRequestStorePageConfigNullableFields = map[string]*big.Int{
+	"accent_color":    updateAccountsRequestStorePageConfigFieldAccentColor,
+	"layout":          updateAccountsRequestStorePageConfigFieldLayout,
+	"profile_variant": updateAccountsRequestStorePageConfigFieldProfileVariant,
+}
+
+// Account store page display configuration.
 type UpdateAccountsRequestStorePageConfig struct {
 	// Accent color used on the account store page.
 	AccentColor *UpdateAccountsRequestStorePageConfigAccentColor `json:"accent_color,omitempty" url:"accent_color,omitempty"`
@@ -7637,10 +9397,12 @@ func (u *UpdateAccountsRequestStorePageConfig) GetExtraProperties() map[string]i
 }
 
 func (u *UpdateAccountsRequestStorePageConfig) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAccentColor sets the AccentColor field and marks it as non-optional;
@@ -7683,6 +9445,13 @@ func (u *UpdateAccountsRequestStorePageConfig) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateAccountsRequestStorePageConfigNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -8035,9 +9804,9 @@ var (
 )
 
 type UpdateAccountsRequestTaxIdentifiersItem struct {
-	// Tax ID type, for example `eu_vat`, `gb_vat`, or `us_ein`.
+	// Tax ID type, for example `eu_vat`, `gb_vat`, or `us_ein`. See the [tax IDs guide](/developer/guides/tax-ids) for an example of each type.
 	TaxIDType UpdateAccountsRequestTaxIdentifiersItemTaxIDType `json:"tax_id_type" url:"tax_id_type"`
-	// Tax ID value, for example `DE123456789`.
+	// Tax ID value, for example `DE123456789`. An `eu_vat` number must start with its two-letter country code (Greece uses `EL`); spaces, dots, and dashes are removed and letters are uppercased. See the [tax IDs guide](/developer/guides/tax-ids).
 	TaxIDValue string `json:"tax_id_value" url:"tax_id_value"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -8069,10 +9838,12 @@ func (u *UpdateAccountsRequestTaxIdentifiersItem) GetExtraProperties() map[strin
 }
 
 func (u *UpdateAccountsRequestTaxIdentifiersItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetTaxIDType sets the TaxIDType field and marks it as non-optional;
@@ -8131,7 +9902,7 @@ func (u *UpdateAccountsRequestTaxIdentifiersItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Tax ID type, for example `eu_vat`, `gb_vat`, or `us_ein`.
+// Tax ID type, for example `eu_vat`, `gb_vat`, or `us_ein`. See the [tax IDs guide](/developer/guides/tax-ids) for an example of each type.
 type UpdateAccountsRequestTaxIdentifiersItemTaxIDType string
 
 const (
@@ -8530,17 +10301,116 @@ func (u UpdateAccountsRequestTaxType) Ptr() *UpdateAccountsRequestTaxType {
 	return &u
 }
 
-// Account-level 3D Secure behavior. Set `mandate_challenge` to require cardholder verification on supported card payments, or `null` to use the standard checkout flow.
+var (
+	updateAccountsRequestTermsOfServiceFieldID = big.NewInt(1 << 0)
+)
+
+// The account's terms of service document. Attached to new disputes as the cancellation policy evidence when no cancellation policy is set. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+type UpdateAccountsRequestTermsOfService struct {
+	// ID of a file from [Create File](/api-reference/files/create-file), prefixed `file_`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	ExtraProperties map[string]interface{} `json:"-" url:"-"`
+
+	rawJSON json.RawMessage
+}
+
+func (u *UpdateAccountsRequestTermsOfService) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdateAccountsRequestTermsOfService) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.ExtraProperties
+}
+
+func (u *UpdateAccountsRequestTermsOfService) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestTermsOfService) SetID(id *string) {
+	u.ID = id
+	u.require(updateAccountsRequestTermsOfServiceFieldID)
+}
+
+func (u *UpdateAccountsRequestTermsOfService) UnmarshalJSON(data []byte) error {
+	type embed UpdateAccountsRequestTermsOfService
+	var unmarshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*u = UpdateAccountsRequestTermsOfService(unmarshaler.embed)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.ExtraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAccountsRequestTermsOfService) MarshalJSON() ([]byte, error) {
+	type embed UpdateAccountsRequestTermsOfService
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, u.ExtraProperties)
+}
+
+func (u *UpdateAccountsRequestTermsOfService) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` uses the standard checkout flow.
 type UpdateAccountsRequestThreeDsLevel string
 
 const (
-	UpdateAccountsRequestThreeDsLevelMandateChallenge UpdateAccountsRequestThreeDsLevel = "mandate_challenge"
+	UpdateAccountsRequestThreeDsLevelMandateChallenge       UpdateAccountsRequestThreeDsLevel = "mandate_challenge"
+	UpdateAccountsRequestThreeDsLevelMandateIfRequired      UpdateAccountsRequestThreeDsLevel = "mandate_if_required"
+	UpdateAccountsRequestThreeDsLevelFrictionlessIfRequired UpdateAccountsRequestThreeDsLevel = "frictionless_if_required"
 )
 
 func NewUpdateAccountsRequestThreeDsLevelFromString(s string) (UpdateAccountsRequestThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return UpdateAccountsRequestThreeDsLevelMandateChallenge, nil
+	case "mandate_if_required":
+		return UpdateAccountsRequestThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return UpdateAccountsRequestThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t UpdateAccountsRequestThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -8557,43 +10427,51 @@ var (
 	updateAccountsRequestFieldBannerImage                     = big.NewInt(1 << 3)
 	updateAccountsRequestFieldBusinessAddress                 = big.NewInt(1 << 4)
 	updateAccountsRequestFieldBusinessName                    = big.NewInt(1 << 5)
-	updateAccountsRequestFieldBusinessType                    = big.NewInt(1 << 6)
+	updateAccountsRequestFieldCancellationPolicy              = big.NewInt(1 << 6)
 	updateAccountsRequestFieldCollectVatID                    = big.NewInt(1 << 7)
 	updateAccountsRequestFieldCountry                         = big.NewInt(1 << 8)
 	updateAccountsRequestFieldDescription                     = big.NewInt(1 << 9)
-	updateAccountsRequestFieldFeaturedAffiliateProductID      = big.NewInt(1 << 10)
-	updateAccountsRequestFieldHomePreferences                 = big.NewInt(1 << 11)
-	updateAccountsRequestFieldIndustryGroup                   = big.NewInt(1 << 12)
-	updateAccountsRequestFieldIndustryType                    = big.NewInt(1 << 13)
+	updateAccountsRequestFieldDisputeFighterEnabled           = big.NewInt(1 << 10)
+	updateAccountsRequestFieldEula                            = big.NewInt(1 << 11)
+	updateAccountsRequestFieldFeaturedAffiliateProductID      = big.NewInt(1 << 12)
+	updateAccountsRequestFieldHomePreferences                 = big.NewInt(1 << 13)
 	updateAccountsRequestFieldInvoicePrefix                   = big.NewInt(1 << 14)
 	updateAccountsRequestFieldLogo                            = big.NewInt(1 << 15)
 	updateAccountsRequestFieldMetadata                        = big.NewInt(1 << 16)
 	updateAccountsRequestFieldOnboardingType                  = big.NewInt(1 << 17)
 	updateAccountsRequestFieldOpengraphImage                  = big.NewInt(1 << 18)
 	updateAccountsRequestFieldOpengraphImageVariant           = big.NewInt(1 << 19)
-	updateAccountsRequestFieldOtherBusinessDescription        = big.NewInt(1 << 20)
-	updateAccountsRequestFieldOtherIndustryDescription        = big.NewInt(1 << 21)
-	updateAccountsRequestFieldProductTaxCodeID                = big.NewInt(1 << 22)
-	updateAccountsRequestFieldRequire2Fa                      = big.NewInt(1 << 23)
-	updateAccountsRequestFieldRoute                           = big.NewInt(1 << 24)
-	updateAccountsRequestFieldSendCustomerEmails              = big.NewInt(1 << 25)
-	updateAccountsRequestFieldShowJoinedWhops                 = big.NewInt(1 << 26)
-	updateAccountsRequestFieldShowReviewsDtc                  = big.NewInt(1 << 27)
-	updateAccountsRequestFieldShowUserDirectory               = big.NewInt(1 << 28)
-	updateAccountsRequestFieldSocialLinks                     = big.NewInt(1 << 29)
-	updateAccountsRequestFieldStorePageConfig                 = big.NewInt(1 << 30)
-	updateAccountsRequestFieldTargetAudience                  = big.NewInt(1 << 31)
-	updateAccountsRequestFieldTaxCollectionEnabledStates      = big.NewInt(1 << 32)
-	updateAccountsRequestFieldTaxIdentifiers                  = big.NewInt(1 << 33)
-	updateAccountsRequestFieldTaxRemittedBy                   = big.NewInt(1 << 34)
-	updateAccountsRequestFieldTaxType                         = big.NewInt(1 << 35)
-	updateAccountsRequestFieldThreeDsLevel                    = big.NewInt(1 << 36)
-	updateAccountsRequestFieldTitle                           = big.NewInt(1 << 37)
-	updateAccountsRequestFieldUseLogoAsOpengraphImageFallback = big.NewInt(1 << 38)
+	updateAccountsRequestFieldOrchestrationEnabled            = big.NewInt(1 << 20)
+	updateAccountsRequestFieldOtherBusinessDescription        = big.NewInt(1 << 21)
+	updateAccountsRequestFieldOtherIndustryDescription        = big.NewInt(1 << 22)
+	updateAccountsRequestFieldPrivacyPolicy                   = big.NewInt(1 << 23)
+	updateAccountsRequestFieldProductTaxCodeID                = big.NewInt(1 << 24)
+	updateAccountsRequestFieldRequire2Fa                      = big.NewInt(1 << 25)
+	updateAccountsRequestFieldReturnPolicy                    = big.NewInt(1 << 26)
+	updateAccountsRequestFieldRoute                           = big.NewInt(1 << 27)
+	updateAccountsRequestFieldSendCustomerEmails              = big.NewInt(1 << 28)
+	updateAccountsRequestFieldShippingPolicy                  = big.NewInt(1 << 29)
+	updateAccountsRequestFieldShowJoinedWhops                 = big.NewInt(1 << 30)
+	updateAccountsRequestFieldShowReviewsDtc                  = big.NewInt(1 << 31)
+	updateAccountsRequestFieldShowUserDirectory               = big.NewInt(1 << 32)
+	updateAccountsRequestFieldSocialLinks                     = big.NewInt(1 << 33)
+	updateAccountsRequestFieldStorePageConfig                 = big.NewInt(1 << 34)
+	updateAccountsRequestFieldTargetAudience                  = big.NewInt(1 << 35)
+	updateAccountsRequestFieldTaxCollectionEnabledStates      = big.NewInt(1 << 36)
+	updateAccountsRequestFieldTaxIdentifiers                  = big.NewInt(1 << 37)
+	updateAccountsRequestFieldTaxRemittedBy                   = big.NewInt(1 << 38)
+	updateAccountsRequestFieldTaxType                         = big.NewInt(1 << 39)
+	updateAccountsRequestFieldTermsOfService                  = big.NewInt(1 << 40)
+	updateAccountsRequestFieldThreeDsLevel                    = big.NewInt(1 << 41)
+	updateAccountsRequestFieldTitle                           = big.NewInt(1 << 42)
+	updateAccountsRequestFieldUseLogoAsOpengraphImageFallback = big.NewInt(1 << 43)
+	updateAccountsRequestFieldWebsite                         = big.NewInt(1 << 44)
+	updateAccountsRequestFieldWhopPartnerEnabled              = big.NewInt(1 << 45)
+	updateAccountsRequestFieldIndustryType                    = big.NewInt(1 << 46)
 )
 
 type UpdateAccountsRequest struct {
-	// Account ID, prefixed `biz_`.
+	// Account ID, prefixed `biz_`. The reserved id `me` resolves to the requesting account, which an Account API key cannot edit.
 	ID string `json:"-" url:"-"`
 	// Whether prospective affiliates must submit an application before promoting this account.
 	AffiliateApplicationRequired *bool `json:"affiliate_application_required,omitempty" url:"-"`
@@ -8605,22 +10483,22 @@ type UpdateAccountsRequest struct {
 	BusinessAddress *UpdateAccountsRequestBusinessAddress `json:"business_address,omitempty" url:"-"`
 	// The legal business name used with the account's tax address.
 	BusinessName *string `json:"business_name,omitempty" url:"-"`
-	// High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
-	BusinessType *UpdateAccountsRequestBusinessType `json:"business_type,omitempty" url:"-"`
+	// The account's cancellation policy document. Attached to new disputes as the cancellation policy evidence, with the terms of service as the fallback. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+	CancellationPolicy *UpdateAccountsRequestCancellationPolicy `json:"cancellation_policy,omitempty" url:"-"`
 	// Whether checkout shows a VAT/tax ID field for buyers to optionally enter. Does not require a VAT ID to purchase.
 	CollectVatID *bool `json:"collect_vat_id,omitempty" url:"-"`
 	// Country where the account is located.
 	Country *string `json:"country,omitempty" url:"-"`
 	// Account promotional description. When creating a Whop-managed Facebook page, it is truncated to 155 characters and used as the About text.
 	Description *string `json:"description,omitempty" url:"-"`
+	// Whether Whop assembles and files dispute evidence for this account. Enabling it opts into the success fee charged on disputes it wins. Requires payment:dispute. Omit to preserve the existing setting or creation default.
+	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
+	// The account's end-user license agreement document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+	Eula *UpdateAccountsRequestEula `json:"eula,omitempty" url:"-"`
 	// The ID of the product to feature for affiliates. Pass `null` to clear.
 	FeaturedAffiliateProductID *string `json:"featured_affiliate_product_id,omitempty" url:"-"`
 	// Public account home page preferences.
 	HomePreferences []UpdateAccountsRequestHomePreferencesItem `json:"home_preferences,omitempty" url:"-"`
-	// Account industry group. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
-	IndustryGroup *UpdateAccountsRequestIndustryGroup `json:"industry_group,omitempty" url:"-"`
-	// Specific industry vertical for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
-	IndustryType *string `json:"industry_type,omitempty" url:"-"`
 	// Prefix used for account invoices.
 	InvoicePrefix *string `json:"invoice_prefix,omitempty" url:"-"`
 	// Account logo, used as the profile picture when creating a Whop-managed Facebook page. Image files up to 5 MB. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file).
@@ -8633,18 +10511,26 @@ type UpdateAccountsRequest struct {
 	OpengraphImage *UpdateAccountsRequestOpengraphImage `json:"opengraph_image,omitempty" url:"-"`
 	// The account Open Graph image variant.
 	OpengraphImageVariant *UpdateAccountsRequestOpengraphImageVariant `json:"opengraph_image_variant,omitempty" url:"-"`
+	// Whether payment orchestration is enabled for this account. Requires payout:account:update. Omit to preserve the existing setting or creation default.
+	OrchestrationEnabled *bool `json:"orchestration_enabled,omitempty" url:"-"`
 	// The description of the business type when business_type is other.
 	OtherBusinessDescription *string `json:"other_business_description,omitempty" url:"-"`
 	// The description of the industry type when industry_type is other.
 	OtherIndustryDescription *string `json:"other_industry_description,omitempty" url:"-"`
+	// The account's privacy policy document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+	PrivacyPolicy *UpdateAccountsRequestPrivacyPolicy `json:"privacy_policy,omitempty" url:"-"`
 	// ID of the tax classification code applied by default to the account's products. See the available [product categories](https://docs.numeral.com/essentials/product-categories).
 	ProductTaxCodeID *string `json:"product_tax_code_id,omitempty" url:"-"`
 	// Whether the account requires authorized users to have two-factor authentication enabled.
 	Require2Fa *bool `json:"require_2fa,omitempty" url:"-"`
+	// The account's return and refund policy document. Attached to new disputes as the refund policy evidence, with the terms of service as the fallback. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+	ReturnPolicy *UpdateAccountsRequestReturnPolicy `json:"return_policy,omitempty" url:"-"`
 	// The unique URL slug for the account.
 	Route *string `json:"route,omitempty" url:"-"`
 	// Whether Whop sends transactional emails to customers on behalf of this account.
 	SendCustomerEmails *bool `json:"send_customer_emails,omitempty" url:"-"`
+	// The account's shipping policy document. Sent with physical-goods dispute evidence. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+	ShippingPolicy *UpdateAccountsRequestShippingPolicy `json:"shipping_policy,omitempty" url:"-"`
 	// Whether the account appears in joined whops on other accounts.
 	ShowJoinedWhops *bool `json:"show_joined_whops,omitempty" url:"-"`
 	// Whether reviews are displayed on direct-to-consumer product pages.
@@ -8659,28 +10545,37 @@ type UpdateAccountsRequest struct {
 	TargetAudience *string `json:"target_audience,omitempty" url:"-"`
 	// US state codes (50 states plus `DC`) where the account collects tax. Replaces the full set on update. Only settable when `tax_remitted_by` is `self`.
 	TaxCollectionEnabledStates []UpdateAccountsRequestTaxCollectionEnabledStatesItem `json:"tax_collection_enabled_states,omitempty" url:"-"`
-	// Account tax/VAT registrations to add or update. When `tax_remitted_by` is `self`, tax is calculated and collected only in the countries where the account holds a registration.
+	// Tax IDs to add to the account, or to replace when the account already has one of that type. When `tax_remitted_by` is `self`, tax outside the US is calculated and collected only in the countries where the account has a tax ID. US collection follows `tax_collection_enabled_states`.
 	TaxIdentifiers []*UpdateAccountsRequestTaxIdentifiersItem `json:"tax_identifiers,omitempty" url:"-"`
 	// Determines whether Whop or the account calculates and remits tax. The account must provide a supported-country business address when it self-remits.
 	TaxRemittedBy *UpdateAccountsRequestTaxRemittedBy `json:"tax_remitted_by,omitempty" url:"-"`
 	// Determines whether tax is included in the listed price or added at checkout.
 	TaxType *UpdateAccountsRequestTaxType `json:"tax_type,omitempty" url:"-"`
-	// Account-level 3D Secure behavior. Set `mandate_challenge` to require cardholder verification on supported card payments, or `null` to use the standard checkout flow.
+	// The account's terms of service document. Attached to new disputes as the cancellation policy evidence when no cancellation policy is set. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+	TermsOfService *UpdateAccountsRequestTermsOfService `json:"terms_of_service,omitempty" url:"-"`
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` uses the standard checkout flow.
 	ThreeDsLevel *UpdateAccountsRequestThreeDsLevel `json:"three_ds_level,omitempty" url:"-"`
 	// The display name of the account.
 	Title *string `json:"title,omitempty" url:"-"`
 	// Whether the account uses its logo as the fallback Open Graph image.
 	UseLogoAsOpengraphImageFallback *bool `json:"use_logo_as_opengraph_image_fallback,omitempty" url:"-"`
+	// The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry. Pass `null` to clear the website; existing social links are left unchanged.
+	Website *string `json:"website,omitempty" url:"-"`
+	// Set to `true` to turn on Whop Partner mode for the account, so its team can refer businesses and the account is paid partner commission on their sales. Recorded once; `false` is rejected.
+	WhopPartnerEnabled *bool `json:"whop_partner_enabled,omitempty" url:"-"`
+	IndustryType       any   `json:"industry_type,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (u *UpdateAccountsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -8725,11 +10620,11 @@ func (u *UpdateAccountsRequest) SetBusinessName(businessName *string) {
 	u.require(updateAccountsRequestFieldBusinessName)
 }
 
-// SetBusinessType sets the BusinessType field and marks it as non-optional;
+// SetCancellationPolicy sets the CancellationPolicy field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAccountsRequest) SetBusinessType(businessType *UpdateAccountsRequestBusinessType) {
-	u.BusinessType = businessType
-	u.require(updateAccountsRequestFieldBusinessType)
+func (u *UpdateAccountsRequest) SetCancellationPolicy(cancellationPolicy *UpdateAccountsRequestCancellationPolicy) {
+	u.CancellationPolicy = cancellationPolicy
+	u.require(updateAccountsRequestFieldCancellationPolicy)
 }
 
 // SetCollectVatID sets the CollectVatID field and marks it as non-optional;
@@ -8753,6 +10648,20 @@ func (u *UpdateAccountsRequest) SetDescription(description *string) {
 	u.require(updateAccountsRequestFieldDescription)
 }
 
+// SetDisputeFighterEnabled sets the DisputeFighterEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetDisputeFighterEnabled(disputeFighterEnabled *bool) {
+	u.DisputeFighterEnabled = disputeFighterEnabled
+	u.require(updateAccountsRequestFieldDisputeFighterEnabled)
+}
+
+// SetEula sets the Eula field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetEula(eula *UpdateAccountsRequestEula) {
+	u.Eula = eula
+	u.require(updateAccountsRequestFieldEula)
+}
+
 // SetFeaturedAffiliateProductID sets the FeaturedAffiliateProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAccountsRequest) SetFeaturedAffiliateProductID(featuredAffiliateProductID *string) {
@@ -8765,20 +10674,6 @@ func (u *UpdateAccountsRequest) SetFeaturedAffiliateProductID(featuredAffiliateP
 func (u *UpdateAccountsRequest) SetHomePreferences(homePreferences []UpdateAccountsRequestHomePreferencesItem) {
 	u.HomePreferences = homePreferences
 	u.require(updateAccountsRequestFieldHomePreferences)
-}
-
-// SetIndustryGroup sets the IndustryGroup field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAccountsRequest) SetIndustryGroup(industryGroup *UpdateAccountsRequestIndustryGroup) {
-	u.IndustryGroup = industryGroup
-	u.require(updateAccountsRequestFieldIndustryGroup)
-}
-
-// SetIndustryType sets the IndustryType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAccountsRequest) SetIndustryType(industryType *string) {
-	u.IndustryType = industryType
-	u.require(updateAccountsRequestFieldIndustryType)
 }
 
 // SetInvoicePrefix sets the InvoicePrefix field and marks it as non-optional;
@@ -8823,6 +10718,13 @@ func (u *UpdateAccountsRequest) SetOpengraphImageVariant(opengraphImageVariant *
 	u.require(updateAccountsRequestFieldOpengraphImageVariant)
 }
 
+// SetOrchestrationEnabled sets the OrchestrationEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetOrchestrationEnabled(orchestrationEnabled *bool) {
+	u.OrchestrationEnabled = orchestrationEnabled
+	u.require(updateAccountsRequestFieldOrchestrationEnabled)
+}
+
 // SetOtherBusinessDescription sets the OtherBusinessDescription field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAccountsRequest) SetOtherBusinessDescription(otherBusinessDescription *string) {
@@ -8835,6 +10737,13 @@ func (u *UpdateAccountsRequest) SetOtherBusinessDescription(otherBusinessDescrip
 func (u *UpdateAccountsRequest) SetOtherIndustryDescription(otherIndustryDescription *string) {
 	u.OtherIndustryDescription = otherIndustryDescription
 	u.require(updateAccountsRequestFieldOtherIndustryDescription)
+}
+
+// SetPrivacyPolicy sets the PrivacyPolicy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetPrivacyPolicy(privacyPolicy *UpdateAccountsRequestPrivacyPolicy) {
+	u.PrivacyPolicy = privacyPolicy
+	u.require(updateAccountsRequestFieldPrivacyPolicy)
 }
 
 // SetProductTaxCodeID sets the ProductTaxCodeID field and marks it as non-optional;
@@ -8851,6 +10760,13 @@ func (u *UpdateAccountsRequest) SetRequire2Fa(require2Fa *bool) {
 	u.require(updateAccountsRequestFieldRequire2Fa)
 }
 
+// SetReturnPolicy sets the ReturnPolicy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetReturnPolicy(returnPolicy *UpdateAccountsRequestReturnPolicy) {
+	u.ReturnPolicy = returnPolicy
+	u.require(updateAccountsRequestFieldReturnPolicy)
+}
+
 // SetRoute sets the Route field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAccountsRequest) SetRoute(route *string) {
@@ -8863,6 +10779,13 @@ func (u *UpdateAccountsRequest) SetRoute(route *string) {
 func (u *UpdateAccountsRequest) SetSendCustomerEmails(sendCustomerEmails *bool) {
 	u.SendCustomerEmails = sendCustomerEmails
 	u.require(updateAccountsRequestFieldSendCustomerEmails)
+}
+
+// SetShippingPolicy sets the ShippingPolicy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetShippingPolicy(shippingPolicy *UpdateAccountsRequestShippingPolicy) {
+	u.ShippingPolicy = shippingPolicy
+	u.require(updateAccountsRequestFieldShippingPolicy)
 }
 
 // SetShowJoinedWhops sets the ShowJoinedWhops field and marks it as non-optional;
@@ -8935,6 +10858,13 @@ func (u *UpdateAccountsRequest) SetTaxType(taxType *UpdateAccountsRequestTaxType
 	u.require(updateAccountsRequestFieldTaxType)
 }
 
+// SetTermsOfService sets the TermsOfService field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetTermsOfService(termsOfService *UpdateAccountsRequestTermsOfService) {
+	u.TermsOfService = termsOfService
+	u.require(updateAccountsRequestFieldTermsOfService)
+}
+
 // SetThreeDsLevel sets the ThreeDsLevel field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAccountsRequest) SetThreeDsLevel(threeDsLevel *UpdateAccountsRequestThreeDsLevel) {
@@ -8954,6 +10884,27 @@ func (u *UpdateAccountsRequest) SetTitle(title *string) {
 func (u *UpdateAccountsRequest) SetUseLogoAsOpengraphImageFallback(useLogoAsOpengraphImageFallback *bool) {
 	u.UseLogoAsOpengraphImageFallback = useLogoAsOpengraphImageFallback
 	u.require(updateAccountsRequestFieldUseLogoAsOpengraphImageFallback)
+}
+
+// SetWebsite sets the Website field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetWebsite(website *string) {
+	u.Website = website
+	u.require(updateAccountsRequestFieldWebsite)
+}
+
+// SetWhopPartnerEnabled sets the WhopPartnerEnabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetWhopPartnerEnabled(whopPartnerEnabled *bool) {
+	u.WhopPartnerEnabled = whopPartnerEnabled
+	u.require(updateAccountsRequestFieldWhopPartnerEnabled)
+}
+
+// SetIndustryType sets the IndustryType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetIndustryType(industryType any) {
+	u.IndustryType = industryType
+	u.require(updateAccountsRequestFieldIndustryType)
 }
 
 func (u *UpdateAccountsRequest) UnmarshalJSON(data []byte) error {

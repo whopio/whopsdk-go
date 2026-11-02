@@ -3,90 +3,105 @@
 package client
 
 import (
-	accesstokens "github.com/whopio/whopsdk-go/accesstokens"
-	accountlinks "github.com/whopio/whopsdk-go/accountlinks"
-	client "github.com/whopio/whopsdk-go/accounts/client"
-	adcampaigns "github.com/whopio/whopsdk-go/adcampaigns"
-	adgroups "github.com/whopio/whopsdk-go/adgroups"
-	adreports "github.com/whopio/whopsdk-go/adreports"
-	ads "github.com/whopio/whopsdk-go/ads"
-	affiliatesclient "github.com/whopio/whopsdk-go/affiliates/client"
-	aichats "github.com/whopio/whopsdk-go/aichats"
-	apikeys "github.com/whopio/whopsdk-go/apikeys"
-	appbuilds "github.com/whopio/whopsdk-go/appbuilds"
-	apps "github.com/whopio/whopsdk-go/apps"
-	audiences "github.com/whopio/whopsdk-go/audiences"
-	authorizedusers "github.com/whopio/whopsdk-go/authorizedusers"
-	bountiesclient "github.com/whopio/whopsdk-go/bounties/client"
-	bountysubmissions "github.com/whopio/whopsdk-go/bountysubmissions"
-	cards "github.com/whopio/whopsdk-go/cards"
-	cardtransactions "github.com/whopio/whopsdk-go/cardtransactions"
-	chatchannels "github.com/whopio/whopsdk-go/chatchannels"
-	checkoutconfigurations "github.com/whopio/whopsdk-go/checkoutconfigurations"
-	companies "github.com/whopio/whopsdk-go/companies"
-	companytokentransactions "github.com/whopio/whopsdk-go/companytokentransactions"
-	core "github.com/whopio/whopsdk-go/core"
-	coursechapters "github.com/whopio/whopsdk-go/coursechapters"
-	courselessoninteractions "github.com/whopio/whopsdk-go/courselessoninteractions"
-	courselessons "github.com/whopio/whopsdk-go/courselessons"
-	courses "github.com/whopio/whopsdk-go/courses"
-	coursestudents "github.com/whopio/whopsdk-go/coursestudents"
-	deposits "github.com/whopio/whopsdk-go/deposits"
-	disputealerts "github.com/whopio/whopsdk-go/disputealerts"
-	disputes "github.com/whopio/whopsdk-go/disputes"
-	dmchannels "github.com/whopio/whopsdk-go/dmchannels"
-	dmmembers "github.com/whopio/whopsdk-go/dmmembers"
-	entries "github.com/whopio/whopsdk-go/entries"
-	events "github.com/whopio/whopsdk-go/events"
-	experiences "github.com/whopio/whopsdk-go/experiences"
-	exports "github.com/whopio/whopsdk-go/exports"
-	feemarkups "github.com/whopio/whopsdk-go/feemarkups"
-	files "github.com/whopio/whopsdk-go/files"
-	financialactivity "github.com/whopio/whopsdk-go/financialactivity"
-	forumposts "github.com/whopio/whopsdk-go/forumposts"
-	forums "github.com/whopio/whopsdk-go/forums"
-	identityprofiles "github.com/whopio/whopsdk-go/identityprofiles"
-	internal "github.com/whopio/whopsdk-go/internal"
-	invoices "github.com/whopio/whopsdk-go/invoices"
-	leads "github.com/whopio/whopsdk-go/leads"
-	ledgeraccounts "github.com/whopio/whopsdk-go/ledgeraccounts"
-	ledgers "github.com/whopio/whopsdk-go/ledgers"
-	media "github.com/whopio/whopsdk-go/media"
-	membersclient "github.com/whopio/whopsdk-go/members/client"
-	memberships "github.com/whopio/whopsdk-go/memberships"
-	messages "github.com/whopio/whopsdk-go/messages"
-	notificationsclient "github.com/whopio/whopsdk-go/notifications/client"
-	option "github.com/whopio/whopsdk-go/option"
-	partnersclient "github.com/whopio/whopsdk-go/partners/client"
-	paymentmethoddomains "github.com/whopio/whopsdk-go/paymentmethoddomains"
-	paymentmethods "github.com/whopio/whopsdk-go/paymentmethods"
-	payments "github.com/whopio/whopsdk-go/payments"
-	payoutaccounts "github.com/whopio/whopsdk-go/payoutaccounts"
-	payoutmethods "github.com/whopio/whopsdk-go/payoutmethods"
-	payoutsclient "github.com/whopio/whopsdk-go/payouts/client"
-	people "github.com/whopio/whopsdk-go/people"
-	permissions "github.com/whopio/whopsdk-go/permissions"
-	plans "github.com/whopio/whopsdk-go/plans"
-	products "github.com/whopio/whopsdk-go/products"
-	promocodes "github.com/whopio/whopsdk-go/promocodes"
-	reactions "github.com/whopio/whopsdk-go/reactions"
-	recommendedactions "github.com/whopio/whopsdk-go/recommendedactions"
-	refunds "github.com/whopio/whopsdk-go/refunds"
-	resolutioncentercases "github.com/whopio/whopsdk-go/resolutioncentercases"
-	reviews "github.com/whopio/whopsdk-go/reviews"
-	setupintents "github.com/whopio/whopsdk-go/setupintents"
-	shipments "github.com/whopio/whopsdk-go/shipments"
-	socialaccounts "github.com/whopio/whopsdk-go/socialaccounts"
-	stats "github.com/whopio/whopsdk-go/stats"
-	supportchannels "github.com/whopio/whopsdk-go/supportchannels"
-	swaps "github.com/whopio/whopsdk-go/swaps"
-	teammembers "github.com/whopio/whopsdk-go/teammembers"
-	topups "github.com/whopio/whopsdk-go/topups"
-	transfers "github.com/whopio/whopsdk-go/transfers"
-	usersclient "github.com/whopio/whopsdk-go/users/client"
-	verifications "github.com/whopio/whopsdk-go/verifications"
-	webhooks "github.com/whopio/whopsdk-go/webhooks"
-	withdrawals "github.com/whopio/whopsdk-go/withdrawals"
+	accesstokens "github.com/whopio/whopsdk-go/v2/accesstokens"
+	accountlinks "github.com/whopio/whopsdk-go/v2/accountlinks"
+	client "github.com/whopio/whopsdk-go/v2/accounts/client"
+	adcampaigns "github.com/whopio/whopsdk-go/v2/adcampaigns"
+	adgroups "github.com/whopio/whopsdk-go/v2/adgroups"
+	adpixels "github.com/whopio/whopsdk-go/v2/adpixels"
+	ads "github.com/whopio/whopsdk-go/v2/ads"
+	affiliatesclient "github.com/whopio/whopsdk-go/v2/affiliates/client"
+	aichats "github.com/whopio/whopsdk-go/v2/aichats"
+	apikeys "github.com/whopio/whopsdk-go/v2/apikeys"
+	apilogs "github.com/whopio/whopsdk-go/v2/apilogs"
+	appbuilds "github.com/whopio/whopsdk-go/v2/appbuilds"
+	appinstallations "github.com/whopio/whopsdk-go/v2/appinstallations"
+	apps "github.com/whopio/whopsdk-go/v2/apps"
+	audiences "github.com/whopio/whopsdk-go/v2/audiences"
+	authorizedusers "github.com/whopio/whopsdk-go/v2/authorizedusers"
+	bountiesclient "github.com/whopio/whopsdk-go/v2/bounties/client"
+	bountysubmissions "github.com/whopio/whopsdk-go/v2/bountysubmissions"
+	cards "github.com/whopio/whopsdk-go/v2/cards"
+	cardtransactions "github.com/whopio/whopsdk-go/v2/cardtransactions"
+	cashbackrules "github.com/whopio/whopsdk-go/v2/cashbackrules"
+	chatchannels "github.com/whopio/whopsdk-go/v2/chatchannels"
+	checkoutconfigurations "github.com/whopio/whopsdk-go/v2/checkoutconfigurations"
+	claimlinks "github.com/whopio/whopsdk-go/v2/claimlinks"
+	companytokentransactions "github.com/whopio/whopsdk-go/v2/companytokentransactions"
+	confirmationtokens "github.com/whopio/whopsdk-go/v2/confirmationtokens"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	coursechapters "github.com/whopio/whopsdk-go/v2/coursechapters"
+	courselessoninteractions "github.com/whopio/whopsdk-go/v2/courselessoninteractions"
+	courselessons "github.com/whopio/whopsdk-go/v2/courselessons"
+	courses "github.com/whopio/whopsdk-go/v2/courses"
+	coursestudents "github.com/whopio/whopsdk-go/v2/coursestudents"
+	deposits "github.com/whopio/whopsdk-go/v2/deposits"
+	disputealerts "github.com/whopio/whopsdk-go/v2/disputealerts"
+	disputes "github.com/whopio/whopsdk-go/v2/disputes"
+	dmchannels "github.com/whopio/whopsdk-go/v2/dmchannels"
+	dmmembers "github.com/whopio/whopsdk-go/v2/dmmembers"
+	domains "github.com/whopio/whopsdk-go/v2/domains"
+	economicintelligence "github.com/whopio/whopsdk-go/v2/economicintelligence"
+	emailaddresses "github.com/whopio/whopsdk-go/v2/emailaddresses"
+	events "github.com/whopio/whopsdk-go/v2/events"
+	experiences "github.com/whopio/whopsdk-go/v2/experiences"
+	experiments "github.com/whopio/whopsdk-go/v2/experiments"
+	exports "github.com/whopio/whopsdk-go/v2/exports"
+	externalaccounts "github.com/whopio/whopsdk-go/v2/externalaccounts"
+	feedbacksubmissions "github.com/whopio/whopsdk-go/v2/feedbacksubmissions"
+	feemarkups "github.com/whopio/whopsdk-go/v2/feemarkups"
+	files "github.com/whopio/whopsdk-go/v2/files"
+	financialactivity "github.com/whopio/whopsdk-go/v2/financialactivity"
+	financialreportsclient "github.com/whopio/whopsdk-go/v2/financialreports/client"
+	financingapplications "github.com/whopio/whopsdk-go/v2/financingapplications"
+	forumposts "github.com/whopio/whopsdk-go/v2/forumposts"
+	forums "github.com/whopio/whopsdk-go/v2/forums"
+	identityprofiles "github.com/whopio/whopsdk-go/v2/identityprofiles"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	invoices "github.com/whopio/whopsdk-go/v2/invoices"
+	leads "github.com/whopio/whopsdk-go/v2/leads"
+	ledgeraccounts "github.com/whopio/whopsdk-go/v2/ledgeraccounts"
+	livestreams "github.com/whopio/whopsdk-go/v2/livestreams"
+	media "github.com/whopio/whopsdk-go/v2/media"
+	membersclient "github.com/whopio/whopsdk-go/v2/members/client"
+	memberships "github.com/whopio/whopsdk-go/v2/memberships"
+	messages "github.com/whopio/whopsdk-go/v2/messages"
+	notificationsclient "github.com/whopio/whopsdk-go/v2/notifications/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
+	partnerreferralrequests "github.com/whopio/whopsdk-go/v2/partnerreferralrequests"
+	partnersclient "github.com/whopio/whopsdk-go/v2/partners/client"
+	paymentmethoddomains "github.com/whopio/whopsdk-go/v2/paymentmethoddomains"
+	paymentmethods "github.com/whopio/whopsdk-go/v2/paymentmethods"
+	paymentquotes "github.com/whopio/whopsdk-go/v2/paymentquotes"
+	paymentrules "github.com/whopio/whopsdk-go/v2/paymentrules"
+	paymentsclient "github.com/whopio/whopsdk-go/v2/payments/client"
+	payoutaccounts "github.com/whopio/whopsdk-go/v2/payoutaccounts"
+	payoutmethods "github.com/whopio/whopsdk-go/v2/payoutmethods"
+	payoutsclient "github.com/whopio/whopsdk-go/v2/payouts/client"
+	people "github.com/whopio/whopsdk-go/v2/people"
+	permissions "github.com/whopio/whopsdk-go/v2/permissions"
+	plans "github.com/whopio/whopsdk-go/v2/plans"
+	productaffiliates "github.com/whopio/whopsdk-go/v2/productaffiliates"
+	products "github.com/whopio/whopsdk-go/v2/products"
+	promocodes "github.com/whopio/whopsdk-go/v2/promocodes"
+	reactions "github.com/whopio/whopsdk-go/v2/reactions"
+	refunds "github.com/whopio/whopsdk-go/v2/refunds"
+	resolutioncentercases "github.com/whopio/whopsdk-go/v2/resolutioncentercases"
+	reviews "github.com/whopio/whopsdk-go/v2/reviews"
+	setupintentsclient "github.com/whopio/whopsdk-go/v2/setupintents/client"
+	shipments "github.com/whopio/whopsdk-go/v2/shipments"
+	socialaccounts "github.com/whopio/whopsdk-go/v2/socialaccounts"
+	statsclient "github.com/whopio/whopsdk-go/v2/stats/client"
+	supportchannels "github.com/whopio/whopsdk-go/v2/supportchannels"
+	swaps "github.com/whopio/whopsdk-go/v2/swaps"
+	teammembers "github.com/whopio/whopsdk-go/v2/teammembers"
+	tradesclient "github.com/whopio/whopsdk-go/v2/trades/client"
+	transfers "github.com/whopio/whopsdk-go/v2/transfers"
+	usersclient "github.com/whopio/whopsdk-go/v2/users/client"
+	variants "github.com/whopio/whopsdk-go/v2/variants"
+	verifications "github.com/whopio/whopsdk-go/v2/verifications"
+	waitlistentries "github.com/whopio/whopsdk-go/v2/waitlistentries"
+	webhooks "github.com/whopio/whopsdk-go/v2/webhooks"
 )
 
 type Whop struct {
@@ -95,12 +110,14 @@ type Whop struct {
 	Accounts                 *client.Client
 	AdCampaigns              *adcampaigns.Client
 	AdGroups                 *adgroups.Client
-	AdReports                *adreports.Client
+	AdPixels                 *adpixels.Client
 	Ads                      *ads.Client
 	Affiliates               *affiliatesclient.Client
 	AiChats                  *aichats.Client
 	APIKeys                  *apikeys.Client
+	APILogs                  *apilogs.Client
 	AppBuilds                *appbuilds.Client
+	AppInstallations         *appinstallations.Client
 	Apps                     *apps.Client
 	Audiences                *audiences.Client
 	AuthorizedUsers          *authorizedusers.Client
@@ -108,10 +125,12 @@ type Whop struct {
 	BountySubmissions        *bountysubmissions.Client
 	CardTransactions         *cardtransactions.Client
 	Cards                    *cards.Client
+	CashbackRules            *cashbackrules.Client
 	ChatChannels             *chatchannels.Client
 	CheckoutConfigurations   *checkoutconfigurations.Client
-	Companies                *companies.Client
+	ClaimLinks               *claimlinks.Client
 	CompanyTokenTransactions *companytokentransactions.Client
+	ConfirmationTokens       *confirmationtokens.Client
 	CourseChapters           *coursechapters.Client
 	CourseLessonInteractions *courselessoninteractions.Client
 	CourseLessons            *courselessons.Client
@@ -122,55 +141,66 @@ type Whop struct {
 	Disputes                 *disputes.Client
 	DmChannels               *dmchannels.Client
 	DmMembers                *dmmembers.Client
-	Entries                  *entries.Client
+	Domains                  *domains.Client
+	EconomicIntelligence     *economicintelligence.Client
+	EmailAddresses           *emailaddresses.Client
 	Events                   *events.Client
 	Experiences              *experiences.Client
+	Experiments              *experiments.Client
 	Exports                  *exports.Client
+	ExternalAccounts         *externalaccounts.Client
 	FeeMarkups               *feemarkups.Client
+	FeedbackSubmissions      *feedbacksubmissions.Client
 	Files                    *files.Client
 	FinancialActivity        *financialactivity.Client
-	Ledgers                  *ledgers.Client
+	FinancialReports         *financialreportsclient.Client
+	FinancingApplications    *financingapplications.Client
 	ForumPosts               *forumposts.Client
 	Forums                   *forums.Client
 	IdentityProfiles         *identityprofiles.Client
 	Invoices                 *invoices.Client
 	Leads                    *leads.Client
 	LedgerAccounts           *ledgeraccounts.Client
+	Livestreams              *livestreams.Client
 	Media                    *media.Client
 	Members                  *membersclient.Client
 	Memberships              *memberships.Client
 	Messages                 *messages.Client
 	Notifications            *notificationsclient.Client
+	PartnerReferralRequests  *partnerreferralrequests.Client
 	Partners                 *partnersclient.Client
 	PaymentMethodDomains     *paymentmethoddomains.Client
 	PaymentMethods           *paymentmethods.Client
-	Payments                 *payments.Client
+	PaymentQuotes            *paymentquotes.Client
+	PaymentRules             *paymentrules.Client
+	Payments                 *paymentsclient.Client
 	PayoutAccounts           *payoutaccounts.Client
 	PayoutMethods            *payoutmethods.Client
 	Payouts                  *payoutsclient.Client
 	People                   *people.Client
 	Permissions              *permissions.Client
 	Plans                    *plans.Client
+	ProductAffiliates        *productaffiliates.Client
 	Products                 *products.Client
 	PromoCodes               *promocodes.Client
 	Reactions                *reactions.Client
-	RecommendedActions       *recommendedactions.Client
 	Refunds                  *refunds.Client
 	ResolutionCenterCases    *resolutioncentercases.Client
 	Reviews                  *reviews.Client
-	SetupIntents             *setupintents.Client
+	SetupIntents             *setupintentsclient.Client
 	Shipments                *shipments.Client
 	SocialAccounts           *socialaccounts.Client
-	Stats                    *stats.Client
+	Stats                    *statsclient.Client
 	SupportChannels          *supportchannels.Client
 	Swaps                    *swaps.Client
 	TeamMembers              *teammembers.Client
-	Topups                   *topups.Client
+	Trades                   *tradesclient.Client
 	Transfers                *transfers.Client
 	Users                    *usersclient.Client
+	Variants                 *variants.Client
 	Verifications            *verifications.Client
+	WaitlistEntries          *waitlistentries.Client
 	Webhooks                 *webhooks.Client
-	Withdrawals              *withdrawals.Client
 
 	options *core.RequestOptions
 	baseURL string
@@ -180,7 +210,7 @@ type Whop struct {
 func NewWhop(opts ...option.RequestOption) *Whop {
 	options := core.NewRequestOptions(opts...)
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Whop{
@@ -189,12 +219,14 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Accounts:                 client.NewClient(options),
 		AdCampaigns:              adcampaigns.NewClient(options),
 		AdGroups:                 adgroups.NewClient(options),
-		AdReports:                adreports.NewClient(options),
+		AdPixels:                 adpixels.NewClient(options),
 		Ads:                      ads.NewClient(options),
 		Affiliates:               affiliatesclient.NewClient(options),
 		AiChats:                  aichats.NewClient(options),
 		APIKeys:                  apikeys.NewClient(options),
+		APILogs:                  apilogs.NewClient(options),
 		AppBuilds:                appbuilds.NewClient(options),
+		AppInstallations:         appinstallations.NewClient(options),
 		Apps:                     apps.NewClient(options),
 		Audiences:                audiences.NewClient(options),
 		AuthorizedUsers:          authorizedusers.NewClient(options),
@@ -202,10 +234,12 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		BountySubmissions:        bountysubmissions.NewClient(options),
 		CardTransactions:         cardtransactions.NewClient(options),
 		Cards:                    cards.NewClient(options),
+		CashbackRules:            cashbackrules.NewClient(options),
 		ChatChannels:             chatchannels.NewClient(options),
 		CheckoutConfigurations:   checkoutconfigurations.NewClient(options),
-		Companies:                companies.NewClient(options),
+		ClaimLinks:               claimlinks.NewClient(options),
 		CompanyTokenTransactions: companytokentransactions.NewClient(options),
+		ConfirmationTokens:       confirmationtokens.NewClient(options),
 		CourseChapters:           coursechapters.NewClient(options),
 		CourseLessonInteractions: courselessoninteractions.NewClient(options),
 		CourseLessons:            courselessons.NewClient(options),
@@ -216,55 +250,66 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Disputes:                 disputes.NewClient(options),
 		DmChannels:               dmchannels.NewClient(options),
 		DmMembers:                dmmembers.NewClient(options),
-		Entries:                  entries.NewClient(options),
+		Domains:                  domains.NewClient(options),
+		EconomicIntelligence:     economicintelligence.NewClient(options),
+		EmailAddresses:           emailaddresses.NewClient(options),
 		Events:                   events.NewClient(options),
 		Experiences:              experiences.NewClient(options),
+		Experiments:              experiments.NewClient(options),
 		Exports:                  exports.NewClient(options),
+		ExternalAccounts:         externalaccounts.NewClient(options),
 		FeeMarkups:               feemarkups.NewClient(options),
+		FeedbackSubmissions:      feedbacksubmissions.NewClient(options),
 		Files:                    files.NewClient(options),
 		FinancialActivity:        financialactivity.NewClient(options),
-		Ledgers:                  ledgers.NewClient(options),
+		FinancialReports:         financialreportsclient.NewClient(options),
+		FinancingApplications:    financingapplications.NewClient(options),
 		ForumPosts:               forumposts.NewClient(options),
 		Forums:                   forums.NewClient(options),
 		IdentityProfiles:         identityprofiles.NewClient(options),
 		Invoices:                 invoices.NewClient(options),
 		Leads:                    leads.NewClient(options),
 		LedgerAccounts:           ledgeraccounts.NewClient(options),
+		Livestreams:              livestreams.NewClient(options),
 		Media:                    media.NewClient(options),
 		Members:                  membersclient.NewClient(options),
 		Memberships:              memberships.NewClient(options),
 		Messages:                 messages.NewClient(options),
 		Notifications:            notificationsclient.NewClient(options),
+		PartnerReferralRequests:  partnerreferralrequests.NewClient(options),
 		Partners:                 partnersclient.NewClient(options),
 		PaymentMethodDomains:     paymentmethoddomains.NewClient(options),
 		PaymentMethods:           paymentmethods.NewClient(options),
-		Payments:                 payments.NewClient(options),
+		PaymentQuotes:            paymentquotes.NewClient(options),
+		PaymentRules:             paymentrules.NewClient(options),
+		Payments:                 paymentsclient.NewClient(options),
 		PayoutAccounts:           payoutaccounts.NewClient(options),
 		PayoutMethods:            payoutmethods.NewClient(options),
 		Payouts:                  payoutsclient.NewClient(options),
 		People:                   people.NewClient(options),
 		Permissions:              permissions.NewClient(options),
 		Plans:                    plans.NewClient(options),
+		ProductAffiliates:        productaffiliates.NewClient(options),
 		Products:                 products.NewClient(options),
 		PromoCodes:               promocodes.NewClient(options),
 		Reactions:                reactions.NewClient(options),
-		RecommendedActions:       recommendedactions.NewClient(options),
 		Refunds:                  refunds.NewClient(options),
 		ResolutionCenterCases:    resolutioncentercases.NewClient(options),
 		Reviews:                  reviews.NewClient(options),
-		SetupIntents:             setupintents.NewClient(options),
+		SetupIntents:             setupintentsclient.NewClient(options),
 		Shipments:                shipments.NewClient(options),
 		SocialAccounts:           socialaccounts.NewClient(options),
-		Stats:                    stats.NewClient(options),
+		Stats:                    statsclient.NewClient(options),
 		SupportChannels:          supportchannels.NewClient(options),
 		Swaps:                    swaps.NewClient(options),
 		TeamMembers:              teammembers.NewClient(options),
-		Topups:                   topups.NewClient(options),
+		Trades:                   tradesclient.NewClient(options),
 		Transfers:                transfers.NewClient(options),
 		Users:                    usersclient.NewClient(options),
+		Variants:                 variants.NewClient(options),
 		Verifications:            verifications.NewClient(options),
+		WaitlistEntries:          waitlistentries.NewClient(options),
 		Webhooks:                 webhooks.NewClient(options),
-		Withdrawals:              withdrawals.NewClient(options),
 		options:                  options,
 		baseURL:                  options.BaseURL,
 		caller: internal.NewCaller(

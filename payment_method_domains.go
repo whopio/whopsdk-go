@@ -5,7 +5,7 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
@@ -16,9 +16,9 @@ var (
 )
 
 type CreatePaymentMethodDomainsRequest struct {
-	// Account to register the domain for (`biz_` tag). Defaults to the caller's account.
+	// Account to register the domain for (`biz_` tag). Required when authenticating as a user; an account API key supplies its own account.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// Hostname to register (e.g. `checkout.shinetime.example`).
+	// Hostname to register (e.g. `checkout.shinetime.com`).
 	Hostname string `json:"hostname" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -26,10 +26,12 @@ type CreatePaymentMethodDomainsRequest struct {
 }
 
 func (c *CreatePaymentMethodDomainsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -72,7 +74,7 @@ var (
 )
 
 type DeletePaymentMethodDomainsRequest struct {
-	// The unique identifier of the payment method domain, prefixed `pmd_`.
+	// The unique identifier of the payment method domain, prefixed `pmd_` or `dom_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -80,10 +82,12 @@ type DeletePaymentMethodDomainsRequest struct {
 }
 
 func (d *DeletePaymentMethodDomainsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -125,13 +129,13 @@ type ListPaymentMethodDomainsRequest struct {
 	Order *ListPaymentMethodDomainsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
 	Direction *ListPaymentMethodDomainsRequestDirection `json:"-" url:"direction,omitempty"`
-	// Number of domains to return from the start of the window.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor to paginate forwards from.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// Number of domains to return from the end of the window.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// Cursor to paginate backwards from.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -139,10 +143,12 @@ type ListPaymentMethodDomainsRequest struct {
 }
 
 func (l *ListPaymentMethodDomainsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -234,7 +240,7 @@ var (
 )
 
 type RetrievePaymentMethodDomainsRequest struct {
-	// The unique identifier of the payment method domain, prefixed `pmd_`.
+	// The unique identifier of the payment method domain, prefixed `pmd_` or `dom_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -242,10 +248,12 @@ type RetrievePaymentMethodDomainsRequest struct {
 }
 
 func (r *RetrievePaymentMethodDomainsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -265,6 +273,11 @@ var (
 	paymentMethodDomainFieldUpdatedAt = big.NewInt(1 << 6)
 )
 
+// paymentMethodDomainNullableFields maps the wire names of PaymentMethodDomain's nullable fields (required or optional) to their field bits.
+var paymentMethodDomainNullableFields = map[string]*big.Int{
+	"account_id": paymentMethodDomainFieldAccountID,
+}
+
 type PaymentMethodDomain struct {
 	// ID of the account the domain is registered for, prefixed `biz_`.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
@@ -272,7 +285,7 @@ type PaymentMethodDomain struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Hostname the checkout is served from (e.g. `checkout.example.com`).
 	Hostname string `json:"hostname" url:"hostname"`
-	// Payment method domain ID, prefixed `pmd_`.
+	// Payment method domain ID: the ID of the account's domain for the hostname, prefixed `dom_`, or `pmd_` for some older domains.
 	ID string `json:"id" url:"id"`
 	// Wallet provider the domain is registered with.
 	Provider PaymentMethodDomainProvider `json:"provider" url:"provider"`
@@ -345,10 +358,12 @@ func (p *PaymentMethodDomain) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PaymentMethodDomain) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -412,6 +427,13 @@ func (p *PaymentMethodDomain) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentMethodDomainNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -523,10 +545,12 @@ func (d *DeletePaymentMethodDomainsResponse) GetExtraProperties() map[string]int
 }
 
 func (d *DeletePaymentMethodDomainsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -705,10 +729,12 @@ func (l *ListPaymentMethodDomainsResponse) GetExtraProperties() map[string]inter
 }
 
 func (l *ListPaymentMethodDomainsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -774,6 +800,12 @@ var (
 	listPaymentMethodDomainsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listPaymentMethodDomainsResponsePageInfoNullableFields maps the wire names of ListPaymentMethodDomainsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listPaymentMethodDomainsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listPaymentMethodDomainsResponsePageInfoFieldEndCursor,
+	"start_cursor": listPaymentMethodDomainsResponsePageInfoFieldStartCursor,
+}
+
 type ListPaymentMethodDomainsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -823,10 +855,12 @@ func (l *ListPaymentMethodDomainsResponsePageInfo) GetExtraProperties() map[stri
 }
 
 func (l *ListPaymentMethodDomainsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -869,6 +903,13 @@ func (l *ListPaymentMethodDomainsResponsePageInfo) UnmarshalJSON(data []byte) er
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPaymentMethodDomainsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -904,7 +945,7 @@ var (
 )
 
 type VerifyPaymentMethodDomainsRequest struct {
-	// The unique identifier of the payment method domain, prefixed `pmd_`.
+	// The unique identifier of the payment method domain, prefixed `pmd_` or `dom_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -912,10 +953,12 @@ type VerifyPaymentMethodDomainsRequest struct {
 }
 
 func (v *VerifyPaymentMethodDomainsRequest) require(field *big.Int) {
-	if v.explicitFields == nil {
-		v.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if v.explicitFields != nil {
+		next.Set(v.explicitFields)
 	}
-	v.explicitFields.Or(v.explicitFields, field)
+	next.Or(next, field)
+	v.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

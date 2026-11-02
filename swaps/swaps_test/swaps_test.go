@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -88,9 +88,7 @@ func TestSwapsListWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ListSwapsRequest{
-		AccountID: "account_id",
-	}
+	request := &whopsdk.ListSwapsRequest{}
 	_, invocationErr := client.Swaps.List(
 		context.TODO(),
 		request,
@@ -100,7 +98,7 @@ func TestSwapsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestSwapsListWithWireMock", "GET", "/swaps", map[string]interface{}{"account_id": "account_id"}, 1)
+	VerifyRequestCount(t, "TestSwapsListWithWireMock", "GET", "/swaps", nil, 1)
 }
 
 func TestSwapsCreateWithWireMock(
@@ -115,7 +113,6 @@ func TestSwapsCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateSwapsRequest{
-		AccountID: "biz_xxxxxxxxxxxxxx",
 		FromToken: "usd",
 		ToToken:   "cad",
 	}

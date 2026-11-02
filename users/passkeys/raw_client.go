@@ -6,11 +6,11 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
-	users "github.com/whopio/whopsdk-go/users"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
+	users "github.com/whopio/whopsdk-go/v2/users"
 )
 
 type RawClient struct {
@@ -41,7 +41,15 @@ func (r *RawClient) Create(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/users/me/passkeys"
@@ -81,11 +89,19 @@ func (r *RawClient) Challenge(
 	ctx context.Context,
 	request *users.ChallengePasskeysRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*users.ChallengePasskeysResponse], error) {
+) (*core.Response[*whopsdk.PasskeyChallenge], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/users/me/passkeys/challenge"
@@ -94,7 +110,7 @@ func (r *RawClient) Challenge(
 		options.ToHeader(),
 	)
 	headers.Add("Content-Type", "application/json")
-	var response *users.ChallengePasskeysResponse
+	var response *whopsdk.PasskeyChallenge
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -114,7 +130,7 @@ func (r *RawClient) Challenge(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*users.ChallengePasskeysResponse]{
+	return &core.Response[*whopsdk.PasskeyChallenge]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -129,7 +145,15 @@ func (r *RawClient) Delete(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(

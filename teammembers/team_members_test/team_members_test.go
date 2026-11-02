@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -116,7 +116,10 @@ func TestTeamMembersCreateWithWireMock(
 	)
 	request := &whopsdk.CreateTeamMembersRequest{
 		AccountID: "biz_xxxxxxxxxxxxxx",
-		Role:      whopsdk.CreateTeamMembersRequestRoleOwner,
+		Role:      whopsdk.CreateTeamMembersRequestRoleSalesManager,
+		UserID: whopsdk.String(
+			"user_xxxxxxxxxxxxxx",
+		),
 	}
 	_, invocationErr := client.TeamMembers.Create(
 		context.TODO(),
@@ -194,8 +197,7 @@ func TestTeamMembersUpdateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.UpdateTeamMembersRequest{
-		ID:   "id",
-		Role: whopsdk.UpdateTeamMembersRequestRoleOwner,
+		ID: "id",
 	}
 	_, invocationErr := client.TeamMembers.Update(
 		context.TODO(),

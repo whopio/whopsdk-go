@@ -6,18 +6,24 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	preferences "github.com/whopio/whopsdk-go/accounts/preferences"
-	reserves "github.com/whopio/whopsdk-go/accounts/reserves"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	customertracking "github.com/whopio/whopsdk-go/v2/accounts/customertracking"
+	fees "github.com/whopio/whopsdk-go/v2/accounts/fees"
+	financingproviders "github.com/whopio/whopsdk-go/v2/accounts/financingproviders"
+	preferences "github.com/whopio/whopsdk-go/v2/accounts/preferences"
+	reserves "github.com/whopio/whopsdk-go/v2/accounts/reserves"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
-	WithRawResponse *RawClient
-	Preferences     *preferences.Client
-	Reserves        *reserves.Client
+	WithRawResponse    *RawClient
+	CustomerTracking   *customertracking.Client
+	Fees               *fees.Client
+	FinancingProviders *financingproviders.Client
+	Preferences        *preferences.Client
+	Reserves           *reserves.Client
 
 	options *core.RequestOptions
 	baseURL string
@@ -26,15 +32,18 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
-		Preferences:     preferences.NewClient(options),
-		Reserves:        reserves.NewClient(options),
-		WithRawResponse: NewRawClient(options),
-		options:         options,
-		baseURL:         options.BaseURL,
+		CustomerTracking:   customertracking.NewClient(options),
+		Fees:               fees.NewClient(options),
+		FinancingProviders: financingproviders.NewClient(options),
+		Preferences:        preferences.NewClient(options),
+		Reserves:           reserves.NewClient(options),
+		WithRawResponse:    NewRawClient(options),
+		options:            options,
+		baseURL:            options.BaseURL,
 		caller: internal.NewCaller(
 			&internal.CallerParams{
 				Client:         options.HTTPClient,
@@ -45,7 +54,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists accounts visible to the credential. User tokens return the user's business accounts; Account API keys return the requesting account and its connected accounts. Pass `parent_account_id` to return only that parent account's connected accounts.
+// Lists accounts visible to the credential. User tokens return the user's business accounts; Account API keys return the requesting account and its connected accounts.
 //
 // Example:
 //
@@ -62,7 +71,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/accounts"
@@ -146,15 +163,19 @@ func (c *Client) Create(
 //
 // Example:
 //
+//	request := &whopsdk.MeAccountsRequest{}
 //	client.Accounts.Me(
 //	    context.TODO(),
+//	    request,
 //	)
 func (c *Client) Me(
 	ctx context.Context,
+	request *whopsdk.MeAccountsRequest,
 	opts ...option.RequestOption,
 ) (*whopsdk.Account, error) {
 	response, err := c.WithRawResponse.Me(
 		ctx,
+		request,
 		opts...,
 	)
 	if err != nil {
@@ -163,7 +184,89 @@ func (c *Client) Me(
 	return response.Body, nil
 }
 
-// Retrieves a single account by ID or public route when it is visible to the credential, including its crypto wallet. The reserved id `me` retrieves the account associated with the current Account API key; user tokens have no single account, so they must address one by ID or route.
+// Finds accounts by name among the accounts the credential can list. Support searches cover every company and return only the 50 best matches.
+//
+// Example:
+//
+//	request := &whopsdk.SearchAccountsRequest{
+//	    Query: "query",
+//	}
+//	client.Accounts.Search(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Search(
+	ctx context.Context,
+	request *whopsdk.SearchAccountsRequest,
+	opts ...option.RequestOption,
+) (*core.Page[*string, *whopsdk.AccountSearchResult, *whopsdk.SearchAccountsResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
+		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := baseURL + "/accounts/search"
+	queryParams, err := internal.QueryValues(request)
+	if err != nil {
+		return nil, err
+	}
+	headers := internal.MergeHeaders(
+		c.options.ToHeader(),
+		options.ToHeader(),
+	)
+	prepareCall := func(pageRequest *core.PageRequest[*string]) *internal.CallParams {
+		if pageRequest.Cursor != nil {
+			queryParams.Set("after", *pageRequest.Cursor)
+		}
+		nextURL := endpointURL
+		if len(queryParams) > 0 {
+			nextURL += "?" + queryParams.Encode()
+		}
+		return &internal.CallParams{
+			URL:             nextURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        pageRequest.Response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		}
+	}
+	readPageResponse := func(response *whopsdk.SearchAccountsResponse) *core.PageResponse[*string, *whopsdk.AccountSearchResult, *whopsdk.SearchAccountsResponse] {
+		var zeroValue *string
+		var next *string
+		if response.PageInfo != nil {
+			next = response.PageInfo.EndCursor
+		}
+		results := response.GetData()
+		return &core.PageResponse[*string, *whopsdk.AccountSearchResult, *whopsdk.SearchAccountsResponse]{
+			Results:  results,
+			Response: response,
+			Next:     next,
+			Done:     next == zeroValue || *next == "",
+		}
+	}
+	pager := internal.NewCursorPager(
+		c.caller,
+		prepareCall,
+		readPageResponse,
+	)
+	return pager.GetPage(ctx, request.After)
+}
+
+// Retrieves an account visible to the credential by ID or public route, including its crypto wallet.
 //
 // Example:
 //
@@ -190,7 +293,34 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Updates an account. User tokens can update business accounts; Account API keys can update connected accounts. The reserved id `me` — accepted on Retrieve Account — resolves to the requesting account, which an Account API key cannot edit, so updates must name the connected account by its `biz_` id.
+// Deletes a connected account directly owned by the authenticated platform account. The account must have no settled, pending, or reserved balance in any currency and no active, trialing, or past-due memberships. The account stops resolving immediately, and its products, plans, and team access are removed in the background; payment history is retained. Deletion cannot be undone through the API. This cannot delete the platform account itself or an account owned by another platform.
+//
+// Example:
+//
+//	request := &whopsdk.DeleteAccountsRequest{
+//	    ID: "id",
+//	}
+//	client.Accounts.Delete(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Delete(
+	ctx context.Context,
+	request *whopsdk.DeleteAccountsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.DeleteAccountsResponse, error) {
+	response, err := c.WithRawResponse.Delete(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Updates an account. User tokens can update business accounts; Account API keys can update connected accounts.
 //
 // Example:
 //
@@ -217,7 +347,7 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Starts an LLC or C-Corp formation for a business account. Defaults to an LLC; set `entity_type` to `c_corp` to form a C-Corp, which additionally requires `share_structure` and officer `roles` on every founder. On submission, the application is validated and the response returns a hosted checkout URL. Once paid, the filing is submitted. Track progress through the account's [`company_formation`](/api-reference/beta/accounts/retrieve-account) field on Retrieve Account.
+// Starts an LLC or C-Corp formation for a business account. The application is validated and the response returns a hosted checkout URL; once paid, the filing is submitted. Track progress through the account's [`company_formation`](/api-reference/beta/accounts/retrieve-account) field on Retrieve Account.
 //
 // Example:
 //
@@ -237,7 +367,6 @@ func (c *Client) Update(
 //	    BusinessPhone: whopsdk.String(
 //	        "+15125550142",
 //	    ),
-//	    BusinessType: "brick_and_mortar",
 //	    BusinessWebsite: whopsdk.String(
 //	        "https://shinetime.example",
 //	    ),
@@ -246,7 +375,7 @@ func (c *Client) Update(
 //	    ExpediteEin: whopsdk.Bool(
 //	        true,
 //	    ),
-//	    FormationState: whopsdk.FormCompanyAccountsRequestFormationStateTx,
+//	    FormationState: whopsdk.FormCompanyAccountsRequestFormationStateWy,
 //	    Founders: []*whopsdk.FormCompanyAccountsRequestFoundersItem{
 //	        &whopsdk.FormCompanyAccountsRequestFoundersItem{
 //	            Address: &whopsdk.FormCompanyAccountsRequestFoundersItemAddress{
@@ -278,8 +407,6 @@ func (c *Client) Update(
 //	            ),
 //	        },
 //	    },
-//	    IndustryGroup: "automotive",
-//	    IndustryType: "car_wash",
 //	    ShareStructure: &whopsdk.FormCompanyAccountsRequestShareStructure{
 //	        NumberOfShares: 123,
 //	        Value: 123,
@@ -308,7 +435,61 @@ func (c *Client) FormCompany(
 	return response.Body, nil
 }
 
-// Transfers ownership of the account to another user, identified by user ID or email address. If the recipient already holds the owner role, ownership moves immediately; otherwise they get an invite and ownership moves when they accept.
+// Queues one background retry of the account's failed ads payments across its campaigns, using the account's configured ads payment methods. A queued response does not mean payment succeeded; read each campaign's `delivery_status` and `issues` for the outcome. Successful settlement clears the payment block without changing a configured `active` or `paused` status; a legacy `payment_failed` status becomes `paused`. Returns an error when the account has no failed ads payments, or while a previous retry for the account is queued or running.
+//
+// Example:
+//
+//	request := &whopsdk.RetryAdsPaymentAccountsRequest{
+//	    ID: "id",
+//	}
+//	client.Accounts.RetryAdsPayment(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) RetryAdsPayment(
+	ctx context.Context,
+	request *whopsdk.RetryAdsPaymentAccountsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.RetryAdsPaymentAccountsResponse, error) {
+	response, err := c.WithRawResponse.RetryAdsPayment(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Suspends a connected account directly owned by the authenticated platform account. This cannot suspend the platform account itself or an account owned by another platform.
+//
+// Example:
+//
+//	request := &whopsdk.SuspendAccountsRequest{
+//	    ID: "id",
+//	}
+//	client.Accounts.Suspend(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Suspend(
+	ctx context.Context,
+	request *whopsdk.SuspendAccountsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Account, error) {
+	response, err := c.WithRawResponse.Suspend(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Transfers ownership of the account to another user, identified by user ID or email address. If the recipient already holds the owner role, ownership moves immediately; otherwise they get an invite and ownership moves when they accept. The Whop CLI and MCP can hand off a business their user owns as a partner (`as_partner: true`) with the `partner:handoff` scope; other OAuth apps cannot transfer ownership.
 //
 // Example:
 //

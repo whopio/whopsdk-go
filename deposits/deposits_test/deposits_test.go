@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -89,9 +89,7 @@ func TestDepositsCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateDepositsRequest{
-		Destination: &whopsdk.CreateDepositsRequestDestination{
-			String: "destination",
-		},
+		Destination: "biz_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.Deposits.Create(
 		context.TODO(),
@@ -103,4 +101,30 @@ func TestDepositsCreateWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestDepositsCreateWithWireMock", "POST", "/deposits", nil, 1)
+}
+
+func TestDepositsReverseWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.ReverseDepositsRequest{
+		ID: "vbt_xxxxxxxxxxxxxx",
+	}
+	_, invocationErr := client.Deposits.Reverse(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestDepositsReverseWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestDepositsReverseWithWireMock", "POST", "/deposits/vbt_xxxxxxxxxxxxxx/reverse", nil, 1)
 }

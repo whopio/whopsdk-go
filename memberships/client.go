@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -43,7 +43,26 @@ func NewClient(options *core.RequestOptions) *Client {
 //
 // Example:
 //
-//	request := &whopsdk.ListMembershipsRequest{}
+//	request := &whopsdk.ListMembershipsRequest{
+//	    ExternalAccount: whopsdk.String(
+//	        "discord_123456789012345678",
+//	    ),
+//	    ProductIDs: []*string{
+//	        whopsdk.String(
+//	            "prod_xxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	    VariantIDs: []*string{
+//	        whopsdk.String(
+//	            "plan_xxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	    PromoCodeIDs: []*string{
+//	        whopsdk.String(
+//	            "promo_xxxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	}
 //	client.Memberships.List(
 //	    context.TODO(),
 //	    request,
@@ -56,7 +75,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/memberships"
@@ -111,14 +138,14 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Sends an email inviting one recipient to join the account through a free plan. Identify the recipient by exactly one of `user_id` or `email`. The invitation is bound to that recipient; after signing in, accepting it immediately grants the membership without checkout. This Experimental endpoint is available only to accounts enabled for membership invitations.
+// Emails one recipient an invitation to a free variant's membership. The invitation is bound to that recipient; after signing in, accepting it immediately grants the membership without checkout. This Experimental endpoint is available only to accounts enabled for membership invitations.
 //
 // Example:
 //
 //	request := &whopsdk.InviteMembershipsRequestBody{
 //	    InviteMembershipsRequestBodyUserID: &whopsdk.InviteMembershipsRequestBodyUserID{
-//	        PlanID: "plan_xxxxxxxxxxxxxx",
 //	        UserID: "user_xxxxxxxxxxxxxx",
+//	        VariantID: "plan_xxxxxxxxxxxxxx",
 //	    },
 //	}
 //	client.Memberships.Invite(
@@ -168,12 +195,15 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Updates a membership: merge metadata key-value pairs, or toggle `cancel_at_period_end` — `true` schedules the cancellation for the end of the current billing period, `false` reverses a pending one.
+// Updates a membership's metadata, scheduled cancellation, renewal payment method, renewal cadence, or next renewal date.
 //
 // Example:
 //
 //	request := &whopsdk.UpdateMembershipsRequest{
 //	    ID: "id",
+//	    BillingPeriodDays: whopsdk.Int(
+//	        45,
+//	    ),
 //	}
 //	client.Memberships.Update(
 //	    context.TODO(),
@@ -195,29 +225,24 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Add free days to extend a membership's current billing period, expiration date, or Stripe trial.
-//
-// Required permissions:
-//   - `member:manage`
-//   - `member:email:read`
-//   - `member:basic:read`
+// Applies a promo code to an `active` or `trialing` membership that does not already have one and has exactly one recurring item, for Stripe-billed memberships and memberships billed by Whop's billing engine. The discount lands on the next invoice and follows the code's duration (`once`, `repeating`, or `forever`).
 //
 // Example:
 //
-//	request := &whopsdk.AddFreeDaysMembershipRequest{
-//	    ID: "mem_xxxxxxxxxxxxxx",
-//	    FreeDays: 42,
+//	request := &whopsdk.ApplyPromoCodeMembershipsRequest{
+//	    ID: "id",
+//	    PromoCode: "SAVE20",
 //	}
-//	client.Memberships.AddFreeDaysMembership(
+//	client.Memberships.ApplyPromoCode(
 //	    context.TODO(),
 //	    request,
 //	)
-func (c *Client) AddFreeDaysMembership(
+func (c *Client) ApplyPromoCode(
 	ctx context.Context,
-	request *whopsdk.AddFreeDaysMembershipRequest,
+	request *whopsdk.ApplyPromoCodeMembershipsRequest,
 	opts ...option.RequestOption,
 ) (*whopsdk.Membership, error) {
-	response, err := c.WithRawResponse.AddFreeDaysMembership(
+	response, err := c.WithRawResponse.ApplyPromoCode(
 		ctx,
 		request,
 		opts...,
@@ -228,7 +253,39 @@ func (c *Client) AddFreeDaysMembership(
 	return response.Body, nil
 }
 
-// Cancels a membership. Pass `cancel_at_period_end: true` to stop auto-renewal and keep access until the current billing period ends. Omit it (or pass `false`) to revoke access immediately. Buyers cannot cancel buy-now-pay-later (`splitit`, `sezzle`) or non-trial split-pay memberships.
+// Assigns an affiliate to a membership and pays them the commission you set on its future payments; past payments are not recalculated. A user who is not yet an affiliate of your account becomes one, which also requires `affiliate:create`. Send a new `commission_type` or `commission_value` for the membership's current affiliate to change their commission; a membership that already has a different affiliate returns a conflict. Works for active or trialing memberships with one recurring variant that bill through Stripe or Whop's billing engine, and not for marketplace memberships, paused payments, or a scheduled cancellation. You cannot assign yourself.
+//
+// Example:
+//
+//	request := &whopsdk.AssignAffiliateMembershipsRequest{
+//	    ID: "id",
+//	    CommissionType: whopsdk.AssignAffiliateMembershipsRequestCommissionTypeFlatFee,
+//	    CommissionValue: 5,
+//	    Email: whopsdk.String(
+//	        "affiliate@example.com",
+//	    ),
+//	}
+//	client.Memberships.AssignAffiliate(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) AssignAffiliate(
+	ctx context.Context,
+	request *whopsdk.AssignAffiliateMembershipsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Membership, error) {
+	response, err := c.WithRawResponse.AssignAffiliate(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Cancels a membership, either immediately or at the end of the current billing period. Buyers cannot cancel buy-now-pay-later (`splitit`, `sezzle`) or non-trial split-pay memberships.
 //
 // Example:
 //
@@ -310,6 +367,33 @@ func (c *Client) Pause(
 	return response.Body, nil
 }
 
+// Restores access to a `canceled` or `expired` membership that contains only one-time purchases and sets its `status` to `completed`. Lifetime memberships regain lifetime access; for memberships with an expiration, `days` sets the new `current_period_end`. Active and recurring memberships cannot be reactivated.
+//
+// Example:
+//
+//	request := &whopsdk.ReactivateMembershipsRequest{
+//	    ID: "id",
+//	}
+//	client.Memberships.Reactivate(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Reactivate(
+	ctx context.Context,
+	request *whopsdk.ReactivateMembershipsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Membership, error) {
+	response, err := c.WithRawResponse.Reactivate(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Resumes a previously paused membership's recurring payment collection. Billing resumes on the next cycle.
 //
 // Example:
@@ -337,28 +421,23 @@ func (c *Client) Resume(
 	return response.Body, nil
 }
 
-// Re-run access fulfillment for a membership. Recomputes the member's content access on Whop, re-validates their Discord link (re-adding them to the server and re-assigning roles if needed), and re-fulfills TradingView indicator access. Telegram access is invite-based and cannot be resynced here. The outcome is written to the membership's logs.
-//
-// Required permissions:
-//   - `membership:resync_access`
-//   - `member:email:read`
-//   - `member:basic:read`
+// Re-runs access fulfillment for a membership: recomputes the member's content access on Whop, re-validates their Discord link (re-adding them to the server and re-assigning roles if needed), and re-fulfills TradingView indicator access. Telegram access is invite-based and is not resynced. The work runs in the background and the outcome is written to the membership's logs.
 //
 // Example:
 //
-//	request := &whopsdk.ResyncAccessMembershipRequest{
-//	    ID: "mem_xxxxxxxxxxxxxx",
+//	request := &whopsdk.ResyncAccessMembershipsRequest{
+//	    ID: "id",
 //	}
-//	client.Memberships.ResyncAccessMembership(
+//	client.Memberships.ResyncAccess(
 //	    context.TODO(),
 //	    request,
 //	)
-func (c *Client) ResyncAccessMembership(
+func (c *Client) ResyncAccess(
 	ctx context.Context,
-	request *whopsdk.ResyncAccessMembershipRequest,
+	request *whopsdk.ResyncAccessMembershipsRequest,
 	opts ...option.RequestOption,
 ) (*whopsdk.Membership, error) {
-	response, err := c.WithRawResponse.ResyncAccessMembership(
+	response, err := c.WithRawResponse.ResyncAccess(
 		ctx,
 		request,
 		opts...,
@@ -386,38 +465,6 @@ func (c *Client) Transfer(
 	opts ...option.RequestOption,
 ) (*whopsdk.TransferMembershipsResponse, error) {
 	response, err := c.WithRawResponse.Transfer(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return response.Body, nil
-}
-
-// Reverse a pending cancellation for a membership that was scheduled to cancel at period end.
-//
-// Required permissions:
-//   - `member:manage`
-//   - `member:email:read`
-//   - `member:basic:read`
-//
-// Example:
-//
-//	request := &whopsdk.UncancelMembershipRequest{
-//	    ID: "mem_xxxxxxxxxxxxxx",
-//	}
-//	client.Memberships.UncancelMembership(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) UncancelMembership(
-	ctx context.Context,
-	request *whopsdk.UncancelMembershipRequest,
-	opts ...option.RequestOption,
-) (*whopsdk.Membership, error) {
-	response, err := c.WithRawResponse.UncancelMembership(
 		ctx,
 		request,
 		opts...,

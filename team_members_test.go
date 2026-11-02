@@ -249,6 +249,38 @@ func TestSettersListTeamMembersRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetQuery", func(t *testing.T) {
+		obj := &ListTeamMembersRequest{}
+		var fernTestValueQuery *string
+		obj.SetQuery(fernTestValueQuery)
+		assert.Equal(t, fernTestValueQuery, obj.Query)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetReportsToID", func(t *testing.T) {
+		obj := &ListTeamMembersRequest{}
+		var fernTestValueReportsToID *string
+		obj.SetReportsToID(fernTestValueReportsToID)
+		assert.Equal(t, fernTestValueReportsToID, obj.ReportsToID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDirectReportsMin", func(t *testing.T) {
+		obj := &ListTeamMembersRequest{}
+		var fernTestValueDirectReportsMin *int
+		obj.SetDirectReportsMin(fernTestValueDirectReportsMin)
+		assert.Equal(t, fernTestValueDirectReportsMin, obj.DirectReportsMin)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDirectReportsMax", func(t *testing.T) {
+		obj := &ListTeamMembersRequest{}
+		var fernTestValueDirectReportsMax *int
+		obj.SetDirectReportsMax(fernTestValueDirectReportsMax)
+		assert.Equal(t, fernTestValueDirectReportsMax, obj.DirectReportsMax)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCreatedBefore", func(t *testing.T) {
 		obj := &ListTeamMembersRequest{}
 		var fernTestValueCreatedBefore *string
@@ -417,6 +449,130 @@ func TestSettersMarkExplicitListTeamMembersRequest(t *testing.T) {
 
 		// Act
 		obj.SetRole(fernTestValueRole)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetQuery_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListTeamMembersRequest{}
+		var fernTestValueQuery *string
+
+		// Act
+		obj.SetQuery(fernTestValueQuery)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetReportsToID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListTeamMembersRequest{}
+		var fernTestValueReportsToID *string
+
+		// Act
+		obj.SetReportsToID(fernTestValueReportsToID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDirectReportsMin_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListTeamMembersRequest{}
+		var fernTestValueDirectReportsMin *int
+
+		// Act
+		obj.SetDirectReportsMin(fernTestValueDirectReportsMin)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDirectReportsMax_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListTeamMembersRequest{}
+		var fernTestValueDirectReportsMax *int
+
+		// Act
+		obj.SetDirectReportsMax(fernTestValueDirectReportsMax)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -760,6 +916,14 @@ func TestSettersTeamMember(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDirectReportsCount", func(t *testing.T) {
+		obj := &TeamMember{}
+		var fernTestValueDirectReportsCount *int
+		obj.SetDirectReportsCount(fernTestValueDirectReportsCount)
+		assert.Equal(t, fernTestValueDirectReportsCount, obj.DirectReportsCount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetEmail", func(t *testing.T) {
 		obj := &TeamMember{}
 		var fernTestValueEmail *string
@@ -781,6 +945,14 @@ func TestSettersTeamMember(t *testing.T) {
 		var fernTestValueIsAgent bool
 		obj.SetIsAgent(fernTestValueIsAgent)
 		assert.Equal(t, fernTestValueIsAgent, obj.IsAgent)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetReportsToID", func(t *testing.T) {
+		obj := &TeamMember{}
+		var fernTestValueReportsToID *string
+		obj.SetReportsToID(fernTestValueReportsToID)
+		assert.Equal(t, fernTestValueReportsToID, obj.ReportsToID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -898,6 +1070,39 @@ func TestGettersTeamMember(t *testing.T) {
 		_ = obj.GetCreatedAt() // Should return zero value
 	})
 
+	t.Run("GetDirectReportsCount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TeamMember{}
+		var expected *int
+		obj.DirectReportsCount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDirectReportsCount(), "getter should return the property value")
+	})
+
+	t.Run("GetDirectReportsCount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TeamMember{}
+		obj.DirectReportsCount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDirectReportsCount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDirectReportsCount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TeamMember
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDirectReportsCount() // Should return zero value
+	})
+
 	t.Run("GetEmail", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -975,6 +1180,39 @@ func TestGettersTeamMember(t *testing.T) {
 			}
 		}()
 		_ = obj.GetIsAgent() // Should return zero value
+	})
+
+	t.Run("GetReportsToID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TeamMember{}
+		var expected *string
+		obj.ReportsToID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetReportsToID(), "getter should return the property value")
+	})
+
+	t.Run("GetReportsToID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TeamMember{}
+		obj.ReportsToID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetReportsToID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetReportsToID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TeamMember
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetReportsToID() // Should return zero value
 	})
 
 	t.Run("GetRole", func(t *testing.T) {
@@ -1175,6 +1413,37 @@ func TestSettersMarkExplicitTeamMember(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetDirectReportsCount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TeamMember{}
+		var fernTestValueDirectReportsCount *int
+
+		// Act
+		obj.SetDirectReportsCount(fernTestValueDirectReportsCount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetEmail_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1245,6 +1514,37 @@ func TestSettersMarkExplicitTeamMember(t *testing.T) {
 
 		// Act
 		obj.SetIsAgent(fernTestValueIsAgent)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetReportsToID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TeamMember{}
+		var fernTestValueReportsToID *string
+
+		// Act
+		obj.SetReportsToID(fernTestValueReportsToID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2039,7 +2339,7 @@ func TestSettersUpdateTeamMembersRequest(t *testing.T) {
 
 	t.Run("SetRole", func(t *testing.T) {
 		obj := &UpdateTeamMembersRequest{}
-		var fernTestValueRole UpdateTeamMembersRequestRole
+		var fernTestValueRole *UpdateTeamMembersRequestRole
 		obj.SetRole(fernTestValueRole)
 		assert.Equal(t, fernTestValueRole, obj.Role)
 		assert.NotNil(t, obj.explicitFields)
@@ -2083,7 +2383,7 @@ func TestSettersMarkExplicitUpdateTeamMembersRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateTeamMembersRequest{}
-		var fernTestValueRole UpdateTeamMembersRequestRole
+		var fernTestValueRole *UpdateTeamMembersRequestRole
 
 		// Act
 		obj.SetRole(fernTestValueRole)
@@ -2277,6 +2577,97 @@ func TestJSONMarshalingTeamMemberAuthorizedRole(t *testing.T) {
 	})
 }
 
+func TestRequiredNullableRoundTripListTeamMembersResponsePageInfo(t *testing.T) {
+	requiredNullableKeys := []string{
+		"end_cursor",
+		"start_cursor",
+	}
+	marshalToMap := func(t *testing.T, obj *ListTeamMembersResponsePageInfo) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj ListTeamMembersResponsePageInfo
+		require.NoError(t, json.Unmarshal([]byte(`{"end_cursor":null,"start_cursor":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj ListTeamMembersResponsePageInfo
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &ListTeamMembersResponsePageInfo{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripTeamMember(t *testing.T) {
+	requiredNullableKeys := []string{
+		"authorized_role",
+		"direct_reports_count",
+		"email",
+		"reports_to_id",
+		"user",
+	}
+	marshalToMap := func(t *testing.T, obj *TeamMember) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj TeamMember
+		require.NoError(t, json.Unmarshal([]byte(`{"authorized_role":null,"direct_reports_count":null,"email":null,"reports_to_id":null,"user":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj TeamMember
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &TeamMember{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestStringDeleteTeamMembersResponse(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -2370,6 +2761,13 @@ func TestEnumCreateTeamMembersRequestRole(t *testing.T) {
 		val, err := NewCreateTeamMembersRequestRoleFromString("admin")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, CreateTeamMembersRequestRole("admin"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateTeamMembersRequestRoleFromString("partner")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateTeamMembersRequestRole("partner"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_sales_manager", func(t *testing.T) {
@@ -2478,6 +2876,13 @@ func TestEnumListTeamMembersRequestRole(t *testing.T) {
 		val, err := NewListTeamMembersRequestRoleFromString("admin")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListTeamMembersRequestRole("admin"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListTeamMembersRequestRoleFromString("partner")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListTeamMembersRequestRole("partner"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_sales_manager", func(t *testing.T) {
@@ -2594,6 +2999,13 @@ func TestEnumTeamMemberRole(t *testing.T) {
 		assert.Equal(t, TeamMemberRole("admin"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_partner", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTeamMemberRoleFromString("partner")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TeamMemberRole("partner"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_sales_manager", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewTeamMemberRoleFromString("sales_manager")
@@ -2706,6 +3118,13 @@ func TestEnumUpdateTeamMembersRequestRole(t *testing.T) {
 		val, err := NewUpdateTeamMembersRequestRoleFromString("admin")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, UpdateTeamMembersRequestRole("admin"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateTeamMembersRequestRoleFromString("partner")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateTeamMembersRequestRole("partner"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_sales_manager", func(t *testing.T) {

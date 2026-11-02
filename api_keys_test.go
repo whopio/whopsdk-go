@@ -4991,6 +4991,269 @@ func TestJSONMarshalingUpdateAPIKeysRequestPermissionsStatementsItem(t *testing.
 	})
 }
 
+func TestRequiredNullableRoundTripAPIKey(t *testing.T) {
+	requiredNullableKeys := []string{
+		"expires_at",
+		"ip_allowlist",
+		"name",
+		"system_role",
+	}
+	marshalToMap := func(t *testing.T, obj *APIKey) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj APIKey
+		require.NoError(t, json.Unmarshal([]byte(`{"expires_at":null,"ip_allowlist":null,"name":null,"system_role":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj APIKey
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &APIKey{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripListAPIKeysResponsePageInfo(t *testing.T) {
+	requiredNullableKeys := []string{
+		"end_cursor",
+		"start_cursor",
+	}
+	marshalToMap := func(t *testing.T, obj *ListAPIKeysResponsePageInfo) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj ListAPIKeysResponsePageInfo
+		require.NoError(t, json.Unmarshal([]byte(`{"end_cursor":null,"start_cursor":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj ListAPIKeysResponsePageInfo
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &ListAPIKeysResponsePageInfo{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripListPermissionsAPIKeysResponsePageInfo(t *testing.T) {
+	requiredNullableKeys := []string{
+		"end_cursor",
+		"start_cursor",
+	}
+	marshalToMap := func(t *testing.T, obj *ListPermissionsAPIKeysResponsePageInfo) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj ListPermissionsAPIKeysResponsePageInfo
+		require.NoError(t, json.Unmarshal([]byte(`{"end_cursor":null,"start_cursor":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj ListPermissionsAPIKeysResponsePageInfo
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &ListPermissionsAPIKeysResponsePageInfo{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripPermission(t *testing.T) {
+	requiredNullableKeys := []string{
+		"category",
+	}
+	marshalToMap := func(t *testing.T, obj *Permission) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj Permission
+		require.NoError(t, json.Unmarshal([]byte(`{"category":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj Permission
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &Permission{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestOptionalNullableRoundTripCreateAPIKeysRequestPermissions(t *testing.T) {
+	optionalNullableKeys := []string{
+		"system_role",
+	}
+	marshalToMap := func(t *testing.T, obj *CreateAPIKeysRequestPermissions) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAPIKeysRequestPermissions
+		require.NoError(t, json.Unmarshal([]byte(`{"system_role":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range optionalNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "optional nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "optional nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateAPIKeysRequestPermissions
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range optionalNullableKeys {
+			assert.NotContains(t, result, key, "optional nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &CreateAPIKeysRequestPermissions{})
+		for _, key := range optionalNullableKeys {
+			assert.NotContains(t, result, key, "optional nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestOptionalNullableRoundTripUpdateAPIKeysRequestPermissions(t *testing.T) {
+	optionalNullableKeys := []string{
+		"system_role",
+	}
+	marshalToMap := func(t *testing.T, obj *UpdateAPIKeysRequestPermissions) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAPIKeysRequestPermissions
+		require.NoError(t, json.Unmarshal([]byte(`{"system_role":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range optionalNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "optional nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "optional nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateAPIKeysRequestPermissions
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range optionalNullableKeys {
+			assert.NotContains(t, result, key, "optional nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &UpdateAPIKeysRequestPermissions{})
+		for _, key := range optionalNullableKeys {
+			assert.NotContains(t, result, key, "optional nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestStringAPIKey(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -5375,6 +5638,419 @@ func TestEnumAPIKeyAPIVersionDate(t *testing.T) {
 		assert.Equal(t, APIKeyAPIVersionDate("2026-08-21"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_2026_08_21_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-08-21-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-08-21-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_08_25", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-08-25")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-08-25"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_08_25_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-08-25-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-08-25-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_08_25_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-08-25-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-08-25-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_08_31", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-08-31")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-08-31"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_02", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-02")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-02"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_02_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-02-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-02-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_02_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-02-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-02-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_04", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-04")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-04"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_06", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-06")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-06"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_09", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-09")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-09"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_09_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-09-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-09-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_11", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-11")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-11"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_11_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-11-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-11-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_13", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-13")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-13"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_15", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-15")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-15"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_22", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-22")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-22"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_22_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-22-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-22-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_22_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-22-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-22-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_22_3", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-22-3")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-22-3"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_22_4", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-22-4")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-22-4"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_23", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-23")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-23"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_24", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-24")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-24"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_24_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-24-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-24-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_25", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-25")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-25"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_28", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-28")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-28"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_29", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-09-29")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-09-29"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_05", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-05")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-05"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_05_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-05-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-05-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_06", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-06")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-06"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_06_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-06-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-06-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_06_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-06-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-06-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_07", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-07")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-07"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_07_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-07-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-07-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_07_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-07-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-07-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_08", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-08")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-08"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_09", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-09")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-09"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_09_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-09-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-09-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_09_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-09-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-09-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_13", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-13")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-13"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_13_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-13-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-13-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_14", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-14")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-14"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_14_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-14-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-14-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_15", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-15")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-15"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_15_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-15-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-15-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_24", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-24")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-24"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_27", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-27")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-27"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_27_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-27-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-27-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_27_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-27-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-27-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_27_3", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-27-3")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-27-3"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_28", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-28")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-28"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_28_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-28-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-28-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-29")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-29"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-29-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-29-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-29-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-29-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_3", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-29-3")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-29-3"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_4", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-29-4")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-29-4"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_5", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-29-5")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-29-5"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_8", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAPIKeyAPIVersionDateFromString("2026-10-29-8")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, APIKeyAPIVersionDate("2026-10-29-8"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewAPIKeyAPIVersionDateFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -5615,6 +6291,419 @@ func TestEnumCreateAPIKeysRequestAPIVersionDate(t *testing.T) {
 		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-08-21"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_2026_08_21_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-08-21-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-08-21-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_08_25", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-08-25")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-08-25"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_08_25_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-08-25-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-08-25-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_08_25_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-08-25-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-08-25-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_08_31", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-08-31")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-08-31"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_02", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-02")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-02"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_02_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-02-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-02-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_02_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-02-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-02-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_04", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-04")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-04"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_06", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-06")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-06"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_09", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-09")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-09"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_09_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-09-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-09-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_11", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-11")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-11"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_11_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-11-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-11-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_13", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-13")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-13"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_15", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-15")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-15"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_22", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-22")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-22"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_22_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-22-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-22-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_22_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-22-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-22-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_22_3", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-22-3")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-22-3"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_22_4", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-22-4")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-22-4"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_23", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-23")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-23"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_24", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-24")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-24"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_24_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-24-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-24-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_25", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-25")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-25"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_28", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-28")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-28"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_29", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-09-29")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-09-29"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_05", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-05")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-05"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_05_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-05-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-05-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_06", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-06")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-06"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_06_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-06-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-06-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_06_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-06-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-06-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_07", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-07")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-07"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_07_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-07-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-07-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_07_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-07-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-07-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_08", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-08")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-08"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_09", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-09")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-09"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_09_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-09-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-09-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_09_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-09-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-09-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_13", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-13")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-13"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_13_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-13-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-13-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_14", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-14")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-14"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_14_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-14-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-14-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_15", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-15")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-15"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_15_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-15-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-15-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_24", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-24")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-24"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_27", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-27")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-27"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_27_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-27-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-27-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_27_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-27-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-27-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_27_3", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-27-3")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-27-3"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_28", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-28")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-28"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_28_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-28-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-28-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-29")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-29"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-29-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-29-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-29-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-29-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_3", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-29-3")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-29-3"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_4", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-29-4")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-29-4"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_5", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-29-5")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-29-5"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_8", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestAPIVersionDateFromString("2026-10-29-8")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestAPIVersionDate("2026-10-29-8"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewCreateAPIKeysRequestAPIVersionDateFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -5692,6 +6781,13 @@ func TestEnumCreateAPIKeysRequestResourceType(t *testing.T) {
 		val, err := NewCreateAPIKeysRequestResourceTypeFromString("app")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, CreateAPIKeysRequestResourceType("app"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_user", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAPIKeysRequestResourceTypeFromString("user")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAPIKeysRequestResourceType("user"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -5774,6 +6870,13 @@ func TestEnumListAPIKeysRequestResourceType(t *testing.T) {
 		assert.Equal(t, ListAPIKeysRequestResourceType("app"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_user", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListAPIKeysRequestResourceTypeFromString("user")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListAPIKeysRequestResourceType("user"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewListAPIKeysRequestResourceTypeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -5822,6 +6925,13 @@ func TestEnumPermissionGrantedToSystemRolesItem(t *testing.T) {
 		val, err := NewPermissionGrantedToSystemRolesItemFromString("advertiser")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PermissionGrantedToSystemRolesItem("advertiser"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionGrantedToSystemRolesItemFromString("partner")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionGrantedToSystemRolesItem("partner"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -6012,6 +7122,419 @@ func TestEnumUpdateAPIKeysRequestAPIVersionDate(t *testing.T) {
 		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-08-21")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-08-21"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_08_21_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-08-21-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-08-21-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_08_25", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-08-25")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-08-25"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_08_25_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-08-25-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-08-25-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_08_25_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-08-25-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-08-25-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_08_31", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-08-31")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-08-31"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_02", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-02")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-02"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_02_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-02-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-02-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_02_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-02-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-02-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_04", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-04")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-04"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_06", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-06")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-06"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_09", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-09")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-09"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_09_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-09-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-09-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_11", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-11")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-11"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_11_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-11-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-11-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_13", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-13")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-13"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_15", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-15")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-15"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_22", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-22")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-22"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_22_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-22-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-22-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_22_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-22-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-22-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_22_3", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-22-3")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-22-3"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_22_4", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-22-4")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-22-4"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_23", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-23")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-23"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_24", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-24")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-24"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_24_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-24-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-24-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_25", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-25")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-25"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_28", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-28")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-28"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_09_29", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-09-29")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-09-29"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_05", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-05")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-05"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_05_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-05-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-05-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_06", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-06")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-06"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_06_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-06-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-06-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_06_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-06-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-06-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_07", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-07")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-07"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_07_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-07-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-07-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_07_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-07-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-07-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_08", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-08")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-08"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_09", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-09")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-09"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_09_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-09-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-09-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_09_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-09-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-09-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_13", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-13")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-13"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_13_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-13-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-13-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_14", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-14")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-14"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_14_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-14-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-14-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_15", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-15")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-15"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_15_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-15-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-15-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_24", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-24")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-24"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_27", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-27")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-27"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_27_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-27-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-27-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_27_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-27-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-27-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_27_3", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-27-3")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-27-3"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_28", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-28")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-28"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_28_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-28-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-28-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-29")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-29"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_1", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-29-1")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-29-1"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_2", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-29-2")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-29-2"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_3", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-29-3")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-29-3"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_4", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-29-4")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-29-4"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_5", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-29-5")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-29-5"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_2026_10_29_8", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAPIKeysRequestAPIVersionDateFromString("2026-10-29-8")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAPIKeysRequestAPIVersionDate("2026-10-29-8"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

@@ -5,8 +5,8 @@ package users
 import (
 	json "encoding/json"
 	fmt "fmt"
-	whopsdkgo "github.com/whopio/whopsdk-go"
-	internal "github.com/whopio/whopsdk-go/internal"
+	v2 "github.com/whopio/whopsdk-go/v2"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 
@@ -16,11 +16,12 @@ var (
 	createOauthGrantsRequestFieldCodeChallenge       = big.NewInt(1 << 2)
 	createOauthGrantsRequestFieldCodeChallengeMethod = big.NewInt(1 << 3)
 	createOauthGrantsRequestFieldConsentShown        = big.NewInt(1 << 4)
-	createOauthGrantsRequestFieldNonce               = big.NewInt(1 << 5)
-	createOauthGrantsRequestFieldRedirectURI         = big.NewInt(1 << 6)
-	createOauthGrantsRequestFieldRequestedScopes     = big.NewInt(1 << 7)
-	createOauthGrantsRequestFieldResponseType        = big.NewInt(1 << 8)
-	createOauthGrantsRequestFieldState               = big.NewInt(1 << 9)
+	createOauthGrantsRequestFieldMcpClient           = big.NewInt(1 << 5)
+	createOauthGrantsRequestFieldNonce               = big.NewInt(1 << 6)
+	createOauthGrantsRequestFieldRedirectURI         = big.NewInt(1 << 7)
+	createOauthGrantsRequestFieldRequestedScopes     = big.NewInt(1 << 8)
+	createOauthGrantsRequestFieldResponseType        = big.NewInt(1 << 9)
+	createOauthGrantsRequestFieldState               = big.NewInt(1 << 10)
 )
 
 type CreateOauthGrantsRequest struct {
@@ -28,12 +29,14 @@ type CreateOauthGrantsRequest struct {
 	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// The app being authorized, prefixed `app_`.
 	ClientID string `json:"client_id" url:"-"`
-	// The PKCE code challenge: the base64url-encoded SHA-256 of your code verifier, without padding.
-	CodeChallenge string `json:"code_challenge" url:"-"`
-	// How `code_challenge` was derived. Only `S256` is accepted.
-	CodeChallengeMethod CreateOauthGrantsRequestCodeChallengeMethod `json:"code_challenge_method" url:"-"`
-	// Whether the consent UI listed these scopes for the user. Sending `false` succeeds only when the user has already granted every scope requested.
+	// The PKCE code challenge: the base64url-encoded SHA-256 of your code verifier, without padding. Required unless the app is confidential; a confidential app that leaves it out redeems the code with its secret instead of a verifier.
+	CodeChallenge *string `json:"code_challenge,omitempty" url:"-"`
+	// How `code_challenge` was derived. Only `S256` is accepted. Required with `code_challenge`.
+	CodeChallengeMethod *CreateOauthGrantsRequestCodeChallengeMethod `json:"code_challenge_method,omitempty" url:"-"`
+	// Whether the consent UI listed these scopes for the user. Sending `false` succeeds only when the user has already granted every scope requested, or when the app is one of Whop's own with the consent skip switched on and asks for `openid` alone.
 	ConsentShown *bool `json:"consent_shown,omitempty" url:"-"`
+	// The downstream MCP client displayed on the consent screen. Requires explicit consent even when the upstream app already has a grant. Bound to the authorization code and returned on token exchange so the MCP server can verify the approved client.
+	McpClient *CreateOauthGrantsRequestMcpClient `json:"mcp_client,omitempty" url:"-"`
 	// OIDC nonce, echoed into the resulting ID token. Required when `requested_scopes` includes `openid`.
 	Nonce *string `json:"nonce,omitempty" url:"-"`
 	// Where to send the user once they have consented. Must match one of the app's registered redirect URIs exactly — it is compared as a string, not normalized.
@@ -50,10 +53,12 @@ type CreateOauthGrantsRequest struct {
 }
 
 func (c *CreateOauthGrantsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -72,14 +77,14 @@ func (c *CreateOauthGrantsRequest) SetClientID(clientID string) {
 
 // SetCodeChallenge sets the CodeChallenge field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateOauthGrantsRequest) SetCodeChallenge(codeChallenge string) {
+func (c *CreateOauthGrantsRequest) SetCodeChallenge(codeChallenge *string) {
 	c.CodeChallenge = codeChallenge
 	c.require(createOauthGrantsRequestFieldCodeChallenge)
 }
 
 // SetCodeChallengeMethod sets the CodeChallengeMethod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateOauthGrantsRequest) SetCodeChallengeMethod(codeChallengeMethod CreateOauthGrantsRequestCodeChallengeMethod) {
+func (c *CreateOauthGrantsRequest) SetCodeChallengeMethod(codeChallengeMethod *CreateOauthGrantsRequestCodeChallengeMethod) {
 	c.CodeChallengeMethod = codeChallengeMethod
 	c.require(createOauthGrantsRequestFieldCodeChallengeMethod)
 }
@@ -89,6 +94,13 @@ func (c *CreateOauthGrantsRequest) SetCodeChallengeMethod(codeChallengeMethod Cr
 func (c *CreateOauthGrantsRequest) SetConsentShown(consentShown *bool) {
 	c.ConsentShown = consentShown
 	c.require(createOauthGrantsRequestFieldConsentShown)
+}
+
+// SetMcpClient sets the McpClient field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateOauthGrantsRequest) SetMcpClient(mcpClient *CreateOauthGrantsRequestMcpClient) {
+	c.McpClient = mcpClient
+	c.require(createOauthGrantsRequestFieldMcpClient)
 }
 
 // SetNonce sets the Nonce field and marks it as non-optional;
@@ -160,13 +172,13 @@ var (
 type ListOauthGrantsRequest struct {
 	// Only return grants for this app, prefixed `app_`. An app the user has never authorized returns an empty list.
 	AppID *string `json:"-" url:"app_id,omitempty"`
-	// The number of grants to return (default 20, max 100).
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor; returns grants after this position.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of grants to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// A cursor; returns grants before this position.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 	// The field to sort grants by.
 	Order *ListOauthGrantsRequestOrder `json:"-" url:"order,omitempty"`
@@ -178,10 +190,12 @@ type ListOauthGrantsRequest struct {
 }
 
 func (l *ListOauthGrantsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAppID sets the AppID field and marks it as non-optional;
@@ -233,7 +247,7 @@ func (l *ListOauthGrantsRequest) SetDirection(direction *ListOauthGrantsRequestD
 	l.require(listOauthGrantsRequestFieldDirection)
 }
 
-// How `code_challenge` was derived. Only `S256` is accepted.
+// How `code_challenge` was derived. Only `S256` is accepted. Required with `code_challenge`.
 type CreateOauthGrantsRequestCodeChallengeMethod string
 
 const (
@@ -251,6 +265,128 @@ func NewCreateOauthGrantsRequestCodeChallengeMethodFromString(s string) (CreateO
 
 func (c CreateOauthGrantsRequestCodeChallengeMethod) Ptr() *CreateOauthGrantsRequestCodeChallengeMethod {
 	return &c
+}
+
+var (
+	createOauthGrantsRequestMcpClientFieldClientID    = big.NewInt(1 << 0)
+	createOauthGrantsRequestMcpClientFieldClientName  = big.NewInt(1 << 1)
+	createOauthGrantsRequestMcpClientFieldRedirectURI = big.NewInt(1 << 2)
+)
+
+// The downstream MCP client displayed on the consent screen. Requires explicit consent even when the upstream app already has a grant. Bound to the authorization code and returned on token exchange so the MCP server can verify the approved client.
+type CreateOauthGrantsRequestMcpClient struct {
+	// The requesting MCP client's identifier.
+	ClientID string `json:"client_id" url:"client_id"`
+	// The requesting MCP client's display name.
+	ClientName string `json:"client_name" url:"client_name"`
+	// The downstream redirect URI displayed to the user.
+	RedirectURI string `json:"redirect_uri" url:"redirect_uri"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateOauthGrantsRequestMcpClient) GetClientID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ClientID
+}
+
+func (c *CreateOauthGrantsRequestMcpClient) GetClientName() string {
+	if c == nil {
+		return ""
+	}
+	return c.ClientName
+}
+
+func (c *CreateOauthGrantsRequestMcpClient) GetRedirectURI() string {
+	if c == nil {
+		return ""
+	}
+	return c.RedirectURI
+}
+
+func (c *CreateOauthGrantsRequestMcpClient) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateOauthGrantsRequestMcpClient) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetClientID sets the ClientID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateOauthGrantsRequestMcpClient) SetClientID(clientID string) {
+	c.ClientID = clientID
+	c.require(createOauthGrantsRequestMcpClientFieldClientID)
+}
+
+// SetClientName sets the ClientName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateOauthGrantsRequestMcpClient) SetClientName(clientName string) {
+	c.ClientName = clientName
+	c.require(createOauthGrantsRequestMcpClientFieldClientName)
+}
+
+// SetRedirectURI sets the RedirectURI field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateOauthGrantsRequestMcpClient) SetRedirectURI(redirectURI string) {
+	c.RedirectURI = redirectURI
+	c.require(createOauthGrantsRequestMcpClientFieldRedirectURI)
+}
+
+func (c *CreateOauthGrantsRequestMcpClient) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateOauthGrantsRequestMcpClient
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateOauthGrantsRequestMcpClient(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateOauthGrantsRequestMcpClient) MarshalJSON() ([]byte, error) {
+	type embed CreateOauthGrantsRequestMcpClient
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateOauthGrantsRequestMcpClient) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 // The OAuth response type. Only `code` is accepted; defaults to `code`.
@@ -320,7 +456,7 @@ var (
 )
 
 type ListOauthGrantsResponse struct {
-	Data     []*whopsdkgo.OauthGrant          `json:"data" url:"data"`
+	Data     []*v2.OauthGrant                 `json:"data" url:"data"`
 	PageInfo *ListOauthGrantsResponsePageInfo `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -330,7 +466,7 @@ type ListOauthGrantsResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListOauthGrantsResponse) GetData() []*whopsdkgo.OauthGrant {
+func (l *ListOauthGrantsResponse) GetData() []*v2.OauthGrant {
 	if l == nil {
 		return nil
 	}
@@ -352,15 +488,17 @@ func (l *ListOauthGrantsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListOauthGrantsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListOauthGrantsResponse) SetData(data []*whopsdkgo.OauthGrant) {
+func (l *ListOauthGrantsResponse) SetData(data []*v2.OauthGrant) {
 	l.Data = data
 	l.require(listOauthGrantsResponseFieldData)
 }
@@ -421,6 +559,12 @@ var (
 	listOauthGrantsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listOauthGrantsResponsePageInfoNullableFields maps the wire names of ListOauthGrantsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listOauthGrantsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listOauthGrantsResponsePageInfoFieldEndCursor,
+	"start_cursor": listOauthGrantsResponsePageInfoFieldStartCursor,
+}
+
 type ListOauthGrantsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -470,10 +614,12 @@ func (l *ListOauthGrantsResponsePageInfo) GetExtraProperties() map[string]interf
 }
 
 func (l *ListOauthGrantsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -516,6 +662,13 @@ func (l *ListOauthGrantsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listOauthGrantsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

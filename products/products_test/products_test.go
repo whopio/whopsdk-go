@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -89,7 +89,6 @@ func TestProductsListWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.ListProductsRequest{
-		AccountID: "account_id",
 		Visibilities: []*string{
 			whopsdk.String(
 				"visible",
@@ -110,7 +109,7 @@ func TestProductsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestProductsListWithWireMock", "GET", "/products", map[string]interface{}{"account_id": "account_id", "visibilities": "visible", "access_pass_types": "regular"}, 1)
+	VerifyRequestCount(t, "TestProductsListWithWireMock", "GET", "/products", map[string]interface{}{"visibilities": "visible", "access_pass_types": "regular"}, 1)
 }
 
 func TestProductsCreateWithWireMock(

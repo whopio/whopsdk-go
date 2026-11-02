@@ -5,24 +5,31 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
 
 var (
-	listFinancialActivityRequestFieldAccountID            = big.NewInt(1 << 0)
-	listFinancialActivityRequestFieldUserID               = big.NewInt(1 << 1)
-	listFinancialActivityRequestFieldIncludeOwnedAccounts = big.NewInt(1 << 2)
-	listFinancialActivityRequestFieldIncludeResource      = big.NewInt(1 << 3)
-	listFinancialActivityRequestFieldLineTypes            = big.NewInt(1 << 4)
-	listFinancialActivityRequestFieldCurrency             = big.NewInt(1 << 5)
-	listFinancialActivityRequestFieldPostedAfter          = big.NewInt(1 << 6)
-	listFinancialActivityRequestFieldPostedBefore         = big.NewInt(1 << 7)
-	listFinancialActivityRequestFieldAvailableAfter       = big.NewInt(1 << 8)
-	listFinancialActivityRequestFieldAvailableBefore      = big.NewInt(1 << 9)
-	listFinancialActivityRequestFieldLimit                = big.NewInt(1 << 10)
-	listFinancialActivityRequestFieldCursor               = big.NewInt(1 << 11)
+	listFinancialActivityRequestFieldAccountID                = big.NewInt(1 << 0)
+	listFinancialActivityRequestFieldUserID                   = big.NewInt(1 << 1)
+	listFinancialActivityRequestFieldIncludeOwnedAccounts     = big.NewInt(1 << 2)
+	listFinancialActivityRequestFieldIncludeResource          = big.NewInt(1 << 3)
+	listFinancialActivityRequestFieldLineTypes                = big.NewInt(1 << 4)
+	listFinancialActivityRequestFieldDirection                = big.NewInt(1 << 5)
+	listFinancialActivityRequestFieldResourceID               = big.NewInt(1 << 6)
+	listFinancialActivityRequestFieldPaymentID                = big.NewInt(1 << 7)
+	listFinancialActivityRequestFieldActivityID               = big.NewInt(1 << 8)
+	listFinancialActivityRequestFieldExcludeInternalMovements = big.NewInt(1 << 9)
+	listFinancialActivityRequestFieldBalanceType              = big.NewInt(1 << 10)
+	listFinancialActivityRequestFieldWithdrawalID             = big.NewInt(1 << 11)
+	listFinancialActivityRequestFieldCurrency                 = big.NewInt(1 << 12)
+	listFinancialActivityRequestFieldPostedAfter              = big.NewInt(1 << 13)
+	listFinancialActivityRequestFieldPostedBefore             = big.NewInt(1 << 14)
+	listFinancialActivityRequestFieldAvailableAfter           = big.NewInt(1 << 15)
+	listFinancialActivityRequestFieldAvailableBefore          = big.NewInt(1 << 16)
+	listFinancialActivityRequestFieldLimit                    = big.NewInt(1 << 17)
+	listFinancialActivityRequestFieldCursor                   = big.NewInt(1 << 18)
 )
 
 type ListFinancialActivityRequest struct {
@@ -36,15 +43,29 @@ type ListFinancialActivityRequest struct {
 	IncludeResource *bool `json:"-" url:"include_resource,omitempty"`
 	// Optional ledger line categories to include. Some categories (for example `onchain_deposit`, which covers inbound crypto deposits such as MoonPay onramps) are only returned when explicitly requested here.
 	LineTypes []*ListFinancialActivityRequestLineTypesItem `json:"-" url:"line_types,omitempty"`
+	// Optional direction filter. `money_in` returns positive activity and `money_out` returns negative activity.
+	Direction *ListFinancialActivityRequestDirection `json:"-" url:"direction,omitempty"`
+	// Optional prefixed resource ID. Returns activity associated with that resource.
+	ResourceID *string `json:"-" url:"resource_id,omitempty"`
+	// Filter activity by payment ID (pay_), including related refunds, disputes, and fees. Combines with resource_id and other filters within the selected accounts. Unknown payments return an empty list.
+	PaymentID *string `json:"-" url:"payment_id,omitempty"`
+	// Optional ledger activity ID (for example `line_3`). Returns at most that one activity.
+	ActivityID *string `json:"-" url:"activity_id,omitempty"`
+	// Whether to exclude balance reservations and balanced movements between the account's own balances.
+	ExcludeInternalMovements *bool `json:"-" url:"exclude_internal_movements,omitempty"`
+	// Which balance the activity changes. `total` includes available, pending, and reserved funds. `available` includes only movements into or out of available funds, including reservations, releases, and fees. Movements within the selected balance are omitted. Omit to preserve the existing activity feed. Requires account_id or user_id; cannot be combined with available_after or available_before.
+	BalanceType *ListFinancialActivityRequestBalanceType `json:"-" url:"balance_type,omitempty"`
+	// Withdrawal ID (wdrl_). With balance_type=available, selects the same period as its statement, after the previous withdrawal and through this withdrawal, excluding this withdrawal and its fee. Requires a single account. Overrides currency and posted-date filters.
+	WithdrawalID *string `json:"-" url:"withdrawal_id,omitempty"`
 	// Optional currency code filter, for example `usd`.
 	Currency *string `json:"-" url:"currency,omitempty"`
 	// Only include rows posted after this ISO 8601 timestamp.
 	PostedAfter *time.Time `json:"-" url:"posted_after,omitempty"`
 	// Only include rows posted before this ISO 8601 timestamp.
 	PostedBefore *time.Time `json:"-" url:"posted_before,omitempty"`
-	// Only include rows whose funds became withdrawable on or after this `YYYY-MM-DD` settlement date (UTC), distinct from posted_at. Requires currency.
+	// Only include balance credits and debits available on or after this `YYYY-MM-DD` date (UTC), distinct from posted_at. Requires currency.
 	AvailableAfter *time.Time `json:"-" url:"available_after,omitempty" format:"date"`
-	// Only include rows whose funds became withdrawable on or before this `YYYY-MM-DD` settlement date (UTC). Set equal to available_after for a single day. Requires currency.
+	// Only include balance credits and debits available on or before this `YYYY-MM-DD` date (UTC). Set equal to available_after for a single day. Requires currency.
 	AvailableBefore *time.Time `json:"-" url:"available_before,omitempty" format:"date"`
 	// Maximum number of rows to return.
 	Limit *int `json:"-" url:"limit,omitempty"`
@@ -56,10 +77,12 @@ type ListFinancialActivityRequest struct {
 }
 
 func (l *ListFinancialActivityRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -95,6 +118,55 @@ func (l *ListFinancialActivityRequest) SetIncludeResource(includeResource *bool)
 func (l *ListFinancialActivityRequest) SetLineTypes(lineTypes []*ListFinancialActivityRequestLineTypesItem) {
 	l.LineTypes = lineTypes
 	l.require(listFinancialActivityRequestFieldLineTypes)
+}
+
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFinancialActivityRequest) SetDirection(direction *ListFinancialActivityRequestDirection) {
+	l.Direction = direction
+	l.require(listFinancialActivityRequestFieldDirection)
+}
+
+// SetResourceID sets the ResourceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFinancialActivityRequest) SetResourceID(resourceID *string) {
+	l.ResourceID = resourceID
+	l.require(listFinancialActivityRequestFieldResourceID)
+}
+
+// SetPaymentID sets the PaymentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFinancialActivityRequest) SetPaymentID(paymentID *string) {
+	l.PaymentID = paymentID
+	l.require(listFinancialActivityRequestFieldPaymentID)
+}
+
+// SetActivityID sets the ActivityID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFinancialActivityRequest) SetActivityID(activityID *string) {
+	l.ActivityID = activityID
+	l.require(listFinancialActivityRequestFieldActivityID)
+}
+
+// SetExcludeInternalMovements sets the ExcludeInternalMovements field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFinancialActivityRequest) SetExcludeInternalMovements(excludeInternalMovements *bool) {
+	l.ExcludeInternalMovements = excludeInternalMovements
+	l.require(listFinancialActivityRequestFieldExcludeInternalMovements)
+}
+
+// SetBalanceType sets the BalanceType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFinancialActivityRequest) SetBalanceType(balanceType *ListFinancialActivityRequestBalanceType) {
+	l.BalanceType = balanceType
+	l.require(listFinancialActivityRequestFieldBalanceType)
+}
+
+// SetWithdrawalID sets the WithdrawalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListFinancialActivityRequest) SetWithdrawalID(withdrawalID *string) {
+	l.WithdrawalID = withdrawalID
+	l.require(listFinancialActivityRequestFieldWithdrawalID)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
@@ -146,3926 +218,206 @@ func (l *ListFinancialActivityRequest) SetCursor(cursor *string) {
 	l.require(listFinancialActivityRequestFieldCursor)
 }
 
-var (
-	ledgerActivityFieldAccount         = big.NewInt(1 << 0)
-	ledgerActivityFieldAmount          = big.NewInt(1 << 1)
-	ledgerActivityFieldAvailableAt     = big.NewInt(1 << 2)
-	ledgerActivityFieldCreatedAt       = big.NewInt(1 << 3)
-	ledgerActivityFieldCurrency        = big.NewInt(1 << 4)
-	ledgerActivityFieldID              = big.NewInt(1 << 5)
-	ledgerActivityFieldLedgerAccountID = big.NewInt(1 << 6)
-	ledgerActivityFieldLineType        = big.NewInt(1 << 7)
-	ledgerActivityFieldObject          = big.NewInt(1 << 8)
-	ledgerActivityFieldPostedAt        = big.NewInt(1 << 9)
-	ledgerActivityFieldResource        = big.NewInt(1 << 10)
-	ledgerActivityFieldSource          = big.NewInt(1 << 11)
-)
-
-type LedgerActivity struct {
-	// The viewer account that owns this row's ledger. Present only when the response aggregates owned accounts (include_owned_accounts=true); omitted otherwise.
-	Account *LedgerActivityAccount `json:"account,omitempty" url:"account,omitempty"`
-	// Signed amount in the currency's smallest precision units.
-	Amount string `json:"amount" url:"amount"`
-	// ISO 8601 timestamp these funds became (or are scheduled to become) withdrawable: the posted time for already-settled funds, or 00:00:00 UTC on the scheduled release date for pending funds. Present only on inflows entering the balance (payments, top-ups, incoming transfers/affiliate); null on withdrawals, refunds, disputes and on-chain rows. The available_after/before filters window on its UTC settlement date.
-	AvailableAt *time.Time `json:"available_at,omitempty" url:"available_at,omitempty"`
-	// When the activity record was created.
-	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
-	// Currency for this ledger activity.
-	Currency *LedgerActivityCurrency `json:"currency" url:"currency"`
-	// Ledger activity ID.
-	ID string `json:"id" url:"id"`
-	// The ledger account (a ldgr_ identifier) this row belongs to. Present only when the response aggregates owned accounts (include_owned_accounts=true); omitted otherwise. Pair it with `account` to scope drawers and dashboard links to the owning business.
-	LedgerAccountID *string `json:"ledger_account_id,omitempty" url:"ledger_account_id,omitempty"`
-	// The ledger line category this activity was posted under.
-	LineType LedgerActivityLineType `json:"line_type" url:"line_type"`
-	Object   LedgerActivityObject   `json:"object" url:"object"`
-	// When the activity posted to the ledger.
-	PostedAt time.Time `json:"posted_at" url:"posted_at"`
-	// Resource associated with this ledger activity.
-	Resource *LedgerActivityResource `json:"resource,omitempty" url:"resource,omitempty"`
-	// Source of this ledger activity.
-	Source *LedgerActivitySource `json:"source,omitempty" url:"source,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LedgerActivity) GetAccount() *LedgerActivityAccount {
-	if l == nil {
-		return nil
-	}
-	return l.Account
-}
-
-func (l *LedgerActivity) GetAmount() string {
-	if l == nil {
-		return ""
-	}
-	return l.Amount
-}
-
-func (l *LedgerActivity) GetAvailableAt() *time.Time {
-	if l == nil {
-		return nil
-	}
-	return l.AvailableAt
-}
-
-func (l *LedgerActivity) GetCreatedAt() *time.Time {
-	if l == nil {
-		return nil
-	}
-	return l.CreatedAt
-}
-
-func (l *LedgerActivity) GetCurrency() *LedgerActivityCurrency {
-	if l == nil {
-		return nil
-	}
-	return l.Currency
-}
-
-func (l *LedgerActivity) GetID() string {
-	if l == nil {
-		return ""
-	}
-	return l.ID
-}
-
-func (l *LedgerActivity) GetLedgerAccountID() *string {
-	if l == nil {
-		return nil
-	}
-	return l.LedgerAccountID
-}
-
-func (l *LedgerActivity) GetLineType() LedgerActivityLineType {
-	if l == nil {
-		return ""
-	}
-	return l.LineType
-}
-
-func (l *LedgerActivity) GetObject() LedgerActivityObject {
-	if l == nil {
-		return ""
-	}
-	return l.Object
-}
-
-func (l *LedgerActivity) GetPostedAt() time.Time {
-	if l == nil {
-		return time.Time{}
-	}
-	return l.PostedAt
-}
-
-func (l *LedgerActivity) GetResource() *LedgerActivityResource {
-	if l == nil {
-		return nil
-	}
-	return l.Resource
-}
-
-func (l *LedgerActivity) GetSource() *LedgerActivitySource {
-	if l == nil {
-		return nil
-	}
-	return l.Source
-}
-
-func (l *LedgerActivity) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LedgerActivity) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetAccount sets the Account field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivity) SetAccount(account *LedgerActivityAccount) {
-	l.Account = account
-	l.require(ledgerActivityFieldAccount)
-}
-
-// SetAmount sets the Amount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivity) SetAmount(amount string) {
-	l.Amount = amount
-	l.require(ledgerActivityFieldAmount)
-}
-
-// SetAvailableAt sets the AvailableAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivity) SetAvailableAt(availableAt *time.Time) {
-	l.AvailableAt = availableAt
-	l.require(ledgerActivityFieldAvailableAt)
-}
-
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivity) SetCreatedAt(createdAt *time.Time) {
-	l.CreatedAt = createdAt
-	l.require(ledgerActivityFieldCreatedAt)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivity) SetCurrency(currency *LedgerActivityCurrency) {
-	l.Currency = currency
-	l.require(ledgerActivityFieldCurrency)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivity) SetID(id string) {
-	l.ID = id
-	l.require(ledgerActivityFieldID)
-}
-
-// SetLedgerAccountID sets the LedgerAccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivity) SetLedgerAccountID(ledgerAccountID *string) {
-	l.LedgerAccountID = ledgerAccountID
-	l.require(ledgerActivityFieldLedgerAccountID)
-}
-
-// SetLineType sets the LineType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivity) SetLineType(lineType LedgerActivityLineType) {
-	l.LineType = lineType
-	l.require(ledgerActivityFieldLineType)
-}
-
-// SetObject sets the Object field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivity) SetObject(object LedgerActivityObject) {
-	l.Object = object
-	l.require(ledgerActivityFieldObject)
-}
-
-// SetPostedAt sets the PostedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivity) SetPostedAt(postedAt time.Time) {
-	l.PostedAt = postedAt
-	l.require(ledgerActivityFieldPostedAt)
-}
-
-// SetResource sets the Resource field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivity) SetResource(resource *LedgerActivityResource) {
-	l.Resource = resource
-	l.require(ledgerActivityFieldResource)
-}
-
-// SetSource sets the Source field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivity) SetSource(source *LedgerActivitySource) {
-	l.Source = source
-	l.require(ledgerActivityFieldSource)
-}
-
-func (l *LedgerActivity) UnmarshalJSON(data []byte) error {
-	type embed LedgerActivity
-	var unmarshaler = struct {
-		embed
-		AvailableAt *internal.DateTime `json:"available_at,omitempty"`
-		CreatedAt   *internal.DateTime `json:"created_at,omitempty"`
-		PostedAt    *internal.DateTime `json:"posted_at"`
-	}{
-		embed: embed(*l),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*l = LedgerActivity(unmarshaler.embed)
-	l.AvailableAt = unmarshaler.AvailableAt.TimePtr()
-	l.CreatedAt = unmarshaler.CreatedAt.TimePtr()
-	l.PostedAt = unmarshaler.PostedAt.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LedgerActivity) MarshalJSON() ([]byte, error) {
-	type embed LedgerActivity
-	var marshaler = struct {
-		embed
-		AvailableAt *internal.DateTime `json:"available_at,omitempty"`
-		CreatedAt   *internal.DateTime `json:"created_at,omitempty"`
-		PostedAt    *internal.DateTime `json:"posted_at"`
-	}{
-		embed:       embed(*l),
-		AvailableAt: internal.NewOptionalDateTime(l.AvailableAt),
-		CreatedAt:   internal.NewOptionalDateTime(l.CreatedAt),
-		PostedAt:    internal.NewDateTime(l.PostedAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LedgerActivity) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-// The viewer account that owns this row's ledger. Present only when the response aggregates owned accounts (include_owned_accounts=true); omitted otherwise.
-type LedgerActivityAccount struct {
-	Object  string
-	Account *LedgerActivityAccountAccount
-	User    *LedgerActivityAccountUser
-
-	rawJSON json.RawMessage
-}
-
-func (l *LedgerActivityAccount) GetObject() string {
-	if l == nil {
-		return ""
-	}
-	return l.Object
-}
-
-func (l *LedgerActivityAccount) GetAccount() *LedgerActivityAccountAccount {
-	if l == nil {
-		return nil
-	}
-	return l.Account
-}
-
-func (l *LedgerActivityAccount) GetUser() *LedgerActivityAccountUser {
-	if l == nil {
-		return nil
-	}
-	return l.User
-}
-
-func (l *LedgerActivityAccount) UnmarshalJSON(data []byte) error {
-	var unmarshaler struct {
-		Object string `json:"object"`
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	l.Object = unmarshaler.Object
-	if unmarshaler.Object == "" {
-		return fmt.Errorf("%T did not include discriminant object", l)
-	}
-	switch unmarshaler.Object {
-	case "account":
-		value := new(LedgerActivityAccountAccount)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		l.Account = value
-	case "user":
-		value := new(LedgerActivityAccountUser)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		l.User = value
-	}
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l LedgerActivityAccount) MarshalJSON() ([]byte, error) {
-	if err := l.validate(); err != nil {
-		return nil, err
-	}
-	if l.Account != nil {
-		return internal.MarshalJSONWithExtraProperty(l.Account, "object", "account")
-	}
-	if l.User != nil {
-		return internal.MarshalJSONWithExtraProperty(l.User, "object", "user")
-	}
-	if len(l.rawJSON) > 0 {
-		return l.rawJSON, nil
-	}
-	return nil, fmt.Errorf("type %T does not define a non-empty union type", l)
-}
-
-type LedgerActivityAccountVisitor interface {
-	VisitAccount(*LedgerActivityAccountAccount) error
-	VisitUser(*LedgerActivityAccountUser) error
-}
-
-func (l *LedgerActivityAccount) Accept(visitor LedgerActivityAccountVisitor) error {
-	if l.Account != nil {
-		return visitor.VisitAccount(l.Account)
-	}
-	if l.User != nil {
-		return visitor.VisitUser(l.User)
-	}
-	return fmt.Errorf("type %T does not define a non-empty union type", l)
-}
-
-func (l *LedgerActivityAccount) validate() error {
-	if l == nil {
-		return fmt.Errorf("type %T is nil", l)
-	}
-	var fields []string
-	if l.Account != nil {
-		fields = append(fields, "account")
-	}
-	if l.User != nil {
-		fields = append(fields, "user")
-	}
-	if len(fields) == 0 {
-		if l.Object != "" {
-			if len(l.rawJSON) > 0 {
-				return nil
-			}
-			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", l, l.Object)
-		}
-		return fmt.Errorf("type %T is empty", l)
-	}
-	if len(fields) > 1 {
-		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", l, fields)
-	}
-	if l.Object != "" {
-		field := fields[0]
-		if l.Object != field {
-			return fmt.Errorf(
-				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
-				l,
-				l.Object,
-				l,
-			)
-		}
-	}
-	return nil
-}
-
-var (
-	ledgerActivityAccountAccountFieldID      = big.NewInt(1 << 0)
-	ledgerActivityAccountAccountFieldLogoURL = big.NewInt(1 << 1)
-	ledgerActivityAccountAccountFieldRoute   = big.NewInt(1 << 2)
-	ledgerActivityAccountAccountFieldTitle   = big.NewInt(1 << 3)
-)
-
-type LedgerActivityAccountAccount struct {
-	// Account ID.
-	ID string `json:"id" url:"id"`
-	// Account logo URL.
-	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
-	// Account route.
-	Route *string `json:"route,omitempty" url:"route,omitempty"`
-	// Account display name.
-	Title *string `json:"title,omitempty" url:"title,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LedgerActivityAccountAccount) GetID() string {
-	if l == nil {
-		return ""
-	}
-	return l.ID
-}
-
-func (l *LedgerActivityAccountAccount) GetLogoURL() *string {
-	if l == nil {
-		return nil
-	}
-	return l.LogoURL
-}
-
-func (l *LedgerActivityAccountAccount) GetRoute() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Route
-}
-
-func (l *LedgerActivityAccountAccount) GetTitle() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Title
-}
-
-func (l *LedgerActivityAccountAccount) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LedgerActivityAccountAccount) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityAccountAccount) SetID(id string) {
-	l.ID = id
-	l.require(ledgerActivityAccountAccountFieldID)
-}
-
-// SetLogoURL sets the LogoURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityAccountAccount) SetLogoURL(logoURL *string) {
-	l.LogoURL = logoURL
-	l.require(ledgerActivityAccountAccountFieldLogoURL)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityAccountAccount) SetRoute(route *string) {
-	l.Route = route
-	l.require(ledgerActivityAccountAccountFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityAccountAccount) SetTitle(title *string) {
-	l.Title = title
-	l.require(ledgerActivityAccountAccountFieldTitle)
-}
-
-func (l *LedgerActivityAccountAccount) UnmarshalJSON(data []byte) error {
-	type unmarshaler LedgerActivityAccountAccount
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = LedgerActivityAccountAccount(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LedgerActivityAccountAccount) MarshalJSON() ([]byte, error) {
-	type embed LedgerActivityAccountAccount
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LedgerActivityAccountAccount) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-var (
-	ledgerActivityAccountUserFieldID                = big.NewInt(1 << 0)
-	ledgerActivityAccountUserFieldName              = big.NewInt(1 << 1)
-	ledgerActivityAccountUserFieldProfilePictureURL = big.NewInt(1 << 2)
-	ledgerActivityAccountUserFieldUsername          = big.NewInt(1 << 3)
-)
-
-type LedgerActivityAccountUser struct {
-	// User ID.
-	ID string `json:"id" url:"id"`
-	// User display name.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// User profile image URL.
-	ProfilePictureURL *string `json:"profile_picture_url,omitempty" url:"profile_picture_url,omitempty"`
-	// User's username.
-	Username *string `json:"username,omitempty" url:"username,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LedgerActivityAccountUser) GetID() string {
-	if l == nil {
-		return ""
-	}
-	return l.ID
-}
-
-func (l *LedgerActivityAccountUser) GetName() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Name
-}
-
-func (l *LedgerActivityAccountUser) GetProfilePictureURL() *string {
-	if l == nil {
-		return nil
-	}
-	return l.ProfilePictureURL
-}
-
-func (l *LedgerActivityAccountUser) GetUsername() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Username
-}
-
-func (l *LedgerActivityAccountUser) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LedgerActivityAccountUser) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityAccountUser) SetID(id string) {
-	l.ID = id
-	l.require(ledgerActivityAccountUserFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityAccountUser) SetName(name *string) {
-	l.Name = name
-	l.require(ledgerActivityAccountUserFieldName)
-}
-
-// SetProfilePictureURL sets the ProfilePictureURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityAccountUser) SetProfilePictureURL(profilePictureURL *string) {
-	l.ProfilePictureURL = profilePictureURL
-	l.require(ledgerActivityAccountUserFieldProfilePictureURL)
-}
-
-// SetUsername sets the Username field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityAccountUser) SetUsername(username *string) {
-	l.Username = username
-	l.require(ledgerActivityAccountUserFieldUsername)
-}
-
-func (l *LedgerActivityAccountUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler LedgerActivityAccountUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = LedgerActivityAccountUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LedgerActivityAccountUser) MarshalJSON() ([]byte, error) {
-	type embed LedgerActivityAccountUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LedgerActivityAccountUser) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-// Currency for this ledger activity.
-var (
-	ledgerActivityCurrencyFieldCode      = big.NewInt(1 << 0)
-	ledgerActivityCurrencyFieldPrecision = big.NewInt(1 << 1)
-)
-
-type LedgerActivityCurrency struct {
-	// Currency code.
-	Code string `json:"code" url:"code"`
-	// Precision factor for the currency, for example `100000000` for USD.
-	Precision string `json:"precision" url:"precision"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LedgerActivityCurrency) GetCode() string {
-	if l == nil {
-		return ""
-	}
-	return l.Code
-}
-
-func (l *LedgerActivityCurrency) GetPrecision() string {
-	if l == nil {
-		return ""
-	}
-	return l.Precision
-}
-
-func (l *LedgerActivityCurrency) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LedgerActivityCurrency) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetCode sets the Code field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityCurrency) SetCode(code string) {
-	l.Code = code
-	l.require(ledgerActivityCurrencyFieldCode)
-}
-
-// SetPrecision sets the Precision field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityCurrency) SetPrecision(precision string) {
-	l.Precision = precision
-	l.require(ledgerActivityCurrencyFieldPrecision)
-}
-
-func (l *LedgerActivityCurrency) UnmarshalJSON(data []byte) error {
-	type unmarshaler LedgerActivityCurrency
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = LedgerActivityCurrency(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LedgerActivityCurrency) MarshalJSON() ([]byte, error) {
-	type embed LedgerActivityCurrency
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LedgerActivityCurrency) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-// The ledger line category this activity was posted under.
-type LedgerActivityLineType string
+type ListFinancialActivityRequestBalanceType string
 
 const (
-	LedgerActivityLineTypeAdBudgetRelease                  LedgerActivityLineType = "ad_budget_release"
-	LedgerActivityLineTypeAdCampaignBudget                 LedgerActivityLineType = "ad_campaign_budget"
-	LedgerActivityLineTypeAdPublisherPayout                LedgerActivityLineType = "ad_publisher_payout"
-	LedgerActivityLineTypeAdPublisherPayoutReceived        LedgerActivityLineType = "ad_publisher_payout_received"
-	LedgerActivityLineTypeAdSpendCharge                    LedgerActivityLineType = "ad_spend_charge"
-	LedgerActivityLineTypeAffiliateFee                     LedgerActivityLineType = "affiliate_fee"
-	LedgerActivityLineTypeAirdrop                          LedgerActivityLineType = "airdrop"
-	LedgerActivityLineTypeAirdropLinkCreated               LedgerActivityLineType = "airdrop_link_created"
-	LedgerActivityLineTypeAirdropLinkRedeemed              LedgerActivityLineType = "airdrop_link_redeemed"
-	LedgerActivityLineTypeAirdropLinkReturned              LedgerActivityLineType = "airdrop_link_returned"
-	LedgerActivityLineTypeAirdropReversal                  LedgerActivityLineType = "airdrop_reversal"
-	LedgerActivityLineTypeApplicationFee                   LedgerActivityLineType = "application_fee"
-	LedgerActivityLineTypeApplicationFeePayout             LedgerActivityLineType = "application_fee_payout"
-	LedgerActivityLineTypeBankTransfer                     LedgerActivityLineType = "bank_transfer"
-	LedgerActivityLineTypeBillingPercentageFee             LedgerActivityLineType = "billing_percentage_fee"
-	LedgerActivityLineTypeBuyerFee                         LedgerActivityLineType = "buyer_fee"
-	LedgerActivityLineTypeCardSpendAuthorization           LedgerActivityLineType = "card_spend_authorization"
-	LedgerActivityLineTypeCardSpendAuthorizationVoid       LedgerActivityLineType = "card_spend_authorization_void"
-	LedgerActivityLineTypeCardSpendRefund                  LedgerActivityLineType = "card_spend_refund"
-	LedgerActivityLineTypeCompanyReferral                  LedgerActivityLineType = "company_referral"
-	LedgerActivityLineTypeCrossBorderPercentageFee         LedgerActivityLineType = "cross_border_percentage_fee"
-	LedgerActivityLineTypeCurrencyConversionIncoming       LedgerActivityLineType = "currency_conversion_incoming"
-	LedgerActivityLineTypeCurrencyConversionOutgoing       LedgerActivityLineType = "currency_conversion_outgoing"
-	LedgerActivityLineTypeDisputeAlertFee                  LedgerActivityLineType = "dispute_alert_fee"
-	LedgerActivityLineTypeDisputeHoldAdjustment            LedgerActivityLineType = "dispute_hold_adjustment"
-	LedgerActivityLineTypeDisputeRepresentmentFee          LedgerActivityLineType = "dispute_representment_fee"
-	LedgerActivityLineTypeFraudPreventionFee               LedgerActivityLineType = "fraud_prevention_fee"
-	LedgerActivityLineTypeFxPercentageFee                  LedgerActivityLineType = "fx_percentage_fee"
-	LedgerActivityLineTypeHighRiskMerchantFee              LedgerActivityLineType = "high_risk_merchant_fee"
-	LedgerActivityLineTypeInstallmentDefault               LedgerActivityLineType = "installment_default"
-	LedgerActivityLineTypeInternalBalanceTransferIncoming  LedgerActivityLineType = "internal_balance_transfer_incoming"
-	LedgerActivityLineTypeInternalBalanceTransferOutgoing  LedgerActivityLineType = "internal_balance_transfer_outgoing"
-	LedgerActivityLineTypeInternalWithdrawal               LedgerActivityLineType = "internal_withdrawal"
-	LedgerActivityLineTypeInternalWithdrawalReversal       LedgerActivityLineType = "internal_withdrawal_reversal"
-	LedgerActivityLineTypeLegacyCryptoPayment              LedgerActivityLineType = "legacy_crypto_payment"
-	LedgerActivityLineTypeLegacyPayment                    LedgerActivityLineType = "legacy_payment"
-	LedgerActivityLineTypeLegacyPaymentRefund              LedgerActivityLineType = "legacy_payment_refund"
-	LedgerActivityLineTypeLicenseSale                      LedgerActivityLineType = "license_sale"
-	LedgerActivityLineTypeLicenseSaleCommission            LedgerActivityLineType = "license_sale_commission"
-	LedgerActivityLineTypeLicenseSaleRevenue               LedgerActivityLineType = "license_sale_revenue"
-	LedgerActivityLineTypeMiscPurchase                     LedgerActivityLineType = "misc_purchase"
-	LedgerActivityLineTypeMiscRefund                       LedgerActivityLineType = "misc_refund"
-	LedgerActivityLineTypeMiscReversal                     LedgerActivityLineType = "misc_reversal"
-	LedgerActivityLineTypeOnchainDeposit                   LedgerActivityLineType = "onchain_deposit"
-	LedgerActivityLineTypeOnchainSwapTarget                LedgerActivityLineType = "onchain_swap_target"
-	LedgerActivityLineTypeOnchainWalletTransferIncoming    LedgerActivityLineType = "onchain_wallet_transfer_incoming"
-	LedgerActivityLineTypeOnchainWalletTransferOutgoing    LedgerActivityLineType = "onchain_wallet_transfer_outgoing"
-	LedgerActivityLineTypeOrchestrationPercentageFee       LedgerActivityLineType = "orchestration_percentage_fee"
-	LedgerActivityLineTypePassthroughGmv                   LedgerActivityLineType = "passthrough_gmv"
-	LedgerActivityLineTypePaymentDispute                   LedgerActivityLineType = "payment_dispute"
-	LedgerActivityLineTypePaymentDisputeAdjustment         LedgerActivityLineType = "payment_dispute_adjustment"
-	LedgerActivityLineTypePaymentDisputeFee                LedgerActivityLineType = "payment_dispute_fee"
-	LedgerActivityLineTypePaymentDisputeReversal           LedgerActivityLineType = "payment_dispute_reversal"
-	LedgerActivityLineTypePaymentGross                     LedgerActivityLineType = "payment_gross"
-	LedgerActivityLineTypePaymentGrossReversal             LedgerActivityLineType = "payment_gross_reversal"
-	LedgerActivityLineTypePaymentProcessingFixedFee        LedgerActivityLineType = "payment_processing_fixed_fee"
-	LedgerActivityLineTypePaymentProcessingPercentageFee   LedgerActivityLineType = "payment_processing_percentage_fee"
-	LedgerActivityLineTypePaymentReferral                  LedgerActivityLineType = "payment_referral"
-	LedgerActivityLineTypePaymentReferralReversal          LedgerActivityLineType = "payment_referral_reversal"
-	LedgerActivityLineTypePaymentRefund                    LedgerActivityLineType = "payment_refund"
-	LedgerActivityLineTypePaymentRefundReversal            LedgerActivityLineType = "payment_refund_reversal"
-	LedgerActivityLineTypePaymentRevshare                  LedgerActivityLineType = "payment_revshare"
-	LedgerActivityLineTypePaymentRevsharePayout            LedgerActivityLineType = "payment_revshare_payout"
-	LedgerActivityLineTypePaymentRevshareRefund            LedgerActivityLineType = "payment_revshare_refund"
-	LedgerActivityLineTypePaymentRevshareReversal          LedgerActivityLineType = "payment_revshare_reversal"
-	LedgerActivityLineTypePayoutFee                        LedgerActivityLineType = "payout_fee"
-	LedgerActivityLineTypePlatformAffiliatePayment         LedgerActivityLineType = "platform_affiliate_payment"
-	LedgerActivityLineTypePlatformAffiliatePaymentReversal LedgerActivityLineType = "platform_affiliate_payment_reversal"
-	LedgerActivityLineTypePlatformBalancePayment           LedgerActivityLineType = "platform_balance_payment"
-	LedgerActivityLineTypePlatformBalancePaymentRefund     LedgerActivityLineType = "platform_balance_payment_refund"
-	LedgerActivityLineTypePlatformBalanceTransferIncoming  LedgerActivityLineType = "platform_balance_transfer_incoming"
-	LedgerActivityLineTypePlatformBalanceTransferOutgoing  LedgerActivityLineType = "platform_balance_transfer_outgoing"
-	LedgerActivityLineTypePlatformCoveredDispute           LedgerActivityLineType = "platform_covered_dispute"
-	LedgerActivityLineTypePromoReversal                    LedgerActivityLineType = "promo_reversal"
-	LedgerActivityLineTypeReferralBonus                    LedgerActivityLineType = "referral_bonus"
-	LedgerActivityLineTypeResolutionCenterRefund           LedgerActivityLineType = "resolution_center_refund"
-	LedgerActivityLineTypeRevsharePercentageFee            LedgerActivityLineType = "revshare_percentage_fee"
-	LedgerActivityLineTypeSalesTaxFee                      LedgerActivityLineType = "sales_tax_fee"
-	LedgerActivityLineTypeSalesTaxRemittance               LedgerActivityLineType = "sales_tax_remittance"
-	LedgerActivityLineTypeSalesTaxRemittanceReversal       LedgerActivityLineType = "sales_tax_remittance_reversal"
-	LedgerActivityLineTypeSoftwareRentalRevshare           LedgerActivityLineType = "software_rental_revshare"
-	LedgerActivityLineTypeSoftwareRentalTransaction        LedgerActivityLineType = "software_rental_transaction"
-	LedgerActivityLineTypeStripeDomesticProcessingFee      LedgerActivityLineType = "stripe_domestic_processing_fee"
-	LedgerActivityLineTypeStripeInternationalProcessingFee LedgerActivityLineType = "stripe_international_processing_fee"
-	LedgerActivityLineTypeThreeDsFixedFee                  LedgerActivityLineType = "three_ds_fixed_fee"
-	LedgerActivityLineTypeTopup                            LedgerActivityLineType = "topup"
-	LedgerActivityLineTypeTopupFee                         LedgerActivityLineType = "topup_fee"
-	LedgerActivityLineTypeTopupReversal                    LedgerActivityLineType = "topup_reversal"
-	LedgerActivityLineTypeTreasuryPayin                    LedgerActivityLineType = "treasury_payin"
-	LedgerActivityLineTypeWhopProcessingFee                LedgerActivityLineType = "whop_processing_fee"
-	LedgerActivityLineTypeWithdrawal                       LedgerActivityLineType = "withdrawal"
-	LedgerActivityLineTypeWithdrawalClawback               LedgerActivityLineType = "withdrawal_clawback"
-	LedgerActivityLineTypeWithdrawalClawbackReversal       LedgerActivityLineType = "withdrawal_clawback_reversal"
-	LedgerActivityLineTypeWithdrawalReclassification       LedgerActivityLineType = "withdrawal_reclassification"
-	LedgerActivityLineTypeWithdrawalReversal               LedgerActivityLineType = "withdrawal_reversal"
+	ListFinancialActivityRequestBalanceTypeTotal     ListFinancialActivityRequestBalanceType = "total"
+	ListFinancialActivityRequestBalanceTypeAvailable ListFinancialActivityRequestBalanceType = "available"
 )
 
-func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, error) {
+func NewListFinancialActivityRequestBalanceTypeFromString(s string) (ListFinancialActivityRequestBalanceType, error) {
 	switch s {
-	case "ad_budget_release":
-		return LedgerActivityLineTypeAdBudgetRelease, nil
-	case "ad_campaign_budget":
-		return LedgerActivityLineTypeAdCampaignBudget, nil
-	case "ad_publisher_payout":
-		return LedgerActivityLineTypeAdPublisherPayout, nil
-	case "ad_publisher_payout_received":
-		return LedgerActivityLineTypeAdPublisherPayoutReceived, nil
-	case "ad_spend_charge":
-		return LedgerActivityLineTypeAdSpendCharge, nil
-	case "affiliate_fee":
-		return LedgerActivityLineTypeAffiliateFee, nil
-	case "airdrop":
-		return LedgerActivityLineTypeAirdrop, nil
-	case "airdrop_link_created":
-		return LedgerActivityLineTypeAirdropLinkCreated, nil
-	case "airdrop_link_redeemed":
-		return LedgerActivityLineTypeAirdropLinkRedeemed, nil
-	case "airdrop_link_returned":
-		return LedgerActivityLineTypeAirdropLinkReturned, nil
-	case "airdrop_reversal":
-		return LedgerActivityLineTypeAirdropReversal, nil
-	case "application_fee":
-		return LedgerActivityLineTypeApplicationFee, nil
-	case "application_fee_payout":
-		return LedgerActivityLineTypeApplicationFeePayout, nil
-	case "bank_transfer":
-		return LedgerActivityLineTypeBankTransfer, nil
-	case "billing_percentage_fee":
-		return LedgerActivityLineTypeBillingPercentageFee, nil
-	case "buyer_fee":
-		return LedgerActivityLineTypeBuyerFee, nil
-	case "card_spend_authorization":
-		return LedgerActivityLineTypeCardSpendAuthorization, nil
-	case "card_spend_authorization_void":
-		return LedgerActivityLineTypeCardSpendAuthorizationVoid, nil
-	case "card_spend_refund":
-		return LedgerActivityLineTypeCardSpendRefund, nil
-	case "company_referral":
-		return LedgerActivityLineTypeCompanyReferral, nil
-	case "cross_border_percentage_fee":
-		return LedgerActivityLineTypeCrossBorderPercentageFee, nil
-	case "currency_conversion_incoming":
-		return LedgerActivityLineTypeCurrencyConversionIncoming, nil
-	case "currency_conversion_outgoing":
-		return LedgerActivityLineTypeCurrencyConversionOutgoing, nil
-	case "dispute_alert_fee":
-		return LedgerActivityLineTypeDisputeAlertFee, nil
-	case "dispute_hold_adjustment":
-		return LedgerActivityLineTypeDisputeHoldAdjustment, nil
-	case "dispute_representment_fee":
-		return LedgerActivityLineTypeDisputeRepresentmentFee, nil
-	case "fraud_prevention_fee":
-		return LedgerActivityLineTypeFraudPreventionFee, nil
-	case "fx_percentage_fee":
-		return LedgerActivityLineTypeFxPercentageFee, nil
-	case "high_risk_merchant_fee":
-		return LedgerActivityLineTypeHighRiskMerchantFee, nil
-	case "installment_default":
-		return LedgerActivityLineTypeInstallmentDefault, nil
-	case "internal_balance_transfer_incoming":
-		return LedgerActivityLineTypeInternalBalanceTransferIncoming, nil
-	case "internal_balance_transfer_outgoing":
-		return LedgerActivityLineTypeInternalBalanceTransferOutgoing, nil
-	case "internal_withdrawal":
-		return LedgerActivityLineTypeInternalWithdrawal, nil
-	case "internal_withdrawal_reversal":
-		return LedgerActivityLineTypeInternalWithdrawalReversal, nil
-	case "legacy_crypto_payment":
-		return LedgerActivityLineTypeLegacyCryptoPayment, nil
-	case "legacy_payment":
-		return LedgerActivityLineTypeLegacyPayment, nil
-	case "legacy_payment_refund":
-		return LedgerActivityLineTypeLegacyPaymentRefund, nil
-	case "license_sale":
-		return LedgerActivityLineTypeLicenseSale, nil
-	case "license_sale_commission":
-		return LedgerActivityLineTypeLicenseSaleCommission, nil
-	case "license_sale_revenue":
-		return LedgerActivityLineTypeLicenseSaleRevenue, nil
-	case "misc_purchase":
-		return LedgerActivityLineTypeMiscPurchase, nil
-	case "misc_refund":
-		return LedgerActivityLineTypeMiscRefund, nil
-	case "misc_reversal":
-		return LedgerActivityLineTypeMiscReversal, nil
-	case "onchain_deposit":
-		return LedgerActivityLineTypeOnchainDeposit, nil
-	case "onchain_swap_target":
-		return LedgerActivityLineTypeOnchainSwapTarget, nil
-	case "onchain_wallet_transfer_incoming":
-		return LedgerActivityLineTypeOnchainWalletTransferIncoming, nil
-	case "onchain_wallet_transfer_outgoing":
-		return LedgerActivityLineTypeOnchainWalletTransferOutgoing, nil
-	case "orchestration_percentage_fee":
-		return LedgerActivityLineTypeOrchestrationPercentageFee, nil
-	case "passthrough_gmv":
-		return LedgerActivityLineTypePassthroughGmv, nil
-	case "payment_dispute":
-		return LedgerActivityLineTypePaymentDispute, nil
-	case "payment_dispute_adjustment":
-		return LedgerActivityLineTypePaymentDisputeAdjustment, nil
-	case "payment_dispute_fee":
-		return LedgerActivityLineTypePaymentDisputeFee, nil
-	case "payment_dispute_reversal":
-		return LedgerActivityLineTypePaymentDisputeReversal, nil
-	case "payment_gross":
-		return LedgerActivityLineTypePaymentGross, nil
-	case "payment_gross_reversal":
-		return LedgerActivityLineTypePaymentGrossReversal, nil
-	case "payment_processing_fixed_fee":
-		return LedgerActivityLineTypePaymentProcessingFixedFee, nil
-	case "payment_processing_percentage_fee":
-		return LedgerActivityLineTypePaymentProcessingPercentageFee, nil
-	case "payment_referral":
-		return LedgerActivityLineTypePaymentReferral, nil
-	case "payment_referral_reversal":
-		return LedgerActivityLineTypePaymentReferralReversal, nil
-	case "payment_refund":
-		return LedgerActivityLineTypePaymentRefund, nil
-	case "payment_refund_reversal":
-		return LedgerActivityLineTypePaymentRefundReversal, nil
-	case "payment_revshare":
-		return LedgerActivityLineTypePaymentRevshare, nil
-	case "payment_revshare_payout":
-		return LedgerActivityLineTypePaymentRevsharePayout, nil
-	case "payment_revshare_refund":
-		return LedgerActivityLineTypePaymentRevshareRefund, nil
-	case "payment_revshare_reversal":
-		return LedgerActivityLineTypePaymentRevshareReversal, nil
-	case "payout_fee":
-		return LedgerActivityLineTypePayoutFee, nil
-	case "platform_affiliate_payment":
-		return LedgerActivityLineTypePlatformAffiliatePayment, nil
-	case "platform_affiliate_payment_reversal":
-		return LedgerActivityLineTypePlatformAffiliatePaymentReversal, nil
-	case "platform_balance_payment":
-		return LedgerActivityLineTypePlatformBalancePayment, nil
-	case "platform_balance_payment_refund":
-		return LedgerActivityLineTypePlatformBalancePaymentRefund, nil
-	case "platform_balance_transfer_incoming":
-		return LedgerActivityLineTypePlatformBalanceTransferIncoming, nil
-	case "platform_balance_transfer_outgoing":
-		return LedgerActivityLineTypePlatformBalanceTransferOutgoing, nil
-	case "platform_covered_dispute":
-		return LedgerActivityLineTypePlatformCoveredDispute, nil
-	case "promo_reversal":
-		return LedgerActivityLineTypePromoReversal, nil
-	case "referral_bonus":
-		return LedgerActivityLineTypeReferralBonus, nil
-	case "resolution_center_refund":
-		return LedgerActivityLineTypeResolutionCenterRefund, nil
-	case "revshare_percentage_fee":
-		return LedgerActivityLineTypeRevsharePercentageFee, nil
-	case "sales_tax_fee":
-		return LedgerActivityLineTypeSalesTaxFee, nil
-	case "sales_tax_remittance":
-		return LedgerActivityLineTypeSalesTaxRemittance, nil
-	case "sales_tax_remittance_reversal":
-		return LedgerActivityLineTypeSalesTaxRemittanceReversal, nil
-	case "software_rental_revshare":
-		return LedgerActivityLineTypeSoftwareRentalRevshare, nil
-	case "software_rental_transaction":
-		return LedgerActivityLineTypeSoftwareRentalTransaction, nil
-	case "stripe_domestic_processing_fee":
-		return LedgerActivityLineTypeStripeDomesticProcessingFee, nil
-	case "stripe_international_processing_fee":
-		return LedgerActivityLineTypeStripeInternationalProcessingFee, nil
-	case "three_ds_fixed_fee":
-		return LedgerActivityLineTypeThreeDsFixedFee, nil
-	case "topup":
-		return LedgerActivityLineTypeTopup, nil
-	case "topup_fee":
-		return LedgerActivityLineTypeTopupFee, nil
-	case "topup_reversal":
-		return LedgerActivityLineTypeTopupReversal, nil
-	case "treasury_payin":
-		return LedgerActivityLineTypeTreasuryPayin, nil
-	case "whop_processing_fee":
-		return LedgerActivityLineTypeWhopProcessingFee, nil
-	case "withdrawal":
-		return LedgerActivityLineTypeWithdrawal, nil
-	case "withdrawal_clawback":
-		return LedgerActivityLineTypeWithdrawalClawback, nil
-	case "withdrawal_clawback_reversal":
-		return LedgerActivityLineTypeWithdrawalClawbackReversal, nil
-	case "withdrawal_reclassification":
-		return LedgerActivityLineTypeWithdrawalReclassification, nil
-	case "withdrawal_reversal":
-		return LedgerActivityLineTypeWithdrawalReversal, nil
+	case "total":
+		return ListFinancialActivityRequestBalanceTypeTotal, nil
+	case "available":
+		return ListFinancialActivityRequestBalanceTypeAvailable, nil
 	}
-	var t LedgerActivityLineType
+	var t ListFinancialActivityRequestBalanceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (l LedgerActivityLineType) Ptr() *LedgerActivityLineType {
+func (l ListFinancialActivityRequestBalanceType) Ptr() *ListFinancialActivityRequestBalanceType {
 	return &l
 }
 
-type LedgerActivityObject string
+type ListFinancialActivityRequestDirection string
 
 const (
-	LedgerActivityObjectLedgerActivity LedgerActivityObject = "ledger_activity"
+	ListFinancialActivityRequestDirectionMoneyIn  ListFinancialActivityRequestDirection = "money_in"
+	ListFinancialActivityRequestDirectionMoneyOut ListFinancialActivityRequestDirection = "money_out"
 )
 
-func NewLedgerActivityObjectFromString(s string) (LedgerActivityObject, error) {
+func NewListFinancialActivityRequestDirectionFromString(s string) (ListFinancialActivityRequestDirection, error) {
 	switch s {
-	case "ledger_activity":
-		return LedgerActivityObjectLedgerActivity, nil
+	case "money_in":
+		return ListFinancialActivityRequestDirectionMoneyIn, nil
+	case "money_out":
+		return ListFinancialActivityRequestDirectionMoneyOut, nil
 	}
-	var t LedgerActivityObject
+	var t ListFinancialActivityRequestDirection
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (l LedgerActivityObject) Ptr() *LedgerActivityObject {
+func (l ListFinancialActivityRequestDirection) Ptr() *ListFinancialActivityRequestDirection {
 	return &l
-}
-
-// Resource associated with this ledger activity.
-type LedgerActivityResource struct {
-	LedgerActivityResourceLogoURL          *LedgerActivityResourceLogoURL
-	LedgerActivityResourceName             *LedgerActivityResourceName
-	LedgerActivityResourceTwo              *LedgerActivityResourceTwo
-	LedgerActivityResourceOwner            *LedgerActivityResourceOwner
-	LedgerActivityResourceBank             *LedgerActivityResourceBank
-	LedgerActivityResourceAccountReference *LedgerActivityResourceAccountReference
-	LedgerActivityResourceAuthorizedAt     *LedgerActivityResourceAuthorizedAt
-
-	typ string
-}
-
-func (l *LedgerActivityResource) GetLedgerActivityResourceLogoURL() *LedgerActivityResourceLogoURL {
-	if l == nil {
-		return nil
-	}
-	return l.LedgerActivityResourceLogoURL
-}
-
-func (l *LedgerActivityResource) GetLedgerActivityResourceName() *LedgerActivityResourceName {
-	if l == nil {
-		return nil
-	}
-	return l.LedgerActivityResourceName
-}
-
-func (l *LedgerActivityResource) GetLedgerActivityResourceTwo() *LedgerActivityResourceTwo {
-	if l == nil {
-		return nil
-	}
-	return l.LedgerActivityResourceTwo
-}
-
-func (l *LedgerActivityResource) GetLedgerActivityResourceOwner() *LedgerActivityResourceOwner {
-	if l == nil {
-		return nil
-	}
-	return l.LedgerActivityResourceOwner
-}
-
-func (l *LedgerActivityResource) GetLedgerActivityResourceBank() *LedgerActivityResourceBank {
-	if l == nil {
-		return nil
-	}
-	return l.LedgerActivityResourceBank
-}
-
-func (l *LedgerActivityResource) GetLedgerActivityResourceAccountReference() *LedgerActivityResourceAccountReference {
-	if l == nil {
-		return nil
-	}
-	return l.LedgerActivityResourceAccountReference
-}
-
-func (l *LedgerActivityResource) GetLedgerActivityResourceAuthorizedAt() *LedgerActivityResourceAuthorizedAt {
-	if l == nil {
-		return nil
-	}
-	return l.LedgerActivityResourceAuthorizedAt
-}
-
-func (l *LedgerActivityResource) UnmarshalJSON(data []byte) error {
-	valueLedgerActivityResourceLogoURL := new(LedgerActivityResourceLogoURL)
-	if err := json.Unmarshal(data, &valueLedgerActivityResourceLogoURL); err == nil {
-		l.typ = "LedgerActivityResourceLogoURL"
-		l.LedgerActivityResourceLogoURL = valueLedgerActivityResourceLogoURL
-		return nil
-	}
-	valueLedgerActivityResourceName := new(LedgerActivityResourceName)
-	if err := json.Unmarshal(data, &valueLedgerActivityResourceName); err == nil {
-		l.typ = "LedgerActivityResourceName"
-		l.LedgerActivityResourceName = valueLedgerActivityResourceName
-		return nil
-	}
-	valueLedgerActivityResourceTwo := new(LedgerActivityResourceTwo)
-	if err := json.Unmarshal(data, &valueLedgerActivityResourceTwo); err == nil {
-		l.typ = "LedgerActivityResourceTwo"
-		l.LedgerActivityResourceTwo = valueLedgerActivityResourceTwo
-		return nil
-	}
-	valueLedgerActivityResourceOwner := new(LedgerActivityResourceOwner)
-	if err := json.Unmarshal(data, &valueLedgerActivityResourceOwner); err == nil {
-		l.typ = "LedgerActivityResourceOwner"
-		l.LedgerActivityResourceOwner = valueLedgerActivityResourceOwner
-		return nil
-	}
-	valueLedgerActivityResourceBank := new(LedgerActivityResourceBank)
-	if err := json.Unmarshal(data, &valueLedgerActivityResourceBank); err == nil {
-		l.typ = "LedgerActivityResourceBank"
-		l.LedgerActivityResourceBank = valueLedgerActivityResourceBank
-		return nil
-	}
-	valueLedgerActivityResourceAccountReference := new(LedgerActivityResourceAccountReference)
-	if err := json.Unmarshal(data, &valueLedgerActivityResourceAccountReference); err == nil {
-		l.typ = "LedgerActivityResourceAccountReference"
-		l.LedgerActivityResourceAccountReference = valueLedgerActivityResourceAccountReference
-		return nil
-	}
-	valueLedgerActivityResourceAuthorizedAt := new(LedgerActivityResourceAuthorizedAt)
-	if err := json.Unmarshal(data, &valueLedgerActivityResourceAuthorizedAt); err == nil {
-		l.typ = "LedgerActivityResourceAuthorizedAt"
-		l.LedgerActivityResourceAuthorizedAt = valueLedgerActivityResourceAuthorizedAt
-		return nil
-	}
-	return fmt.Errorf("%s cannot be deserialized as a %T", data, l)
-}
-
-func (l LedgerActivityResource) MarshalJSON() ([]byte, error) {
-	if l.typ == "LedgerActivityResourceLogoURL" || l.LedgerActivityResourceLogoURL != nil {
-		return json.Marshal(l.LedgerActivityResourceLogoURL)
-	}
-	if l.typ == "LedgerActivityResourceName" || l.LedgerActivityResourceName != nil {
-		return json.Marshal(l.LedgerActivityResourceName)
-	}
-	if l.typ == "LedgerActivityResourceTwo" || l.LedgerActivityResourceTwo != nil {
-		return json.Marshal(l.LedgerActivityResourceTwo)
-	}
-	if l.typ == "LedgerActivityResourceOwner" || l.LedgerActivityResourceOwner != nil {
-		return json.Marshal(l.LedgerActivityResourceOwner)
-	}
-	if l.typ == "LedgerActivityResourceBank" || l.LedgerActivityResourceBank != nil {
-		return json.Marshal(l.LedgerActivityResourceBank)
-	}
-	if l.typ == "LedgerActivityResourceAccountReference" || l.LedgerActivityResourceAccountReference != nil {
-		return json.Marshal(l.LedgerActivityResourceAccountReference)
-	}
-	if l.typ == "LedgerActivityResourceAuthorizedAt" || l.LedgerActivityResourceAuthorizedAt != nil {
-		return json.Marshal(l.LedgerActivityResourceAuthorizedAt)
-	}
-	return nil, fmt.Errorf("type %T does not include a non-empty union type", l)
-}
-
-type LedgerActivityResourceVisitor interface {
-	VisitLedgerActivityResourceLogoURL(*LedgerActivityResourceLogoURL) error
-	VisitLedgerActivityResourceName(*LedgerActivityResourceName) error
-	VisitLedgerActivityResourceTwo(*LedgerActivityResourceTwo) error
-	VisitLedgerActivityResourceOwner(*LedgerActivityResourceOwner) error
-	VisitLedgerActivityResourceBank(*LedgerActivityResourceBank) error
-	VisitLedgerActivityResourceAccountReference(*LedgerActivityResourceAccountReference) error
-	VisitLedgerActivityResourceAuthorizedAt(*LedgerActivityResourceAuthorizedAt) error
-}
-
-func (l *LedgerActivityResource) Accept(visitor LedgerActivityResourceVisitor) error {
-	if l.typ == "LedgerActivityResourceLogoURL" || l.LedgerActivityResourceLogoURL != nil {
-		return visitor.VisitLedgerActivityResourceLogoURL(l.LedgerActivityResourceLogoURL)
-	}
-	if l.typ == "LedgerActivityResourceName" || l.LedgerActivityResourceName != nil {
-		return visitor.VisitLedgerActivityResourceName(l.LedgerActivityResourceName)
-	}
-	if l.typ == "LedgerActivityResourceTwo" || l.LedgerActivityResourceTwo != nil {
-		return visitor.VisitLedgerActivityResourceTwo(l.LedgerActivityResourceTwo)
-	}
-	if l.typ == "LedgerActivityResourceOwner" || l.LedgerActivityResourceOwner != nil {
-		return visitor.VisitLedgerActivityResourceOwner(l.LedgerActivityResourceOwner)
-	}
-	if l.typ == "LedgerActivityResourceBank" || l.LedgerActivityResourceBank != nil {
-		return visitor.VisitLedgerActivityResourceBank(l.LedgerActivityResourceBank)
-	}
-	if l.typ == "LedgerActivityResourceAccountReference" || l.LedgerActivityResourceAccountReference != nil {
-		return visitor.VisitLedgerActivityResourceAccountReference(l.LedgerActivityResourceAccountReference)
-	}
-	if l.typ == "LedgerActivityResourceAuthorizedAt" || l.LedgerActivityResourceAuthorizedAt != nil {
-		return visitor.VisitLedgerActivityResourceAuthorizedAt(l.LedgerActivityResourceAuthorizedAt)
-	}
-	return fmt.Errorf("type %T does not include a non-empty union type", l)
-}
-
-var (
-	ledgerActivityResourceAccountReferenceFieldAccountReference        = big.NewInt(1 << 0)
-	ledgerActivityResourceAccountReferenceFieldDestinationCurrencyCode = big.NewInt(1 << 1)
-	ledgerActivityResourceAccountReferenceFieldID                      = big.NewInt(1 << 2)
-	ledgerActivityResourceAccountReferenceFieldInstitutionName         = big.NewInt(1 << 3)
-	ledgerActivityResourceAccountReferenceFieldNickname                = big.NewInt(1 << 4)
-	ledgerActivityResourceAccountReferenceFieldObject                  = big.NewInt(1 << 5)
-	ledgerActivityResourceAccountReferenceFieldProvider                = big.NewInt(1 << 6)
-)
-
-type LedgerActivityResourceAccountReference struct {
-	// Masked account reference.
-	AccountReference *string `json:"account_reference,omitempty" url:"account_reference,omitempty"`
-	// Destination currency code.
-	DestinationCurrencyCode *string `json:"destination_currency_code,omitempty" url:"destination_currency_code,omitempty"`
-	// Payout method ID.
-	ID string `json:"id" url:"id"`
-	// Payout institution name.
-	InstitutionName *string `json:"institution_name,omitempty" url:"institution_name,omitempty"`
-	// Payout method nickname.
-	Nickname *string                                      `json:"nickname,omitempty" url:"nickname,omitempty"`
-	Object   LedgerActivityResourceAccountReferenceObject `json:"object" url:"object"`
-	// Payout provider.
-	Provider *string `json:"provider,omitempty" url:"provider,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LedgerActivityResourceAccountReference) GetAccountReference() *string {
-	if l == nil {
-		return nil
-	}
-	return l.AccountReference
-}
-
-func (l *LedgerActivityResourceAccountReference) GetDestinationCurrencyCode() *string {
-	if l == nil {
-		return nil
-	}
-	return l.DestinationCurrencyCode
-}
-
-func (l *LedgerActivityResourceAccountReference) GetID() string {
-	if l == nil {
-		return ""
-	}
-	return l.ID
-}
-
-func (l *LedgerActivityResourceAccountReference) GetInstitutionName() *string {
-	if l == nil {
-		return nil
-	}
-	return l.InstitutionName
-}
-
-func (l *LedgerActivityResourceAccountReference) GetNickname() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Nickname
-}
-
-func (l *LedgerActivityResourceAccountReference) GetObject() LedgerActivityResourceAccountReferenceObject {
-	if l == nil {
-		return ""
-	}
-	return l.Object
-}
-
-func (l *LedgerActivityResourceAccountReference) GetProvider() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Provider
-}
-
-func (l *LedgerActivityResourceAccountReference) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LedgerActivityResourceAccountReference) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetAccountReference sets the AccountReference field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAccountReference) SetAccountReference(accountReference *string) {
-	l.AccountReference = accountReference
-	l.require(ledgerActivityResourceAccountReferenceFieldAccountReference)
-}
-
-// SetDestinationCurrencyCode sets the DestinationCurrencyCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAccountReference) SetDestinationCurrencyCode(destinationCurrencyCode *string) {
-	l.DestinationCurrencyCode = destinationCurrencyCode
-	l.require(ledgerActivityResourceAccountReferenceFieldDestinationCurrencyCode)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAccountReference) SetID(id string) {
-	l.ID = id
-	l.require(ledgerActivityResourceAccountReferenceFieldID)
-}
-
-// SetInstitutionName sets the InstitutionName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAccountReference) SetInstitutionName(institutionName *string) {
-	l.InstitutionName = institutionName
-	l.require(ledgerActivityResourceAccountReferenceFieldInstitutionName)
-}
-
-// SetNickname sets the Nickname field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAccountReference) SetNickname(nickname *string) {
-	l.Nickname = nickname
-	l.require(ledgerActivityResourceAccountReferenceFieldNickname)
-}
-
-// SetObject sets the Object field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAccountReference) SetObject(object LedgerActivityResourceAccountReferenceObject) {
-	l.Object = object
-	l.require(ledgerActivityResourceAccountReferenceFieldObject)
-}
-
-// SetProvider sets the Provider field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAccountReference) SetProvider(provider *string) {
-	l.Provider = provider
-	l.require(ledgerActivityResourceAccountReferenceFieldProvider)
-}
-
-func (l *LedgerActivityResourceAccountReference) UnmarshalJSON(data []byte) error {
-	type unmarshaler LedgerActivityResourceAccountReference
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = LedgerActivityResourceAccountReference(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LedgerActivityResourceAccountReference) MarshalJSON() ([]byte, error) {
-	type embed LedgerActivityResourceAccountReference
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LedgerActivityResourceAccountReference) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-type LedgerActivityResourceAccountReferenceObject string
-
-const (
-	LedgerActivityResourceAccountReferenceObjectPayoutMethod LedgerActivityResourceAccountReferenceObject = "payout_method"
-)
-
-func NewLedgerActivityResourceAccountReferenceObjectFromString(s string) (LedgerActivityResourceAccountReferenceObject, error) {
-	switch s {
-	case "payout_method":
-		return LedgerActivityResourceAccountReferenceObjectPayoutMethod, nil
-	}
-	var t LedgerActivityResourceAccountReferenceObject
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (l LedgerActivityResourceAccountReferenceObject) Ptr() *LedgerActivityResourceAccountReferenceObject {
-	return &l
-}
-
-var (
-	ledgerActivityResourceAuthorizedAtFieldAuthorizedAt     = big.NewInt(1 << 0)
-	ledgerActivityResourceAuthorizedAtFieldCardID           = big.NewInt(1 << 1)
-	ledgerActivityResourceAuthorizedAtFieldCashbackUsd      = big.NewInt(1 << 2)
-	ledgerActivityResourceAuthorizedAtFieldDeclinedReason   = big.NewInt(1 << 3)
-	ledgerActivityResourceAuthorizedAtFieldID               = big.NewInt(1 << 4)
-	ledgerActivityResourceAuthorizedAtFieldLocalAmount      = big.NewInt(1 << 5)
-	ledgerActivityResourceAuthorizedAtFieldLocalCurrency    = big.NewInt(1 << 6)
-	ledgerActivityResourceAuthorizedAtFieldMerchantCategory = big.NewInt(1 << 7)
-	ledgerActivityResourceAuthorizedAtFieldMerchantIconURL  = big.NewInt(1 << 8)
-	ledgerActivityResourceAuthorizedAtFieldMerchantName     = big.NewInt(1 << 9)
-	ledgerActivityResourceAuthorizedAtFieldObject           = big.NewInt(1 << 10)
-	ledgerActivityResourceAuthorizedAtFieldPostedAt         = big.NewInt(1 << 11)
-	ledgerActivityResourceAuthorizedAtFieldStatus           = big.NewInt(1 << 12)
-	ledgerActivityResourceAuthorizedAtFieldUsdAmount        = big.NewInt(1 << 13)
-)
-
-type LedgerActivityResourceAuthorizedAt struct {
-	// ISO 8601 timestamp the transaction was authorized.
-	AuthorizedAt *time.Time `json:"authorized_at,omitempty" url:"authorized_at,omitempty"`
-	// Identifier of the card that the transaction was charged to.
-	CardID *string `json:"card_id,omitempty" url:"card_id,omitempty"`
-	// Cashback earned on this transaction as a USD decimal string. Zero for declined or ineligible transactions; null when cashback has not been computed yet.
-	CashbackUsd *string `json:"cashback_usd,omitempty" url:"cashback_usd,omitempty"`
-	// Reason the transaction was declined (when status is declined).
-	DeclinedReason *string `json:"declined_reason,omitempty" url:"declined_reason,omitempty"`
-	// Card transaction ID.
-	ID string `json:"id" url:"id"`
-	// Amount the merchant charged in their local currency, as a decimal string. Pair with local_currency.
-	LocalAmount *string `json:"local_amount,omitempty" url:"local_amount,omitempty"`
-	// ISO 4217 currency code of the merchant-charged amount in local_amount.
-	LocalCurrency *string `json:"local_currency,omitempty" url:"local_currency,omitempty"`
-	// Merchant category.
-	MerchantCategory *string `json:"merchant_category,omitempty" url:"merchant_category,omitempty"`
-	// Merchant icon URL.
-	MerchantIconURL *string `json:"merchant_icon_url,omitempty" url:"merchant_icon_url,omitempty"`
-	// Merchant display name.
-	MerchantName *string                                  `json:"merchant_name,omitempty" url:"merchant_name,omitempty"`
-	Object       LedgerActivityResourceAuthorizedAtObject `json:"object" url:"object"`
-	// ISO 8601 timestamp the transaction was settled by the card network.
-	PostedAt *time.Time `json:"posted_at,omitempty" url:"posted_at,omitempty"`
-	// Current card transaction status.
-	Status *string `json:"status,omitempty" url:"status,omitempty"`
-	// The processor-settled USD amount as a decimal string. The ledger's USDT leg is posted 1:1 from this value.
-	UsdAmount *string `json:"usd_amount,omitempty" url:"usd_amount,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) GetAuthorizedAt() *time.Time {
-	if l == nil {
-		return nil
-	}
-	return l.AuthorizedAt
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) GetCardID() *string {
-	if l == nil {
-		return nil
-	}
-	return l.CardID
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) GetCashbackUsd() *string {
-	if l == nil {
-		return nil
-	}
-	return l.CashbackUsd
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) GetDeclinedReason() *string {
-	if l == nil {
-		return nil
-	}
-	return l.DeclinedReason
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) GetID() string {
-	if l == nil {
-		return ""
-	}
-	return l.ID
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) GetLocalAmount() *string {
-	if l == nil {
-		return nil
-	}
-	return l.LocalAmount
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) GetLocalCurrency() *string {
-	if l == nil {
-		return nil
-	}
-	return l.LocalCurrency
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) GetMerchantCategory() *string {
-	if l == nil {
-		return nil
-	}
-	return l.MerchantCategory
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) GetMerchantIconURL() *string {
-	if l == nil {
-		return nil
-	}
-	return l.MerchantIconURL
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) GetMerchantName() *string {
-	if l == nil {
-		return nil
-	}
-	return l.MerchantName
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) GetObject() LedgerActivityResourceAuthorizedAtObject {
-	if l == nil {
-		return ""
-	}
-	return l.Object
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) GetPostedAt() *time.Time {
-	if l == nil {
-		return nil
-	}
-	return l.PostedAt
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) GetStatus() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Status
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) GetUsdAmount() *string {
-	if l == nil {
-		return nil
-	}
-	return l.UsdAmount
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetAuthorizedAt sets the AuthorizedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAuthorizedAt) SetAuthorizedAt(authorizedAt *time.Time) {
-	l.AuthorizedAt = authorizedAt
-	l.require(ledgerActivityResourceAuthorizedAtFieldAuthorizedAt)
-}
-
-// SetCardID sets the CardID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAuthorizedAt) SetCardID(cardID *string) {
-	l.CardID = cardID
-	l.require(ledgerActivityResourceAuthorizedAtFieldCardID)
-}
-
-// SetCashbackUsd sets the CashbackUsd field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAuthorizedAt) SetCashbackUsd(cashbackUsd *string) {
-	l.CashbackUsd = cashbackUsd
-	l.require(ledgerActivityResourceAuthorizedAtFieldCashbackUsd)
-}
-
-// SetDeclinedReason sets the DeclinedReason field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAuthorizedAt) SetDeclinedReason(declinedReason *string) {
-	l.DeclinedReason = declinedReason
-	l.require(ledgerActivityResourceAuthorizedAtFieldDeclinedReason)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAuthorizedAt) SetID(id string) {
-	l.ID = id
-	l.require(ledgerActivityResourceAuthorizedAtFieldID)
-}
-
-// SetLocalAmount sets the LocalAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAuthorizedAt) SetLocalAmount(localAmount *string) {
-	l.LocalAmount = localAmount
-	l.require(ledgerActivityResourceAuthorizedAtFieldLocalAmount)
-}
-
-// SetLocalCurrency sets the LocalCurrency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAuthorizedAt) SetLocalCurrency(localCurrency *string) {
-	l.LocalCurrency = localCurrency
-	l.require(ledgerActivityResourceAuthorizedAtFieldLocalCurrency)
-}
-
-// SetMerchantCategory sets the MerchantCategory field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAuthorizedAt) SetMerchantCategory(merchantCategory *string) {
-	l.MerchantCategory = merchantCategory
-	l.require(ledgerActivityResourceAuthorizedAtFieldMerchantCategory)
-}
-
-// SetMerchantIconURL sets the MerchantIconURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAuthorizedAt) SetMerchantIconURL(merchantIconURL *string) {
-	l.MerchantIconURL = merchantIconURL
-	l.require(ledgerActivityResourceAuthorizedAtFieldMerchantIconURL)
-}
-
-// SetMerchantName sets the MerchantName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAuthorizedAt) SetMerchantName(merchantName *string) {
-	l.MerchantName = merchantName
-	l.require(ledgerActivityResourceAuthorizedAtFieldMerchantName)
-}
-
-// SetObject sets the Object field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAuthorizedAt) SetObject(object LedgerActivityResourceAuthorizedAtObject) {
-	l.Object = object
-	l.require(ledgerActivityResourceAuthorizedAtFieldObject)
-}
-
-// SetPostedAt sets the PostedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAuthorizedAt) SetPostedAt(postedAt *time.Time) {
-	l.PostedAt = postedAt
-	l.require(ledgerActivityResourceAuthorizedAtFieldPostedAt)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAuthorizedAt) SetStatus(status *string) {
-	l.Status = status
-	l.require(ledgerActivityResourceAuthorizedAtFieldStatus)
-}
-
-// SetUsdAmount sets the UsdAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceAuthorizedAt) SetUsdAmount(usdAmount *string) {
-	l.UsdAmount = usdAmount
-	l.require(ledgerActivityResourceAuthorizedAtFieldUsdAmount)
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) UnmarshalJSON(data []byte) error {
-	type embed LedgerActivityResourceAuthorizedAt
-	var unmarshaler = struct {
-		embed
-		AuthorizedAt *internal.DateTime `json:"authorized_at,omitempty"`
-		PostedAt     *internal.DateTime `json:"posted_at,omitempty"`
-	}{
-		embed: embed(*l),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*l = LedgerActivityResourceAuthorizedAt(unmarshaler.embed)
-	l.AuthorizedAt = unmarshaler.AuthorizedAt.TimePtr()
-	l.PostedAt = unmarshaler.PostedAt.TimePtr()
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) MarshalJSON() ([]byte, error) {
-	type embed LedgerActivityResourceAuthorizedAt
-	var marshaler = struct {
-		embed
-		AuthorizedAt *internal.DateTime `json:"authorized_at,omitempty"`
-		PostedAt     *internal.DateTime `json:"posted_at,omitempty"`
-	}{
-		embed:        embed(*l),
-		AuthorizedAt: internal.NewOptionalDateTime(l.AuthorizedAt),
-		PostedAt:     internal.NewOptionalDateTime(l.PostedAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LedgerActivityResourceAuthorizedAt) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-type LedgerActivityResourceAuthorizedAtObject string
-
-const (
-	LedgerActivityResourceAuthorizedAtObjectCardTransaction LedgerActivityResourceAuthorizedAtObject = "card_transaction"
-)
-
-func NewLedgerActivityResourceAuthorizedAtObjectFromString(s string) (LedgerActivityResourceAuthorizedAtObject, error) {
-	switch s {
-	case "card_transaction":
-		return LedgerActivityResourceAuthorizedAtObjectCardTransaction, nil
-	}
-	var t LedgerActivityResourceAuthorizedAtObject
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (l LedgerActivityResourceAuthorizedAtObject) Ptr() *LedgerActivityResourceAuthorizedAtObject {
-	return &l
-}
-
-var (
-	ledgerActivityResourceBankFieldBank              = big.NewInt(1 << 0)
-	ledgerActivityResourceBankFieldCard              = big.NewInt(1 << 1)
-	ledgerActivityResourceBankFieldEmailIdentifier   = big.NewInt(1 << 2)
-	ledgerActivityResourceBankFieldGatewayType       = big.NewInt(1 << 3)
-	ledgerActivityResourceBankFieldID                = big.NewInt(1 << 4)
-	ledgerActivityResourceBankFieldObject            = big.NewInt(1 << 5)
-	ledgerActivityResourceBankFieldPaymentMethodType = big.NewInt(1 << 6)
-)
-
-type LedgerActivityResourceBank struct {
-	Bank *LedgerActivityResourceBankBank `json:"bank,omitempty" url:"bank,omitempty"`
-	Card *LedgerActivityResourceBankCard `json:"card,omitempty" url:"card,omitempty"`
-	// Email identifier for email-based payment methods.
-	EmailIdentifier *string `json:"email_identifier,omitempty" url:"email_identifier,omitempty"`
-	// Payment gateway type.
-	GatewayType *string `json:"gateway_type,omitempty" url:"gateway_type,omitempty"`
-	// Payment method ID.
-	ID     string                           `json:"id" url:"id"`
-	Object LedgerActivityResourceBankObject `json:"object" url:"object"`
-	// Payment method type.
-	PaymentMethodType *string `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LedgerActivityResourceBank) GetBank() *LedgerActivityResourceBankBank {
-	if l == nil {
-		return nil
-	}
-	return l.Bank
-}
-
-func (l *LedgerActivityResourceBank) GetCard() *LedgerActivityResourceBankCard {
-	if l == nil {
-		return nil
-	}
-	return l.Card
-}
-
-func (l *LedgerActivityResourceBank) GetEmailIdentifier() *string {
-	if l == nil {
-		return nil
-	}
-	return l.EmailIdentifier
-}
-
-func (l *LedgerActivityResourceBank) GetGatewayType() *string {
-	if l == nil {
-		return nil
-	}
-	return l.GatewayType
-}
-
-func (l *LedgerActivityResourceBank) GetID() string {
-	if l == nil {
-		return ""
-	}
-	return l.ID
-}
-
-func (l *LedgerActivityResourceBank) GetObject() LedgerActivityResourceBankObject {
-	if l == nil {
-		return ""
-	}
-	return l.Object
-}
-
-func (l *LedgerActivityResourceBank) GetPaymentMethodType() *string {
-	if l == nil {
-		return nil
-	}
-	return l.PaymentMethodType
-}
-
-func (l *LedgerActivityResourceBank) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LedgerActivityResourceBank) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetBank sets the Bank field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceBank) SetBank(bank *LedgerActivityResourceBankBank) {
-	l.Bank = bank
-	l.require(ledgerActivityResourceBankFieldBank)
-}
-
-// SetCard sets the Card field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceBank) SetCard(card *LedgerActivityResourceBankCard) {
-	l.Card = card
-	l.require(ledgerActivityResourceBankFieldCard)
-}
-
-// SetEmailIdentifier sets the EmailIdentifier field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceBank) SetEmailIdentifier(emailIdentifier *string) {
-	l.EmailIdentifier = emailIdentifier
-	l.require(ledgerActivityResourceBankFieldEmailIdentifier)
-}
-
-// SetGatewayType sets the GatewayType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceBank) SetGatewayType(gatewayType *string) {
-	l.GatewayType = gatewayType
-	l.require(ledgerActivityResourceBankFieldGatewayType)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceBank) SetID(id string) {
-	l.ID = id
-	l.require(ledgerActivityResourceBankFieldID)
-}
-
-// SetObject sets the Object field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceBank) SetObject(object LedgerActivityResourceBankObject) {
-	l.Object = object
-	l.require(ledgerActivityResourceBankFieldObject)
-}
-
-// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceBank) SetPaymentMethodType(paymentMethodType *string) {
-	l.PaymentMethodType = paymentMethodType
-	l.require(ledgerActivityResourceBankFieldPaymentMethodType)
-}
-
-func (l *LedgerActivityResourceBank) UnmarshalJSON(data []byte) error {
-	type unmarshaler LedgerActivityResourceBank
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = LedgerActivityResourceBank(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LedgerActivityResourceBank) MarshalJSON() ([]byte, error) {
-	type embed LedgerActivityResourceBank
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LedgerActivityResourceBank) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-var (
-	ledgerActivityResourceBankBankFieldAccountName = big.NewInt(1 << 0)
-	ledgerActivityResourceBankBankFieldAccountType = big.NewInt(1 << 1)
-	ledgerActivityResourceBankBankFieldBankName    = big.NewInt(1 << 2)
-	ledgerActivityResourceBankBankFieldLast4       = big.NewInt(1 << 3)
-)
-
-type LedgerActivityResourceBankBank struct {
-	// Bank account holder name.
-	AccountName *string `json:"account_name,omitempty" url:"account_name,omitempty"`
-	// Bank account type.
-	AccountType *string `json:"account_type,omitempty" url:"account_type,omitempty"`
-	// Bank name.
-	BankName *string `json:"bank_name,omitempty" url:"bank_name,omitempty"`
-	// Last four digits of the bank account.
-	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LedgerActivityResourceBankBank) GetAccountName() *string {
-	if l == nil {
-		return nil
-	}
-	return l.AccountName
-}
-
-func (l *LedgerActivityResourceBankBank) GetAccountType() *string {
-	if l == nil {
-		return nil
-	}
-	return l.AccountType
-}
-
-func (l *LedgerActivityResourceBankBank) GetBankName() *string {
-	if l == nil {
-		return nil
-	}
-	return l.BankName
-}
-
-func (l *LedgerActivityResourceBankBank) GetLast4() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Last4
-}
-
-func (l *LedgerActivityResourceBankBank) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LedgerActivityResourceBankBank) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetAccountName sets the AccountName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceBankBank) SetAccountName(accountName *string) {
-	l.AccountName = accountName
-	l.require(ledgerActivityResourceBankBankFieldAccountName)
-}
-
-// SetAccountType sets the AccountType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceBankBank) SetAccountType(accountType *string) {
-	l.AccountType = accountType
-	l.require(ledgerActivityResourceBankBankFieldAccountType)
-}
-
-// SetBankName sets the BankName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceBankBank) SetBankName(bankName *string) {
-	l.BankName = bankName
-	l.require(ledgerActivityResourceBankBankFieldBankName)
-}
-
-// SetLast4 sets the Last4 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceBankBank) SetLast4(last4 *string) {
-	l.Last4 = last4
-	l.require(ledgerActivityResourceBankBankFieldLast4)
-}
-
-func (l *LedgerActivityResourceBankBank) UnmarshalJSON(data []byte) error {
-	type unmarshaler LedgerActivityResourceBankBank
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = LedgerActivityResourceBankBank(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LedgerActivityResourceBankBank) MarshalJSON() ([]byte, error) {
-	type embed LedgerActivityResourceBankBank
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LedgerActivityResourceBankBank) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-var (
-	ledgerActivityResourceBankCardFieldBrand    = big.NewInt(1 << 0)
-	ledgerActivityResourceBankCardFieldExpMonth = big.NewInt(1 << 1)
-	ledgerActivityResourceBankCardFieldExpYear  = big.NewInt(1 << 2)
-	ledgerActivityResourceBankCardFieldLast4    = big.NewInt(1 << 3)
-)
-
-type LedgerActivityResourceBankCard struct {
-	// Card brand.
-	Brand *string `json:"brand,omitempty" url:"brand,omitempty"`
-	// Card expiration month.
-	ExpMonth *int `json:"exp_month,omitempty" url:"exp_month,omitempty"`
-	// Card expiration year.
-	ExpYear *int `json:"exp_year,omitempty" url:"exp_year,omitempty"`
-	// Last four digits of the card.
-	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LedgerActivityResourceBankCard) GetBrand() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Brand
-}
-
-func (l *LedgerActivityResourceBankCard) GetExpMonth() *int {
-	if l == nil {
-		return nil
-	}
-	return l.ExpMonth
-}
-
-func (l *LedgerActivityResourceBankCard) GetExpYear() *int {
-	if l == nil {
-		return nil
-	}
-	return l.ExpYear
-}
-
-func (l *LedgerActivityResourceBankCard) GetLast4() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Last4
-}
-
-func (l *LedgerActivityResourceBankCard) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LedgerActivityResourceBankCard) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetBrand sets the Brand field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceBankCard) SetBrand(brand *string) {
-	l.Brand = brand
-	l.require(ledgerActivityResourceBankCardFieldBrand)
-}
-
-// SetExpMonth sets the ExpMonth field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceBankCard) SetExpMonth(expMonth *int) {
-	l.ExpMonth = expMonth
-	l.require(ledgerActivityResourceBankCardFieldExpMonth)
-}
-
-// SetExpYear sets the ExpYear field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceBankCard) SetExpYear(expYear *int) {
-	l.ExpYear = expYear
-	l.require(ledgerActivityResourceBankCardFieldExpYear)
-}
-
-// SetLast4 sets the Last4 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceBankCard) SetLast4(last4 *string) {
-	l.Last4 = last4
-	l.require(ledgerActivityResourceBankCardFieldLast4)
-}
-
-func (l *LedgerActivityResourceBankCard) UnmarshalJSON(data []byte) error {
-	type unmarshaler LedgerActivityResourceBankCard
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = LedgerActivityResourceBankCard(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LedgerActivityResourceBankCard) MarshalJSON() ([]byte, error) {
-	type embed LedgerActivityResourceBankCard
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LedgerActivityResourceBankCard) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-type LedgerActivityResourceBankObject string
-
-const (
-	LedgerActivityResourceBankObjectPaymentMethod LedgerActivityResourceBankObject = "payment_method"
-)
-
-func NewLedgerActivityResourceBankObjectFromString(s string) (LedgerActivityResourceBankObject, error) {
-	switch s {
-	case "payment_method":
-		return LedgerActivityResourceBankObjectPaymentMethod, nil
-	}
-	var t LedgerActivityResourceBankObject
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (l LedgerActivityResourceBankObject) Ptr() *LedgerActivityResourceBankObject {
-	return &l
-}
-
-var (
-	ledgerActivityResourceLogoURLFieldID      = big.NewInt(1 << 0)
-	ledgerActivityResourceLogoURLFieldLogoURL = big.NewInt(1 << 1)
-	ledgerActivityResourceLogoURLFieldObject  = big.NewInt(1 << 2)
-	ledgerActivityResourceLogoURLFieldRoute   = big.NewInt(1 << 3)
-	ledgerActivityResourceLogoURLFieldTitle   = big.NewInt(1 << 4)
-)
-
-type LedgerActivityResourceLogoURL struct {
-	// Account ID.
-	ID string `json:"id" url:"id"`
-	// Account logo URL.
-	LogoURL *string                             `json:"logo_url,omitempty" url:"logo_url,omitempty"`
-	Object  LedgerActivityResourceLogoURLObject `json:"object" url:"object"`
-	// Account route.
-	Route *string `json:"route,omitempty" url:"route,omitempty"`
-	// Account display name.
-	Title *string `json:"title,omitempty" url:"title,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LedgerActivityResourceLogoURL) GetID() string {
-	if l == nil {
-		return ""
-	}
-	return l.ID
-}
-
-func (l *LedgerActivityResourceLogoURL) GetLogoURL() *string {
-	if l == nil {
-		return nil
-	}
-	return l.LogoURL
-}
-
-func (l *LedgerActivityResourceLogoURL) GetObject() LedgerActivityResourceLogoURLObject {
-	if l == nil {
-		return ""
-	}
-	return l.Object
-}
-
-func (l *LedgerActivityResourceLogoURL) GetRoute() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Route
-}
-
-func (l *LedgerActivityResourceLogoURL) GetTitle() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Title
-}
-
-func (l *LedgerActivityResourceLogoURL) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LedgerActivityResourceLogoURL) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceLogoURL) SetID(id string) {
-	l.ID = id
-	l.require(ledgerActivityResourceLogoURLFieldID)
-}
-
-// SetLogoURL sets the LogoURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceLogoURL) SetLogoURL(logoURL *string) {
-	l.LogoURL = logoURL
-	l.require(ledgerActivityResourceLogoURLFieldLogoURL)
-}
-
-// SetObject sets the Object field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceLogoURL) SetObject(object LedgerActivityResourceLogoURLObject) {
-	l.Object = object
-	l.require(ledgerActivityResourceLogoURLFieldObject)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceLogoURL) SetRoute(route *string) {
-	l.Route = route
-	l.require(ledgerActivityResourceLogoURLFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceLogoURL) SetTitle(title *string) {
-	l.Title = title
-	l.require(ledgerActivityResourceLogoURLFieldTitle)
-}
-
-func (l *LedgerActivityResourceLogoURL) UnmarshalJSON(data []byte) error {
-	type unmarshaler LedgerActivityResourceLogoURL
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = LedgerActivityResourceLogoURL(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LedgerActivityResourceLogoURL) MarshalJSON() ([]byte, error) {
-	type embed LedgerActivityResourceLogoURL
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LedgerActivityResourceLogoURL) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-type LedgerActivityResourceLogoURLObject string
-
-const (
-	LedgerActivityResourceLogoURLObjectAccount LedgerActivityResourceLogoURLObject = "account"
-)
-
-func NewLedgerActivityResourceLogoURLObjectFromString(s string) (LedgerActivityResourceLogoURLObject, error) {
-	switch s {
-	case "account":
-		return LedgerActivityResourceLogoURLObjectAccount, nil
-	}
-	var t LedgerActivityResourceLogoURLObject
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (l LedgerActivityResourceLogoURLObject) Ptr() *LedgerActivityResourceLogoURLObject {
-	return &l
-}
-
-var (
-	ledgerActivityResourceNameFieldID                = big.NewInt(1 << 0)
-	ledgerActivityResourceNameFieldName              = big.NewInt(1 << 1)
-	ledgerActivityResourceNameFieldObject            = big.NewInt(1 << 2)
-	ledgerActivityResourceNameFieldProfilePictureURL = big.NewInt(1 << 3)
-	ledgerActivityResourceNameFieldUsername          = big.NewInt(1 << 4)
-)
-
-type LedgerActivityResourceName struct {
-	// User ID.
-	ID string `json:"id" url:"id"`
-	// User display name.
-	Name   *string                          `json:"name,omitempty" url:"name,omitempty"`
-	Object LedgerActivityResourceNameObject `json:"object" url:"object"`
-	// User profile image URL.
-	ProfilePictureURL *string `json:"profile_picture_url,omitempty" url:"profile_picture_url,omitempty"`
-	// User's username.
-	Username *string `json:"username,omitempty" url:"username,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LedgerActivityResourceName) GetID() string {
-	if l == nil {
-		return ""
-	}
-	return l.ID
-}
-
-func (l *LedgerActivityResourceName) GetName() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Name
-}
-
-func (l *LedgerActivityResourceName) GetObject() LedgerActivityResourceNameObject {
-	if l == nil {
-		return ""
-	}
-	return l.Object
-}
-
-func (l *LedgerActivityResourceName) GetProfilePictureURL() *string {
-	if l == nil {
-		return nil
-	}
-	return l.ProfilePictureURL
-}
-
-func (l *LedgerActivityResourceName) GetUsername() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Username
-}
-
-func (l *LedgerActivityResourceName) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LedgerActivityResourceName) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceName) SetID(id string) {
-	l.ID = id
-	l.require(ledgerActivityResourceNameFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceName) SetName(name *string) {
-	l.Name = name
-	l.require(ledgerActivityResourceNameFieldName)
-}
-
-// SetObject sets the Object field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceName) SetObject(object LedgerActivityResourceNameObject) {
-	l.Object = object
-	l.require(ledgerActivityResourceNameFieldObject)
-}
-
-// SetProfilePictureURL sets the ProfilePictureURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceName) SetProfilePictureURL(profilePictureURL *string) {
-	l.ProfilePictureURL = profilePictureURL
-	l.require(ledgerActivityResourceNameFieldProfilePictureURL)
-}
-
-// SetUsername sets the Username field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceName) SetUsername(username *string) {
-	l.Username = username
-	l.require(ledgerActivityResourceNameFieldUsername)
-}
-
-func (l *LedgerActivityResourceName) UnmarshalJSON(data []byte) error {
-	type unmarshaler LedgerActivityResourceName
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = LedgerActivityResourceName(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LedgerActivityResourceName) MarshalJSON() ([]byte, error) {
-	type embed LedgerActivityResourceName
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LedgerActivityResourceName) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-type LedgerActivityResourceNameObject string
-
-const (
-	LedgerActivityResourceNameObjectUser LedgerActivityResourceNameObject = "user"
-)
-
-func NewLedgerActivityResourceNameObjectFromString(s string) (LedgerActivityResourceNameObject, error) {
-	switch s {
-	case "user":
-		return LedgerActivityResourceNameObjectUser, nil
-	}
-	var t LedgerActivityResourceNameObject
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (l LedgerActivityResourceNameObject) Ptr() *LedgerActivityResourceNameObject {
-	return &l
-}
-
-var (
-	ledgerActivityResourceOwnerFieldID     = big.NewInt(1 << 0)
-	ledgerActivityResourceOwnerFieldObject = big.NewInt(1 << 1)
-	ledgerActivityResourceOwnerFieldOwner  = big.NewInt(1 << 2)
-)
-
-type LedgerActivityResourceOwner struct {
-	// Ledger account ID.
-	ID     string                            `json:"id" url:"id"`
-	Object LedgerActivityResourceOwnerObject `json:"object" url:"object"`
-	Owner  *LedgerActivityResourceOwnerOwner `json:"owner,omitempty" url:"owner,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LedgerActivityResourceOwner) GetID() string {
-	if l == nil {
-		return ""
-	}
-	return l.ID
-}
-
-func (l *LedgerActivityResourceOwner) GetObject() LedgerActivityResourceOwnerObject {
-	if l == nil {
-		return ""
-	}
-	return l.Object
-}
-
-func (l *LedgerActivityResourceOwner) GetOwner() *LedgerActivityResourceOwnerOwner {
-	if l == nil {
-		return nil
-	}
-	return l.Owner
-}
-
-func (l *LedgerActivityResourceOwner) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LedgerActivityResourceOwner) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceOwner) SetID(id string) {
-	l.ID = id
-	l.require(ledgerActivityResourceOwnerFieldID)
-}
-
-// SetObject sets the Object field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceOwner) SetObject(object LedgerActivityResourceOwnerObject) {
-	l.Object = object
-	l.require(ledgerActivityResourceOwnerFieldObject)
-}
-
-// SetOwner sets the Owner field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceOwner) SetOwner(owner *LedgerActivityResourceOwnerOwner) {
-	l.Owner = owner
-	l.require(ledgerActivityResourceOwnerFieldOwner)
-}
-
-func (l *LedgerActivityResourceOwner) UnmarshalJSON(data []byte) error {
-	type unmarshaler LedgerActivityResourceOwner
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = LedgerActivityResourceOwner(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LedgerActivityResourceOwner) MarshalJSON() ([]byte, error) {
-	type embed LedgerActivityResourceOwner
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LedgerActivityResourceOwner) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-type LedgerActivityResourceOwnerObject string
-
-const (
-	LedgerActivityResourceOwnerObjectLedgerAccount LedgerActivityResourceOwnerObject = "ledger_account"
-)
-
-func NewLedgerActivityResourceOwnerObjectFromString(s string) (LedgerActivityResourceOwnerObject, error) {
-	switch s {
-	case "ledger_account":
-		return LedgerActivityResourceOwnerObjectLedgerAccount, nil
-	}
-	var t LedgerActivityResourceOwnerObject
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (l LedgerActivityResourceOwnerObject) Ptr() *LedgerActivityResourceOwnerObject {
-	return &l
-}
-
-type LedgerActivityResourceOwnerOwner struct {
-	LedgerActivityResourceOwnerOwnerLogoURL *LedgerActivityResourceOwnerOwnerLogoURL
-	LedgerActivityResourceOwnerOwnerName    *LedgerActivityResourceOwnerOwnerName
-
-	typ string
-}
-
-func (l *LedgerActivityResourceOwnerOwner) GetLedgerActivityResourceOwnerOwnerLogoURL() *LedgerActivityResourceOwnerOwnerLogoURL {
-	if l == nil {
-		return nil
-	}
-	return l.LedgerActivityResourceOwnerOwnerLogoURL
-}
-
-func (l *LedgerActivityResourceOwnerOwner) GetLedgerActivityResourceOwnerOwnerName() *LedgerActivityResourceOwnerOwnerName {
-	if l == nil {
-		return nil
-	}
-	return l.LedgerActivityResourceOwnerOwnerName
-}
-
-func (l *LedgerActivityResourceOwnerOwner) UnmarshalJSON(data []byte) error {
-	valueLedgerActivityResourceOwnerOwnerLogoURL := new(LedgerActivityResourceOwnerOwnerLogoURL)
-	if err := json.Unmarshal(data, &valueLedgerActivityResourceOwnerOwnerLogoURL); err == nil {
-		l.typ = "LedgerActivityResourceOwnerOwnerLogoURL"
-		l.LedgerActivityResourceOwnerOwnerLogoURL = valueLedgerActivityResourceOwnerOwnerLogoURL
-		return nil
-	}
-	valueLedgerActivityResourceOwnerOwnerName := new(LedgerActivityResourceOwnerOwnerName)
-	if err := json.Unmarshal(data, &valueLedgerActivityResourceOwnerOwnerName); err == nil {
-		l.typ = "LedgerActivityResourceOwnerOwnerName"
-		l.LedgerActivityResourceOwnerOwnerName = valueLedgerActivityResourceOwnerOwnerName
-		return nil
-	}
-	return fmt.Errorf("%s cannot be deserialized as a %T", data, l)
-}
-
-func (l LedgerActivityResourceOwnerOwner) MarshalJSON() ([]byte, error) {
-	if l.typ == "LedgerActivityResourceOwnerOwnerLogoURL" || l.LedgerActivityResourceOwnerOwnerLogoURL != nil {
-		return json.Marshal(l.LedgerActivityResourceOwnerOwnerLogoURL)
-	}
-	if l.typ == "LedgerActivityResourceOwnerOwnerName" || l.LedgerActivityResourceOwnerOwnerName != nil {
-		return json.Marshal(l.LedgerActivityResourceOwnerOwnerName)
-	}
-	return nil, fmt.Errorf("type %T does not include a non-empty union type", l)
-}
-
-type LedgerActivityResourceOwnerOwnerVisitor interface {
-	VisitLedgerActivityResourceOwnerOwnerLogoURL(*LedgerActivityResourceOwnerOwnerLogoURL) error
-	VisitLedgerActivityResourceOwnerOwnerName(*LedgerActivityResourceOwnerOwnerName) error
-}
-
-func (l *LedgerActivityResourceOwnerOwner) Accept(visitor LedgerActivityResourceOwnerOwnerVisitor) error {
-	if l.typ == "LedgerActivityResourceOwnerOwnerLogoURL" || l.LedgerActivityResourceOwnerOwnerLogoURL != nil {
-		return visitor.VisitLedgerActivityResourceOwnerOwnerLogoURL(l.LedgerActivityResourceOwnerOwnerLogoURL)
-	}
-	if l.typ == "LedgerActivityResourceOwnerOwnerName" || l.LedgerActivityResourceOwnerOwnerName != nil {
-		return visitor.VisitLedgerActivityResourceOwnerOwnerName(l.LedgerActivityResourceOwnerOwnerName)
-	}
-	return fmt.Errorf("type %T does not include a non-empty union type", l)
-}
-
-var (
-	ledgerActivityResourceOwnerOwnerLogoURLFieldID      = big.NewInt(1 << 0)
-	ledgerActivityResourceOwnerOwnerLogoURLFieldLogoURL = big.NewInt(1 << 1)
-	ledgerActivityResourceOwnerOwnerLogoURLFieldObject  = big.NewInt(1 << 2)
-	ledgerActivityResourceOwnerOwnerLogoURLFieldRoute   = big.NewInt(1 << 3)
-	ledgerActivityResourceOwnerOwnerLogoURLFieldTitle   = big.NewInt(1 << 4)
-)
-
-type LedgerActivityResourceOwnerOwnerLogoURL struct {
-	// Account ID.
-	ID string `json:"id" url:"id"`
-	// Account logo URL.
-	LogoURL *string                                       `json:"logo_url,omitempty" url:"logo_url,omitempty"`
-	Object  LedgerActivityResourceOwnerOwnerLogoURLObject `json:"object" url:"object"`
-	// Account route.
-	Route *string `json:"route,omitempty" url:"route,omitempty"`
-	// Account display name.
-	Title *string `json:"title,omitempty" url:"title,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LedgerActivityResourceOwnerOwnerLogoURL) GetID() string {
-	if l == nil {
-		return ""
-	}
-	return l.ID
-}
-
-func (l *LedgerActivityResourceOwnerOwnerLogoURL) GetLogoURL() *string {
-	if l == nil {
-		return nil
-	}
-	return l.LogoURL
-}
-
-func (l *LedgerActivityResourceOwnerOwnerLogoURL) GetObject() LedgerActivityResourceOwnerOwnerLogoURLObject {
-	if l == nil {
-		return ""
-	}
-	return l.Object
-}
-
-func (l *LedgerActivityResourceOwnerOwnerLogoURL) GetRoute() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Route
-}
-
-func (l *LedgerActivityResourceOwnerOwnerLogoURL) GetTitle() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Title
-}
-
-func (l *LedgerActivityResourceOwnerOwnerLogoURL) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LedgerActivityResourceOwnerOwnerLogoURL) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceOwnerOwnerLogoURL) SetID(id string) {
-	l.ID = id
-	l.require(ledgerActivityResourceOwnerOwnerLogoURLFieldID)
-}
-
-// SetLogoURL sets the LogoURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceOwnerOwnerLogoURL) SetLogoURL(logoURL *string) {
-	l.LogoURL = logoURL
-	l.require(ledgerActivityResourceOwnerOwnerLogoURLFieldLogoURL)
-}
-
-// SetObject sets the Object field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceOwnerOwnerLogoURL) SetObject(object LedgerActivityResourceOwnerOwnerLogoURLObject) {
-	l.Object = object
-	l.require(ledgerActivityResourceOwnerOwnerLogoURLFieldObject)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceOwnerOwnerLogoURL) SetRoute(route *string) {
-	l.Route = route
-	l.require(ledgerActivityResourceOwnerOwnerLogoURLFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceOwnerOwnerLogoURL) SetTitle(title *string) {
-	l.Title = title
-	l.require(ledgerActivityResourceOwnerOwnerLogoURLFieldTitle)
-}
-
-func (l *LedgerActivityResourceOwnerOwnerLogoURL) UnmarshalJSON(data []byte) error {
-	type unmarshaler LedgerActivityResourceOwnerOwnerLogoURL
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = LedgerActivityResourceOwnerOwnerLogoURL(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LedgerActivityResourceOwnerOwnerLogoURL) MarshalJSON() ([]byte, error) {
-	type embed LedgerActivityResourceOwnerOwnerLogoURL
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LedgerActivityResourceOwnerOwnerLogoURL) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-type LedgerActivityResourceOwnerOwnerLogoURLObject string
-
-const (
-	LedgerActivityResourceOwnerOwnerLogoURLObjectAccount LedgerActivityResourceOwnerOwnerLogoURLObject = "account"
-)
-
-func NewLedgerActivityResourceOwnerOwnerLogoURLObjectFromString(s string) (LedgerActivityResourceOwnerOwnerLogoURLObject, error) {
-	switch s {
-	case "account":
-		return LedgerActivityResourceOwnerOwnerLogoURLObjectAccount, nil
-	}
-	var t LedgerActivityResourceOwnerOwnerLogoURLObject
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (l LedgerActivityResourceOwnerOwnerLogoURLObject) Ptr() *LedgerActivityResourceOwnerOwnerLogoURLObject {
-	return &l
-}
-
-var (
-	ledgerActivityResourceOwnerOwnerNameFieldID                = big.NewInt(1 << 0)
-	ledgerActivityResourceOwnerOwnerNameFieldName              = big.NewInt(1 << 1)
-	ledgerActivityResourceOwnerOwnerNameFieldObject            = big.NewInt(1 << 2)
-	ledgerActivityResourceOwnerOwnerNameFieldProfilePictureURL = big.NewInt(1 << 3)
-	ledgerActivityResourceOwnerOwnerNameFieldUsername          = big.NewInt(1 << 4)
-)
-
-type LedgerActivityResourceOwnerOwnerName struct {
-	// User ID.
-	ID string `json:"id" url:"id"`
-	// User display name.
-	Name   *string                                    `json:"name,omitempty" url:"name,omitempty"`
-	Object LedgerActivityResourceOwnerOwnerNameObject `json:"object" url:"object"`
-	// User profile image URL.
-	ProfilePictureURL *string `json:"profile_picture_url,omitempty" url:"profile_picture_url,omitempty"`
-	// User's username.
-	Username *string `json:"username,omitempty" url:"username,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LedgerActivityResourceOwnerOwnerName) GetID() string {
-	if l == nil {
-		return ""
-	}
-	return l.ID
-}
-
-func (l *LedgerActivityResourceOwnerOwnerName) GetName() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Name
-}
-
-func (l *LedgerActivityResourceOwnerOwnerName) GetObject() LedgerActivityResourceOwnerOwnerNameObject {
-	if l == nil {
-		return ""
-	}
-	return l.Object
-}
-
-func (l *LedgerActivityResourceOwnerOwnerName) GetProfilePictureURL() *string {
-	if l == nil {
-		return nil
-	}
-	return l.ProfilePictureURL
-}
-
-func (l *LedgerActivityResourceOwnerOwnerName) GetUsername() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Username
-}
-
-func (l *LedgerActivityResourceOwnerOwnerName) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LedgerActivityResourceOwnerOwnerName) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceOwnerOwnerName) SetID(id string) {
-	l.ID = id
-	l.require(ledgerActivityResourceOwnerOwnerNameFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceOwnerOwnerName) SetName(name *string) {
-	l.Name = name
-	l.require(ledgerActivityResourceOwnerOwnerNameFieldName)
-}
-
-// SetObject sets the Object field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceOwnerOwnerName) SetObject(object LedgerActivityResourceOwnerOwnerNameObject) {
-	l.Object = object
-	l.require(ledgerActivityResourceOwnerOwnerNameFieldObject)
-}
-
-// SetProfilePictureURL sets the ProfilePictureURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceOwnerOwnerName) SetProfilePictureURL(profilePictureURL *string) {
-	l.ProfilePictureURL = profilePictureURL
-	l.require(ledgerActivityResourceOwnerOwnerNameFieldProfilePictureURL)
-}
-
-// SetUsername sets the Username field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceOwnerOwnerName) SetUsername(username *string) {
-	l.Username = username
-	l.require(ledgerActivityResourceOwnerOwnerNameFieldUsername)
-}
-
-func (l *LedgerActivityResourceOwnerOwnerName) UnmarshalJSON(data []byte) error {
-	type unmarshaler LedgerActivityResourceOwnerOwnerName
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = LedgerActivityResourceOwnerOwnerName(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LedgerActivityResourceOwnerOwnerName) MarshalJSON() ([]byte, error) {
-	type embed LedgerActivityResourceOwnerOwnerName
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LedgerActivityResourceOwnerOwnerName) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-type LedgerActivityResourceOwnerOwnerNameObject string
-
-const (
-	LedgerActivityResourceOwnerOwnerNameObjectUser LedgerActivityResourceOwnerOwnerNameObject = "user"
-)
-
-func NewLedgerActivityResourceOwnerOwnerNameObjectFromString(s string) (LedgerActivityResourceOwnerOwnerNameObject, error) {
-	switch s {
-	case "user":
-		return LedgerActivityResourceOwnerOwnerNameObjectUser, nil
-	}
-	var t LedgerActivityResourceOwnerOwnerNameObject
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (l LedgerActivityResourceOwnerOwnerNameObject) Ptr() *LedgerActivityResourceOwnerOwnerNameObject {
-	return &l
-}
-
-var (
-	ledgerActivityResourceTwoFieldID     = big.NewInt(1 << 0)
-	ledgerActivityResourceTwoFieldObject = big.NewInt(1 << 1)
-	ledgerActivityResourceTwoFieldStatus = big.NewInt(1 << 2)
-	ledgerActivityResourceTwoFieldTitle  = big.NewInt(1 << 3)
-)
-
-type LedgerActivityResourceTwo struct {
-	// Bounty ID.
-	ID     string                          `json:"id" url:"id"`
-	Object LedgerActivityResourceTwoObject `json:"object" url:"object"`
-	// Bounty lifecycle status.
-	Status string `json:"status" url:"status"`
-	// Bounty title.
-	Title string `json:"title" url:"title"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LedgerActivityResourceTwo) GetID() string {
-	if l == nil {
-		return ""
-	}
-	return l.ID
-}
-
-func (l *LedgerActivityResourceTwo) GetObject() LedgerActivityResourceTwoObject {
-	if l == nil {
-		return ""
-	}
-	return l.Object
-}
-
-func (l *LedgerActivityResourceTwo) GetStatus() string {
-	if l == nil {
-		return ""
-	}
-	return l.Status
-}
-
-func (l *LedgerActivityResourceTwo) GetTitle() string {
-	if l == nil {
-		return ""
-	}
-	return l.Title
-}
-
-func (l *LedgerActivityResourceTwo) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LedgerActivityResourceTwo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceTwo) SetID(id string) {
-	l.ID = id
-	l.require(ledgerActivityResourceTwoFieldID)
-}
-
-// SetObject sets the Object field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceTwo) SetObject(object LedgerActivityResourceTwoObject) {
-	l.Object = object
-	l.require(ledgerActivityResourceTwoFieldObject)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceTwo) SetStatus(status string) {
-	l.Status = status
-	l.require(ledgerActivityResourceTwoFieldStatus)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivityResourceTwo) SetTitle(title string) {
-	l.Title = title
-	l.require(ledgerActivityResourceTwoFieldTitle)
-}
-
-func (l *LedgerActivityResourceTwo) UnmarshalJSON(data []byte) error {
-	type unmarshaler LedgerActivityResourceTwo
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = LedgerActivityResourceTwo(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LedgerActivityResourceTwo) MarshalJSON() ([]byte, error) {
-	type embed LedgerActivityResourceTwo
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LedgerActivityResourceTwo) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-type LedgerActivityResourceTwoObject string
-
-const (
-	LedgerActivityResourceTwoObjectBounty LedgerActivityResourceTwoObject = "bounty"
-)
-
-func NewLedgerActivityResourceTwoObjectFromString(s string) (LedgerActivityResourceTwoObject, error) {
-	switch s {
-	case "bounty":
-		return LedgerActivityResourceTwoObjectBounty, nil
-	}
-	var t LedgerActivityResourceTwoObject
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (l LedgerActivityResourceTwoObject) Ptr() *LedgerActivityResourceTwoObject {
-	return &l
-}
-
-// Source of this ledger activity.
-var (
-	ledgerActivitySourceFieldAmountFloat         = big.NewInt(1 << 0)
-	ledgerActivitySourceFieldChain               = big.NewInt(1 << 1)
-	ledgerActivitySourceFieldClaimURL            = big.NewInt(1 << 2)
-	ledgerActivitySourceFieldCreatedAt           = big.NewInt(1 << 3)
-	ledgerActivitySourceFieldEstimatedArrival    = big.NewInt(1 << 4)
-	ledgerActivitySourceFieldFromAmount          = big.NewInt(1 << 5)
-	ledgerActivitySourceFieldFromCurrency        = big.NewInt(1 << 6)
-	ledgerActivitySourceFieldID                  = big.NewInt(1 << 7)
-	ledgerActivitySourceFieldObject              = big.NewInt(1 << 8)
-	ledgerActivitySourceFieldPayerName           = big.NewInt(1 << 9)
-	ledgerActivitySourceFieldPayoutDestination   = big.NewInt(1 << 10)
-	ledgerActivitySourceFieldPayoutTokenNickname = big.NewInt(1 << 11)
-	ledgerActivitySourceFieldReason              = big.NewInt(1 << 12)
-	ledgerActivitySourceFieldSenderAddress       = big.NewInt(1 << 13)
-	ledgerActivitySourceFieldStatus              = big.NewInt(1 << 14)
-	ledgerActivitySourceFieldToAmount            = big.NewInt(1 << 15)
-	ledgerActivitySourceFieldToCurrency          = big.NewInt(1 << 16)
-	ledgerActivitySourceFieldTxHash              = big.NewInt(1 << 17)
-)
-
-type LedgerActivitySource struct {
-	// Withdrawal amount as a decimal number in the destination currency (withdrawal sources only; requires payout:withdrawal:read).
-	AmountFloat *float64 `json:"amount_float,omitempty" url:"amount_float,omitempty"`
-	// Chain the deposit landed on, for example plasma (onchain_transaction sources only).
-	Chain *string `json:"chain,omitempty" url:"chain,omitempty"`
-	// Public claim URL for the airdrop link (airdrop_link sources only).
-	ClaimURL *string `json:"claim_url,omitempty" url:"claim_url,omitempty"`
-	// Withdrawal creation time as an ISO 8601 timestamp (withdrawal sources only; requires payout:withdrawal:read).
-	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
-	// Estimated arrival as an ISO 8601 timestamp (withdrawal sources only; requires payout:withdrawal:read).
-	EstimatedArrival *time.Time `json:"estimated_arrival,omitempty" url:"estimated_arrival,omitempty"`
-	// Amount converted out of from_currency as a decimal string (swap sources only).
-	FromAmount *string `json:"from_amount,omitempty" url:"from_amount,omitempty"`
-	// Lowercase currency code converted from (swap sources only).
-	FromCurrency *string `json:"from_currency,omitempty" url:"from_currency,omitempty"`
-	ID           string  `json:"id" url:"id"`
-	Object       string  `json:"object" url:"object"`
-	// Name of the entity processing the payout (withdrawal sources only; requires payout:withdrawal:read).
-	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
-	// Payout destination display info (withdrawal sources only).
-	PayoutDestination *LedgerActivitySourcePayoutDestination `json:"payout_destination,omitempty" url:"payout_destination,omitempty"`
-	// Saved payout destination nickname (withdrawal sources only).
-	PayoutTokenNickname *string `json:"payout_token_nickname,omitempty" url:"payout_token_nickname,omitempty"`
-	// Why the activity happened. On transfer sources this is the transfer reason, for example pool_top_up or bounty_return. On withdrawal sources it explains why the withdrawal was canceled, denied, or failed (requires payout:withdrawal:read); null while the withdrawal is progressing normally.
-	Reason *string `json:"reason,omitempty" url:"reason,omitempty"`
-	// Sender wallet address or onramp provider identifier (onchain_transaction sources only).
-	SenderAddress *string `json:"sender_address,omitempty" url:"sender_address,omitempty"`
-	// Lifecycle status. On withdrawal sources this is the withdrawal status (requires payout:withdrawal:read); on airdrop_link sources it is the claim-link status (ungated); on payment and top-up sources it is the friendly payment status such as succeeded/pending/failed (ungated).
-	Status *string `json:"status,omitempty" url:"status,omitempty"`
-	// Amount received in to_currency as a decimal string (swap sources only).
-	ToAmount *string `json:"to_amount,omitempty" url:"to_amount,omitempty"`
-	// Lowercase currency code converted to (swap sources only).
-	ToCurrency *string `json:"to_currency,omitempty" url:"to_currency,omitempty"`
-	// On-chain transaction hash (onchain_transaction and swap sources only).
-	TxHash *string `json:"tx_hash,omitempty" url:"tx_hash,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	ExtraProperties map[string]interface{} `json:"-" url:"-"`
-
-	rawJSON json.RawMessage
-}
-
-func (l *LedgerActivitySource) GetAmountFloat() *float64 {
-	if l == nil {
-		return nil
-	}
-	return l.AmountFloat
-}
-
-func (l *LedgerActivitySource) GetChain() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Chain
-}
-
-func (l *LedgerActivitySource) GetClaimURL() *string {
-	if l == nil {
-		return nil
-	}
-	return l.ClaimURL
-}
-
-func (l *LedgerActivitySource) GetCreatedAt() *time.Time {
-	if l == nil {
-		return nil
-	}
-	return l.CreatedAt
-}
-
-func (l *LedgerActivitySource) GetEstimatedArrival() *time.Time {
-	if l == nil {
-		return nil
-	}
-	return l.EstimatedArrival
-}
-
-func (l *LedgerActivitySource) GetFromAmount() *string {
-	if l == nil {
-		return nil
-	}
-	return l.FromAmount
-}
-
-func (l *LedgerActivitySource) GetFromCurrency() *string {
-	if l == nil {
-		return nil
-	}
-	return l.FromCurrency
-}
-
-func (l *LedgerActivitySource) GetID() string {
-	if l == nil {
-		return ""
-	}
-	return l.ID
-}
-
-func (l *LedgerActivitySource) GetObject() string {
-	if l == nil {
-		return ""
-	}
-	return l.Object
-}
-
-func (l *LedgerActivitySource) GetPayerName() *string {
-	if l == nil {
-		return nil
-	}
-	return l.PayerName
-}
-
-func (l *LedgerActivitySource) GetPayoutDestination() *LedgerActivitySourcePayoutDestination {
-	if l == nil {
-		return nil
-	}
-	return l.PayoutDestination
-}
-
-func (l *LedgerActivitySource) GetPayoutTokenNickname() *string {
-	if l == nil {
-		return nil
-	}
-	return l.PayoutTokenNickname
-}
-
-func (l *LedgerActivitySource) GetReason() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Reason
-}
-
-func (l *LedgerActivitySource) GetSenderAddress() *string {
-	if l == nil {
-		return nil
-	}
-	return l.SenderAddress
-}
-
-func (l *LedgerActivitySource) GetStatus() *string {
-	if l == nil {
-		return nil
-	}
-	return l.Status
-}
-
-func (l *LedgerActivitySource) GetToAmount() *string {
-	if l == nil {
-		return nil
-	}
-	return l.ToAmount
-}
-
-func (l *LedgerActivitySource) GetToCurrency() *string {
-	if l == nil {
-		return nil
-	}
-	return l.ToCurrency
-}
-
-func (l *LedgerActivitySource) GetTxHash() *string {
-	if l == nil {
-		return nil
-	}
-	return l.TxHash
-}
-
-func (l *LedgerActivitySource) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.ExtraProperties
-}
-
-func (l *LedgerActivitySource) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetAmountFloat sets the AmountFloat field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetAmountFloat(amountFloat *float64) {
-	l.AmountFloat = amountFloat
-	l.require(ledgerActivitySourceFieldAmountFloat)
-}
-
-// SetChain sets the Chain field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetChain(chain *string) {
-	l.Chain = chain
-	l.require(ledgerActivitySourceFieldChain)
-}
-
-// SetClaimURL sets the ClaimURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetClaimURL(claimURL *string) {
-	l.ClaimURL = claimURL
-	l.require(ledgerActivitySourceFieldClaimURL)
-}
-
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetCreatedAt(createdAt *time.Time) {
-	l.CreatedAt = createdAt
-	l.require(ledgerActivitySourceFieldCreatedAt)
-}
-
-// SetEstimatedArrival sets the EstimatedArrival field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetEstimatedArrival(estimatedArrival *time.Time) {
-	l.EstimatedArrival = estimatedArrival
-	l.require(ledgerActivitySourceFieldEstimatedArrival)
-}
-
-// SetFromAmount sets the FromAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetFromAmount(fromAmount *string) {
-	l.FromAmount = fromAmount
-	l.require(ledgerActivitySourceFieldFromAmount)
-}
-
-// SetFromCurrency sets the FromCurrency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetFromCurrency(fromCurrency *string) {
-	l.FromCurrency = fromCurrency
-	l.require(ledgerActivitySourceFieldFromCurrency)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetID(id string) {
-	l.ID = id
-	l.require(ledgerActivitySourceFieldID)
-}
-
-// SetObject sets the Object field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetObject(object string) {
-	l.Object = object
-	l.require(ledgerActivitySourceFieldObject)
-}
-
-// SetPayerName sets the PayerName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetPayerName(payerName *string) {
-	l.PayerName = payerName
-	l.require(ledgerActivitySourceFieldPayerName)
-}
-
-// SetPayoutDestination sets the PayoutDestination field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetPayoutDestination(payoutDestination *LedgerActivitySourcePayoutDestination) {
-	l.PayoutDestination = payoutDestination
-	l.require(ledgerActivitySourceFieldPayoutDestination)
-}
-
-// SetPayoutTokenNickname sets the PayoutTokenNickname field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetPayoutTokenNickname(payoutTokenNickname *string) {
-	l.PayoutTokenNickname = payoutTokenNickname
-	l.require(ledgerActivitySourceFieldPayoutTokenNickname)
-}
-
-// SetReason sets the Reason field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetReason(reason *string) {
-	l.Reason = reason
-	l.require(ledgerActivitySourceFieldReason)
-}
-
-// SetSenderAddress sets the SenderAddress field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetSenderAddress(senderAddress *string) {
-	l.SenderAddress = senderAddress
-	l.require(ledgerActivitySourceFieldSenderAddress)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetStatus(status *string) {
-	l.Status = status
-	l.require(ledgerActivitySourceFieldStatus)
-}
-
-// SetToAmount sets the ToAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetToAmount(toAmount *string) {
-	l.ToAmount = toAmount
-	l.require(ledgerActivitySourceFieldToAmount)
-}
-
-// SetToCurrency sets the ToCurrency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetToCurrency(toCurrency *string) {
-	l.ToCurrency = toCurrency
-	l.require(ledgerActivitySourceFieldToCurrency)
-}
-
-// SetTxHash sets the TxHash field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySource) SetTxHash(txHash *string) {
-	l.TxHash = txHash
-	l.require(ledgerActivitySourceFieldTxHash)
-}
-
-func (l *LedgerActivitySource) UnmarshalJSON(data []byte) error {
-	type embed LedgerActivitySource
-	var unmarshaler = struct {
-		embed
-		CreatedAt        *internal.DateTime `json:"created_at,omitempty"`
-		EstimatedArrival *internal.DateTime `json:"estimated_arrival,omitempty"`
-	}{
-		embed: embed(*l),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*l = LedgerActivitySource(unmarshaler.embed)
-	l.CreatedAt = unmarshaler.CreatedAt.TimePtr()
-	l.EstimatedArrival = unmarshaler.EstimatedArrival.TimePtr()
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.ExtraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LedgerActivitySource) MarshalJSON() ([]byte, error) {
-	type embed LedgerActivitySource
-	var marshaler = struct {
-		embed
-		CreatedAt        *internal.DateTime `json:"created_at,omitempty"`
-		EstimatedArrival *internal.DateTime `json:"estimated_arrival,omitempty"`
-	}{
-		embed:            embed(*l),
-		CreatedAt:        internal.NewOptionalDateTime(l.CreatedAt),
-		EstimatedArrival: internal.NewOptionalDateTime(l.EstimatedArrival),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return internal.MarshalJSONWithExtraProperties(explicitMarshaler, l.ExtraProperties)
-}
-
-func (l *LedgerActivitySource) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-// Payout destination display info (withdrawal sources only).
-var (
-	ledgerActivitySourcePayoutDestinationFieldIconURL   = big.NewInt(1 << 0)
-	ledgerActivitySourcePayoutDestinationFieldPayerName = big.NewInt(1 << 1)
-)
-
-type LedgerActivitySourcePayoutDestination struct {
-	IconURL   *string `json:"icon_url,omitempty" url:"icon_url,omitempty"`
-	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LedgerActivitySourcePayoutDestination) GetIconURL() *string {
-	if l == nil {
-		return nil
-	}
-	return l.IconURL
-}
-
-func (l *LedgerActivitySourcePayoutDestination) GetPayerName() *string {
-	if l == nil {
-		return nil
-	}
-	return l.PayerName
-}
-
-func (l *LedgerActivitySourcePayoutDestination) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LedgerActivitySourcePayoutDestination) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetIconURL sets the IconURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySourcePayoutDestination) SetIconURL(iconURL *string) {
-	l.IconURL = iconURL
-	l.require(ledgerActivitySourcePayoutDestinationFieldIconURL)
-}
-
-// SetPayerName sets the PayerName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LedgerActivitySourcePayoutDestination) SetPayerName(payerName *string) {
-	l.PayerName = payerName
-	l.require(ledgerActivitySourcePayoutDestinationFieldPayerName)
-}
-
-func (l *LedgerActivitySourcePayoutDestination) UnmarshalJSON(data []byte) error {
-	type unmarshaler LedgerActivitySourcePayoutDestination
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = LedgerActivitySourcePayoutDestination(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LedgerActivitySourcePayoutDestination) MarshalJSON() ([]byte, error) {
-	type embed LedgerActivitySourcePayoutDestination
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LedgerActivitySourcePayoutDestination) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
 }
 
 type ListFinancialActivityRequestLineTypesItem string
 
 const (
-	ListFinancialActivityRequestLineTypesItemAdBudgetRelease                  ListFinancialActivityRequestLineTypesItem = "ad_budget_release"
-	ListFinancialActivityRequestLineTypesItemAdCampaignBudget                 ListFinancialActivityRequestLineTypesItem = "ad_campaign_budget"
-	ListFinancialActivityRequestLineTypesItemAdPublisherPayout                ListFinancialActivityRequestLineTypesItem = "ad_publisher_payout"
-	ListFinancialActivityRequestLineTypesItemAdPublisherPayoutReceived        ListFinancialActivityRequestLineTypesItem = "ad_publisher_payout_received"
-	ListFinancialActivityRequestLineTypesItemAdSpendCharge                    ListFinancialActivityRequestLineTypesItem = "ad_spend_charge"
-	ListFinancialActivityRequestLineTypesItemAffiliateFee                     ListFinancialActivityRequestLineTypesItem = "affiliate_fee"
-	ListFinancialActivityRequestLineTypesItemAirdrop                          ListFinancialActivityRequestLineTypesItem = "airdrop"
-	ListFinancialActivityRequestLineTypesItemAirdropLinkCreated               ListFinancialActivityRequestLineTypesItem = "airdrop_link_created"
-	ListFinancialActivityRequestLineTypesItemAirdropLinkRedeemed              ListFinancialActivityRequestLineTypesItem = "airdrop_link_redeemed"
-	ListFinancialActivityRequestLineTypesItemAirdropLinkReturned              ListFinancialActivityRequestLineTypesItem = "airdrop_link_returned"
-	ListFinancialActivityRequestLineTypesItemAirdropReversal                  ListFinancialActivityRequestLineTypesItem = "airdrop_reversal"
-	ListFinancialActivityRequestLineTypesItemApplicationFee                   ListFinancialActivityRequestLineTypesItem = "application_fee"
-	ListFinancialActivityRequestLineTypesItemApplicationFeePayout             ListFinancialActivityRequestLineTypesItem = "application_fee_payout"
-	ListFinancialActivityRequestLineTypesItemBankTransfer                     ListFinancialActivityRequestLineTypesItem = "bank_transfer"
-	ListFinancialActivityRequestLineTypesItemBillingPercentageFee             ListFinancialActivityRequestLineTypesItem = "billing_percentage_fee"
-	ListFinancialActivityRequestLineTypesItemBuyerFee                         ListFinancialActivityRequestLineTypesItem = "buyer_fee"
-	ListFinancialActivityRequestLineTypesItemCardSpendAuthorization           ListFinancialActivityRequestLineTypesItem = "card_spend_authorization"
-	ListFinancialActivityRequestLineTypesItemCardSpendAuthorizationVoid       ListFinancialActivityRequestLineTypesItem = "card_spend_authorization_void"
-	ListFinancialActivityRequestLineTypesItemCardSpendRefund                  ListFinancialActivityRequestLineTypesItem = "card_spend_refund"
-	ListFinancialActivityRequestLineTypesItemCompanyReferral                  ListFinancialActivityRequestLineTypesItem = "company_referral"
-	ListFinancialActivityRequestLineTypesItemCrossBorderPercentageFee         ListFinancialActivityRequestLineTypesItem = "cross_border_percentage_fee"
-	ListFinancialActivityRequestLineTypesItemCurrencyConversionIncoming       ListFinancialActivityRequestLineTypesItem = "currency_conversion_incoming"
-	ListFinancialActivityRequestLineTypesItemCurrencyConversionOutgoing       ListFinancialActivityRequestLineTypesItem = "currency_conversion_outgoing"
-	ListFinancialActivityRequestLineTypesItemDisputeAlertFee                  ListFinancialActivityRequestLineTypesItem = "dispute_alert_fee"
-	ListFinancialActivityRequestLineTypesItemDisputeHoldAdjustment            ListFinancialActivityRequestLineTypesItem = "dispute_hold_adjustment"
-	ListFinancialActivityRequestLineTypesItemDisputeRepresentmentFee          ListFinancialActivityRequestLineTypesItem = "dispute_representment_fee"
-	ListFinancialActivityRequestLineTypesItemFees                             ListFinancialActivityRequestLineTypesItem = "fees"
-	ListFinancialActivityRequestLineTypesItemFraudPreventionFee               ListFinancialActivityRequestLineTypesItem = "fraud_prevention_fee"
-	ListFinancialActivityRequestLineTypesItemFxPercentageFee                  ListFinancialActivityRequestLineTypesItem = "fx_percentage_fee"
-	ListFinancialActivityRequestLineTypesItemHighRiskMerchantFee              ListFinancialActivityRequestLineTypesItem = "high_risk_merchant_fee"
-	ListFinancialActivityRequestLineTypesItemInstallmentDefault               ListFinancialActivityRequestLineTypesItem = "installment_default"
-	ListFinancialActivityRequestLineTypesItemInternalBalanceTransferIncoming  ListFinancialActivityRequestLineTypesItem = "internal_balance_transfer_incoming"
-	ListFinancialActivityRequestLineTypesItemInternalBalanceTransferOutgoing  ListFinancialActivityRequestLineTypesItem = "internal_balance_transfer_outgoing"
-	ListFinancialActivityRequestLineTypesItemInternalWithdrawal               ListFinancialActivityRequestLineTypesItem = "internal_withdrawal"
-	ListFinancialActivityRequestLineTypesItemInternalWithdrawalReversal       ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_reversal"
-	ListFinancialActivityRequestLineTypesItemLegacyCryptoPayment              ListFinancialActivityRequestLineTypesItem = "legacy_crypto_payment"
-	ListFinancialActivityRequestLineTypesItemLegacyPayment                    ListFinancialActivityRequestLineTypesItem = "legacy_payment"
-	ListFinancialActivityRequestLineTypesItemLegacyPaymentRefund              ListFinancialActivityRequestLineTypesItem = "legacy_payment_refund"
-	ListFinancialActivityRequestLineTypesItemLicenseSale                      ListFinancialActivityRequestLineTypesItem = "license_sale"
-	ListFinancialActivityRequestLineTypesItemLicenseSaleCommission            ListFinancialActivityRequestLineTypesItem = "license_sale_commission"
-	ListFinancialActivityRequestLineTypesItemLicenseSaleRevenue               ListFinancialActivityRequestLineTypesItem = "license_sale_revenue"
-	ListFinancialActivityRequestLineTypesItemMiscPurchase                     ListFinancialActivityRequestLineTypesItem = "misc_purchase"
-	ListFinancialActivityRequestLineTypesItemMiscRefund                       ListFinancialActivityRequestLineTypesItem = "misc_refund"
-	ListFinancialActivityRequestLineTypesItemMiscReversal                     ListFinancialActivityRequestLineTypesItem = "misc_reversal"
-	ListFinancialActivityRequestLineTypesItemOnchainDeposit                   ListFinancialActivityRequestLineTypesItem = "onchain_deposit"
-	ListFinancialActivityRequestLineTypesItemOnchainSwapTarget                ListFinancialActivityRequestLineTypesItem = "onchain_swap_target"
-	ListFinancialActivityRequestLineTypesItemOnchainWalletTransferIncoming    ListFinancialActivityRequestLineTypesItem = "onchain_wallet_transfer_incoming"
-	ListFinancialActivityRequestLineTypesItemOnchainWalletTransferOutgoing    ListFinancialActivityRequestLineTypesItem = "onchain_wallet_transfer_outgoing"
-	ListFinancialActivityRequestLineTypesItemOrchestrationPercentageFee       ListFinancialActivityRequestLineTypesItem = "orchestration_percentage_fee"
-	ListFinancialActivityRequestLineTypesItemPassthroughGmv                   ListFinancialActivityRequestLineTypesItem = "passthrough_gmv"
-	ListFinancialActivityRequestLineTypesItemPaymentDispute                   ListFinancialActivityRequestLineTypesItem = "payment_dispute"
-	ListFinancialActivityRequestLineTypesItemPaymentDisputeAdjustment         ListFinancialActivityRequestLineTypesItem = "payment_dispute_adjustment"
-	ListFinancialActivityRequestLineTypesItemPaymentDisputeFee                ListFinancialActivityRequestLineTypesItem = "payment_dispute_fee"
-	ListFinancialActivityRequestLineTypesItemPaymentDisputeReversal           ListFinancialActivityRequestLineTypesItem = "payment_dispute_reversal"
-	ListFinancialActivityRequestLineTypesItemPaymentGross                     ListFinancialActivityRequestLineTypesItem = "payment_gross"
-	ListFinancialActivityRequestLineTypesItemPaymentGrossReversal             ListFinancialActivityRequestLineTypesItem = "payment_gross_reversal"
-	ListFinancialActivityRequestLineTypesItemPaymentProcessingFixedFee        ListFinancialActivityRequestLineTypesItem = "payment_processing_fixed_fee"
-	ListFinancialActivityRequestLineTypesItemPaymentProcessingPercentageFee   ListFinancialActivityRequestLineTypesItem = "payment_processing_percentage_fee"
-	ListFinancialActivityRequestLineTypesItemPaymentReferral                  ListFinancialActivityRequestLineTypesItem = "payment_referral"
-	ListFinancialActivityRequestLineTypesItemPaymentReferralReversal          ListFinancialActivityRequestLineTypesItem = "payment_referral_reversal"
-	ListFinancialActivityRequestLineTypesItemPaymentRefund                    ListFinancialActivityRequestLineTypesItem = "payment_refund"
-	ListFinancialActivityRequestLineTypesItemPaymentRefundReversal            ListFinancialActivityRequestLineTypesItem = "payment_refund_reversal"
-	ListFinancialActivityRequestLineTypesItemPaymentRevshare                  ListFinancialActivityRequestLineTypesItem = "payment_revshare"
-	ListFinancialActivityRequestLineTypesItemPaymentRevsharePayout            ListFinancialActivityRequestLineTypesItem = "payment_revshare_payout"
-	ListFinancialActivityRequestLineTypesItemPaymentRevshareRefund            ListFinancialActivityRequestLineTypesItem = "payment_revshare_refund"
-	ListFinancialActivityRequestLineTypesItemPaymentRevshareReversal          ListFinancialActivityRequestLineTypesItem = "payment_revshare_reversal"
-	ListFinancialActivityRequestLineTypesItemPayoutFee                        ListFinancialActivityRequestLineTypesItem = "payout_fee"
-	ListFinancialActivityRequestLineTypesItemPlatformAffiliatePayment         ListFinancialActivityRequestLineTypesItem = "platform_affiliate_payment"
-	ListFinancialActivityRequestLineTypesItemPlatformAffiliatePaymentReversal ListFinancialActivityRequestLineTypesItem = "platform_affiliate_payment_reversal"
-	ListFinancialActivityRequestLineTypesItemPlatformBalancePayment           ListFinancialActivityRequestLineTypesItem = "platform_balance_payment"
-	ListFinancialActivityRequestLineTypesItemPlatformBalancePaymentRefund     ListFinancialActivityRequestLineTypesItem = "platform_balance_payment_refund"
-	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferIncoming  ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_incoming"
-	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferOutgoing  ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_outgoing"
-	ListFinancialActivityRequestLineTypesItemPlatformCoveredDispute           ListFinancialActivityRequestLineTypesItem = "platform_covered_dispute"
-	ListFinancialActivityRequestLineTypesItemPromoReversal                    ListFinancialActivityRequestLineTypesItem = "promo_reversal"
-	ListFinancialActivityRequestLineTypesItemReferralBonus                    ListFinancialActivityRequestLineTypesItem = "referral_bonus"
-	ListFinancialActivityRequestLineTypesItemResolutionCenterRefund           ListFinancialActivityRequestLineTypesItem = "resolution_center_refund"
-	ListFinancialActivityRequestLineTypesItemRevsharePercentageFee            ListFinancialActivityRequestLineTypesItem = "revshare_percentage_fee"
-	ListFinancialActivityRequestLineTypesItemSalesTaxFee                      ListFinancialActivityRequestLineTypesItem = "sales_tax_fee"
-	ListFinancialActivityRequestLineTypesItemSalesTaxRemittance               ListFinancialActivityRequestLineTypesItem = "sales_tax_remittance"
-	ListFinancialActivityRequestLineTypesItemSalesTaxRemittanceReversal       ListFinancialActivityRequestLineTypesItem = "sales_tax_remittance_reversal"
-	ListFinancialActivityRequestLineTypesItemSoftwareRentalRevshare           ListFinancialActivityRequestLineTypesItem = "software_rental_revshare"
-	ListFinancialActivityRequestLineTypesItemSoftwareRentalTransaction        ListFinancialActivityRequestLineTypesItem = "software_rental_transaction"
-	ListFinancialActivityRequestLineTypesItemStripeDomesticProcessingFee      ListFinancialActivityRequestLineTypesItem = "stripe_domestic_processing_fee"
-	ListFinancialActivityRequestLineTypesItemStripeInternationalProcessingFee ListFinancialActivityRequestLineTypesItem = "stripe_international_processing_fee"
-	ListFinancialActivityRequestLineTypesItemThreeDsFixedFee                  ListFinancialActivityRequestLineTypesItem = "three_ds_fixed_fee"
-	ListFinancialActivityRequestLineTypesItemTopup                            ListFinancialActivityRequestLineTypesItem = "topup"
-	ListFinancialActivityRequestLineTypesItemTopupFee                         ListFinancialActivityRequestLineTypesItem = "topup_fee"
-	ListFinancialActivityRequestLineTypesItemTopupReversal                    ListFinancialActivityRequestLineTypesItem = "topup_reversal"
-	ListFinancialActivityRequestLineTypesItemTreasuryPayin                    ListFinancialActivityRequestLineTypesItem = "treasury_payin"
-	ListFinancialActivityRequestLineTypesItemWhopProcessingFee                ListFinancialActivityRequestLineTypesItem = "whop_processing_fee"
-	ListFinancialActivityRequestLineTypesItemWithdrawal                       ListFinancialActivityRequestLineTypesItem = "withdrawal"
-	ListFinancialActivityRequestLineTypesItemWithdrawalClawback               ListFinancialActivityRequestLineTypesItem = "withdrawal_clawback"
-	ListFinancialActivityRequestLineTypesItemWithdrawalClawbackReversal       ListFinancialActivityRequestLineTypesItem = "withdrawal_clawback_reversal"
-	ListFinancialActivityRequestLineTypesItemWithdrawalReclassification       ListFinancialActivityRequestLineTypesItem = "withdrawal_reclassification"
-	ListFinancialActivityRequestLineTypesItemWithdrawalReversal               ListFinancialActivityRequestLineTypesItem = "withdrawal_reversal"
+	ListFinancialActivityRequestLineTypesItemAccountSettlement                         ListFinancialActivityRequestLineTypesItem = "account_settlement"
+	ListFinancialActivityRequestLineTypesItemAdAffiliatePayoutReceived                 ListFinancialActivityRequestLineTypesItem = "ad_affiliate_payout_received"
+	ListFinancialActivityRequestLineTypesItemAdBudgetRelease                           ListFinancialActivityRequestLineTypesItem = "ad_budget_release"
+	ListFinancialActivityRequestLineTypesItemAdCampaignBudget                          ListFinancialActivityRequestLineTypesItem = "ad_campaign_budget"
+	ListFinancialActivityRequestLineTypesItemAdPublisherPayout                         ListFinancialActivityRequestLineTypesItem = "ad_publisher_payout"
+	ListFinancialActivityRequestLineTypesItemAdPublisherPayoutReceived                 ListFinancialActivityRequestLineTypesItem = "ad_publisher_payout_received"
+	ListFinancialActivityRequestLineTypesItemAdSpendCharge                             ListFinancialActivityRequestLineTypesItem = "ad_spend_charge"
+	ListFinancialActivityRequestLineTypesItemAffiliateFee                              ListFinancialActivityRequestLineTypesItem = "affiliate_fee"
+	ListFinancialActivityRequestLineTypesItemAirdrop                                   ListFinancialActivityRequestLineTypesItem = "airdrop"
+	ListFinancialActivityRequestLineTypesItemAirdropLinkCreated                        ListFinancialActivityRequestLineTypesItem = "airdrop_link_created"
+	ListFinancialActivityRequestLineTypesItemAirdropLinkRedeemed                       ListFinancialActivityRequestLineTypesItem = "airdrop_link_redeemed"
+	ListFinancialActivityRequestLineTypesItemAirdropLinkReturned                       ListFinancialActivityRequestLineTypesItem = "airdrop_link_returned"
+	ListFinancialActivityRequestLineTypesItemAirdropReversal                           ListFinancialActivityRequestLineTypesItem = "airdrop_reversal"
+	ListFinancialActivityRequestLineTypesItemApplicationFee                            ListFinancialActivityRequestLineTypesItem = "application_fee"
+	ListFinancialActivityRequestLineTypesItemApplicationFeePayout                      ListFinancialActivityRequestLineTypesItem = "application_fee_payout"
+	ListFinancialActivityRequestLineTypesItemBalanceReservation                        ListFinancialActivityRequestLineTypesItem = "balance_reservation"
+	ListFinancialActivityRequestLineTypesItemBalanceReservationReversal                ListFinancialActivityRequestLineTypesItem = "balance_reservation_reversal"
+	ListFinancialActivityRequestLineTypesItemBankTransfer                              ListFinancialActivityRequestLineTypesItem = "bank_transfer"
+	ListFinancialActivityRequestLineTypesItemBillingPercentageFee                      ListFinancialActivityRequestLineTypesItem = "billing_percentage_fee"
+	ListFinancialActivityRequestLineTypesItemBuyerFee                                  ListFinancialActivityRequestLineTypesItem = "buyer_fee"
+	ListFinancialActivityRequestLineTypesItemCardInterchange                           ListFinancialActivityRequestLineTypesItem = "card_interchange"
+	ListFinancialActivityRequestLineTypesItemCardLoadDeposit                           ListFinancialActivityRequestLineTypesItem = "card_load_deposit"
+	ListFinancialActivityRequestLineTypesItemCardLoadTransfer                          ListFinancialActivityRequestLineTypesItem = "card_load_transfer"
+	ListFinancialActivityRequestLineTypesItemCardSpendAuthorization                    ListFinancialActivityRequestLineTypesItem = "card_spend_authorization"
+	ListFinancialActivityRequestLineTypesItemCardSpendAuthorizationVoid                ListFinancialActivityRequestLineTypesItem = "card_spend_authorization_void"
+	ListFinancialActivityRequestLineTypesItemCardSpendRefund                           ListFinancialActivityRequestLineTypesItem = "card_spend_refund"
+	ListFinancialActivityRequestLineTypesItemCardUnloadDeposit                         ListFinancialActivityRequestLineTypesItem = "card_unload_deposit"
+	ListFinancialActivityRequestLineTypesItemCardUnloadTransfer                        ListFinancialActivityRequestLineTypesItem = "card_unload_transfer"
+	ListFinancialActivityRequestLineTypesItemCashback                                  ListFinancialActivityRequestLineTypesItem = "cashback"
+	ListFinancialActivityRequestLineTypesItemCashbackFunding                           ListFinancialActivityRequestLineTypesItem = "cashback_funding"
+	ListFinancialActivityRequestLineTypesItemCompanyReferral                           ListFinancialActivityRequestLineTypesItem = "company_referral"
+	ListFinancialActivityRequestLineTypesItemConnectedAccountNegativeBalance           ListFinancialActivityRequestLineTypesItem = "connected_account_negative_balance"
+	ListFinancialActivityRequestLineTypesItemCrossBorderPercentageFee                  ListFinancialActivityRequestLineTypesItem = "cross_border_percentage_fee"
+	ListFinancialActivityRequestLineTypesItemCurrencyConversionIncoming                ListFinancialActivityRequestLineTypesItem = "currency_conversion_incoming"
+	ListFinancialActivityRequestLineTypesItemCurrencyConversionOutgoing                ListFinancialActivityRequestLineTypesItem = "currency_conversion_outgoing"
+	ListFinancialActivityRequestLineTypesItemDisputeAlertFee                           ListFinancialActivityRequestLineTypesItem = "dispute_alert_fee"
+	ListFinancialActivityRequestLineTypesItemDisputeHoldAdjustment                     ListFinancialActivityRequestLineTypesItem = "dispute_hold_adjustment"
+	ListFinancialActivityRequestLineTypesItemDisputeRepresentmentFee                   ListFinancialActivityRequestLineTypesItem = "dispute_representment_fee"
+	ListFinancialActivityRequestLineTypesItemEconomicIntelligencePercentageFee         ListFinancialActivityRequestLineTypesItem = "economic_intelligence_percentage_fee"
+	ListFinancialActivityRequestLineTypesItemExternalCardLoadDeposit                   ListFinancialActivityRequestLineTypesItem = "external_card_load_deposit"
+	ListFinancialActivityRequestLineTypesItemFees                                      ListFinancialActivityRequestLineTypesItem = "fees"
+	ListFinancialActivityRequestLineTypesItemFraudPreventionFee                        ListFinancialActivityRequestLineTypesItem = "fraud_prevention_fee"
+	ListFinancialActivityRequestLineTypesItemFxPercentageFee                           ListFinancialActivityRequestLineTypesItem = "fx_percentage_fee"
+	ListFinancialActivityRequestLineTypesItemHighRiskMerchantFee                       ListFinancialActivityRequestLineTypesItem = "high_risk_merchant_fee"
+	ListFinancialActivityRequestLineTypesItemInstallmentDefault                        ListFinancialActivityRequestLineTypesItem = "installment_default"
+	ListFinancialActivityRequestLineTypesItemInternalBalanceTransferIncoming           ListFinancialActivityRequestLineTypesItem = "internal_balance_transfer_incoming"
+	ListFinancialActivityRequestLineTypesItemInternalBalanceTransferOutgoing           ListFinancialActivityRequestLineTypesItem = "internal_balance_transfer_outgoing"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawal                        ListFinancialActivityRequestLineTypesItem = "internal_withdrawal"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalComplete                ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_complete"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalFee                     ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_fee"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalFeeReversal             ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_fee_reversal"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalInTransit               ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_in_transit"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalInTransitReversal       ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_in_transit_reversal"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalMarkupFee               ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_markup_fee"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalMarkupFeePayout         ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_markup_fee_payout"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalMarkupFeePayoutReversal ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_markup_fee_payout_reversal"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalMarkupFeeReversal       ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_markup_fee_reversal"
+	ListFinancialActivityRequestLineTypesItemInternalWithdrawalReversal                ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_reversal"
+	ListFinancialActivityRequestLineTypesItemLegacyCryptoPayment                       ListFinancialActivityRequestLineTypesItem = "legacy_crypto_payment"
+	ListFinancialActivityRequestLineTypesItemLegacyPayment                             ListFinancialActivityRequestLineTypesItem = "legacy_payment"
+	ListFinancialActivityRequestLineTypesItemLegacyPaymentRefund                       ListFinancialActivityRequestLineTypesItem = "legacy_payment_refund"
+	ListFinancialActivityRequestLineTypesItemLicenseSale                               ListFinancialActivityRequestLineTypesItem = "license_sale"
+	ListFinancialActivityRequestLineTypesItemLicenseSaleCommission                     ListFinancialActivityRequestLineTypesItem = "license_sale_commission"
+	ListFinancialActivityRequestLineTypesItemLicenseSaleRevenue                        ListFinancialActivityRequestLineTypesItem = "license_sale_revenue"
+	ListFinancialActivityRequestLineTypesItemMarketplaceAffiliateFee                   ListFinancialActivityRequestLineTypesItem = "marketplace_affiliate_fee"
+	ListFinancialActivityRequestLineTypesItemMiscPurchase                              ListFinancialActivityRequestLineTypesItem = "misc_purchase"
+	ListFinancialActivityRequestLineTypesItemMiscRefund                                ListFinancialActivityRequestLineTypesItem = "misc_refund"
+	ListFinancialActivityRequestLineTypesItemMiscReversal                              ListFinancialActivityRequestLineTypesItem = "misc_reversal"
+	ListFinancialActivityRequestLineTypesItemOnboardingReward                          ListFinancialActivityRequestLineTypesItem = "onboarding_reward"
+	ListFinancialActivityRequestLineTypesItemOnchainDeposit                            ListFinancialActivityRequestLineTypesItem = "onchain_deposit"
+	ListFinancialActivityRequestLineTypesItemOnchainInternalTransferIncoming           ListFinancialActivityRequestLineTypesItem = "onchain_internal_transfer_incoming"
+	ListFinancialActivityRequestLineTypesItemOnchainInternalTransferOutgoing           ListFinancialActivityRequestLineTypesItem = "onchain_internal_transfer_outgoing"
+	ListFinancialActivityRequestLineTypesItemOnchainPlatformTransferIncoming           ListFinancialActivityRequestLineTypesItem = "onchain_platform_transfer_incoming"
+	ListFinancialActivityRequestLineTypesItemOnchainPlatformTransferOutgoing           ListFinancialActivityRequestLineTypesItem = "onchain_platform_transfer_outgoing"
+	ListFinancialActivityRequestLineTypesItemOnchainSwapSource                         ListFinancialActivityRequestLineTypesItem = "onchain_swap_source"
+	ListFinancialActivityRequestLineTypesItemOnchainSwapTarget                         ListFinancialActivityRequestLineTypesItem = "onchain_swap_target"
+	ListFinancialActivityRequestLineTypesItemOnchainWalletTransferIncoming             ListFinancialActivityRequestLineTypesItem = "onchain_wallet_transfer_incoming"
+	ListFinancialActivityRequestLineTypesItemOnchainWalletTransferOutgoing             ListFinancialActivityRequestLineTypesItem = "onchain_wallet_transfer_outgoing"
+	ListFinancialActivityRequestLineTypesItemOnchainWithdrawal                         ListFinancialActivityRequestLineTypesItem = "onchain_withdrawal"
+	ListFinancialActivityRequestLineTypesItemOrchestrationPercentageFee                ListFinancialActivityRequestLineTypesItem = "orchestration_percentage_fee"
+	ListFinancialActivityRequestLineTypesItemPartnerGrantReward                        ListFinancialActivityRequestLineTypesItem = "partner_grant_reward"
+	ListFinancialActivityRequestLineTypesItemPassthroughGmv                            ListFinancialActivityRequestLineTypesItem = "passthrough_gmv"
+	ListFinancialActivityRequestLineTypesItemPaymentDispute                            ListFinancialActivityRequestLineTypesItem = "payment_dispute"
+	ListFinancialActivityRequestLineTypesItemPaymentDisputeAdjustment                  ListFinancialActivityRequestLineTypesItem = "payment_dispute_adjustment"
+	ListFinancialActivityRequestLineTypesItemPaymentDisputeFee                         ListFinancialActivityRequestLineTypesItem = "payment_dispute_fee"
+	ListFinancialActivityRequestLineTypesItemPaymentDisputeReversal                    ListFinancialActivityRequestLineTypesItem = "payment_dispute_reversal"
+	ListFinancialActivityRequestLineTypesItemPaymentGross                              ListFinancialActivityRequestLineTypesItem = "payment_gross"
+	ListFinancialActivityRequestLineTypesItemPaymentGrossReversal                      ListFinancialActivityRequestLineTypesItem = "payment_gross_reversal"
+	ListFinancialActivityRequestLineTypesItemPaymentProcessingFixedFee                 ListFinancialActivityRequestLineTypesItem = "payment_processing_fixed_fee"
+	ListFinancialActivityRequestLineTypesItemPaymentProcessingPercentageFee            ListFinancialActivityRequestLineTypesItem = "payment_processing_percentage_fee"
+	ListFinancialActivityRequestLineTypesItemPaymentReferral                           ListFinancialActivityRequestLineTypesItem = "payment_referral"
+	ListFinancialActivityRequestLineTypesItemPaymentReferralRefund                     ListFinancialActivityRequestLineTypesItem = "payment_referral_refund"
+	ListFinancialActivityRequestLineTypesItemPaymentReferralReversal                   ListFinancialActivityRequestLineTypesItem = "payment_referral_reversal"
+	ListFinancialActivityRequestLineTypesItemPaymentRefund                             ListFinancialActivityRequestLineTypesItem = "payment_refund"
+	ListFinancialActivityRequestLineTypesItemPaymentRefundReversal                     ListFinancialActivityRequestLineTypesItem = "payment_refund_reversal"
+	ListFinancialActivityRequestLineTypesItemPaymentReturnFee                          ListFinancialActivityRequestLineTypesItem = "payment_return_fee"
+	ListFinancialActivityRequestLineTypesItemPaymentRevshare                           ListFinancialActivityRequestLineTypesItem = "payment_revshare"
+	ListFinancialActivityRequestLineTypesItemPaymentRevsharePayout                     ListFinancialActivityRequestLineTypesItem = "payment_revshare_payout"
+	ListFinancialActivityRequestLineTypesItemPaymentRevshareRefund                     ListFinancialActivityRequestLineTypesItem = "payment_revshare_refund"
+	ListFinancialActivityRequestLineTypesItemPaymentRevshareReversal                   ListFinancialActivityRequestLineTypesItem = "payment_revshare_reversal"
+	ListFinancialActivityRequestLineTypesItemPayoutFee                                 ListFinancialActivityRequestLineTypesItem = "payout_fee"
+	ListFinancialActivityRequestLineTypesItemPlatformAffiliatePayment                  ListFinancialActivityRequestLineTypesItem = "platform_affiliate_payment"
+	ListFinancialActivityRequestLineTypesItemPlatformAffiliatePaymentReversal          ListFinancialActivityRequestLineTypesItem = "platform_affiliate_payment_reversal"
+	ListFinancialActivityRequestLineTypesItemPlatformBalancePayment                    ListFinancialActivityRequestLineTypesItem = "platform_balance_payment"
+	ListFinancialActivityRequestLineTypesItemPlatformBalancePaymentRefund              ListFinancialActivityRequestLineTypesItem = "platform_balance_payment_refund"
+	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferFee                ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_fee"
+	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferIncoming           ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_incoming"
+	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferOutgoing           ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_outgoing"
+	ListFinancialActivityRequestLineTypesItemPlatformCoveredDispute                    ListFinancialActivityRequestLineTypesItem = "platform_covered_dispute"
+	ListFinancialActivityRequestLineTypesItemPlatformCreditsGranted                    ListFinancialActivityRequestLineTypesItem = "platform_credits_granted"
+	ListFinancialActivityRequestLineTypesItemPlatformCreditsPayment                    ListFinancialActivityRequestLineTypesItem = "platform_credits_payment"
+	ListFinancialActivityRequestLineTypesItemPlatformCreditsPaymentRefund              ListFinancialActivityRequestLineTypesItem = "platform_credits_payment_refund"
+	ListFinancialActivityRequestLineTypesItemPlatformEarning                           ListFinancialActivityRequestLineTypesItem = "platform_earning"
+	ListFinancialActivityRequestLineTypesItemPlatformMarkupFee                         ListFinancialActivityRequestLineTypesItem = "platform_markup_fee"
+	ListFinancialActivityRequestLineTypesItemPlatformMarkupFeePayout                   ListFinancialActivityRequestLineTypesItem = "platform_markup_fee_payout"
+	ListFinancialActivityRequestLineTypesItemPromoReversal                             ListFinancialActivityRequestLineTypesItem = "promo_reversal"
+	ListFinancialActivityRequestLineTypesItemReferralBonus                             ListFinancialActivityRequestLineTypesItem = "referral_bonus"
+	ListFinancialActivityRequestLineTypesItemResolutionCenterRefund                    ListFinancialActivityRequestLineTypesItem = "resolution_center_refund"
+	ListFinancialActivityRequestLineTypesItemRevsharePercentageFee                     ListFinancialActivityRequestLineTypesItem = "revshare_percentage_fee"
+	ListFinancialActivityRequestLineTypesItemSalesTaxFee                               ListFinancialActivityRequestLineTypesItem = "sales_tax_fee"
+	ListFinancialActivityRequestLineTypesItemSalesTaxRemittance                        ListFinancialActivityRequestLineTypesItem = "sales_tax_remittance"
+	ListFinancialActivityRequestLineTypesItemSalesTaxRemittanceReversal                ListFinancialActivityRequestLineTypesItem = "sales_tax_remittance_reversal"
+	ListFinancialActivityRequestLineTypesItemSoftwareRentalRevshare                    ListFinancialActivityRequestLineTypesItem = "software_rental_revshare"
+	ListFinancialActivityRequestLineTypesItemSoftwareRentalTransaction                 ListFinancialActivityRequestLineTypesItem = "software_rental_transaction"
+	ListFinancialActivityRequestLineTypesItemStripeDomesticProcessingFee               ListFinancialActivityRequestLineTypesItem = "stripe_domestic_processing_fee"
+	ListFinancialActivityRequestLineTypesItemStripeInternationalProcessingFee          ListFinancialActivityRequestLineTypesItem = "stripe_international_processing_fee"
+	ListFinancialActivityRequestLineTypesItemSwapFee                                   ListFinancialActivityRequestLineTypesItem = "swap_fee"
+	ListFinancialActivityRequestLineTypesItemThreeDsFixedFee                           ListFinancialActivityRequestLineTypesItem = "three_ds_fixed_fee"
+	ListFinancialActivityRequestLineTypesItemTopup                                     ListFinancialActivityRequestLineTypesItem = "topup"
+	ListFinancialActivityRequestLineTypesItemTopupFee                                  ListFinancialActivityRequestLineTypesItem = "topup_fee"
+	ListFinancialActivityRequestLineTypesItemTopupReversal                             ListFinancialActivityRequestLineTypesItem = "topup_reversal"
+	ListFinancialActivityRequestLineTypesItemTreasuryPayin                             ListFinancialActivityRequestLineTypesItem = "treasury_payin"
+	ListFinancialActivityRequestLineTypesItemWhopProcessingFee                         ListFinancialActivityRequestLineTypesItem = "whop_processing_fee"
+	ListFinancialActivityRequestLineTypesItemWithdrawal                                ListFinancialActivityRequestLineTypesItem = "withdrawal"
+	ListFinancialActivityRequestLineTypesItemWithdrawalClawback                        ListFinancialActivityRequestLineTypesItem = "withdrawal_clawback"
+	ListFinancialActivityRequestLineTypesItemWithdrawalClawbackReversal                ListFinancialActivityRequestLineTypesItem = "withdrawal_clawback_reversal"
+	ListFinancialActivityRequestLineTypesItemWithdrawalFee                             ListFinancialActivityRequestLineTypesItem = "withdrawal_fee"
+	ListFinancialActivityRequestLineTypesItemWithdrawalFeeReversal                     ListFinancialActivityRequestLineTypesItem = "withdrawal_fee_reversal"
+	ListFinancialActivityRequestLineTypesItemWithdrawalMarkupFee                       ListFinancialActivityRequestLineTypesItem = "withdrawal_markup_fee"
+	ListFinancialActivityRequestLineTypesItemWithdrawalMarkupFeePayout                 ListFinancialActivityRequestLineTypesItem = "withdrawal_markup_fee_payout"
+	ListFinancialActivityRequestLineTypesItemWithdrawalMarkupFeePayoutReversal         ListFinancialActivityRequestLineTypesItem = "withdrawal_markup_fee_payout_reversal"
+	ListFinancialActivityRequestLineTypesItemWithdrawalMarkupFeeReversal               ListFinancialActivityRequestLineTypesItem = "withdrawal_markup_fee_reversal"
+	ListFinancialActivityRequestLineTypesItemWithdrawalReclassification                ListFinancialActivityRequestLineTypesItem = "withdrawal_reclassification"
+	ListFinancialActivityRequestLineTypesItemWithdrawalReversal                        ListFinancialActivityRequestLineTypesItem = "withdrawal_reversal"
+	ListFinancialActivityRequestLineTypesItemWithdrawalTopupAdjustment                 ListFinancialActivityRequestLineTypesItem = "withdrawal_topup_adjustment"
 )
 
 func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinancialActivityRequestLineTypesItem, error) {
 	switch s {
+	case "account_settlement":
+		return ListFinancialActivityRequestLineTypesItemAccountSettlement, nil
+	case "ad_affiliate_payout_received":
+		return ListFinancialActivityRequestLineTypesItemAdAffiliatePayoutReceived, nil
 	case "ad_budget_release":
 		return ListFinancialActivityRequestLineTypesItemAdBudgetRelease, nil
 	case "ad_campaign_budget":
@@ -4092,20 +444,40 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemApplicationFee, nil
 	case "application_fee_payout":
 		return ListFinancialActivityRequestLineTypesItemApplicationFeePayout, nil
+	case "balance_reservation":
+		return ListFinancialActivityRequestLineTypesItemBalanceReservation, nil
+	case "balance_reservation_reversal":
+		return ListFinancialActivityRequestLineTypesItemBalanceReservationReversal, nil
 	case "bank_transfer":
 		return ListFinancialActivityRequestLineTypesItemBankTransfer, nil
 	case "billing_percentage_fee":
 		return ListFinancialActivityRequestLineTypesItemBillingPercentageFee, nil
 	case "buyer_fee":
 		return ListFinancialActivityRequestLineTypesItemBuyerFee, nil
+	case "card_interchange":
+		return ListFinancialActivityRequestLineTypesItemCardInterchange, nil
+	case "card_load_deposit":
+		return ListFinancialActivityRequestLineTypesItemCardLoadDeposit, nil
+	case "card_load_transfer":
+		return ListFinancialActivityRequestLineTypesItemCardLoadTransfer, nil
 	case "card_spend_authorization":
 		return ListFinancialActivityRequestLineTypesItemCardSpendAuthorization, nil
 	case "card_spend_authorization_void":
 		return ListFinancialActivityRequestLineTypesItemCardSpendAuthorizationVoid, nil
 	case "card_spend_refund":
 		return ListFinancialActivityRequestLineTypesItemCardSpendRefund, nil
+	case "card_unload_deposit":
+		return ListFinancialActivityRequestLineTypesItemCardUnloadDeposit, nil
+	case "card_unload_transfer":
+		return ListFinancialActivityRequestLineTypesItemCardUnloadTransfer, nil
+	case "cashback":
+		return ListFinancialActivityRequestLineTypesItemCashback, nil
+	case "cashback_funding":
+		return ListFinancialActivityRequestLineTypesItemCashbackFunding, nil
 	case "company_referral":
 		return ListFinancialActivityRequestLineTypesItemCompanyReferral, nil
+	case "connected_account_negative_balance":
+		return ListFinancialActivityRequestLineTypesItemConnectedAccountNegativeBalance, nil
 	case "cross_border_percentage_fee":
 		return ListFinancialActivityRequestLineTypesItemCrossBorderPercentageFee, nil
 	case "currency_conversion_incoming":
@@ -4118,6 +490,10 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemDisputeHoldAdjustment, nil
 	case "dispute_representment_fee":
 		return ListFinancialActivityRequestLineTypesItemDisputeRepresentmentFee, nil
+	case "economic_intelligence_percentage_fee":
+		return ListFinancialActivityRequestLineTypesItemEconomicIntelligencePercentageFee, nil
+	case "external_card_load_deposit":
+		return ListFinancialActivityRequestLineTypesItemExternalCardLoadDeposit, nil
 	case "fees":
 		return ListFinancialActivityRequestLineTypesItemFees, nil
 	case "fraud_prevention_fee":
@@ -4134,6 +510,24 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemInternalBalanceTransferOutgoing, nil
 	case "internal_withdrawal":
 		return ListFinancialActivityRequestLineTypesItemInternalWithdrawal, nil
+	case "internal_withdrawal_complete":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalComplete, nil
+	case "internal_withdrawal_fee":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalFee, nil
+	case "internal_withdrawal_fee_reversal":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalFeeReversal, nil
+	case "internal_withdrawal_in_transit":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalInTransit, nil
+	case "internal_withdrawal_in_transit_reversal":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalInTransitReversal, nil
+	case "internal_withdrawal_markup_fee":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalMarkupFee, nil
+	case "internal_withdrawal_markup_fee_payout":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalMarkupFeePayout, nil
+	case "internal_withdrawal_markup_fee_payout_reversal":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalMarkupFeePayoutReversal, nil
+	case "internal_withdrawal_markup_fee_reversal":
+		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalMarkupFeeReversal, nil
 	case "internal_withdrawal_reversal":
 		return ListFinancialActivityRequestLineTypesItemInternalWithdrawalReversal, nil
 	case "legacy_crypto_payment":
@@ -4148,22 +542,40 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemLicenseSaleCommission, nil
 	case "license_sale_revenue":
 		return ListFinancialActivityRequestLineTypesItemLicenseSaleRevenue, nil
+	case "marketplace_affiliate_fee":
+		return ListFinancialActivityRequestLineTypesItemMarketplaceAffiliateFee, nil
 	case "misc_purchase":
 		return ListFinancialActivityRequestLineTypesItemMiscPurchase, nil
 	case "misc_refund":
 		return ListFinancialActivityRequestLineTypesItemMiscRefund, nil
 	case "misc_reversal":
 		return ListFinancialActivityRequestLineTypesItemMiscReversal, nil
+	case "onboarding_reward":
+		return ListFinancialActivityRequestLineTypesItemOnboardingReward, nil
 	case "onchain_deposit":
 		return ListFinancialActivityRequestLineTypesItemOnchainDeposit, nil
+	case "onchain_internal_transfer_incoming":
+		return ListFinancialActivityRequestLineTypesItemOnchainInternalTransferIncoming, nil
+	case "onchain_internal_transfer_outgoing":
+		return ListFinancialActivityRequestLineTypesItemOnchainInternalTransferOutgoing, nil
+	case "onchain_platform_transfer_incoming":
+		return ListFinancialActivityRequestLineTypesItemOnchainPlatformTransferIncoming, nil
+	case "onchain_platform_transfer_outgoing":
+		return ListFinancialActivityRequestLineTypesItemOnchainPlatformTransferOutgoing, nil
+	case "onchain_swap_source":
+		return ListFinancialActivityRequestLineTypesItemOnchainSwapSource, nil
 	case "onchain_swap_target":
 		return ListFinancialActivityRequestLineTypesItemOnchainSwapTarget, nil
 	case "onchain_wallet_transfer_incoming":
 		return ListFinancialActivityRequestLineTypesItemOnchainWalletTransferIncoming, nil
 	case "onchain_wallet_transfer_outgoing":
 		return ListFinancialActivityRequestLineTypesItemOnchainWalletTransferOutgoing, nil
+	case "onchain_withdrawal":
+		return ListFinancialActivityRequestLineTypesItemOnchainWithdrawal, nil
 	case "orchestration_percentage_fee":
 		return ListFinancialActivityRequestLineTypesItemOrchestrationPercentageFee, nil
+	case "partner_grant_reward":
+		return ListFinancialActivityRequestLineTypesItemPartnerGrantReward, nil
 	case "passthrough_gmv":
 		return ListFinancialActivityRequestLineTypesItemPassthroughGmv, nil
 	case "payment_dispute":
@@ -4184,12 +596,16 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemPaymentProcessingPercentageFee, nil
 	case "payment_referral":
 		return ListFinancialActivityRequestLineTypesItemPaymentReferral, nil
+	case "payment_referral_refund":
+		return ListFinancialActivityRequestLineTypesItemPaymentReferralRefund, nil
 	case "payment_referral_reversal":
 		return ListFinancialActivityRequestLineTypesItemPaymentReferralReversal, nil
 	case "payment_refund":
 		return ListFinancialActivityRequestLineTypesItemPaymentRefund, nil
 	case "payment_refund_reversal":
 		return ListFinancialActivityRequestLineTypesItemPaymentRefundReversal, nil
+	case "payment_return_fee":
+		return ListFinancialActivityRequestLineTypesItemPaymentReturnFee, nil
 	case "payment_revshare":
 		return ListFinancialActivityRequestLineTypesItemPaymentRevshare, nil
 	case "payment_revshare_payout":
@@ -4208,12 +624,26 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemPlatformBalancePayment, nil
 	case "platform_balance_payment_refund":
 		return ListFinancialActivityRequestLineTypesItemPlatformBalancePaymentRefund, nil
+	case "platform_balance_transfer_fee":
+		return ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferFee, nil
 	case "platform_balance_transfer_incoming":
 		return ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferIncoming, nil
 	case "platform_balance_transfer_outgoing":
 		return ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferOutgoing, nil
 	case "platform_covered_dispute":
 		return ListFinancialActivityRequestLineTypesItemPlatformCoveredDispute, nil
+	case "platform_credits_granted":
+		return ListFinancialActivityRequestLineTypesItemPlatformCreditsGranted, nil
+	case "platform_credits_payment":
+		return ListFinancialActivityRequestLineTypesItemPlatformCreditsPayment, nil
+	case "platform_credits_payment_refund":
+		return ListFinancialActivityRequestLineTypesItemPlatformCreditsPaymentRefund, nil
+	case "platform_earning":
+		return ListFinancialActivityRequestLineTypesItemPlatformEarning, nil
+	case "platform_markup_fee":
+		return ListFinancialActivityRequestLineTypesItemPlatformMarkupFee, nil
+	case "platform_markup_fee_payout":
+		return ListFinancialActivityRequestLineTypesItemPlatformMarkupFeePayout, nil
 	case "promo_reversal":
 		return ListFinancialActivityRequestLineTypesItemPromoReversal, nil
 	case "referral_bonus":
@@ -4236,6 +666,8 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemStripeDomesticProcessingFee, nil
 	case "stripe_international_processing_fee":
 		return ListFinancialActivityRequestLineTypesItemStripeInternationalProcessingFee, nil
+	case "swap_fee":
+		return ListFinancialActivityRequestLineTypesItemSwapFee, nil
 	case "three_ds_fixed_fee":
 		return ListFinancialActivityRequestLineTypesItemThreeDsFixedFee, nil
 	case "topup":
@@ -4254,10 +686,24 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemWithdrawalClawback, nil
 	case "withdrawal_clawback_reversal":
 		return ListFinancialActivityRequestLineTypesItemWithdrawalClawbackReversal, nil
+	case "withdrawal_fee":
+		return ListFinancialActivityRequestLineTypesItemWithdrawalFee, nil
+	case "withdrawal_fee_reversal":
+		return ListFinancialActivityRequestLineTypesItemWithdrawalFeeReversal, nil
+	case "withdrawal_markup_fee":
+		return ListFinancialActivityRequestLineTypesItemWithdrawalMarkupFee, nil
+	case "withdrawal_markup_fee_payout":
+		return ListFinancialActivityRequestLineTypesItemWithdrawalMarkupFeePayout, nil
+	case "withdrawal_markup_fee_payout_reversal":
+		return ListFinancialActivityRequestLineTypesItemWithdrawalMarkupFeePayoutReversal, nil
+	case "withdrawal_markup_fee_reversal":
+		return ListFinancialActivityRequestLineTypesItemWithdrawalMarkupFeeReversal, nil
 	case "withdrawal_reclassification":
 		return ListFinancialActivityRequestLineTypesItemWithdrawalReclassification, nil
 	case "withdrawal_reversal":
 		return ListFinancialActivityRequestLineTypesItemWithdrawalReversal, nil
+	case "withdrawal_topup_adjustment":
+		return ListFinancialActivityRequestLineTypesItemWithdrawalTopupAdjustment, nil
 	}
 	var t ListFinancialActivityRequestLineTypesItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -4305,10 +751,12 @@ func (l *ListFinancialActivityResponse) GetExtraProperties() map[string]interfac
 }
 
 func (l *ListFinancialActivityResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -4374,6 +822,12 @@ var (
 	listFinancialActivityResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listFinancialActivityResponsePageInfoNullableFields maps the wire names of ListFinancialActivityResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listFinancialActivityResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listFinancialActivityResponsePageInfoFieldEndCursor,
+	"start_cursor": listFinancialActivityResponsePageInfoFieldStartCursor,
+}
+
 type ListFinancialActivityResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -4423,10 +877,12 @@ func (l *ListFinancialActivityResponsePageInfo) GetExtraProperties() map[string]
 }
 
 func (l *ListFinancialActivityResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -4469,6 +925,13 @@ func (l *ListFinancialActivityResponsePageInfo) UnmarshalJSON(data []byte) error
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listFinancialActivityResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

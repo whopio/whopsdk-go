@@ -5,7 +5,7 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 
@@ -17,13 +17,13 @@ var (
 )
 
 type ConnectSocialAccountsRequest struct {
-	// The Account (biz_ identifier) to connect the social account for. An account-scoped API key may omit this to default to its own account.
+	// The Account (biz_ identifier) to connect the external account for. An account-scoped API key may omit this to default to its own account. Omit for user profile connections.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The platform to connect the social account on. Supported options are `meta_business` and `tiktok`.
+	// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `snapchat` for Snapchat Public Profiles. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, omit `scopes`, and the user picks the company in QuickBooks.
 	Platform ConnectSocialAccountsRequestPlatform `json:"platform" url:"-"`
-	// The Whop URL to redirect the user to after they finish connecting.
-	RedirectURL *string `json:"redirect_url,omitempty" url:"-"`
-	// Capabilities to grant for the connected social account. Use `advertise` when connecting a Meta Business or TikTok account for ads.
+	// Where to send the user once they finish connecting their accounts. Must be an `https` URL on whop.com; any other host is rejected. On success, the user is redirected with an `external_account_connected` query param naming the platform; if the connection fails, with an `external_account_error` query param instead. The same values also arrive as `social_account_connected` / `social_account_error`.
+	RedirectURL string `json:"redirect_url" url:"-"`
+	// The connection purpose. For `snapchat`, `advertise` is required and connects company advertising assets. For `linkedin`, `tiktok`, `youtube`, and `x`, omit scopes to connect the authenticated user’s profile. For `quickbooks`, omit scopes; the connection belongs to the account in `account_id`. Profile connections still request the platform permissions needed to read the profile.
 	Scopes []ConnectSocialAccountsRequestScopesItem `json:"scopes,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -31,10 +31,12 @@ type ConnectSocialAccountsRequest struct {
 }
 
 func (c *ConnectSocialAccountsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -53,7 +55,7 @@ func (c *ConnectSocialAccountsRequest) SetPlatform(platform ConnectSocialAccount
 
 // SetRedirectURL sets the RedirectURL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *ConnectSocialAccountsRequest) SetRedirectURL(redirectURL *string) {
+func (c *ConnectSocialAccountsRequest) SetRedirectURL(redirectURL string) {
 	c.RedirectURL = redirectURL
 	c.require(connectSocialAccountsRequestFieldRedirectURL)
 }
@@ -87,63 +89,6 @@ func (c *ConnectSocialAccountsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	createSocialAccountsRequestFieldAccountID = big.NewInt(1 << 0)
-	createSocialAccountsRequestFieldPlatform  = big.NewInt(1 << 1)
-)
-
-type CreateSocialAccountsRequest struct {
-	// The Account (biz_ identifier) to create the social account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
-	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The platform to create the social account on. `facebook` requires the account's `banner_image`, `logo`, and `description`; configure them with [Update Account](/api-reference/beta/accounts/update-account).
-	Platform CreateSocialAccountsRequestPlatform `json:"platform" url:"-"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (c *CreateSocialAccountsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateSocialAccountsRequest) SetAccountID(accountID *string) {
-	c.AccountID = accountID
-	c.require(createSocialAccountsRequestFieldAccountID)
-}
-
-// SetPlatform sets the Platform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateSocialAccountsRequest) SetPlatform(platform CreateSocialAccountsRequestPlatform) {
-	c.Platform = platform
-	c.require(createSocialAccountsRequestFieldPlatform)
-}
-
-func (c *CreateSocialAccountsRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateSocialAccountsRequest
-	var body unmarshaler
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	*c = CreateSocialAccountsRequest(body)
-	return nil
-}
-
-func (c *CreateSocialAccountsRequest) MarshalJSON() ([]byte, error) {
-	type embed CreateSocialAccountsRequest
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-var (
 	deleteSocialAccountsRequestFieldID        = big.NewInt(1 << 0)
 	deleteSocialAccountsRequestFieldAccountID = big.NewInt(1 << 1)
 	deleteSocialAccountsRequestFieldUserID    = big.NewInt(1 << 2)
@@ -151,21 +96,21 @@ var (
 
 type DeleteSocialAccountsRequest struct {
 	// The ID of the social account to disconnect.
-	ID string `json:"-" url:"-"`
-	// The Account that the social account is connected to. Provide either this or user_id.
+	ID        string  `json:"-" url:"-"`
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// The User that the social account is connected to. Provide either this or account_id.
-	UserID *string `json:"-" url:"user_id,omitempty"`
+	UserID    *string `json:"-" url:"user_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (d *DeleteSocialAccountsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -190,75 +135,42 @@ func (d *DeleteSocialAccountsRequest) SetUserID(userID *string) {
 }
 
 var (
-	leadFormsSocialAccountsRequestFieldID        = big.NewInt(1 << 0)
-	leadFormsSocialAccountsRequestFieldAccountID = big.NewInt(1 << 1)
-)
-
-type LeadFormsSocialAccountsRequest struct {
-	// The social account (a sacc_ identifier) whose lead forms to list.
-	ID string `json:"-" url:"-"`
-	// The Account (a biz_ identifier) the social account is connected to.
-	AccountID string `json:"-" url:"account_id"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (l *LeadFormsSocialAccountsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LeadFormsSocialAccountsRequest) SetID(id string) {
-	l.ID = id
-	l.require(leadFormsSocialAccountsRequestFieldID)
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LeadFormsSocialAccountsRequest) SetAccountID(accountID string) {
-	l.AccountID = accountID
-	l.require(leadFormsSocialAccountsRequestFieldAccountID)
-}
-
-var (
-	listSocialAccountsRequestFieldAccountID = big.NewInt(1 << 0)
-	listSocialAccountsRequestFieldUserID    = big.NewInt(1 << 1)
-	listSocialAccountsRequestFieldPlatform  = big.NewInt(1 << 2)
-	listSocialAccountsRequestFieldVerified  = big.NewInt(1 << 3)
-	listSocialAccountsRequestFieldScopes    = big.NewInt(1 << 4)
-	listSocialAccountsRequestFieldFirst     = big.NewInt(1 << 5)
-	listSocialAccountsRequestFieldAfter     = big.NewInt(1 << 6)
-	listSocialAccountsRequestFieldLast      = big.NewInt(1 << 7)
-	listSocialAccountsRequestFieldBefore    = big.NewInt(1 << 8)
-	listSocialAccountsRequestFieldOrder     = big.NewInt(1 << 9)
-	listSocialAccountsRequestFieldDirection = big.NewInt(1 << 10)
+	listSocialAccountsRequestFieldAccountID  = big.NewInt(1 << 0)
+	listSocialAccountsRequestFieldUserID     = big.NewInt(1 << 1)
+	listSocialAccountsRequestFieldPlatform   = big.NewInt(1 << 2)
+	listSocialAccountsRequestFieldTrustLevel = big.NewInt(1 << 3)
+	listSocialAccountsRequestFieldVerified   = big.NewInt(1 << 4)
+	listSocialAccountsRequestFieldScopes     = big.NewInt(1 << 5)
+	listSocialAccountsRequestFieldFirst      = big.NewInt(1 << 6)
+	listSocialAccountsRequestFieldAfter      = big.NewInt(1 << 7)
+	listSocialAccountsRequestFieldLast       = big.NewInt(1 << 8)
+	listSocialAccountsRequestFieldBefore     = big.NewInt(1 << 9)
+	listSocialAccountsRequestFieldOrder      = big.NewInt(1 << 10)
+	listSocialAccountsRequestFieldDirection  = big.NewInt(1 << 11)
 )
 
 type ListSocialAccountsRequest struct {
-	// The Account that the social accounts are connected to. Provide either this or user_id.
+	// The Account that the external accounts are connected to. Provide either this or user_id.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// The User that the social accounts are connected to. Provide either this or account_id.
+	// The User that the external accounts are connected to. Provide either this or account_id.
 	UserID *string `json:"-" url:"user_id,omitempty"`
-	// Only return social accounts for the platform that is specified.
+	// Only return external accounts for the platform that is specified. An `aimerce` account is returned only with this filter, which requires the `company:manage_checkout` scope instead of `social_account:read`.
 	Platform *ListSocialAccountsRequestPlatform `json:"-" url:"platform,omitempty"`
-	// Only return social accounts that are verified on the platform.
+	// Only return external accounts linked with this trust level, such as `oauth` for accounts connected through OAuth.
+	TrustLevel *ListSocialAccountsRequestTrustLevel `json:"-" url:"trust_level,omitempty"`
+	// Only return external accounts that are verified on the platform.
 	Verified *bool `json:"-" url:"verified,omitempty"`
-	// Only return social accounts that have these scopes.
+	// Only return external accounts that have these scopes.
 	Scopes []*ListSocialAccountsRequestScopesItem `json:"-" url:"scopes,omitempty"`
-	// The number of social accounts to return.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor to fetch the page after (from page_info.end_cursor).
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of social accounts to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// Cursor to fetch the page before (from page_info.start_cursor).
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
-	// The field to sort social accounts by.
+	// The field to sort external accounts by.
 	Order *ListSocialAccountsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
 	Direction *ListSocialAccountsRequestDirection `json:"-" url:"direction,omitempty"`
@@ -268,10 +180,12 @@ type ListSocialAccountsRequest struct {
 }
 
 func (l *ListSocialAccountsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -293,6 +207,13 @@ func (l *ListSocialAccountsRequest) SetUserID(userID *string) {
 func (l *ListSocialAccountsRequest) SetPlatform(platform *ListSocialAccountsRequestPlatform) {
 	l.Platform = platform
 	l.require(listSocialAccountsRequestFieldPlatform)
+}
+
+// SetTrustLevel sets the TrustLevel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSocialAccountsRequest) SetTrustLevel(trustLevel *ListSocialAccountsRequestTrustLevel) {
+	l.TrustLevel = trustLevel
+	l.require(listSocialAccountsRequestFieldTrustLevel)
 }
 
 // SetVerified sets the Verified field and marks it as non-optional;
@@ -352,109 +273,115 @@ func (l *ListSocialAccountsRequest) SetDirection(direction *ListSocialAccountsRe
 }
 
 var (
-	postsSocialAccountsRequestFieldID        = big.NewInt(1 << 0)
-	postsSocialAccountsRequestFieldAccountID = big.NewInt(1 << 1)
-	postsSocialAccountsRequestFieldPostID    = big.NewInt(1 << 2)
-	postsSocialAccountsRequestFieldFirst     = big.NewInt(1 << 3)
-	postsSocialAccountsRequestFieldAfter     = big.NewInt(1 << 4)
+	refreshSocialAccountsRequestFieldID        = big.NewInt(1 << 0)
+	refreshSocialAccountsRequestFieldAccountID = big.NewInt(1 << 1)
 )
 
-type PostsSocialAccountsRequest struct {
-	// The social account (a sacc_ identifier) whose posts to list.
+type RefreshSocialAccountsRequest struct {
+	// The social account (a sacc_ identifier) to refresh.
 	ID string `json:"-" url:"-"`
-	// The Account (a biz_ identifier) the social account is connected to.
-	AccountID string `json:"-" url:"account_id"`
-	// Return only the single post with this platform id, instead of the full list.
-	PostID *string `json:"-" url:"post_id,omitempty"`
-	// The number of posts to return.
-	First *int `json:"-" url:"first,omitempty"`
-	// Cursor to fetch the page after (from page_info.end_cursor).
-	After *string `json:"-" url:"after,omitempty"`
+	// The Account (biz_ identifier) the external account is connected to. An account-scoped API key may omit this to default to its own account.
+	AccountID *string `json:"account_id,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
-func (p *PostsSocialAccountsRequest) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+func (r *RefreshSocialAccountsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostsSocialAccountsRequest) SetID(id string) {
-	p.ID = id
-	p.require(postsSocialAccountsRequestFieldID)
+func (r *RefreshSocialAccountsRequest) SetID(id string) {
+	r.ID = id
+	r.require(refreshSocialAccountsRequestFieldID)
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostsSocialAccountsRequest) SetAccountID(accountID string) {
-	p.AccountID = accountID
-	p.require(postsSocialAccountsRequestFieldAccountID)
+func (r *RefreshSocialAccountsRequest) SetAccountID(accountID *string) {
+	r.AccountID = accountID
+	r.require(refreshSocialAccountsRequestFieldAccountID)
 }
 
-// SetPostID sets the PostID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostsSocialAccountsRequest) SetPostID(postID *string) {
-	p.PostID = postID
-	p.require(postsSocialAccountsRequestFieldPostID)
+func (r *RefreshSocialAccountsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler RefreshSocialAccountsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*r = RefreshSocialAccountsRequest(body)
+	return nil
 }
 
-// SetFirst sets the First field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostsSocialAccountsRequest) SetFirst(first *int) {
-	p.First = first
-	p.require(postsSocialAccountsRequestFieldFirst)
-}
-
-// SetAfter sets the After field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostsSocialAccountsRequest) SetAfter(after *string) {
-	p.After = after
-	p.require(postsSocialAccountsRequestFieldAfter)
+func (r *RefreshSocialAccountsRequest) MarshalJSON() ([]byte, error) {
+	type embed RefreshSocialAccountsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 var (
-	socialAccountLeadFormFieldCompletion            = big.NewInt(1 << 0)
-	socialAccountLeadFormFieldCreatedAt             = big.NewInt(1 << 1)
-	socialAccountLeadFormFieldDisclaimer            = big.NewInt(1 << 2)
-	socialAccountLeadFormFieldFormType              = big.NewInt(1 << 3)
-	socialAccountLeadFormFieldID                    = big.NewInt(1 << 4)
-	socialAccountLeadFormFieldIntro                 = big.NewInt(1 << 5)
-	socialAccountLeadFormFieldLocale                = big.NewInt(1 << 6)
-	socialAccountLeadFormFieldName                  = big.NewInt(1 << 7)
-	socialAccountLeadFormFieldPrivacyPolicyLinkText = big.NewInt(1 << 8)
-	socialAccountLeadFormFieldPrivacyPolicyURL      = big.NewInt(1 << 9)
-	socialAccountLeadFormFieldQuestionLabels        = big.NewInt(1 << 10)
-	socialAccountLeadFormFieldQuestions             = big.NewInt(1 << 11)
+	socialAccountFieldError               = big.NewInt(1 << 0)
+	socialAccountFieldExternalID          = big.NewInt(1 << 1)
+	socialAccountFieldID                  = big.NewInt(1 << 2)
+	socialAccountFieldName                = big.NewInt(1 << 3)
+	socialAccountFieldParentSocialAccount = big.NewInt(1 << 4)
+	socialAccountFieldPartnershipStatus   = big.NewInt(1 << 5)
+	socialAccountFieldPlatform            = big.NewInt(1 << 6)
+	socialAccountFieldProfilePictureURL   = big.NewInt(1 << 7)
+	socialAccountFieldScopes              = big.NewInt(1 << 8)
+	socialAccountFieldURL                 = big.NewInt(1 << 9)
+	socialAccountFieldUsername            = big.NewInt(1 << 10)
+	socialAccountFieldVerified            = big.NewInt(1 << 11)
 )
 
-type SocialAccountLeadForm struct {
-	// Screen shown after the form is submitted. `null` when the form has none.
-	Completion *AdLeadFormCompletion `json:"completion,omitempty" url:"completion,omitempty"`
-	// When the form was created, as an ISO 8601 timestamp.
-	CreatedAt *string `json:"created_at,omitempty" url:"created_at,omitempty"`
-	// Custom consent disclaimer shown before submission. `null` when the form has none.
-	Disclaimer *AdLeadFormDisclaimer `json:"disclaimer,omitempty" url:"disclaimer,omitempty"`
-	// `more_volume` is quickest to submit; `higher_intent` adds a confirmation step before submission.
-	FormType SocialAccountLeadFormFormType `json:"form_type" url:"form_type"`
-	// The ad platform's identifier for the form. Use it as lead_gen_form_id on an ad to reuse the form.
+// socialAccountNullableFields maps the wire names of SocialAccount's nullable fields (required or optional) to their field bits.
+var socialAccountNullableFields = map[string]*big.Int{
+	"error":                 socialAccountFieldError,
+	"external_id":           socialAccountFieldExternalID,
+	"name":                  socialAccountFieldName,
+	"parent_social_account": socialAccountFieldParentSocialAccount,
+	"partnership_status":    socialAccountFieldPartnershipStatus,
+	"profile_picture_url":   socialAccountFieldProfilePictureURL,
+	"url":                   socialAccountFieldURL,
+	"username":              socialAccountFieldUsername,
+}
+
+type SocialAccount struct {
+	// Why this social account currently can't be used for advertising — a failed share or a Meta-side restriction. Null when the account is healthy.
+	Error *string `json:"error,omitempty" url:"error,omitempty"`
+	// The platform-specific ID for this social account.
+	ExternalID *string `json:"external_id,omitempty" url:"external_id,omitempty"`
+	// Unique identifier for the social account.
 	ID string `json:"id" url:"id"`
-	// Intro screen shown before the questions. `null` when the form has none.
-	Intro *AdLeadFormIntro `json:"intro,omitempty" url:"intro,omitempty"`
-	// Language the form is shown in, such as en_US.
-	Locale *string `json:"locale,omitempty" url:"locale,omitempty"`
-	// Advertiser-facing form name.
+	// The display name of the social account on the platform.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// Custom link text for the privacy policy. `null` when the default is used.
-	PrivacyPolicyLinkText *string `json:"privacy_policy_link_text,omitempty" url:"privacy_policy_link_text,omitempty"`
-	// Privacy policy URL configured on the form.
-	PrivacyPolicyURL *string               `json:"privacy_policy_url,omitempty" url:"privacy_policy_url,omitempty"`
-	QuestionLabels   []string              `json:"question_labels" url:"question_labels"`
-	Questions        []*AdLeadFormQuestion `json:"questions" url:"questions"`
+	// The social account this one belongs to on the platform, such as the Facebook page that owns an Instagram account. Null when the social account stands on its own, or when it is a partner.
+	ParentSocialAccount *SocialAccountParent `json:"parent_social_account,omitempty" url:"parent_social_account,omitempty"`
+	// Always `null`. Partnership ads are no longer available.
+	PartnershipStatus *string `json:"partnership_status,omitempty" url:"partnership_status,omitempty"`
+	// The platform the social account exists on.
+	Platform SocialAccountPlatform `json:"platform" url:"platform"`
+	// The URL where the profile picture of the social account can be accessed.
+	ProfilePictureURL *string  `json:"profile_picture_url,omitempty" url:"profile_picture_url,omitempty"`
+	Scopes            []string `json:"scopes" url:"scopes"`
+	// The URL where the social account can be accessed on the platform. Null while a Whop-owned account is still being provisioned.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+	// The username of the social account on the platform. Null while a Whop-owned account is still being provisioned, and on platforms without usernames, such as Klaviyo.
+	Username *string `json:"username,omitempty" url:"username,omitempty"`
+	// Whether the social account is verified on the platform.
+	Verified bool `json:"verified" url:"verified"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -463,206 +390,215 @@ type SocialAccountLeadForm struct {
 	rawJSON         json.RawMessage
 }
 
-func (s *SocialAccountLeadForm) GetCompletion() *AdLeadFormCompletion {
+func (s *SocialAccount) GetError() *string {
 	if s == nil {
 		return nil
 	}
-	return s.Completion
+	return s.Error
 }
 
-func (s *SocialAccountLeadForm) GetCreatedAt() *string {
+func (s *SocialAccount) GetExternalID() *string {
 	if s == nil {
 		return nil
 	}
-	return s.CreatedAt
+	return s.ExternalID
 }
 
-func (s *SocialAccountLeadForm) GetDisclaimer() *AdLeadFormDisclaimer {
-	if s == nil {
-		return nil
-	}
-	return s.Disclaimer
-}
-
-func (s *SocialAccountLeadForm) GetFormType() SocialAccountLeadFormFormType {
-	if s == nil {
-		return ""
-	}
-	return s.FormType
-}
-
-func (s *SocialAccountLeadForm) GetID() string {
+func (s *SocialAccount) GetID() string {
 	if s == nil {
 		return ""
 	}
 	return s.ID
 }
 
-func (s *SocialAccountLeadForm) GetIntro() *AdLeadFormIntro {
-	if s == nil {
-		return nil
-	}
-	return s.Intro
-}
-
-func (s *SocialAccountLeadForm) GetLocale() *string {
-	if s == nil {
-		return nil
-	}
-	return s.Locale
-}
-
-func (s *SocialAccountLeadForm) GetName() *string {
+func (s *SocialAccount) GetName() *string {
 	if s == nil {
 		return nil
 	}
 	return s.Name
 }
 
-func (s *SocialAccountLeadForm) GetPrivacyPolicyLinkText() *string {
+func (s *SocialAccount) GetParentSocialAccount() *SocialAccountParent {
 	if s == nil {
 		return nil
 	}
-	return s.PrivacyPolicyLinkText
+	return s.ParentSocialAccount
 }
 
-func (s *SocialAccountLeadForm) GetPrivacyPolicyURL() *string {
+func (s *SocialAccount) GetPartnershipStatus() *string {
 	if s == nil {
 		return nil
 	}
-	return s.PrivacyPolicyURL
+	return s.PartnershipStatus
 }
 
-func (s *SocialAccountLeadForm) GetQuestionLabels() []string {
+func (s *SocialAccount) GetPlatform() SocialAccountPlatform {
+	if s == nil {
+		return ""
+	}
+	return s.Platform
+}
+
+func (s *SocialAccount) GetProfilePictureURL() *string {
 	if s == nil {
 		return nil
 	}
-	return s.QuestionLabels
+	return s.ProfilePictureURL
 }
 
-func (s *SocialAccountLeadForm) GetQuestions() []*AdLeadFormQuestion {
+func (s *SocialAccount) GetScopes() []string {
 	if s == nil {
 		return nil
 	}
-	return s.Questions
+	return s.Scopes
 }
 
-func (s *SocialAccountLeadForm) GetExtraProperties() map[string]interface{} {
+func (s *SocialAccount) GetURL() *string {
+	if s == nil {
+		return nil
+	}
+	return s.URL
+}
+
+func (s *SocialAccount) GetUsername() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Username
+}
+
+func (s *SocialAccount) GetVerified() bool {
+	if s == nil {
+		return false
+	}
+	return s.Verified
+}
+
+func (s *SocialAccount) GetExtraProperties() map[string]interface{} {
 	if s == nil {
 		return nil
 	}
 	return s.extraProperties
 }
 
-func (s *SocialAccountLeadForm) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+func (s *SocialAccount) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
-// SetCompletion sets the Completion field and marks it as non-optional;
+// SetError sets the Error field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountLeadForm) SetCompletion(completion *AdLeadFormCompletion) {
-	s.Completion = completion
-	s.require(socialAccountLeadFormFieldCompletion)
+func (s *SocialAccount) SetError(error_ *string) {
+	s.Error = error_
+	s.require(socialAccountFieldError)
 }
 
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// SetExternalID sets the ExternalID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountLeadForm) SetCreatedAt(createdAt *string) {
-	s.CreatedAt = createdAt
-	s.require(socialAccountLeadFormFieldCreatedAt)
-}
-
-// SetDisclaimer sets the Disclaimer field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountLeadForm) SetDisclaimer(disclaimer *AdLeadFormDisclaimer) {
-	s.Disclaimer = disclaimer
-	s.require(socialAccountLeadFormFieldDisclaimer)
-}
-
-// SetFormType sets the FormType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountLeadForm) SetFormType(formType SocialAccountLeadFormFormType) {
-	s.FormType = formType
-	s.require(socialAccountLeadFormFieldFormType)
+func (s *SocialAccount) SetExternalID(externalID *string) {
+	s.ExternalID = externalID
+	s.require(socialAccountFieldExternalID)
 }
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountLeadForm) SetID(id string) {
+func (s *SocialAccount) SetID(id string) {
 	s.ID = id
-	s.require(socialAccountLeadFormFieldID)
-}
-
-// SetIntro sets the Intro field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountLeadForm) SetIntro(intro *AdLeadFormIntro) {
-	s.Intro = intro
-	s.require(socialAccountLeadFormFieldIntro)
-}
-
-// SetLocale sets the Locale field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountLeadForm) SetLocale(locale *string) {
-	s.Locale = locale
-	s.require(socialAccountLeadFormFieldLocale)
+	s.require(socialAccountFieldID)
 }
 
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountLeadForm) SetName(name *string) {
+func (s *SocialAccount) SetName(name *string) {
 	s.Name = name
-	s.require(socialAccountLeadFormFieldName)
+	s.require(socialAccountFieldName)
 }
 
-// SetPrivacyPolicyLinkText sets the PrivacyPolicyLinkText field and marks it as non-optional;
+// SetParentSocialAccount sets the ParentSocialAccount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountLeadForm) SetPrivacyPolicyLinkText(privacyPolicyLinkText *string) {
-	s.PrivacyPolicyLinkText = privacyPolicyLinkText
-	s.require(socialAccountLeadFormFieldPrivacyPolicyLinkText)
+func (s *SocialAccount) SetParentSocialAccount(parentSocialAccount *SocialAccountParent) {
+	s.ParentSocialAccount = parentSocialAccount
+	s.require(socialAccountFieldParentSocialAccount)
 }
 
-// SetPrivacyPolicyURL sets the PrivacyPolicyURL field and marks it as non-optional;
+// SetPartnershipStatus sets the PartnershipStatus field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountLeadForm) SetPrivacyPolicyURL(privacyPolicyURL *string) {
-	s.PrivacyPolicyURL = privacyPolicyURL
-	s.require(socialAccountLeadFormFieldPrivacyPolicyURL)
+func (s *SocialAccount) SetPartnershipStatus(partnershipStatus *string) {
+	s.PartnershipStatus = partnershipStatus
+	s.require(socialAccountFieldPartnershipStatus)
 }
 
-// SetQuestionLabels sets the QuestionLabels field and marks it as non-optional;
+// SetPlatform sets the Platform field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountLeadForm) SetQuestionLabels(questionLabels []string) {
-	s.QuestionLabels = questionLabels
-	s.require(socialAccountLeadFormFieldQuestionLabels)
+func (s *SocialAccount) SetPlatform(platform SocialAccountPlatform) {
+	s.Platform = platform
+	s.require(socialAccountFieldPlatform)
 }
 
-// SetQuestions sets the Questions field and marks it as non-optional;
+// SetProfilePictureURL sets the ProfilePictureURL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountLeadForm) SetQuestions(questions []*AdLeadFormQuestion) {
-	s.Questions = questions
-	s.require(socialAccountLeadFormFieldQuestions)
+func (s *SocialAccount) SetProfilePictureURL(profilePictureURL *string) {
+	s.ProfilePictureURL = profilePictureURL
+	s.require(socialAccountFieldProfilePictureURL)
 }
 
-func (s *SocialAccountLeadForm) UnmarshalJSON(data []byte) error {
-	type unmarshaler SocialAccountLeadForm
+// SetScopes sets the Scopes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SocialAccount) SetScopes(scopes []string) {
+	s.Scopes = scopes
+	s.require(socialAccountFieldScopes)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SocialAccount) SetURL(url *string) {
+	s.URL = url
+	s.require(socialAccountFieldURL)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SocialAccount) SetUsername(username *string) {
+	s.Username = username
+	s.require(socialAccountFieldUsername)
+}
+
+// SetVerified sets the Verified field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SocialAccount) SetVerified(verified bool) {
+	s.Verified = verified
+	s.require(socialAccountFieldVerified)
+}
+
+func (s *SocialAccount) UnmarshalJSON(data []byte) error {
+	type unmarshaler SocialAccount
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*s = SocialAccountLeadForm(value)
+	*s = SocialAccount(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *s)
 	if err != nil {
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, socialAccountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (s *SocialAccountLeadForm) MarshalJSON() ([]byte, error) {
-	type embed SocialAccountLeadForm
+func (s *SocialAccount) MarshalJSON() ([]byte, error) {
+	type embed SocialAccount
 	var marshaler = struct {
 		embed
 	}{
@@ -672,7 +608,7 @@ func (s *SocialAccountLeadForm) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (s *SocialAccountLeadForm) String() string {
+func (s *SocialAccount) String() string {
 	if s == nil {
 		return "<nil>"
 	}
@@ -687,53 +623,39 @@ func (s *SocialAccountLeadForm) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// `more_volume` is quickest to submit; `higher_intent` adds a confirmation step before submission.
-type SocialAccountLeadFormFormType string
-
-const (
-	SocialAccountLeadFormFormTypeMoreVolume   SocialAccountLeadFormFormType = "more_volume"
-	SocialAccountLeadFormFormTypeHigherIntent SocialAccountLeadFormFormType = "higher_intent"
-)
-
-func NewSocialAccountLeadFormFormTypeFromString(s string) (SocialAccountLeadFormFormType, error) {
-	switch s {
-	case "more_volume":
-		return SocialAccountLeadFormFormTypeMoreVolume, nil
-	case "higher_intent":
-		return SocialAccountLeadFormFormTypeHigherIntent, nil
-	}
-	var t SocialAccountLeadFormFormType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (s SocialAccountLeadFormFormType) Ptr() *SocialAccountLeadFormFormType {
-	return &s
-}
-
 var (
-	socialAccountPostFieldCallToAction   = big.NewInt(1 << 0)
-	socialAccountPostFieldDestinationURL = big.NewInt(1 << 1)
-	socialAccountPostFieldEmbedURL       = big.NewInt(1 << 2)
-	socialAccountPostFieldID             = big.NewInt(1 << 3)
-	socialAccountPostFieldMediaURL       = big.NewInt(1 << 4)
-	socialAccountPostFieldRestrictions   = big.NewInt(1 << 5)
-	socialAccountPostFieldThumbnailURL   = big.NewInt(1 << 6)
+	socialAccountParentFieldExternalID        = big.NewInt(1 << 0)
+	socialAccountParentFieldID                = big.NewInt(1 << 1)
+	socialAccountParentFieldName              = big.NewInt(1 << 2)
+	socialAccountParentFieldPlatform          = big.NewInt(1 << 3)
+	socialAccountParentFieldProfilePictureURL = big.NewInt(1 << 4)
+	socialAccountParentFieldUsername          = big.NewInt(1 << 5)
+	socialAccountParentFieldVerified          = big.NewInt(1 << 6)
 )
 
-type SocialAccountPost struct {
-	// The post's call-to-action button, for example shop_now (Facebook only; null for Instagram and TikTok).
-	CallToAction *SocialAccountPostCallToAction `json:"call_to_action,omitempty" url:"call_to_action,omitempty"`
-	// The URL the post's call-to-action drives to (Facebook only; null for Instagram and TikTok).
-	DestinationURL *string `json:"destination_url,omitempty" url:"destination_url,omitempty"`
-	// An iframe-embeddable URL for previewing the post inline (the platform's player or post embed). For TikTok this is the only preview, since media_url is null; for Facebook and Instagram it supplements media_url. Null when no public embed is available.
-	EmbedURL *string `json:"embed_url,omitempty" url:"embed_url,omitempty"`
-	// The platform's own identifier for the post or media. Use it to reference the post on an ad.
+// socialAccountParentNullableFields maps the wire names of SocialAccountParent's nullable fields (required or optional) to their field bits.
+var socialAccountParentNullableFields = map[string]*big.Int{
+	"external_id":         socialAccountParentFieldExternalID,
+	"name":                socialAccountParentFieldName,
+	"profile_picture_url": socialAccountParentFieldProfilePictureURL,
+	"username":            socialAccountParentFieldUsername,
+}
+
+type SocialAccountParent struct {
+	// The platform-specific ID for the parent social account.
+	ExternalID *string `json:"external_id,omitempty" url:"external_id,omitempty"`
+	// Social account ID, prefixed `sacc_`.
 	ID string `json:"id" url:"id"`
-	// The URL of the post's media — the image for image posts, the playable video file for video posts. Null for TikTok, which exposes no raw file (use embed_url). Meta URLs are signed and expire after roughly 24 hours, so don't store them.
-	MediaURL     *string                             `json:"media_url,omitempty" url:"media_url,omitempty"`
-	Restrictions []SocialAccountPostRestrictionsItem `json:"restrictions" url:"restrictions"`
-	// Poster image for video posts (always set for TikTok, which is video-only); null for image posts, where media_url is already the image.
-	ThumbnailURL *string `json:"thumbnail_url,omitempty" url:"thumbnail_url,omitempty"`
+	// The display name of the parent social account on the platform.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The platform the parent social account exists on.
+	Platform SocialAccountParentPlatform `json:"platform" url:"platform"`
+	// The URL where the profile picture of the parent social account can be accessed.
+	ProfilePictureURL *string `json:"profile_picture_url,omitempty" url:"profile_picture_url,omitempty"`
+	// The username of the parent social account on the platform.
+	Username *string `json:"username,omitempty" url:"username,omitempty"`
+	// Whether the parent social account is verified on the platform.
+	Verified bool `json:"verified" url:"verified"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -742,136 +664,145 @@ type SocialAccountPost struct {
 	rawJSON         json.RawMessage
 }
 
-func (s *SocialAccountPost) GetCallToAction() *SocialAccountPostCallToAction {
+func (s *SocialAccountParent) GetExternalID() *string {
 	if s == nil {
 		return nil
 	}
-	return s.CallToAction
+	return s.ExternalID
 }
 
-func (s *SocialAccountPost) GetDestinationURL() *string {
-	if s == nil {
-		return nil
-	}
-	return s.DestinationURL
-}
-
-func (s *SocialAccountPost) GetEmbedURL() *string {
-	if s == nil {
-		return nil
-	}
-	return s.EmbedURL
-}
-
-func (s *SocialAccountPost) GetID() string {
+func (s *SocialAccountParent) GetID() string {
 	if s == nil {
 		return ""
 	}
 	return s.ID
 }
 
-func (s *SocialAccountPost) GetMediaURL() *string {
+func (s *SocialAccountParent) GetName() *string {
 	if s == nil {
 		return nil
 	}
-	return s.MediaURL
+	return s.Name
 }
 
-func (s *SocialAccountPost) GetRestrictions() []SocialAccountPostRestrictionsItem {
+func (s *SocialAccountParent) GetPlatform() SocialAccountParentPlatform {
+	if s == nil {
+		return ""
+	}
+	return s.Platform
+}
+
+func (s *SocialAccountParent) GetProfilePictureURL() *string {
 	if s == nil {
 		return nil
 	}
-	return s.Restrictions
+	return s.ProfilePictureURL
 }
 
-func (s *SocialAccountPost) GetThumbnailURL() *string {
+func (s *SocialAccountParent) GetUsername() *string {
 	if s == nil {
 		return nil
 	}
-	return s.ThumbnailURL
+	return s.Username
 }
 
-func (s *SocialAccountPost) GetExtraProperties() map[string]interface{} {
+func (s *SocialAccountParent) GetVerified() bool {
+	if s == nil {
+		return false
+	}
+	return s.Verified
+}
+
+func (s *SocialAccountParent) GetExtraProperties() map[string]interface{} {
 	if s == nil {
 		return nil
 	}
 	return s.extraProperties
 }
 
-func (s *SocialAccountPost) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+func (s *SocialAccountParent) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
-// SetCallToAction sets the CallToAction field and marks it as non-optional;
+// SetExternalID sets the ExternalID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountPost) SetCallToAction(callToAction *SocialAccountPostCallToAction) {
-	s.CallToAction = callToAction
-	s.require(socialAccountPostFieldCallToAction)
-}
-
-// SetDestinationURL sets the DestinationURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountPost) SetDestinationURL(destinationURL *string) {
-	s.DestinationURL = destinationURL
-	s.require(socialAccountPostFieldDestinationURL)
-}
-
-// SetEmbedURL sets the EmbedURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountPost) SetEmbedURL(embedURL *string) {
-	s.EmbedURL = embedURL
-	s.require(socialAccountPostFieldEmbedURL)
+func (s *SocialAccountParent) SetExternalID(externalID *string) {
+	s.ExternalID = externalID
+	s.require(socialAccountParentFieldExternalID)
 }
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountPost) SetID(id string) {
+func (s *SocialAccountParent) SetID(id string) {
 	s.ID = id
-	s.require(socialAccountPostFieldID)
+	s.require(socialAccountParentFieldID)
 }
 
-// SetMediaURL sets the MediaURL field and marks it as non-optional;
+// SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountPost) SetMediaURL(mediaURL *string) {
-	s.MediaURL = mediaURL
-	s.require(socialAccountPostFieldMediaURL)
+func (s *SocialAccountParent) SetName(name *string) {
+	s.Name = name
+	s.require(socialAccountParentFieldName)
 }
 
-// SetRestrictions sets the Restrictions field and marks it as non-optional;
+// SetPlatform sets the Platform field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountPost) SetRestrictions(restrictions []SocialAccountPostRestrictionsItem) {
-	s.Restrictions = restrictions
-	s.require(socialAccountPostFieldRestrictions)
+func (s *SocialAccountParent) SetPlatform(platform SocialAccountParentPlatform) {
+	s.Platform = platform
+	s.require(socialAccountParentFieldPlatform)
 }
 
-// SetThumbnailURL sets the ThumbnailURL field and marks it as non-optional;
+// SetProfilePictureURL sets the ProfilePictureURL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccountPost) SetThumbnailURL(thumbnailURL *string) {
-	s.ThumbnailURL = thumbnailURL
-	s.require(socialAccountPostFieldThumbnailURL)
+func (s *SocialAccountParent) SetProfilePictureURL(profilePictureURL *string) {
+	s.ProfilePictureURL = profilePictureURL
+	s.require(socialAccountParentFieldProfilePictureURL)
 }
 
-func (s *SocialAccountPost) UnmarshalJSON(data []byte) error {
-	type unmarshaler SocialAccountPost
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SocialAccountParent) SetUsername(username *string) {
+	s.Username = username
+	s.require(socialAccountParentFieldUsername)
+}
+
+// SetVerified sets the Verified field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SocialAccountParent) SetVerified(verified bool) {
+	s.Verified = verified
+	s.require(socialAccountParentFieldVerified)
+}
+
+func (s *SocialAccountParent) UnmarshalJSON(data []byte) error {
+	type unmarshaler SocialAccountParent
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*s = SocialAccountPost(value)
+	*s = SocialAccountParent(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *s)
 	if err != nil {
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, socialAccountParentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (s *SocialAccountPost) MarshalJSON() ([]byte, error) {
-	type embed SocialAccountPost
+func (s *SocialAccountParent) MarshalJSON() ([]byte, error) {
+	type embed SocialAccountParent
 	var marshaler = struct {
 		embed
 	}{
@@ -881,7 +812,7 @@ func (s *SocialAccountPost) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (s *SocialAccountPost) String() string {
+func (s *SocialAccountParent) String() string {
 	if s == nil {
 		return "<nil>"
 	}
@@ -896,165 +827,138 @@ func (s *SocialAccountPost) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// The post's call-to-action button, for example shop_now (Facebook only; null for Instagram and TikTok).
-type SocialAccountPostCallToAction string
+// The platform the parent social account exists on.
+type SocialAccountParentPlatform string
 
 const (
-	SocialAccountPostCallToActionLearnMore            SocialAccountPostCallToAction = "learn_more"
-	SocialAccountPostCallToActionShopNow              SocialAccountPostCallToAction = "shop_now"
-	SocialAccountPostCallToActionSignUp               SocialAccountPostCallToAction = "sign_up"
-	SocialAccountPostCallToActionSubscribe            SocialAccountPostCallToAction = "subscribe"
-	SocialAccountPostCallToActionGetStarted           SocialAccountPostCallToAction = "get_started"
-	SocialAccountPostCallToActionBookNow              SocialAccountPostCallToAction = "book_now"
-	SocialAccountPostCallToActionApplyNow             SocialAccountPostCallToAction = "apply_now"
-	SocialAccountPostCallToActionContactUs            SocialAccountPostCallToAction = "contact_us"
-	SocialAccountPostCallToActionDownload             SocialAccountPostCallToAction = "download"
-	SocialAccountPostCallToActionOrderNow             SocialAccountPostCallToAction = "order_now"
-	SocialAccountPostCallToActionBuyNow               SocialAccountPostCallToAction = "buy_now"
-	SocialAccountPostCallToActionGetQuote             SocialAccountPostCallToAction = "get_quote"
-	SocialAccountPostCallToActionMessagePage          SocialAccountPostCallToAction = "message_page"
-	SocialAccountPostCallToActionWhatsappMessage      SocialAccountPostCallToAction = "whatsapp_message"
-	SocialAccountPostCallToActionInstagramMessage     SocialAccountPostCallToAction = "instagram_message"
-	SocialAccountPostCallToActionCallNow              SocialAccountPostCallToAction = "call_now"
-	SocialAccountPostCallToActionGetDirections        SocialAccountPostCallToAction = "get_directions"
-	SocialAccountPostCallToActionSendUpdates          SocialAccountPostCallToAction = "send_updates"
-	SocialAccountPostCallToActionGetOffer             SocialAccountPostCallToAction = "get_offer"
-	SocialAccountPostCallToActionWatchMore            SocialAccountPostCallToAction = "watch_more"
-	SocialAccountPostCallToActionListenNow            SocialAccountPostCallToAction = "listen_now"
-	SocialAccountPostCallToActionPlayGame             SocialAccountPostCallToAction = "play_game"
-	SocialAccountPostCallToActionOpenLink             SocialAccountPostCallToAction = "open_link"
-	SocialAccountPostCallToActionNoButton             SocialAccountPostCallToAction = "no_button"
-	SocialAccountPostCallToActionGetOfferView         SocialAccountPostCallToAction = "get_offer_view"
-	SocialAccountPostCallToActionGetEventTickets      SocialAccountPostCallToAction = "get_event_tickets"
-	SocialAccountPostCallToActionSeeMenu              SocialAccountPostCallToAction = "see_menu"
-	SocialAccountPostCallToActionRequestTime          SocialAccountPostCallToAction = "request_time"
-	SocialAccountPostCallToActionEventRsvp            SocialAccountPostCallToAction = "event_rsvp"
-	SocialAccountPostCallToActionSeeDetails           SocialAccountPostCallToAction = "see_details"
-	SocialAccountPostCallToActionViewInstagramProfile SocialAccountPostCallToAction = "view_instagram_profile"
+	SocialAccountParentPlatformX          SocialAccountParentPlatform = "x"
+	SocialAccountParentPlatformInstagram  SocialAccountParentPlatform = "instagram"
+	SocialAccountParentPlatformYoutube    SocialAccountParentPlatform = "youtube"
+	SocialAccountParentPlatformTiktok     SocialAccountParentPlatform = "tiktok"
+	SocialAccountParentPlatformFacebook   SocialAccountParentPlatform = "facebook"
+	SocialAccountParentPlatformDiscord    SocialAccountParentPlatform = "discord"
+	SocialAccountParentPlatformTelegram   SocialAccountParentPlatform = "telegram"
+	SocialAccountParentPlatformLinkedin   SocialAccountParentPlatform = "linkedin"
+	SocialAccountParentPlatformSnapchat   SocialAccountParentPlatform = "snapchat"
+	SocialAccountParentPlatformKlaviyo    SocialAccountParentPlatform = "klaviyo"
+	SocialAccountParentPlatformQuickbooks SocialAccountParentPlatform = "quickbooks"
+	SocialAccountParentPlatformAimerce    SocialAccountParentPlatform = "aimerce"
 )
 
-func NewSocialAccountPostCallToActionFromString(s string) (SocialAccountPostCallToAction, error) {
+func NewSocialAccountParentPlatformFromString(s string) (SocialAccountParentPlatform, error) {
 	switch s {
-	case "learn_more":
-		return SocialAccountPostCallToActionLearnMore, nil
-	case "shop_now":
-		return SocialAccountPostCallToActionShopNow, nil
-	case "sign_up":
-		return SocialAccountPostCallToActionSignUp, nil
-	case "subscribe":
-		return SocialAccountPostCallToActionSubscribe, nil
-	case "get_started":
-		return SocialAccountPostCallToActionGetStarted, nil
-	case "book_now":
-		return SocialAccountPostCallToActionBookNow, nil
-	case "apply_now":
-		return SocialAccountPostCallToActionApplyNow, nil
-	case "contact_us":
-		return SocialAccountPostCallToActionContactUs, nil
-	case "download":
-		return SocialAccountPostCallToActionDownload, nil
-	case "order_now":
-		return SocialAccountPostCallToActionOrderNow, nil
-	case "buy_now":
-		return SocialAccountPostCallToActionBuyNow, nil
-	case "get_quote":
-		return SocialAccountPostCallToActionGetQuote, nil
-	case "message_page":
-		return SocialAccountPostCallToActionMessagePage, nil
-	case "whatsapp_message":
-		return SocialAccountPostCallToActionWhatsappMessage, nil
-	case "instagram_message":
-		return SocialAccountPostCallToActionInstagramMessage, nil
-	case "call_now":
-		return SocialAccountPostCallToActionCallNow, nil
-	case "get_directions":
-		return SocialAccountPostCallToActionGetDirections, nil
-	case "send_updates":
-		return SocialAccountPostCallToActionSendUpdates, nil
-	case "get_offer":
-		return SocialAccountPostCallToActionGetOffer, nil
-	case "watch_more":
-		return SocialAccountPostCallToActionWatchMore, nil
-	case "listen_now":
-		return SocialAccountPostCallToActionListenNow, nil
-	case "play_game":
-		return SocialAccountPostCallToActionPlayGame, nil
-	case "open_link":
-		return SocialAccountPostCallToActionOpenLink, nil
-	case "no_button":
-		return SocialAccountPostCallToActionNoButton, nil
-	case "get_offer_view":
-		return SocialAccountPostCallToActionGetOfferView, nil
-	case "get_event_tickets":
-		return SocialAccountPostCallToActionGetEventTickets, nil
-	case "see_menu":
-		return SocialAccountPostCallToActionSeeMenu, nil
-	case "request_time":
-		return SocialAccountPostCallToActionRequestTime, nil
-	case "event_rsvp":
-		return SocialAccountPostCallToActionEventRsvp, nil
-	case "see_details":
-		return SocialAccountPostCallToActionSeeDetails, nil
-	case "view_instagram_profile":
-		return SocialAccountPostCallToActionViewInstagramProfile, nil
+	case "x":
+		return SocialAccountParentPlatformX, nil
+	case "instagram":
+		return SocialAccountParentPlatformInstagram, nil
+	case "youtube":
+		return SocialAccountParentPlatformYoutube, nil
+	case "tiktok":
+		return SocialAccountParentPlatformTiktok, nil
+	case "facebook":
+		return SocialAccountParentPlatformFacebook, nil
+	case "discord":
+		return SocialAccountParentPlatformDiscord, nil
+	case "telegram":
+		return SocialAccountParentPlatformTelegram, nil
+	case "linkedin":
+		return SocialAccountParentPlatformLinkedin, nil
+	case "snapchat":
+		return SocialAccountParentPlatformSnapchat, nil
+	case "klaviyo":
+		return SocialAccountParentPlatformKlaviyo, nil
+	case "quickbooks":
+		return SocialAccountParentPlatformQuickbooks, nil
+	case "aimerce":
+		return SocialAccountParentPlatformAimerce, nil
 	}
-	var t SocialAccountPostCallToAction
+	var t SocialAccountParentPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (s SocialAccountPostCallToAction) Ptr() *SocialAccountPostCallToAction {
+func (s SocialAccountParentPlatform) Ptr() *SocialAccountParentPlatform {
 	return &s
 }
 
-// Ways this post can't be used on an ad. `lead_form_ineligible`: post can't be used in lead form ads. `promotion_ineligible`: the platform won't promote this post at all — always present when that's true, alongside a reason code when one is identified. `copyrighted_music`: post uses music the platform does not allow for ads. `messenger_destination`, `instagram_destination`, `whatsapp_destination`: the post's own button opens that chat app, so the post can only run in an ad group that sends people to the same one — always accompanied by `lead_form_ineligible`. Empty when the post has no restrictions.
-type SocialAccountPostRestrictionsItem string
+// The platform the social account exists on.
+type SocialAccountPlatform string
 
 const (
-	SocialAccountPostRestrictionsItemLeadFormIneligible   SocialAccountPostRestrictionsItem = "lead_form_ineligible"
-	SocialAccountPostRestrictionsItemPromotionIneligible  SocialAccountPostRestrictionsItem = "promotion_ineligible"
-	SocialAccountPostRestrictionsItemCopyrightedMusic     SocialAccountPostRestrictionsItem = "copyrighted_music"
-	SocialAccountPostRestrictionsItemMessengerDestination SocialAccountPostRestrictionsItem = "messenger_destination"
-	SocialAccountPostRestrictionsItemInstagramDestination SocialAccountPostRestrictionsItem = "instagram_destination"
-	SocialAccountPostRestrictionsItemWhatsappDestination  SocialAccountPostRestrictionsItem = "whatsapp_destination"
+	SocialAccountPlatformX          SocialAccountPlatform = "x"
+	SocialAccountPlatformInstagram  SocialAccountPlatform = "instagram"
+	SocialAccountPlatformYoutube    SocialAccountPlatform = "youtube"
+	SocialAccountPlatformTiktok     SocialAccountPlatform = "tiktok"
+	SocialAccountPlatformFacebook   SocialAccountPlatform = "facebook"
+	SocialAccountPlatformDiscord    SocialAccountPlatform = "discord"
+	SocialAccountPlatformTelegram   SocialAccountPlatform = "telegram"
+	SocialAccountPlatformLinkedin   SocialAccountPlatform = "linkedin"
+	SocialAccountPlatformSnapchat   SocialAccountPlatform = "snapchat"
+	SocialAccountPlatformKlaviyo    SocialAccountPlatform = "klaviyo"
+	SocialAccountPlatformQuickbooks SocialAccountPlatform = "quickbooks"
+	SocialAccountPlatformAimerce    SocialAccountPlatform = "aimerce"
 )
 
-func NewSocialAccountPostRestrictionsItemFromString(s string) (SocialAccountPostRestrictionsItem, error) {
+func NewSocialAccountPlatformFromString(s string) (SocialAccountPlatform, error) {
 	switch s {
-	case "lead_form_ineligible":
-		return SocialAccountPostRestrictionsItemLeadFormIneligible, nil
-	case "promotion_ineligible":
-		return SocialAccountPostRestrictionsItemPromotionIneligible, nil
-	case "copyrighted_music":
-		return SocialAccountPostRestrictionsItemCopyrightedMusic, nil
-	case "messenger_destination":
-		return SocialAccountPostRestrictionsItemMessengerDestination, nil
-	case "instagram_destination":
-		return SocialAccountPostRestrictionsItemInstagramDestination, nil
-	case "whatsapp_destination":
-		return SocialAccountPostRestrictionsItemWhatsappDestination, nil
+	case "x":
+		return SocialAccountPlatformX, nil
+	case "instagram":
+		return SocialAccountPlatformInstagram, nil
+	case "youtube":
+		return SocialAccountPlatformYoutube, nil
+	case "tiktok":
+		return SocialAccountPlatformTiktok, nil
+	case "facebook":
+		return SocialAccountPlatformFacebook, nil
+	case "discord":
+		return SocialAccountPlatformDiscord, nil
+	case "telegram":
+		return SocialAccountPlatformTelegram, nil
+	case "linkedin":
+		return SocialAccountPlatformLinkedin, nil
+	case "snapchat":
+		return SocialAccountPlatformSnapchat, nil
+	case "klaviyo":
+		return SocialAccountPlatformKlaviyo, nil
+	case "quickbooks":
+		return SocialAccountPlatformQuickbooks, nil
+	case "aimerce":
+		return SocialAccountPlatformAimerce, nil
 	}
-	var t SocialAccountPostRestrictionsItem
+	var t SocialAccountPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (s SocialAccountPostRestrictionsItem) Ptr() *SocialAccountPostRestrictionsItem {
+func (s SocialAccountPlatform) Ptr() *SocialAccountPlatform {
 	return &s
 }
 
-// The platform to connect the social account on. Supported options are `meta_business` and `tiktok`.
+// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `snapchat` for Snapchat Public Profiles. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, omit `scopes`, and the user picks the company in QuickBooks.
 type ConnectSocialAccountsRequestPlatform string
 
 const (
-	ConnectSocialAccountsRequestPlatformMetaBusiness ConnectSocialAccountsRequestPlatform = "meta_business"
-	ConnectSocialAccountsRequestPlatformTiktok       ConnectSocialAccountsRequestPlatform = "tiktok"
+	ConnectSocialAccountsRequestPlatformTiktok     ConnectSocialAccountsRequestPlatform = "tiktok"
+	ConnectSocialAccountsRequestPlatformLinkedin   ConnectSocialAccountsRequestPlatform = "linkedin"
+	ConnectSocialAccountsRequestPlatformYoutube    ConnectSocialAccountsRequestPlatform = "youtube"
+	ConnectSocialAccountsRequestPlatformX          ConnectSocialAccountsRequestPlatform = "x"
+	ConnectSocialAccountsRequestPlatformSnapchat   ConnectSocialAccountsRequestPlatform = "snapchat"
+	ConnectSocialAccountsRequestPlatformQuickbooks ConnectSocialAccountsRequestPlatform = "quickbooks"
 )
 
 func NewConnectSocialAccountsRequestPlatformFromString(s string) (ConnectSocialAccountsRequestPlatform, error) {
 	switch s {
-	case "meta_business":
-		return ConnectSocialAccountsRequestPlatformMetaBusiness, nil
 	case "tiktok":
 		return ConnectSocialAccountsRequestPlatformTiktok, nil
+	case "linkedin":
+		return ConnectSocialAccountsRequestPlatformLinkedin, nil
+	case "youtube":
+		return ConnectSocialAccountsRequestPlatformYoutube, nil
+	case "x":
+		return ConnectSocialAccountsRequestPlatformX, nil
+	case "snapchat":
+		return ConnectSocialAccountsRequestPlatformSnapchat, nil
+	case "quickbooks":
+		return ConnectSocialAccountsRequestPlatformQuickbooks, nil
 	}
 	var t ConnectSocialAccountsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1088,7 +992,6 @@ var (
 )
 
 type ConnectSocialAccountsResponse struct {
-	// The OAuth authorization URL to redirect the user to.
 	AuthorizeURL string `json:"authorize_url" url:"authorize_url"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1113,10 +1016,12 @@ func (c *ConnectSocialAccountsResponse) GetExtraProperties() map[string]interfac
 }
 
 func (c *ConnectSocialAccountsResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAuthorizeURL sets the AuthorizeURL field and marks it as non-optional;
@@ -1168,24 +1073,568 @@ func (c *ConnectSocialAccountsResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The platform to create the social account on. `facebook` requires the account's `banner_image`, `logo`, and `description`; configure them with [Update Account](/api-reference/beta/accounts/update-account).
-type CreateSocialAccountsRequestPlatform string
+type CreateSocialAccountsRequestBody struct {
+	Platform string
+	// Provisions a Whop-managed Facebook page for the account. Requires the account's `banner_image`, `logo`, and `description`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before Facebook has created the page — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+	Facebook *CreateSocialAccountsRequestBodyFacebook
+	// Provisions a Whop-managed TikTok account for the account. Requires the account's `logo`; configure it with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before TikTok has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+	Tiktok *CreateSocialAccountsRequestBodyTiktok
+	// Connects the account's existing Klaviyo account with a private API key.
+	Klaviyo *CreateSocialAccountsRequestBodyKlaviyo
+	// Connects the account's Aimerce shop with an API key and turns on the Aimerce tracking pixel. Requires the `company:manage_checkout` scope instead of `social_account:create`.
+	Aimerce *CreateSocialAccountsRequestBodyAimerce
 
-const (
-	CreateSocialAccountsRequestPlatformFacebook CreateSocialAccountsRequestPlatform = "facebook"
-)
-
-func NewCreateSocialAccountsRequestPlatformFromString(s string) (CreateSocialAccountsRequestPlatform, error) {
-	switch s {
-	case "facebook":
-		return CreateSocialAccountsRequestPlatformFacebook, nil
-	}
-	var t CreateSocialAccountsRequestPlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
+	rawJSON json.RawMessage
 }
 
-func (c CreateSocialAccountsRequestPlatform) Ptr() *CreateSocialAccountsRequestPlatform {
-	return &c
+func (c *CreateSocialAccountsRequestBody) GetPlatform() string {
+	if c == nil {
+		return ""
+	}
+	return c.Platform
+}
+
+func (c *CreateSocialAccountsRequestBody) GetFacebook() *CreateSocialAccountsRequestBodyFacebook {
+	if c == nil {
+		return nil
+	}
+	return c.Facebook
+}
+
+func (c *CreateSocialAccountsRequestBody) GetTiktok() *CreateSocialAccountsRequestBodyTiktok {
+	if c == nil {
+		return nil
+	}
+	return c.Tiktok
+}
+
+func (c *CreateSocialAccountsRequestBody) GetKlaviyo() *CreateSocialAccountsRequestBodyKlaviyo {
+	if c == nil {
+		return nil
+	}
+	return c.Klaviyo
+}
+
+func (c *CreateSocialAccountsRequestBody) GetAimerce() *CreateSocialAccountsRequestBodyAimerce {
+	if c == nil {
+		return nil
+	}
+	return c.Aimerce
+}
+
+func (c *CreateSocialAccountsRequestBody) UnmarshalJSON(data []byte) error {
+	var unmarshaler struct {
+		Platform string `json:"platform"`
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	c.Platform = unmarshaler.Platform
+	if unmarshaler.Platform == "" {
+		return fmt.Errorf("%T did not include discriminant platform", c)
+	}
+	switch unmarshaler.Platform {
+	case "facebook":
+		value := new(CreateSocialAccountsRequestBodyFacebook)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		c.Facebook = value
+	case "tiktok":
+		value := new(CreateSocialAccountsRequestBodyTiktok)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		c.Tiktok = value
+	case "klaviyo":
+		value := new(CreateSocialAccountsRequestBodyKlaviyo)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		c.Klaviyo = value
+	case "aimerce":
+		value := new(CreateSocialAccountsRequestBodyAimerce)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		c.Aimerce = value
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c CreateSocialAccountsRequestBody) MarshalJSON() ([]byte, error) {
+	if err := c.validate(); err != nil {
+		return nil, err
+	}
+	if c.Facebook != nil {
+		return internal.MarshalJSONWithExtraProperty(c.Facebook, "platform", "facebook")
+	}
+	if c.Tiktok != nil {
+		return internal.MarshalJSONWithExtraProperty(c.Tiktok, "platform", "tiktok")
+	}
+	if c.Klaviyo != nil {
+		return internal.MarshalJSONWithExtraProperty(c.Klaviyo, "platform", "klaviyo")
+	}
+	if c.Aimerce != nil {
+		return internal.MarshalJSONWithExtraProperty(c.Aimerce, "platform", "aimerce")
+	}
+	if len(c.rawJSON) > 0 {
+		return c.rawJSON, nil
+	}
+	return nil, fmt.Errorf("type %T does not define a non-empty union type", c)
+}
+
+type CreateSocialAccountsRequestBodyVisitor interface {
+	VisitFacebook(*CreateSocialAccountsRequestBodyFacebook) error
+	VisitTiktok(*CreateSocialAccountsRequestBodyTiktok) error
+	VisitKlaviyo(*CreateSocialAccountsRequestBodyKlaviyo) error
+	VisitAimerce(*CreateSocialAccountsRequestBodyAimerce) error
+}
+
+func (c *CreateSocialAccountsRequestBody) Accept(visitor CreateSocialAccountsRequestBodyVisitor) error {
+	if c.Facebook != nil {
+		return visitor.VisitFacebook(c.Facebook)
+	}
+	if c.Tiktok != nil {
+		return visitor.VisitTiktok(c.Tiktok)
+	}
+	if c.Klaviyo != nil {
+		return visitor.VisitKlaviyo(c.Klaviyo)
+	}
+	if c.Aimerce != nil {
+		return visitor.VisitAimerce(c.Aimerce)
+	}
+	return fmt.Errorf("type %T does not define a non-empty union type", c)
+}
+
+func (c *CreateSocialAccountsRequestBody) validate() error {
+	if c == nil {
+		return fmt.Errorf("type %T is nil", c)
+	}
+	var fields []string
+	if c.Facebook != nil {
+		fields = append(fields, "facebook")
+	}
+	if c.Tiktok != nil {
+		fields = append(fields, "tiktok")
+	}
+	if c.Klaviyo != nil {
+		fields = append(fields, "klaviyo")
+	}
+	if c.Aimerce != nil {
+		fields = append(fields, "aimerce")
+	}
+	if len(fields) == 0 {
+		if c.Platform != "" {
+			if len(c.rawJSON) > 0 {
+				return nil
+			}
+			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", c, c.Platform)
+		}
+		return fmt.Errorf("type %T is empty", c)
+	}
+	if len(fields) > 1 {
+		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", c, fields)
+	}
+	if c.Platform != "" {
+		field := fields[0]
+		if c.Platform != field {
+			return fmt.Errorf(
+				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
+				c,
+				c.Platform,
+				c,
+			)
+		}
+	}
+	return nil
+}
+
+var (
+	createSocialAccountsRequestBodyAimerceFieldAccountID = big.NewInt(1 << 0)
+	createSocialAccountsRequestBodyAimerceFieldAPIKey    = big.NewInt(1 << 1)
+)
+
+// Connects the account's Aimerce shop with an API key and turns on the Aimerce tracking pixel. Requires the `company:manage_checkout` scope instead of `social_account:create`.
+type CreateSocialAccountsRequestBodyAimerce struct {
+	// The Account (biz_ identifier) to create the external account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The account's Aimerce API key. Whop checks the key with Aimerce before connecting and never returns it. Connecting again replaces the saved key.
+	APIKey string `json:"api_key" url:"api_key"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateSocialAccountsRequestBodyAimerce) GetAccountID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AccountID
+}
+
+func (c *CreateSocialAccountsRequestBodyAimerce) GetAPIKey() string {
+	if c == nil {
+		return ""
+	}
+	return c.APIKey
+}
+
+func (c *CreateSocialAccountsRequestBodyAimerce) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateSocialAccountsRequestBodyAimerce) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSocialAccountsRequestBodyAimerce) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createSocialAccountsRequestBodyAimerceFieldAccountID)
+}
+
+// SetAPIKey sets the APIKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSocialAccountsRequestBodyAimerce) SetAPIKey(apiKey string) {
+	c.APIKey = apiKey
+	c.require(createSocialAccountsRequestBodyAimerceFieldAPIKey)
+}
+
+func (c *CreateSocialAccountsRequestBodyAimerce) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateSocialAccountsRequestBodyAimerce
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateSocialAccountsRequestBodyAimerce(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateSocialAccountsRequestBodyAimerce) MarshalJSON() ([]byte, error) {
+	type embed CreateSocialAccountsRequestBodyAimerce
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateSocialAccountsRequestBodyAimerce) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createSocialAccountsRequestBodyFacebookFieldAccountID = big.NewInt(1 << 0)
+)
+
+// Provisions a Whop-managed Facebook page for the account. Requires the account's `banner_image`, `logo`, and `description`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before Facebook has created the page — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+type CreateSocialAccountsRequestBodyFacebook struct {
+	// The Account (biz_ identifier) to create the external account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateSocialAccountsRequestBodyFacebook) GetAccountID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AccountID
+}
+
+func (c *CreateSocialAccountsRequestBodyFacebook) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateSocialAccountsRequestBodyFacebook) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSocialAccountsRequestBodyFacebook) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createSocialAccountsRequestBodyFacebookFieldAccountID)
+}
+
+func (c *CreateSocialAccountsRequestBodyFacebook) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateSocialAccountsRequestBodyFacebook
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateSocialAccountsRequestBodyFacebook(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateSocialAccountsRequestBodyFacebook) MarshalJSON() ([]byte, error) {
+	type embed CreateSocialAccountsRequestBodyFacebook
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateSocialAccountsRequestBodyFacebook) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createSocialAccountsRequestBodyKlaviyoFieldAccountID = big.NewInt(1 << 0)
+	createSocialAccountsRequestBodyKlaviyoFieldAPIKey    = big.NewInt(1 << 1)
+)
+
+// Connects the account's existing Klaviyo account with a private API key.
+type CreateSocialAccountsRequestBodyKlaviyo struct {
+	// The Account (biz_ identifier) to create the external account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// A private Klaviyo API key with read access to Accounts. Whop checks the key with Klaviyo before connecting and never returns it. Connecting again replaces the saved key.
+	APIKey string `json:"api_key" url:"api_key"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateSocialAccountsRequestBodyKlaviyo) GetAccountID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AccountID
+}
+
+func (c *CreateSocialAccountsRequestBodyKlaviyo) GetAPIKey() string {
+	if c == nil {
+		return ""
+	}
+	return c.APIKey
+}
+
+func (c *CreateSocialAccountsRequestBodyKlaviyo) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateSocialAccountsRequestBodyKlaviyo) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSocialAccountsRequestBodyKlaviyo) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createSocialAccountsRequestBodyKlaviyoFieldAccountID)
+}
+
+// SetAPIKey sets the APIKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSocialAccountsRequestBodyKlaviyo) SetAPIKey(apiKey string) {
+	c.APIKey = apiKey
+	c.require(createSocialAccountsRequestBodyKlaviyoFieldAPIKey)
+}
+
+func (c *CreateSocialAccountsRequestBodyKlaviyo) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateSocialAccountsRequestBodyKlaviyo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateSocialAccountsRequestBodyKlaviyo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateSocialAccountsRequestBodyKlaviyo) MarshalJSON() ([]byte, error) {
+	type embed CreateSocialAccountsRequestBodyKlaviyo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateSocialAccountsRequestBodyKlaviyo) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createSocialAccountsRequestBodyTiktokFieldAccountID = big.NewInt(1 << 0)
+)
+
+// Provisions a Whop-managed TikTok account for the account. Requires the account's `logo`; configure it with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before TikTok has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+type CreateSocialAccountsRequestBodyTiktok struct {
+	// The Account (biz_ identifier) to create the external account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateSocialAccountsRequestBodyTiktok) GetAccountID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AccountID
+}
+
+func (c *CreateSocialAccountsRequestBodyTiktok) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateSocialAccountsRequestBodyTiktok) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateSocialAccountsRequestBodyTiktok) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createSocialAccountsRequestBodyTiktokFieldAccountID)
+}
+
+func (c *CreateSocialAccountsRequestBodyTiktok) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateSocialAccountsRequestBodyTiktok
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateSocialAccountsRequestBodyTiktok(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateSocialAccountsRequestBodyTiktok) MarshalJSON() ([]byte, error) {
+	type embed CreateSocialAccountsRequestBodyTiktok
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateSocialAccountsRequestBodyTiktok) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 var (
@@ -1194,10 +1643,8 @@ var (
 )
 
 type DeleteSocialAccountsResponse struct {
-	// Always true.
-	Deleted bool `json:"deleted" url:"deleted"`
-	// ID of the disconnected social account.
-	ID string `json:"id" url:"id"`
+	Deleted bool   `json:"deleted" url:"deleted"`
+	ID      string `json:"id" url:"id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1228,10 +1675,12 @@ func (d *DeleteSocialAccountsResponse) GetExtraProperties() map[string]interface
 }
 
 func (d *DeleteSocialAccountsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -1290,90 +1739,6 @@ func (d *DeleteSocialAccountsResponse) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
-var (
-	leadFormsSocialAccountsResponseFieldData = big.NewInt(1 << 0)
-)
-
-type LeadFormsSocialAccountsResponse struct {
-	Data []*SocialAccountLeadForm `json:"data" url:"data"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *LeadFormsSocialAccountsResponse) GetData() []*SocialAccountLeadForm {
-	if l == nil {
-		return nil
-	}
-	return l.Data
-}
-
-func (l *LeadFormsSocialAccountsResponse) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *LeadFormsSocialAccountsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
-	}
-	l.explicitFields.Or(l.explicitFields, field)
-}
-
-// SetData sets the Data field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *LeadFormsSocialAccountsResponse) SetData(data []*SocialAccountLeadForm) {
-	l.Data = data
-	l.require(leadFormsSocialAccountsResponseFieldData)
-}
-
-func (l *LeadFormsSocialAccountsResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler LeadFormsSocialAccountsResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = LeadFormsSocialAccountsResponse(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *LeadFormsSocialAccountsResponse) MarshalJSON() ([]byte, error) {
-	type embed LeadFormsSocialAccountsResponse
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *LeadFormsSocialAccountsResponse) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
 type ListSocialAccountsRequestDirection string
 
 const (
@@ -1421,13 +1786,18 @@ func (l ListSocialAccountsRequestOrder) Ptr() *ListSocialAccountsRequestOrder {
 type ListSocialAccountsRequestPlatform string
 
 const (
-	ListSocialAccountsRequestPlatformX         ListSocialAccountsRequestPlatform = "x"
-	ListSocialAccountsRequestPlatformInstagram ListSocialAccountsRequestPlatform = "instagram"
-	ListSocialAccountsRequestPlatformYoutube   ListSocialAccountsRequestPlatform = "youtube"
-	ListSocialAccountsRequestPlatformTiktok    ListSocialAccountsRequestPlatform = "tiktok"
-	ListSocialAccountsRequestPlatformFacebook  ListSocialAccountsRequestPlatform = "facebook"
-	ListSocialAccountsRequestPlatformDiscord   ListSocialAccountsRequestPlatform = "discord"
-	ListSocialAccountsRequestPlatformTelegram  ListSocialAccountsRequestPlatform = "telegram"
+	ListSocialAccountsRequestPlatformX          ListSocialAccountsRequestPlatform = "x"
+	ListSocialAccountsRequestPlatformInstagram  ListSocialAccountsRequestPlatform = "instagram"
+	ListSocialAccountsRequestPlatformYoutube    ListSocialAccountsRequestPlatform = "youtube"
+	ListSocialAccountsRequestPlatformTiktok     ListSocialAccountsRequestPlatform = "tiktok"
+	ListSocialAccountsRequestPlatformFacebook   ListSocialAccountsRequestPlatform = "facebook"
+	ListSocialAccountsRequestPlatformDiscord    ListSocialAccountsRequestPlatform = "discord"
+	ListSocialAccountsRequestPlatformTelegram   ListSocialAccountsRequestPlatform = "telegram"
+	ListSocialAccountsRequestPlatformLinkedin   ListSocialAccountsRequestPlatform = "linkedin"
+	ListSocialAccountsRequestPlatformSnapchat   ListSocialAccountsRequestPlatform = "snapchat"
+	ListSocialAccountsRequestPlatformKlaviyo    ListSocialAccountsRequestPlatform = "klaviyo"
+	ListSocialAccountsRequestPlatformQuickbooks ListSocialAccountsRequestPlatform = "quickbooks"
+	ListSocialAccountsRequestPlatformAimerce    ListSocialAccountsRequestPlatform = "aimerce"
 )
 
 func NewListSocialAccountsRequestPlatformFromString(s string) (ListSocialAccountsRequestPlatform, error) {
@@ -1446,6 +1816,16 @@ func NewListSocialAccountsRequestPlatformFromString(s string) (ListSocialAccount
 		return ListSocialAccountsRequestPlatformDiscord, nil
 	case "telegram":
 		return ListSocialAccountsRequestPlatformTelegram, nil
+	case "linkedin":
+		return ListSocialAccountsRequestPlatformLinkedin, nil
+	case "snapchat":
+		return ListSocialAccountsRequestPlatformSnapchat, nil
+	case "klaviyo":
+		return ListSocialAccountsRequestPlatformKlaviyo, nil
+	case "quickbooks":
+		return ListSocialAccountsRequestPlatformQuickbooks, nil
+	case "aimerce":
+		return ListSocialAccountsRequestPlatformAimerce, nil
 	}
 	var t ListSocialAccountsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1471,6 +1851,40 @@ func NewListSocialAccountsRequestScopesItemFromString(s string) (ListSocialAccou
 }
 
 func (l ListSocialAccountsRequestScopesItem) Ptr() *ListSocialAccountsRequestScopesItem {
+	return &l
+}
+
+type ListSocialAccountsRequestTrustLevel string
+
+const (
+	ListSocialAccountsRequestTrustLevelOauth      ListSocialAccountsRequestTrustLevel = "oauth"
+	ListSocialAccountsRequestTrustLevelAPIKey     ListSocialAccountsRequestTrustLevel = "api_key"
+	ListSocialAccountsRequestTrustLevelVerified   ListSocialAccountsRequestTrustLevel = "verified"
+	ListSocialAccountsRequestTrustLevelAuthorized ListSocialAccountsRequestTrustLevel = "authorized"
+	ListSocialAccountsRequestTrustLevelClaimed    ListSocialAccountsRequestTrustLevel = "claimed"
+	ListSocialAccountsRequestTrustLevelScraped    ListSocialAccountsRequestTrustLevel = "scraped"
+)
+
+func NewListSocialAccountsRequestTrustLevelFromString(s string) (ListSocialAccountsRequestTrustLevel, error) {
+	switch s {
+	case "oauth":
+		return ListSocialAccountsRequestTrustLevelOauth, nil
+	case "api_key":
+		return ListSocialAccountsRequestTrustLevelAPIKey, nil
+	case "verified":
+		return ListSocialAccountsRequestTrustLevelVerified, nil
+	case "authorized":
+		return ListSocialAccountsRequestTrustLevelAuthorized, nil
+	case "claimed":
+		return ListSocialAccountsRequestTrustLevelClaimed, nil
+	case "scraped":
+		return ListSocialAccountsRequestTrustLevelScraped, nil
+	}
+	var t ListSocialAccountsRequestTrustLevel
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListSocialAccountsRequestTrustLevel) Ptr() *ListSocialAccountsRequestTrustLevel {
 	return &l
 }
 
@@ -1512,10 +1926,12 @@ func (l *ListSocialAccountsResponse) GetExtraProperties() map[string]interface{}
 }
 
 func (l *ListSocialAccountsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1581,6 +1997,12 @@ var (
 	listSocialAccountsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listSocialAccountsResponsePageInfoNullableFields maps the wire names of ListSocialAccountsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listSocialAccountsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listSocialAccountsResponsePageInfoFieldEndCursor,
+	"start_cursor": listSocialAccountsResponsePageInfoFieldStartCursor,
+}
+
 type ListSocialAccountsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1630,10 +2052,12 @@ func (l *ListSocialAccountsResponsePageInfo) GetExtraProperties() map[string]int
 }
 
 func (l *ListSocialAccountsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1676,6 +2100,13 @@ func (l *ListSocialAccountsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listSocialAccountsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1704,204 +2135,4 @@ func (l *ListSocialAccountsResponsePageInfo) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
-}
-
-var (
-	postsSocialAccountsResponseFieldData     = big.NewInt(1 << 0)
-	postsSocialAccountsResponseFieldPageInfo = big.NewInt(1 << 1)
-)
-
-type PostsSocialAccountsResponse struct {
-	Data     []*SocialAccountPost                 `json:"data" url:"data"`
-	PageInfo *PostsSocialAccountsResponsePageInfo `json:"page_info" url:"page_info"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostsSocialAccountsResponse) GetData() []*SocialAccountPost {
-	if p == nil {
-		return nil
-	}
-	return p.Data
-}
-
-func (p *PostsSocialAccountsResponse) GetPageInfo() *PostsSocialAccountsResponsePageInfo {
-	if p == nil {
-		return nil
-	}
-	return p.PageInfo
-}
-
-func (p *PostsSocialAccountsResponse) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostsSocialAccountsResponse) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetData sets the Data field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostsSocialAccountsResponse) SetData(data []*SocialAccountPost) {
-	p.Data = data
-	p.require(postsSocialAccountsResponseFieldData)
-}
-
-// SetPageInfo sets the PageInfo field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostsSocialAccountsResponse) SetPageInfo(pageInfo *PostsSocialAccountsResponsePageInfo) {
-	p.PageInfo = pageInfo
-	p.require(postsSocialAccountsResponseFieldPageInfo)
-}
-
-func (p *PostsSocialAccountsResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostsSocialAccountsResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PostsSocialAccountsResponse(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostsSocialAccountsResponse) MarshalJSON() ([]byte, error) {
-	type embed PostsSocialAccountsResponse
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostsSocialAccountsResponse) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-var (
-	postsSocialAccountsResponsePageInfoFieldEndCursor   = big.NewInt(1 << 0)
-	postsSocialAccountsResponsePageInfoFieldHasNextPage = big.NewInt(1 << 1)
-)
-
-type PostsSocialAccountsResponsePageInfo struct {
-	EndCursor   *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
-	HasNextPage bool    `json:"has_next_page" url:"has_next_page"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostsSocialAccountsResponsePageInfo) GetEndCursor() *string {
-	if p == nil {
-		return nil
-	}
-	return p.EndCursor
-}
-
-func (p *PostsSocialAccountsResponsePageInfo) GetHasNextPage() bool {
-	if p == nil {
-		return false
-	}
-	return p.HasNextPage
-}
-
-func (p *PostsSocialAccountsResponsePageInfo) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostsSocialAccountsResponsePageInfo) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetEndCursor sets the EndCursor field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostsSocialAccountsResponsePageInfo) SetEndCursor(endCursor *string) {
-	p.EndCursor = endCursor
-	p.require(postsSocialAccountsResponsePageInfoFieldEndCursor)
-}
-
-// SetHasNextPage sets the HasNextPage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostsSocialAccountsResponsePageInfo) SetHasNextPage(hasNextPage bool) {
-	p.HasNextPage = hasNextPage
-	p.require(postsSocialAccountsResponsePageInfoFieldHasNextPage)
-}
-
-func (p *PostsSocialAccountsResponsePageInfo) UnmarshalJSON(data []byte) error {
-	type unmarshaler PostsSocialAccountsResponsePageInfo
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PostsSocialAccountsResponsePageInfo(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostsSocialAccountsResponsePageInfo) MarshalJSON() ([]byte, error) {
-	type embed PostsSocialAccountsResponsePageInfo
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostsSocialAccountsResponsePageInfo) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
 }

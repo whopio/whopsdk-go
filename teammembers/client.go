@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists an account's team members, including pending invites (`status: "pending"`, `ausri_` ids; `user` is `null` for invites sent to an email with no Whop account yet). For accepted members, `email` requires the `company:authorized_user:email:read` scope and is `null` otherwise. Listing `role=workforce` is also allowed with the `bounty:create` scope.
+// Lists an account's team members, including pending invites. A user credential with `company:basic:read` may list only its own joined membership by passing its own `user_id` and `status=joined`. Listing `role=workforce` is also allowed with the `bounty:create` scope. Members with the view-only Partner role are listed after all other members.
 //
 // Example:
 //
@@ -58,7 +58,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/team_members"
@@ -113,13 +121,16 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Adds a member to an account's team with a system role. Identify them by exactly one of `user_id` or `email`. If the person has not yet accepted — or the email does not belong to a Whop account yet — an invitation is sent instead and the response is `202` with `{ "object": "team_member_invite", "invitation_sent": true }`. If they already have a pending invite, the request fails with a `400`. Custom roles cannot be granted via the API. Granting the `workforce` role is also allowed with the `bounty:create` scope.
+// Adds a member to an account's team with a system role. Identify them by exactly one of `user_id` or `email`. If the person has not yet accepted, or the email does not belong to a Whop account yet, an invitation is sent instead and the response is `202` with the pending team member, whose `status` is `pending` and whose id is prefixed `ausri_`. If they already have a pending invite, the request fails with a `400`. Granting the `workforce` role is also allowed with the `bounty:create` scope.
 //
 // Example:
 //
 //	request := &whopsdk.CreateTeamMembersRequest{
 //	    AccountID: "biz_xxxxxxxxxxxxxx",
-//	    Role: whopsdk.CreateTeamMembersRequestRoleOwner,
+//	    Role: whopsdk.CreateTeamMembersRequestRoleSalesManager,
+//	    UserID: whopsdk.String(
+//	        "user_xxxxxxxxxxxxxx",
+//	    ),
 //	}
 //	client.TeamMembers.Create(
 //	    context.TODO(),
@@ -141,7 +152,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Retrieves a team member by ID. `email` requires the `company:authorized_user:email:read` scope and is `null` otherwise.
+// Retrieves a team member or pending invite by ID.
 //
 // Example:
 //
@@ -201,7 +212,6 @@ func (c *Client) Delete(
 //
 //	request := &whopsdk.UpdateTeamMembersRequest{
 //	    ID: "id",
-//	    Role: whopsdk.UpdateTeamMembersRequestRoleOwner,
 //	}
 //	client.TeamMembers.Update(
 //	    context.TODO(),

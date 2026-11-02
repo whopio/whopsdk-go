@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,34 +39,11 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of invoices for a company, with optional filtering by product, status, collection method, and creation date.
-//
-// Required permissions:
-//   - `invoice:basic:read`
+// Lists receipt-backed invoices for accounts the caller can read. Legacy invoices are excluded.
 //
 // Example:
 //
-//	request := &whopsdk.ListInvoicesRequest{
-//	    First: whopsdk.Int(
-//	        42,
-//	    ),
-//	    Last: whopsdk.Int(
-//	        42,
-//	    ),
-//	    CompanyID: whopsdk.String(
-//	        "biz_xxxxxxxxxxxxxx",
-//	    ),
-//	    CreatedBefore: whopsdk.Time(
-//	        whopsdk.MustParseDateTime(
-//	            "2023-12-01T05:00:00Z",
-//	        ),
-//	    ),
-//	    CreatedAfter: whopsdk.Time(
-//	        whopsdk.MustParseDateTime(
-//	            "2023-12-01T05:00:00Z",
-//	        ),
-//	    ),
-//	}
+//	request := &whopsdk.ListInvoicesRequest{}
 //	client.Invoices.List(
 //	    context.TODO(),
 //	    request,
@@ -75,11 +52,19 @@ func (c *Client) List(
 	ctx context.Context,
 	request *whopsdk.ListInvoicesRequest,
 	opts ...option.RequestOption,
-) (*core.Page[*string, *whopsdk.InvoiceListItem, *whopsdk.ListInvoicesResponse], error) {
+) (*core.Page[*string, *whopsdk.Invoice, *whopsdk.ListInvoicesResponse], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/invoices"
@@ -112,14 +97,14 @@ func (c *Client) List(
 			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		}
 	}
-	readPageResponse := func(response *whopsdk.ListInvoicesResponse) *core.PageResponse[*string, *whopsdk.InvoiceListItem, *whopsdk.ListInvoicesResponse] {
+	readPageResponse := func(response *whopsdk.ListInvoicesResponse) *core.PageResponse[*string, *whopsdk.Invoice, *whopsdk.ListInvoicesResponse] {
 		var zeroValue *string
 		var next *string
 		if response.PageInfo != nil {
 			next = response.PageInfo.EndCursor
 		}
 		results := response.GetData()
-		return &core.PageResponse[*string, *whopsdk.InvoiceListItem, *whopsdk.ListInvoicesResponse]{
+		return &core.PageResponse[*string, *whopsdk.Invoice, *whopsdk.ListInvoicesResponse]{
 			Results:  results,
 			Response: response,
 			Next:     next,
@@ -134,25 +119,13 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Create an invoice for a customer. The invoice can be charged automatically using a stored payment method, or sent to the customer for manual payment.
-//
-// Required permissions:
-//   - `invoice:create`
-//   - `member:email:read`
-//   - `member:basic:read`
-//   - `payment:basic:read`
+// Creates a draft invoice backed by a receipt, with saved items, quantities, prices, and recipients. Issue the draft to resolve final tax and open the invoice. The pay_ ID stays the same when paid. Needs `invoice:create` or `payment:charge`; a `payment_method_id` needs `payment:charge`.
 //
 // Example:
 //
 //	request := &whopsdk.CreateInvoicesRequest{
-//	    CreateInvoicesRequestProduct: &whopsdk.CreateInvoicesRequestProduct{
-//	        CollectionMethod: whopsdk.InvoiceCollectionMethodsSendInvoice,
-//	        CompanyID: "biz_xxxxxxxxxxxxxx",
-//	        Plan: &whopsdk.CreateInvoicesRequestProductPlan{},
-//	        Product: &whopsdk.CreateInvoicesRequestProductProduct{
-//	            Title: "title",
-//	        },
-//	    },
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
+//	    Items: []*whopsdk.CreateInvoicesRequestItemsItem{},
 //	}
 //	client.Invoices.Create(
 //	    context.TODO(),
@@ -174,18 +147,12 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Retrieves the details of an existing invoice.
-//
-// Required permissions:
-//   - `invoice:basic:read`
-//   - `member:email:read`
-//   - `member:basic:read`
-//   - `payment:basic:read`
+// Retrieves a receipt-backed invoice by its pay_ ID.
 //
 // Example:
 //
 //	request := &whopsdk.RetrieveInvoicesRequest{
-//	    ID: "inv_xxxxxxxxxxxxxx",
+//	    ID: "id",
 //	}
 //	client.Invoices.Retrieve(
 //	    context.TODO(),
@@ -207,48 +174,12 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Delete a draft invoice.
-//
-// Required permissions:
-//   - `invoice:update`
-//
-// Example:
-//
-//	request := &whopsdk.DeleteInvoicesRequest{
-//	    ID: "inv_xxxxxxxxxxxxxx",
-//	}
-//	client.Invoices.Delete(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) Delete(
-	ctx context.Context,
-	request *whopsdk.DeleteInvoicesRequest,
-	opts ...option.RequestOption,
-) (bool, error) {
-	response, err := c.WithRawResponse.Delete(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return false, err
-	}
-	return response.Body, nil
-}
-
-// Update a draft invoice's details.
-//
-// Required permissions:
-//   - `invoice:update`
-//   - `member:email:read`
-//   - `member:basic:read`
-//   - `payment:basic:read`
+// Updates draft invoice items and billing fields. Recipient-only updates are also allowed on unpaid invoices. Edit customer contact details through the member API. A draft with no saved payment method and no scheduled send needs `invoice:update`, `invoice:create`, or `payment:charge`; every other update, and setting `payment_method_id`, needs `payment:charge`.
 //
 // Example:
 //
 //	request := &whopsdk.UpdateInvoicesRequest{
-//	    ID: "inv_xxxxxxxxxxxxxx",
+//	    ID: "id",
 //	}
 //	client.Invoices.Update(
 //	    context.TODO(),
@@ -270,45 +201,93 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Mark an open invoice as paid when payment was collected outside of Whop.
-//
-// Required permissions:
-//   - `invoice:update`
+// Charges an open invoice now to one of its customer's saved payment methods, canceling any charge scheduled for later. The charge completes asynchronously: the invoice becomes `paid`, or, if declined, stays `open` and its recipients are emailed the `checkout_link`. Refused for drafts and while another payment is in progress.
 //
 // Example:
 //
-//	request := &whopsdk.MarkPaidInvoicesRequest{
-//	    ID: "inv_xxxxxxxxxxxxxx",
+//	request := &whopsdk.ChargeInvoicesRequest{
+//	    ID: "id",
 //	}
-//	client.Invoices.MarkPaid(
+//	client.Invoices.Charge(
 //	    context.TODO(),
 //	    request,
 //	)
-func (c *Client) MarkPaid(
+func (c *Client) Charge(
 	ctx context.Context,
-	request *whopsdk.MarkPaidInvoicesRequest,
+	request *whopsdk.ChargeInvoicesRequest,
 	opts ...option.RequestOption,
-) (bool, error) {
-	response, err := c.WithRawResponse.MarkPaid(
+) (*whopsdk.Invoice, error) {
+	response, err := c.WithRawResponse.Charge(
 		ctx,
 		request,
 		opts...,
 	)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	return response.Body, nil
 }
 
-// Mark an open invoice as uncollectible when payment is not expected.
+// Generates the invoice as a PDF and returns a short-lived link to download it. A draft shows its estimated totals. The buyer's name and email need `member:basic:read` and `member:email:read`, and the Pay now link on an open invoice needs `payment:charge`, or `invoice:create` or `invoice:update` when it has no `payment_method_id`. Each call generates a new file and link, so this endpoint does not replay `Idempotency-Key` responses.
 //
-// Required permissions:
-//   - `invoice:update`
+// Example:
+//
+//	request := &whopsdk.GeneratePdfInvoicesRequest{
+//	    ID: "id",
+//	}
+//	client.Invoices.GeneratePdf(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) GeneratePdf(
+	ctx context.Context,
+	request *whopsdk.GeneratePdfInvoicesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.InvoicePdf, error) {
+	response, err := c.WithRawResponse.GeneratePdf(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Resolves final tax and opens a draft invoice without emailing it. An invoice with a `payment_method_id` is charged to it off-session, as `POST /payments` charges a saved payment method: at `charge_at` if given, otherwise on `due_at` while it is still ahead, otherwise right away (see `scheduled_charge_at`). With a future `due_at` and no `charge_at`, the customer is charged on the due date without being emailed first. Issuing an open invoice again retains its totals and charges nothing.
+//
+// Example:
+//
+//	request := &whopsdk.IssueInvoicesRequest{
+//	    ID: "id",
+//	}
+//	client.Invoices.Issue(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Issue(
+	ctx context.Context,
+	request *whopsdk.IssueInvoicesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Invoice, error) {
+	response, err := c.WithRawResponse.Issue(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Marks an open invoice as uncollectible. Its checkout link stops working.
 //
 // Example:
 //
 //	request := &whopsdk.MarkUncollectibleInvoicesRequest{
-//	    ID: "inv_xxxxxxxxxxxxxx",
+//	    ID: "id",
 //	}
 //	client.Invoices.MarkUncollectible(
 //	    context.TODO(),
@@ -318,57 +297,78 @@ func (c *Client) MarkUncollectible(
 	ctx context.Context,
 	request *whopsdk.MarkUncollectibleInvoicesRequest,
 	opts ...option.RequestOption,
-) (bool, error) {
+) (*whopsdk.Invoice, error) {
 	response, err := c.WithRawResponse.MarkUncollectible(
 		ctx,
 		request,
 		opts...,
 	)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	return response.Body, nil
 }
 
-// Resend the notification email for an existing invoice to the customer.
-//
-// Required permissions:
-//   - `invoice:update`
+// Issues a draft and emails it to its recipients, with reminders after the due date. A draft with no `payment_method_id` needs `invoice:update`, `invoice:create`, or `payment:charge`, and is never charged. A draft with a `payment_method_id` needs `payment:charge`: with a `charge_at`, or when its `due_at` is still ahead, it is emailed now and charged to that method at that time (see `scheduled_charge_at`); otherwise it is charged right away instead of emailed. Voiding the invoice, marking it uncollectible, or paying it first cancels the scheduled charge, and its recipients get the payment link if a charge fails. Sending an open invoice needs `payment:charge` and emails it again, up to three emails a day including the first send. With `send_at`, the draft is sent at that time instead, and cannot be edited, except its recipients, until it is sent or unscheduled. Each email, reminders included, is sent separately to the customer email shown on the invoice and to each address in `recipient_emails`, so recipients never see each other's addresses.
 //
 // Example:
 //
-//	request := &whopsdk.ResendInvoicesRequest{
-//	    ID: "inv_xxxxxxxxxxxxxx",
+//	request := &whopsdk.SendInvoicesRequest{
+//	    ID: "id",
 //	}
-//	client.Invoices.Resend(
+//	client.Invoices.Send(
 //	    context.TODO(),
 //	    request,
 //	)
-func (c *Client) Resend(
+func (c *Client) Send(
 	ctx context.Context,
-	request *whopsdk.ResendInvoicesRequest,
+	request *whopsdk.SendInvoicesRequest,
 	opts ...option.RequestOption,
-) (bool, error) {
-	response, err := c.WithRawResponse.Resend(
+) (*whopsdk.Invoice, error) {
+	response, err := c.WithRawResponse.Send(
 		ctx,
 		request,
 		opts...,
 	)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	return response.Body, nil
 }
 
-// Void an open invoice so it can no longer be paid. Voiding is permanent and cannot be undone.
+// Cancels a draft's scheduled send, so it can be edited again. An invoice with no scheduled send is returned unchanged. A draft with no `payment_method_id` needs `invoice:update`, `invoice:create`, or `payment:charge`; any other invoice needs `payment:charge`.
 //
-// Required permissions:
-//   - `invoice:update`
+// Example:
+//
+//	request := &whopsdk.UnscheduleInvoicesRequest{
+//	    ID: "id",
+//	}
+//	client.Invoices.Unschedule(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Unschedule(
+	ctx context.Context,
+	request *whopsdk.UnscheduleInvoicesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Invoice, error) {
+	response, err := c.WithRawResponse.Unschedule(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Voids a draft or unpaid invoice.
 //
 // Example:
 //
 //	request := &whopsdk.VoidInvoicesRequest{
-//	    ID: "inv_xxxxxxxxxxxxxx",
+//	    ID: "id",
 //	}
 //	client.Invoices.Void(
 //	    context.TODO(),
@@ -378,14 +378,14 @@ func (c *Client) Void(
 	ctx context.Context,
 	request *whopsdk.VoidInvoicesRequest,
 	opts ...option.RequestOption,
-) (bool, error) {
+) (*whopsdk.Invoice, error) {
 	response, err := c.WithRawResponse.Void(
 		ctx,
 		request,
 		opts...,
 	)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	return response.Body, nil
 }

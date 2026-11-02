@@ -6,11 +6,11 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
-	client "github.com/whopio/whopsdk-go/partners/businesses/client"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
+	client "github.com/whopio/whopsdk-go/v2/partners/businesses/client"
 )
 
 type Client struct {
@@ -24,7 +24,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -63,7 +63,28 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Ranks referrers by partner business earnings — all-time by default, or over the current day, month, year, or trailing 30 days. Authentication is optional: authenticated callers also get their own standing, anonymous callers get the rankings alone.
+// Lists, per income stream, the fee a business the caller refers would be charged, how low the caller may price it, and the commission the caller earns on that stream. Answers for a referral that does not exist yet, so a referral flow can price the deal before the business is created. Requires `partner:fees:update`, since the floors a partner may price down to are only for a credential that can set them.
+//
+// Example:
+//
+//	client.Partners.FeeOptions(
+//	    context.TODO(),
+//	)
+func (c *Client) FeeOptions(
+	ctx context.Context,
+	opts ...option.RequestOption,
+) (*whopsdk.FeeOptionsPartnersResponse, error) {
+	response, err := c.WithRawResponse.FeeOptions(
+		ctx,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Ranks referrers by partner business earnings over the chosen `period`, all-time by default. Authentication is optional: authenticated callers also get their own standing, anonymous callers get the rankings alone.
 //
 // Example:
 //
@@ -88,7 +109,7 @@ func (c *Client) Leaderboard(
 	return response.Body, nil
 }
 
-// Lists the users the caller referred onto Whop (newest first), each with the second-tier earnings the caller has made from that user's businesses.
+// Lists the users the caller referred onto Whop, newest first by default, each with the caller's total affiliate earnings from that user across all tiers.
 //
 // Example:
 //
@@ -105,7 +126,15 @@ func (c *Client) ReferredUsers(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/partners/referred_users"
@@ -158,4 +187,31 @@ func (c *Client) ReferredUsers(
 		readPageResponse,
 	)
 	return pager.GetPage(ctx, request.After)
+}
+
+// Retrieves the authenticated user's partner profile: enrollment and verification status, certification completion, active direct business referral count, and default payout rates. Other users' profiles are not accessible. To create and manage referral links, use `/partner_referral_requests`.
+//
+// Example:
+//
+//	request := &whopsdk.RetrievePartnersRequest{
+//	    ID: "me",
+//	}
+//	client.Partners.Retrieve(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Retrieve(
+	ctx context.Context,
+	request *whopsdk.RetrievePartnersRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Partner, error) {
+	response, err := c.WithRawResponse.Retrieve(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
 }

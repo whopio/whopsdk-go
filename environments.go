@@ -2,12 +2,26 @@
 
 package whopsdk
 
+// Environment defines the environment with multiple base URLs.
+type Environment struct {
+	API   string
+	Vault string
+}
+
 // Environments defines all of the API environments.
 // These values can be used with the WithBaseURL
 // RequestOption to override the client's default environment,
 // if any.
 var Environments = struct {
-	Default string
+	Production Environment
+	Sandbox    Environment
 }{
-	Default: "https://api.whop.com/api/v1",
+	Production: Environment{
+		API:   "https://api.whop.com/api/v1",
+		Vault: "https://vault-api.whop.com/api/v1",
+	},
+	Sandbox: Environment{
+		API:   "https://sandbox-api.whop.com/api/v1",
+		Vault: "https://sandbox-vault-api.whop.com/api/v1",
+	},
 }

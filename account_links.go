@@ -5,13 +5,13 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
 
 var (
-	createAccountLinksRequestFieldCompanyID  = big.NewInt(1 << 0)
+	createAccountLinksRequestFieldAccountID  = big.NewInt(1 << 0)
 	createAccountLinksRequestFieldRefreshURL = big.NewInt(1 << 1)
 	createAccountLinksRequestFieldReturnURL  = big.NewInt(1 << 2)
 	createAccountLinksRequestFieldUseCase    = big.NewInt(1 << 3)
@@ -19,7 +19,7 @@ var (
 
 type CreateAccountLinksRequest struct {
 	// The unique identifier of the company to generate the link for, starting with 'biz_'. Must be a sub-merchant of the API key's company.
-	CompanyID string `json:"company_id" url:"-"`
+	AccountID string `json:"account_id" url:"-"`
 	// The URL to redirect the user to if the session expires and needs to be re-authenticated, such as 'https://example.com/refresh'.
 	RefreshURL string `json:"refresh_url" url:"-"`
 	// The URL to redirect the user to when they want to return to your site, such as 'https://example.com/return'.
@@ -32,17 +32,19 @@ type CreateAccountLinksRequest struct {
 }
 
 func (c *CreateAccountLinksRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAccountLinksRequest) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createAccountLinksRequestFieldCompanyID)
+func (c *CreateAccountLinksRequest) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(createAccountLinksRequestFieldAccountID)
 }
 
 // SetRefreshURL sets the RefreshURL field and marks it as non-optional;
@@ -87,12 +89,12 @@ func (c *CreateAccountLinksRequest) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-// A temporary, time-limited URL that grants a user access to an external account management page.
 var (
 	accountLinkFieldExpiresAt = big.NewInt(1 << 0)
 	accountLinkFieldURL       = big.NewInt(1 << 1)
 )
 
+// A temporary, time-limited URL that grants a user access to an external account management page.
 type AccountLink struct {
 	// The timestamp after which this account link URL is no longer valid.
 	ExpiresAt time.Time `json:"expires_at" url:"expires_at"`
@@ -128,10 +130,12 @@ func (a *AccountLink) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AccountLink) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetExpiresAt sets the ExpiresAt field and marks it as non-optional;

@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -89,7 +89,7 @@ func TestAccountLinksCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateAccountLinksRequest{
-		CompanyID:  "biz_xxxxxxxxxxxxxx",
+		AccountID:  "biz_xxxxxxxxxxxxxx",
 		RefreshURL: "refresh_url",
 		ReturnURL:  "return_url",
 		UseCase:    whopsdk.AccountLinkUseCasesAccountOnboarding,

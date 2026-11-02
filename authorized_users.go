@@ -5,13 +5,13 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
 
 var (
-	createAuthorizedUsersRequestFieldCompanyID  = big.NewInt(1 << 0)
+	createAuthorizedUsersRequestFieldAccountID  = big.NewInt(1 << 0)
 	createAuthorizedUsersRequestFieldElevation  = big.NewInt(1 << 1)
 	createAuthorizedUsersRequestFieldRole       = big.NewInt(1 << 2)
 	createAuthorizedUsersRequestFieldSendEmails = big.NewInt(1 << 3)
@@ -20,7 +20,7 @@ var (
 
 type CreateAuthorizedUsersRequest struct {
 	// The ID of the company to add the authorized user to.
-	CompanyID string `json:"company_id" url:"-"`
+	AccountID string `json:"account_id" url:"-"`
 	// Re-authentication proof required to perform this sensitive action.
 	Elevation *CreateAuthorizedUsersRequestElevation `json:"elevation,omitempty" url:"-"`
 	// The role to assign to the authorized user within the company. Supported roles: 'moderator', 'sales_manager'.
@@ -35,17 +35,19 @@ type CreateAuthorizedUsersRequest struct {
 }
 
 func (c *CreateAuthorizedUsersRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAuthorizedUsersRequest) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createAuthorizedUsersRequestFieldCompanyID)
+func (c *CreateAuthorizedUsersRequest) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(createAuthorizedUsersRequestFieldAccountID)
 }
 
 // SetElevation sets the Elevation field and marks it as non-optional;
@@ -99,24 +101,26 @@ func (c *CreateAuthorizedUsersRequest) MarshalJSON() ([]byte, error) {
 
 var (
 	deleteAuthorizedUsersRequestFieldID        = big.NewInt(1 << 0)
-	deleteAuthorizedUsersRequestFieldCompanyID = big.NewInt(1 << 1)
+	deleteAuthorizedUsersRequestFieldAccountID = big.NewInt(1 << 1)
 )
 
 type DeleteAuthorizedUsersRequest struct {
-	// The ID of the authorized user or user to remove.
+	// The ID of the authorized user or user to remove. Team member IDs may start with `ausr_` or `mber_`; treat them as opaque.
 	ID string `json:"-" url:"-"`
 	// The ID of the company the authorized user belongs to. Optional if the authorized user ID is provided.
-	CompanyID *string `json:"-" url:"company_id,omitempty"`
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (d *DeleteAuthorizedUsersRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -126,11 +130,11 @@ func (d *DeleteAuthorizedUsersRequest) SetID(id string) {
 	d.require(deleteAuthorizedUsersRequestFieldID)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DeleteAuthorizedUsersRequest) SetCompanyID(companyID *string) {
-	d.CompanyID = companyID
-	d.require(deleteAuthorizedUsersRequestFieldCompanyID)
+func (d *DeleteAuthorizedUsersRequest) SetAccountID(accountID *string) {
+	d.AccountID = accountID
+	d.require(deleteAuthorizedUsersRequestFieldAccountID)
 }
 
 var (
@@ -138,11 +142,11 @@ var (
 	listAuthorizedUsersRequestFieldBefore        = big.NewInt(1 << 1)
 	listAuthorizedUsersRequestFieldFirst         = big.NewInt(1 << 2)
 	listAuthorizedUsersRequestFieldLast          = big.NewInt(1 << 3)
-	listAuthorizedUsersRequestFieldCompanyID     = big.NewInt(1 << 4)
-	listAuthorizedUsersRequestFieldUserID        = big.NewInt(1 << 5)
-	listAuthorizedUsersRequestFieldRole          = big.NewInt(1 << 6)
-	listAuthorizedUsersRequestFieldCreatedBefore = big.NewInt(1 << 7)
-	listAuthorizedUsersRequestFieldCreatedAfter  = big.NewInt(1 << 8)
+	listAuthorizedUsersRequestFieldUserID        = big.NewInt(1 << 4)
+	listAuthorizedUsersRequestFieldRole          = big.NewInt(1 << 5)
+	listAuthorizedUsersRequestFieldCreatedBefore = big.NewInt(1 << 6)
+	listAuthorizedUsersRequestFieldCreatedAfter  = big.NewInt(1 << 7)
+	listAuthorizedUsersRequestFieldAccountID     = big.NewInt(1 << 8)
 )
 
 type ListAuthorizedUsersRequest struct {
@@ -154,8 +158,6 @@ type ListAuthorizedUsersRequest struct {
 	First *int `json:"-" url:"first,omitempty"`
 	// Returns the last _n_ elements from the list.
 	Last *int `json:"-" url:"last,omitempty"`
-	// The unique identifier of the company to list authorized users for.
-	CompanyID *string `json:"-" url:"company_id,omitempty"`
 	// Filter results to a specific user to check if they are an authorized team member.
 	UserID *string              `json:"-" url:"user_id,omitempty"`
 	Role   *AuthorizedUserRoles `json:"-" url:"role,omitempty"`
@@ -163,16 +165,20 @@ type ListAuthorizedUsersRequest struct {
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
 	// Only return authorized users created after this timestamp.
 	CreatedAfter *time.Time `json:"-" url:"created_after,omitempty"`
+	// The unique identifier of the company to list authorized users for.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (l *ListAuthorizedUsersRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -203,13 +209,6 @@ func (l *ListAuthorizedUsersRequest) SetLast(last *int) {
 	l.require(listAuthorizedUsersRequestFieldLast)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListAuthorizedUsersRequest) SetCompanyID(companyID *string) {
-	l.CompanyID = companyID
-	l.require(listAuthorizedUsersRequestFieldCompanyID)
-}
-
 // SetUserID sets the UserID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListAuthorizedUsersRequest) SetUserID(userID *string) {
@@ -238,12 +237,19 @@ func (l *ListAuthorizedUsersRequest) SetCreatedAfter(createdAfter *time.Time) {
 	l.require(listAuthorizedUsersRequestFieldCreatedAfter)
 }
 
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAuthorizedUsersRequest) SetAccountID(accountID *string) {
+	l.AccountID = accountID
+	l.require(listAuthorizedUsersRequestFieldAccountID)
+}
+
 var (
 	retrieveAuthorizedUsersRequestFieldID = big.NewInt(1 << 0)
 )
 
 type RetrieveAuthorizedUsersRequest struct {
-	// The unique identifier of the authorized user to retrieve.
+	// The unique identifier of the authorized user to retrieve. Team member IDs may start with `ausr_` or `mber_`; treat them as opaque.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -251,10 +257,12 @@ type RetrieveAuthorizedUsersRequest struct {
 }
 
 func (r *RetrieveAuthorizedUsersRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -264,7 +272,6 @@ func (r *RetrieveAuthorizedUsersRequest) SetID(id string) {
 	r.require(retrieveAuthorizedUsersRequestFieldID)
 }
 
-// A user who belongs to a company's team with access determined by their assigned role.
 var (
 	authorizedUserFieldCompany = big.NewInt(1 << 0)
 	authorizedUserFieldID      = big.NewInt(1 << 1)
@@ -272,10 +279,11 @@ var (
 	authorizedUserFieldUser    = big.NewInt(1 << 3)
 )
 
+// A user who belongs to a company's team with access determined by their assigned role.
 type AuthorizedUser struct {
 	// The company this authorized user has access to.
 	Company *AuthorizedUserCompany `json:"company" url:"company"`
-	// The unique identifier for the authorized user.
+	// The team member's ID. It may start with `ausr_` or `mber_`; treat it as opaque.
 	ID string `json:"id" url:"id"`
 	// The permission role assigned to this authorized user within the company.
 	Role AuthorizedUserRoles `json:"role" url:"role"`
@@ -325,10 +333,12 @@ func (a *AuthorizedUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AuthorizedUser) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetCompany sets the Company field and marks it as non-optional;
@@ -401,12 +411,12 @@ func (a *AuthorizedUser) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// The company this authorized user has access to.
 var (
 	authorizedUserCompanyFieldID    = big.NewInt(1 << 0)
 	authorizedUserCompanyFieldTitle = big.NewInt(1 << 1)
 )
 
+// The company this authorized user has access to.
 type AuthorizedUserCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
@@ -442,10 +452,12 @@ func (a *AuthorizedUserCompany) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AuthorizedUserCompany) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -504,7 +516,6 @@ func (a *AuthorizedUserCompany) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// A user who belongs to a company's team with access determined by their assigned role.
 var (
 	authorizedUserListItemFieldCompany = big.NewInt(1 << 0)
 	authorizedUserListItemFieldID      = big.NewInt(1 << 1)
@@ -512,10 +523,11 @@ var (
 	authorizedUserListItemFieldUser    = big.NewInt(1 << 3)
 )
 
+// A user who belongs to a company's team with access determined by their assigned role.
 type AuthorizedUserListItem struct {
 	// The company this authorized user has access to.
 	Company *AuthorizedUserListItemCompany `json:"company" url:"company"`
-	// The unique identifier for the authorized user.
+	// The team member's ID. It may start with `ausr_` or `mber_`; treat it as opaque.
 	ID string `json:"id" url:"id"`
 	// The permission role assigned to this authorized user within the company.
 	Role AuthorizedUserRoles `json:"role" url:"role"`
@@ -565,10 +577,12 @@ func (a *AuthorizedUserListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AuthorizedUserListItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetCompany sets the Company field and marks it as non-optional;
@@ -641,12 +655,12 @@ func (a *AuthorizedUserListItem) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// The company this authorized user has access to.
 var (
 	authorizedUserListItemCompanyFieldID    = big.NewInt(1 << 0)
 	authorizedUserListItemCompanyFieldTitle = big.NewInt(1 << 1)
 )
 
+// The company this authorized user has access to.
 type AuthorizedUserListItemCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
@@ -682,10 +696,12 @@ func (a *AuthorizedUserListItemCompany) GetExtraProperties() map[string]interfac
 }
 
 func (a *AuthorizedUserListItemCompany) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -744,7 +760,6 @@ func (a *AuthorizedUserListItemCompany) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// The user account linked to this authorized user record.
 var (
 	authorizedUserListItemUserFieldEmail    = big.NewInt(1 << 0)
 	authorizedUserListItemUserFieldID       = big.NewInt(1 << 1)
@@ -752,6 +767,13 @@ var (
 	authorizedUserListItemUserFieldUsername = big.NewInt(1 << 3)
 )
 
+// authorizedUserListItemUserNullableFields maps the wire names of AuthorizedUserListItemUser's nullable fields (required or optional) to their field bits.
+var authorizedUserListItemUserNullableFields = map[string]*big.Int{
+	"email": authorizedUserListItemUserFieldEmail,
+	"name":  authorizedUserListItemUserFieldName,
+}
+
+// The user account linked to this authorized user record.
 type AuthorizedUserListItemUser struct {
 	// The user's email address. Requires the member:email:read permission to access. Null if not authorized.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
@@ -805,10 +827,12 @@ func (a *AuthorizedUserListItemUser) GetExtraProperties() map[string]interface{}
 }
 
 func (a *AuthorizedUserListItemUser) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -851,6 +875,13 @@ func (a *AuthorizedUserListItemUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, authorizedUserListItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -887,6 +918,7 @@ type AuthorizedUserRoles string
 const (
 	AuthorizedUserRolesOwner        AuthorizedUserRoles = "owner"
 	AuthorizedUserRolesAdmin        AuthorizedUserRoles = "admin"
+	AuthorizedUserRolesPartner      AuthorizedUserRoles = "partner"
 	AuthorizedUserRolesSalesManager AuthorizedUserRoles = "sales_manager"
 	AuthorizedUserRolesModerator    AuthorizedUserRoles = "moderator"
 	AuthorizedUserRolesAdvertiser   AuthorizedUserRoles = "advertiser"
@@ -903,6 +935,8 @@ func NewAuthorizedUserRolesFromString(s string) (AuthorizedUserRoles, error) {
 		return AuthorizedUserRolesOwner, nil
 	case "admin":
 		return AuthorizedUserRolesAdmin, nil
+	case "partner":
+		return AuthorizedUserRolesPartner, nil
 	case "sales_manager":
 		return AuthorizedUserRolesSalesManager, nil
 	case "moderator":
@@ -928,7 +962,6 @@ func (a AuthorizedUserRoles) Ptr() *AuthorizedUserRoles {
 	return &a
 }
 
-// The user account linked to this authorized user record.
 var (
 	authorizedUserUserFieldEmail    = big.NewInt(1 << 0)
 	authorizedUserUserFieldID       = big.NewInt(1 << 1)
@@ -936,6 +969,13 @@ var (
 	authorizedUserUserFieldUsername = big.NewInt(1 << 3)
 )
 
+// authorizedUserUserNullableFields maps the wire names of AuthorizedUserUser's nullable fields (required or optional) to their field bits.
+var authorizedUserUserNullableFields = map[string]*big.Int{
+	"email": authorizedUserUserFieldEmail,
+	"name":  authorizedUserUserFieldName,
+}
+
+// The user account linked to this authorized user record.
 type AuthorizedUserUser struct {
 	// The user's email address. Requires the member:email:read permission to access. Null if not authorized.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
@@ -989,10 +1029,12 @@ func (a *AuthorizedUserUser) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AuthorizedUserUser) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -1035,6 +1077,13 @@ func (a *AuthorizedUserUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, authorizedUserUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1071,6 +1120,7 @@ type GrantableAuthorizedUserRoles string
 const (
 	GrantableAuthorizedUserRolesOwner        GrantableAuthorizedUserRoles = "owner"
 	GrantableAuthorizedUserRolesAdmin        GrantableAuthorizedUserRoles = "admin"
+	GrantableAuthorizedUserRolesPartner      GrantableAuthorizedUserRoles = "partner"
 	GrantableAuthorizedUserRolesSalesManager GrantableAuthorizedUserRoles = "sales_manager"
 	GrantableAuthorizedUserRolesModerator    GrantableAuthorizedUserRoles = "moderator"
 	GrantableAuthorizedUserRolesAdvertiser   GrantableAuthorizedUserRoles = "advertiser"
@@ -1082,6 +1132,8 @@ func NewGrantableAuthorizedUserRolesFromString(s string) (GrantableAuthorizedUse
 		return GrantableAuthorizedUserRolesOwner, nil
 	case "admin":
 		return GrantableAuthorizedUserRolesAdmin, nil
+	case "partner":
+		return GrantableAuthorizedUserRolesPartner, nil
 	case "sales_manager":
 		return GrantableAuthorizedUserRolesSalesManager, nil
 	case "moderator":
@@ -1097,7 +1149,6 @@ func (g GrantableAuthorizedUserRoles) Ptr() *GrantableAuthorizedUserRoles {
 	return &g
 }
 
-// Re-authentication proof required to perform this sensitive action.
 var (
 	createAuthorizedUsersRequestElevationFieldAuthenticatorData = big.NewInt(1 << 0)
 	createAuthorizedUsersRequestElevationFieldClientDataJSON    = big.NewInt(1 << 1)
@@ -1108,20 +1159,32 @@ var (
 	createAuthorizedUsersRequestElevationFieldUseFinanceSession = big.NewInt(1 << 6)
 )
 
+// createAuthorizedUsersRequestElevationNullableFields maps the wire names of CreateAuthorizedUsersRequestElevation's nullable fields (required or optional) to their field bits.
+var createAuthorizedUsersRequestElevationNullableFields = map[string]*big.Int{
+	"authenticator_data":  createAuthorizedUsersRequestElevationFieldAuthenticatorData,
+	"client_data_json":    createAuthorizedUsersRequestElevationFieldClientDataJSON,
+	"credential_id":       createAuthorizedUsersRequestElevationFieldCredentialID,
+	"email_code":          createAuthorizedUsersRequestElevationFieldEmailCode,
+	"signature":           createAuthorizedUsersRequestElevationFieldSignature,
+	"totp_code":           createAuthorizedUsersRequestElevationFieldTotpCode,
+	"use_finance_session": createAuthorizedUsersRequestElevationFieldUseFinanceSession,
+}
+
+// Re-authentication proof required to perform this sensitive action.
 type CreateAuthorizedUsersRequestElevation struct {
-	// The WebAuthn authenticator data (base64).
+	// Ignored. Kept so existing API clients that send a passkey assertion keep working.
 	AuthenticatorData *string `json:"authenticator_data,omitempty" url:"authenticator_data,omitempty"`
-	// The WebAuthn client data JSON (base64).
+	// Ignored. Kept so existing API clients that send a passkey assertion keep working.
 	ClientDataJSON *string `json:"client_data_json,omitempty" url:"client_data_json,omitempty"`
-	// The WebAuthn credential ID (base64).
+	// Ignored. Kept so existing API clients that send a passkey assertion keep working.
 	CredentialID *string `json:"credential_id,omitempty" url:"credential_id,omitempty"`
 	// The 6-digit code emailed to the user.
 	EmailCode *string `json:"email_code,omitempty" url:"email_code,omitempty"`
-	// The WebAuthn signature (base64).
+	// Ignored. Kept so existing API clients that send a passkey assertion keep working.
 	Signature *string `json:"signature,omitempty" url:"signature,omitempty"`
 	// The 6-digit code from the authenticator app or SMS.
 	TotpCode *string `json:"totp_code,omitempty" url:"totp_code,omitempty"`
-	// Reuse an existing elevated session (for SMS/email 2FA users).
+	// Ignored. Kept so existing API clients that send it keep working.
 	UseFinanceSession *bool `json:"use_finance_session,omitempty" url:"use_finance_session,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1188,10 +1251,12 @@ func (c *CreateAuthorizedUsersRequestElevation) GetExtraProperties() map[string]
 }
 
 func (c *CreateAuthorizedUsersRequestElevation) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAuthenticatorData sets the AuthenticatorData field and marks it as non-optional;
@@ -1255,6 +1320,13 @@ func (c *CreateAuthorizedUsersRequestElevation) UnmarshalJSON(data []byte) error
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createAuthorizedUsersRequestElevationNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1285,12 +1357,12 @@ func (c *CreateAuthorizedUsersRequestElevation) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The connection type for AuthorizedUser.
 var (
 	listAuthorizedUsersResponseFieldData     = big.NewInt(1 << 0)
 	listAuthorizedUsersResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for AuthorizedUser.
 type ListAuthorizedUsersResponse struct {
 	// A list of nodes.
 	Data []*AuthorizedUserListItem `json:"data" url:"data"`
@@ -1326,10 +1398,12 @@ func (l *ListAuthorizedUsersResponse) GetExtraProperties() map[string]interface{
 }
 
 func (l *ListAuthorizedUsersResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;

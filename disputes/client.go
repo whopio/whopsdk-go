@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -56,7 +56,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/disputes"
@@ -163,7 +171,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Edits a dispute's evidence, while it is still editable. Sending it is a separate call.
+// Edits a dispute's evidence while it is still editable. When the evidence is ready, send it to the payment processor with `POST /disputes/:id/submit`.
 //
 // Example:
 //
@@ -180,6 +188,33 @@ func (c *Client) Update(
 	opts ...option.RequestOption,
 ) (*whopsdk.Dispute, error) {
 	response, err := c.WithRawResponse.Update(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Accepts a chargeback, conceding it to the customer instead of contesting it. The payment processor closes the dispute as `lost`. This is final — the dispute cannot be contested afterwards. Only a dispute whose `acceptable` is true can be accepted.
+//
+// Example:
+//
+//	request := &whopsdk.AcceptDisputesRequest{
+//	    ID: "id",
+//	}
+//	client.Disputes.Accept(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Accept(
+	ctx context.Context,
+	request *whopsdk.AcceptDisputesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Dispute, error) {
+	response, err := c.WithRawResponse.Accept(
 		ctx,
 		request,
 		opts...,
@@ -217,81 +252,7 @@ func (c *Client) Submit(
 	return response.Body, nil
 }
 
-// Submit a payment dispute to the payment processor for review. Once submitted, no further edits can be made.
-//
-// Required permissions:
-//   - `payment:dispute`
-//   - `plan:basic:read`
-//   - `access_pass:basic:read`
-//   - `company:basic:read`
-//   - `payment:basic:read`
-//   - `member:email:read`
-//   - `member:basic:read`
-//   - `member:phone:read`
-//
-// Example:
-//
-//	request := &whopsdk.SubmitEvidenceDisputeRequest{
-//	    ID: "dspt_xxxxxxxxxxxxx",
-//	}
-//	client.Disputes.SubmitEvidenceDispute(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) SubmitEvidenceDispute(
-	ctx context.Context,
-	request *whopsdk.SubmitEvidenceDisputeRequest,
-	opts ...option.RequestOption,
-) (*whopsdk.Dispute, error) {
-	response, err := c.WithRawResponse.SubmitEvidenceDispute(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return response.Body, nil
-}
-
-// Update a dispute with evidence data to attempt to win the dispute.
-//
-// Required permissions:
-//   - `payment:dispute`
-//   - `plan:basic:read`
-//   - `access_pass:basic:read`
-//   - `company:basic:read`
-//   - `payment:basic:read`
-//   - `member:email:read`
-//   - `member:basic:read`
-//   - `member:phone:read`
-//
-// Example:
-//
-//	request := &whopsdk.UpdateEvidenceDisputeRequest{
-//	    ID: "dspt_xxxxxxxxxxxxx",
-//	}
-//	client.Disputes.UpdateEvidenceDispute(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) UpdateEvidenceDispute(
-	ctx context.Context,
-	request *whopsdk.UpdateEvidenceDisputeRequest,
-	opts ...option.RequestOption,
-) (*whopsdk.Dispute, error) {
-	response, err := c.WithRawResponse.UpdateEvidenceDispute(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return response.Body, nil
-}
-
-// Replaces the full set of uploaded evidence documents on a dispute, beyond the four fixed evidence slots. Send the files as multipart file parts to upload and attach in one call, or reference files already stored by `id`/`direct_upload_id`. Send every document the packet should carry — up to 10, 10MB each and 25MB in total; an empty list removes them all. Accepted content types: application/pdf, application/json, image/jpeg, image/png, image/webp — any other type is rejected.
+// Replaces the full set of uploaded evidence documents on a dispute, beyond the four fixed evidence slots. Prefer `PATCH /disputes/:id` with `evidence.documents`, which does the same replace alongside every other evidence field in one call.
 //
 // Example:
 //

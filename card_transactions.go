@@ -5,29 +5,32 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 
 var (
 	listCardTransactionsRequestFieldAccountID      = big.NewInt(1 << 0)
-	listCardTransactionsRequestFieldTransactionIDs = big.NewInt(1 << 1)
-	listCardTransactionsRequestFieldCardID         = big.NewInt(1 << 2)
-	listCardTransactionsRequestFieldCardholderID   = big.NewInt(1 << 3)
-	listCardTransactionsRequestFieldStatus         = big.NewInt(1 << 4)
-	listCardTransactionsRequestFieldCreatedAfter   = big.NewInt(1 << 5)
-	listCardTransactionsRequestFieldCreatedBefore  = big.NewInt(1 << 6)
-	listCardTransactionsRequestFieldOrder          = big.NewInt(1 << 7)
-	listCardTransactionsRequestFieldDirection      = big.NewInt(1 << 8)
-	listCardTransactionsRequestFieldFirst          = big.NewInt(1 << 9)
-	listCardTransactionsRequestFieldAfter          = big.NewInt(1 << 10)
-	listCardTransactionsRequestFieldLast           = big.NewInt(1 << 11)
-	listCardTransactionsRequestFieldBefore         = big.NewInt(1 << 12)
+	listCardTransactionsRequestFieldUserID         = big.NewInt(1 << 1)
+	listCardTransactionsRequestFieldTransactionIDs = big.NewInt(1 << 2)
+	listCardTransactionsRequestFieldCardID         = big.NewInt(1 << 3)
+	listCardTransactionsRequestFieldCardholderID   = big.NewInt(1 << 4)
+	listCardTransactionsRequestFieldStatus         = big.NewInt(1 << 5)
+	listCardTransactionsRequestFieldCreatedAfter   = big.NewInt(1 << 6)
+	listCardTransactionsRequestFieldCreatedBefore  = big.NewInt(1 << 7)
+	listCardTransactionsRequestFieldOrder          = big.NewInt(1 << 8)
+	listCardTransactionsRequestFieldDirection      = big.NewInt(1 << 9)
+	listCardTransactionsRequestFieldFirst          = big.NewInt(1 << 10)
+	listCardTransactionsRequestFieldAfter          = big.NewInt(1 << 11)
+	listCardTransactionsRequestFieldLast           = big.NewInt(1 << 12)
+	listCardTransactionsRequestFieldBefore         = big.NewInt(1 << 13)
 )
 
 type ListCardTransactionsRequest struct {
-	// The account whose card transactions to list, prefixed `biz_`. Defaults to the credential's account.
+	// The account whose card transactions to list, prefixed `biz_`. Provide this or `user_id`. Defaults to the credential's account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// The user whose personal card transactions to list, prefixed `user_`. Provide this or `account_id`. Only that user can read them.
+	UserID *string `json:"-" url:"user_id,omitempty"`
 	// Return only these card transactions, each prefixed `citx_`. Repeat the parameter, or pass one comma-separated value.
 	TransactionIDs []*string `json:"-" url:"transaction_ids,omitempty"`
 	// Return only transactions charged to these cards, each prefixed `icrd_`.
@@ -44,13 +47,13 @@ type ListCardTransactionsRequest struct {
 	Order *ListCardTransactionsRequestOrder `json:"-" url:"order,omitempty"`
 	// The sort direction. Defaults to `desc`.
 	Direction *ListCardTransactionsRequestDirection `json:"-" url:"direction,omitempty"`
-	// The number of card transactions to return.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor; returns card transactions after this position.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of card transactions to return, counting back from the end.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// A cursor; returns card transactions before this position.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -58,10 +61,12 @@ type ListCardTransactionsRequest struct {
 }
 
 func (l *ListCardTransactionsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -69,6 +74,13 @@ func (l *ListCardTransactionsRequest) require(field *big.Int) {
 func (l *ListCardTransactionsRequest) SetAccountID(accountID *string) {
 	l.AccountID = accountID
 	l.require(listCardTransactionsRequestFieldAccountID)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCardTransactionsRequest) SetUserID(userID *string) {
+	l.UserID = userID
+	l.require(listCardTransactionsRequestFieldUserID)
 }
 
 // SetTransactionIDs sets the TransactionIDs field and marks it as non-optional;
@@ -158,23 +170,28 @@ func (l *ListCardTransactionsRequest) SetBefore(before *string) {
 var (
 	retrieveCardTransactionsRequestFieldID        = big.NewInt(1 << 0)
 	retrieveCardTransactionsRequestFieldAccountID = big.NewInt(1 << 1)
+	retrieveCardTransactionsRequestFieldUserID    = big.NewInt(1 << 2)
 )
 
 type RetrieveCardTransactionsRequest struct {
 	// The card transaction ID, prefixed `citx_`.
 	ID string `json:"-" url:"-"`
-	// The account that owns the transaction, prefixed `biz_`. Defaults to the credential's account.
+	// The account that owns the transaction, prefixed `biz_`. Provide this or `user_id`. Defaults to the credential's account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// The user that owns the transaction, prefixed `user_`. Provide this or `account_id`. Only that user can read it.
+	UserID *string `json:"-" url:"user_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (r *RetrieveCardTransactionsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -189,6 +206,13 @@ func (r *RetrieveCardTransactionsRequest) SetID(id string) {
 func (r *RetrieveCardTransactionsRequest) SetAccountID(accountID *string) {
 	r.AccountID = accountID
 	r.require(retrieveCardTransactionsRequestFieldAccountID)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveCardTransactionsRequest) SetUserID(userID *string) {
+	r.UserID = userID
+	r.require(retrieveCardTransactionsRequestFieldUserID)
 }
 
 var (
@@ -210,6 +234,21 @@ var (
 	cardTransactionFieldTransactionType      = big.NewInt(1 << 15)
 	cardTransactionFieldUsdAmount            = big.NewInt(1 << 16)
 )
+
+// cardTransactionNullableFields maps the wire names of CardTransaction's nullable fields (required or optional) to their field bits.
+var cardTransactionNullableFields = map[string]*big.Int{
+	"cardholder_id":          cardTransactionFieldCardholderID,
+	"cashback_usd_amount":    cardTransactionFieldCashbackUsdAmount,
+	"currency":               cardTransactionFieldCurrency,
+	"declined_reason":        cardTransactionFieldDeclinedReason,
+	"local_amount":           cardTransactionFieldLocalAmount,
+	"merchant_category":      cardTransactionFieldMerchantCategory,
+	"merchant_category_code": cardTransactionFieldMerchantCategoryCode,
+	"merchant_icon_url":      cardTransactionFieldMerchantIconURL,
+	"merchant_name":          cardTransactionFieldMerchantName,
+	"posted_at":              cardTransactionFieldPostedAt,
+	"usd_amount":             cardTransactionFieldUsdAmount,
+}
 
 type CardTransaction struct {
 	// The card this transaction was charged to, prefixed `icrd_`.
@@ -381,10 +420,12 @@ func (c *CardTransaction) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CardTransaction) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCardID sets the CardID field and marks it as non-optional;
@@ -518,6 +559,13 @@ func (c *CardTransaction) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, cardTransactionNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -704,10 +752,12 @@ func (l *ListCardTransactionsResponse) GetExtraProperties() map[string]interface
 }
 
 func (l *ListCardTransactionsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -773,6 +823,12 @@ var (
 	listCardTransactionsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listCardTransactionsResponsePageInfoNullableFields maps the wire names of ListCardTransactionsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listCardTransactionsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listCardTransactionsResponsePageInfoFieldEndCursor,
+	"start_cursor": listCardTransactionsResponsePageInfoFieldStartCursor,
+}
+
 type ListCardTransactionsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -822,10 +878,12 @@ func (l *ListCardTransactionsResponsePageInfo) GetExtraProperties() map[string]i
 }
 
 func (l *ListCardTransactionsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -868,6 +926,13 @@ func (l *ListCardTransactionsResponsePageInfo) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listCardTransactionsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

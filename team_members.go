@@ -5,7 +5,7 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 
@@ -21,7 +21,7 @@ type CreateTeamMembersRequest struct {
 	AccountID string `json:"account_id" url:"-"`
 	// Email address to invite. Mutually exclusive with `user_id`. If the email already belongs to a Whop account it is treated the same as passing that account's `user_id`; otherwise a pending invite is created for the email.
 	Email *string `json:"email,omitempty" url:"-"`
-	// The system role to grant.
+	// The system role to grant. Custom roles cannot be granted through the API. The Partner role provides view-only access.
 	Role CreateTeamMembersRequestRole `json:"role" url:"-"`
 	// The user to add to the team, prefixed `user_`. Mutually exclusive with `email`.
 	UserID *string `json:"user_id,omitempty" url:"-"`
@@ -31,10 +31,12 @@ type CreateTeamMembersRequest struct {
 }
 
 func (c *CreateTeamMembersRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -91,7 +93,7 @@ var (
 )
 
 type DeleteTeamMembersRequest struct {
-	// Team member ID — `ausr_` for accepted members, `ausri_` for pending invites.
+	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -99,10 +101,12 @@ type DeleteTeamMembersRequest struct {
 }
 
 func (d *DeleteTeamMembersRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -113,18 +117,22 @@ func (d *DeleteTeamMembersRequest) SetID(id string) {
 }
 
 var (
-	listTeamMembersRequestFieldAccountID     = big.NewInt(1 << 0)
-	listTeamMembersRequestFieldStatus        = big.NewInt(1 << 1)
-	listTeamMembersRequestFieldUserID        = big.NewInt(1 << 2)
-	listTeamMembersRequestFieldRole          = big.NewInt(1 << 3)
-	listTeamMembersRequestFieldCreatedBefore = big.NewInt(1 << 4)
-	listTeamMembersRequestFieldCreatedAfter  = big.NewInt(1 << 5)
-	listTeamMembersRequestFieldOrder         = big.NewInt(1 << 6)
-	listTeamMembersRequestFieldDirection     = big.NewInt(1 << 7)
-	listTeamMembersRequestFieldFirst         = big.NewInt(1 << 8)
-	listTeamMembersRequestFieldAfter         = big.NewInt(1 << 9)
-	listTeamMembersRequestFieldLast          = big.NewInt(1 << 10)
-	listTeamMembersRequestFieldBefore        = big.NewInt(1 << 11)
+	listTeamMembersRequestFieldAccountID        = big.NewInt(1 << 0)
+	listTeamMembersRequestFieldStatus           = big.NewInt(1 << 1)
+	listTeamMembersRequestFieldUserID           = big.NewInt(1 << 2)
+	listTeamMembersRequestFieldRole             = big.NewInt(1 << 3)
+	listTeamMembersRequestFieldQuery            = big.NewInt(1 << 4)
+	listTeamMembersRequestFieldReportsToID      = big.NewInt(1 << 5)
+	listTeamMembersRequestFieldDirectReportsMin = big.NewInt(1 << 6)
+	listTeamMembersRequestFieldDirectReportsMax = big.NewInt(1 << 7)
+	listTeamMembersRequestFieldCreatedBefore    = big.NewInt(1 << 8)
+	listTeamMembersRequestFieldCreatedAfter     = big.NewInt(1 << 9)
+	listTeamMembersRequestFieldOrder            = big.NewInt(1 << 10)
+	listTeamMembersRequestFieldDirection        = big.NewInt(1 << 11)
+	listTeamMembersRequestFieldFirst            = big.NewInt(1 << 12)
+	listTeamMembersRequestFieldAfter            = big.NewInt(1 << 13)
+	listTeamMembersRequestFieldLast             = big.NewInt(1 << 14)
+	listTeamMembersRequestFieldBefore           = big.NewInt(1 << 15)
 )
 
 type ListTeamMembersRequest struct {
@@ -136,21 +144,29 @@ type ListTeamMembersRequest struct {
 	UserID *string `json:"-" url:"user_id,omitempty"`
 	// Only return members with this role. `custom` matches members on a dashboard-managed custom role.
 	Role *ListTeamMembersRequestRole `json:"-" url:"role,omitempty"`
+	// Only return members whose name or username contains this text, and invites whose email contains it.
+	Query *string `json:"-" url:"query,omitempty"`
+	// Only return the direct reports of this team member, whose ID may start with `ausr_` or `mber_`. Pass the account ID, prefixed `biz_`, for the members who report to the business directly. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
+	ReportsToID *string `json:"-" url:"reports_to_id,omitempty"`
+	// Only return members with at least this many direct reports. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
+	DirectReportsMin *int `json:"-" url:"direct_reports_min,omitempty"`
+	// Only return members with at most this many direct reports; `0` returns the people who manage no one. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
+	DirectReportsMax *int `json:"-" url:"direct_reports_max,omitempty"`
 	// Only return members added before this ISO 8601 timestamp.
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only return members added after this ISO 8601 timestamp.
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
-	// Field used to sort members.
+	// Field used to sort members. Members with the view-only Partner role are listed after all other members whichever way the list is sorted.
 	Order *ListTeamMembersRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction. Defaults to `desc`.
 	Direction *ListTeamMembersRequestDirection `json:"-" url:"direction,omitempty"`
-	// Number of members to return. Defaults to 20; maximum 100.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor for the next page of members.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// Number of members to return from the end of the window.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// Cursor to paginate backwards from.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -158,10 +174,12 @@ type ListTeamMembersRequest struct {
 }
 
 func (l *ListTeamMembersRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -190,6 +208,34 @@ func (l *ListTeamMembersRequest) SetUserID(userID *string) {
 func (l *ListTeamMembersRequest) SetRole(role *ListTeamMembersRequestRole) {
 	l.Role = role
 	l.require(listTeamMembersRequestFieldRole)
+}
+
+// SetQuery sets the Query field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTeamMembersRequest) SetQuery(query *string) {
+	l.Query = query
+	l.require(listTeamMembersRequestFieldQuery)
+}
+
+// SetReportsToID sets the ReportsToID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTeamMembersRequest) SetReportsToID(reportsToID *string) {
+	l.ReportsToID = reportsToID
+	l.require(listTeamMembersRequestFieldReportsToID)
+}
+
+// SetDirectReportsMin sets the DirectReportsMin field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTeamMembersRequest) SetDirectReportsMin(directReportsMin *int) {
+	l.DirectReportsMin = directReportsMin
+	l.require(listTeamMembersRequestFieldDirectReportsMin)
+}
+
+// SetDirectReportsMax sets the DirectReportsMax field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTeamMembersRequest) SetDirectReportsMax(directReportsMax *int) {
+	l.DirectReportsMax = directReportsMax
+	l.require(listTeamMembersRequestFieldDirectReportsMax)
 }
 
 // SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;
@@ -253,7 +299,7 @@ var (
 )
 
 type RetrieveTeamMembersRequest struct {
-	// Team member ID — `ausr_` for accepted members, `ausri_` for pending invites.
+	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -261,10 +307,12 @@ type RetrieveTeamMembersRequest struct {
 }
 
 func (r *RetrieveTeamMembersRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -275,31 +323,46 @@ func (r *RetrieveTeamMembersRequest) SetID(id string) {
 }
 
 var (
-	teamMemberFieldAccountID      = big.NewInt(1 << 0)
-	teamMemberFieldAuthorizedRole = big.NewInt(1 << 1)
-	teamMemberFieldCreatedAt      = big.NewInt(1 << 2)
-	teamMemberFieldEmail          = big.NewInt(1 << 3)
-	teamMemberFieldID             = big.NewInt(1 << 4)
-	teamMemberFieldIsAgent        = big.NewInt(1 << 5)
-	teamMemberFieldRole           = big.NewInt(1 << 6)
-	teamMemberFieldStatus         = big.NewInt(1 << 7)
-	teamMemberFieldUpdatedAt      = big.NewInt(1 << 8)
-	teamMemberFieldUser           = big.NewInt(1 << 9)
+	teamMemberFieldAccountID          = big.NewInt(1 << 0)
+	teamMemberFieldAuthorizedRole     = big.NewInt(1 << 1)
+	teamMemberFieldCreatedAt          = big.NewInt(1 << 2)
+	teamMemberFieldDirectReportsCount = big.NewInt(1 << 3)
+	teamMemberFieldEmail              = big.NewInt(1 << 4)
+	teamMemberFieldID                 = big.NewInt(1 << 5)
+	teamMemberFieldIsAgent            = big.NewInt(1 << 6)
+	teamMemberFieldReportsToID        = big.NewInt(1 << 7)
+	teamMemberFieldRole               = big.NewInt(1 << 8)
+	teamMemberFieldStatus             = big.NewInt(1 << 9)
+	teamMemberFieldUpdatedAt          = big.NewInt(1 << 10)
+	teamMemberFieldUser               = big.NewInt(1 << 11)
 )
+
+// teamMemberNullableFields maps the wire names of TeamMember's nullable fields (required or optional) to their field bits.
+var teamMemberNullableFields = map[string]*big.Int{
+	"authorized_role":      teamMemberFieldAuthorizedRole,
+	"direct_reports_count": teamMemberFieldDirectReportsCount,
+	"email":                teamMemberFieldEmail,
+	"reports_to_id":        teamMemberFieldReportsToID,
+	"user":                 teamMemberFieldUser,
+}
 
 type TeamMember struct {
 	// The account this membership belongs to, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"account_id"`
 	// Custom role assigned to this member, or `null` when the member has a system role.
 	AuthorizedRole *TeamMemberAuthorizedRole `json:"authorized_role,omitempty" url:"authorized_role,omitempty"`
-	// When the member joined or the invite was sent, as an ISO 8601 timestamp.
+	// When the member joined the team or the invite was sent, as an ISO 8601 timestamp. A member who was a customer first keeps the date they were given their role.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// The member's email address. For accepted members, `null` unless the caller holds the email read scope; for invites, the invited address.
+	// How many team members report directly to this member. `null` for invites.
+	DirectReportsCount *int `json:"direct_reports_count,omitempty" url:"direct_reports_count,omitempty"`
+	// The member's email address. For an invite sent to an email with no Whop account yet, the invited address; for accepted members and invites to an existing Whop account, `null` unless the caller holds the `company:authorized_user:email:read` scope.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
-	// Team member ID — `ausr_` for accepted members, `ausri_` for pending invites.
+	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque: both member prefixes are accepted wherever a team member ID is.
 	ID string `json:"id" url:"id"`
 	// Whether this member is an agent (app-controlled account) rather than a human team member. Always `false` for invites.
 	IsAgent bool `json:"is_agent" url:"is_agent"`
+	// The ID of the team member this member reports to, starting with `ausr_` or `mber_`; treat it as opaque. `null` when the member reports to the business directly, and for invites.
+	ReportsToID *string `json:"reports_to_id,omitempty" url:"reports_to_id,omitempty"`
 	// The member's role on the account. `custom` means a bespoke dashboard-managed role; the API can read but not grant it.
 	Role TeamMemberRole `json:"role" url:"role"`
 	// `joined` for accepted members, `pending` while the invite is pending.
@@ -337,6 +400,13 @@ func (t *TeamMember) GetCreatedAt() string {
 	return t.CreatedAt
 }
 
+func (t *TeamMember) GetDirectReportsCount() *int {
+	if t == nil {
+		return nil
+	}
+	return t.DirectReportsCount
+}
+
 func (t *TeamMember) GetEmail() *string {
 	if t == nil {
 		return nil
@@ -356,6 +426,13 @@ func (t *TeamMember) GetIsAgent() bool {
 		return false
 	}
 	return t.IsAgent
+}
+
+func (t *TeamMember) GetReportsToID() *string {
+	if t == nil {
+		return nil
+	}
+	return t.ReportsToID
 }
 
 func (t *TeamMember) GetRole() TeamMemberRole {
@@ -394,10 +471,12 @@ func (t *TeamMember) GetExtraProperties() map[string]interface{} {
 }
 
 func (t *TeamMember) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -421,6 +500,13 @@ func (t *TeamMember) SetCreatedAt(createdAt string) {
 	t.require(teamMemberFieldCreatedAt)
 }
 
+// SetDirectReportsCount sets the DirectReportsCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TeamMember) SetDirectReportsCount(directReportsCount *int) {
+	t.DirectReportsCount = directReportsCount
+	t.require(teamMemberFieldDirectReportsCount)
+}
+
 // SetEmail sets the Email field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (t *TeamMember) SetEmail(email *string) {
@@ -440,6 +526,13 @@ func (t *TeamMember) SetID(id string) {
 func (t *TeamMember) SetIsAgent(isAgent bool) {
 	t.IsAgent = isAgent
 	t.require(teamMemberFieldIsAgent)
+}
+
+// SetReportsToID sets the ReportsToID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TeamMember) SetReportsToID(reportsToID *string) {
+	t.ReportsToID = reportsToID
+	t.require(teamMemberFieldReportsToID)
 }
 
 // SetRole sets the Role field and marks it as non-optional;
@@ -482,6 +575,13 @@ func (t *TeamMember) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	t.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, teamMemberNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		t.require(presentFields)
+	}
 	t.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -552,10 +652,12 @@ func (t *TeamMemberAuthorizedRole) GetExtraProperties() map[string]interface{} {
 }
 
 func (t *TeamMemberAuthorizedRole) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -620,6 +722,7 @@ type TeamMemberRole string
 const (
 	TeamMemberRoleOwner        TeamMemberRole = "owner"
 	TeamMemberRoleAdmin        TeamMemberRole = "admin"
+	TeamMemberRolePartner      TeamMemberRole = "partner"
 	TeamMemberRoleSalesManager TeamMemberRole = "sales_manager"
 	TeamMemberRoleModerator    TeamMemberRole = "moderator"
 	TeamMemberRoleAdvertiser   TeamMemberRole = "advertiser"
@@ -636,6 +739,8 @@ func NewTeamMemberRoleFromString(s string) (TeamMemberRole, error) {
 		return TeamMemberRoleOwner, nil
 	case "admin":
 		return TeamMemberRoleAdmin, nil
+	case "partner":
+		return TeamMemberRolePartner, nil
 	case "sales_manager":
 		return TeamMemberRoleSalesManager, nil
 	case "moderator":
@@ -684,12 +789,13 @@ func (t TeamMemberStatus) Ptr() *TeamMemberStatus {
 	return &t
 }
 
-// The system role to grant.
+// The system role to grant. Custom roles cannot be granted through the API. The Partner role provides view-only access.
 type CreateTeamMembersRequestRole string
 
 const (
 	CreateTeamMembersRequestRoleOwner        CreateTeamMembersRequestRole = "owner"
 	CreateTeamMembersRequestRoleAdmin        CreateTeamMembersRequestRole = "admin"
+	CreateTeamMembersRequestRolePartner      CreateTeamMembersRequestRole = "partner"
 	CreateTeamMembersRequestRoleSalesManager CreateTeamMembersRequestRole = "sales_manager"
 	CreateTeamMembersRequestRoleModerator    CreateTeamMembersRequestRole = "moderator"
 	CreateTeamMembersRequestRoleAdvertiser   CreateTeamMembersRequestRole = "advertiser"
@@ -702,6 +808,8 @@ func NewCreateTeamMembersRequestRoleFromString(s string) (CreateTeamMembersReque
 		return CreateTeamMembersRequestRoleOwner, nil
 	case "admin":
 		return CreateTeamMembersRequestRoleAdmin, nil
+	case "partner":
+		return CreateTeamMembersRequestRolePartner, nil
 	case "sales_manager":
 		return CreateTeamMembersRequestRoleSalesManager, nil
 	case "moderator":
@@ -748,10 +856,12 @@ func (d *DeleteTeamMembersResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (d *DeleteTeamMembersResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;
@@ -849,6 +959,7 @@ type ListTeamMembersRequestRole string
 const (
 	ListTeamMembersRequestRoleOwner        ListTeamMembersRequestRole = "owner"
 	ListTeamMembersRequestRoleAdmin        ListTeamMembersRequestRole = "admin"
+	ListTeamMembersRequestRolePartner      ListTeamMembersRequestRole = "partner"
 	ListTeamMembersRequestRoleSalesManager ListTeamMembersRequestRole = "sales_manager"
 	ListTeamMembersRequestRoleModerator    ListTeamMembersRequestRole = "moderator"
 	ListTeamMembersRequestRoleAdvertiser   ListTeamMembersRequestRole = "advertiser"
@@ -865,6 +976,8 @@ func NewListTeamMembersRequestRoleFromString(s string) (ListTeamMembersRequestRo
 		return ListTeamMembersRequestRoleOwner, nil
 	case "admin":
 		return ListTeamMembersRequestRoleAdmin, nil
+	case "partner":
+		return ListTeamMembersRequestRolePartner, nil
 	case "sales_manager":
 		return ListTeamMembersRequestRoleSalesManager, nil
 	case "moderator":
@@ -950,10 +1063,12 @@ func (l *ListTeamMembersResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListTeamMembersResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1019,6 +1134,12 @@ var (
 	listTeamMembersResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listTeamMembersResponsePageInfoNullableFields maps the wire names of ListTeamMembersResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listTeamMembersResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listTeamMembersResponsePageInfoFieldEndCursor,
+	"start_cursor": listTeamMembersResponsePageInfoFieldStartCursor,
+}
+
 type ListTeamMembersResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1068,10 +1189,12 @@ func (l *ListTeamMembersResponsePageInfo) GetExtraProperties() map[string]interf
 }
 
 func (l *ListTeamMembersResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1114,6 +1237,13 @@ func (l *ListTeamMembersResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listTeamMembersResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1144,12 +1274,13 @@ func (l *ListTeamMembersResponsePageInfo) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The system role to grant.
+// The system role to grant. Custom roles cannot be granted through the API. The Partner role provides view-only access.
 type UpdateTeamMembersRequestRole string
 
 const (
 	UpdateTeamMembersRequestRoleOwner        UpdateTeamMembersRequestRole = "owner"
 	UpdateTeamMembersRequestRoleAdmin        UpdateTeamMembersRequestRole = "admin"
+	UpdateTeamMembersRequestRolePartner      UpdateTeamMembersRequestRole = "partner"
 	UpdateTeamMembersRequestRoleSalesManager UpdateTeamMembersRequestRole = "sales_manager"
 	UpdateTeamMembersRequestRoleModerator    UpdateTeamMembersRequestRole = "moderator"
 	UpdateTeamMembersRequestRoleAdvertiser   UpdateTeamMembersRequestRole = "advertiser"
@@ -1162,6 +1293,8 @@ func NewUpdateTeamMembersRequestRoleFromString(s string) (UpdateTeamMembersReque
 		return UpdateTeamMembersRequestRoleOwner, nil
 	case "admin":
 		return UpdateTeamMembersRequestRoleAdmin, nil
+	case "partner":
+		return UpdateTeamMembersRequestRolePartner, nil
 	case "sales_manager":
 		return UpdateTeamMembersRequestRoleSalesManager, nil
 	case "moderator":
@@ -1185,20 +1318,22 @@ var (
 )
 
 type UpdateTeamMembersRequest struct {
-	// Team member ID — `ausr_` for accepted members, `ausri_` for pending invites.
+	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque.
 	ID string `json:"-" url:"-"`
-	// The system role to grant.
-	Role UpdateTeamMembersRequestRole `json:"role" url:"-"`
+	// The system role to grant. Custom roles cannot be granted through the API. The Partner role provides view-only access.
+	Role *UpdateTeamMembersRequestRole `json:"role,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (u *UpdateTeamMembersRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1210,7 +1345,7 @@ func (u *UpdateTeamMembersRequest) SetID(id string) {
 
 // SetRole sets the Role field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateTeamMembersRequest) SetRole(role UpdateTeamMembersRequestRole) {
+func (u *UpdateTeamMembersRequest) SetRole(role *UpdateTeamMembersRequestRole) {
 	u.Role = role
 	u.require(updateTeamMembersRequestFieldRole)
 }

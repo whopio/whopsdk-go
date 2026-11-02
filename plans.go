@@ -5,9 +5,8 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
-	time "time"
 )
 
 var (
@@ -18,24 +17,23 @@ var (
 )
 
 type CalculateTaxPlansRequest struct {
-	// Plan ID, prefixed `plan_`.
-	ID string `json:"-" url:"-"`
-	// Buyer billing address used for tax calculation. Provide either `address.country` or `ip_address`; include state and postal code when available for more accurate results.
-	Address *CalculateTaxPlansRequestAddress `json:"address,omitempty" url:"-"`
-	// Buyer IP address used to infer location when no billing address is provided.
-	IPAddress *string `json:"ip_address,omitempty" url:"-"`
-	// Optional buyer tax ID for B2B exemptions. At most one entry is supported.
-	TaxIDs []*CalculateTaxPlansRequestTaxIDsItem `json:"tax_ids,omitempty" url:"-"`
+	// Variant ID, prefixed `plan_`.
+	ID        string                                `json:"-" url:"-"`
+	Address   *CalculateTaxPlansRequestAddress      `json:"address,omitempty" url:"-"`
+	IPAddress *string                               `json:"ip_address,omitempty" url:"-"`
+	TaxIDs    []*CalculateTaxPlansRequestTaxIDsItem `json:"tax_ids,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (c *CalculateTaxPlansRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -90,92 +88,81 @@ func (c *CalculateTaxPlansRequest) MarshalJSON() ([]byte, error) {
 var (
 	createPlansRequestFieldAccountID                  = big.NewInt(1 << 0)
 	createPlansRequestFieldAdaptivePricingEnabled     = big.NewInt(1 << 1)
-	createPlansRequestFieldBillingPeriod              = big.NewInt(1 << 2)
-	createPlansRequestFieldCheckoutStyling            = big.NewInt(1 << 3)
-	createPlansRequestFieldCurrency                   = big.NewInt(1 << 4)
-	createPlansRequestFieldCustomFields               = big.NewInt(1 << 5)
-	createPlansRequestFieldDescription                = big.NewInt(1 << 6)
-	createPlansRequestFieldExpirationDays             = big.NewInt(1 << 7)
-	createPlansRequestFieldImage                      = big.NewInt(1 << 8)
-	createPlansRequestFieldInitialPrice               = big.NewInt(1 << 9)
-	createPlansRequestFieldInternalNotes              = big.NewInt(1 << 10)
-	createPlansRequestFieldMetadata                   = big.NewInt(1 << 11)
-	createPlansRequestFieldOverrideTaxType            = big.NewInt(1 << 12)
-	createPlansRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 13)
-	createPlansRequestFieldPlanType                   = big.NewInt(1 << 14)
-	createPlansRequestFieldProductID                  = big.NewInt(1 << 15)
-	createPlansRequestFieldReleaseMethod              = big.NewInt(1 << 16)
-	createPlansRequestFieldRenewalPrice               = big.NewInt(1 << 17)
-	createPlansRequestFieldSplitPayRequiredPayments   = big.NewInt(1 << 18)
-	createPlansRequestFieldStock                      = big.NewInt(1 << 19)
-	createPlansRequestFieldThreeDsLevel               = big.NewInt(1 << 20)
-	createPlansRequestFieldTitle                      = big.NewInt(1 << 21)
-	createPlansRequestFieldTrialPeriodDays            = big.NewInt(1 << 22)
-	createPlansRequestFieldUnlimitedStock             = big.NewInt(1 << 23)
-	createPlansRequestFieldVisibility                 = big.NewInt(1 << 24)
+	createPlansRequestFieldAllowMultipleQuantity      = big.NewInt(1 << 2)
+	createPlansRequestFieldAttributes                 = big.NewInt(1 << 3)
+	createPlansRequestFieldBillingPeriod              = big.NewInt(1 << 4)
+	createPlansRequestFieldBillingType                = big.NewInt(1 << 5)
+	createPlansRequestFieldCancelDiscountIntervals    = big.NewInt(1 << 6)
+	createPlansRequestFieldCancelDiscountPercentage   = big.NewInt(1 << 7)
+	createPlansRequestFieldCheckoutStyling            = big.NewInt(1 << 8)
+	createPlansRequestFieldCurrency                   = big.NewInt(1 << 9)
+	createPlansRequestFieldCustomFields               = big.NewInt(1 << 10)
+	createPlansRequestFieldDescription                = big.NewInt(1 << 11)
+	createPlansRequestFieldExpirationDays             = big.NewInt(1 << 12)
+	createPlansRequestFieldImage                      = big.NewInt(1 << 13)
+	createPlansRequestFieldInitialPrice               = big.NewInt(1 << 14)
+	createPlansRequestFieldInternalNotes              = big.NewInt(1 << 15)
+	createPlansRequestFieldMetadata                   = big.NewInt(1 << 16)
+	createPlansRequestFieldOfferCancelDiscount        = big.NewInt(1 << 17)
+	createPlansRequestFieldOverrideTaxType            = big.NewInt(1 << 18)
+	createPlansRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 19)
+	createPlansRequestFieldProductID                  = big.NewInt(1 << 20)
+	createPlansRequestFieldReleaseMethod              = big.NewInt(1 << 21)
+	createPlansRequestFieldRenewalPrice               = big.NewInt(1 << 22)
+	createPlansRequestFieldSku                        = big.NewInt(1 << 23)
+	createPlansRequestFieldSplitPayRequiredPayments   = big.NewInt(1 << 24)
+	createPlansRequestFieldStock                      = big.NewInt(1 << 25)
+	createPlansRequestFieldThreeDsLevel               = big.NewInt(1 << 26)
+	createPlansRequestFieldTitle                      = big.NewInt(1 << 27)
+	createPlansRequestFieldTrialPeriodDays            = big.NewInt(1 << 28)
+	createPlansRequestFieldUnlimitedStock             = big.NewInt(1 << 29)
+	createPlansRequestFieldVisibility                 = big.NewInt(1 << 30)
 )
 
 type CreatePlansRequest struct {
-	// The unique identifier of the account to create this plan for. Defaults to the caller's account.
-	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// Whether this plan accepts local currency payments via adaptive pricing.
-	AdaptivePricingEnabled *bool `json:"adaptive_pricing_enabled,omitempty" url:"-"`
-	// Recurring billing interval in days, such as 30 for monthly or 365 for annual.
-	BillingPeriod *int `json:"billing_period,omitempty" url:"-"`
-	// Checkout styling overrides for this plan.
-	CheckoutStyling map[string]any `json:"checkout_styling,omitempty" url:"-"`
-	// The three-letter ISO currency code for the plan's pricing. Defaults to USD.
-	Currency *string `json:"currency,omitempty" url:"-"`
-	// An array of custom field definitions to collect from customers at checkout. Omitting this field clears existing custom fields.
-	CustomFields []*CreatePlansRequestCustomFieldsItem `json:"custom_fields,omitempty" url:"-"`
-	// A text description of the plan displayed to customers on the product page.
-	Description *string `json:"description,omitempty" url:"-"`
-	// Access duration in days before the membership expires.
-	ExpirationDays *int `json:"expiration_days,omitempty" url:"-"`
-	// An image displayed on the product page to represent this plan.
-	Image *CreatePlansRequestImage `json:"image,omitempty" url:"-"`
-	// Initial amount charged in the plan's currency, e.g. 10.43 for $10.43.
-	InitialPrice *float64 `json:"initial_price,omitempty" url:"-"`
-	// Private notes visible only to the account owner. Not shown to customers.
-	InternalNotes *string `json:"internal_notes,omitempty" url:"-"`
-	// Custom key-value pairs to store on the plan. Included in webhook payloads for payment and membership events. Max 50 keys, 100 chars per key, 500 chars per string value. The reserved keys `custom_cta` (a checkout call-to-action button label — one of the product custom CTA values, e.g. `subscribe`, `get_offer`) and `custom_cta_url` (a URL the button links to; web or `tel:`) override the product's call to action for this plan and are validated on save.
-	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
-	// Override the default tax classification for this specific plan.
-	OverrideTaxType *string `json:"override_tax_type,omitempty" url:"-"`
-	// Explicit payment method configuration for the plan. When not provided, the account's defaults apply.
+	AccountID                  *string                                       `json:"account_id,omitempty" url:"-"`
+	AdaptivePricingEnabled     *bool                                         `json:"adaptive_pricing_enabled,omitempty" url:"-"`
+	AllowMultipleQuantity      *bool                                         `json:"allow_multiple_quantity,omitempty" url:"-"`
+	Attributes                 map[string]any                                `json:"attributes,omitempty" url:"-"`
+	BillingPeriod              *int                                          `json:"billing_period,omitempty" url:"-"`
+	BillingType                *string                                       `json:"billing_type,omitempty" url:"-"`
+	CancelDiscountIntervals    *int                                          `json:"cancel_discount_intervals,omitempty" url:"-"`
+	CancelDiscountPercentage   *int                                          `json:"cancel_discount_percentage,omitempty" url:"-"`
+	CheckoutStyling            map[string]any                                `json:"checkout_styling,omitempty" url:"-"`
+	Currency                   *string                                       `json:"currency,omitempty" url:"-"`
+	CustomFields               []*CreatePlansRequestCustomFieldsItem         `json:"custom_fields,omitempty" url:"-"`
+	Description                *string                                       `json:"description,omitempty" url:"-"`
+	ExpirationDays             *int                                          `json:"expiration_days,omitempty" url:"-"`
+	Image                      *CreatePlansRequestImage                      `json:"image,omitempty" url:"-"`
+	InitialPrice               *float64                                      `json:"initial_price,omitempty" url:"-"`
+	InternalNotes              *string                                       `json:"internal_notes,omitempty" url:"-"`
+	Metadata                   map[string]any                                `json:"metadata,omitempty" url:"-"`
+	OfferCancelDiscount        *bool                                         `json:"offer_cancel_discount,omitempty" url:"-"`
+	OverrideTaxType            *string                                       `json:"override_tax_type,omitempty" url:"-"`
 	PaymentMethodConfiguration *CreatePlansRequestPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"-"`
-	// Plan billing type, such as `one_time` or `renewal`.
-	PlanType *string `json:"plan_type,omitempty" url:"-"`
-	// The unique identifier of the product to attach this plan to.
-	ProductID *string `json:"product_id,omitempty" url:"-"`
-	// Sales method for this plan.
-	ReleaseMethod *string `json:"release_method,omitempty" url:"-"`
-	// The amount charged each billing period for recurring plans, in the plan's currency.
-	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"-"`
-	// Installment payments required before the subscription pauses.
-	SplitPayRequiredPayments *int `json:"split_pay_required_payments,omitempty" url:"-"`
-	// The maximum number of units available for purchase. Ignored when unlimited_stock is true.
-	Stock *int `json:"stock,omitempty" url:"-"`
-	// 3D Secure behavior for this plan. Send `null` to inherit the account default.
-	ThreeDsLevel *CreatePlansRequestThreeDsLevel `json:"three_ds_level,omitempty" url:"-"`
-	// The display name of the plan shown to customers on the product page.
-	Title *string `json:"title,omitempty" url:"-"`
-	// Free trial duration before the first recurring charge.
-	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"-"`
-	// Whether the plan has unlimited stock. When true, the stock field is ignored.
-	UnlimitedStock *bool `json:"unlimited_stock,omitempty" url:"-"`
-	// Whether the plan is visible to customers or hidden from public view.
-	Visibility *string `json:"visibility,omitempty" url:"-"`
+	ProductID                  *string                                       `json:"product_id,omitempty" url:"-"`
+	ReleaseMethod              *string                                       `json:"release_method,omitempty" url:"-"`
+	RenewalPrice               *float64                                      `json:"renewal_price,omitempty" url:"-"`
+	Sku                        *string                                       `json:"sku,omitempty" url:"-"`
+	SplitPayRequiredPayments   *int                                          `json:"split_pay_required_payments,omitempty" url:"-"`
+	Stock                      *int                                          `json:"stock,omitempty" url:"-"`
+	ThreeDsLevel               *CreatePlansRequestThreeDsLevel               `json:"three_ds_level,omitempty" url:"-"`
+	Title                      *string                                       `json:"title,omitempty" url:"-"`
+	TrialPeriodDays            *int                                          `json:"trial_period_days,omitempty" url:"-"`
+	UnlimitedStock             *bool                                         `json:"unlimited_stock,omitempty" url:"-"`
+	Visibility                 *string                                       `json:"visibility,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (c *CreatePlansRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -192,11 +179,46 @@ func (c *CreatePlansRequest) SetAdaptivePricingEnabled(adaptivePricingEnabled *b
 	c.require(createPlansRequestFieldAdaptivePricingEnabled)
 }
 
+// SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePlansRequest) SetAllowMultipleQuantity(allowMultipleQuantity *bool) {
+	c.AllowMultipleQuantity = allowMultipleQuantity
+	c.require(createPlansRequestFieldAllowMultipleQuantity)
+}
+
+// SetAttributes sets the Attributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePlansRequest) SetAttributes(attributes map[string]any) {
+	c.Attributes = attributes
+	c.require(createPlansRequestFieldAttributes)
+}
+
 // SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreatePlansRequest) SetBillingPeriod(billingPeriod *int) {
 	c.BillingPeriod = billingPeriod
 	c.require(createPlansRequestFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePlansRequest) SetBillingType(billingType *string) {
+	c.BillingType = billingType
+	c.require(createPlansRequestFieldBillingType)
+}
+
+// SetCancelDiscountIntervals sets the CancelDiscountIntervals field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePlansRequest) SetCancelDiscountIntervals(cancelDiscountIntervals *int) {
+	c.CancelDiscountIntervals = cancelDiscountIntervals
+	c.require(createPlansRequestFieldCancelDiscountIntervals)
+}
+
+// SetCancelDiscountPercentage sets the CancelDiscountPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePlansRequest) SetCancelDiscountPercentage(cancelDiscountPercentage *int) {
+	c.CancelDiscountPercentage = cancelDiscountPercentage
+	c.require(createPlansRequestFieldCancelDiscountPercentage)
 }
 
 // SetCheckoutStyling sets the CheckoutStyling field and marks it as non-optional;
@@ -262,6 +284,13 @@ func (c *CreatePlansRequest) SetMetadata(metadata map[string]any) {
 	c.require(createPlansRequestFieldMetadata)
 }
 
+// SetOfferCancelDiscount sets the OfferCancelDiscount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePlansRequest) SetOfferCancelDiscount(offerCancelDiscount *bool) {
+	c.OfferCancelDiscount = offerCancelDiscount
+	c.require(createPlansRequestFieldOfferCancelDiscount)
+}
+
 // SetOverrideTaxType sets the OverrideTaxType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreatePlansRequest) SetOverrideTaxType(overrideTaxType *string) {
@@ -274,13 +303,6 @@ func (c *CreatePlansRequest) SetOverrideTaxType(overrideTaxType *string) {
 func (c *CreatePlansRequest) SetPaymentMethodConfiguration(paymentMethodConfiguration *CreatePlansRequestPaymentMethodConfiguration) {
 	c.PaymentMethodConfiguration = paymentMethodConfiguration
 	c.require(createPlansRequestFieldPaymentMethodConfiguration)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePlansRequest) SetPlanType(planType *string) {
-	c.PlanType = planType
-	c.require(createPlansRequestFieldPlanType)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
@@ -302,6 +324,13 @@ func (c *CreatePlansRequest) SetReleaseMethod(releaseMethod *string) {
 func (c *CreatePlansRequest) SetRenewalPrice(renewalPrice *float64) {
 	c.RenewalPrice = renewalPrice
 	c.require(createPlansRequestFieldRenewalPrice)
+}
+
+// SetSku sets the Sku field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePlansRequest) SetSku(sku *string) {
+	c.Sku = sku
+	c.require(createPlansRequestFieldSku)
 }
 
 // SetSplitPayRequiredPayments sets the SplitPayRequiredPayments field and marks it as non-optional;
@@ -379,7 +408,7 @@ var (
 )
 
 type DeletePlansRequest struct {
-	// Plan ID, prefixed `plan_`.
+	// Variant ID, prefixed `plan_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -387,10 +416,12 @@ type DeletePlansRequest struct {
 }
 
 func (d *DeletePlansRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -406,7 +437,7 @@ var (
 	listPlansRequestFieldOrder          = big.NewInt(1 << 2)
 	listPlansRequestFieldReleaseMethods = big.NewInt(1 << 3)
 	listPlansRequestFieldVisibilities   = big.NewInt(1 << 4)
-	listPlansRequestFieldPlanTypes      = big.NewInt(1 << 5)
+	listPlansRequestFieldBillingTypes   = big.NewInt(1 << 5)
 	listPlansRequestFieldProductIDs     = big.NewInt(1 << 6)
 	listPlansRequestFieldCreatedBefore  = big.NewInt(1 << 7)
 	listPlansRequestFieldCreatedAfter   = big.NewInt(1 << 8)
@@ -417,31 +448,22 @@ var (
 )
 
 type ListPlansRequest struct {
-	// The unique identifier of the account to list plans for.
-	AccountID string `json:"-" url:"account_id"`
-	// The sort direction for results. Defaults to descending.
-	Direction *ListPlansRequestDirection `json:"-" url:"direction,omitempty"`
-	// The field to sort results by. Defaults to created_at.
-	Order *ListPlansRequestOrder `json:"-" url:"order,omitempty"`
-	// Filter to only plans matching these release methods.
-	ReleaseMethods []*string `json:"-" url:"release_methods,omitempty"`
-	// Filter to only plans matching these visibility states.
-	Visibilities []*string `json:"-" url:"visibilities,omitempty"`
-	// Filter to only plans matching these billing types.
-	PlanTypes []*string `json:"-" url:"plan_types,omitempty"`
-	// Filter to only plans belonging to these product identifiers.
-	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
-	// Only return plans created before this timestamp.
-	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
-	// Only return plans created after this timestamp.
-	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
-	// The number of plans to return (default and max 100).
+	AccountID      *string                    `json:"-" url:"account_id,omitempty"`
+	Direction      *ListPlansRequestDirection `json:"-" url:"direction,omitempty"`
+	Order          *ListPlansRequestOrder     `json:"-" url:"order,omitempty"`
+	ReleaseMethods []*string                  `json:"-" url:"release_methods,omitempty"`
+	Visibilities   []*string                  `json:"-" url:"visibilities,omitempty"`
+	BillingTypes   []*string                  `json:"-" url:"billing_types,omitempty"`
+	ProductIDs     []*string                  `json:"-" url:"product_ids,omitempty"`
+	CreatedBefore  *string                    `json:"-" url:"created_before,omitempty"`
+	CreatedAfter   *string                    `json:"-" url:"created_after,omitempty"`
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor; returns plans after this position.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of plans to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// A cursor; returns plans before this position.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -449,15 +471,17 @@ type ListPlansRequest struct {
 }
 
 func (l *ListPlansRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPlansRequest) SetAccountID(accountID string) {
+func (l *ListPlansRequest) SetAccountID(accountID *string) {
 	l.AccountID = accountID
 	l.require(listPlansRequestFieldAccountID)
 }
@@ -490,11 +514,11 @@ func (l *ListPlansRequest) SetVisibilities(visibilities []*string) {
 	l.require(listPlansRequestFieldVisibilities)
 }
 
-// SetPlanTypes sets the PlanTypes field and marks it as non-optional;
+// SetBillingTypes sets the BillingTypes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPlansRequest) SetPlanTypes(planTypes []*string) {
-	l.PlanTypes = planTypes
-	l.require(listPlansRequestFieldPlanTypes)
+func (l *ListPlansRequest) SetBillingTypes(billingTypes []*string) {
+	l.BillingTypes = billingTypes
+	l.require(listPlansRequestFieldBillingTypes)
 }
 
 // SetProductIDs sets the ProductIDs field and marks it as non-optional;
@@ -551,7 +575,7 @@ var (
 )
 
 type RetrievePlansRequest struct {
-	// Plan ID, prefixed `plan_`.
+	// Variant ID, prefixed `plan_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -559,10 +583,12 @@ type RetrievePlansRequest struct {
 }
 
 func (r *RetrievePlansRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -573,244 +599,169 @@ func (r *RetrievePlansRequest) SetID(id string) {
 }
 
 var (
-	checkoutSessionPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
-	checkoutSessionPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
-	checkoutSessionPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
-)
-
-type CheckoutSessionPaymentMethodConfiguration struct {
-	Disabled []string `json:"disabled" url:"disabled"`
-	Enabled  []string `json:"enabled" url:"enabled"`
-	// Whether Whop's default set is the starting point. When `false`, only `enabled` is offered.
-	IncludePlatformDefaults bool `json:"include_platform_defaults" url:"include_platform_defaults"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) GetDisabled() []string {
-	if c == nil {
-		return nil
-	}
-	return c.Disabled
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) GetEnabled() []string {
-	if c == nil {
-		return nil
-	}
-	return c.Enabled
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) GetIncludePlatformDefaults() bool {
-	if c == nil {
-		return false
-	}
-	return c.IncludePlatformDefaults
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetDisabled sets the Disabled field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutSessionPaymentMethodConfiguration) SetDisabled(disabled []string) {
-	c.Disabled = disabled
-	c.require(checkoutSessionPaymentMethodConfigurationFieldDisabled)
-}
-
-// SetEnabled sets the Enabled field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutSessionPaymentMethodConfiguration) SetEnabled(enabled []string) {
-	c.Enabled = enabled
-	c.require(checkoutSessionPaymentMethodConfigurationFieldEnabled)
-}
-
-// SetIncludePlatformDefaults sets the IncludePlatformDefaults field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CheckoutSessionPaymentMethodConfiguration) SetIncludePlatformDefaults(includePlatformDefaults bool) {
-	c.IncludePlatformDefaults = includePlatformDefaults
-	c.require(checkoutSessionPaymentMethodConfigurationFieldIncludePlatformDefaults)
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) UnmarshalJSON(data []byte) error {
-	type unmarshaler CheckoutSessionPaymentMethodConfiguration
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CheckoutSessionPaymentMethodConfiguration(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) MarshalJSON() ([]byte, error) {
-	type embed CheckoutSessionPaymentMethodConfiguration
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CheckoutSessionPaymentMethodConfiguration) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
 	planFieldAccount                             = big.NewInt(1 << 0)
 	planFieldAdaptivePricingEnabled              = big.NewInt(1 << 1)
-	planFieldBillingPeriod                       = big.NewInt(1 << 2)
-	planFieldCancelDiscountIntervals             = big.NewInt(1 << 3)
-	planFieldCancelDiscountPercentage            = big.NewInt(1 << 4)
-	planFieldCheckoutStyling                     = big.NewInt(1 << 5)
-	planFieldCollectTax                          = big.NewInt(1 << 6)
-	planFieldCreatedAt                           = big.NewInt(1 << 7)
-	planFieldCurrency                            = big.NewInt(1 << 8)
-	planFieldCustomFields                        = big.NewInt(1 << 9)
-	planFieldDeletable                           = big.NewInt(1 << 10)
-	planFieldDescription                         = big.NewInt(1 << 11)
-	planFieldEffectivePaymentMethodConfiguration = big.NewInt(1 << 12)
-	planFieldExpirationDays                      = big.NewInt(1 << 13)
-	planFieldFormattedPrice                      = big.NewInt(1 << 14)
-	planFieldID                                  = big.NewInt(1 << 15)
-	planFieldImage                               = big.NewInt(1 << 16)
-	planFieldInitialPrice                        = big.NewInt(1 << 17)
-	planFieldInternalNotes                       = big.NewInt(1 << 18)
-	planFieldInvoice                             = big.NewInt(1 << 19)
-	planFieldMemberCount                         = big.NewInt(1 << 20)
-	planFieldMetadata                            = big.NewInt(1 << 21)
-	planFieldOfferCancelDiscount                 = big.NewInt(1 << 22)
-	planFieldPaymentMethodConfiguration          = big.NewInt(1 << 23)
-	planFieldPlanType                            = big.NewInt(1 << 24)
-	planFieldProduct                             = big.NewInt(1 << 25)
-	planFieldPurchaseURL                         = big.NewInt(1 << 26)
-	planFieldReleaseMethod                       = big.NewInt(1 << 27)
-	planFieldRenewalPrice                        = big.NewInt(1 << 28)
-	planFieldSplitPayRequiredPayments            = big.NewInt(1 << 29)
-	planFieldStock                               = big.NewInt(1 << 30)
-	planFieldStrikeThroughInitialPrice           = big.NewInt(1 << 31)
-	planFieldStrikeThroughRenewalPrice           = big.NewInt(1 << 32)
-	planFieldTaxType                             = big.NewInt(1 << 33)
-	planFieldThreeDsLevel                        = big.NewInt(1 << 34)
-	planFieldTitle                               = big.NewInt(1 << 35)
-	planFieldTrialPeriodDays                     = big.NewInt(1 << 36)
-	planFieldUnlimitedStock                      = big.NewInt(1 << 37)
-	planFieldUpdatedAt                           = big.NewInt(1 << 38)
-	planFieldVisibility                          = big.NewInt(1 << 39)
+	planFieldAllowMultipleQuantity               = big.NewInt(1 << 2)
+	planFieldAttributes                          = big.NewInt(1 << 3)
+	planFieldBillingPeriod                       = big.NewInt(1 << 4)
+	planFieldBillingType                         = big.NewInt(1 << 5)
+	planFieldCancelDiscountIntervals             = big.NewInt(1 << 6)
+	planFieldCancelDiscountPercentage            = big.NewInt(1 << 7)
+	planFieldCheckoutStyling                     = big.NewInt(1 << 8)
+	planFieldCollectTax                          = big.NewInt(1 << 9)
+	planFieldCreatedAt                           = big.NewInt(1 << 10)
+	planFieldCurrency                            = big.NewInt(1 << 11)
+	planFieldCustomFields                        = big.NewInt(1 << 12)
+	planFieldDeletable                           = big.NewInt(1 << 13)
+	planFieldDescription                         = big.NewInt(1 << 14)
+	planFieldEffectivePaymentMethodConfiguration = big.NewInt(1 << 15)
+	planFieldExpirationDays                      = big.NewInt(1 << 16)
+	planFieldFormattedPrice                      = big.NewInt(1 << 17)
+	planFieldID                                  = big.NewInt(1 << 18)
+	planFieldImage                               = big.NewInt(1 << 19)
+	planFieldInitialPrice                        = big.NewInt(1 << 20)
+	planFieldInitialPriceDue                     = big.NewInt(1 << 21)
+	planFieldInternalNotes                       = big.NewInt(1 << 22)
+	planFieldInvoice                             = big.NewInt(1 << 23)
+	planFieldMemberCount                         = big.NewInt(1 << 24)
+	planFieldMetadata                            = big.NewInt(1 << 25)
+	planFieldOfferCancelDiscount                 = big.NewInt(1 << 26)
+	planFieldPaymentMethodConfiguration          = big.NewInt(1 << 27)
+	planFieldProduct                             = big.NewInt(1 << 28)
+	planFieldPurchaseURL                         = big.NewInt(1 << 29)
+	planFieldReleaseMethod                       = big.NewInt(1 << 30)
+	planFieldRenewalPrice                        = big.NewInt(1 << 31)
+	planFieldSku                                 = big.NewInt(1 << 32)
+	planFieldSplitPayRequiredPayments            = big.NewInt(1 << 33)
+	planFieldStock                               = big.NewInt(1 << 34)
+	planFieldStrikeThroughInitialPrice           = big.NewInt(1 << 35)
+	planFieldStrikeThroughRenewalPrice           = big.NewInt(1 << 36)
+	planFieldTaxType                             = big.NewInt(1 << 37)
+	planFieldThreeDsLevel                        = big.NewInt(1 << 38)
+	planFieldTitle                               = big.NewInt(1 << 39)
+	planFieldTrialPeriodDays                     = big.NewInt(1 << 40)
+	planFieldUnlimitedStock                      = big.NewInt(1 << 41)
+	planFieldUpdatedAt                           = big.NewInt(1 << 42)
+	planFieldVisibility                          = big.NewInt(1 << 43)
 )
 
+// planNullableFields maps the wire names of Plan's nullable fields (required or optional) to their field bits.
+var planNullableFields = map[string]*big.Int{
+	"account":                                planFieldAccount,
+	"attributes":                             planFieldAttributes,
+	"billing_period":                         planFieldBillingPeriod,
+	"cancel_discount_intervals":              planFieldCancelDiscountIntervals,
+	"cancel_discount_percentage":             planFieldCancelDiscountPercentage,
+	"checkout_styling":                       planFieldCheckoutStyling,
+	"deletable":                              planFieldDeletable,
+	"description":                            planFieldDescription,
+	"effective_payment_method_configuration": planFieldEffectivePaymentMethodConfiguration,
+	"expiration_days":                        planFieldExpirationDays,
+	"image":                                  planFieldImage,
+	"internal_notes":                         planFieldInternalNotes,
+	"invoice":                                planFieldInvoice,
+	"member_count":                           planFieldMemberCount,
+	"metadata":                               planFieldMetadata,
+	"offer_cancel_discount":                  planFieldOfferCancelDiscount,
+	"payment_method_configuration":           planFieldPaymentMethodConfiguration,
+	"product":                                planFieldProduct,
+	"sku":                                    planFieldSku,
+	"split_pay_required_payments":            planFieldSplitPayRequiredPayments,
+	"stock":                                  planFieldStock,
+	"strike_through_initial_price":           planFieldStrikeThroughInitialPrice,
+	"strike_through_renewal_price":           planFieldStrikeThroughRenewalPrice,
+	"three_ds_level":                         planFieldThreeDsLevel,
+	"title":                                  planFieldTitle,
+	"trial_period_days":                      planFieldTrialPeriodDays,
+}
+
 type Plan struct {
-	// Account that sells this plan; `null` for standalone invoice plans.
+	// Account that sells this variant; `null` for standalone invoice variants.
 	Account *AccountSummary `json:"account,omitempty" url:"account,omitempty"`
-	// Whether adaptive pricing is enabled for this plan. Raw setting — does not check processor compatibility or feature flags.
+	// Whether adaptive pricing is enabled for this variant. Raw setting — does not check processor compatibility or feature flags.
 	AdaptivePricingEnabled bool `json:"adaptive_pricing_enabled" url:"adaptive_pricing_enabled"`
-	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time plans.
+	// Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
+	AllowMultipleQuantity bool `json:"allow_multiple_quantity" url:"allow_multiple_quantity"`
+	// Attribute values that distinguish this variant within its product, as a map of attribute name to value, e.g. `{"color": "Blue", "size": "Large"}`. Names are snake_case identifiers and come back in alphabetical order. Every attributed variant on a product carries the same attribute names and a distinct set of values; the product lists the full option set as `variant_attributes`. `null` when the variant has no attributes.
+	Attributes map[string]*string `json:"attributes,omitempty" url:"attributes,omitempty"`
+	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time variants.
 	BillingPeriod *float64 `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// Billing intervals the cancellation discount applies to (`0` forever, `1` first payment, or a month count). `null` when none is offered or the actor lacks the `plan:basic:read` scope.
+	// Billing model for this variant.
+	BillingType PlanBillingType `json:"billing_type" url:"billing_type"`
+	// How long the cancellation discount lasts: `0` forever, `1` the next payment only, or a number of calendar months from when the customer accepts it. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
 	CancelDiscountIntervals *float64 `json:"cancel_discount_intervals,omitempty" url:"cancel_discount_intervals,omitempty"`
 	// Cancellation discount as a whole-number percentage. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
 	CancelDiscountPercentage *float64 `json:"cancel_discount_percentage,omitempty" url:"cancel_discount_percentage,omitempty"`
-	// Plan-level checkout styling (`background_color`, `button_color`, `font_family`, `border_style`); `null` inherits the account default.
+	// Variant-level checkout styling (`background_color`, `button_color`, `font_family`, `border_style`); `null` inherits the account default.
 	CheckoutStyling map[string]any `json:"checkout_styling,omitempty" url:"checkout_styling,omitempty"`
-	// Whether tax is collected on purchases of this plan, based on the account's tax configuration.
+	// Whether tax is collected on purchases of this variant, based on the account's tax configuration.
 	CollectTax bool `json:"collect_tax" url:"collect_tax"`
-	// When the plan was created, as an ISO 8601 timestamp.
+	// When the variant was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// Three-letter ISO currency code for this plan's prices.
+	// Three-letter ISO 4217 code of the currency every price on this variant is stated in, lowercase: the variant's own currency, or the `presentment_currency` the read asked for when the variant can be converted into it.
 	Currency     PlanCurrency       `json:"currency" url:"currency"`
 	CustomFields []*PlanCustomField `json:"custom_fields" url:"custom_fields"`
-	// Whether the plan can be deleted (it has no memberships or waitlist entries). `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+	// Whether the variant can be deleted (it has no memberships or waitlist entries). `null` unless the actor has the `plan:basic:read` scope on the variant's account.
 	Deletable *bool `json:"deletable,omitempty" url:"deletable,omitempty"`
-	// Customer-visible plan description. Maximum 1000 characters. `null` if no description is set.
+	// Customer-visible variant description. Maximum 1000 characters. `null` if no description is set.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	// The configuration governing a checkout for this plan, resolved through every layer (the plan's own and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays the plan's own editable override.
+	// The configuration governing a checkout for this variant, resolved through every layer (the variant's own and the account's) — the shape a session's `payment_method_configuration` carries. Apply it over the payment method types catalogue for the offerable set. `null` means platform defaults; `payment_method_configuration` stays the variant's own editable override.
 	EffectivePaymentMethodConfiguration *CheckoutSessionPaymentMethodConfiguration `json:"effective_payment_method_configuration,omitempty" url:"effective_payment_method_configuration,omitempty"`
-	// Access duration in days for expiration-based plans, such as 365 for a one-year pass. `null` for plans without an expiration.
+	// Access duration in days for expiration-based variants, such as 365 for a one-year pass. `null` for variants without an expiration.
 	ExpirationDays *float64 `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Human-readable price for display (currency + interval), e.g. "$10 / month".
+	// Human-readable price for display (currency + interval) in `currency`, e.g. "$10 / month".
 	FormattedPrice string `json:"formatted_price" url:"formatted_price"`
-	// Plan ID, prefixed `plan_`.
+	// Variant ID, prefixed `plan_`.
 	ID string `json:"id" url:"id"`
 	// Pricing-tier image (`url`, `blurhash`) shown on the product page; `null` when no image is set.
 	Image map[string]any `json:"image,omitempty" url:"image,omitempty"`
-	// Initial purchase price in plan currency.
+	// Initial purchase price, in `currency`.
 	InitialPrice float64 `json:"initial_price" url:"initial_price"`
-	// Private notes not shown to customers. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+	// Total charged at checkout for one unit, before promo codes and tax: `initial_price` plus the first `renewal_price` for recurring variants, or `initial_price` alone while a free trial applies. The trial does not apply when the viewing user has already used one for this variant. Stated in `currency`.
+	InitialPriceDue *Money `json:"initial_price_due" url:"initial_price_due"`
+	// Private notes not shown to customers. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
 	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
-	// Invoice this plan was generated for; `null` unless created for an invoice.
+	// Invoice this variant was generated for; `null` unless created for an invoice.
 	Invoice map[string]any `json:"invoice,omitempty" url:"invoice,omitempty"`
-	// Active memberships through this plan. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+	// Active memberships through this variant. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
 	MemberCount *float64 `json:"member_count,omitempty" url:"member_count,omitempty"`
-	// Custom key-value pairs stored on the plan. Included in webhook payloads for payment and membership events. Maximum 50 keys, 100 characters per key, 500 characters per value. The reserved keys `custom_cta` and `custom_cta_url`, when set, override the product's checkout call to action for this plan.
+	// Custom key-value pairs stored on the variant. Included in webhook payloads for payment and membership events. Maximum 50 keys, 100 characters per key, 500 characters per value. The reserved keys `custom_cta` and `custom_cta_url`, when set, override the product's checkout call to action for this variant.
 	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// Whether a cancellation discount is offered. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+	// Whether a cancellation discount is offered. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
 	OfferCancelDiscount *bool `json:"offer_cancel_discount,omitempty" url:"offer_cancel_discount,omitempty"`
-	// Payment method configuration (`enabled`, `disabled`, `include_platform_defaults`); `null` when plan uses default settings.
+	// Payment method configuration (`enabled`, `disabled`, `include_platform_defaults`); `null` when variant uses default settings.
 	PaymentMethodConfiguration map[string]any `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Billing model for this plan.
-	PlanType PlanPlanType `json:"plan_type" url:"plan_type"`
-	// Product this plan belongs to; `null` for standalone plans.
+	// Product this variant belongs to; `null` for standalone variants.
 	Product map[string]any `json:"product,omitempty" url:"product,omitempty"`
-	// URL where customers can purchase this plan directly.
+	// URL where customers can purchase this variant directly.
 	PurchaseURL string `json:"purchase_url" url:"purchase_url"`
-	// Sales method for this plan.
+	// Sales method for this variant.
 	ReleaseMethod PlanReleaseMethod `json:"release_method" url:"release_method"`
-	// Recurring price charged every billing period.
+	// Recurring price charged every billing period, in `currency`.
 	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
+	// Stock keeping unit, free text set by the seller (e.g. `TSHIRT-LARGE-BLUE`). Not enforced unique. `null` when unset.
+	Sku *string `json:"sku,omitempty" url:"sku,omitempty"`
 	// Installment payments required before the subscription pauses. Must be greater than 1. `null` if split pay is not configured.
 	SplitPayRequiredPayments *float64 `json:"split_pay_required_payments,omitempty" url:"split_pay_required_payments,omitempty"`
-	// Units available for purchase. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+	// Units available for purchase. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
 	Stock *float64 `json:"stock,omitempty" url:"stock,omitempty"`
-	// Original initial price shown with a strikethrough, in the plan's currency. `null` when no strikethrough is set.
+	// Original initial price shown with a strikethrough, in `currency`. `null` when no strikethrough is set.
 	StrikeThroughInitialPrice *float64 `json:"strike_through_initial_price,omitempty" url:"strike_through_initial_price,omitempty"`
-	// Original renewal price shown with a strikethrough, in the plan's currency. `null` when no strikethrough is set.
+	// Original renewal price shown with a strikethrough, in `currency`. `null` when no strikethrough is set.
 	StrikeThroughRenewalPrice *float64 `json:"strike_through_renewal_price,omitempty" url:"strike_through_renewal_price,omitempty"`
-	// How tax is handled for this plan, including whether tax is included in the price, added at checkout, or not configured.
+	// How tax is handled for this variant, including whether tax is included in the price, added at checkout, or not configured.
 	TaxType PlanTaxType `json:"tax_type" url:"tax_type"`
-	// 3D Secure behavior for this plan; `null` inherits the account default.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 	ThreeDsLevel *PlanThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
-	// Plan display name shown to customers. Maximum 30 characters. `null` if no title has been set.
+	// Variant display name shown to customers. Maximum 30 characters. A variant created without one defaults to its attribute values joined with ` / `. `null` if no title has been set.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
-	// Free trial days before the first renewal charge. `null` if no trial is configured or the user has already used a trial for this plan.
+	// Free trial days before the first renewal charge. `null` if no trial is configured or the user has already used a trial for this variant.
 	TrialPeriodDays *float64 `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// Whether the plan has unlimited stock. When `true`, the `stock` field is ignored; waitlist plans always report `true`.
+	// Whether the variant has unlimited stock. When `true`, the `stock` field is ignored; waitlist variants always report `true`.
 	UnlimitedStock bool `json:"unlimited_stock" url:"unlimited_stock"`
-	// When the plan was last updated, as an ISO 8601 timestamp.
+	// When the variant was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
-	// Controls where this plan can be seen. When `hidden`, the plan is reachable only by its direct link.
+	// Controls where this variant can be seen. When `hidden`, the variant is reachable only by its direct link.
 	Visibility PlanVisibility `json:"visibility" url:"visibility"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -834,11 +785,32 @@ func (p *Plan) GetAdaptivePricingEnabled() bool {
 	return p.AdaptivePricingEnabled
 }
 
+func (p *Plan) GetAllowMultipleQuantity() bool {
+	if p == nil {
+		return false
+	}
+	return p.AllowMultipleQuantity
+}
+
+func (p *Plan) GetAttributes() map[string]*string {
+	if p == nil {
+		return nil
+	}
+	return p.Attributes
+}
+
 func (p *Plan) GetBillingPeriod() *float64 {
 	if p == nil {
 		return nil
 	}
 	return p.BillingPeriod
+}
+
+func (p *Plan) GetBillingType() PlanBillingType {
+	if p == nil {
+		return ""
+	}
+	return p.BillingType
 }
 
 func (p *Plan) GetCancelDiscountIntervals() *float64 {
@@ -946,6 +918,13 @@ func (p *Plan) GetInitialPrice() float64 {
 	return p.InitialPrice
 }
 
+func (p *Plan) GetInitialPriceDue() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.InitialPriceDue
+}
+
 func (p *Plan) GetInternalNotes() *string {
 	if p == nil {
 		return nil
@@ -988,13 +967,6 @@ func (p *Plan) GetPaymentMethodConfiguration() map[string]any {
 	return p.PaymentMethodConfiguration
 }
 
-func (p *Plan) GetPlanType() PlanPlanType {
-	if p == nil {
-		return ""
-	}
-	return p.PlanType
-}
-
 func (p *Plan) GetProduct() map[string]any {
 	if p == nil {
 		return nil
@@ -1021,6 +993,13 @@ func (p *Plan) GetRenewalPrice() float64 {
 		return 0
 	}
 	return p.RenewalPrice
+}
+
+func (p *Plan) GetSku() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Sku
 }
 
 func (p *Plan) GetSplitPayRequiredPayments() *float64 {
@@ -1108,10 +1087,12 @@ func (p *Plan) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *Plan) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -1128,11 +1109,32 @@ func (p *Plan) SetAdaptivePricingEnabled(adaptivePricingEnabled bool) {
 	p.require(planFieldAdaptivePricingEnabled)
 }
 
+// SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Plan) SetAllowMultipleQuantity(allowMultipleQuantity bool) {
+	p.AllowMultipleQuantity = allowMultipleQuantity
+	p.require(planFieldAllowMultipleQuantity)
+}
+
+// SetAttributes sets the Attributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Plan) SetAttributes(attributes map[string]*string) {
+	p.Attributes = attributes
+	p.require(planFieldAttributes)
+}
+
 // SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *Plan) SetBillingPeriod(billingPeriod *float64) {
 	p.BillingPeriod = billingPeriod
 	p.require(planFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Plan) SetBillingType(billingType PlanBillingType) {
+	p.BillingType = billingType
+	p.require(planFieldBillingType)
 }
 
 // SetCancelDiscountIntervals sets the CancelDiscountIntervals field and marks it as non-optional;
@@ -1240,6 +1242,13 @@ func (p *Plan) SetInitialPrice(initialPrice float64) {
 	p.require(planFieldInitialPrice)
 }
 
+// SetInitialPriceDue sets the InitialPriceDue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Plan) SetInitialPriceDue(initialPriceDue *Money) {
+	p.InitialPriceDue = initialPriceDue
+	p.require(planFieldInitialPriceDue)
+}
+
 // SetInternalNotes sets the InternalNotes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *Plan) SetInternalNotes(internalNotes *string) {
@@ -1282,13 +1291,6 @@ func (p *Plan) SetPaymentMethodConfiguration(paymentMethodConfiguration map[stri
 	p.require(planFieldPaymentMethodConfiguration)
 }
 
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Plan) SetPlanType(planType PlanPlanType) {
-	p.PlanType = planType
-	p.require(planFieldPlanType)
-}
-
 // SetProduct sets the Product field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *Plan) SetProduct(product map[string]any) {
@@ -1315,6 +1317,13 @@ func (p *Plan) SetReleaseMethod(releaseMethod PlanReleaseMethod) {
 func (p *Plan) SetRenewalPrice(renewalPrice float64) {
 	p.RenewalPrice = renewalPrice
 	p.require(planFieldRenewalPrice)
+}
+
+// SetSku sets the Sku field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Plan) SetSku(sku *string) {
+	p.Sku = sku
+	p.require(planFieldSku)
 }
 
 // SetSplitPayRequiredPayments sets the SplitPayRequiredPayments field and marks it as non-optional;
@@ -1406,6 +1415,13 @@ func (p *Plan) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, planNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1436,7 +1452,30 @@ func (p *Plan) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Three-letter ISO currency code for this plan's prices.
+// Billing model for this variant.
+type PlanBillingType string
+
+const (
+	PlanBillingTypeRenewal PlanBillingType = "renewal"
+	PlanBillingTypeOneTime PlanBillingType = "one_time"
+)
+
+func NewPlanBillingTypeFromString(s string) (PlanBillingType, error) {
+	switch s {
+	case "renewal":
+		return PlanBillingTypeRenewal, nil
+	case "one_time":
+		return PlanBillingTypeOneTime, nil
+	}
+	var t PlanBillingType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PlanBillingType) Ptr() *PlanBillingType {
+	return &p
+}
+
+// Three-letter ISO 4217 code of the currency every price on this variant is stated in, lowercase: the variant's own currency, or the `presentment_currency` the read asked for when the variant can be converted into it.
 type PlanCurrency string
 
 const (
@@ -1724,305 +1763,155 @@ func (p PlanCurrency) Ptr() *PlanCurrency {
 }
 
 var (
-	planCustomFieldFieldFieldType   = big.NewInt(1 << 0)
-	planCustomFieldFieldID          = big.NewInt(1 << 1)
-	planCustomFieldFieldName        = big.NewInt(1 << 2)
-	planCustomFieldFieldOrder       = big.NewInt(1 << 3)
-	planCustomFieldFieldPlaceholder = big.NewInt(1 << 4)
-	planCustomFieldFieldRequired    = big.NewInt(1 << 5)
-)
-
-type PlanCustomField struct {
-	// Custom field input type.
-	FieldType PlanCustomFieldFieldType `json:"field_type" url:"field_type"`
-	// Custom field ID, prefixed `field_`.
-	ID string `json:"id" url:"id"`
-	// Field label shown to customer at checkout.
-	Name string `json:"name" url:"name"`
-	// Field position on checkout form.
-	Order float64 `json:"order" url:"order"`
-	// Placeholder text shown in the empty field. `null` if none is set.
-	Placeholder *string `json:"placeholder,omitempty" url:"placeholder,omitempty"`
-	// Whether the customer must complete this field to check out.
-	Required bool `json:"required" url:"required"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PlanCustomField) GetFieldType() PlanCustomFieldFieldType {
-	if p == nil {
-		return ""
-	}
-	return p.FieldType
-}
-
-func (p *PlanCustomField) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PlanCustomField) GetName() string {
-	if p == nil {
-		return ""
-	}
-	return p.Name
-}
-
-func (p *PlanCustomField) GetOrder() float64 {
-	if p == nil {
-		return 0
-	}
-	return p.Order
-}
-
-func (p *PlanCustomField) GetPlaceholder() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Placeholder
-}
-
-func (p *PlanCustomField) GetRequired() bool {
-	if p == nil {
-		return false
-	}
-	return p.Required
-}
-
-func (p *PlanCustomField) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PlanCustomField) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetFieldType sets the FieldType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PlanCustomField) SetFieldType(fieldType PlanCustomFieldFieldType) {
-	p.FieldType = fieldType
-	p.require(planCustomFieldFieldFieldType)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PlanCustomField) SetID(id string) {
-	p.ID = id
-	p.require(planCustomFieldFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PlanCustomField) SetName(name string) {
-	p.Name = name
-	p.require(planCustomFieldFieldName)
-}
-
-// SetOrder sets the Order field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PlanCustomField) SetOrder(order float64) {
-	p.Order = order
-	p.require(planCustomFieldFieldOrder)
-}
-
-// SetPlaceholder sets the Placeholder field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PlanCustomField) SetPlaceholder(placeholder *string) {
-	p.Placeholder = placeholder
-	p.require(planCustomFieldFieldPlaceholder)
-}
-
-// SetRequired sets the Required field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PlanCustomField) SetRequired(required bool) {
-	p.Required = required
-	p.require(planCustomFieldFieldRequired)
-}
-
-func (p *PlanCustomField) UnmarshalJSON(data []byte) error {
-	type unmarshaler PlanCustomField
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PlanCustomField(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PlanCustomField) MarshalJSON() ([]byte, error) {
-	type embed PlanCustomField
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PlanCustomField) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// Custom field input type.
-type PlanCustomFieldFieldType string
-
-const (
-	PlanCustomFieldFieldTypeText PlanCustomFieldFieldType = "text"
-)
-
-func NewPlanCustomFieldFieldTypeFromString(s string) (PlanCustomFieldFieldType, error) {
-	switch s {
-	case "text":
-		return PlanCustomFieldFieldTypeText, nil
-	}
-	var t PlanCustomFieldFieldType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PlanCustomFieldFieldType) Ptr() *PlanCustomFieldFieldType {
-	return &p
-}
-
-var (
 	planListItemFieldAccount                    = big.NewInt(1 << 0)
 	planListItemFieldAdaptivePricingEnabled     = big.NewInt(1 << 1)
-	planListItemFieldBillingPeriod              = big.NewInt(1 << 2)
-	planListItemFieldCancelDiscountIntervals    = big.NewInt(1 << 3)
-	planListItemFieldCancelDiscountPercentage   = big.NewInt(1 << 4)
-	planListItemFieldCheckoutStyling            = big.NewInt(1 << 5)
-	planListItemFieldCreatedAt                  = big.NewInt(1 << 6)
-	planListItemFieldCurrency                   = big.NewInt(1 << 7)
-	planListItemFieldCustomFields               = big.NewInt(1 << 8)
-	planListItemFieldDescription                = big.NewInt(1 << 9)
-	planListItemFieldExpirationDays             = big.NewInt(1 << 10)
-	planListItemFieldFormattedPrice             = big.NewInt(1 << 11)
-	planListItemFieldID                         = big.NewInt(1 << 12)
-	planListItemFieldImage                      = big.NewInt(1 << 13)
-	planListItemFieldInitialPrice               = big.NewInt(1 << 14)
-	planListItemFieldInternalNotes              = big.NewInt(1 << 15)
-	planListItemFieldInvoice                    = big.NewInt(1 << 16)
-	planListItemFieldMemberCount                = big.NewInt(1 << 17)
-	planListItemFieldMetadata                   = big.NewInt(1 << 18)
-	planListItemFieldOfferCancelDiscount        = big.NewInt(1 << 19)
-	planListItemFieldPaymentMethodConfiguration = big.NewInt(1 << 20)
-	planListItemFieldPlanType                   = big.NewInt(1 << 21)
-	planListItemFieldProduct                    = big.NewInt(1 << 22)
-	planListItemFieldPurchaseURL                = big.NewInt(1 << 23)
-	planListItemFieldReleaseMethod              = big.NewInt(1 << 24)
-	planListItemFieldRenewalPrice               = big.NewInt(1 << 25)
-	planListItemFieldSplitPayRequiredPayments   = big.NewInt(1 << 26)
-	planListItemFieldStock                      = big.NewInt(1 << 27)
-	planListItemFieldStrikeThroughInitialPrice  = big.NewInt(1 << 28)
-	planListItemFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 29)
-	planListItemFieldThreeDsLevel               = big.NewInt(1 << 30)
-	planListItemFieldTitle                      = big.NewInt(1 << 31)
-	planListItemFieldTrialPeriodDays            = big.NewInt(1 << 32)
-	planListItemFieldUnlimitedStock             = big.NewInt(1 << 33)
-	planListItemFieldUpdatedAt                  = big.NewInt(1 << 34)
-	planListItemFieldVisibility                 = big.NewInt(1 << 35)
+	planListItemFieldAllowMultipleQuantity      = big.NewInt(1 << 2)
+	planListItemFieldAttributes                 = big.NewInt(1 << 3)
+	planListItemFieldBillingPeriod              = big.NewInt(1 << 4)
+	planListItemFieldBillingType                = big.NewInt(1 << 5)
+	planListItemFieldCancelDiscountIntervals    = big.NewInt(1 << 6)
+	planListItemFieldCancelDiscountPercentage   = big.NewInt(1 << 7)
+	planListItemFieldCheckoutStyling            = big.NewInt(1 << 8)
+	planListItemFieldCreatedAt                  = big.NewInt(1 << 9)
+	planListItemFieldCurrency                   = big.NewInt(1 << 10)
+	planListItemFieldCustomFields               = big.NewInt(1 << 11)
+	planListItemFieldDescription                = big.NewInt(1 << 12)
+	planListItemFieldExpirationDays             = big.NewInt(1 << 13)
+	planListItemFieldFormattedPrice             = big.NewInt(1 << 14)
+	planListItemFieldID                         = big.NewInt(1 << 15)
+	planListItemFieldImage                      = big.NewInt(1 << 16)
+	planListItemFieldInitialPrice               = big.NewInt(1 << 17)
+	planListItemFieldInitialPriceDue            = big.NewInt(1 << 18)
+	planListItemFieldInternalNotes              = big.NewInt(1 << 19)
+	planListItemFieldInvoice                    = big.NewInt(1 << 20)
+	planListItemFieldMemberCount                = big.NewInt(1 << 21)
+	planListItemFieldMetadata                   = big.NewInt(1 << 22)
+	planListItemFieldOfferCancelDiscount        = big.NewInt(1 << 23)
+	planListItemFieldPaymentMethodConfiguration = big.NewInt(1 << 24)
+	planListItemFieldProduct                    = big.NewInt(1 << 25)
+	planListItemFieldPurchaseURL                = big.NewInt(1 << 26)
+	planListItemFieldReleaseMethod              = big.NewInt(1 << 27)
+	planListItemFieldRenewalPrice               = big.NewInt(1 << 28)
+	planListItemFieldSku                        = big.NewInt(1 << 29)
+	planListItemFieldSplitPayRequiredPayments   = big.NewInt(1 << 30)
+	planListItemFieldStock                      = big.NewInt(1 << 31)
+	planListItemFieldStrikeThroughInitialPrice  = big.NewInt(1 << 32)
+	planListItemFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 33)
+	planListItemFieldThreeDsLevel               = big.NewInt(1 << 34)
+	planListItemFieldTitle                      = big.NewInt(1 << 35)
+	planListItemFieldTrialPeriodDays            = big.NewInt(1 << 36)
+	planListItemFieldUnlimitedStock             = big.NewInt(1 << 37)
+	planListItemFieldUpdatedAt                  = big.NewInt(1 << 38)
+	planListItemFieldVisibility                 = big.NewInt(1 << 39)
 )
 
+// planListItemNullableFields maps the wire names of PlanListItem's nullable fields (required or optional) to their field bits.
+var planListItemNullableFields = map[string]*big.Int{
+	"account":                      planListItemFieldAccount,
+	"attributes":                   planListItemFieldAttributes,
+	"billing_period":               planListItemFieldBillingPeriod,
+	"cancel_discount_intervals":    planListItemFieldCancelDiscountIntervals,
+	"cancel_discount_percentage":   planListItemFieldCancelDiscountPercentage,
+	"checkout_styling":             planListItemFieldCheckoutStyling,
+	"description":                  planListItemFieldDescription,
+	"expiration_days":              planListItemFieldExpirationDays,
+	"image":                        planListItemFieldImage,
+	"internal_notes":               planListItemFieldInternalNotes,
+	"invoice":                      planListItemFieldInvoice,
+	"member_count":                 planListItemFieldMemberCount,
+	"metadata":                     planListItemFieldMetadata,
+	"offer_cancel_discount":        planListItemFieldOfferCancelDiscount,
+	"payment_method_configuration": planListItemFieldPaymentMethodConfiguration,
+	"product":                      planListItemFieldProduct,
+	"sku":                          planListItemFieldSku,
+	"split_pay_required_payments":  planListItemFieldSplitPayRequiredPayments,
+	"stock":                        planListItemFieldStock,
+	"strike_through_initial_price": planListItemFieldStrikeThroughInitialPrice,
+	"strike_through_renewal_price": planListItemFieldStrikeThroughRenewalPrice,
+	"three_ds_level":               planListItemFieldThreeDsLevel,
+	"title":                        planListItemFieldTitle,
+	"trial_period_days":            planListItemFieldTrialPeriodDays,
+}
+
 type PlanListItem struct {
-	// Account that sells this plan; `null` for standalone invoice plans.
+	// Account that sells this variant; `null` for standalone invoice variants.
 	Account *AccountSummary `json:"account,omitempty" url:"account,omitempty"`
-	// Whether adaptive pricing is enabled for this plan. Raw setting — does not check processor compatibility or feature flags.
+	// Whether adaptive pricing is enabled for this variant. Raw setting — does not check processor compatibility or feature flags.
 	AdaptivePricingEnabled bool `json:"adaptive_pricing_enabled" url:"adaptive_pricing_enabled"`
-	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time plans.
+	// Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
+	AllowMultipleQuantity bool `json:"allow_multiple_quantity" url:"allow_multiple_quantity"`
+	// Attribute values that distinguish this variant within its product, as a map of attribute name to value, e.g. `{"color": "Blue", "size": "Large"}`. Names are snake_case identifiers and come back in alphabetical order. Every attributed variant on a product carries the same attribute names and a distinct set of values; the product lists the full option set as `variant_attributes`. `null` when the variant has no attributes.
+	Attributes map[string]*string `json:"attributes,omitempty" url:"attributes,omitempty"`
+	// Number of days between recurring charges, such as 30 for monthly or 365 for annual. `null` for one-time variants.
 	BillingPeriod *float64 `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// Billing intervals the cancellation discount applies to (`0` forever, `1` first payment, or a month count). `null` when none is offered or the actor lacks the `plan:basic:read` scope.
+	// Billing model for this variant.
+	BillingType PlanListItemBillingType `json:"billing_type" url:"billing_type"`
+	// How long the cancellation discount lasts: `0` forever, `1` the next payment only, or a number of calendar months from when the customer accepts it. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
 	CancelDiscountIntervals *float64 `json:"cancel_discount_intervals,omitempty" url:"cancel_discount_intervals,omitempty"`
 	// Cancellation discount as a whole-number percentage. `null` when none is offered or the actor lacks the `plan:basic:read` scope.
 	CancelDiscountPercentage *float64 `json:"cancel_discount_percentage,omitempty" url:"cancel_discount_percentage,omitempty"`
-	// Plan-level checkout styling (`background_color`, `button_color`, `font_family`, `border_style`); `null` inherits the account default.
+	// Variant-level checkout styling (`background_color`, `button_color`, `font_family`, `border_style`); `null` inherits the account default.
 	CheckoutStyling map[string]any `json:"checkout_styling,omitempty" url:"checkout_styling,omitempty"`
-	// When the plan was created, as an ISO 8601 timestamp.
+	// When the variant was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// Three-letter ISO currency code for this plan's prices.
+	// Three-letter ISO 4217 code of the currency every price on this variant is stated in, lowercase: the variant's own currency, or the `presentment_currency` the read asked for when the variant can be converted into it.
 	Currency     string             `json:"currency" url:"currency"`
 	CustomFields []*PlanCustomField `json:"custom_fields" url:"custom_fields"`
-	// Customer-visible plan description. Maximum 1000 characters. `null` if no description is set.
+	// Customer-visible variant description. Maximum 1000 characters. `null` if no description is set.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	// Access duration in days for expiration-based plans, such as 365 for a one-year pass. `null` for plans without an expiration.
+	// Access duration in days for expiration-based variants, such as 365 for a one-year pass. `null` for variants without an expiration.
 	ExpirationDays *float64 `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Human-readable price for display (currency + interval), e.g. "$10 / month".
+	// Human-readable price for display (currency + interval) in `currency`, e.g. "$10 / month".
 	FormattedPrice string `json:"formatted_price" url:"formatted_price"`
-	// Plan ID, prefixed `plan_`.
+	// Variant ID, prefixed `plan_`.
 	ID string `json:"id" url:"id"`
 	// Pricing-tier image (`url`, `blurhash`) shown on the product page; `null` when no image is set.
 	Image map[string]any `json:"image,omitempty" url:"image,omitempty"`
-	// Initial purchase price in plan currency.
+	// Initial purchase price, in `currency`.
 	InitialPrice float64 `json:"initial_price" url:"initial_price"`
-	// Private notes not shown to customers. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+	// Total charged at checkout for one unit, before promo codes and tax: `initial_price` plus the first `renewal_price` for recurring variants, or `initial_price` alone while a free trial applies. The trial does not apply when the viewing user has already used one for this variant. Stated in `currency`.
+	InitialPriceDue *Money `json:"initial_price_due" url:"initial_price_due"`
+	// Private notes not shown to customers. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
 	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
-	// Invoice this plan was generated for; `null` unless created for an invoice.
+	// Invoice this variant was generated for; `null` unless created for an invoice.
 	Invoice map[string]any `json:"invoice,omitempty" url:"invoice,omitempty"`
-	// Active memberships through this plan. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+	// Active memberships through this variant. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
 	MemberCount *float64 `json:"member_count,omitempty" url:"member_count,omitempty"`
-	// Custom key-value pairs stored on the plan. Included in webhook payloads for payment and membership events. Maximum 50 keys, 100 characters per key, 500 characters per value. The reserved keys `custom_cta` and `custom_cta_url`, when set, override the product's checkout call to action for this plan.
+	// Custom key-value pairs stored on the variant. Included in webhook payloads for payment and membership events. Maximum 50 keys, 100 characters per key, 500 characters per value. The reserved keys `custom_cta` and `custom_cta_url`, when set, override the product's checkout call to action for this variant.
 	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// Whether a cancellation discount is offered. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+	// Whether a cancellation discount is offered. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
 	OfferCancelDiscount *bool `json:"offer_cancel_discount,omitempty" url:"offer_cancel_discount,omitempty"`
-	// Payment method configuration (`enabled`, `disabled`, `include_platform_defaults`); `null` when plan uses default settings.
+	// Payment method configuration (`enabled`, `disabled`, `include_platform_defaults`); `null` when variant uses default settings.
 	PaymentMethodConfiguration map[string]any `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
-	// Billing model for this plan.
-	PlanType PlanListItemPlanType `json:"plan_type" url:"plan_type"`
-	// Product this plan belongs to; `null` for standalone plans.
+	// Product this variant belongs to; `null` for standalone variants.
 	Product map[string]any `json:"product,omitempty" url:"product,omitempty"`
-	// URL where customers can purchase this plan directly.
+	// URL where customers can purchase this variant directly.
 	PurchaseURL string `json:"purchase_url" url:"purchase_url"`
-	// Sales method for this plan.
+	// Sales method for this variant.
 	ReleaseMethod PlanListItemReleaseMethod `json:"release_method" url:"release_method"`
-	// Recurring price charged every billing period.
+	// Recurring price charged every billing period, in `currency`.
 	RenewalPrice float64 `json:"renewal_price" url:"renewal_price"`
+	// Stock keeping unit, free text set by the seller (e.g. `TSHIRT-LARGE-BLUE`). Not enforced unique. `null` when unset.
+	Sku *string `json:"sku,omitempty" url:"sku,omitempty"`
 	// Installment payments required before the subscription pauses. Must be greater than 1. `null` if split pay is not configured.
 	SplitPayRequiredPayments *float64 `json:"split_pay_required_payments,omitempty" url:"split_pay_required_payments,omitempty"`
-	// Units available for purchase. `null` unless the actor has the `plan:basic:read` scope on the plan's account.
+	// Units available for purchase. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
 	Stock *float64 `json:"stock,omitempty" url:"stock,omitempty"`
-	// Original initial price shown with a strikethrough, in the plan's currency. `null` when no strikethrough is set.
+	// Original initial price shown with a strikethrough, in `currency`. `null` when no strikethrough is set.
 	StrikeThroughInitialPrice *float64 `json:"strike_through_initial_price,omitempty" url:"strike_through_initial_price,omitempty"`
-	// Original renewal price shown with a strikethrough, in the plan's currency. `null` when no strikethrough is set.
+	// Original renewal price shown with a strikethrough, in `currency`. `null` when no strikethrough is set.
 	StrikeThroughRenewalPrice *float64 `json:"strike_through_renewal_price,omitempty" url:"strike_through_renewal_price,omitempty"`
-	// 3D Secure behavior for this plan; `null` inherits the account default.
+	// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 	ThreeDsLevel *PlanListItemThreeDsLevel `json:"three_ds_level,omitempty" url:"three_ds_level,omitempty"`
-	// Plan display name shown to customers. Maximum 30 characters. `null` if no title has been set.
+	// Variant display name shown to customers. Maximum 30 characters. A variant created without one defaults to its attribute values joined with ` / `. `null` if no title has been set.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
-	// Free trial days before the first renewal charge. `null` if no trial is configured or the user has already used a trial for this plan.
+	// Free trial days before the first renewal charge. `null` if no trial is configured or the user has already used a trial for this variant.
 	TrialPeriodDays *float64 `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// Whether the plan has unlimited stock. When `true`, the `stock` field is ignored; waitlist plans always report `true`.
+	// Whether the variant has unlimited stock. When `true`, the `stock` field is ignored; waitlist variants always report `true`.
 	UnlimitedStock bool `json:"unlimited_stock" url:"unlimited_stock"`
-	// When the plan was last updated, as an ISO 8601 timestamp.
+	// When the variant was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
-	// Controls where this plan can be seen. When `hidden`, the plan is reachable only by its direct link.
+	// Controls where this variant can be seen. When `hidden`, the variant is reachable only by its direct link.
 	Visibility PlanListItemVisibility `json:"visibility" url:"visibility"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2046,11 +1935,32 @@ func (p *PlanListItem) GetAdaptivePricingEnabled() bool {
 	return p.AdaptivePricingEnabled
 }
 
+func (p *PlanListItem) GetAllowMultipleQuantity() bool {
+	if p == nil {
+		return false
+	}
+	return p.AllowMultipleQuantity
+}
+
+func (p *PlanListItem) GetAttributes() map[string]*string {
+	if p == nil {
+		return nil
+	}
+	return p.Attributes
+}
+
 func (p *PlanListItem) GetBillingPeriod() *float64 {
 	if p == nil {
 		return nil
 	}
 	return p.BillingPeriod
+}
+
+func (p *PlanListItem) GetBillingType() PlanListItemBillingType {
+	if p == nil {
+		return ""
+	}
+	return p.BillingType
 }
 
 func (p *PlanListItem) GetCancelDiscountIntervals() *float64 {
@@ -2137,6 +2047,13 @@ func (p *PlanListItem) GetInitialPrice() float64 {
 	return p.InitialPrice
 }
 
+func (p *PlanListItem) GetInitialPriceDue() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.InitialPriceDue
+}
+
 func (p *PlanListItem) GetInternalNotes() *string {
 	if p == nil {
 		return nil
@@ -2179,13 +2096,6 @@ func (p *PlanListItem) GetPaymentMethodConfiguration() map[string]any {
 	return p.PaymentMethodConfiguration
 }
 
-func (p *PlanListItem) GetPlanType() PlanListItemPlanType {
-	if p == nil {
-		return ""
-	}
-	return p.PlanType
-}
-
 func (p *PlanListItem) GetProduct() map[string]any {
 	if p == nil {
 		return nil
@@ -2212,6 +2122,13 @@ func (p *PlanListItem) GetRenewalPrice() float64 {
 		return 0
 	}
 	return p.RenewalPrice
+}
+
+func (p *PlanListItem) GetSku() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Sku
 }
 
 func (p *PlanListItem) GetSplitPayRequiredPayments() *float64 {
@@ -2292,10 +2209,12 @@ func (p *PlanListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PlanListItem) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -2312,11 +2231,32 @@ func (p *PlanListItem) SetAdaptivePricingEnabled(adaptivePricingEnabled bool) {
 	p.require(planListItemFieldAdaptivePricingEnabled)
 }
 
+// SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetAllowMultipleQuantity(allowMultipleQuantity bool) {
+	p.AllowMultipleQuantity = allowMultipleQuantity
+	p.require(planListItemFieldAllowMultipleQuantity)
+}
+
+// SetAttributes sets the Attributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetAttributes(attributes map[string]*string) {
+	p.Attributes = attributes
+	p.require(planListItemFieldAttributes)
+}
+
 // SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PlanListItem) SetBillingPeriod(billingPeriod *float64) {
 	p.BillingPeriod = billingPeriod
 	p.require(planListItemFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetBillingType(billingType PlanListItemBillingType) {
+	p.BillingType = billingType
+	p.require(planListItemFieldBillingType)
 }
 
 // SetCancelDiscountIntervals sets the CancelDiscountIntervals field and marks it as non-optional;
@@ -2403,6 +2343,13 @@ func (p *PlanListItem) SetInitialPrice(initialPrice float64) {
 	p.require(planListItemFieldInitialPrice)
 }
 
+// SetInitialPriceDue sets the InitialPriceDue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetInitialPriceDue(initialPriceDue *Money) {
+	p.InitialPriceDue = initialPriceDue
+	p.require(planListItemFieldInitialPriceDue)
+}
+
 // SetInternalNotes sets the InternalNotes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PlanListItem) SetInternalNotes(internalNotes *string) {
@@ -2445,13 +2392,6 @@ func (p *PlanListItem) SetPaymentMethodConfiguration(paymentMethodConfiguration 
 	p.require(planListItemFieldPaymentMethodConfiguration)
 }
 
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PlanListItem) SetPlanType(planType PlanListItemPlanType) {
-	p.PlanType = planType
-	p.require(planListItemFieldPlanType)
-}
-
 // SetProduct sets the Product field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PlanListItem) SetProduct(product map[string]any) {
@@ -2478,6 +2418,13 @@ func (p *PlanListItem) SetReleaseMethod(releaseMethod PlanListItemReleaseMethod)
 func (p *PlanListItem) SetRenewalPrice(renewalPrice float64) {
 	p.RenewalPrice = renewalPrice
 	p.require(planListItemFieldRenewalPrice)
+}
+
+// SetSku sets the Sku field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetSku(sku *string) {
+	p.Sku = sku
+	p.require(planListItemFieldSku)
 }
 
 // SetSplitPayRequiredPayments sets the SplitPayRequiredPayments field and marks it as non-optional;
@@ -2562,6 +2509,13 @@ func (p *PlanListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, planListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2592,30 +2546,30 @@ func (p *PlanListItem) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Billing model for this plan.
-type PlanListItemPlanType string
+// Billing model for this variant.
+type PlanListItemBillingType string
 
 const (
-	PlanListItemPlanTypeRenewal PlanListItemPlanType = "renewal"
-	PlanListItemPlanTypeOneTime PlanListItemPlanType = "one_time"
+	PlanListItemBillingTypeRenewal PlanListItemBillingType = "renewal"
+	PlanListItemBillingTypeOneTime PlanListItemBillingType = "one_time"
 )
 
-func NewPlanListItemPlanTypeFromString(s string) (PlanListItemPlanType, error) {
+func NewPlanListItemBillingTypeFromString(s string) (PlanListItemBillingType, error) {
 	switch s {
 	case "renewal":
-		return PlanListItemPlanTypeRenewal, nil
+		return PlanListItemBillingTypeRenewal, nil
 	case "one_time":
-		return PlanListItemPlanTypeOneTime, nil
+		return PlanListItemBillingTypeOneTime, nil
 	}
-	var t PlanListItemPlanType
+	var t PlanListItemBillingType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PlanListItemPlanType) Ptr() *PlanListItemPlanType {
+func (p PlanListItemBillingType) Ptr() *PlanListItemBillingType {
 	return &p
 }
 
-// Sales method for this plan.
+// Sales method for this variant.
 type PlanListItemReleaseMethod string
 
 const (
@@ -2638,20 +2592,23 @@ func (p PlanListItemReleaseMethod) Ptr() *PlanListItemReleaseMethod {
 	return &p
 }
 
-// 3D Secure behavior for this plan; `null` inherits the account default.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 type PlanListItemThreeDsLevel string
 
 const (
-	PlanListItemThreeDsLevelMandateChallenge PlanListItemThreeDsLevel = "mandate_challenge"
-	PlanListItemThreeDsLevelFrictionless     PlanListItemThreeDsLevel = "frictionless"
+	PlanListItemThreeDsLevelMandateChallenge       PlanListItemThreeDsLevel = "mandate_challenge"
+	PlanListItemThreeDsLevelMandateIfRequired      PlanListItemThreeDsLevel = "mandate_if_required"
+	PlanListItemThreeDsLevelFrictionlessIfRequired PlanListItemThreeDsLevel = "frictionless_if_required"
 )
 
 func NewPlanListItemThreeDsLevelFromString(s string) (PlanListItemThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return PlanListItemThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return PlanListItemThreeDsLevelFrictionless, nil
+	case "mandate_if_required":
+		return PlanListItemThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return PlanListItemThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t PlanListItemThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2661,7 +2618,7 @@ func (p PlanListItemThreeDsLevel) Ptr() *PlanListItemThreeDsLevel {
 	return &p
 }
 
-// Controls where this plan can be seen. When `hidden`, the plan is reachable only by its direct link.
+// Controls where this variant can be seen. When `hidden`, the variant is reachable only by its direct link.
 type PlanListItemVisibility string
 
 const (
@@ -2690,30 +2647,7 @@ func (p PlanListItemVisibility) Ptr() *PlanListItemVisibility {
 	return &p
 }
 
-// Billing model for this plan.
-type PlanPlanType string
-
-const (
-	PlanPlanTypeRenewal PlanPlanType = "renewal"
-	PlanPlanTypeOneTime PlanPlanType = "one_time"
-)
-
-func NewPlanPlanTypeFromString(s string) (PlanPlanType, error) {
-	switch s {
-	case "renewal":
-		return PlanPlanTypeRenewal, nil
-	case "one_time":
-		return PlanPlanTypeOneTime, nil
-	}
-	var t PlanPlanType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PlanPlanType) Ptr() *PlanPlanType {
-	return &p
-}
-
-// Sales method for this plan.
+// Sales method for this variant.
 type PlanReleaseMethod string
 
 const (
@@ -2736,7 +2670,7 @@ func (p PlanReleaseMethod) Ptr() *PlanReleaseMethod {
 	return &p
 }
 
-// How tax is handled for this plan, including whether tax is included in the price, added at checkout, or not configured.
+// How tax is handled for this variant, including whether tax is included in the price, added at checkout, or not configured.
 type PlanTaxType string
 
 const (
@@ -2762,20 +2696,23 @@ func (p PlanTaxType) Ptr() *PlanTaxType {
 	return &p
 }
 
-// 3D Secure behavior for this plan; `null` inherits the account default.
+// 3D Secure behavior for supported on-session card payments. `mandate_challenge` requires a 3DS challenge before payment processing; `mandate_if_required` mandates a challenge only when the payment processor requires it; `frictionless_if_required` uses the regular frictionless 3DS flow. Payments of $1,000 or more use `mandate_if_required` unless `mandate_challenge` is selected. Risk and authentication recovery requirements can override the preference. `null` inherits the account default.
 type PlanThreeDsLevel string
 
 const (
-	PlanThreeDsLevelMandateChallenge PlanThreeDsLevel = "mandate_challenge"
-	PlanThreeDsLevelFrictionless     PlanThreeDsLevel = "frictionless"
+	PlanThreeDsLevelMandateChallenge       PlanThreeDsLevel = "mandate_challenge"
+	PlanThreeDsLevelMandateIfRequired      PlanThreeDsLevel = "mandate_if_required"
+	PlanThreeDsLevelFrictionlessIfRequired PlanThreeDsLevel = "frictionless_if_required"
 )
 
 func NewPlanThreeDsLevelFromString(s string) (PlanThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return PlanThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return PlanThreeDsLevelFrictionless, nil
+	case "mandate_if_required":
+		return PlanThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return PlanThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t PlanThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2785,7 +2722,7 @@ func (p PlanThreeDsLevel) Ptr() *PlanThreeDsLevel {
 	return &p
 }
 
-// Controls where this plan can be seen. When `hidden`, the plan is reachable only by its direct link.
+// Controls where this variant can be seen. When `hidden`, the variant is reachable only by its direct link.
 type PlanVisibility string
 
 const (
@@ -2814,7 +2751,6 @@ func (p PlanVisibility) Ptr() *PlanVisibility {
 	return &p
 }
 
-// Buyer billing address used for tax calculation. Provide either `address.country` or `ip_address`; include state and postal code when available for more accurate results.
 var (
 	calculateTaxPlansRequestAddressFieldCity       = big.NewInt(1 << 0)
 	calculateTaxPlansRequestAddressFieldCountry    = big.NewInt(1 << 1)
@@ -2824,19 +2760,22 @@ var (
 	calculateTaxPlansRequestAddressFieldState      = big.NewInt(1 << 5)
 )
 
+// calculateTaxPlansRequestAddressNullableFields maps the wire names of CalculateTaxPlansRequestAddress's nullable fields (required or optional) to their field bits.
+var calculateTaxPlansRequestAddressNullableFields = map[string]*big.Int{
+	"city":        calculateTaxPlansRequestAddressFieldCity,
+	"line1":       calculateTaxPlansRequestAddressFieldLine1,
+	"line2":       calculateTaxPlansRequestAddressFieldLine2,
+	"postal_code": calculateTaxPlansRequestAddressFieldPostalCode,
+	"state":       calculateTaxPlansRequestAddressFieldState,
+}
+
 type CalculateTaxPlansRequestAddress struct {
-	// City name.
-	City *string `json:"city,omitempty" url:"city,omitempty"`
-	// ISO 3166-1 alpha-2 country code, such as `US`, `DE`, or `GB`.
-	Country string `json:"country" url:"country"`
-	// First line of the street address.
-	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
-	// Second line of the street address.
-	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
-	// Postal or ZIP code.
+	City       *string `json:"city,omitempty" url:"city,omitempty"`
+	Country    string  `json:"country" url:"country"`
+	Line1      *string `json:"line1,omitempty" url:"line1,omitempty"`
+	Line2      *string `json:"line2,omitempty" url:"line2,omitempty"`
 	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
-	// State, province, or region code, such as `CA`.
-	State *string `json:"state,omitempty" url:"state,omitempty"`
+	State      *string `json:"state,omitempty" url:"state,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2895,10 +2834,12 @@ func (c *CalculateTaxPlansRequestAddress) GetExtraProperties() map[string]interf
 }
 
 func (c *CalculateTaxPlansRequestAddress) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCity sets the City field and marks it as non-optional;
@@ -2955,6 +2896,13 @@ func (c *CalculateTaxPlansRequestAddress) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, calculateTaxPlansRequestAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2991,10 +2939,8 @@ var (
 )
 
 type CalculateTaxPlansRequestTaxIDsItem struct {
-	// Tax ID type, such as `eu_vat` for an EU VAT number.
-	Type *CalculateTaxPlansRequestTaxIDsItemType `json:"type,omitempty" url:"type,omitempty"`
-	// Tax ID value, for example `DE123456789`.
-	Value *string `json:"value,omitempty" url:"value,omitempty"`
+	Type  *CalculateTaxPlansRequestTaxIDsItemType `json:"type,omitempty" url:"type,omitempty"`
+	Value *string                                 `json:"value,omitempty" url:"value,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3025,10 +2971,12 @@ func (c *CalculateTaxPlansRequestTaxIDsItem) GetExtraProperties() map[string]int
 }
 
 func (c *CalculateTaxPlansRequestTaxIDsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -3087,7 +3035,6 @@ func (c *CalculateTaxPlansRequestTaxIDsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Tax ID type, such as `eu_vat` for an EU VAT number.
 type CalculateTaxPlansRequestTaxIDsItemType string
 
 const (
@@ -3447,18 +3394,12 @@ var (
 )
 
 type CalculateTaxPlansResponse struct {
-	// Three-letter ISO 4217 currency code for the returned amounts.
-	Currency string `json:"currency" url:"currency"`
-	// Whether Whop calculated tax for this preview. `not_calculated` means no tax could be determined, so `tax_amount` is 0 and `total` equals `subtotal`.
-	Status CalculateTaxPlansResponseStatus `json:"status" url:"status"`
-	// Plan price in the currency's smallest unit, for example cents. For exclusive tax, this is the pre-tax amount; for inclusive tax, it already includes tax and equals the total.
-	Subtotal int `json:"subtotal" url:"subtotal"`
-	// Calculated tax amount in the currency's smallest unit. For exclusive tax, this is added on top of the subtotal; for inclusive tax, it is the portion of the subtotal that is tax.
-	TaxAmount int `json:"tax_amount" url:"tax_amount"`
-	// Whether tax is added on top of the plan price or already included in it for this buyer's location.
+	Currency    string                               `json:"currency" url:"currency"`
+	Status      CalculateTaxPlansResponseStatus      `json:"status" url:"status"`
+	Subtotal    int                                  `json:"subtotal" url:"subtotal"`
+	TaxAmount   int                                  `json:"tax_amount" url:"tax_amount"`
 	TaxBehavior CalculateTaxPlansResponseTaxBehavior `json:"tax_behavior" url:"tax_behavior"`
-	// Amount the buyer would pay in the currency's smallest unit.
-	Total int `json:"total" url:"total"`
+	Total       int                                  `json:"total" url:"total"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3517,10 +3458,12 @@ func (c *CalculateTaxPlansResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (c *CalculateTaxPlansResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
@@ -3607,7 +3550,6 @@ func (c *CalculateTaxPlansResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Whether Whop calculated tax for this preview. `not_calculated` means no tax could be determined, so `tax_amount` is 0 and `total` equals `subtotal`.
 type CalculateTaxPlansResponseStatus string
 
 const (
@@ -3630,7 +3572,6 @@ func (c CalculateTaxPlansResponseStatus) Ptr() *CalculateTaxPlansResponseStatus 
 	return &c
 }
 
-// Whether tax is added on top of the plan price or already included in it for this buyer's location.
 type CalculateTaxPlansResponseTaxBehavior string
 
 const (
@@ -3662,19 +3603,18 @@ var (
 	createPlansRequestCustomFieldsItemFieldRequired    = big.NewInt(1 << 5)
 )
 
+// createPlansRequestCustomFieldsItemNullableFields maps the wire names of CreatePlansRequestCustomFieldsItem's nullable fields (required or optional) to their field bits.
+var createPlansRequestCustomFieldsItemNullableFields = map[string]*big.Int{
+	"placeholder": createPlansRequestCustomFieldsItemFieldPlaceholder,
+}
+
 type CreatePlansRequestCustomFieldsItem struct {
-	// The type of the custom field.
-	FieldType *CreatePlansRequestCustomFieldsItemFieldType `json:"field_type,omitempty" url:"field_type,omitempty"`
-	// The ID of the custom field (if being updated).
-	ID *string `json:"id,omitempty" url:"id,omitempty"`
-	// The name of the custom field.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The order of the field.
-	Order *int `json:"order,omitempty" url:"order,omitempty"`
-	// An example response displayed in the input field.
-	Placeholder *string `json:"placeholder,omitempty" url:"placeholder,omitempty"`
-	// Whether or not the field is required.
-	Required *bool `json:"required,omitempty" url:"required,omitempty"`
+	FieldType   *CreatePlansRequestCustomFieldsItemFieldType `json:"field_type,omitempty" url:"field_type,omitempty"`
+	ID          *string                                      `json:"id,omitempty" url:"id,omitempty"`
+	Name        *string                                      `json:"name,omitempty" url:"name,omitempty"`
+	Order       *int                                         `json:"order,omitempty" url:"order,omitempty"`
+	Placeholder *string                                      `json:"placeholder,omitempty" url:"placeholder,omitempty"`
+	Required    *bool                                        `json:"required,omitempty" url:"required,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3733,10 +3673,12 @@ func (c *CreatePlansRequestCustomFieldsItem) GetExtraProperties() map[string]int
 }
 
 func (c *CreatePlansRequestCustomFieldsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetFieldType sets the FieldType field and marks it as non-optional;
@@ -3793,6 +3735,13 @@ func (c *CreatePlansRequestCustomFieldsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPlansRequestCustomFieldsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3823,7 +3772,6 @@ func (c *CreatePlansRequestCustomFieldsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The type of the custom field.
 type CreatePlansRequestCustomFieldsItemFieldType string
 
 const (
@@ -3843,7 +3791,6 @@ func (c CreatePlansRequestCustomFieldsItemFieldType) Ptr() *CreatePlansRequestCu
 	return &c
 }
 
-// An image displayed on the product page to represent this plan.
 var (
 	createPlansRequestImageFieldDirectUploadID = big.NewInt(1 << 0)
 	createPlansRequestImageFieldID             = big.NewInt(1 << 1)
@@ -3882,10 +3829,12 @@ func (c *CreatePlansRequestImage) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CreatePlansRequestImage) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -3944,7 +3893,6 @@ func (c *CreatePlansRequestImage) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Explicit payment method configuration for the plan. When not provided, the account's defaults apply.
 var (
 	createPlansRequestPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	createPlansRequestPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
@@ -3952,9 +3900,9 @@ var (
 )
 
 type CreatePlansRequestPaymentMethodConfiguration struct {
-	Disabled                []string `json:"disabled,omitempty" url:"disabled,omitempty"`
-	Enabled                 []string `json:"enabled,omitempty" url:"enabled,omitempty"`
-	IncludePlatformDefaults *bool    `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
+	Disabled                []PaymentMethodTypes `json:"disabled,omitempty" url:"disabled,omitempty"`
+	Enabled                 []PaymentMethodTypes `json:"enabled,omitempty" url:"enabled,omitempty"`
+	IncludePlatformDefaults *bool                `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3963,14 +3911,14 @@ type CreatePlansRequestPaymentMethodConfiguration struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreatePlansRequestPaymentMethodConfiguration) GetDisabled() []string {
+func (c *CreatePlansRequestPaymentMethodConfiguration) GetDisabled() []PaymentMethodTypes {
 	if c == nil {
 		return nil
 	}
 	return c.Disabled
 }
 
-func (c *CreatePlansRequestPaymentMethodConfiguration) GetEnabled() []string {
+func (c *CreatePlansRequestPaymentMethodConfiguration) GetEnabled() []PaymentMethodTypes {
 	if c == nil {
 		return nil
 	}
@@ -3992,22 +3940,24 @@ func (c *CreatePlansRequestPaymentMethodConfiguration) GetExtraProperties() map[
 }
 
 func (c *CreatePlansRequestPaymentMethodConfiguration) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePlansRequestPaymentMethodConfiguration) SetDisabled(disabled []string) {
+func (c *CreatePlansRequestPaymentMethodConfiguration) SetDisabled(disabled []PaymentMethodTypes) {
 	c.Disabled = disabled
 	c.require(createPlansRequestPaymentMethodConfigurationFieldDisabled)
 }
 
 // SetEnabled sets the Enabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePlansRequestPaymentMethodConfiguration) SetEnabled(enabled []string) {
+func (c *CreatePlansRequestPaymentMethodConfiguration) SetEnabled(enabled []PaymentMethodTypes) {
 	c.Enabled = enabled
 	c.require(createPlansRequestPaymentMethodConfigurationFieldEnabled)
 }
@@ -4061,20 +4011,22 @@ func (c *CreatePlansRequestPaymentMethodConfiguration) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// 3D Secure behavior for this plan. Send `null` to inherit the account default.
 type CreatePlansRequestThreeDsLevel string
 
 const (
-	CreatePlansRequestThreeDsLevelMandateChallenge CreatePlansRequestThreeDsLevel = "mandate_challenge"
-	CreatePlansRequestThreeDsLevelFrictionless     CreatePlansRequestThreeDsLevel = "frictionless"
+	CreatePlansRequestThreeDsLevelMandateChallenge       CreatePlansRequestThreeDsLevel = "mandate_challenge"
+	CreatePlansRequestThreeDsLevelMandateIfRequired      CreatePlansRequestThreeDsLevel = "mandate_if_required"
+	CreatePlansRequestThreeDsLevelFrictionlessIfRequired CreatePlansRequestThreeDsLevel = "frictionless_if_required"
 )
 
 func NewCreatePlansRequestThreeDsLevelFromString(s string) (CreatePlansRequestThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return CreatePlansRequestThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return CreatePlansRequestThreeDsLevelFrictionless, nil
+	case "mandate_if_required":
+		return CreatePlansRequestThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return CreatePlansRequestThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t CreatePlansRequestThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -4090,10 +4042,8 @@ var (
 )
 
 type DeletePlansResponse struct {
-	// Always true.
-	Deleted bool `json:"deleted" url:"deleted"`
-	// ID of the deleted plan.
-	ID string `json:"id" url:"id"`
+	Deleted bool   `json:"deleted" url:"deleted"`
+	ID      string `json:"id" url:"id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4124,10 +4074,12 @@ func (d *DeletePlansResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeletePlansResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -4277,10 +4229,12 @@ func (l *ListPlansResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListPlansResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -4346,6 +4300,12 @@ var (
 	listPlansResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listPlansResponsePageInfoNullableFields maps the wire names of ListPlansResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listPlansResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listPlansResponsePageInfoFieldEndCursor,
+	"start_cursor": listPlansResponsePageInfoFieldStartCursor,
+}
+
 type ListPlansResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -4395,10 +4355,12 @@ func (l *ListPlansResponsePageInfo) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *ListPlansResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -4441,6 +4403,13 @@ func (l *ListPlansResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPlansResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4472,759 +4441,6 @@ func (l *ListPlansResponsePageInfo) String() string {
 }
 
 var (
-	postPlanCreatedPayloadFieldAccountID          = big.NewInt(1 << 0)
-	postPlanCreatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
-	postPlanCreatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
-	postPlanCreatedPayloadFieldData               = big.NewInt(1 << 3)
-	postPlanCreatedPayloadFieldID                 = big.NewInt(1 << 4)
-	postPlanCreatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
-	postPlanCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
-	postPlanCreatedPayloadFieldType               = big.NewInt(1 << 7)
-)
-
-type PostPlanCreatedPayload struct {
-	// The account ID that this webhook event is associated with
-	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// The API version for this webhook
-	APIVersion PostPlanCreatedPayloadAPIVersion `json:"api_version" url:"api_version"`
-	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *Plan   `json:"data" url:"data"`
-	// A unique ID for every single webhook request
-	ID string `json:"id" url:"id"`
-	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
-	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
-	// The timestamp in ISO 8601 format that the webhook was sent at on the server
-	Timestamp time.Time `json:"timestamp" url:"timestamp"`
-	// The webhook event type
-	Type PostPlanCreatedPayloadType `json:"type" url:"type"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostPlanCreatedPayload) GetAccountID() *string {
-	if p == nil {
-		return nil
-	}
-	return p.AccountID
-}
-
-func (p *PostPlanCreatedPayload) GetAPIVersion() PostPlanCreatedPayloadAPIVersion {
-	if p == nil {
-		return ""
-	}
-	return p.APIVersion
-}
-
-func (p *PostPlanCreatedPayload) GetAPIVersionDate() *string {
-	if p == nil {
-		return nil
-	}
-	return p.APIVersionDate
-}
-
-func (p *PostPlanCreatedPayload) GetData() *Plan {
-	if p == nil {
-		return nil
-	}
-	return p.Data
-}
-
-func (p *PostPlanCreatedPayload) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostPlanCreatedPayload) GetPreviousAttributes() map[string]any {
-	if p == nil {
-		return nil
-	}
-	return p.PreviousAttributes
-}
-
-func (p *PostPlanCreatedPayload) GetTimestamp() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.Timestamp
-}
-
-func (p *PostPlanCreatedPayload) GetType() PostPlanCreatedPayloadType {
-	if p == nil {
-		return ""
-	}
-	return p.Type
-}
-
-func (p *PostPlanCreatedPayload) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostPlanCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanCreatedPayload) SetAccountID(accountID *string) {
-	p.AccountID = accountID
-	p.require(postPlanCreatedPayloadFieldAccountID)
-}
-
-// SetAPIVersion sets the APIVersion field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanCreatedPayload) SetAPIVersion(apiVersion PostPlanCreatedPayloadAPIVersion) {
-	p.APIVersion = apiVersion
-	p.require(postPlanCreatedPayloadFieldAPIVersion)
-}
-
-// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanCreatedPayload) SetAPIVersionDate(apiVersionDate *string) {
-	p.APIVersionDate = apiVersionDate
-	p.require(postPlanCreatedPayloadFieldAPIVersionDate)
-}
-
-// SetData sets the Data field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanCreatedPayload) SetData(data *Plan) {
-	p.Data = data
-	p.require(postPlanCreatedPayloadFieldData)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanCreatedPayload) SetID(id string) {
-	p.ID = id
-	p.require(postPlanCreatedPayloadFieldID)
-}
-
-// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanCreatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
-	p.PreviousAttributes = previousAttributes
-	p.require(postPlanCreatedPayloadFieldPreviousAttributes)
-}
-
-// SetTimestamp sets the Timestamp field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanCreatedPayload) SetTimestamp(timestamp time.Time) {
-	p.Timestamp = timestamp
-	p.require(postPlanCreatedPayloadFieldTimestamp)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanCreatedPayload) SetType(type_ PostPlanCreatedPayloadType) {
-	p.Type = type_
-	p.require(postPlanCreatedPayloadFieldType)
-}
-
-func (p *PostPlanCreatedPayload) UnmarshalJSON(data []byte) error {
-	type embed PostPlanCreatedPayload
-	var unmarshaler = struct {
-		embed
-		Timestamp *internal.DateTime `json:"timestamp"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PostPlanCreatedPayload(unmarshaler.embed)
-	p.Timestamp = unmarshaler.Timestamp.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostPlanCreatedPayload) MarshalJSON() ([]byte, error) {
-	type embed PostPlanCreatedPayload
-	var marshaler = struct {
-		embed
-		Timestamp *internal.DateTime `json:"timestamp"`
-	}{
-		embed:     embed(*p),
-		Timestamp: internal.NewDateTime(p.Timestamp),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostPlanCreatedPayload) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The API version for this webhook
-type PostPlanCreatedPayloadAPIVersion string
-
-const (
-	PostPlanCreatedPayloadAPIVersionV1 PostPlanCreatedPayloadAPIVersion = "v1"
-)
-
-func NewPostPlanCreatedPayloadAPIVersionFromString(s string) (PostPlanCreatedPayloadAPIVersion, error) {
-	switch s {
-	case "v1":
-		return PostPlanCreatedPayloadAPIVersionV1, nil
-	}
-	var t PostPlanCreatedPayloadAPIVersion
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostPlanCreatedPayloadAPIVersion) Ptr() *PostPlanCreatedPayloadAPIVersion {
-	return &p
-}
-
-// The webhook event type
-type PostPlanCreatedPayloadType string
-
-const (
-	PostPlanCreatedPayloadTypePlanCreated PostPlanCreatedPayloadType = "plan.created"
-)
-
-func NewPostPlanCreatedPayloadTypeFromString(s string) (PostPlanCreatedPayloadType, error) {
-	switch s {
-	case "plan.created":
-		return PostPlanCreatedPayloadTypePlanCreated, nil
-	}
-	var t PostPlanCreatedPayloadType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostPlanCreatedPayloadType) Ptr() *PostPlanCreatedPayloadType {
-	return &p
-}
-
-var (
-	postPlanDeletedPayloadFieldAccountID          = big.NewInt(1 << 0)
-	postPlanDeletedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
-	postPlanDeletedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
-	postPlanDeletedPayloadFieldData               = big.NewInt(1 << 3)
-	postPlanDeletedPayloadFieldID                 = big.NewInt(1 << 4)
-	postPlanDeletedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
-	postPlanDeletedPayloadFieldTimestamp          = big.NewInt(1 << 6)
-	postPlanDeletedPayloadFieldType               = big.NewInt(1 << 7)
-)
-
-type PostPlanDeletedPayload struct {
-	// The account ID that this webhook event is associated with
-	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// The API version for this webhook
-	APIVersion PostPlanDeletedPayloadAPIVersion `json:"api_version" url:"api_version"`
-	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *Plan   `json:"data" url:"data"`
-	// A unique ID for every single webhook request
-	ID string `json:"id" url:"id"`
-	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
-	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
-	// The timestamp in ISO 8601 format that the webhook was sent at on the server
-	Timestamp time.Time `json:"timestamp" url:"timestamp"`
-	// The webhook event type
-	Type PostPlanDeletedPayloadType `json:"type" url:"type"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostPlanDeletedPayload) GetAccountID() *string {
-	if p == nil {
-		return nil
-	}
-	return p.AccountID
-}
-
-func (p *PostPlanDeletedPayload) GetAPIVersion() PostPlanDeletedPayloadAPIVersion {
-	if p == nil {
-		return ""
-	}
-	return p.APIVersion
-}
-
-func (p *PostPlanDeletedPayload) GetAPIVersionDate() *string {
-	if p == nil {
-		return nil
-	}
-	return p.APIVersionDate
-}
-
-func (p *PostPlanDeletedPayload) GetData() *Plan {
-	if p == nil {
-		return nil
-	}
-	return p.Data
-}
-
-func (p *PostPlanDeletedPayload) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostPlanDeletedPayload) GetPreviousAttributes() map[string]any {
-	if p == nil {
-		return nil
-	}
-	return p.PreviousAttributes
-}
-
-func (p *PostPlanDeletedPayload) GetTimestamp() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.Timestamp
-}
-
-func (p *PostPlanDeletedPayload) GetType() PostPlanDeletedPayloadType {
-	if p == nil {
-		return ""
-	}
-	return p.Type
-}
-
-func (p *PostPlanDeletedPayload) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostPlanDeletedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanDeletedPayload) SetAccountID(accountID *string) {
-	p.AccountID = accountID
-	p.require(postPlanDeletedPayloadFieldAccountID)
-}
-
-// SetAPIVersion sets the APIVersion field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanDeletedPayload) SetAPIVersion(apiVersion PostPlanDeletedPayloadAPIVersion) {
-	p.APIVersion = apiVersion
-	p.require(postPlanDeletedPayloadFieldAPIVersion)
-}
-
-// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanDeletedPayload) SetAPIVersionDate(apiVersionDate *string) {
-	p.APIVersionDate = apiVersionDate
-	p.require(postPlanDeletedPayloadFieldAPIVersionDate)
-}
-
-// SetData sets the Data field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanDeletedPayload) SetData(data *Plan) {
-	p.Data = data
-	p.require(postPlanDeletedPayloadFieldData)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanDeletedPayload) SetID(id string) {
-	p.ID = id
-	p.require(postPlanDeletedPayloadFieldID)
-}
-
-// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanDeletedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
-	p.PreviousAttributes = previousAttributes
-	p.require(postPlanDeletedPayloadFieldPreviousAttributes)
-}
-
-// SetTimestamp sets the Timestamp field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanDeletedPayload) SetTimestamp(timestamp time.Time) {
-	p.Timestamp = timestamp
-	p.require(postPlanDeletedPayloadFieldTimestamp)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanDeletedPayload) SetType(type_ PostPlanDeletedPayloadType) {
-	p.Type = type_
-	p.require(postPlanDeletedPayloadFieldType)
-}
-
-func (p *PostPlanDeletedPayload) UnmarshalJSON(data []byte) error {
-	type embed PostPlanDeletedPayload
-	var unmarshaler = struct {
-		embed
-		Timestamp *internal.DateTime `json:"timestamp"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PostPlanDeletedPayload(unmarshaler.embed)
-	p.Timestamp = unmarshaler.Timestamp.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostPlanDeletedPayload) MarshalJSON() ([]byte, error) {
-	type embed PostPlanDeletedPayload
-	var marshaler = struct {
-		embed
-		Timestamp *internal.DateTime `json:"timestamp"`
-	}{
-		embed:     embed(*p),
-		Timestamp: internal.NewDateTime(p.Timestamp),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostPlanDeletedPayload) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The API version for this webhook
-type PostPlanDeletedPayloadAPIVersion string
-
-const (
-	PostPlanDeletedPayloadAPIVersionV1 PostPlanDeletedPayloadAPIVersion = "v1"
-)
-
-func NewPostPlanDeletedPayloadAPIVersionFromString(s string) (PostPlanDeletedPayloadAPIVersion, error) {
-	switch s {
-	case "v1":
-		return PostPlanDeletedPayloadAPIVersionV1, nil
-	}
-	var t PostPlanDeletedPayloadAPIVersion
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostPlanDeletedPayloadAPIVersion) Ptr() *PostPlanDeletedPayloadAPIVersion {
-	return &p
-}
-
-// The webhook event type
-type PostPlanDeletedPayloadType string
-
-const (
-	PostPlanDeletedPayloadTypePlanDeleted PostPlanDeletedPayloadType = "plan.deleted"
-)
-
-func NewPostPlanDeletedPayloadTypeFromString(s string) (PostPlanDeletedPayloadType, error) {
-	switch s {
-	case "plan.deleted":
-		return PostPlanDeletedPayloadTypePlanDeleted, nil
-	}
-	var t PostPlanDeletedPayloadType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostPlanDeletedPayloadType) Ptr() *PostPlanDeletedPayloadType {
-	return &p
-}
-
-var (
-	postPlanUpdatedPayloadFieldAccountID          = big.NewInt(1 << 0)
-	postPlanUpdatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
-	postPlanUpdatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
-	postPlanUpdatedPayloadFieldData               = big.NewInt(1 << 3)
-	postPlanUpdatedPayloadFieldID                 = big.NewInt(1 << 4)
-	postPlanUpdatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
-	postPlanUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
-	postPlanUpdatedPayloadFieldType               = big.NewInt(1 << 7)
-)
-
-type PostPlanUpdatedPayload struct {
-	// The account ID that this webhook event is associated with
-	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// The API version for this webhook
-	APIVersion PostPlanUpdatedPayloadAPIVersion `json:"api_version" url:"api_version"`
-	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *Plan   `json:"data" url:"data"`
-	// A unique ID for every single webhook request
-	ID string `json:"id" url:"id"`
-	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
-	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
-	// The timestamp in ISO 8601 format that the webhook was sent at on the server
-	Timestamp time.Time `json:"timestamp" url:"timestamp"`
-	// The webhook event type
-	Type PostPlanUpdatedPayloadType `json:"type" url:"type"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostPlanUpdatedPayload) GetAccountID() *string {
-	if p == nil {
-		return nil
-	}
-	return p.AccountID
-}
-
-func (p *PostPlanUpdatedPayload) GetAPIVersion() PostPlanUpdatedPayloadAPIVersion {
-	if p == nil {
-		return ""
-	}
-	return p.APIVersion
-}
-
-func (p *PostPlanUpdatedPayload) GetAPIVersionDate() *string {
-	if p == nil {
-		return nil
-	}
-	return p.APIVersionDate
-}
-
-func (p *PostPlanUpdatedPayload) GetData() *Plan {
-	if p == nil {
-		return nil
-	}
-	return p.Data
-}
-
-func (p *PostPlanUpdatedPayload) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostPlanUpdatedPayload) GetPreviousAttributes() map[string]any {
-	if p == nil {
-		return nil
-	}
-	return p.PreviousAttributes
-}
-
-func (p *PostPlanUpdatedPayload) GetTimestamp() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.Timestamp
-}
-
-func (p *PostPlanUpdatedPayload) GetType() PostPlanUpdatedPayloadType {
-	if p == nil {
-		return ""
-	}
-	return p.Type
-}
-
-func (p *PostPlanUpdatedPayload) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostPlanUpdatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanUpdatedPayload) SetAccountID(accountID *string) {
-	p.AccountID = accountID
-	p.require(postPlanUpdatedPayloadFieldAccountID)
-}
-
-// SetAPIVersion sets the APIVersion field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanUpdatedPayload) SetAPIVersion(apiVersion PostPlanUpdatedPayloadAPIVersion) {
-	p.APIVersion = apiVersion
-	p.require(postPlanUpdatedPayloadFieldAPIVersion)
-}
-
-// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanUpdatedPayload) SetAPIVersionDate(apiVersionDate *string) {
-	p.APIVersionDate = apiVersionDate
-	p.require(postPlanUpdatedPayloadFieldAPIVersionDate)
-}
-
-// SetData sets the Data field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanUpdatedPayload) SetData(data *Plan) {
-	p.Data = data
-	p.require(postPlanUpdatedPayloadFieldData)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanUpdatedPayload) SetID(id string) {
-	p.ID = id
-	p.require(postPlanUpdatedPayloadFieldID)
-}
-
-// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanUpdatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
-	p.PreviousAttributes = previousAttributes
-	p.require(postPlanUpdatedPayloadFieldPreviousAttributes)
-}
-
-// SetTimestamp sets the Timestamp field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanUpdatedPayload) SetTimestamp(timestamp time.Time) {
-	p.Timestamp = timestamp
-	p.require(postPlanUpdatedPayloadFieldTimestamp)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostPlanUpdatedPayload) SetType(type_ PostPlanUpdatedPayloadType) {
-	p.Type = type_
-	p.require(postPlanUpdatedPayloadFieldType)
-}
-
-func (p *PostPlanUpdatedPayload) UnmarshalJSON(data []byte) error {
-	type embed PostPlanUpdatedPayload
-	var unmarshaler = struct {
-		embed
-		Timestamp *internal.DateTime `json:"timestamp"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PostPlanUpdatedPayload(unmarshaler.embed)
-	p.Timestamp = unmarshaler.Timestamp.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostPlanUpdatedPayload) MarshalJSON() ([]byte, error) {
-	type embed PostPlanUpdatedPayload
-	var marshaler = struct {
-		embed
-		Timestamp *internal.DateTime `json:"timestamp"`
-	}{
-		embed:     embed(*p),
-		Timestamp: internal.NewDateTime(p.Timestamp),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostPlanUpdatedPayload) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The API version for this webhook
-type PostPlanUpdatedPayloadAPIVersion string
-
-const (
-	PostPlanUpdatedPayloadAPIVersionV1 PostPlanUpdatedPayloadAPIVersion = "v1"
-)
-
-func NewPostPlanUpdatedPayloadAPIVersionFromString(s string) (PostPlanUpdatedPayloadAPIVersion, error) {
-	switch s {
-	case "v1":
-		return PostPlanUpdatedPayloadAPIVersionV1, nil
-	}
-	var t PostPlanUpdatedPayloadAPIVersion
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostPlanUpdatedPayloadAPIVersion) Ptr() *PostPlanUpdatedPayloadAPIVersion {
-	return &p
-}
-
-// The webhook event type
-type PostPlanUpdatedPayloadType string
-
-const (
-	PostPlanUpdatedPayloadTypePlanUpdated PostPlanUpdatedPayloadType = "plan.updated"
-)
-
-func NewPostPlanUpdatedPayloadTypeFromString(s string) (PostPlanUpdatedPayloadType, error) {
-	switch s {
-	case "plan.updated":
-		return PostPlanUpdatedPayloadTypePlanUpdated, nil
-	}
-	var t PostPlanUpdatedPayloadType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostPlanUpdatedPayloadType) Ptr() *PostPlanUpdatedPayloadType {
-	return &p
-}
-
-var (
 	updatePlansRequestCustomFieldsItemFieldFieldType   = big.NewInt(1 << 0)
 	updatePlansRequestCustomFieldsItemFieldID          = big.NewInt(1 << 1)
 	updatePlansRequestCustomFieldsItemFieldName        = big.NewInt(1 << 2)
@@ -5233,19 +4449,18 @@ var (
 	updatePlansRequestCustomFieldsItemFieldRequired    = big.NewInt(1 << 5)
 )
 
+// updatePlansRequestCustomFieldsItemNullableFields maps the wire names of UpdatePlansRequestCustomFieldsItem's nullable fields (required or optional) to their field bits.
+var updatePlansRequestCustomFieldsItemNullableFields = map[string]*big.Int{
+	"placeholder": updatePlansRequestCustomFieldsItemFieldPlaceholder,
+}
+
 type UpdatePlansRequestCustomFieldsItem struct {
-	// The type of the custom field.
-	FieldType *UpdatePlansRequestCustomFieldsItemFieldType `json:"field_type,omitempty" url:"field_type,omitempty"`
-	// The ID of the custom field (if being updated).
-	ID *string `json:"id,omitempty" url:"id,omitempty"`
-	// The name of the custom field.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The order of the field.
-	Order *int `json:"order,omitempty" url:"order,omitempty"`
-	// An example response displayed in the input field.
-	Placeholder *string `json:"placeholder,omitempty" url:"placeholder,omitempty"`
-	// Whether or not the field is required.
-	Required *bool `json:"required,omitempty" url:"required,omitempty"`
+	FieldType   *UpdatePlansRequestCustomFieldsItemFieldType `json:"field_type,omitempty" url:"field_type,omitempty"`
+	ID          *string                                      `json:"id,omitempty" url:"id,omitempty"`
+	Name        *string                                      `json:"name,omitempty" url:"name,omitempty"`
+	Order       *int                                         `json:"order,omitempty" url:"order,omitempty"`
+	Placeholder *string                                      `json:"placeholder,omitempty" url:"placeholder,omitempty"`
+	Required    *bool                                        `json:"required,omitempty" url:"required,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -5304,10 +4519,12 @@ func (u *UpdatePlansRequestCustomFieldsItem) GetExtraProperties() map[string]int
 }
 
 func (u *UpdatePlansRequestCustomFieldsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFieldType sets the FieldType field and marks it as non-optional;
@@ -5364,6 +4581,13 @@ func (u *UpdatePlansRequestCustomFieldsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePlansRequestCustomFieldsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5394,7 +4618,6 @@ func (u *UpdatePlansRequestCustomFieldsItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The type of the custom field.
 type UpdatePlansRequestCustomFieldsItemFieldType string
 
 const (
@@ -5414,7 +4637,6 @@ func (u UpdatePlansRequestCustomFieldsItemFieldType) Ptr() *UpdatePlansRequestCu
 	return &u
 }
 
-// An image displayed on the product page to represent this plan.
 var (
 	updatePlansRequestImageFieldDirectUploadID = big.NewInt(1 << 0)
 	updatePlansRequestImageFieldID             = big.NewInt(1 << 1)
@@ -5453,10 +4675,12 @@ func (u *UpdatePlansRequestImage) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UpdatePlansRequestImage) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -5515,7 +4739,6 @@ func (u *UpdatePlansRequestImage) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Explicit payment method configuration for the plan. When not provided, the account's defaults apply.
 var (
 	updatePlansRequestPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
 	updatePlansRequestPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
@@ -5523,9 +4746,9 @@ var (
 )
 
 type UpdatePlansRequestPaymentMethodConfiguration struct {
-	Disabled                []string `json:"disabled,omitempty" url:"disabled,omitempty"`
-	Enabled                 []string `json:"enabled,omitempty" url:"enabled,omitempty"`
-	IncludePlatformDefaults *bool    `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
+	Disabled                []PaymentMethodTypes `json:"disabled,omitempty" url:"disabled,omitempty"`
+	Enabled                 []PaymentMethodTypes `json:"enabled,omitempty" url:"enabled,omitempty"`
+	IncludePlatformDefaults *bool                `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -5534,14 +4757,14 @@ type UpdatePlansRequestPaymentMethodConfiguration struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UpdatePlansRequestPaymentMethodConfiguration) GetDisabled() []string {
+func (u *UpdatePlansRequestPaymentMethodConfiguration) GetDisabled() []PaymentMethodTypes {
 	if u == nil {
 		return nil
 	}
 	return u.Disabled
 }
 
-func (u *UpdatePlansRequestPaymentMethodConfiguration) GetEnabled() []string {
+func (u *UpdatePlansRequestPaymentMethodConfiguration) GetEnabled() []PaymentMethodTypes {
 	if u == nil {
 		return nil
 	}
@@ -5563,22 +4786,24 @@ func (u *UpdatePlansRequestPaymentMethodConfiguration) GetExtraProperties() map[
 }
 
 func (u *UpdatePlansRequestPaymentMethodConfiguration) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDisabled sets the Disabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdatePlansRequestPaymentMethodConfiguration) SetDisabled(disabled []string) {
+func (u *UpdatePlansRequestPaymentMethodConfiguration) SetDisabled(disabled []PaymentMethodTypes) {
 	u.Disabled = disabled
 	u.require(updatePlansRequestPaymentMethodConfigurationFieldDisabled)
 }
 
 // SetEnabled sets the Enabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdatePlansRequestPaymentMethodConfiguration) SetEnabled(enabled []string) {
+func (u *UpdatePlansRequestPaymentMethodConfiguration) SetEnabled(enabled []PaymentMethodTypes) {
 	u.Enabled = enabled
 	u.require(updatePlansRequestPaymentMethodConfigurationFieldEnabled)
 }
@@ -5632,20 +4857,22 @@ func (u *UpdatePlansRequestPaymentMethodConfiguration) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// 3D Secure behavior for this plan. Send `null` to inherit the account default.
 type UpdatePlansRequestThreeDsLevel string
 
 const (
-	UpdatePlansRequestThreeDsLevelMandateChallenge UpdatePlansRequestThreeDsLevel = "mandate_challenge"
-	UpdatePlansRequestThreeDsLevelFrictionless     UpdatePlansRequestThreeDsLevel = "frictionless"
+	UpdatePlansRequestThreeDsLevelMandateChallenge       UpdatePlansRequestThreeDsLevel = "mandate_challenge"
+	UpdatePlansRequestThreeDsLevelMandateIfRequired      UpdatePlansRequestThreeDsLevel = "mandate_if_required"
+	UpdatePlansRequestThreeDsLevelFrictionlessIfRequired UpdatePlansRequestThreeDsLevel = "frictionless_if_required"
 )
 
 func NewUpdatePlansRequestThreeDsLevelFromString(s string) (UpdatePlansRequestThreeDsLevel, error) {
 	switch s {
 	case "mandate_challenge":
 		return UpdatePlansRequestThreeDsLevelMandateChallenge, nil
-	case "frictionless":
-		return UpdatePlansRequestThreeDsLevelFrictionless, nil
+	case "mandate_if_required":
+		return UpdatePlansRequestThreeDsLevelMandateIfRequired, nil
+	case "frictionless_if_required":
+		return UpdatePlansRequestThreeDsLevelFrictionlessIfRequired, nil
 	}
 	var t UpdatePlansRequestThreeDsLevel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -5658,98 +4885,82 @@ func (u UpdatePlansRequestThreeDsLevel) Ptr() *UpdatePlansRequestThreeDsLevel {
 var (
 	updatePlansRequestFieldID                         = big.NewInt(1 << 0)
 	updatePlansRequestFieldAdaptivePricingEnabled     = big.NewInt(1 << 1)
-	updatePlansRequestFieldBillingPeriod              = big.NewInt(1 << 2)
-	updatePlansRequestFieldCancelDiscountIntervals    = big.NewInt(1 << 3)
-	updatePlansRequestFieldCancelDiscountPercentage   = big.NewInt(1 << 4)
-	updatePlansRequestFieldCheckoutStyling            = big.NewInt(1 << 5)
-	updatePlansRequestFieldCurrency                   = big.NewInt(1 << 6)
-	updatePlansRequestFieldCustomFields               = big.NewInt(1 << 7)
-	updatePlansRequestFieldDescription                = big.NewInt(1 << 8)
-	updatePlansRequestFieldExpirationDays             = big.NewInt(1 << 9)
-	updatePlansRequestFieldImage                      = big.NewInt(1 << 10)
-	updatePlansRequestFieldInitialPrice               = big.NewInt(1 << 11)
-	updatePlansRequestFieldInternalNotes              = big.NewInt(1 << 12)
-	updatePlansRequestFieldMetadata                   = big.NewInt(1 << 13)
-	updatePlansRequestFieldOfferCancelDiscount        = big.NewInt(1 << 14)
-	updatePlansRequestFieldOverrideTaxType            = big.NewInt(1 << 15)
-	updatePlansRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 16)
-	updatePlansRequestFieldReleaseMethod              = big.NewInt(1 << 17)
-	updatePlansRequestFieldRenewalPrice               = big.NewInt(1 << 18)
-	updatePlansRequestFieldStock                      = big.NewInt(1 << 19)
-	updatePlansRequestFieldStrikeThroughInitialPrice  = big.NewInt(1 << 20)
-	updatePlansRequestFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 21)
-	updatePlansRequestFieldThreeDsLevel               = big.NewInt(1 << 22)
-	updatePlansRequestFieldTitle                      = big.NewInt(1 << 23)
-	updatePlansRequestFieldTrialPeriodDays            = big.NewInt(1 << 24)
-	updatePlansRequestFieldUnlimitedStock             = big.NewInt(1 << 25)
-	updatePlansRequestFieldVisibility                 = big.NewInt(1 << 26)
+	updatePlansRequestFieldAllowMultipleQuantity      = big.NewInt(1 << 2)
+	updatePlansRequestFieldAttributes                 = big.NewInt(1 << 3)
+	updatePlansRequestFieldBillingPeriod              = big.NewInt(1 << 4)
+	updatePlansRequestFieldCancelDiscountIntervals    = big.NewInt(1 << 5)
+	updatePlansRequestFieldCancelDiscountPercentage   = big.NewInt(1 << 6)
+	updatePlansRequestFieldCheckoutStyling            = big.NewInt(1 << 7)
+	updatePlansRequestFieldCurrency                   = big.NewInt(1 << 8)
+	updatePlansRequestFieldCustomFields               = big.NewInt(1 << 9)
+	updatePlansRequestFieldDescription                = big.NewInt(1 << 10)
+	updatePlansRequestFieldExpirationDays             = big.NewInt(1 << 11)
+	updatePlansRequestFieldImage                      = big.NewInt(1 << 12)
+	updatePlansRequestFieldInitialPrice               = big.NewInt(1 << 13)
+	updatePlansRequestFieldInternalNotes              = big.NewInt(1 << 14)
+	updatePlansRequestFieldMetadata                   = big.NewInt(1 << 15)
+	updatePlansRequestFieldOfferCancelDiscount        = big.NewInt(1 << 16)
+	updatePlansRequestFieldOverrideTaxType            = big.NewInt(1 << 17)
+	updatePlansRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 18)
+	updatePlansRequestFieldReleaseMethod              = big.NewInt(1 << 19)
+	updatePlansRequestFieldRenewalPrice               = big.NewInt(1 << 20)
+	updatePlansRequestFieldSku                        = big.NewInt(1 << 21)
+	updatePlansRequestFieldSplitPayRequiredPayments   = big.NewInt(1 << 22)
+	updatePlansRequestFieldStock                      = big.NewInt(1 << 23)
+	updatePlansRequestFieldStrikeThroughInitialPrice  = big.NewInt(1 << 24)
+	updatePlansRequestFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 25)
+	updatePlansRequestFieldThreeDsLevel               = big.NewInt(1 << 26)
+	updatePlansRequestFieldTitle                      = big.NewInt(1 << 27)
+	updatePlansRequestFieldTrialPeriodDays            = big.NewInt(1 << 28)
+	updatePlansRequestFieldUnlimitedStock             = big.NewInt(1 << 29)
+	updatePlansRequestFieldVisibility                 = big.NewInt(1 << 30)
 )
 
 type UpdatePlansRequest struct {
-	// Plan ID, prefixed `plan_`.
-	ID string `json:"-" url:"-"`
-	// Whether this plan accepts local currency payments via adaptive pricing.
-	AdaptivePricingEnabled *bool `json:"adaptive_pricing_enabled,omitempty" url:"-"`
-	// Recurring billing interval in days, such as 30 for monthly or 365 for annual.
-	BillingPeriod *int `json:"billing_period,omitempty" url:"-"`
-	// How many renewals the retention discount applies to. Required when `offer_cancel_discount` is true.
-	CancelDiscountIntervals *int `json:"cancel_discount_intervals,omitempty" url:"-"`
-	// Percentage taken off each discounted renewal. Required when `offer_cancel_discount` is true.
-	CancelDiscountPercentage *int `json:"cancel_discount_percentage,omitempty" url:"-"`
-	// Checkout styling overrides for this plan.
-	CheckoutStyling map[string]any `json:"checkout_styling,omitempty" url:"-"`
-	// The three-letter ISO currency code for the plan's pricing. Defaults to USD.
-	Currency *string `json:"currency,omitempty" url:"-"`
-	// An array of custom field definitions to collect from customers at checkout. Omitting this field clears existing custom fields.
-	CustomFields []*UpdatePlansRequestCustomFieldsItem `json:"custom_fields,omitempty" url:"-"`
-	// A text description of the plan displayed to customers on the product page.
-	Description *string `json:"description,omitempty" url:"-"`
-	// Access duration in days before the membership expires.
-	ExpirationDays *int `json:"expiration_days,omitempty" url:"-"`
-	// An image displayed on the product page to represent this plan.
-	Image *UpdatePlansRequestImage `json:"image,omitempty" url:"-"`
-	// Initial amount charged in the plan's currency, e.g. 10.43 for $10.43.
-	InitialPrice *float64 `json:"initial_price,omitempty" url:"-"`
-	// Private notes visible only to the account owner. Not shown to customers.
-	InternalNotes *string `json:"internal_notes,omitempty" url:"-"`
-	// Custom key-value pairs to store on the plan. Included in webhook payloads for payment and membership events. Max 50 keys, 100 chars per key, 500 chars per string value. The reserved keys `custom_cta` (a checkout call-to-action button label — one of the product custom CTA values, e.g. `subscribe`, `get_offer`) and `custom_cta_url` (a URL the button links to; web or `tel:`) override the product's call to action for this plan and are validated on save.
-	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
-	// Whether to offer a retention discount when a customer attempts to cancel.
-	OfferCancelDiscount *bool `json:"offer_cancel_discount,omitempty" url:"-"`
-	// Override the default tax classification for this specific plan.
-	OverrideTaxType *string `json:"override_tax_type,omitempty" url:"-"`
-	// Explicit payment method configuration for the plan. When not provided, the account's defaults apply.
+	// Variant ID, prefixed `plan_`.
+	ID                         string                                        `json:"-" url:"-"`
+	AdaptivePricingEnabled     *bool                                         `json:"adaptive_pricing_enabled,omitempty" url:"-"`
+	AllowMultipleQuantity      *bool                                         `json:"allow_multiple_quantity,omitempty" url:"-"`
+	Attributes                 map[string]any                                `json:"attributes,omitempty" url:"-"`
+	BillingPeriod              *int                                          `json:"billing_period,omitempty" url:"-"`
+	CancelDiscountIntervals    *int                                          `json:"cancel_discount_intervals,omitempty" url:"-"`
+	CancelDiscountPercentage   *int                                          `json:"cancel_discount_percentage,omitempty" url:"-"`
+	CheckoutStyling            map[string]any                                `json:"checkout_styling,omitempty" url:"-"`
+	Currency                   *string                                       `json:"currency,omitempty" url:"-"`
+	CustomFields               []*UpdatePlansRequestCustomFieldsItem         `json:"custom_fields,omitempty" url:"-"`
+	Description                *string                                       `json:"description,omitempty" url:"-"`
+	ExpirationDays             *int                                          `json:"expiration_days,omitempty" url:"-"`
+	Image                      *UpdatePlansRequestImage                      `json:"image,omitempty" url:"-"`
+	InitialPrice               *float64                                      `json:"initial_price,omitempty" url:"-"`
+	InternalNotes              *string                                       `json:"internal_notes,omitempty" url:"-"`
+	Metadata                   map[string]any                                `json:"metadata,omitempty" url:"-"`
+	OfferCancelDiscount        *bool                                         `json:"offer_cancel_discount,omitempty" url:"-"`
+	OverrideTaxType            *string                                       `json:"override_tax_type,omitempty" url:"-"`
 	PaymentMethodConfiguration *UpdatePlansRequestPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"-"`
-	// Sales method for this plan.
-	ReleaseMethod *string `json:"release_method,omitempty" url:"-"`
-	// The amount charged each billing period for recurring plans, in the plan's currency.
-	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"-"`
-	// The maximum number of units available for purchase. Ignored when unlimited_stock is true.
-	Stock *int `json:"stock,omitempty" url:"-"`
-	// A comparison price displayed with a strikethrough for the initial price.
-	StrikeThroughInitialPrice *float64 `json:"strike_through_initial_price,omitempty" url:"-"`
-	// A comparison price displayed with a strikethrough for the renewal price.
-	StrikeThroughRenewalPrice *float64 `json:"strike_through_renewal_price,omitempty" url:"-"`
-	// 3D Secure behavior for this plan. Send `null` to inherit the account default.
-	ThreeDsLevel *UpdatePlansRequestThreeDsLevel `json:"three_ds_level,omitempty" url:"-"`
-	// The display name of the plan shown to customers on the product page.
-	Title *string `json:"title,omitempty" url:"-"`
-	// Free trial duration before the first recurring charge.
-	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"-"`
-	// Whether the plan has unlimited stock. When true, the stock field is ignored.
-	UnlimitedStock *bool `json:"unlimited_stock,omitempty" url:"-"`
-	// Whether the plan is visible to customers or hidden from public view.
-	Visibility *string `json:"visibility,omitempty" url:"-"`
+	ReleaseMethod              *string                                       `json:"release_method,omitempty" url:"-"`
+	RenewalPrice               *float64                                      `json:"renewal_price,omitempty" url:"-"`
+	Sku                        *string                                       `json:"sku,omitempty" url:"-"`
+	SplitPayRequiredPayments   *int                                          `json:"split_pay_required_payments,omitempty" url:"-"`
+	Stock                      *int                                          `json:"stock,omitempty" url:"-"`
+	StrikeThroughInitialPrice  *float64                                      `json:"strike_through_initial_price,omitempty" url:"-"`
+	StrikeThroughRenewalPrice  *float64                                      `json:"strike_through_renewal_price,omitempty" url:"-"`
+	ThreeDsLevel               *UpdatePlansRequestThreeDsLevel               `json:"three_ds_level,omitempty" url:"-"`
+	Title                      *string                                       `json:"title,omitempty" url:"-"`
+	TrialPeriodDays            *int                                          `json:"trial_period_days,omitempty" url:"-"`
+	UnlimitedStock             *bool                                         `json:"unlimited_stock,omitempty" url:"-"`
+	Visibility                 *string                                       `json:"visibility,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (u *UpdatePlansRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -5764,6 +4975,20 @@ func (u *UpdatePlansRequest) SetID(id string) {
 func (u *UpdatePlansRequest) SetAdaptivePricingEnabled(adaptivePricingEnabled *bool) {
 	u.AdaptivePricingEnabled = adaptivePricingEnabled
 	u.require(updatePlansRequestFieldAdaptivePricingEnabled)
+}
+
+// SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePlansRequest) SetAllowMultipleQuantity(allowMultipleQuantity *bool) {
+	u.AllowMultipleQuantity = allowMultipleQuantity
+	u.require(updatePlansRequestFieldAllowMultipleQuantity)
+}
+
+// SetAttributes sets the Attributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePlansRequest) SetAttributes(attributes map[string]any) {
+	u.Attributes = attributes
+	u.require(updatePlansRequestFieldAttributes)
 }
 
 // SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
@@ -5883,6 +5108,20 @@ func (u *UpdatePlansRequest) SetReleaseMethod(releaseMethod *string) {
 func (u *UpdatePlansRequest) SetRenewalPrice(renewalPrice *float64) {
 	u.RenewalPrice = renewalPrice
 	u.require(updatePlansRequestFieldRenewalPrice)
+}
+
+// SetSku sets the Sku field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePlansRequest) SetSku(sku *string) {
+	u.Sku = sku
+	u.require(updatePlansRequestFieldSku)
+}
+
+// SetSplitPayRequiredPayments sets the SplitPayRequiredPayments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePlansRequest) SetSplitPayRequiredPayments(splitPayRequiredPayments *int) {
+	u.SplitPayRequiredPayments = splitPayRequiredPayments
+	u.require(updatePlansRequestFieldSplitPayRequiredPayments)
 }
 
 // SetStock sets the Stock field and marks it as non-optional;

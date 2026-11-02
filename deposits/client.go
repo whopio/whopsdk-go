@@ -5,10 +5,10 @@ package deposits
 import (
 	context "context"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -21,7 +21,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -38,14 +38,12 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Retrieve the deposit methods for an account, including crypto and bank transfer.
+// Returns the deposit methods for an account or user, including crypto addresses, bank transfer instructions, and, for a business, a hosted deposit page. Bitcoin deposits are converted to USDT on Plasma in the destination's wallet. Business destinations require no authentication. Pass `payment_method_id` to also charge a business's saved payment method for `amount` in USD and add it to the business's balance; that requires authentication with the `payment:charge` scope. The charge has no fees or taxes and does not count as revenue.
 //
 // Example:
 //
 //	request := &whopsdk.CreateDepositsRequest{
-//	    Destination: &whopsdk.CreateDepositsRequestDestination{
-//	        String: "destination",
-//	    },
+//	    Destination: "biz_xxxxxxxxxxxxxx",
 //	}
 //	client.Deposits.Create(
 //	    context.TODO(),
@@ -57,6 +55,36 @@ func (c *Client) Create(
 	opts ...option.RequestOption,
 ) (*whopsdk.CreateDepositsResponse, error) {
 	response, err := c.WithRawResponse.Create(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Sends a deposit back where it came from. If the available balance doesn't cover it, nothing is sent.
+//
+// - **Bank deposit:** pass its `vbt_` ID. The deposit fee is returned, so the balance only has to cover the rest. Returns a `topup_reversal` row.
+// - **Card deposit:** pass its `pay_` ID. It's refunded to the card, and its fees aren't returned. Returns a `payment_refund` row.
+//
+// Example:
+//
+//	request := &whopsdk.ReverseDepositsRequest{
+//	    ID: "vbt_xxxxxxxxxxxxxx",
+//	}
+//	client.Deposits.Reverse(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Reverse(
+	ctx context.Context,
+	request *whopsdk.ReverseDepositsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.LedgerActivity, error) {
+	response, err := c.WithRawResponse.Reverse(
 		ctx,
 		request,
 		opts...,

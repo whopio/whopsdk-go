@@ -6,6 +6,7 @@ import (
 	json "encoding/json"
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	testing "testing"
 	time "time"
 )
@@ -64,6 +65,14 @@ func TestSettersListSupportedMethodsRequest(t *testing.T) {
 		var fernTestValueDestinationCurrency *string
 		obj.SetDestinationCurrency(fernTestValueDestinationCurrency)
 		assert.Equal(t, fernTestValueDestinationCurrency, obj.DestinationCurrency)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPartyType", func(t *testing.T) {
+		obj := &ListSupportedMethodsRequest{}
+		var fernTestValuePartyType *ListSupportedMethodsRequestPartyType
+		obj.SetPartyType(fernTestValuePartyType)
+		assert.Equal(t, fernTestValuePartyType, obj.PartyType)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -296,6 +305,37 @@ func TestSettersMarkExplicitListSupportedMethodsRequest(t *testing.T) {
 
 		// Act
 		obj.SetDestinationCurrency(fernTestValueDestinationCurrency)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPartyType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsRequest{}
+		var fernTestValuePartyType *ListSupportedMethodsRequestPartyType
+
+		// Act
+		obj.SetPartyType(fernTestValuePartyType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -607,6 +647,14 @@ func TestSettersListSupportedMethodsResponseDataItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetFeeStructure", func(t *testing.T) {
+		obj := &ListSupportedMethodsResponseDataItem{}
+		var fernTestValueFeeStructure *ListSupportedMethodsResponseDataItemFeeStructure
+		obj.SetFeeStructure(fernTestValueFeeStructure)
+		assert.Equal(t, fernTestValueFeeStructure, obj.FeeStructure)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetIconURL", func(t *testing.T) {
 		obj := &ListSupportedMethodsResponseDataItem{}
 		var fernTestValueIconURL *string
@@ -663,6 +711,14 @@ func TestSettersListSupportedMethodsResponseDataItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSupportsPaypalLogin", func(t *testing.T) {
+		obj := &ListSupportedMethodsResponseDataItem{}
+		var fernTestValueSupportsPaypalLogin *bool
+		obj.SetSupportsPaypalLogin(fernTestValueSupportsPaypalLogin)
+		assert.Equal(t, fernTestValueSupportsPaypalLogin, obj.SupportsPaypalLogin)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSupportsStandardDelivery", func(t *testing.T) {
 		obj := &ListSupportedMethodsResponseDataItem{}
 		var fernTestValueSupportsStandardDelivery bool
@@ -695,6 +751,39 @@ func TestGettersListSupportedMethodsResponseDataItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetDeliveryType() // Should return zero value
+	})
+
+	t.Run("GetFeeStructure", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItem{}
+		var expected *ListSupportedMethodsResponseDataItemFeeStructure
+		obj.FeeStructure = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFeeStructure(), "getter should return the property value")
+	})
+
+	t.Run("GetFeeStructure_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItem{}
+		obj.FeeStructure = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFeeStructure(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFeeStructure_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListSupportedMethodsResponseDataItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFeeStructure() // Should return zero value
 	})
 
 	t.Run("GetIconURL", func(t *testing.T) {
@@ -898,6 +987,39 @@ func TestGettersListSupportedMethodsResponseDataItem(t *testing.T) {
 		_ = obj.GetSupportsInstantDelivery() // Should return zero value
 	})
 
+	t.Run("GetSupportsPaypalLogin", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItem{}
+		var expected *bool
+		obj.SupportsPaypalLogin = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSupportsPaypalLogin(), "getter should return the property value")
+	})
+
+	t.Run("GetSupportsPaypalLogin_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItem{}
+		obj.SupportsPaypalLogin = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSupportsPaypalLogin(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSupportsPaypalLogin_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListSupportedMethodsResponseDataItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSupportsPaypalLogin() // Should return zero value
+	})
+
 	t.Run("GetSupportsStandardDelivery", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -932,6 +1054,37 @@ func TestSettersMarkExplicitListSupportedMethodsResponseDataItem(t *testing.T) {
 
 		// Act
 		obj.SetDeliveryType(fernTestValueDeliveryType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetFeeStructure_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItem{}
+		var fernTestValueFeeStructure *ListSupportedMethodsResponseDataItemFeeStructure
+
+		// Act
+		obj.SetFeeStructure(fernTestValueFeeStructure)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1172,6 +1325,37 @@ func TestSettersMarkExplicitListSupportedMethodsResponseDataItem(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetSupportsPaypalLogin_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItem{}
+		var fernTestValueSupportsPaypalLogin *bool
+
+		// Act
+		obj.SetSupportsPaypalLogin(fernTestValueSupportsPaypalLogin)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetSupportsStandardDelivery_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1180,6 +1364,149 @@ func TestSettersMarkExplicitListSupportedMethodsResponseDataItem(t *testing.T) {
 
 		// Act
 		obj.SetSupportsStandardDelivery(fernTestValueSupportsStandardDelivery)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersListSupportedMethodsResponseDataItemFeeStructure(t *testing.T) {
+	t.Run("SetFixed", func(t *testing.T) {
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		var fernTestValueFixed *v2.Money
+		obj.SetFixed(fernTestValueFixed)
+		assert.Equal(t, fernTestValueFixed, obj.Fixed)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPercentage", func(t *testing.T) {
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		var fernTestValuePercentage float64
+		obj.SetPercentage(fernTestValuePercentage)
+		assert.Equal(t, fernTestValuePercentage, obj.Percentage)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersListSupportedMethodsResponseDataItemFeeStructure(t *testing.T) {
+	t.Run("GetFixed", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		var expected *v2.Money
+		obj.Fixed = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFixed(), "getter should return the property value")
+	})
+
+	t.Run("GetFixed_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		obj.Fixed = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetFixed(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetFixed_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListSupportedMethodsResponseDataItemFeeStructure
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFixed() // Should return zero value
+	})
+
+	t.Run("GetPercentage", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		var expected float64
+		obj.Percentage = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPercentage(), "getter should return the property value")
+	})
+
+	t.Run("GetPercentage_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListSupportedMethodsResponseDataItemFeeStructure
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPercentage() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitListSupportedMethodsResponseDataItemFeeStructure(t *testing.T) {
+	t.Run("SetFixed_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		var fernTestValueFixed *v2.Money
+
+		// Act
+		obj.SetFixed(fernTestValueFixed)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPercentage_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		var fernTestValuePercentage float64
+
+		// Act
+		obj.SetPercentage(fernTestValuePercentage)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3132,6 +3459,39 @@ func TestJSONMarshalingListSupportedMethodsResponseDataItem(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingListSupportedMethodsResponseDataItemFeeStructure(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled ListSupportedMethodsResponseDataItemFeeStructure
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj ListSupportedMethodsResponseDataItemFeeStructure
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj ListSupportedMethodsResponseDataItemFeeStructure
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingListSupportedMethodsResponseDataItemQuotesItem(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -3297,6 +3657,186 @@ func TestJSONMarshalingListSupportedMethodsResponsePageInfo(t *testing.T) {
 	})
 }
 
+func TestRequiredNullableRoundTripListSupportedMethodsResponseDataItem(t *testing.T) {
+	requiredNullableKeys := []string{
+		"icon_url",
+		"name",
+		"quotes",
+		"required_fields",
+	}
+	marshalToMap := func(t *testing.T, obj *ListSupportedMethodsResponseDataItem) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj ListSupportedMethodsResponseDataItem
+		require.NoError(t, json.Unmarshal([]byte(`{"icon_url":null,"name":null,"quotes":null,"required_fields":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj ListSupportedMethodsResponseDataItem
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &ListSupportedMethodsResponseDataItem{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripListSupportedMethodsResponseDataItemQuotesItem(t *testing.T) {
+	requiredNullableKeys := []string{
+		"instant",
+		"max_limit",
+		"standard",
+	}
+	marshalToMap := func(t *testing.T, obj *ListSupportedMethodsResponseDataItemQuotesItem) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj ListSupportedMethodsResponseDataItemQuotesItem
+		require.NoError(t, json.Unmarshal([]byte(`{"instant":null,"max_limit":null,"standard":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj ListSupportedMethodsResponseDataItemQuotesItem
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &ListSupportedMethodsResponseDataItemQuotesItem{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripListSupportedMethodsResponseDataItemRequiredFieldsItem(t *testing.T) {
+	requiredNullableKeys := []string{
+		"options",
+		"placeholder",
+		"validation",
+	}
+	marshalToMap := func(t *testing.T, obj *ListSupportedMethodsResponseDataItemRequiredFieldsItem) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj ListSupportedMethodsResponseDataItemRequiredFieldsItem
+		require.NoError(t, json.Unmarshal([]byte(`{"options":null,"placeholder":null,"validation":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj ListSupportedMethodsResponseDataItemRequiredFieldsItem
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &ListSupportedMethodsResponseDataItemRequiredFieldsItem{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripListSupportedMethodsResponsePageInfo(t *testing.T) {
+	requiredNullableKeys := []string{
+		"end_cursor",
+		"start_cursor",
+	}
+	marshalToMap := func(t *testing.T, obj *ListSupportedMethodsResponsePageInfo) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj ListSupportedMethodsResponsePageInfo
+		require.NoError(t, json.Unmarshal([]byte(`{"end_cursor":null,"start_cursor":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj ListSupportedMethodsResponsePageInfo
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &ListSupportedMethodsResponsePageInfo{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestStringListSupportedMethodsResponse(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -3324,6 +3864,22 @@ func TestStringListSupportedMethodsResponseDataItem(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ListSupportedMethodsResponseDataItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringListSupportedMethodsResponseDataItemFeeStructure(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListSupportedMethodsResponseDataItemFeeStructure
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -3409,6 +3965,35 @@ func TestStringListSupportedMethodsResponsePageInfo(t *testing.T) {
 	})
 }
 
+func TestEnumListSupportedMethodsRequestPartyType(t *testing.T) {
+	t.Run("NewFromString_first_party", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListSupportedMethodsRequestPartyTypeFromString("first_party")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListSupportedMethodsRequestPartyType("first_party"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_third_party", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListSupportedMethodsRequestPartyTypeFromString("third_party")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListSupportedMethodsRequestPartyType("third_party"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListSupportedMethodsRequestPartyTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListSupportedMethodsRequestPartyTypeFromString("first_party")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumListSupportedMethodsResponseDataItemDeliveryType(t *testing.T) {
 	t.Run("NewFromString_cash_pickup", func(t *testing.T) {
 		t.Parallel()
@@ -3438,18 +4023,18 @@ func TestEnumListSupportedMethodsResponseDataItemDeliveryType(t *testing.T) {
 		assert.Equal(t, ListSupportedMethodsResponseDataItemDeliveryType("mobile_wallet"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_masspay_card", func(t *testing.T) {
+	t.Run("NewFromString_card", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewListSupportedMethodsResponseDataItemDeliveryTypeFromString("masspay_card")
+		val, err := NewListSupportedMethodsResponseDataItemDeliveryTypeFromString("card")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListSupportedMethodsResponseDataItemDeliveryType("masspay_card"), val, "enum value should match expected wire value")
+		assert.Equal(t, ListSupportedMethodsResponseDataItemDeliveryType("card"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_paper_check", func(t *testing.T) {
+	t.Run("NewFromString_check", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewListSupportedMethodsResponseDataItemDeliveryTypeFromString("paper_check")
+		val, err := NewListSupportedMethodsResponseDataItemDeliveryTypeFromString("check")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListSupportedMethodsResponseDataItemDeliveryType("paper_check"), val, "enum value should match expected wire value")
+		assert.Equal(t, ListSupportedMethodsResponseDataItemDeliveryType("check"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_bill", func(t *testing.T) {
@@ -3464,13 +4049,6 @@ func TestEnumListSupportedMethodsResponseDataItemDeliveryType(t *testing.T) {
 		val, err := NewListSupportedMethodsResponseDataItemDeliveryTypeFromString("cryptocurrency")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListSupportedMethodsResponseDataItemDeliveryType("cryptocurrency"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_unknown", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListSupportedMethodsResponseDataItemDeliveryTypeFromString("unknown")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListSupportedMethodsResponseDataItemDeliveryType("unknown"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -3572,6 +4150,29 @@ func TestExtraPropertiesListSupportedMethodsResponseDataItem(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ListSupportedMethodsResponseDataItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesListSupportedMethodsResponseDataItemFeeStructure(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &ListSupportedMethodsResponseDataItemFeeStructure{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListSupportedMethodsResponseDataItemFeeStructure
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

@@ -5,28 +5,22 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
+	time "time"
 )
 
 var (
-	createAdsRequestFieldAdGroup            = big.NewInt(1 << 0)
-	createAdsRequestFieldAdGroupID          = big.NewInt(1 << 1)
-	createAdsRequestFieldCallToAction       = big.NewInt(1 << 2)
-	createAdsRequestFieldCreatives          = big.NewInt(1 << 3)
-	createAdsRequestFieldDescriptions       = big.NewInt(1 << 4)
-	createAdsRequestFieldHeadlines          = big.NewInt(1 << 5)
-	createAdsRequestFieldLeadForm           = big.NewInt(1 << 6)
-	createAdsRequestFieldLeadFormID         = big.NewInt(1 << 7)
-	createAdsRequestFieldMessagingConfig    = big.NewInt(1 << 8)
-	createAdsRequestFieldMultiAdvertiserAds = big.NewInt(1 << 9)
-	createAdsRequestFieldPostID             = big.NewInt(1 << 10)
-	createAdsRequestFieldPostSource         = big.NewInt(1 << 11)
-	createAdsRequestFieldPrimaryTexts       = big.NewInt(1 << 12)
-	createAdsRequestFieldSocialAccounts     = big.NewInt(1 << 13)
-	createAdsRequestFieldTitle              = big.NewInt(1 << 14)
-	createAdsRequestFieldURL                = big.NewInt(1 << 15)
-	createAdsRequestFieldURLParameters      = big.NewInt(1 << 16)
+	createAdsRequestFieldAdGroup       = big.NewInt(1 << 0)
+	createAdsRequestFieldAdGroupID     = big.NewInt(1 << 1)
+	createAdsRequestFieldCallToAction  = big.NewInt(1 << 2)
+	createAdsRequestFieldCreatives     = big.NewInt(1 << 3)
+	createAdsRequestFieldDescriptions  = big.NewInt(1 << 4)
+	createAdsRequestFieldHeadlines     = big.NewInt(1 << 5)
+	createAdsRequestFieldPrimaryTexts  = big.NewInt(1 << 6)
+	createAdsRequestFieldTitle         = big.NewInt(1 << 7)
+	createAdsRequestFieldURL           = big.NewInt(1 << 8)
+	createAdsRequestFieldURLParameters = big.NewInt(1 << 9)
 )
 
 type CreateAdsRequest struct {
@@ -36,33 +30,19 @@ type CreateAdsRequest struct {
 	AdGroupID *string `json:"ad_group_id,omitempty" url:"-"`
 	// The call-to-action button shown on the ad.
 	CallToAction *CreateAdsRequestCallToAction `json:"call_to_action,omitempty" url:"-"`
-	// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Two or more entries with no format become a carousel (2-10 attachments), in order, sharing the ad's copy.
+	// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Entries with no format become a carousel's ordered cards, sharing the ad's copy.
 	Creatives []*CreateAdsRequestCreativesItem `json:"creatives,omitempty" url:"-"`
-	// The description variants shown on the ad.
-	Descriptions []string `json:"descriptions,omitempty" url:"-"`
-	// The headline variants shown on the ad.
-	Headlines []string `json:"headlines,omitempty" url:"-"`
-	// Instant lead form for the ad. Only allowed when the ad group's conversion_location is an instant-form destination (instant_forms, instant_forms_and_messenger, website_and_instant_forms). Mutually exclusive with lead_form_id.
-	LeadForm *CreateAdsRequestLeadForm `json:"lead_form,omitempty" url:"-"`
-	// Use an existing instant form instead of creating one — the form's platform ID, from a form already on the ad's Facebook page. Only allowed when the ad group's conversion_location is an instant-form destination. Mutually exclusive with lead_form.
-	LeadFormID *string `json:"lead_form_id,omitempty" url:"-"`
-	// Click-to-message welcome copy: the greeting (message) and the ice-breaker prompt (keyword).
-	MessagingConfig *CreateAdsRequestMessagingConfig `json:"messaging_config,omitempty" url:"-"`
-	// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
-	MultiAdvertiserAds *bool `json:"multi_advertiser_ads,omitempty" url:"-"`
-	// Promote an existing post instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
-	PostID *string `json:"post_id,omitempty" url:"-"`
-	// Identifies the network that owns `post_id`. The source is inferred from the ID shape when omitted.
-	PostSource *CreateAdsRequestPostSource `json:"post_source,omitempty" url:"-"`
-	// The primary text variants shown in the ad body.
-	PrimaryTexts []string `json:"primary_texts,omitempty" url:"-"`
-	// The social accounts the ad runs under — a connected Facebook page and, optionally, an Instagram profile.
-	SocialAccounts []*CreateAdsRequestSocialAccountsItem `json:"social_accounts,omitempty" url:"-"`
+	// The description shown on the ad.
+	Descriptions []*CreateAdsRequestDescriptionsItem `json:"descriptions,omitempty" url:"-"`
+	// The headline shown on the ad.
+	Headlines []*CreateAdsRequestHeadlinesItem `json:"headlines,omitempty" url:"-"`
+	// The primary text shown in the ad body. Several entries make text variations.
+	PrimaryTexts []*CreateAdsRequestPrimaryTextsItem `json:"primary_texts,omitempty" url:"-"`
 	// The display name of the ad.
 	Title *string `json:"title,omitempty" url:"-"`
 	// The URL the ad links to. Query parameters are merged into url_parameters, so the stored URL is always bare.
 	URL *string `json:"url,omitempty" url:"-"`
-	// Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them (utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid).
+	// Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved, and setting one returns an error that names it.
 	URLParameters map[string]any `json:"url_parameters,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -70,10 +50,12 @@ type CreateAdsRequest struct {
 }
 
 func (c *CreateAdsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAdGroup sets the AdGroup field and marks it as non-optional;
@@ -106,72 +88,23 @@ func (c *CreateAdsRequest) SetCreatives(creatives []*CreateAdsRequestCreativesIt
 
 // SetDescriptions sets the Descriptions field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequest) SetDescriptions(descriptions []string) {
+func (c *CreateAdsRequest) SetDescriptions(descriptions []*CreateAdsRequestDescriptionsItem) {
 	c.Descriptions = descriptions
 	c.require(createAdsRequestFieldDescriptions)
 }
 
 // SetHeadlines sets the Headlines field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequest) SetHeadlines(headlines []string) {
+func (c *CreateAdsRequest) SetHeadlines(headlines []*CreateAdsRequestHeadlinesItem) {
 	c.Headlines = headlines
 	c.require(createAdsRequestFieldHeadlines)
 }
 
-// SetLeadForm sets the LeadForm field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequest) SetLeadForm(leadForm *CreateAdsRequestLeadForm) {
-	c.LeadForm = leadForm
-	c.require(createAdsRequestFieldLeadForm)
-}
-
-// SetLeadFormID sets the LeadFormID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequest) SetLeadFormID(leadFormID *string) {
-	c.LeadFormID = leadFormID
-	c.require(createAdsRequestFieldLeadFormID)
-}
-
-// SetMessagingConfig sets the MessagingConfig field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequest) SetMessagingConfig(messagingConfig *CreateAdsRequestMessagingConfig) {
-	c.MessagingConfig = messagingConfig
-	c.require(createAdsRequestFieldMessagingConfig)
-}
-
-// SetMultiAdvertiserAds sets the MultiAdvertiserAds field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequest) SetMultiAdvertiserAds(multiAdvertiserAds *bool) {
-	c.MultiAdvertiserAds = multiAdvertiserAds
-	c.require(createAdsRequestFieldMultiAdvertiserAds)
-}
-
-// SetPostID sets the PostID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequest) SetPostID(postID *string) {
-	c.PostID = postID
-	c.require(createAdsRequestFieldPostID)
-}
-
-// SetPostSource sets the PostSource field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequest) SetPostSource(postSource *CreateAdsRequestPostSource) {
-	c.PostSource = postSource
-	c.require(createAdsRequestFieldPostSource)
-}
-
 // SetPrimaryTexts sets the PrimaryTexts field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequest) SetPrimaryTexts(primaryTexts []string) {
+func (c *CreateAdsRequest) SetPrimaryTexts(primaryTexts []*CreateAdsRequestPrimaryTextsItem) {
 	c.PrimaryTexts = primaryTexts
 	c.require(createAdsRequestFieldPrimaryTexts)
-}
-
-// SetSocialAccounts sets the SocialAccounts field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequest) SetSocialAccounts(socialAccounts []*CreateAdsRequestSocialAccountsItem) {
-	c.SocialAccounts = socialAccounts
-	c.require(createAdsRequestFieldSocialAccounts)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
@@ -229,10 +162,12 @@ type DeleteAdsRequest struct {
 }
 
 func (d *DeleteAdsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -243,10 +178,9 @@ func (d *DeleteAdsRequest) SetID(id string) {
 }
 
 var (
-	duplicateAdsRequestFieldID                 = big.NewInt(1 << 0)
-	duplicateAdsRequestFieldCount              = big.NewInt(1 << 1)
-	duplicateAdsRequestFieldPreserveEngagement = big.NewInt(1 << 2)
-	duplicateAdsRequestFieldTargetAdGroupID    = big.NewInt(1 << 3)
+	duplicateAdsRequestFieldID              = big.NewInt(1 << 0)
+	duplicateAdsRequestFieldCount           = big.NewInt(1 << 1)
+	duplicateAdsRequestFieldTargetAdGroupID = big.NewInt(1 << 2)
 )
 
 type DuplicateAdsRequest struct {
@@ -254,9 +188,7 @@ type DuplicateAdsRequest struct {
 	ID string `json:"-" url:"-"`
 	// Number of copies to create (1-10). Defaults to 1.
 	Count *int `json:"count,omitempty" url:"-"`
-	// Whether the copies keep the original post's engagement (likes, comments, shares). Defaults to false.
-	PreserveEngagement *bool `json:"preserve_engagement,omitempty" url:"-"`
-	// Ad group to duplicate into. Defaults to the ad's own ad group.
+	// Ad group to duplicate into, which must belong to the same account and be compatible with the ad. Defaults to the ad's own ad group.
 	TargetAdGroupID *string `json:"target_ad_group_id,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -264,10 +196,12 @@ type DuplicateAdsRequest struct {
 }
 
 func (d *DuplicateAdsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -282,13 +216,6 @@ func (d *DuplicateAdsRequest) SetID(id string) {
 func (d *DuplicateAdsRequest) SetCount(count *int) {
 	d.Count = count
 	d.require(duplicateAdsRequestFieldCount)
-}
-
-// SetPreserveEngagement sets the PreserveEngagement field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DuplicateAdsRequest) SetPreserveEngagement(preserveEngagement *bool) {
-	d.PreserveEngagement = preserveEngagement
-	d.require(duplicateAdsRequestFieldPreserveEngagement)
 }
 
 // SetTargetAdGroupID sets the TargetAdGroupID field and marks it as non-optional;
@@ -356,7 +283,7 @@ type ListAdsRequest struct {
 	Status *ListAdsRequestStatus `json:"-" url:"status,omitempty"`
 	// Filter ads by a title or ID substring.
 	Query *string `json:"-" url:"query,omitempty"`
-	// The field to sort by. Defaults to created_at. Stat columns (spend, impressions, …) rank over the stats_from/stats_to window across the whole list, not just the current page. results, cost_per_result and return_on_ad_spend rank by the same Whop pixel-attributed values the response reports.
+	// The field to sort by. Defaults to created_at. Stat columns (spend, impressions, …) rank over the stats_from/stats_to window across the whole list, not just the current page. results, cost_per_result and return_on_ad_spend rank by the same Whop pixel-attributed values the response reports, and link_clicks by the same Whop pixel page views.
 	Order *ListAdsRequestOrder `json:"-" url:"order,omitempty"`
 	// The sort direction. Defaults to desc.
 	Direction *ListAdsRequestDirection `json:"-" url:"direction,omitempty"`
@@ -372,13 +299,13 @@ type ListAdsRequest struct {
 	TimeZone *string `json:"-" url:"time_zone,omitempty"`
 	// Attribution model the conversion stats count under (defaults to last_touch). Under both models a journey with any whop ad touch attributes to whop; the model picks which whop touch credits the entity and which non-whop source wins otherwise.
 	AttributionModel *ListAdsRequestAttributionModel `json:"-" url:"attribution_model,omitempty"`
-	// The number of ads to return.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor to fetch the page after (from page_info.end_cursor).
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of ads to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// Cursor to fetch the page before (from page_info.start_cursor).
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -386,10 +313,12 @@ type ListAdsRequest struct {
 }
 
 func (l *ListAdsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -538,10 +467,12 @@ type PauseAdsRequest struct {
 }
 
 func (p *PauseAdsRequest) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -549,6 +480,103 @@ func (p *PauseAdsRequest) require(field *big.Int) {
 func (p *PauseAdsRequest) SetID(id string) {
 	p.ID = id
 	p.require(pauseAdsRequestFieldID)
+}
+
+var (
+	reportStatsAdsRequestFieldAdID          = big.NewInt(1 << 0)
+	reportStatsAdsRequestFieldClicks        = big.NewInt(1 << 1)
+	reportStatsAdsRequestFieldHourStartedAt = big.NewInt(1 << 2)
+	reportStatsAdsRequestFieldImpressions   = big.NewInt(1 << 3)
+	reportStatsAdsRequestFieldSpend         = big.NewInt(1 << 4)
+)
+
+type ReportStatsAdsRequest struct {
+	// The ad's ID, prefixed `ad_`: the campaign's ad or the runner's copy of it.
+	AdID string `json:"ad_id" url:"-"`
+	// The ad's clicks in the hour so far, at most `impressions`. Zero when left out.
+	Clicks *ReportStatsAdsRequestClicks `json:"clicks,omitempty" url:"-"`
+	// Start of the hour, on the hour, within the last 24 hours.
+	HourStartedAt time.Time `json:"hour_started_at" url:"-"`
+	// The ad's impressions in the hour so far. Zero when left out.
+	Impressions *ReportStatsAdsRequestImpressions `json:"impressions,omitempty" url:"-"`
+	// The USD to be paid for the ad's hour so far, to the cent: what the ad spent plus any markup, such as 105.00 for 100.00 spent with a 5% markup.
+	Spend *ReportStatsAdsRequestSpend `json:"spend" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *ReportStatsAdsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetAdID sets the AdID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReportStatsAdsRequest) SetAdID(adID string) {
+	r.AdID = adID
+	r.require(reportStatsAdsRequestFieldAdID)
+}
+
+// SetClicks sets the Clicks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReportStatsAdsRequest) SetClicks(clicks *ReportStatsAdsRequestClicks) {
+	r.Clicks = clicks
+	r.require(reportStatsAdsRequestFieldClicks)
+}
+
+// SetHourStartedAt sets the HourStartedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReportStatsAdsRequest) SetHourStartedAt(hourStartedAt time.Time) {
+	r.HourStartedAt = hourStartedAt
+	r.require(reportStatsAdsRequestFieldHourStartedAt)
+}
+
+// SetImpressions sets the Impressions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReportStatsAdsRequest) SetImpressions(impressions *ReportStatsAdsRequestImpressions) {
+	r.Impressions = impressions
+	r.require(reportStatsAdsRequestFieldImpressions)
+}
+
+// SetSpend sets the Spend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReportStatsAdsRequest) SetSpend(spend *ReportStatsAdsRequestSpend) {
+	r.Spend = spend
+	r.require(reportStatsAdsRequestFieldSpend)
+}
+
+func (r *ReportStatsAdsRequest) UnmarshalJSON(data []byte) error {
+	type embed ReportStatsAdsRequest
+	var body = struct {
+		embed
+		HourStartedAt *internal.DateTime `json:"hour_started_at"`
+	}{
+		embed: embed(*r),
+	}
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*r = ReportStatsAdsRequest(body.embed)
+	r.HourStartedAt = body.HourStartedAt.Time()
+	return nil
+}
+
+func (r *ReportStatsAdsRequest) MarshalJSON() ([]byte, error) {
+	type embed ReportStatsAdsRequest
+	var marshaler = struct {
+		embed
+		HourStartedAt *internal.DateTime `json:"hour_started_at"`
+	}{
+		embed:         embed(*r),
+		HourStartedAt: internal.NewDateTime(r.HourStartedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 var (
@@ -576,10 +604,12 @@ type RetrieveAdsRequest struct {
 }
 
 func (r *RetrieveAdsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -653,40 +683,56 @@ var (
 	adFieldID                           = big.NewInt(1 << 32)
 	adFieldImpressions                  = big.NewInt(1 << 33)
 	adFieldIssues                       = big.NewInt(1 << 34)
-	adFieldLeadForm                     = big.NewInt(1 << 35)
-	adFieldLeadFormID                   = big.NewInt(1 << 36)
-	adFieldLeadValue                    = big.NewInt(1 << 37)
-	adFieldLeads                        = big.NewInt(1 << 38)
-	adFieldMessagingConfig              = big.NewInt(1 << 39)
-	adFieldMultiAdvertiserAds           = big.NewInt(1 << 40)
-	adFieldPostID                       = big.NewInt(1 << 41)
-	adFieldPostSource                   = big.NewInt(1 << 42)
-	adFieldPostThumbnailURL             = big.NewInt(1 << 43)
-	adFieldPrimaryTexts                 = big.NewInt(1 << 44)
-	adFieldPurchaseValue                = big.NewInt(1 << 45)
-	adFieldPurchases                    = big.NewInt(1 << 46)
-	adFieldReach                        = big.NewInt(1 << 47)
-	adFieldResultEvent                  = big.NewInt(1 << 48)
-	adFieldResultEventName              = big.NewInt(1 << 49)
-	adFieldResults                      = big.NewInt(1 << 50)
-	adFieldReturnOnAdSpend              = big.NewInt(1 << 51)
-	adFieldScheduleValue                = big.NewInt(1 << 52)
-	adFieldSchedules                    = big.NewInt(1 << 53)
-	adFieldSocialAccounts               = big.NewInt(1 << 54)
-	adFieldSpend                        = big.NewInt(1 << 55)
-	adFieldSpendCurrency                = big.NewInt(1 << 56)
-	adFieldStatus                       = big.NewInt(1 << 57)
-	adFieldSubmittedApplicationValue    = big.NewInt(1 << 58)
-	adFieldSubmittedApplications        = big.NewInt(1 << 59)
-	adFieldTitle                        = big.NewInt(1 << 60)
-	adFieldUniqueClickThroughRate       = big.NewInt(1 << 61)
-	adFieldUniqueClicks                 = big.NewInt(1 << 62)
-	adFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	adFieldURL                          = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	adFieldURLParameters                = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	adFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	adFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	adFieldLeadValue                    = big.NewInt(1 << 35)
+	adFieldLeads                        = big.NewInt(1 << 36)
+	adFieldLinkClicks                   = big.NewInt(1 << 37)
+	adFieldPrimaryTexts                 = big.NewInt(1 << 38)
+	adFieldPurchaseValue                = big.NewInt(1 << 39)
+	adFieldPurchases                    = big.NewInt(1 << 40)
+	adFieldReach                        = big.NewInt(1 << 41)
+	adFieldResultEvent                  = big.NewInt(1 << 42)
+	adFieldResultEventName              = big.NewInt(1 << 43)
+	adFieldResults                      = big.NewInt(1 << 44)
+	adFieldReturnOnAdSpend              = big.NewInt(1 << 45)
+	adFieldScheduleValue                = big.NewInt(1 << 46)
+	adFieldSchedules                    = big.NewInt(1 << 47)
+	adFieldSpend                        = big.NewInt(1 << 48)
+	adFieldSpendCurrency                = big.NewInt(1 << 49)
+	adFieldStatus                       = big.NewInt(1 << 50)
+	adFieldSubmittedApplicationValue    = big.NewInt(1 << 51)
+	adFieldSubmittedApplications        = big.NewInt(1 << 52)
+	adFieldTitle                        = big.NewInt(1 << 53)
+	adFieldUniqueClickThroughRate       = big.NewInt(1 << 54)
+	adFieldUniqueClicks                 = big.NewInt(1 << 55)
+	adFieldUpdatedAt                    = big.NewInt(1 << 56)
+	adFieldURL                          = big.NewInt(1 << 57)
+	adFieldURLParameters                = big.NewInt(1 << 58)
+	adFieldViewedContentValue           = big.NewInt(1 << 59)
+	adFieldViewedContents               = big.NewInt(1 << 60)
 )
+
+// adNullableFields maps the wire names of Ad's nullable fields (required or optional) to their field bits.
+var adNullableFields = map[string]*big.Int{
+	"call_to_action":                  adFieldCallToAction,
+	"cost_per_added_to_cart":          adFieldCostPerAddedToCart,
+	"cost_per_completed_registration": adFieldCostPerCompletedRegistration,
+	"cost_per_contact":                adFieldCostPerContact,
+	"cost_per_lead":                   adFieldCostPerLead,
+	"cost_per_purchase":               adFieldCostPerPurchase,
+	"cost_per_result":                 adFieldCostPerResult,
+	"cost_per_schedule":               adFieldCostPerSchedule,
+	"cost_per_submitted_application":  adFieldCostPerSubmittedApplication,
+	"cost_per_unique_click":           adFieldCostPerUniqueClick,
+	"cost_per_viewed_content":         adFieldCostPerViewedContent,
+	"frequency":                       adFieldFrequency,
+	"result_event":                    adFieldResultEvent,
+	"result_event_name":               adFieldResultEventName,
+	"results":                         adFieldResults,
+	"spend_currency":                  adFieldSpendCurrency,
+	"title":                           adFieldTitle,
+	"unique_click_through_rate":       adFieldUniqueClickThroughRate,
+	"url":                             adFieldURL,
+}
 
 type Ad struct {
 	// The ad campaign this ad belongs to.
@@ -746,34 +792,22 @@ type Ad struct {
 	CustomEventValues map[string]any `json:"custom_event_values" url:"custom_event_values"`
 	// Whether the ad is delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus AdDeliveryStatus `json:"delivery_status" url:"delivery_status"`
-	Descriptions   []string         `json:"descriptions" url:"descriptions"`
-	// Platform-reported impressions divided by reach.
-	Frequency *float64 `json:"frequency,omitempty" url:"frequency,omitempty"`
-	Headlines []string `json:"headlines" url:"headlines"`
+	Descriptions   []*AdText        `json:"descriptions" url:"descriptions"`
+	// Impressions divided by reach.
+	Frequency *float64  `json:"frequency,omitempty" url:"frequency,omitempty"`
+	Headlines []*AdText `json:"headlines" url:"headlines"`
 	// Unique identifier for the ad, prefixed `ad_`.
 	ID string `json:"id" url:"id"`
 	// The number of impressions.
 	Impressions float64            `json:"impressions" url:"impressions"`
 	Issues      []*AdPlatformIssue `json:"issues" url:"issues"`
-	// The instant lead form shown when someone taps this ad. `null` when the ad group's conversion_location is not an instant-form destination.
-	LeadForm *AdLeadForm `json:"lead_form,omitempty" url:"lead_form,omitempty"`
-	// The ad platform's ID for the instant form the ad uses. Set when the ad references an existing form via `lead_form_id`, or once a form built from `lead_form` has been created on the platform.
-	LeadFormID *string `json:"lead_form_id,omitempty" url:"lead_form_id,omitempty"`
 	// USD value attributed to lead events. Sums the value sent with each event, normalized to USD; events without a value contribute 0.
 	LeadValue float64 `json:"lead_value" url:"lead_value"`
 	// Whop pixel-attributed leads, last-click.
 	Leads float64 `json:"leads" url:"leads"`
-	// Welcome message for click-to-message ads, shown when the conversation opens. `null` when the ad has none.
-	MessagingConfig *AdMessagingConfig `json:"messaging_config,omitempty" url:"messaging_config,omitempty"`
-	// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
-	MultiAdvertiserAds *bool `json:"multi_advertiser_ads,omitempty" url:"multi_advertiser_ads,omitempty"`
-	// The existing post this ad promotes — a Facebook post or Instagram media ID. `null` when the ad uses uploaded creatives.
-	PostID *string `json:"post_id,omitempty" url:"post_id,omitempty"`
-	// Identifies the network that owns `post_id`; `null` when the ad uses uploaded creatives.
-	PostSource *AdPostSource `json:"post_source,omitempty" url:"post_source,omitempty"`
-	// Preview image of the existing post this ad promotes. `null` for ads that use uploaded creatives, or until the post's media has been fetched from the network.
-	PostThumbnailURL *string  `json:"post_thumbnail_url,omitempty" url:"post_thumbnail_url,omitempty"`
-	PrimaryTexts     []string `json:"primary_texts" url:"primary_texts"`
+	// Page views on your destination from people who clicked the ad, recorded by the Whop pixel. Counted the same way on every ad platform.
+	LinkClicks   float64   `json:"link_clicks" url:"link_clicks"`
+	PrimaryTexts []*AdText `json:"primary_texts" url:"primary_texts"`
 	// USD value of pixel-attributed purchases.
 	PurchaseValue float64 `json:"purchase_value" url:"purchase_value"`
 	// Whop pixel-attributed purchases, last-click.
@@ -791,8 +825,7 @@ type Ad struct {
 	// USD value attributed to schedule events. Sums the value sent with each event, normalized to USD; events without a value contribute 0.
 	ScheduleValue float64 `json:"schedule_value" url:"schedule_value"`
 	// Whop pixel-attributed schedule events, last-click.
-	Schedules      float64              `json:"schedules" url:"schedules"`
-	SocialAccounts []*AdEntityReference `json:"social_accounts" url:"social_accounts"`
+	Schedules float64 `json:"schedules" url:"schedules"`
 	// The amount charged, in spend_currency.
 	Spend float64 `json:"spend" url:"spend"`
 	// The ISO 4217 currency code of all monetary metrics.
@@ -813,7 +846,7 @@ type Ad struct {
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
 	// The URL the ad links to, without its query string. Parameters belong in `url_parameters`; any you send on `url` are moved there.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
-	// Every query parameter appended to the URL, keyed by parameter name — including any you sent on `url` itself. Whop adds its own click-attribution parameters on top; those are reserved and rejected if you set them (utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid).
+	// Every query parameter appended to the URL, keyed by parameter name — including any you sent on `url` itself. Whop adds its own click-attribution parameters; those are reserved, and setting one returns an error that names it.
 	URLParameters map[string]any `json:"url_parameters" url:"url_parameters"`
 	// USD value attributed to view-content events. Sums the value sent with each event, normalized to USD; events without a value contribute 0.
 	ViewedContentValue float64 `json:"viewed_content_value" url:"viewed_content_value"`
@@ -1030,7 +1063,7 @@ func (a *Ad) GetDeliveryStatus() AdDeliveryStatus {
 	return a.DeliveryStatus
 }
 
-func (a *Ad) GetDescriptions() []string {
+func (a *Ad) GetDescriptions() []*AdText {
 	if a == nil {
 		return nil
 	}
@@ -1044,7 +1077,7 @@ func (a *Ad) GetFrequency() *float64 {
 	return a.Frequency
 }
 
-func (a *Ad) GetHeadlines() []string {
+func (a *Ad) GetHeadlines() []*AdText {
 	if a == nil {
 		return nil
 	}
@@ -1072,20 +1105,6 @@ func (a *Ad) GetIssues() []*AdPlatformIssue {
 	return a.Issues
 }
 
-func (a *Ad) GetLeadForm() *AdLeadForm {
-	if a == nil {
-		return nil
-	}
-	return a.LeadForm
-}
-
-func (a *Ad) GetLeadFormID() *string {
-	if a == nil {
-		return nil
-	}
-	return a.LeadFormID
-}
-
 func (a *Ad) GetLeadValue() float64 {
 	if a == nil {
 		return 0
@@ -1100,42 +1119,14 @@ func (a *Ad) GetLeads() float64 {
 	return a.Leads
 }
 
-func (a *Ad) GetMessagingConfig() *AdMessagingConfig {
+func (a *Ad) GetLinkClicks() float64 {
 	if a == nil {
-		return nil
+		return 0
 	}
-	return a.MessagingConfig
+	return a.LinkClicks
 }
 
-func (a *Ad) GetMultiAdvertiserAds() *bool {
-	if a == nil {
-		return nil
-	}
-	return a.MultiAdvertiserAds
-}
-
-func (a *Ad) GetPostID() *string {
-	if a == nil {
-		return nil
-	}
-	return a.PostID
-}
-
-func (a *Ad) GetPostSource() *AdPostSource {
-	if a == nil {
-		return nil
-	}
-	return a.PostSource
-}
-
-func (a *Ad) GetPostThumbnailURL() *string {
-	if a == nil {
-		return nil
-	}
-	return a.PostThumbnailURL
-}
-
-func (a *Ad) GetPrimaryTexts() []string {
+func (a *Ad) GetPrimaryTexts() []*AdText {
 	if a == nil {
 		return nil
 	}
@@ -1203,13 +1194,6 @@ func (a *Ad) GetSchedules() float64 {
 		return 0
 	}
 	return a.Schedules
-}
-
-func (a *Ad) GetSocialAccounts() []*AdEntityReference {
-	if a == nil {
-		return nil
-	}
-	return a.SocialAccounts
 }
 
 func (a *Ad) GetSpend() float64 {
@@ -1311,10 +1295,12 @@ func (a *Ad) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *Ad) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAdCampaign sets the AdCampaign field and marks it as non-optional;
@@ -1522,7 +1508,7 @@ func (a *Ad) SetDeliveryStatus(deliveryStatus AdDeliveryStatus) {
 
 // SetDescriptions sets the Descriptions field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetDescriptions(descriptions []string) {
+func (a *Ad) SetDescriptions(descriptions []*AdText) {
 	a.Descriptions = descriptions
 	a.require(adFieldDescriptions)
 }
@@ -1536,7 +1522,7 @@ func (a *Ad) SetFrequency(frequency *float64) {
 
 // SetHeadlines sets the Headlines field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetHeadlines(headlines []string) {
+func (a *Ad) SetHeadlines(headlines []*AdText) {
 	a.Headlines = headlines
 	a.require(adFieldHeadlines)
 }
@@ -1562,20 +1548,6 @@ func (a *Ad) SetIssues(issues []*AdPlatformIssue) {
 	a.require(adFieldIssues)
 }
 
-// SetLeadForm sets the LeadForm field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetLeadForm(leadForm *AdLeadForm) {
-	a.LeadForm = leadForm
-	a.require(adFieldLeadForm)
-}
-
-// SetLeadFormID sets the LeadFormID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetLeadFormID(leadFormID *string) {
-	a.LeadFormID = leadFormID
-	a.require(adFieldLeadFormID)
-}
-
 // SetLeadValue sets the LeadValue field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *Ad) SetLeadValue(leadValue float64) {
@@ -1590,44 +1562,16 @@ func (a *Ad) SetLeads(leads float64) {
 	a.require(adFieldLeads)
 }
 
-// SetMessagingConfig sets the MessagingConfig field and marks it as non-optional;
+// SetLinkClicks sets the LinkClicks field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetMessagingConfig(messagingConfig *AdMessagingConfig) {
-	a.MessagingConfig = messagingConfig
-	a.require(adFieldMessagingConfig)
-}
-
-// SetMultiAdvertiserAds sets the MultiAdvertiserAds field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetMultiAdvertiserAds(multiAdvertiserAds *bool) {
-	a.MultiAdvertiserAds = multiAdvertiserAds
-	a.require(adFieldMultiAdvertiserAds)
-}
-
-// SetPostID sets the PostID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetPostID(postID *string) {
-	a.PostID = postID
-	a.require(adFieldPostID)
-}
-
-// SetPostSource sets the PostSource field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetPostSource(postSource *AdPostSource) {
-	a.PostSource = postSource
-	a.require(adFieldPostSource)
-}
-
-// SetPostThumbnailURL sets the PostThumbnailURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetPostThumbnailURL(postThumbnailURL *string) {
-	a.PostThumbnailURL = postThumbnailURL
-	a.require(adFieldPostThumbnailURL)
+func (a *Ad) SetLinkClicks(linkClicks float64) {
+	a.LinkClicks = linkClicks
+	a.require(adFieldLinkClicks)
 }
 
 // SetPrimaryTexts sets the PrimaryTexts field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetPrimaryTexts(primaryTexts []string) {
+func (a *Ad) SetPrimaryTexts(primaryTexts []*AdText) {
 	a.PrimaryTexts = primaryTexts
 	a.require(adFieldPrimaryTexts)
 }
@@ -1693,13 +1637,6 @@ func (a *Ad) SetScheduleValue(scheduleValue float64) {
 func (a *Ad) SetSchedules(schedules float64) {
 	a.Schedules = schedules
 	a.require(adFieldSchedules)
-}
-
-// SetSocialAccounts sets the SocialAccounts field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Ad) SetSocialAccounts(socialAccounts []*AdEntityReference) {
-	a.SocialAccounts = socialAccounts
-	a.require(adFieldSocialAccounts)
 }
 
 // SetSpend sets the Spend field and marks it as non-optional;
@@ -1805,6 +1742,13 @@ func (a *Ad) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1870,6 +1814,9 @@ const (
 	AdCallToActionEventRsvp            AdCallToAction = "event_rsvp"
 	AdCallToActionSeeDetails           AdCallToAction = "see_details"
 	AdCallToActionViewInstagramProfile AdCallToAction = "view_instagram_profile"
+	AdCallToActionDonateNow            AdCallToAction = "donate_now"
+	AdCallToActionSeeMore              AdCallToAction = "see_more"
+	AdCallToActionVisitSite            AdCallToAction = "visit_site"
 )
 
 func NewAdCallToActionFromString(s string) (AdCallToAction, error) {
@@ -1936,6 +1883,12 @@ func NewAdCallToActionFromString(s string) (AdCallToAction, error) {
 		return AdCallToActionSeeDetails, nil
 	case "view_instagram_profile":
 		return AdCallToActionViewInstagramProfile, nil
+	case "donate_now":
+		return AdCallToActionDonateNow, nil
+	case "see_more":
+		return AdCallToActionSeeMore, nil
+	case "visit_site":
+		return AdCallToActionVisitSite, nil
 	}
 	var t AdCallToAction
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1949,9 +1902,19 @@ var (
 	adCreativeFieldCrop      = big.NewInt(1 << 0)
 	adCreativeFieldFormat    = big.NewInt(1 << 1)
 	adCreativeFieldID        = big.NewInt(1 << 2)
-	adCreativeFieldMediaType = big.NewInt(1 << 3)
-	adCreativeFieldURL       = big.NewInt(1 << 4)
+	adCreativeFieldLanguage  = big.NewInt(1 << 3)
+	adCreativeFieldMediaType = big.NewInt(1 << 4)
+	adCreativeFieldURL       = big.NewInt(1 << 5)
 )
+
+// adCreativeNullableFields maps the wire names of AdCreative's nullable fields (required or optional) to their field bits.
+var adCreativeNullableFields = map[string]*big.Int{
+	"crop":       adCreativeFieldCrop,
+	"format":     adCreativeFieldFormat,
+	"language":   adCreativeFieldLanguage,
+	"media_type": adCreativeFieldMediaType,
+	"url":        adCreativeFieldURL,
+}
 
 type AdCreative struct {
 	// The saved crop window for this creative, in source image pixels. Null for the original asset or a format that has not been cropped.
@@ -1960,6 +1923,8 @@ type AdCreative struct {
 	Format *AdCreativeFormat `json:"format,omitempty" url:"format,omitempty"`
 	// The creative attachment's file id.
 	ID string `json:"id" url:"id"`
+	// Always `null`. Translations are no longer available.
+	Language *string `json:"language,omitempty" url:"language,omitempty"`
 	// The kind of asset, image or video.
 	MediaType *string `json:"media_type,omitempty" url:"media_type,omitempty"`
 	// CDN url of the asset.
@@ -1993,6 +1958,13 @@ func (a *AdCreative) GetID() string {
 	return a.ID
 }
 
+func (a *AdCreative) GetLanguage() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Language
+}
+
 func (a *AdCreative) GetMediaType() *string {
 	if a == nil {
 		return nil
@@ -2015,10 +1987,12 @@ func (a *AdCreative) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdCreative) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetCrop sets the Crop field and marks it as non-optional;
@@ -2040,6 +2014,13 @@ func (a *AdCreative) SetFormat(format *AdCreativeFormat) {
 func (a *AdCreative) SetID(id string) {
 	a.ID = id
 	a.require(adCreativeFieldID)
+}
+
+// SetLanguage sets the Language field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdCreative) SetLanguage(language *string) {
+	a.Language = language
+	a.require(adCreativeFieldLanguage)
 }
 
 // SetMediaType sets the MediaType field and marks it as non-optional;
@@ -2068,6 +2049,13 @@ func (a *AdCreative) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adCreativeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2158,10 +2146,12 @@ func (a *AdCreativeCrop) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AdCreativeCrop) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetHeight sets the Height field and marks it as non-optional;
@@ -2264,6 +2254,7 @@ func (a AdCreativeFormat) Ptr() *AdCreativeFormat {
 type AdDeliveryStatus string
 
 const (
+	AdDeliveryStatusInAppeal        AdDeliveryStatus = "in_appeal"
 	AdDeliveryStatusRejected        AdDeliveryStatus = "rejected"
 	AdDeliveryStatusInReview        AdDeliveryStatus = "in_review"
 	AdDeliveryStatusDraft           AdDeliveryStatus = "draft"
@@ -2280,6 +2271,8 @@ const (
 
 func NewAdDeliveryStatusFromString(s string) (AdDeliveryStatus, error) {
 	switch s {
+	case "in_appeal":
+		return AdDeliveryStatusInAppeal, nil
 	case "rejected":
 		return AdDeliveryStatusRejected, nil
 	case "in_review":
@@ -2310,459 +2303,6 @@ func NewAdDeliveryStatusFromString(s string) (AdDeliveryStatus, error) {
 }
 
 func (a AdDeliveryStatus) Ptr() *AdDeliveryStatus {
-	return &a
-}
-
-var (
-	adLeadFormFieldCompletion        = big.NewInt(1 << 0)
-	adLeadFormFieldDisclaimer        = big.NewInt(1 << 1)
-	adLeadFormFieldFormType          = big.NewInt(1 << 2)
-	adLeadFormFieldIntro             = big.NewInt(1 << 3)
-	adLeadFormFieldName              = big.NewInt(1 << 4)
-	adLeadFormFieldPhoneVerification = big.NewInt(1 << 5)
-	adLeadFormFieldPrivacyPolicy     = big.NewInt(1 << 6)
-	adLeadFormFieldQuestions         = big.NewInt(1 << 7)
-)
-
-type AdLeadForm struct {
-	// Screen shown after the form is submitted. `null` when the form uses the default.
-	Completion *AdLeadFormCompletion `json:"completion,omitempty" url:"completion,omitempty"`
-	// Custom consent disclaimer shown before submission. `null` when the form has none.
-	Disclaimer *AdLeadFormDisclaimer `json:"disclaimer,omitempty" url:"disclaimer,omitempty"`
-	// `more_volume` is quickest to submit; `higher_intent` adds a confirmation step before submission.
-	FormType AdLeadFormFormType `json:"form_type" url:"form_type"`
-	// Intro screen shown before the questions. `null` when the form has none.
-	Intro *AdLeadFormIntro `json:"intro,omitempty" url:"intro,omitempty"`
-	// Internal name of the form.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// Whether the phone number must be verified by SMS before submitting.
-	PhoneVerification bool `json:"phone_verification" url:"phone_verification"`
-	// Your privacy policy, linked from the form. `null` when unset.
-	PrivacyPolicy *AdLeadFormPrivacyPolicy `json:"privacy_policy,omitempty" url:"privacy_policy,omitempty"`
-	Questions     []*AdLeadFormQuestion    `json:"questions" url:"questions"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AdLeadForm) GetCompletion() *AdLeadFormCompletion {
-	if a == nil {
-		return nil
-	}
-	return a.Completion
-}
-
-func (a *AdLeadForm) GetDisclaimer() *AdLeadFormDisclaimer {
-	if a == nil {
-		return nil
-	}
-	return a.Disclaimer
-}
-
-func (a *AdLeadForm) GetFormType() AdLeadFormFormType {
-	if a == nil {
-		return ""
-	}
-	return a.FormType
-}
-
-func (a *AdLeadForm) GetIntro() *AdLeadFormIntro {
-	if a == nil {
-		return nil
-	}
-	return a.Intro
-}
-
-func (a *AdLeadForm) GetName() *string {
-	if a == nil {
-		return nil
-	}
-	return a.Name
-}
-
-func (a *AdLeadForm) GetPhoneVerification() bool {
-	if a == nil {
-		return false
-	}
-	return a.PhoneVerification
-}
-
-func (a *AdLeadForm) GetPrivacyPolicy() *AdLeadFormPrivacyPolicy {
-	if a == nil {
-		return nil
-	}
-	return a.PrivacyPolicy
-}
-
-func (a *AdLeadForm) GetQuestions() []*AdLeadFormQuestion {
-	if a == nil {
-		return nil
-	}
-	return a.Questions
-}
-
-func (a *AdLeadForm) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AdLeadForm) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
-	}
-	a.explicitFields.Or(a.explicitFields, field)
-}
-
-// SetCompletion sets the Completion field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdLeadForm) SetCompletion(completion *AdLeadFormCompletion) {
-	a.Completion = completion
-	a.require(adLeadFormFieldCompletion)
-}
-
-// SetDisclaimer sets the Disclaimer field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdLeadForm) SetDisclaimer(disclaimer *AdLeadFormDisclaimer) {
-	a.Disclaimer = disclaimer
-	a.require(adLeadFormFieldDisclaimer)
-}
-
-// SetFormType sets the FormType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdLeadForm) SetFormType(formType AdLeadFormFormType) {
-	a.FormType = formType
-	a.require(adLeadFormFieldFormType)
-}
-
-// SetIntro sets the Intro field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdLeadForm) SetIntro(intro *AdLeadFormIntro) {
-	a.Intro = intro
-	a.require(adLeadFormFieldIntro)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdLeadForm) SetName(name *string) {
-	a.Name = name
-	a.require(adLeadFormFieldName)
-}
-
-// SetPhoneVerification sets the PhoneVerification field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdLeadForm) SetPhoneVerification(phoneVerification bool) {
-	a.PhoneVerification = phoneVerification
-	a.require(adLeadFormFieldPhoneVerification)
-}
-
-// SetPrivacyPolicy sets the PrivacyPolicy field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdLeadForm) SetPrivacyPolicy(privacyPolicy *AdLeadFormPrivacyPolicy) {
-	a.PrivacyPolicy = privacyPolicy
-	a.require(adLeadFormFieldPrivacyPolicy)
-}
-
-// SetQuestions sets the Questions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdLeadForm) SetQuestions(questions []*AdLeadFormQuestion) {
-	a.Questions = questions
-	a.require(adLeadFormFieldQuestions)
-}
-
-func (a *AdLeadForm) UnmarshalJSON(data []byte) error {
-	type unmarshaler AdLeadForm
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AdLeadForm(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AdLeadForm) MarshalJSON() ([]byte, error) {
-	type embed AdLeadForm
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AdLeadForm) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-// `more_volume` is quickest to submit; `higher_intent` adds a confirmation step before submission.
-type AdLeadFormFormType string
-
-const (
-	AdLeadFormFormTypeMoreVolume   AdLeadFormFormType = "more_volume"
-	AdLeadFormFormTypeHigherIntent AdLeadFormFormType = "higher_intent"
-)
-
-func NewAdLeadFormFormTypeFromString(s string) (AdLeadFormFormType, error) {
-	switch s {
-	case "more_volume":
-		return AdLeadFormFormTypeMoreVolume, nil
-	case "higher_intent":
-		return AdLeadFormFormTypeHigherIntent, nil
-	}
-	var t AdLeadFormFormType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdLeadFormFormType) Ptr() *AdLeadFormFormType {
-	return &a
-}
-
-var (
-	adLeadFormPrivacyPolicyFieldLinkText = big.NewInt(1 << 0)
-	adLeadFormPrivacyPolicyFieldURL      = big.NewInt(1 << 1)
-)
-
-type AdLeadFormPrivacyPolicy struct {
-	// Link text shown for the policy. `null` uses the platform default.
-	LinkText *string `json:"link_text,omitempty" url:"link_text,omitempty"`
-	// URL of your privacy policy.
-	URL string `json:"url" url:"url"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AdLeadFormPrivacyPolicy) GetLinkText() *string {
-	if a == nil {
-		return nil
-	}
-	return a.LinkText
-}
-
-func (a *AdLeadFormPrivacyPolicy) GetURL() string {
-	if a == nil {
-		return ""
-	}
-	return a.URL
-}
-
-func (a *AdLeadFormPrivacyPolicy) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AdLeadFormPrivacyPolicy) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
-	}
-	a.explicitFields.Or(a.explicitFields, field)
-}
-
-// SetLinkText sets the LinkText field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdLeadFormPrivacyPolicy) SetLinkText(linkText *string) {
-	a.LinkText = linkText
-	a.require(adLeadFormPrivacyPolicyFieldLinkText)
-}
-
-// SetURL sets the URL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdLeadFormPrivacyPolicy) SetURL(url string) {
-	a.URL = url
-	a.require(adLeadFormPrivacyPolicyFieldURL)
-}
-
-func (a *AdLeadFormPrivacyPolicy) UnmarshalJSON(data []byte) error {
-	type unmarshaler AdLeadFormPrivacyPolicy
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AdLeadFormPrivacyPolicy(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AdLeadFormPrivacyPolicy) MarshalJSON() ([]byte, error) {
-	type embed AdLeadFormPrivacyPolicy
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AdLeadFormPrivacyPolicy) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-var (
-	adMessagingConfigFieldKeyword = big.NewInt(1 << 0)
-	adMessagingConfigFieldMessage = big.NewInt(1 << 1)
-)
-
-type AdMessagingConfig struct {
-	// Suggested reply the person can tap to start the conversation.
-	Keyword *string `json:"keyword,omitempty" url:"keyword,omitempty"`
-	// Greeting shown when the conversation opens.
-	Message *string `json:"message,omitempty" url:"message,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AdMessagingConfig) GetKeyword() *string {
-	if a == nil {
-		return nil
-	}
-	return a.Keyword
-}
-
-func (a *AdMessagingConfig) GetMessage() *string {
-	if a == nil {
-		return nil
-	}
-	return a.Message
-}
-
-func (a *AdMessagingConfig) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AdMessagingConfig) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
-	}
-	a.explicitFields.Or(a.explicitFields, field)
-}
-
-// SetKeyword sets the Keyword field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdMessagingConfig) SetKeyword(keyword *string) {
-	a.Keyword = keyword
-	a.require(adMessagingConfigFieldKeyword)
-}
-
-// SetMessage sets the Message field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdMessagingConfig) SetMessage(message *string) {
-	a.Message = message
-	a.require(adMessagingConfigFieldMessage)
-}
-
-func (a *AdMessagingConfig) UnmarshalJSON(data []byte) error {
-	type unmarshaler AdMessagingConfig
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AdMessagingConfig(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AdMessagingConfig) MarshalJSON() ([]byte, error) {
-	type embed AdMessagingConfig
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AdMessagingConfig) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-// Identifies the network that owns `post_id`; `null` when the ad uses uploaded creatives.
-type AdPostSource string
-
-const (
-	AdPostSourceFacebook  AdPostSource = "facebook"
-	AdPostSourceInstagram AdPostSource = "instagram"
-)
-
-func NewAdPostSourceFromString(s string) (AdPostSource, error) {
-	switch s {
-	case "facebook":
-		return AdPostSourceFacebook, nil
-	case "instagram":
-		return AdPostSourceInstagram, nil
-	}
-	var t AdPostSource
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdPostSource) Ptr() *AdPostSource {
 	return &a
 }
 
@@ -2813,6 +2353,195 @@ func (a AdResultEvent) Ptr() *AdResultEvent {
 	return &a
 }
 
+var (
+	adStatFieldAdCampaignID  = big.NewInt(1 << 0)
+	adStatFieldAdGroupID     = big.NewInt(1 << 1)
+	adStatFieldAdID          = big.NewInt(1 << 2)
+	adStatFieldClicks        = big.NewInt(1 << 3)
+	adStatFieldHourStartedAt = big.NewInt(1 << 4)
+	adStatFieldImpressions   = big.NewInt(1 << 5)
+	adStatFieldSpend         = big.NewInt(1 << 6)
+)
+
+type AdStat struct {
+	// The ID of the ad's campaign, prefixed `adcamp_`.
+	AdCampaignID string `json:"ad_campaign_id" url:"ad_campaign_id"`
+	// The ID of the ad's ad group, prefixed `adgrp_`.
+	AdGroupID string `json:"ad_group_id" url:"ad_group_id"`
+	// The ad's ID, prefixed `ad_`, as sent.
+	AdID string `json:"ad_id" url:"ad_id"`
+	// The ad's clicks in the hour.
+	Clicks int `json:"clicks" url:"clicks"`
+	// Start of the hour, as an ISO 8601 timestamp.
+	HourStartedAt string `json:"hour_started_at" url:"hour_started_at"`
+	// The ad's impressions in the hour.
+	Impressions int `json:"impressions" url:"impressions"`
+	// The spend recorded and paid for the ad in the hour, exactly as reported.
+	Spend *Money `json:"spend" url:"spend"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AdStat) GetAdCampaignID() string {
+	if a == nil {
+		return ""
+	}
+	return a.AdCampaignID
+}
+
+func (a *AdStat) GetAdGroupID() string {
+	if a == nil {
+		return ""
+	}
+	return a.AdGroupID
+}
+
+func (a *AdStat) GetAdID() string {
+	if a == nil {
+		return ""
+	}
+	return a.AdID
+}
+
+func (a *AdStat) GetClicks() int {
+	if a == nil {
+		return 0
+	}
+	return a.Clicks
+}
+
+func (a *AdStat) GetHourStartedAt() string {
+	if a == nil {
+		return ""
+	}
+	return a.HourStartedAt
+}
+
+func (a *AdStat) GetImpressions() int {
+	if a == nil {
+		return 0
+	}
+	return a.Impressions
+}
+
+func (a *AdStat) GetSpend() *Money {
+	if a == nil {
+		return nil
+	}
+	return a.Spend
+}
+
+func (a *AdStat) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AdStat) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetAdCampaignID sets the AdCampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdStat) SetAdCampaignID(adCampaignID string) {
+	a.AdCampaignID = adCampaignID
+	a.require(adStatFieldAdCampaignID)
+}
+
+// SetAdGroupID sets the AdGroupID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdStat) SetAdGroupID(adGroupID string) {
+	a.AdGroupID = adGroupID
+	a.require(adStatFieldAdGroupID)
+}
+
+// SetAdID sets the AdID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdStat) SetAdID(adID string) {
+	a.AdID = adID
+	a.require(adStatFieldAdID)
+}
+
+// SetClicks sets the Clicks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdStat) SetClicks(clicks int) {
+	a.Clicks = clicks
+	a.require(adStatFieldClicks)
+}
+
+// SetHourStartedAt sets the HourStartedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdStat) SetHourStartedAt(hourStartedAt string) {
+	a.HourStartedAt = hourStartedAt
+	a.require(adStatFieldHourStartedAt)
+}
+
+// SetImpressions sets the Impressions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdStat) SetImpressions(impressions int) {
+	a.Impressions = impressions
+	a.require(adStatFieldImpressions)
+}
+
+// SetSpend sets the Spend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdStat) SetSpend(spend *Money) {
+	a.Spend = spend
+	a.require(adStatFieldSpend)
+}
+
+func (a *AdStat) UnmarshalJSON(data []byte) error {
+	type unmarshaler AdStat
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AdStat(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AdStat) MarshalJSON() ([]byte, error) {
+	type embed AdStat
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AdStat) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
 // Whether the ad is enabled. `active` and `paused` are set by you; `in_review` and `rejected` come from ad review.
 type AdStatus string
 
@@ -2842,6 +2571,122 @@ func (a AdStatus) Ptr() *AdStatus {
 	return &a
 }
 
+var (
+	adTextFieldLanguage = big.NewInt(1 << 0)
+	adTextFieldText     = big.NewInt(1 << 1)
+)
+
+// adTextNullableFields maps the wire names of AdText's nullable fields (required or optional) to their field bits.
+var adTextNullableFields = map[string]*big.Int{
+	"language": adTextFieldLanguage,
+}
+
+type AdText struct {
+	// Always `null`. Translations are no longer available.
+	Language *string `json:"language,omitempty" url:"language,omitempty"`
+	// The text shown to viewers.
+	Text string `json:"text" url:"text"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AdText) GetLanguage() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Language
+}
+
+func (a *AdText) GetText() string {
+	if a == nil {
+		return ""
+	}
+	return a.Text
+}
+
+func (a *AdText) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AdText) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetLanguage sets the Language field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdText) SetLanguage(language *string) {
+	a.Language = language
+	a.require(adTextFieldLanguage)
+}
+
+// SetText sets the Text field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdText) SetText(text string) {
+	a.Text = text
+	a.require(adTextFieldText)
+}
+
+func (a *AdText) UnmarshalJSON(data []byte) error {
+	type unmarshaler AdText
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AdText(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adTextNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AdText) MarshalJSON() ([]byte, error) {
+	type embed AdText
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AdText) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
 // The call-to-action button shown on the ad.
 type CreateAdsRequestCallToAction string
 
@@ -2850,6 +2695,7 @@ const (
 	CreateAdsRequestCallToActionBookNow       CreateAdsRequestCallToAction = "book_now"
 	CreateAdsRequestCallToActionCallNow       CreateAdsRequestCallToAction = "call_now"
 	CreateAdsRequestCallToActionContactUs     CreateAdsRequestCallToAction = "contact_us"
+	CreateAdsRequestCallToActionDonateNow     CreateAdsRequestCallToAction = "donate_now"
 	CreateAdsRequestCallToActionDownload      CreateAdsRequestCallToAction = "download"
 	CreateAdsRequestCallToActionGetDirections CreateAdsRequestCallToAction = "get_directions"
 	CreateAdsRequestCallToActionGetOffer      CreateAdsRequestCallToAction = "get_offer"
@@ -2863,10 +2709,12 @@ const (
 	CreateAdsRequestCallToActionRequestTime   CreateAdsRequestCallToAction = "request_time"
 	CreateAdsRequestCallToActionSeeDetails    CreateAdsRequestCallToAction = "see_details"
 	CreateAdsRequestCallToActionSeeMenu       CreateAdsRequestCallToAction = "see_menu"
+	CreateAdsRequestCallToActionSeeMore       CreateAdsRequestCallToAction = "see_more"
 	CreateAdsRequestCallToActionSendUpdates   CreateAdsRequestCallToAction = "send_updates"
 	CreateAdsRequestCallToActionShopNow       CreateAdsRequestCallToAction = "shop_now"
 	CreateAdsRequestCallToActionSignUp        CreateAdsRequestCallToAction = "sign_up"
 	CreateAdsRequestCallToActionSubscribe     CreateAdsRequestCallToAction = "subscribe"
+	CreateAdsRequestCallToActionVisitSite     CreateAdsRequestCallToAction = "visit_site"
 	CreateAdsRequestCallToActionWatchMore     CreateAdsRequestCallToAction = "watch_more"
 )
 
@@ -2880,6 +2728,8 @@ func NewCreateAdsRequestCallToActionFromString(s string) (CreateAdsRequestCallTo
 		return CreateAdsRequestCallToActionCallNow, nil
 	case "contact_us":
 		return CreateAdsRequestCallToActionContactUs, nil
+	case "donate_now":
+		return CreateAdsRequestCallToActionDonateNow, nil
 	case "download":
 		return CreateAdsRequestCallToActionDownload, nil
 	case "get_directions":
@@ -2906,6 +2756,8 @@ func NewCreateAdsRequestCallToActionFromString(s string) (CreateAdsRequestCallTo
 		return CreateAdsRequestCallToActionSeeDetails, nil
 	case "see_menu":
 		return CreateAdsRequestCallToActionSeeMenu, nil
+	case "see_more":
+		return CreateAdsRequestCallToActionSeeMore, nil
 	case "send_updates":
 		return CreateAdsRequestCallToActionSendUpdates, nil
 	case "shop_now":
@@ -2914,6 +2766,8 @@ func NewCreateAdsRequestCallToActionFromString(s string) (CreateAdsRequestCallTo
 		return CreateAdsRequestCallToActionSignUp, nil
 	case "subscribe":
 		return CreateAdsRequestCallToActionSubscribe, nil
+	case "visit_site":
+		return CreateAdsRequestCallToActionVisitSite, nil
 	case "watch_more":
 		return CreateAdsRequestCallToActionWatchMore, nil
 	}
@@ -2974,10 +2828,12 @@ func (c *CreateAdsRequestCreativesItem) GetExtraProperties() map[string]interfac
 }
 
 func (c *CreateAdsRequestCreativesItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCrop sets the Crop field and marks it as non-optional;
@@ -3043,7 +2899,6 @@ func (c *CreateAdsRequestCreativesItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The saved crop window for this creative, in source image pixels. Omit it for the original asset or for a format that has not been cropped.
 var (
 	createAdsRequestCreativesItemCropFieldHeight = big.NewInt(1 << 0)
 	createAdsRequestCreativesItemCropFieldWidth  = big.NewInt(1 << 1)
@@ -3051,6 +2906,7 @@ var (
 	createAdsRequestCreativesItemCropFieldY      = big.NewInt(1 << 3)
 )
 
+// The saved crop window for this creative, in source image pixels. Omit it for the original asset or for a format that has not been cropped.
 type CreateAdsRequestCreativesItemCrop struct {
 	Height *float64 `json:"height,omitempty" url:"height,omitempty"`
 	Width  *float64 `json:"width,omitempty" url:"width,omitempty"`
@@ -3100,10 +2956,12 @@ func (c *CreateAdsRequestCreativesItemCrop) GetExtraProperties() map[string]inte
 }
 
 func (c *CreateAdsRequestCreativesItemCrop) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetHeight sets the Height field and marks it as non-optional;
@@ -3201,35 +3059,13 @@ func (c CreateAdsRequestCreativesItemFormat) Ptr() *CreateAdsRequestCreativesIte
 	return &c
 }
 
-// Instant lead form for the ad. Only allowed when the ad group's conversion_location is an instant-form destination (instant_forms, instant_forms_and_messenger, website_and_instant_forms). Mutually exclusive with lead_form_id.
 var (
-	createAdsRequestLeadFormFieldCompletion        = big.NewInt(1 << 0)
-	createAdsRequestLeadFormFieldDisclaimer        = big.NewInt(1 << 1)
-	createAdsRequestLeadFormFieldFormType          = big.NewInt(1 << 2)
-	createAdsRequestLeadFormFieldIntro             = big.NewInt(1 << 3)
-	createAdsRequestLeadFormFieldName              = big.NewInt(1 << 4)
-	createAdsRequestLeadFormFieldPhoneVerification = big.NewInt(1 << 5)
-	createAdsRequestLeadFormFieldPrivacyPolicy     = big.NewInt(1 << 6)
-	createAdsRequestLeadFormFieldQuestions         = big.NewInt(1 << 7)
+	createAdsRequestDescriptionsItemFieldText = big.NewInt(1 << 0)
 )
 
-type CreateAdsRequestLeadForm struct {
-	// Optional completion screen shown after submission; url sets the follow-up website button.
-	Completion *CreateAdsRequestLeadFormCompletion `json:"completion,omitempty" url:"completion,omitempty"`
-	// Optional custom consent disclaimer with checkboxes.
-	Disclaimer *CreateAdsRequestLeadFormDisclaimer `json:"disclaimer,omitempty" url:"disclaimer,omitempty"`
-	// more_volume (default) is quickest to submit; higher_intent adds a confirmation step.
-	FormType *CreateAdsRequestLeadFormFormType `json:"form_type,omitempty" url:"form_type,omitempty"`
-	// Optional intro screen shown before the questions.
-	Intro *CreateAdsRequestLeadFormIntro `json:"intro,omitempty" url:"intro,omitempty"`
-	// Internal name for the form. Auto-generated if omitted.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// Require SMS verification of the phone number (higher_intent forms).
-	PhoneVerification *bool `json:"phone_verification,omitempty" url:"phone_verification,omitempty"`
-	// Your privacy policy. url is required by the ad platform.
-	PrivacyPolicy *CreateAdsRequestLeadFormPrivacyPolicy `json:"privacy_policy,omitempty" url:"privacy_policy,omitempty"`
-	// The questions on the form. Standard prefill types need only a type; a custom question needs a label and a format (plus options for multiple_choice). Options carry an optional key and answer-routing logic.
-	Questions []*CreateAdsRequestLeadFormQuestionsItem `json:"questions,omitempty" url:"questions,omitempty"`
+type CreateAdsRequestDescriptionsItem struct {
+	// The text shown to viewers.
+	Text string `json:"text" url:"text"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3238,521 +3074,43 @@ type CreateAdsRequestLeadForm struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateAdsRequestLeadForm) GetCompletion() *CreateAdsRequestLeadFormCompletion {
+func (c *CreateAdsRequestDescriptionsItem) GetText() string {
 	if c == nil {
-		return nil
-	}
-	return c.Completion
-}
-
-func (c *CreateAdsRequestLeadForm) GetDisclaimer() *CreateAdsRequestLeadFormDisclaimer {
-	if c == nil {
-		return nil
-	}
-	return c.Disclaimer
-}
-
-func (c *CreateAdsRequestLeadForm) GetFormType() *CreateAdsRequestLeadFormFormType {
-	if c == nil {
-		return nil
-	}
-	return c.FormType
-}
-
-func (c *CreateAdsRequestLeadForm) GetIntro() *CreateAdsRequestLeadFormIntro {
-	if c == nil {
-		return nil
-	}
-	return c.Intro
-}
-
-func (c *CreateAdsRequestLeadForm) GetName() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Name
-}
-
-func (c *CreateAdsRequestLeadForm) GetPhoneVerification() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.PhoneVerification
-}
-
-func (c *CreateAdsRequestLeadForm) GetPrivacyPolicy() *CreateAdsRequestLeadFormPrivacyPolicy {
-	if c == nil {
-		return nil
-	}
-	return c.PrivacyPolicy
-}
-
-func (c *CreateAdsRequestLeadForm) GetQuestions() []*CreateAdsRequestLeadFormQuestionsItem {
-	if c == nil {
-		return nil
-	}
-	return c.Questions
-}
-
-func (c *CreateAdsRequestLeadForm) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateAdsRequestLeadForm) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetCompletion sets the Completion field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadForm) SetCompletion(completion *CreateAdsRequestLeadFormCompletion) {
-	c.Completion = completion
-	c.require(createAdsRequestLeadFormFieldCompletion)
-}
-
-// SetDisclaimer sets the Disclaimer field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadForm) SetDisclaimer(disclaimer *CreateAdsRequestLeadFormDisclaimer) {
-	c.Disclaimer = disclaimer
-	c.require(createAdsRequestLeadFormFieldDisclaimer)
-}
-
-// SetFormType sets the FormType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadForm) SetFormType(formType *CreateAdsRequestLeadFormFormType) {
-	c.FormType = formType
-	c.require(createAdsRequestLeadFormFieldFormType)
-}
-
-// SetIntro sets the Intro field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadForm) SetIntro(intro *CreateAdsRequestLeadFormIntro) {
-	c.Intro = intro
-	c.require(createAdsRequestLeadFormFieldIntro)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadForm) SetName(name *string) {
-	c.Name = name
-	c.require(createAdsRequestLeadFormFieldName)
-}
-
-// SetPhoneVerification sets the PhoneVerification field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadForm) SetPhoneVerification(phoneVerification *bool) {
-	c.PhoneVerification = phoneVerification
-	c.require(createAdsRequestLeadFormFieldPhoneVerification)
-}
-
-// SetPrivacyPolicy sets the PrivacyPolicy field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadForm) SetPrivacyPolicy(privacyPolicy *CreateAdsRequestLeadFormPrivacyPolicy) {
-	c.PrivacyPolicy = privacyPolicy
-	c.require(createAdsRequestLeadFormFieldPrivacyPolicy)
-}
-
-// SetQuestions sets the Questions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadForm) SetQuestions(questions []*CreateAdsRequestLeadFormQuestionsItem) {
-	c.Questions = questions
-	c.require(createAdsRequestLeadFormFieldQuestions)
-}
-
-func (c *CreateAdsRequestLeadForm) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAdsRequestLeadForm
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateAdsRequestLeadForm(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateAdsRequestLeadForm) MarshalJSON() ([]byte, error) {
-	type embed CreateAdsRequestLeadForm
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateAdsRequestLeadForm) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-// Optional completion screen shown after submission; url sets the follow-up website button.
-var (
-	createAdsRequestLeadFormCompletionFieldButtonText  = big.NewInt(1 << 0)
-	createAdsRequestLeadFormCompletionFieldDescription = big.NewInt(1 << 1)
-	createAdsRequestLeadFormCompletionFieldHeadline    = big.NewInt(1 << 2)
-	createAdsRequestLeadFormCompletionFieldURL         = big.NewInt(1 << 3)
-)
-
-type CreateAdsRequestLeadFormCompletion struct {
-	ButtonText  *string `json:"button_text,omitempty" url:"button_text,omitempty"`
-	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	Headline    *string `json:"headline,omitempty" url:"headline,omitempty"`
-	URL         *string `json:"url,omitempty" url:"url,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateAdsRequestLeadFormCompletion) GetButtonText() *string {
-	if c == nil {
-		return nil
-	}
-	return c.ButtonText
-}
-
-func (c *CreateAdsRequestLeadFormCompletion) GetDescription() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Description
-}
-
-func (c *CreateAdsRequestLeadFormCompletion) GetHeadline() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Headline
-}
-
-func (c *CreateAdsRequestLeadFormCompletion) GetURL() *string {
-	if c == nil {
-		return nil
-	}
-	return c.URL
-}
-
-func (c *CreateAdsRequestLeadFormCompletion) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateAdsRequestLeadFormCompletion) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetButtonText sets the ButtonText field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormCompletion) SetButtonText(buttonText *string) {
-	c.ButtonText = buttonText
-	c.require(createAdsRequestLeadFormCompletionFieldButtonText)
-}
-
-// SetDescription sets the Description field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormCompletion) SetDescription(description *string) {
-	c.Description = description
-	c.require(createAdsRequestLeadFormCompletionFieldDescription)
-}
-
-// SetHeadline sets the Headline field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormCompletion) SetHeadline(headline *string) {
-	c.Headline = headline
-	c.require(createAdsRequestLeadFormCompletionFieldHeadline)
-}
-
-// SetURL sets the URL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormCompletion) SetURL(url *string) {
-	c.URL = url
-	c.require(createAdsRequestLeadFormCompletionFieldURL)
-}
-
-func (c *CreateAdsRequestLeadFormCompletion) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAdsRequestLeadFormCompletion
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateAdsRequestLeadFormCompletion(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateAdsRequestLeadFormCompletion) MarshalJSON() ([]byte, error) {
-	type embed CreateAdsRequestLeadFormCompletion
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateAdsRequestLeadFormCompletion) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-// Optional custom consent disclaimer with checkboxes.
-var (
-	createAdsRequestLeadFormDisclaimerFieldBody       = big.NewInt(1 << 0)
-	createAdsRequestLeadFormDisclaimerFieldCheckboxes = big.NewInt(1 << 1)
-	createAdsRequestLeadFormDisclaimerFieldTitle      = big.NewInt(1 << 2)
-)
-
-type CreateAdsRequestLeadFormDisclaimer struct {
-	Body       *string                                             `json:"body,omitempty" url:"body,omitempty"`
-	Checkboxes []*CreateAdsRequestLeadFormDisclaimerCheckboxesItem `json:"checkboxes,omitempty" url:"checkboxes,omitempty"`
-	Title      *string                                             `json:"title,omitempty" url:"title,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateAdsRequestLeadFormDisclaimer) GetBody() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Body
-}
-
-func (c *CreateAdsRequestLeadFormDisclaimer) GetCheckboxes() []*CreateAdsRequestLeadFormDisclaimerCheckboxesItem {
-	if c == nil {
-		return nil
-	}
-	return c.Checkboxes
-}
-
-func (c *CreateAdsRequestLeadFormDisclaimer) GetTitle() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Title
-}
-
-func (c *CreateAdsRequestLeadFormDisclaimer) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateAdsRequestLeadFormDisclaimer) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetBody sets the Body field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormDisclaimer) SetBody(body *string) {
-	c.Body = body
-	c.require(createAdsRequestLeadFormDisclaimerFieldBody)
-}
-
-// SetCheckboxes sets the Checkboxes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormDisclaimer) SetCheckboxes(checkboxes []*CreateAdsRequestLeadFormDisclaimerCheckboxesItem) {
-	c.Checkboxes = checkboxes
-	c.require(createAdsRequestLeadFormDisclaimerFieldCheckboxes)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormDisclaimer) SetTitle(title *string) {
-	c.Title = title
-	c.require(createAdsRequestLeadFormDisclaimerFieldTitle)
-}
-
-func (c *CreateAdsRequestLeadFormDisclaimer) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAdsRequestLeadFormDisclaimer
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateAdsRequestLeadFormDisclaimer(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateAdsRequestLeadFormDisclaimer) MarshalJSON() ([]byte, error) {
-	type embed CreateAdsRequestLeadFormDisclaimer
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateAdsRequestLeadFormDisclaimer) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createAdsRequestLeadFormDisclaimerCheckboxesItemFieldCheckedByDefault = big.NewInt(1 << 0)
-	createAdsRequestLeadFormDisclaimerCheckboxesItemFieldKey              = big.NewInt(1 << 1)
-	createAdsRequestLeadFormDisclaimerCheckboxesItemFieldRequired         = big.NewInt(1 << 2)
-	createAdsRequestLeadFormDisclaimerCheckboxesItemFieldText             = big.NewInt(1 << 3)
-)
-
-type CreateAdsRequestLeadFormDisclaimerCheckboxesItem struct {
-	CheckedByDefault *bool   `json:"checked_by_default,omitempty" url:"checked_by_default,omitempty"`
-	Key              *string `json:"key,omitempty" url:"key,omitempty"`
-	Required         *bool   `json:"required,omitempty" url:"required,omitempty"`
-	Text             *string `json:"text,omitempty" url:"text,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateAdsRequestLeadFormDisclaimerCheckboxesItem) GetCheckedByDefault() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.CheckedByDefault
-}
-
-func (c *CreateAdsRequestLeadFormDisclaimerCheckboxesItem) GetKey() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Key
-}
-
-func (c *CreateAdsRequestLeadFormDisclaimerCheckboxesItem) GetRequired() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.Required
-}
-
-func (c *CreateAdsRequestLeadFormDisclaimerCheckboxesItem) GetText() *string {
-	if c == nil {
-		return nil
+		return ""
 	}
 	return c.Text
 }
 
-func (c *CreateAdsRequestLeadFormDisclaimerCheckboxesItem) GetExtraProperties() map[string]interface{} {
+func (c *CreateAdsRequestDescriptionsItem) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreateAdsRequestLeadFormDisclaimerCheckboxesItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+func (c *CreateAdsRequestDescriptionsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetCheckedByDefault sets the CheckedByDefault field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormDisclaimerCheckboxesItem) SetCheckedByDefault(checkedByDefault *bool) {
-	c.CheckedByDefault = checkedByDefault
-	c.require(createAdsRequestLeadFormDisclaimerCheckboxesItemFieldCheckedByDefault)
-}
-
-// SetKey sets the Key field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormDisclaimerCheckboxesItem) SetKey(key *string) {
-	c.Key = key
-	c.require(createAdsRequestLeadFormDisclaimerCheckboxesItemFieldKey)
-}
-
-// SetRequired sets the Required field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormDisclaimerCheckboxesItem) SetRequired(required *bool) {
-	c.Required = required
-	c.require(createAdsRequestLeadFormDisclaimerCheckboxesItemFieldRequired)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetText sets the Text field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormDisclaimerCheckboxesItem) SetText(text *string) {
+func (c *CreateAdsRequestDescriptionsItem) SetText(text string) {
 	c.Text = text
-	c.require(createAdsRequestLeadFormDisclaimerCheckboxesItemFieldText)
+	c.require(createAdsRequestDescriptionsItemFieldText)
 }
 
-func (c *CreateAdsRequestLeadFormDisclaimerCheckboxesItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAdsRequestLeadFormDisclaimerCheckboxesItem
+func (c *CreateAdsRequestDescriptionsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdsRequestDescriptionsItem
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreateAdsRequestLeadFormDisclaimerCheckboxesItem(value)
+	*c = CreateAdsRequestDescriptionsItem(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
@@ -3762,8 +3120,8 @@ func (c *CreateAdsRequestLeadFormDisclaimerCheckboxesItem) UnmarshalJSON(data []
 	return nil
 }
 
-func (c *CreateAdsRequestLeadFormDisclaimerCheckboxesItem) MarshalJSON() ([]byte, error) {
-	type embed CreateAdsRequestLeadFormDisclaimerCheckboxesItem
+func (c *CreateAdsRequestDescriptionsItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdsRequestDescriptionsItem
 	var marshaler = struct {
 		embed
 	}{
@@ -3773,232 +3131,7 @@ func (c *CreateAdsRequestLeadFormDisclaimerCheckboxesItem) MarshalJSON() ([]byte
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreateAdsRequestLeadFormDisclaimerCheckboxesItem) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-// more_volume (default) is quickest to submit; higher_intent adds a confirmation step.
-type CreateAdsRequestLeadFormFormType string
-
-const (
-	CreateAdsRequestLeadFormFormTypeMoreVolume   CreateAdsRequestLeadFormFormType = "more_volume"
-	CreateAdsRequestLeadFormFormTypeHigherIntent CreateAdsRequestLeadFormFormType = "higher_intent"
-)
-
-func NewCreateAdsRequestLeadFormFormTypeFromString(s string) (CreateAdsRequestLeadFormFormType, error) {
-	switch s {
-	case "more_volume":
-		return CreateAdsRequestLeadFormFormTypeMoreVolume, nil
-	case "higher_intent":
-		return CreateAdsRequestLeadFormFormTypeHigherIntent, nil
-	}
-	var t CreateAdsRequestLeadFormFormType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateAdsRequestLeadFormFormType) Ptr() *CreateAdsRequestLeadFormFormType {
-	return &c
-}
-
-// Optional intro screen shown before the questions.
-var (
-	createAdsRequestLeadFormIntroFieldDescription = big.NewInt(1 << 0)
-	createAdsRequestLeadFormIntroFieldHeadline    = big.NewInt(1 << 1)
-)
-
-type CreateAdsRequestLeadFormIntro struct {
-	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	Headline    *string `json:"headline,omitempty" url:"headline,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateAdsRequestLeadFormIntro) GetDescription() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Description
-}
-
-func (c *CreateAdsRequestLeadFormIntro) GetHeadline() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Headline
-}
-
-func (c *CreateAdsRequestLeadFormIntro) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateAdsRequestLeadFormIntro) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetDescription sets the Description field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormIntro) SetDescription(description *string) {
-	c.Description = description
-	c.require(createAdsRequestLeadFormIntroFieldDescription)
-}
-
-// SetHeadline sets the Headline field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormIntro) SetHeadline(headline *string) {
-	c.Headline = headline
-	c.require(createAdsRequestLeadFormIntroFieldHeadline)
-}
-
-func (c *CreateAdsRequestLeadFormIntro) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAdsRequestLeadFormIntro
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateAdsRequestLeadFormIntro(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateAdsRequestLeadFormIntro) MarshalJSON() ([]byte, error) {
-	type embed CreateAdsRequestLeadFormIntro
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateAdsRequestLeadFormIntro) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-// Your privacy policy. url is required by the ad platform.
-var (
-	createAdsRequestLeadFormPrivacyPolicyFieldLinkText = big.NewInt(1 << 0)
-	createAdsRequestLeadFormPrivacyPolicyFieldURL      = big.NewInt(1 << 1)
-)
-
-type CreateAdsRequestLeadFormPrivacyPolicy struct {
-	LinkText *string `json:"link_text,omitempty" url:"link_text,omitempty"`
-	URL      *string `json:"url,omitempty" url:"url,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateAdsRequestLeadFormPrivacyPolicy) GetLinkText() *string {
-	if c == nil {
-		return nil
-	}
-	return c.LinkText
-}
-
-func (c *CreateAdsRequestLeadFormPrivacyPolicy) GetURL() *string {
-	if c == nil {
-		return nil
-	}
-	return c.URL
-}
-
-func (c *CreateAdsRequestLeadFormPrivacyPolicy) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateAdsRequestLeadFormPrivacyPolicy) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetLinkText sets the LinkText field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormPrivacyPolicy) SetLinkText(linkText *string) {
-	c.LinkText = linkText
-	c.require(createAdsRequestLeadFormPrivacyPolicyFieldLinkText)
-}
-
-// SetURL sets the URL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormPrivacyPolicy) SetURL(url *string) {
-	c.URL = url
-	c.require(createAdsRequestLeadFormPrivacyPolicyFieldURL)
-}
-
-func (c *CreateAdsRequestLeadFormPrivacyPolicy) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAdsRequestLeadFormPrivacyPolicy
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateAdsRequestLeadFormPrivacyPolicy(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateAdsRequestLeadFormPrivacyPolicy) MarshalJSON() ([]byte, error) {
-	type embed CreateAdsRequestLeadFormPrivacyPolicy
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateAdsRequestLeadFormPrivacyPolicy) String() string {
+func (c *CreateAdsRequestDescriptionsItem) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -4014,17 +3147,12 @@ func (c *CreateAdsRequestLeadFormPrivacyPolicy) String() string {
 }
 
 var (
-	createAdsRequestLeadFormQuestionsItemFieldFormat  = big.NewInt(1 << 0)
-	createAdsRequestLeadFormQuestionsItemFieldLabel   = big.NewInt(1 << 1)
-	createAdsRequestLeadFormQuestionsItemFieldOptions = big.NewInt(1 << 2)
-	createAdsRequestLeadFormQuestionsItemFieldType    = big.NewInt(1 << 3)
+	createAdsRequestHeadlinesItemFieldText = big.NewInt(1 << 0)
 )
 
-type CreateAdsRequestLeadFormQuestionsItem struct {
-	Format  *CreateAdsRequestLeadFormQuestionsItemFormat        `json:"format,omitempty" url:"format,omitempty"`
-	Label   *string                                             `json:"label,omitempty" url:"label,omitempty"`
-	Options []*CreateAdsRequestLeadFormQuestionsItemOptionsItem `json:"options,omitempty" url:"options,omitempty"`
-	Type    *CreateAdsRequestLeadFormQuestionsItemType          `json:"type,omitempty" url:"type,omitempty"`
+type CreateAdsRequestHeadlinesItem struct {
+	// The text shown to viewers.
+	Text string `json:"text" url:"text"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4033,83 +3161,43 @@ type CreateAdsRequestLeadFormQuestionsItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateAdsRequestLeadFormQuestionsItem) GetFormat() *CreateAdsRequestLeadFormQuestionsItemFormat {
+func (c *CreateAdsRequestHeadlinesItem) GetText() string {
 	if c == nil {
-		return nil
+		return ""
 	}
-	return c.Format
+	return c.Text
 }
 
-func (c *CreateAdsRequestLeadFormQuestionsItem) GetLabel() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Label
-}
-
-func (c *CreateAdsRequestLeadFormQuestionsItem) GetOptions() []*CreateAdsRequestLeadFormQuestionsItemOptionsItem {
-	if c == nil {
-		return nil
-	}
-	return c.Options
-}
-
-func (c *CreateAdsRequestLeadFormQuestionsItem) GetType() *CreateAdsRequestLeadFormQuestionsItemType {
-	if c == nil {
-		return nil
-	}
-	return c.Type
-}
-
-func (c *CreateAdsRequestLeadFormQuestionsItem) GetExtraProperties() map[string]interface{} {
+func (c *CreateAdsRequestHeadlinesItem) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreateAdsRequestLeadFormQuestionsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+func (c *CreateAdsRequestHeadlinesItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
-// SetFormat sets the Format field and marks it as non-optional;
+// SetText sets the Text field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormQuestionsItem) SetFormat(format *CreateAdsRequestLeadFormQuestionsItemFormat) {
-	c.Format = format
-	c.require(createAdsRequestLeadFormQuestionsItemFieldFormat)
+func (c *CreateAdsRequestHeadlinesItem) SetText(text string) {
+	c.Text = text
+	c.require(createAdsRequestHeadlinesItemFieldText)
 }
 
-// SetLabel sets the Label field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormQuestionsItem) SetLabel(label *string) {
-	c.Label = label
-	c.require(createAdsRequestLeadFormQuestionsItemFieldLabel)
-}
-
-// SetOptions sets the Options field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormQuestionsItem) SetOptions(options []*CreateAdsRequestLeadFormQuestionsItemOptionsItem) {
-	c.Options = options
-	c.require(createAdsRequestLeadFormQuestionsItemFieldOptions)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormQuestionsItem) SetType(type_ *CreateAdsRequestLeadFormQuestionsItemType) {
-	c.Type = type_
-	c.require(createAdsRequestLeadFormQuestionsItemFieldType)
-}
-
-func (c *CreateAdsRequestLeadFormQuestionsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAdsRequestLeadFormQuestionsItem
+func (c *CreateAdsRequestHeadlinesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdsRequestHeadlinesItem
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreateAdsRequestLeadFormQuestionsItem(value)
+	*c = CreateAdsRequestHeadlinesItem(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
@@ -4119,8 +3207,8 @@ func (c *CreateAdsRequestLeadFormQuestionsItem) UnmarshalJSON(data []byte) error
 	return nil
 }
 
-func (c *CreateAdsRequestLeadFormQuestionsItem) MarshalJSON() ([]byte, error) {
-	type embed CreateAdsRequestLeadFormQuestionsItem
+func (c *CreateAdsRequestHeadlinesItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdsRequestHeadlinesItem
 	var marshaler = struct {
 		embed
 	}{
@@ -4130,148 +3218,7 @@ func (c *CreateAdsRequestLeadFormQuestionsItem) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreateAdsRequestLeadFormQuestionsItem) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-type CreateAdsRequestLeadFormQuestionsItemFormat string
-
-const (
-	CreateAdsRequestLeadFormQuestionsItemFormatShortAnswer    CreateAdsRequestLeadFormQuestionsItemFormat = "short_answer"
-	CreateAdsRequestLeadFormQuestionsItemFormatMultipleChoice CreateAdsRequestLeadFormQuestionsItemFormat = "multiple_choice"
-	CreateAdsRequestLeadFormQuestionsItemFormatAppointment    CreateAdsRequestLeadFormQuestionsItemFormat = "appointment"
-)
-
-func NewCreateAdsRequestLeadFormQuestionsItemFormatFromString(s string) (CreateAdsRequestLeadFormQuestionsItemFormat, error) {
-	switch s {
-	case "short_answer":
-		return CreateAdsRequestLeadFormQuestionsItemFormatShortAnswer, nil
-	case "multiple_choice":
-		return CreateAdsRequestLeadFormQuestionsItemFormatMultipleChoice, nil
-	case "appointment":
-		return CreateAdsRequestLeadFormQuestionsItemFormatAppointment, nil
-	}
-	var t CreateAdsRequestLeadFormQuestionsItemFormat
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateAdsRequestLeadFormQuestionsItemFormat) Ptr() *CreateAdsRequestLeadFormQuestionsItemFormat {
-	return &c
-}
-
-var (
-	createAdsRequestLeadFormQuestionsItemOptionsItemFieldKey   = big.NewInt(1 << 0)
-	createAdsRequestLeadFormQuestionsItemOptionsItemFieldLogic = big.NewInt(1 << 1)
-	createAdsRequestLeadFormQuestionsItemOptionsItemFieldValue = big.NewInt(1 << 2)
-)
-
-type CreateAdsRequestLeadFormQuestionsItemOptionsItem struct {
-	Key   *string                                                `json:"key,omitempty" url:"key,omitempty"`
-	Logic *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic `json:"logic,omitempty" url:"logic,omitempty"`
-	Value *string                                                `json:"value,omitempty" url:"value,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItem) GetKey() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Key
-}
-
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItem) GetLogic() *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic {
-	if c == nil {
-		return nil
-	}
-	return c.Logic
-}
-
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItem) GetValue() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Value
-}
-
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItem) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetKey sets the Key field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItem) SetKey(key *string) {
-	c.Key = key
-	c.require(createAdsRequestLeadFormQuestionsItemOptionsItemFieldKey)
-}
-
-// SetLogic sets the Logic field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItem) SetLogic(logic *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic) {
-	c.Logic = logic
-	c.require(createAdsRequestLeadFormQuestionsItemOptionsItemFieldLogic)
-}
-
-// SetValue sets the Value field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItem) SetValue(value *string) {
-	c.Value = value
-	c.require(createAdsRequestLeadFormQuestionsItemOptionsItemFieldValue)
-}
-
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAdsRequestLeadFormQuestionsItemOptionsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateAdsRequestLeadFormQuestionsItemOptionsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItem) MarshalJSON() ([]byte, error) {
-	type embed CreateAdsRequestLeadFormQuestionsItemOptionsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItem) String() string {
+func (c *CreateAdsRequestHeadlinesItem) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -4287,15 +3234,12 @@ func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItem) String() string {
 }
 
 var (
-	createAdsRequestLeadFormQuestionsItemOptionsItemLogicFieldAction              = big.NewInt(1 << 0)
-	createAdsRequestLeadFormQuestionsItemOptionsItemLogicFieldTargetEndPageIndex  = big.NewInt(1 << 1)
-	createAdsRequestLeadFormQuestionsItemOptionsItemLogicFieldTargetQuestionIndex = big.NewInt(1 << 2)
+	createAdsRequestPrimaryTextsItemFieldText = big.NewInt(1 << 0)
 )
 
-type CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic struct {
-	Action              *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction `json:"action,omitempty" url:"action,omitempty"`
-	TargetEndPageIndex  *int                                                         `json:"target_end_page_index,omitempty" url:"target_end_page_index,omitempty"`
-	TargetQuestionIndex *int                                                         `json:"target_question_index,omitempty" url:"target_question_index,omitempty"`
+type CreateAdsRequestPrimaryTextsItem struct {
+	// The text shown to viewers.
+	Text string `json:"text" url:"text"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4304,69 +3248,43 @@ type CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic) GetAction() *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction {
+func (c *CreateAdsRequestPrimaryTextsItem) GetText() string {
 	if c == nil {
-		return nil
+		return ""
 	}
-	return c.Action
+	return c.Text
 }
 
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic) GetTargetEndPageIndex() *int {
-	if c == nil {
-		return nil
-	}
-	return c.TargetEndPageIndex
-}
-
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic) GetTargetQuestionIndex() *int {
-	if c == nil {
-		return nil
-	}
-	return c.TargetQuestionIndex
-}
-
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic) GetExtraProperties() map[string]interface{} {
+func (c *CreateAdsRequestPrimaryTextsItem) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+func (c *CreateAdsRequestPrimaryTextsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
-// SetAction sets the Action field and marks it as non-optional;
+// SetText sets the Text field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic) SetAction(action *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction) {
-	c.Action = action
-	c.require(createAdsRequestLeadFormQuestionsItemOptionsItemLogicFieldAction)
+func (c *CreateAdsRequestPrimaryTextsItem) SetText(text string) {
+	c.Text = text
+	c.require(createAdsRequestPrimaryTextsItemFieldText)
 }
 
-// SetTargetEndPageIndex sets the TargetEndPageIndex field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic) SetTargetEndPageIndex(targetEndPageIndex *int) {
-	c.TargetEndPageIndex = targetEndPageIndex
-	c.require(createAdsRequestLeadFormQuestionsItemOptionsItemLogicFieldTargetEndPageIndex)
-}
-
-// SetTargetQuestionIndex sets the TargetQuestionIndex field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic) SetTargetQuestionIndex(targetQuestionIndex *int) {
-	c.TargetQuestionIndex = targetQuestionIndex
-	c.require(createAdsRequestLeadFormQuestionsItemOptionsItemLogicFieldTargetQuestionIndex)
-}
-
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic
+func (c *CreateAdsRequestPrimaryTextsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAdsRequestPrimaryTextsItem
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic(value)
+	*c = CreateAdsRequestPrimaryTextsItem(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
@@ -4376,8 +3294,8 @@ func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic) UnmarshalJSON(da
 	return nil
 }
 
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic) MarshalJSON() ([]byte, error) {
-	type embed CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic
+func (c *CreateAdsRequestPrimaryTextsItem) MarshalJSON() ([]byte, error) {
+	type embed CreateAdsRequestPrimaryTextsItem
 	var marshaler = struct {
 		embed
 	}{
@@ -4387,320 +3305,7 @@ func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic) MarshalJSON() ([
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogic) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-type CreateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction string
-
-const (
-	CreateAdsRequestLeadFormQuestionsItemOptionsItemLogicActionGoToQuestion CreateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction = "go_to_question"
-	CreateAdsRequestLeadFormQuestionsItemOptionsItemLogicActionSubmitForm   CreateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction = "submit_form"
-	CreateAdsRequestLeadFormQuestionsItemOptionsItemLogicActionCloseForm    CreateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction = "close_form"
-)
-
-func NewCreateAdsRequestLeadFormQuestionsItemOptionsItemLogicActionFromString(s string) (CreateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction, error) {
-	switch s {
-	case "go_to_question":
-		return CreateAdsRequestLeadFormQuestionsItemOptionsItemLogicActionGoToQuestion, nil
-	case "submit_form":
-		return CreateAdsRequestLeadFormQuestionsItemOptionsItemLogicActionSubmitForm, nil
-	case "close_form":
-		return CreateAdsRequestLeadFormQuestionsItemOptionsItemLogicActionCloseForm, nil
-	}
-	var t CreateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction) Ptr() *CreateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction {
-	return &c
-}
-
-type CreateAdsRequestLeadFormQuestionsItemType string
-
-const (
-	CreateAdsRequestLeadFormQuestionsItemTypeEmail              CreateAdsRequestLeadFormQuestionsItemType = "email"
-	CreateAdsRequestLeadFormQuestionsItemTypePhone              CreateAdsRequestLeadFormQuestionsItemType = "phone"
-	CreateAdsRequestLeadFormQuestionsItemTypeFullName           CreateAdsRequestLeadFormQuestionsItemType = "full_name"
-	CreateAdsRequestLeadFormQuestionsItemTypeFirstName          CreateAdsRequestLeadFormQuestionsItemType = "first_name"
-	CreateAdsRequestLeadFormQuestionsItemTypeLastName           CreateAdsRequestLeadFormQuestionsItemType = "last_name"
-	CreateAdsRequestLeadFormQuestionsItemTypeCity               CreateAdsRequestLeadFormQuestionsItemType = "city"
-	CreateAdsRequestLeadFormQuestionsItemTypeState              CreateAdsRequestLeadFormQuestionsItemType = "state"
-	CreateAdsRequestLeadFormQuestionsItemTypeZip                CreateAdsRequestLeadFormQuestionsItemType = "zip"
-	CreateAdsRequestLeadFormQuestionsItemTypeCountry            CreateAdsRequestLeadFormQuestionsItemType = "country"
-	CreateAdsRequestLeadFormQuestionsItemTypeStreetAddress      CreateAdsRequestLeadFormQuestionsItemType = "street_address"
-	CreateAdsRequestLeadFormQuestionsItemTypeJobTitle           CreateAdsRequestLeadFormQuestionsItemType = "job_title"
-	CreateAdsRequestLeadFormQuestionsItemTypeCompanyName        CreateAdsRequestLeadFormQuestionsItemType = "company_name"
-	CreateAdsRequestLeadFormQuestionsItemTypeWorkEmail          CreateAdsRequestLeadFormQuestionsItemType = "work_email"
-	CreateAdsRequestLeadFormQuestionsItemTypeWorkPhoneNumber    CreateAdsRequestLeadFormQuestionsItemType = "work_phone_number"
-	CreateAdsRequestLeadFormQuestionsItemTypeDob                CreateAdsRequestLeadFormQuestionsItemType = "dob"
-	CreateAdsRequestLeadFormQuestionsItemTypeGender             CreateAdsRequestLeadFormQuestionsItemType = "gender"
-	CreateAdsRequestLeadFormQuestionsItemTypeMaritalStatus      CreateAdsRequestLeadFormQuestionsItemType = "marital_status"
-	CreateAdsRequestLeadFormQuestionsItemTypeRelationshipStatus CreateAdsRequestLeadFormQuestionsItemType = "relationship_status"
-	CreateAdsRequestLeadFormQuestionsItemTypeMilitaryStatus     CreateAdsRequestLeadFormQuestionsItemType = "military_status"
-	CreateAdsRequestLeadFormQuestionsItemTypeDateTime           CreateAdsRequestLeadFormQuestionsItemType = "date_time"
-	CreateAdsRequestLeadFormQuestionsItemTypeCustom             CreateAdsRequestLeadFormQuestionsItemType = "custom"
-)
-
-func NewCreateAdsRequestLeadFormQuestionsItemTypeFromString(s string) (CreateAdsRequestLeadFormQuestionsItemType, error) {
-	switch s {
-	case "email":
-		return CreateAdsRequestLeadFormQuestionsItemTypeEmail, nil
-	case "phone":
-		return CreateAdsRequestLeadFormQuestionsItemTypePhone, nil
-	case "full_name":
-		return CreateAdsRequestLeadFormQuestionsItemTypeFullName, nil
-	case "first_name":
-		return CreateAdsRequestLeadFormQuestionsItemTypeFirstName, nil
-	case "last_name":
-		return CreateAdsRequestLeadFormQuestionsItemTypeLastName, nil
-	case "city":
-		return CreateAdsRequestLeadFormQuestionsItemTypeCity, nil
-	case "state":
-		return CreateAdsRequestLeadFormQuestionsItemTypeState, nil
-	case "zip":
-		return CreateAdsRequestLeadFormQuestionsItemTypeZip, nil
-	case "country":
-		return CreateAdsRequestLeadFormQuestionsItemTypeCountry, nil
-	case "street_address":
-		return CreateAdsRequestLeadFormQuestionsItemTypeStreetAddress, nil
-	case "job_title":
-		return CreateAdsRequestLeadFormQuestionsItemTypeJobTitle, nil
-	case "company_name":
-		return CreateAdsRequestLeadFormQuestionsItemTypeCompanyName, nil
-	case "work_email":
-		return CreateAdsRequestLeadFormQuestionsItemTypeWorkEmail, nil
-	case "work_phone_number":
-		return CreateAdsRequestLeadFormQuestionsItemTypeWorkPhoneNumber, nil
-	case "dob":
-		return CreateAdsRequestLeadFormQuestionsItemTypeDob, nil
-	case "gender":
-		return CreateAdsRequestLeadFormQuestionsItemTypeGender, nil
-	case "marital_status":
-		return CreateAdsRequestLeadFormQuestionsItemTypeMaritalStatus, nil
-	case "relationship_status":
-		return CreateAdsRequestLeadFormQuestionsItemTypeRelationshipStatus, nil
-	case "military_status":
-		return CreateAdsRequestLeadFormQuestionsItemTypeMilitaryStatus, nil
-	case "date_time":
-		return CreateAdsRequestLeadFormQuestionsItemTypeDateTime, nil
-	case "custom":
-		return CreateAdsRequestLeadFormQuestionsItemTypeCustom, nil
-	}
-	var t CreateAdsRequestLeadFormQuestionsItemType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateAdsRequestLeadFormQuestionsItemType) Ptr() *CreateAdsRequestLeadFormQuestionsItemType {
-	return &c
-}
-
-// Click-to-message welcome copy: the greeting (message) and the ice-breaker prompt (keyword).
-var (
-	createAdsRequestMessagingConfigFieldKeyword = big.NewInt(1 << 0)
-	createAdsRequestMessagingConfigFieldMessage = big.NewInt(1 << 1)
-)
-
-type CreateAdsRequestMessagingConfig struct {
-	Keyword *string `json:"keyword,omitempty" url:"keyword,omitempty"`
-	Message *string `json:"message,omitempty" url:"message,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateAdsRequestMessagingConfig) GetKeyword() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Keyword
-}
-
-func (c *CreateAdsRequestMessagingConfig) GetMessage() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Message
-}
-
-func (c *CreateAdsRequestMessagingConfig) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateAdsRequestMessagingConfig) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetKeyword sets the Keyword field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestMessagingConfig) SetKeyword(keyword *string) {
-	c.Keyword = keyword
-	c.require(createAdsRequestMessagingConfigFieldKeyword)
-}
-
-// SetMessage sets the Message field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestMessagingConfig) SetMessage(message *string) {
-	c.Message = message
-	c.require(createAdsRequestMessagingConfigFieldMessage)
-}
-
-func (c *CreateAdsRequestMessagingConfig) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAdsRequestMessagingConfig
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateAdsRequestMessagingConfig(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateAdsRequestMessagingConfig) MarshalJSON() ([]byte, error) {
-	type embed CreateAdsRequestMessagingConfig
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateAdsRequestMessagingConfig) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-// Identifies the network that owns `post_id`. The source is inferred from the ID shape when omitted.
-type CreateAdsRequestPostSource string
-
-const (
-	CreateAdsRequestPostSourceFacebook  CreateAdsRequestPostSource = "facebook"
-	CreateAdsRequestPostSourceInstagram CreateAdsRequestPostSource = "instagram"
-)
-
-func NewCreateAdsRequestPostSourceFromString(s string) (CreateAdsRequestPostSource, error) {
-	switch s {
-	case "facebook":
-		return CreateAdsRequestPostSourceFacebook, nil
-	case "instagram":
-		return CreateAdsRequestPostSourceInstagram, nil
-	}
-	var t CreateAdsRequestPostSource
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateAdsRequestPostSource) Ptr() *CreateAdsRequestPostSource {
-	return &c
-}
-
-var (
-	createAdsRequestSocialAccountsItemFieldID = big.NewInt(1 << 0)
-)
-
-type CreateAdsRequestSocialAccountsItem struct {
-	// Social account ID, prefixed `sacc_`.
-	ID *string `json:"id,omitempty" url:"id,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateAdsRequestSocialAccountsItem) GetID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.ID
-}
-
-func (c *CreateAdsRequestSocialAccountsItem) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateAdsRequestSocialAccountsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdsRequestSocialAccountsItem) SetID(id *string) {
-	c.ID = id
-	c.require(createAdsRequestSocialAccountsItemFieldID)
-}
-
-func (c *CreateAdsRequestSocialAccountsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateAdsRequestSocialAccountsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateAdsRequestSocialAccountsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateAdsRequestSocialAccountsItem) MarshalJSON() ([]byte, error) {
-	type embed CreateAdsRequestSocialAccountsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateAdsRequestSocialAccountsItem) String() string {
+func (c *CreateAdsRequestPrimaryTextsItem) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -4755,10 +3360,12 @@ func (d *DeleteAdsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeleteAdsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -4846,10 +3453,12 @@ func (d *DuplicateAdsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DuplicateAdsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -4954,6 +3563,7 @@ const (
 	ListAdsRequestOrderImpressions      ListAdsRequestOrder = "impressions"
 	ListAdsRequestOrderReach            ListAdsRequestOrder = "reach"
 	ListAdsRequestOrderClicks           ListAdsRequestOrder = "clicks"
+	ListAdsRequestOrderLinkClicks       ListAdsRequestOrder = "link_clicks"
 	ListAdsRequestOrderUniqueClicks     ListAdsRequestOrder = "unique_clicks"
 	ListAdsRequestOrderFrequency        ListAdsRequestOrder = "frequency"
 	ListAdsRequestOrderClickThroughRate ListAdsRequestOrder = "click_through_rate"
@@ -4978,6 +3588,8 @@ func NewListAdsRequestOrderFromString(s string) (ListAdsRequestOrder, error) {
 		return ListAdsRequestOrderReach, nil
 	case "clicks":
 		return ListAdsRequestOrderClicks, nil
+	case "link_clicks":
+		return ListAdsRequestOrderLinkClicks, nil
 	case "unique_clicks":
 		return ListAdsRequestOrderUniqueClicks, nil
 	case "frequency":
@@ -5069,10 +3681,12 @@ func (l *ListAdsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAdsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -5138,6 +3752,12 @@ var (
 	listAdsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listAdsResponsePageInfoNullableFields maps the wire names of ListAdsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listAdsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listAdsResponsePageInfoFieldEndCursor,
+	"start_cursor": listAdsResponsePageInfoFieldStartCursor,
+}
+
 type ListAdsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -5187,10 +3807,12 @@ func (l *ListAdsResponsePageInfo) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAdsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -5233,6 +3855,13 @@ func (l *ListAdsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listAdsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -5261,6 +3890,1016 @@ func (l *ListAdsResponsePageInfo) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	postAdUpdatedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postAdUpdatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postAdUpdatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postAdUpdatedPayloadFieldData               = big.NewInt(1 << 3)
+	postAdUpdatedPayloadFieldID                 = big.NewInt(1 << 4)
+	postAdUpdatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postAdUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postAdUpdatedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+// postAdUpdatedPayloadNullableFields maps the wire names of PostAdUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postAdUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postAdUpdatedPayloadFieldAccountID,
+	"api_version_date": postAdUpdatedPayloadFieldAPIVersionDate,
+}
+
+type PostAdUpdatedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostAdUpdatedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string                   `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *PostAdUpdatedPayloadData `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostAdUpdatedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostAdUpdatedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostAdUpdatedPayload) GetAPIVersion() PostAdUpdatedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostAdUpdatedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostAdUpdatedPayload) GetData() *PostAdUpdatedPayloadData {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostAdUpdatedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostAdUpdatedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostAdUpdatedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostAdUpdatedPayload) GetType() PostAdUpdatedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostAdUpdatedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostAdUpdatedPayload) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postAdUpdatedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayload) SetAPIVersion(apiVersion PostAdUpdatedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postAdUpdatedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postAdUpdatedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayload) SetData(data *PostAdUpdatedPayloadData) {
+	p.Data = data
+	p.require(postAdUpdatedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postAdUpdatedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postAdUpdatedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postAdUpdatedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayload) SetType(type_ PostAdUpdatedPayloadType) {
+	p.Type = type_
+	p.require(postAdUpdatedPayloadFieldType)
+}
+
+func (p *PostAdUpdatedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostAdUpdatedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostAdUpdatedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAdUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostAdUpdatedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostAdUpdatedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostAdUpdatedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostAdUpdatedPayloadAPIVersion string
+
+const (
+	PostAdUpdatedPayloadAPIVersionV1 PostAdUpdatedPayloadAPIVersion = "v1"
+)
+
+func NewPostAdUpdatedPayloadAPIVersionFromString(s string) (PostAdUpdatedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostAdUpdatedPayloadAPIVersionV1, nil
+	}
+	var t PostAdUpdatedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdUpdatedPayloadAPIVersion) Ptr() *PostAdUpdatedPayloadAPIVersion {
+	return &p
+}
+
+var (
+	postAdUpdatedPayloadDataFieldAdCampaign     = big.NewInt(1 << 0)
+	postAdUpdatedPayloadDataFieldAdGroup        = big.NewInt(1 << 1)
+	postAdUpdatedPayloadDataFieldCallToAction   = big.NewInt(1 << 2)
+	postAdUpdatedPayloadDataFieldCreatedAt      = big.NewInt(1 << 3)
+	postAdUpdatedPayloadDataFieldCreatives      = big.NewInt(1 << 4)
+	postAdUpdatedPayloadDataFieldDeliveryStatus = big.NewInt(1 << 5)
+	postAdUpdatedPayloadDataFieldDescriptions   = big.NewInt(1 << 6)
+	postAdUpdatedPayloadDataFieldHeadlines      = big.NewInt(1 << 7)
+	postAdUpdatedPayloadDataFieldID             = big.NewInt(1 << 8)
+	postAdUpdatedPayloadDataFieldIssues         = big.NewInt(1 << 9)
+	postAdUpdatedPayloadDataFieldPrimaryTexts   = big.NewInt(1 << 10)
+	postAdUpdatedPayloadDataFieldStatus         = big.NewInt(1 << 11)
+	postAdUpdatedPayloadDataFieldTitle          = big.NewInt(1 << 12)
+	postAdUpdatedPayloadDataFieldUpdatedAt      = big.NewInt(1 << 13)
+	postAdUpdatedPayloadDataFieldURL            = big.NewInt(1 << 14)
+	postAdUpdatedPayloadDataFieldURLParameters  = big.NewInt(1 << 15)
+)
+
+// postAdUpdatedPayloadDataNullableFields maps the wire names of PostAdUpdatedPayloadData's nullable fields (required or optional) to their field bits.
+var postAdUpdatedPayloadDataNullableFields = map[string]*big.Int{
+	"call_to_action": postAdUpdatedPayloadDataFieldCallToAction,
+	"title":          postAdUpdatedPayloadDataFieldTitle,
+	"url":            postAdUpdatedPayloadDataFieldURL,
+}
+
+type PostAdUpdatedPayloadData struct {
+	// The ad campaign this ad belongs to.
+	AdCampaign *AdEntityReference `json:"ad_campaign" url:"ad_campaign"`
+	// The ad group this ad belongs to.
+	AdGroup *AdEntityReference `json:"ad_group" url:"ad_group"`
+	// The call-to-action button shown on the ad.
+	CallToAction *PostAdUpdatedPayloadDataCallToAction `json:"call_to_action,omitempty" url:"call_to_action,omitempty"`
+	// When the ad was created, as an ISO 8601 timestamp.
+	CreatedAt string        `json:"created_at" url:"created_at"`
+	Creatives []*AdCreative `json:"creatives" url:"creatives"`
+	// Whether the ad is delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+	DeliveryStatus PostAdUpdatedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
+	Descriptions   []*AdText                              `json:"descriptions" url:"descriptions"`
+	Headlines      []*AdText                              `json:"headlines" url:"headlines"`
+	// Unique identifier for the ad, prefixed `ad_`.
+	ID           string             `json:"id" url:"id"`
+	Issues       []*AdPlatformIssue `json:"issues" url:"issues"`
+	PrimaryTexts []*AdText          `json:"primary_texts" url:"primary_texts"`
+	// Whether the ad is enabled. `active` and `paused` are set by you; `in_review` and `rejected` come from ad review.
+	Status PostAdUpdatedPayloadDataStatus `json:"status" url:"status"`
+	// Display title of the ad.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+	// When the ad was last updated, as an ISO 8601 timestamp.
+	UpdatedAt string `json:"updated_at" url:"updated_at"`
+	// The URL the ad links to, without its query string. Parameters belong in `url_parameters`; any you send on `url` are moved there.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+	// Every query parameter appended to the URL, keyed by parameter name — including any you sent on `url` itself. Whop adds its own click-attribution parameters; those are reserved, and setting one returns an error that names it.
+	URLParameters map[string]any `json:"url_parameters" url:"url_parameters"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostAdUpdatedPayloadData) GetAdCampaign() *AdEntityReference {
+	if p == nil {
+		return nil
+	}
+	return p.AdCampaign
+}
+
+func (p *PostAdUpdatedPayloadData) GetAdGroup() *AdEntityReference {
+	if p == nil {
+		return nil
+	}
+	return p.AdGroup
+}
+
+func (p *PostAdUpdatedPayloadData) GetCallToAction() *PostAdUpdatedPayloadDataCallToAction {
+	if p == nil {
+		return nil
+	}
+	return p.CallToAction
+}
+
+func (p *PostAdUpdatedPayloadData) GetCreatedAt() string {
+	if p == nil {
+		return ""
+	}
+	return p.CreatedAt
+}
+
+func (p *PostAdUpdatedPayloadData) GetCreatives() []*AdCreative {
+	if p == nil {
+		return nil
+	}
+	return p.Creatives
+}
+
+func (p *PostAdUpdatedPayloadData) GetDeliveryStatus() PostAdUpdatedPayloadDataDeliveryStatus {
+	if p == nil {
+		return ""
+	}
+	return p.DeliveryStatus
+}
+
+func (p *PostAdUpdatedPayloadData) GetDescriptions() []*AdText {
+	if p == nil {
+		return nil
+	}
+	return p.Descriptions
+}
+
+func (p *PostAdUpdatedPayloadData) GetHeadlines() []*AdText {
+	if p == nil {
+		return nil
+	}
+	return p.Headlines
+}
+
+func (p *PostAdUpdatedPayloadData) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostAdUpdatedPayloadData) GetIssues() []*AdPlatformIssue {
+	if p == nil {
+		return nil
+	}
+	return p.Issues
+}
+
+func (p *PostAdUpdatedPayloadData) GetPrimaryTexts() []*AdText {
+	if p == nil {
+		return nil
+	}
+	return p.PrimaryTexts
+}
+
+func (p *PostAdUpdatedPayloadData) GetStatus() PostAdUpdatedPayloadDataStatus {
+	if p == nil {
+		return ""
+	}
+	return p.Status
+}
+
+func (p *PostAdUpdatedPayloadData) GetTitle() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Title
+}
+
+func (p *PostAdUpdatedPayloadData) GetUpdatedAt() string {
+	if p == nil {
+		return ""
+	}
+	return p.UpdatedAt
+}
+
+func (p *PostAdUpdatedPayloadData) GetURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.URL
+}
+
+func (p *PostAdUpdatedPayloadData) GetURLParameters() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.URLParameters
+}
+
+func (p *PostAdUpdatedPayloadData) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostAdUpdatedPayloadData) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAdCampaign sets the AdCampaign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetAdCampaign(adCampaign *AdEntityReference) {
+	p.AdCampaign = adCampaign
+	p.require(postAdUpdatedPayloadDataFieldAdCampaign)
+}
+
+// SetAdGroup sets the AdGroup field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetAdGroup(adGroup *AdEntityReference) {
+	p.AdGroup = adGroup
+	p.require(postAdUpdatedPayloadDataFieldAdGroup)
+}
+
+// SetCallToAction sets the CallToAction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetCallToAction(callToAction *PostAdUpdatedPayloadDataCallToAction) {
+	p.CallToAction = callToAction
+	p.require(postAdUpdatedPayloadDataFieldCallToAction)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetCreatedAt(createdAt string) {
+	p.CreatedAt = createdAt
+	p.require(postAdUpdatedPayloadDataFieldCreatedAt)
+}
+
+// SetCreatives sets the Creatives field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetCreatives(creatives []*AdCreative) {
+	p.Creatives = creatives
+	p.require(postAdUpdatedPayloadDataFieldCreatives)
+}
+
+// SetDeliveryStatus sets the DeliveryStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetDeliveryStatus(deliveryStatus PostAdUpdatedPayloadDataDeliveryStatus) {
+	p.DeliveryStatus = deliveryStatus
+	p.require(postAdUpdatedPayloadDataFieldDeliveryStatus)
+}
+
+// SetDescriptions sets the Descriptions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetDescriptions(descriptions []*AdText) {
+	p.Descriptions = descriptions
+	p.require(postAdUpdatedPayloadDataFieldDescriptions)
+}
+
+// SetHeadlines sets the Headlines field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetHeadlines(headlines []*AdText) {
+	p.Headlines = headlines
+	p.require(postAdUpdatedPayloadDataFieldHeadlines)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetID(id string) {
+	p.ID = id
+	p.require(postAdUpdatedPayloadDataFieldID)
+}
+
+// SetIssues sets the Issues field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetIssues(issues []*AdPlatformIssue) {
+	p.Issues = issues
+	p.require(postAdUpdatedPayloadDataFieldIssues)
+}
+
+// SetPrimaryTexts sets the PrimaryTexts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetPrimaryTexts(primaryTexts []*AdText) {
+	p.PrimaryTexts = primaryTexts
+	p.require(postAdUpdatedPayloadDataFieldPrimaryTexts)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetStatus(status PostAdUpdatedPayloadDataStatus) {
+	p.Status = status
+	p.require(postAdUpdatedPayloadDataFieldStatus)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetTitle(title *string) {
+	p.Title = title
+	p.require(postAdUpdatedPayloadDataFieldTitle)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetUpdatedAt(updatedAt string) {
+	p.UpdatedAt = updatedAt
+	p.require(postAdUpdatedPayloadDataFieldUpdatedAt)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetURL(url *string) {
+	p.URL = url
+	p.require(postAdUpdatedPayloadDataFieldURL)
+}
+
+// SetURLParameters sets the URLParameters field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetURLParameters(urlParameters map[string]any) {
+	p.URLParameters = urlParameters
+	p.require(postAdUpdatedPayloadDataFieldURLParameters)
+}
+
+func (p *PostAdUpdatedPayloadData) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostAdUpdatedPayloadData
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PostAdUpdatedPayloadData(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postAdUpdatedPayloadDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostAdUpdatedPayloadData) MarshalJSON() ([]byte, error) {
+	type embed PostAdUpdatedPayloadData
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostAdUpdatedPayloadData) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The call-to-action button shown on the ad.
+type PostAdUpdatedPayloadDataCallToAction string
+
+const (
+	PostAdUpdatedPayloadDataCallToActionLearnMore            PostAdUpdatedPayloadDataCallToAction = "learn_more"
+	PostAdUpdatedPayloadDataCallToActionShopNow              PostAdUpdatedPayloadDataCallToAction = "shop_now"
+	PostAdUpdatedPayloadDataCallToActionSignUp               PostAdUpdatedPayloadDataCallToAction = "sign_up"
+	PostAdUpdatedPayloadDataCallToActionSubscribe            PostAdUpdatedPayloadDataCallToAction = "subscribe"
+	PostAdUpdatedPayloadDataCallToActionGetStarted           PostAdUpdatedPayloadDataCallToAction = "get_started"
+	PostAdUpdatedPayloadDataCallToActionBookNow              PostAdUpdatedPayloadDataCallToAction = "book_now"
+	PostAdUpdatedPayloadDataCallToActionApplyNow             PostAdUpdatedPayloadDataCallToAction = "apply_now"
+	PostAdUpdatedPayloadDataCallToActionContactUs            PostAdUpdatedPayloadDataCallToAction = "contact_us"
+	PostAdUpdatedPayloadDataCallToActionDownload             PostAdUpdatedPayloadDataCallToAction = "download"
+	PostAdUpdatedPayloadDataCallToActionOrderNow             PostAdUpdatedPayloadDataCallToAction = "order_now"
+	PostAdUpdatedPayloadDataCallToActionBuyNow               PostAdUpdatedPayloadDataCallToAction = "buy_now"
+	PostAdUpdatedPayloadDataCallToActionGetQuote             PostAdUpdatedPayloadDataCallToAction = "get_quote"
+	PostAdUpdatedPayloadDataCallToActionMessagePage          PostAdUpdatedPayloadDataCallToAction = "message_page"
+	PostAdUpdatedPayloadDataCallToActionWhatsappMessage      PostAdUpdatedPayloadDataCallToAction = "whatsapp_message"
+	PostAdUpdatedPayloadDataCallToActionInstagramMessage     PostAdUpdatedPayloadDataCallToAction = "instagram_message"
+	PostAdUpdatedPayloadDataCallToActionCallNow              PostAdUpdatedPayloadDataCallToAction = "call_now"
+	PostAdUpdatedPayloadDataCallToActionGetDirections        PostAdUpdatedPayloadDataCallToAction = "get_directions"
+	PostAdUpdatedPayloadDataCallToActionSendUpdates          PostAdUpdatedPayloadDataCallToAction = "send_updates"
+	PostAdUpdatedPayloadDataCallToActionGetOffer             PostAdUpdatedPayloadDataCallToAction = "get_offer"
+	PostAdUpdatedPayloadDataCallToActionWatchMore            PostAdUpdatedPayloadDataCallToAction = "watch_more"
+	PostAdUpdatedPayloadDataCallToActionListenNow            PostAdUpdatedPayloadDataCallToAction = "listen_now"
+	PostAdUpdatedPayloadDataCallToActionPlayGame             PostAdUpdatedPayloadDataCallToAction = "play_game"
+	PostAdUpdatedPayloadDataCallToActionOpenLink             PostAdUpdatedPayloadDataCallToAction = "open_link"
+	PostAdUpdatedPayloadDataCallToActionNoButton             PostAdUpdatedPayloadDataCallToAction = "no_button"
+	PostAdUpdatedPayloadDataCallToActionGetOfferView         PostAdUpdatedPayloadDataCallToAction = "get_offer_view"
+	PostAdUpdatedPayloadDataCallToActionGetEventTickets      PostAdUpdatedPayloadDataCallToAction = "get_event_tickets"
+	PostAdUpdatedPayloadDataCallToActionSeeMenu              PostAdUpdatedPayloadDataCallToAction = "see_menu"
+	PostAdUpdatedPayloadDataCallToActionRequestTime          PostAdUpdatedPayloadDataCallToAction = "request_time"
+	PostAdUpdatedPayloadDataCallToActionEventRsvp            PostAdUpdatedPayloadDataCallToAction = "event_rsvp"
+	PostAdUpdatedPayloadDataCallToActionSeeDetails           PostAdUpdatedPayloadDataCallToAction = "see_details"
+	PostAdUpdatedPayloadDataCallToActionViewInstagramProfile PostAdUpdatedPayloadDataCallToAction = "view_instagram_profile"
+	PostAdUpdatedPayloadDataCallToActionDonateNow            PostAdUpdatedPayloadDataCallToAction = "donate_now"
+	PostAdUpdatedPayloadDataCallToActionSeeMore              PostAdUpdatedPayloadDataCallToAction = "see_more"
+	PostAdUpdatedPayloadDataCallToActionVisitSite            PostAdUpdatedPayloadDataCallToAction = "visit_site"
+)
+
+func NewPostAdUpdatedPayloadDataCallToActionFromString(s string) (PostAdUpdatedPayloadDataCallToAction, error) {
+	switch s {
+	case "learn_more":
+		return PostAdUpdatedPayloadDataCallToActionLearnMore, nil
+	case "shop_now":
+		return PostAdUpdatedPayloadDataCallToActionShopNow, nil
+	case "sign_up":
+		return PostAdUpdatedPayloadDataCallToActionSignUp, nil
+	case "subscribe":
+		return PostAdUpdatedPayloadDataCallToActionSubscribe, nil
+	case "get_started":
+		return PostAdUpdatedPayloadDataCallToActionGetStarted, nil
+	case "book_now":
+		return PostAdUpdatedPayloadDataCallToActionBookNow, nil
+	case "apply_now":
+		return PostAdUpdatedPayloadDataCallToActionApplyNow, nil
+	case "contact_us":
+		return PostAdUpdatedPayloadDataCallToActionContactUs, nil
+	case "download":
+		return PostAdUpdatedPayloadDataCallToActionDownload, nil
+	case "order_now":
+		return PostAdUpdatedPayloadDataCallToActionOrderNow, nil
+	case "buy_now":
+		return PostAdUpdatedPayloadDataCallToActionBuyNow, nil
+	case "get_quote":
+		return PostAdUpdatedPayloadDataCallToActionGetQuote, nil
+	case "message_page":
+		return PostAdUpdatedPayloadDataCallToActionMessagePage, nil
+	case "whatsapp_message":
+		return PostAdUpdatedPayloadDataCallToActionWhatsappMessage, nil
+	case "instagram_message":
+		return PostAdUpdatedPayloadDataCallToActionInstagramMessage, nil
+	case "call_now":
+		return PostAdUpdatedPayloadDataCallToActionCallNow, nil
+	case "get_directions":
+		return PostAdUpdatedPayloadDataCallToActionGetDirections, nil
+	case "send_updates":
+		return PostAdUpdatedPayloadDataCallToActionSendUpdates, nil
+	case "get_offer":
+		return PostAdUpdatedPayloadDataCallToActionGetOffer, nil
+	case "watch_more":
+		return PostAdUpdatedPayloadDataCallToActionWatchMore, nil
+	case "listen_now":
+		return PostAdUpdatedPayloadDataCallToActionListenNow, nil
+	case "play_game":
+		return PostAdUpdatedPayloadDataCallToActionPlayGame, nil
+	case "open_link":
+		return PostAdUpdatedPayloadDataCallToActionOpenLink, nil
+	case "no_button":
+		return PostAdUpdatedPayloadDataCallToActionNoButton, nil
+	case "get_offer_view":
+		return PostAdUpdatedPayloadDataCallToActionGetOfferView, nil
+	case "get_event_tickets":
+		return PostAdUpdatedPayloadDataCallToActionGetEventTickets, nil
+	case "see_menu":
+		return PostAdUpdatedPayloadDataCallToActionSeeMenu, nil
+	case "request_time":
+		return PostAdUpdatedPayloadDataCallToActionRequestTime, nil
+	case "event_rsvp":
+		return PostAdUpdatedPayloadDataCallToActionEventRsvp, nil
+	case "see_details":
+		return PostAdUpdatedPayloadDataCallToActionSeeDetails, nil
+	case "view_instagram_profile":
+		return PostAdUpdatedPayloadDataCallToActionViewInstagramProfile, nil
+	case "donate_now":
+		return PostAdUpdatedPayloadDataCallToActionDonateNow, nil
+	case "see_more":
+		return PostAdUpdatedPayloadDataCallToActionSeeMore, nil
+	case "visit_site":
+		return PostAdUpdatedPayloadDataCallToActionVisitSite, nil
+	}
+	var t PostAdUpdatedPayloadDataCallToAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdUpdatedPayloadDataCallToAction) Ptr() *PostAdUpdatedPayloadDataCallToAction {
+	return &p
+}
+
+// Whether the ad is delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
+type PostAdUpdatedPayloadDataDeliveryStatus string
+
+const (
+	PostAdUpdatedPayloadDataDeliveryStatusInAppeal        PostAdUpdatedPayloadDataDeliveryStatus = "in_appeal"
+	PostAdUpdatedPayloadDataDeliveryStatusRejected        PostAdUpdatedPayloadDataDeliveryStatus = "rejected"
+	PostAdUpdatedPayloadDataDeliveryStatusInReview        PostAdUpdatedPayloadDataDeliveryStatus = "in_review"
+	PostAdUpdatedPayloadDataDeliveryStatusDraft           PostAdUpdatedPayloadDataDeliveryStatus = "draft"
+	PostAdUpdatedPayloadDataDeliveryStatusCampaignPaused  PostAdUpdatedPayloadDataDeliveryStatus = "campaign_paused"
+	PostAdUpdatedPayloadDataDeliveryStatusAdGroupPaused   PostAdUpdatedPayloadDataDeliveryStatus = "ad_group_paused"
+	PostAdUpdatedPayloadDataDeliveryStatusPaused          PostAdUpdatedPayloadDataDeliveryStatus = "paused"
+	PostAdUpdatedPayloadDataDeliveryStatusProcessing      PostAdUpdatedPayloadDataDeliveryStatus = "processing"
+	PostAdUpdatedPayloadDataDeliveryStatusIssues          PostAdUpdatedPayloadDataDeliveryStatus = "issues"
+	PostAdUpdatedPayloadDataDeliveryStatusScheduled       PostAdUpdatedPayloadDataDeliveryStatus = "scheduled"
+	PostAdUpdatedPayloadDataDeliveryStatusLearningLimited PostAdUpdatedPayloadDataDeliveryStatus = "learning_limited"
+	PostAdUpdatedPayloadDataDeliveryStatusLearning        PostAdUpdatedPayloadDataDeliveryStatus = "learning"
+	PostAdUpdatedPayloadDataDeliveryStatusActive          PostAdUpdatedPayloadDataDeliveryStatus = "active"
+)
+
+func NewPostAdUpdatedPayloadDataDeliveryStatusFromString(s string) (PostAdUpdatedPayloadDataDeliveryStatus, error) {
+	switch s {
+	case "in_appeal":
+		return PostAdUpdatedPayloadDataDeliveryStatusInAppeal, nil
+	case "rejected":
+		return PostAdUpdatedPayloadDataDeliveryStatusRejected, nil
+	case "in_review":
+		return PostAdUpdatedPayloadDataDeliveryStatusInReview, nil
+	case "draft":
+		return PostAdUpdatedPayloadDataDeliveryStatusDraft, nil
+	case "campaign_paused":
+		return PostAdUpdatedPayloadDataDeliveryStatusCampaignPaused, nil
+	case "ad_group_paused":
+		return PostAdUpdatedPayloadDataDeliveryStatusAdGroupPaused, nil
+	case "paused":
+		return PostAdUpdatedPayloadDataDeliveryStatusPaused, nil
+	case "processing":
+		return PostAdUpdatedPayloadDataDeliveryStatusProcessing, nil
+	case "issues":
+		return PostAdUpdatedPayloadDataDeliveryStatusIssues, nil
+	case "scheduled":
+		return PostAdUpdatedPayloadDataDeliveryStatusScheduled, nil
+	case "learning_limited":
+		return PostAdUpdatedPayloadDataDeliveryStatusLearningLimited, nil
+	case "learning":
+		return PostAdUpdatedPayloadDataDeliveryStatusLearning, nil
+	case "active":
+		return PostAdUpdatedPayloadDataDeliveryStatusActive, nil
+	}
+	var t PostAdUpdatedPayloadDataDeliveryStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdUpdatedPayloadDataDeliveryStatus) Ptr() *PostAdUpdatedPayloadDataDeliveryStatus {
+	return &p
+}
+
+// Whether the ad is enabled. `active` and `paused` are set by you; `in_review` and `rejected` come from ad review.
+type PostAdUpdatedPayloadDataStatus string
+
+const (
+	PostAdUpdatedPayloadDataStatusActive   PostAdUpdatedPayloadDataStatus = "active"
+	PostAdUpdatedPayloadDataStatusPaused   PostAdUpdatedPayloadDataStatus = "paused"
+	PostAdUpdatedPayloadDataStatusInReview PostAdUpdatedPayloadDataStatus = "in_review"
+	PostAdUpdatedPayloadDataStatusRejected PostAdUpdatedPayloadDataStatus = "rejected"
+)
+
+func NewPostAdUpdatedPayloadDataStatusFromString(s string) (PostAdUpdatedPayloadDataStatus, error) {
+	switch s {
+	case "active":
+		return PostAdUpdatedPayloadDataStatusActive, nil
+	case "paused":
+		return PostAdUpdatedPayloadDataStatusPaused, nil
+	case "in_review":
+		return PostAdUpdatedPayloadDataStatusInReview, nil
+	case "rejected":
+		return PostAdUpdatedPayloadDataStatusRejected, nil
+	}
+	var t PostAdUpdatedPayloadDataStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdUpdatedPayloadDataStatus) Ptr() *PostAdUpdatedPayloadDataStatus {
+	return &p
+}
+
+// The webhook event type
+type PostAdUpdatedPayloadType string
+
+const (
+	PostAdUpdatedPayloadTypeAdUpdated PostAdUpdatedPayloadType = "ad.updated"
+)
+
+func NewPostAdUpdatedPayloadTypeFromString(s string) (PostAdUpdatedPayloadType, error) {
+	switch s {
+	case "ad.updated":
+		return PostAdUpdatedPayloadTypeAdUpdated, nil
+	}
+	var t PostAdUpdatedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostAdUpdatedPayloadType) Ptr() *PostAdUpdatedPayloadType {
+	return &p
+}
+
+// The ad's clicks in the hour so far, at most `impressions`. Zero when left out.
+type ReportStatsAdsRequestClicks struct {
+	Integer int
+	String  string
+
+	typ string
+}
+
+func (r *ReportStatsAdsRequestClicks) GetInteger() int {
+	if r == nil {
+		return 0
+	}
+	return r.Integer
+}
+
+func (r *ReportStatsAdsRequestClicks) GetString() string {
+	if r == nil {
+		return ""
+	}
+	return r.String
+}
+
+func (r *ReportStatsAdsRequestClicks) UnmarshalJSON(data []byte) error {
+	var valueInteger int
+	if err := json.Unmarshal(data, &valueInteger); err == nil {
+		r.typ = "Integer"
+		r.Integer = valueInteger
+		return nil
+	}
+	var valueString string
+	if err := json.Unmarshal(data, &valueString); err == nil {
+		r.typ = "String"
+		r.String = valueString
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, r)
+}
+
+func (r ReportStatsAdsRequestClicks) MarshalJSON() ([]byte, error) {
+	if r.typ == "Integer" || r.Integer != 0 {
+		return json.Marshal(r.Integer)
+	}
+	if r.typ == "String" || r.String != "" {
+		return json.Marshal(r.String)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", r)
+}
+
+type ReportStatsAdsRequestClicksVisitor interface {
+	VisitInteger(int) error
+	VisitString(string) error
+}
+
+func (r *ReportStatsAdsRequestClicks) Accept(visitor ReportStatsAdsRequestClicksVisitor) error {
+	if r.typ == "Integer" || r.Integer != 0 {
+		return visitor.VisitInteger(r.Integer)
+	}
+	if r.typ == "String" || r.String != "" {
+		return visitor.VisitString(r.String)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", r)
+}
+
+// The ad's impressions in the hour so far. Zero when left out.
+type ReportStatsAdsRequestImpressions struct {
+	Integer int
+	String  string
+
+	typ string
+}
+
+func (r *ReportStatsAdsRequestImpressions) GetInteger() int {
+	if r == nil {
+		return 0
+	}
+	return r.Integer
+}
+
+func (r *ReportStatsAdsRequestImpressions) GetString() string {
+	if r == nil {
+		return ""
+	}
+	return r.String
+}
+
+func (r *ReportStatsAdsRequestImpressions) UnmarshalJSON(data []byte) error {
+	var valueInteger int
+	if err := json.Unmarshal(data, &valueInteger); err == nil {
+		r.typ = "Integer"
+		r.Integer = valueInteger
+		return nil
+	}
+	var valueString string
+	if err := json.Unmarshal(data, &valueString); err == nil {
+		r.typ = "String"
+		r.String = valueString
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, r)
+}
+
+func (r ReportStatsAdsRequestImpressions) MarshalJSON() ([]byte, error) {
+	if r.typ == "Integer" || r.Integer != 0 {
+		return json.Marshal(r.Integer)
+	}
+	if r.typ == "String" || r.String != "" {
+		return json.Marshal(r.String)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", r)
+}
+
+type ReportStatsAdsRequestImpressionsVisitor interface {
+	VisitInteger(int) error
+	VisitString(string) error
+}
+
+func (r *ReportStatsAdsRequestImpressions) Accept(visitor ReportStatsAdsRequestImpressionsVisitor) error {
+	if r.typ == "Integer" || r.Integer != 0 {
+		return visitor.VisitInteger(r.Integer)
+	}
+	if r.typ == "String" || r.String != "" {
+		return visitor.VisitString(r.String)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", r)
+}
+
+// The USD to be paid for the ad's hour so far, to the cent: what the ad spent plus any markup, such as 105.00 for 100.00 spent with a 5% markup.
+type ReportStatsAdsRequestSpend struct {
+	Double float64
+	String string
+
+	typ string
+}
+
+func (r *ReportStatsAdsRequestSpend) GetDouble() float64 {
+	if r == nil {
+		return 0
+	}
+	return r.Double
+}
+
+func (r *ReportStatsAdsRequestSpend) GetString() string {
+	if r == nil {
+		return ""
+	}
+	return r.String
+}
+
+func (r *ReportStatsAdsRequestSpend) UnmarshalJSON(data []byte) error {
+	var valueDouble float64
+	if err := json.Unmarshal(data, &valueDouble); err == nil {
+		r.typ = "Double"
+		r.Double = valueDouble
+		return nil
+	}
+	var valueString string
+	if err := json.Unmarshal(data, &valueString); err == nil {
+		r.typ = "String"
+		r.String = valueString
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, r)
+}
+
+func (r ReportStatsAdsRequestSpend) MarshalJSON() ([]byte, error) {
+	if r.typ == "Double" || r.Double != 0 {
+		return json.Marshal(r.Double)
+	}
+	if r.typ == "String" || r.String != "" {
+		return json.Marshal(r.String)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", r)
+}
+
+type ReportStatsAdsRequestSpendVisitor interface {
+	VisitDouble(float64) error
+	VisitString(string) error
+}
+
+func (r *ReportStatsAdsRequestSpend) Accept(visitor ReportStatsAdsRequestSpendVisitor) error {
+	if r.typ == "Double" || r.Double != 0 {
+		return visitor.VisitDouble(r.Double)
+	}
+	if r.typ == "String" || r.String != "" {
+		return visitor.VisitString(r.String)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", r)
 }
 
 type RetrieveAdsRequestAttributionModel string
@@ -5293,6 +4932,7 @@ const (
 	UpdateAdsRequestCallToActionBookNow       UpdateAdsRequestCallToAction = "book_now"
 	UpdateAdsRequestCallToActionCallNow       UpdateAdsRequestCallToAction = "call_now"
 	UpdateAdsRequestCallToActionContactUs     UpdateAdsRequestCallToAction = "contact_us"
+	UpdateAdsRequestCallToActionDonateNow     UpdateAdsRequestCallToAction = "donate_now"
 	UpdateAdsRequestCallToActionDownload      UpdateAdsRequestCallToAction = "download"
 	UpdateAdsRequestCallToActionGetDirections UpdateAdsRequestCallToAction = "get_directions"
 	UpdateAdsRequestCallToActionGetOffer      UpdateAdsRequestCallToAction = "get_offer"
@@ -5306,10 +4946,12 @@ const (
 	UpdateAdsRequestCallToActionRequestTime   UpdateAdsRequestCallToAction = "request_time"
 	UpdateAdsRequestCallToActionSeeDetails    UpdateAdsRequestCallToAction = "see_details"
 	UpdateAdsRequestCallToActionSeeMenu       UpdateAdsRequestCallToAction = "see_menu"
+	UpdateAdsRequestCallToActionSeeMore       UpdateAdsRequestCallToAction = "see_more"
 	UpdateAdsRequestCallToActionSendUpdates   UpdateAdsRequestCallToAction = "send_updates"
 	UpdateAdsRequestCallToActionShopNow       UpdateAdsRequestCallToAction = "shop_now"
 	UpdateAdsRequestCallToActionSignUp        UpdateAdsRequestCallToAction = "sign_up"
 	UpdateAdsRequestCallToActionSubscribe     UpdateAdsRequestCallToAction = "subscribe"
+	UpdateAdsRequestCallToActionVisitSite     UpdateAdsRequestCallToAction = "visit_site"
 	UpdateAdsRequestCallToActionWatchMore     UpdateAdsRequestCallToAction = "watch_more"
 )
 
@@ -5323,6 +4965,8 @@ func NewUpdateAdsRequestCallToActionFromString(s string) (UpdateAdsRequestCallTo
 		return UpdateAdsRequestCallToActionCallNow, nil
 	case "contact_us":
 		return UpdateAdsRequestCallToActionContactUs, nil
+	case "donate_now":
+		return UpdateAdsRequestCallToActionDonateNow, nil
 	case "download":
 		return UpdateAdsRequestCallToActionDownload, nil
 	case "get_directions":
@@ -5349,6 +4993,8 @@ func NewUpdateAdsRequestCallToActionFromString(s string) (UpdateAdsRequestCallTo
 		return UpdateAdsRequestCallToActionSeeDetails, nil
 	case "see_menu":
 		return UpdateAdsRequestCallToActionSeeMenu, nil
+	case "see_more":
+		return UpdateAdsRequestCallToActionSeeMore, nil
 	case "send_updates":
 		return UpdateAdsRequestCallToActionSendUpdates, nil
 	case "shop_now":
@@ -5357,6 +5003,8 @@ func NewUpdateAdsRequestCallToActionFromString(s string) (UpdateAdsRequestCallTo
 		return UpdateAdsRequestCallToActionSignUp, nil
 	case "subscribe":
 		return UpdateAdsRequestCallToActionSubscribe, nil
+	case "visit_site":
+		return UpdateAdsRequestCallToActionVisitSite, nil
 	case "watch_more":
 		return UpdateAdsRequestCallToActionWatchMore, nil
 	}
@@ -5417,10 +5065,12 @@ func (u *UpdateAdsRequestCreativesItem) GetExtraProperties() map[string]interfac
 }
 
 func (u *UpdateAdsRequestCreativesItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetCrop sets the Crop field and marks it as non-optional;
@@ -5486,7 +5136,6 @@ func (u *UpdateAdsRequestCreativesItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// The saved crop window for this creative, in source image pixels. Omit it for the original asset or for a format that has not been cropped.
 var (
 	updateAdsRequestCreativesItemCropFieldHeight = big.NewInt(1 << 0)
 	updateAdsRequestCreativesItemCropFieldWidth  = big.NewInt(1 << 1)
@@ -5494,6 +5143,7 @@ var (
 	updateAdsRequestCreativesItemCropFieldY      = big.NewInt(1 << 3)
 )
 
+// The saved crop window for this creative, in source image pixels. Omit it for the original asset or for a format that has not been cropped.
 type UpdateAdsRequestCreativesItemCrop struct {
 	Height *float64 `json:"height,omitempty" url:"height,omitempty"`
 	Width  *float64 `json:"width,omitempty" url:"width,omitempty"`
@@ -5543,10 +5193,12 @@ func (u *UpdateAdsRequestCreativesItemCrop) GetExtraProperties() map[string]inte
 }
 
 func (u *UpdateAdsRequestCreativesItemCrop) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetHeight sets the Height field and marks it as non-optional;
@@ -5644,35 +5296,13 @@ func (u UpdateAdsRequestCreativesItemFormat) Ptr() *UpdateAdsRequestCreativesIte
 	return &u
 }
 
-// Instant lead form for the ad. Only allowed when the ad group's conversion_location is an instant-form destination (instant_forms, instant_forms_and_messenger, website_and_instant_forms). Mutually exclusive with lead_form_id.
 var (
-	updateAdsRequestLeadFormFieldCompletion        = big.NewInt(1 << 0)
-	updateAdsRequestLeadFormFieldDisclaimer        = big.NewInt(1 << 1)
-	updateAdsRequestLeadFormFieldFormType          = big.NewInt(1 << 2)
-	updateAdsRequestLeadFormFieldIntro             = big.NewInt(1 << 3)
-	updateAdsRequestLeadFormFieldName              = big.NewInt(1 << 4)
-	updateAdsRequestLeadFormFieldPhoneVerification = big.NewInt(1 << 5)
-	updateAdsRequestLeadFormFieldPrivacyPolicy     = big.NewInt(1 << 6)
-	updateAdsRequestLeadFormFieldQuestions         = big.NewInt(1 << 7)
+	updateAdsRequestDescriptionsItemFieldText = big.NewInt(1 << 0)
 )
 
-type UpdateAdsRequestLeadForm struct {
-	// Optional completion screen shown after submission; url sets the follow-up website button.
-	Completion *UpdateAdsRequestLeadFormCompletion `json:"completion,omitempty" url:"completion,omitempty"`
-	// Optional custom consent disclaimer with checkboxes.
-	Disclaimer *UpdateAdsRequestLeadFormDisclaimer `json:"disclaimer,omitempty" url:"disclaimer,omitempty"`
-	// more_volume (default) is quickest to submit; higher_intent adds a confirmation step.
-	FormType *UpdateAdsRequestLeadFormFormType `json:"form_type,omitempty" url:"form_type,omitempty"`
-	// Optional intro screen shown before the questions.
-	Intro *UpdateAdsRequestLeadFormIntro `json:"intro,omitempty" url:"intro,omitempty"`
-	// Internal name for the form. Auto-generated if omitted.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// Require SMS verification of the phone number (higher_intent forms).
-	PhoneVerification *bool `json:"phone_verification,omitempty" url:"phone_verification,omitempty"`
-	// Your privacy policy. url is required by the ad platform.
-	PrivacyPolicy *UpdateAdsRequestLeadFormPrivacyPolicy `json:"privacy_policy,omitempty" url:"privacy_policy,omitempty"`
-	// The questions on the form. Standard prefill types need only a type; a custom question needs a label and a format (plus options for multiple_choice). Options carry an optional key and answer-routing logic.
-	Questions []*UpdateAdsRequestLeadFormQuestionsItem `json:"questions,omitempty" url:"questions,omitempty"`
+type UpdateAdsRequestDescriptionsItem struct {
+	// The text shown to viewers.
+	Text string `json:"text" url:"text"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -5681,521 +5311,43 @@ type UpdateAdsRequestLeadForm struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UpdateAdsRequestLeadForm) GetCompletion() *UpdateAdsRequestLeadFormCompletion {
+func (u *UpdateAdsRequestDescriptionsItem) GetText() string {
 	if u == nil {
-		return nil
-	}
-	return u.Completion
-}
-
-func (u *UpdateAdsRequestLeadForm) GetDisclaimer() *UpdateAdsRequestLeadFormDisclaimer {
-	if u == nil {
-		return nil
-	}
-	return u.Disclaimer
-}
-
-func (u *UpdateAdsRequestLeadForm) GetFormType() *UpdateAdsRequestLeadFormFormType {
-	if u == nil {
-		return nil
-	}
-	return u.FormType
-}
-
-func (u *UpdateAdsRequestLeadForm) GetIntro() *UpdateAdsRequestLeadFormIntro {
-	if u == nil {
-		return nil
-	}
-	return u.Intro
-}
-
-func (u *UpdateAdsRequestLeadForm) GetName() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Name
-}
-
-func (u *UpdateAdsRequestLeadForm) GetPhoneVerification() *bool {
-	if u == nil {
-		return nil
-	}
-	return u.PhoneVerification
-}
-
-func (u *UpdateAdsRequestLeadForm) GetPrivacyPolicy() *UpdateAdsRequestLeadFormPrivacyPolicy {
-	if u == nil {
-		return nil
-	}
-	return u.PrivacyPolicy
-}
-
-func (u *UpdateAdsRequestLeadForm) GetQuestions() []*UpdateAdsRequestLeadFormQuestionsItem {
-	if u == nil {
-		return nil
-	}
-	return u.Questions
-}
-
-func (u *UpdateAdsRequestLeadForm) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateAdsRequestLeadForm) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetCompletion sets the Completion field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadForm) SetCompletion(completion *UpdateAdsRequestLeadFormCompletion) {
-	u.Completion = completion
-	u.require(updateAdsRequestLeadFormFieldCompletion)
-}
-
-// SetDisclaimer sets the Disclaimer field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadForm) SetDisclaimer(disclaimer *UpdateAdsRequestLeadFormDisclaimer) {
-	u.Disclaimer = disclaimer
-	u.require(updateAdsRequestLeadFormFieldDisclaimer)
-}
-
-// SetFormType sets the FormType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadForm) SetFormType(formType *UpdateAdsRequestLeadFormFormType) {
-	u.FormType = formType
-	u.require(updateAdsRequestLeadFormFieldFormType)
-}
-
-// SetIntro sets the Intro field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadForm) SetIntro(intro *UpdateAdsRequestLeadFormIntro) {
-	u.Intro = intro
-	u.require(updateAdsRequestLeadFormFieldIntro)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadForm) SetName(name *string) {
-	u.Name = name
-	u.require(updateAdsRequestLeadFormFieldName)
-}
-
-// SetPhoneVerification sets the PhoneVerification field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadForm) SetPhoneVerification(phoneVerification *bool) {
-	u.PhoneVerification = phoneVerification
-	u.require(updateAdsRequestLeadFormFieldPhoneVerification)
-}
-
-// SetPrivacyPolicy sets the PrivacyPolicy field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadForm) SetPrivacyPolicy(privacyPolicy *UpdateAdsRequestLeadFormPrivacyPolicy) {
-	u.PrivacyPolicy = privacyPolicy
-	u.require(updateAdsRequestLeadFormFieldPrivacyPolicy)
-}
-
-// SetQuestions sets the Questions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadForm) SetQuestions(questions []*UpdateAdsRequestLeadFormQuestionsItem) {
-	u.Questions = questions
-	u.require(updateAdsRequestLeadFormFieldQuestions)
-}
-
-func (u *UpdateAdsRequestLeadForm) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateAdsRequestLeadForm
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateAdsRequestLeadForm(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateAdsRequestLeadForm) MarshalJSON() ([]byte, error) {
-	type embed UpdateAdsRequestLeadForm
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateAdsRequestLeadForm) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-// Optional completion screen shown after submission; url sets the follow-up website button.
-var (
-	updateAdsRequestLeadFormCompletionFieldButtonText  = big.NewInt(1 << 0)
-	updateAdsRequestLeadFormCompletionFieldDescription = big.NewInt(1 << 1)
-	updateAdsRequestLeadFormCompletionFieldHeadline    = big.NewInt(1 << 2)
-	updateAdsRequestLeadFormCompletionFieldURL         = big.NewInt(1 << 3)
-)
-
-type UpdateAdsRequestLeadFormCompletion struct {
-	ButtonText  *string `json:"button_text,omitempty" url:"button_text,omitempty"`
-	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	Headline    *string `json:"headline,omitempty" url:"headline,omitempty"`
-	URL         *string `json:"url,omitempty" url:"url,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateAdsRequestLeadFormCompletion) GetButtonText() *string {
-	if u == nil {
-		return nil
-	}
-	return u.ButtonText
-}
-
-func (u *UpdateAdsRequestLeadFormCompletion) GetDescription() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Description
-}
-
-func (u *UpdateAdsRequestLeadFormCompletion) GetHeadline() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Headline
-}
-
-func (u *UpdateAdsRequestLeadFormCompletion) GetURL() *string {
-	if u == nil {
-		return nil
-	}
-	return u.URL
-}
-
-func (u *UpdateAdsRequestLeadFormCompletion) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateAdsRequestLeadFormCompletion) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetButtonText sets the ButtonText field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormCompletion) SetButtonText(buttonText *string) {
-	u.ButtonText = buttonText
-	u.require(updateAdsRequestLeadFormCompletionFieldButtonText)
-}
-
-// SetDescription sets the Description field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormCompletion) SetDescription(description *string) {
-	u.Description = description
-	u.require(updateAdsRequestLeadFormCompletionFieldDescription)
-}
-
-// SetHeadline sets the Headline field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormCompletion) SetHeadline(headline *string) {
-	u.Headline = headline
-	u.require(updateAdsRequestLeadFormCompletionFieldHeadline)
-}
-
-// SetURL sets the URL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormCompletion) SetURL(url *string) {
-	u.URL = url
-	u.require(updateAdsRequestLeadFormCompletionFieldURL)
-}
-
-func (u *UpdateAdsRequestLeadFormCompletion) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateAdsRequestLeadFormCompletion
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateAdsRequestLeadFormCompletion(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateAdsRequestLeadFormCompletion) MarshalJSON() ([]byte, error) {
-	type embed UpdateAdsRequestLeadFormCompletion
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateAdsRequestLeadFormCompletion) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-// Optional custom consent disclaimer with checkboxes.
-var (
-	updateAdsRequestLeadFormDisclaimerFieldBody       = big.NewInt(1 << 0)
-	updateAdsRequestLeadFormDisclaimerFieldCheckboxes = big.NewInt(1 << 1)
-	updateAdsRequestLeadFormDisclaimerFieldTitle      = big.NewInt(1 << 2)
-)
-
-type UpdateAdsRequestLeadFormDisclaimer struct {
-	Body       *string                                             `json:"body,omitempty" url:"body,omitempty"`
-	Checkboxes []*UpdateAdsRequestLeadFormDisclaimerCheckboxesItem `json:"checkboxes,omitempty" url:"checkboxes,omitempty"`
-	Title      *string                                             `json:"title,omitempty" url:"title,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateAdsRequestLeadFormDisclaimer) GetBody() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Body
-}
-
-func (u *UpdateAdsRequestLeadFormDisclaimer) GetCheckboxes() []*UpdateAdsRequestLeadFormDisclaimerCheckboxesItem {
-	if u == nil {
-		return nil
-	}
-	return u.Checkboxes
-}
-
-func (u *UpdateAdsRequestLeadFormDisclaimer) GetTitle() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Title
-}
-
-func (u *UpdateAdsRequestLeadFormDisclaimer) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateAdsRequestLeadFormDisclaimer) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetBody sets the Body field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormDisclaimer) SetBody(body *string) {
-	u.Body = body
-	u.require(updateAdsRequestLeadFormDisclaimerFieldBody)
-}
-
-// SetCheckboxes sets the Checkboxes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormDisclaimer) SetCheckboxes(checkboxes []*UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) {
-	u.Checkboxes = checkboxes
-	u.require(updateAdsRequestLeadFormDisclaimerFieldCheckboxes)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormDisclaimer) SetTitle(title *string) {
-	u.Title = title
-	u.require(updateAdsRequestLeadFormDisclaimerFieldTitle)
-}
-
-func (u *UpdateAdsRequestLeadFormDisclaimer) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateAdsRequestLeadFormDisclaimer
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateAdsRequestLeadFormDisclaimer(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateAdsRequestLeadFormDisclaimer) MarshalJSON() ([]byte, error) {
-	type embed UpdateAdsRequestLeadFormDisclaimer
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateAdsRequestLeadFormDisclaimer) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-var (
-	updateAdsRequestLeadFormDisclaimerCheckboxesItemFieldCheckedByDefault = big.NewInt(1 << 0)
-	updateAdsRequestLeadFormDisclaimerCheckboxesItemFieldKey              = big.NewInt(1 << 1)
-	updateAdsRequestLeadFormDisclaimerCheckboxesItemFieldRequired         = big.NewInt(1 << 2)
-	updateAdsRequestLeadFormDisclaimerCheckboxesItemFieldText             = big.NewInt(1 << 3)
-)
-
-type UpdateAdsRequestLeadFormDisclaimerCheckboxesItem struct {
-	CheckedByDefault *bool   `json:"checked_by_default,omitempty" url:"checked_by_default,omitempty"`
-	Key              *string `json:"key,omitempty" url:"key,omitempty"`
-	Required         *bool   `json:"required,omitempty" url:"required,omitempty"`
-	Text             *string `json:"text,omitempty" url:"text,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) GetCheckedByDefault() *bool {
-	if u == nil {
-		return nil
-	}
-	return u.CheckedByDefault
-}
-
-func (u *UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) GetKey() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Key
-}
-
-func (u *UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) GetRequired() *bool {
-	if u == nil {
-		return nil
-	}
-	return u.Required
-}
-
-func (u *UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) GetText() *string {
-	if u == nil {
-		return nil
+		return ""
 	}
 	return u.Text
 }
 
-func (u *UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) GetExtraProperties() map[string]interface{} {
+func (u *UpdateAdsRequestDescriptionsItem) GetExtraProperties() map[string]interface{} {
 	if u == nil {
 		return nil
 	}
 	return u.extraProperties
 }
 
-func (u *UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+func (u *UpdateAdsRequestDescriptionsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetCheckedByDefault sets the CheckedByDefault field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) SetCheckedByDefault(checkedByDefault *bool) {
-	u.CheckedByDefault = checkedByDefault
-	u.require(updateAdsRequestLeadFormDisclaimerCheckboxesItemFieldCheckedByDefault)
-}
-
-// SetKey sets the Key field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) SetKey(key *string) {
-	u.Key = key
-	u.require(updateAdsRequestLeadFormDisclaimerCheckboxesItemFieldKey)
-}
-
-// SetRequired sets the Required field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) SetRequired(required *bool) {
-	u.Required = required
-	u.require(updateAdsRequestLeadFormDisclaimerCheckboxesItemFieldRequired)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetText sets the Text field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) SetText(text *string) {
+func (u *UpdateAdsRequestDescriptionsItem) SetText(text string) {
 	u.Text = text
-	u.require(updateAdsRequestLeadFormDisclaimerCheckboxesItemFieldText)
+	u.require(updateAdsRequestDescriptionsItemFieldText)
 }
 
-func (u *UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateAdsRequestLeadFormDisclaimerCheckboxesItem
+func (u *UpdateAdsRequestDescriptionsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdsRequestDescriptionsItem
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*u = UpdateAdsRequestLeadFormDisclaimerCheckboxesItem(value)
+	*u = UpdateAdsRequestDescriptionsItem(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *u)
 	if err != nil {
 		return err
@@ -6205,8 +5357,8 @@ func (u *UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) UnmarshalJSON(data []
 	return nil
 }
 
-func (u *UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) MarshalJSON() ([]byte, error) {
-	type embed UpdateAdsRequestLeadFormDisclaimerCheckboxesItem
+func (u *UpdateAdsRequestDescriptionsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdsRequestDescriptionsItem
 	var marshaler = struct {
 		embed
 	}{
@@ -6216,232 +5368,7 @@ func (u *UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) MarshalJSON() ([]byte
 	return json.Marshal(explicitMarshaler)
 }
 
-func (u *UpdateAdsRequestLeadFormDisclaimerCheckboxesItem) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-// more_volume (default) is quickest to submit; higher_intent adds a confirmation step.
-type UpdateAdsRequestLeadFormFormType string
-
-const (
-	UpdateAdsRequestLeadFormFormTypeMoreVolume   UpdateAdsRequestLeadFormFormType = "more_volume"
-	UpdateAdsRequestLeadFormFormTypeHigherIntent UpdateAdsRequestLeadFormFormType = "higher_intent"
-)
-
-func NewUpdateAdsRequestLeadFormFormTypeFromString(s string) (UpdateAdsRequestLeadFormFormType, error) {
-	switch s {
-	case "more_volume":
-		return UpdateAdsRequestLeadFormFormTypeMoreVolume, nil
-	case "higher_intent":
-		return UpdateAdsRequestLeadFormFormTypeHigherIntent, nil
-	}
-	var t UpdateAdsRequestLeadFormFormType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateAdsRequestLeadFormFormType) Ptr() *UpdateAdsRequestLeadFormFormType {
-	return &u
-}
-
-// Optional intro screen shown before the questions.
-var (
-	updateAdsRequestLeadFormIntroFieldDescription = big.NewInt(1 << 0)
-	updateAdsRequestLeadFormIntroFieldHeadline    = big.NewInt(1 << 1)
-)
-
-type UpdateAdsRequestLeadFormIntro struct {
-	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	Headline    *string `json:"headline,omitempty" url:"headline,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateAdsRequestLeadFormIntro) GetDescription() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Description
-}
-
-func (u *UpdateAdsRequestLeadFormIntro) GetHeadline() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Headline
-}
-
-func (u *UpdateAdsRequestLeadFormIntro) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateAdsRequestLeadFormIntro) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetDescription sets the Description field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormIntro) SetDescription(description *string) {
-	u.Description = description
-	u.require(updateAdsRequestLeadFormIntroFieldDescription)
-}
-
-// SetHeadline sets the Headline field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormIntro) SetHeadline(headline *string) {
-	u.Headline = headline
-	u.require(updateAdsRequestLeadFormIntroFieldHeadline)
-}
-
-func (u *UpdateAdsRequestLeadFormIntro) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateAdsRequestLeadFormIntro
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateAdsRequestLeadFormIntro(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateAdsRequestLeadFormIntro) MarshalJSON() ([]byte, error) {
-	type embed UpdateAdsRequestLeadFormIntro
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateAdsRequestLeadFormIntro) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-// Your privacy policy. url is required by the ad platform.
-var (
-	updateAdsRequestLeadFormPrivacyPolicyFieldLinkText = big.NewInt(1 << 0)
-	updateAdsRequestLeadFormPrivacyPolicyFieldURL      = big.NewInt(1 << 1)
-)
-
-type UpdateAdsRequestLeadFormPrivacyPolicy struct {
-	LinkText *string `json:"link_text,omitempty" url:"link_text,omitempty"`
-	URL      *string `json:"url,omitempty" url:"url,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateAdsRequestLeadFormPrivacyPolicy) GetLinkText() *string {
-	if u == nil {
-		return nil
-	}
-	return u.LinkText
-}
-
-func (u *UpdateAdsRequestLeadFormPrivacyPolicy) GetURL() *string {
-	if u == nil {
-		return nil
-	}
-	return u.URL
-}
-
-func (u *UpdateAdsRequestLeadFormPrivacyPolicy) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateAdsRequestLeadFormPrivacyPolicy) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetLinkText sets the LinkText field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormPrivacyPolicy) SetLinkText(linkText *string) {
-	u.LinkText = linkText
-	u.require(updateAdsRequestLeadFormPrivacyPolicyFieldLinkText)
-}
-
-// SetURL sets the URL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormPrivacyPolicy) SetURL(url *string) {
-	u.URL = url
-	u.require(updateAdsRequestLeadFormPrivacyPolicyFieldURL)
-}
-
-func (u *UpdateAdsRequestLeadFormPrivacyPolicy) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateAdsRequestLeadFormPrivacyPolicy
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateAdsRequestLeadFormPrivacyPolicy(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateAdsRequestLeadFormPrivacyPolicy) MarshalJSON() ([]byte, error) {
-	type embed UpdateAdsRequestLeadFormPrivacyPolicy
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateAdsRequestLeadFormPrivacyPolicy) String() string {
+func (u *UpdateAdsRequestDescriptionsItem) String() string {
 	if u == nil {
 		return "<nil>"
 	}
@@ -6457,17 +5384,12 @@ func (u *UpdateAdsRequestLeadFormPrivacyPolicy) String() string {
 }
 
 var (
-	updateAdsRequestLeadFormQuestionsItemFieldFormat  = big.NewInt(1 << 0)
-	updateAdsRequestLeadFormQuestionsItemFieldLabel   = big.NewInt(1 << 1)
-	updateAdsRequestLeadFormQuestionsItemFieldOptions = big.NewInt(1 << 2)
-	updateAdsRequestLeadFormQuestionsItemFieldType    = big.NewInt(1 << 3)
+	updateAdsRequestHeadlinesItemFieldText = big.NewInt(1 << 0)
 )
 
-type UpdateAdsRequestLeadFormQuestionsItem struct {
-	Format  *UpdateAdsRequestLeadFormQuestionsItemFormat        `json:"format,omitempty" url:"format,omitempty"`
-	Label   *string                                             `json:"label,omitempty" url:"label,omitempty"`
-	Options []*UpdateAdsRequestLeadFormQuestionsItemOptionsItem `json:"options,omitempty" url:"options,omitempty"`
-	Type    *UpdateAdsRequestLeadFormQuestionsItemType          `json:"type,omitempty" url:"type,omitempty"`
+type UpdateAdsRequestHeadlinesItem struct {
+	// The text shown to viewers.
+	Text string `json:"text" url:"text"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6476,83 +5398,43 @@ type UpdateAdsRequestLeadFormQuestionsItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UpdateAdsRequestLeadFormQuestionsItem) GetFormat() *UpdateAdsRequestLeadFormQuestionsItemFormat {
+func (u *UpdateAdsRequestHeadlinesItem) GetText() string {
 	if u == nil {
-		return nil
+		return ""
 	}
-	return u.Format
+	return u.Text
 }
 
-func (u *UpdateAdsRequestLeadFormQuestionsItem) GetLabel() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Label
-}
-
-func (u *UpdateAdsRequestLeadFormQuestionsItem) GetOptions() []*UpdateAdsRequestLeadFormQuestionsItemOptionsItem {
-	if u == nil {
-		return nil
-	}
-	return u.Options
-}
-
-func (u *UpdateAdsRequestLeadFormQuestionsItem) GetType() *UpdateAdsRequestLeadFormQuestionsItemType {
-	if u == nil {
-		return nil
-	}
-	return u.Type
-}
-
-func (u *UpdateAdsRequestLeadFormQuestionsItem) GetExtraProperties() map[string]interface{} {
+func (u *UpdateAdsRequestHeadlinesItem) GetExtraProperties() map[string]interface{} {
 	if u == nil {
 		return nil
 	}
 	return u.extraProperties
 }
 
-func (u *UpdateAdsRequestLeadFormQuestionsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+func (u *UpdateAdsRequestHeadlinesItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
-// SetFormat sets the Format field and marks it as non-optional;
+// SetText sets the Text field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormQuestionsItem) SetFormat(format *UpdateAdsRequestLeadFormQuestionsItemFormat) {
-	u.Format = format
-	u.require(updateAdsRequestLeadFormQuestionsItemFieldFormat)
+func (u *UpdateAdsRequestHeadlinesItem) SetText(text string) {
+	u.Text = text
+	u.require(updateAdsRequestHeadlinesItemFieldText)
 }
 
-// SetLabel sets the Label field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormQuestionsItem) SetLabel(label *string) {
-	u.Label = label
-	u.require(updateAdsRequestLeadFormQuestionsItemFieldLabel)
-}
-
-// SetOptions sets the Options field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormQuestionsItem) SetOptions(options []*UpdateAdsRequestLeadFormQuestionsItemOptionsItem) {
-	u.Options = options
-	u.require(updateAdsRequestLeadFormQuestionsItemFieldOptions)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormQuestionsItem) SetType(type_ *UpdateAdsRequestLeadFormQuestionsItemType) {
-	u.Type = type_
-	u.require(updateAdsRequestLeadFormQuestionsItemFieldType)
-}
-
-func (u *UpdateAdsRequestLeadFormQuestionsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateAdsRequestLeadFormQuestionsItem
+func (u *UpdateAdsRequestHeadlinesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdsRequestHeadlinesItem
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*u = UpdateAdsRequestLeadFormQuestionsItem(value)
+	*u = UpdateAdsRequestHeadlinesItem(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *u)
 	if err != nil {
 		return err
@@ -6562,8 +5444,8 @@ func (u *UpdateAdsRequestLeadFormQuestionsItem) UnmarshalJSON(data []byte) error
 	return nil
 }
 
-func (u *UpdateAdsRequestLeadFormQuestionsItem) MarshalJSON() ([]byte, error) {
-	type embed UpdateAdsRequestLeadFormQuestionsItem
+func (u *UpdateAdsRequestHeadlinesItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdsRequestHeadlinesItem
 	var marshaler = struct {
 		embed
 	}{
@@ -6573,148 +5455,7 @@ func (u *UpdateAdsRequestLeadFormQuestionsItem) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (u *UpdateAdsRequestLeadFormQuestionsItem) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-type UpdateAdsRequestLeadFormQuestionsItemFormat string
-
-const (
-	UpdateAdsRequestLeadFormQuestionsItemFormatShortAnswer    UpdateAdsRequestLeadFormQuestionsItemFormat = "short_answer"
-	UpdateAdsRequestLeadFormQuestionsItemFormatMultipleChoice UpdateAdsRequestLeadFormQuestionsItemFormat = "multiple_choice"
-	UpdateAdsRequestLeadFormQuestionsItemFormatAppointment    UpdateAdsRequestLeadFormQuestionsItemFormat = "appointment"
-)
-
-func NewUpdateAdsRequestLeadFormQuestionsItemFormatFromString(s string) (UpdateAdsRequestLeadFormQuestionsItemFormat, error) {
-	switch s {
-	case "short_answer":
-		return UpdateAdsRequestLeadFormQuestionsItemFormatShortAnswer, nil
-	case "multiple_choice":
-		return UpdateAdsRequestLeadFormQuestionsItemFormatMultipleChoice, nil
-	case "appointment":
-		return UpdateAdsRequestLeadFormQuestionsItemFormatAppointment, nil
-	}
-	var t UpdateAdsRequestLeadFormQuestionsItemFormat
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateAdsRequestLeadFormQuestionsItemFormat) Ptr() *UpdateAdsRequestLeadFormQuestionsItemFormat {
-	return &u
-}
-
-var (
-	updateAdsRequestLeadFormQuestionsItemOptionsItemFieldKey   = big.NewInt(1 << 0)
-	updateAdsRequestLeadFormQuestionsItemOptionsItemFieldLogic = big.NewInt(1 << 1)
-	updateAdsRequestLeadFormQuestionsItemOptionsItemFieldValue = big.NewInt(1 << 2)
-)
-
-type UpdateAdsRequestLeadFormQuestionsItemOptionsItem struct {
-	Key   *string                                                `json:"key,omitempty" url:"key,omitempty"`
-	Logic *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic `json:"logic,omitempty" url:"logic,omitempty"`
-	Value *string                                                `json:"value,omitempty" url:"value,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItem) GetKey() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Key
-}
-
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItem) GetLogic() *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic {
-	if u == nil {
-		return nil
-	}
-	return u.Logic
-}
-
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItem) GetValue() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Value
-}
-
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItem) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetKey sets the Key field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItem) SetKey(key *string) {
-	u.Key = key
-	u.require(updateAdsRequestLeadFormQuestionsItemOptionsItemFieldKey)
-}
-
-// SetLogic sets the Logic field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItem) SetLogic(logic *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic) {
-	u.Logic = logic
-	u.require(updateAdsRequestLeadFormQuestionsItemOptionsItemFieldLogic)
-}
-
-// SetValue sets the Value field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItem) SetValue(value *string) {
-	u.Value = value
-	u.require(updateAdsRequestLeadFormQuestionsItemOptionsItemFieldValue)
-}
-
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateAdsRequestLeadFormQuestionsItemOptionsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateAdsRequestLeadFormQuestionsItemOptionsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItem) MarshalJSON() ([]byte, error) {
-	type embed UpdateAdsRequestLeadFormQuestionsItemOptionsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItem) String() string {
+func (u *UpdateAdsRequestHeadlinesItem) String() string {
 	if u == nil {
 		return "<nil>"
 	}
@@ -6730,15 +5471,12 @@ func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItem) String() string {
 }
 
 var (
-	updateAdsRequestLeadFormQuestionsItemOptionsItemLogicFieldAction              = big.NewInt(1 << 0)
-	updateAdsRequestLeadFormQuestionsItemOptionsItemLogicFieldTargetEndPageIndex  = big.NewInt(1 << 1)
-	updateAdsRequestLeadFormQuestionsItemOptionsItemLogicFieldTargetQuestionIndex = big.NewInt(1 << 2)
+	updateAdsRequestPrimaryTextsItemFieldText = big.NewInt(1 << 0)
 )
 
-type UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic struct {
-	Action              *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction `json:"action,omitempty" url:"action,omitempty"`
-	TargetEndPageIndex  *int                                                         `json:"target_end_page_index,omitempty" url:"target_end_page_index,omitempty"`
-	TargetQuestionIndex *int                                                         `json:"target_question_index,omitempty" url:"target_question_index,omitempty"`
+type UpdateAdsRequestPrimaryTextsItem struct {
+	// The text shown to viewers.
+	Text string `json:"text" url:"text"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6747,69 +5485,43 @@ type UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic) GetAction() *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction {
+func (u *UpdateAdsRequestPrimaryTextsItem) GetText() string {
 	if u == nil {
-		return nil
+		return ""
 	}
-	return u.Action
+	return u.Text
 }
 
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic) GetTargetEndPageIndex() *int {
-	if u == nil {
-		return nil
-	}
-	return u.TargetEndPageIndex
-}
-
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic) GetTargetQuestionIndex() *int {
-	if u == nil {
-		return nil
-	}
-	return u.TargetQuestionIndex
-}
-
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic) GetExtraProperties() map[string]interface{} {
+func (u *UpdateAdsRequestPrimaryTextsItem) GetExtraProperties() map[string]interface{} {
 	if u == nil {
 		return nil
 	}
 	return u.extraProperties
 }
 
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+func (u *UpdateAdsRequestPrimaryTextsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
-// SetAction sets the Action field and marks it as non-optional;
+// SetText sets the Text field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic) SetAction(action *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction) {
-	u.Action = action
-	u.require(updateAdsRequestLeadFormQuestionsItemOptionsItemLogicFieldAction)
+func (u *UpdateAdsRequestPrimaryTextsItem) SetText(text string) {
+	u.Text = text
+	u.require(updateAdsRequestPrimaryTextsItemFieldText)
 }
 
-// SetTargetEndPageIndex sets the TargetEndPageIndex field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic) SetTargetEndPageIndex(targetEndPageIndex *int) {
-	u.TargetEndPageIndex = targetEndPageIndex
-	u.require(updateAdsRequestLeadFormQuestionsItemOptionsItemLogicFieldTargetEndPageIndex)
-}
-
-// SetTargetQuestionIndex sets the TargetQuestionIndex field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic) SetTargetQuestionIndex(targetQuestionIndex *int) {
-	u.TargetQuestionIndex = targetQuestionIndex
-	u.require(updateAdsRequestLeadFormQuestionsItemOptionsItemLogicFieldTargetQuestionIndex)
-}
-
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic
+func (u *UpdateAdsRequestPrimaryTextsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAdsRequestPrimaryTextsItem
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*u = UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic(value)
+	*u = UpdateAdsRequestPrimaryTextsItem(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *u)
 	if err != nil {
 		return err
@@ -6819,8 +5531,8 @@ func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic) UnmarshalJSON(da
 	return nil
 }
 
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic) MarshalJSON() ([]byte, error) {
-	type embed UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic
+func (u *UpdateAdsRequestPrimaryTextsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateAdsRequestPrimaryTextsItem
 	var marshaler = struct {
 		embed
 	}{
@@ -6830,320 +5542,7 @@ func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic) MarshalJSON() ([
 	return json.Marshal(explicitMarshaler)
 }
 
-func (u *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogic) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-type UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction string
-
-const (
-	UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicActionGoToQuestion UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction = "go_to_question"
-	UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicActionSubmitForm   UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction = "submit_form"
-	UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicActionCloseForm    UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction = "close_form"
-)
-
-func NewUpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicActionFromString(s string) (UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction, error) {
-	switch s {
-	case "go_to_question":
-		return UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicActionGoToQuestion, nil
-	case "submit_form":
-		return UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicActionSubmitForm, nil
-	case "close_form":
-		return UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicActionCloseForm, nil
-	}
-	var t UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction) Ptr() *UpdateAdsRequestLeadFormQuestionsItemOptionsItemLogicAction {
-	return &u
-}
-
-type UpdateAdsRequestLeadFormQuestionsItemType string
-
-const (
-	UpdateAdsRequestLeadFormQuestionsItemTypeEmail              UpdateAdsRequestLeadFormQuestionsItemType = "email"
-	UpdateAdsRequestLeadFormQuestionsItemTypePhone              UpdateAdsRequestLeadFormQuestionsItemType = "phone"
-	UpdateAdsRequestLeadFormQuestionsItemTypeFullName           UpdateAdsRequestLeadFormQuestionsItemType = "full_name"
-	UpdateAdsRequestLeadFormQuestionsItemTypeFirstName          UpdateAdsRequestLeadFormQuestionsItemType = "first_name"
-	UpdateAdsRequestLeadFormQuestionsItemTypeLastName           UpdateAdsRequestLeadFormQuestionsItemType = "last_name"
-	UpdateAdsRequestLeadFormQuestionsItemTypeCity               UpdateAdsRequestLeadFormQuestionsItemType = "city"
-	UpdateAdsRequestLeadFormQuestionsItemTypeState              UpdateAdsRequestLeadFormQuestionsItemType = "state"
-	UpdateAdsRequestLeadFormQuestionsItemTypeZip                UpdateAdsRequestLeadFormQuestionsItemType = "zip"
-	UpdateAdsRequestLeadFormQuestionsItemTypeCountry            UpdateAdsRequestLeadFormQuestionsItemType = "country"
-	UpdateAdsRequestLeadFormQuestionsItemTypeStreetAddress      UpdateAdsRequestLeadFormQuestionsItemType = "street_address"
-	UpdateAdsRequestLeadFormQuestionsItemTypeJobTitle           UpdateAdsRequestLeadFormQuestionsItemType = "job_title"
-	UpdateAdsRequestLeadFormQuestionsItemTypeCompanyName        UpdateAdsRequestLeadFormQuestionsItemType = "company_name"
-	UpdateAdsRequestLeadFormQuestionsItemTypeWorkEmail          UpdateAdsRequestLeadFormQuestionsItemType = "work_email"
-	UpdateAdsRequestLeadFormQuestionsItemTypeWorkPhoneNumber    UpdateAdsRequestLeadFormQuestionsItemType = "work_phone_number"
-	UpdateAdsRequestLeadFormQuestionsItemTypeDob                UpdateAdsRequestLeadFormQuestionsItemType = "dob"
-	UpdateAdsRequestLeadFormQuestionsItemTypeGender             UpdateAdsRequestLeadFormQuestionsItemType = "gender"
-	UpdateAdsRequestLeadFormQuestionsItemTypeMaritalStatus      UpdateAdsRequestLeadFormQuestionsItemType = "marital_status"
-	UpdateAdsRequestLeadFormQuestionsItemTypeRelationshipStatus UpdateAdsRequestLeadFormQuestionsItemType = "relationship_status"
-	UpdateAdsRequestLeadFormQuestionsItemTypeMilitaryStatus     UpdateAdsRequestLeadFormQuestionsItemType = "military_status"
-	UpdateAdsRequestLeadFormQuestionsItemTypeDateTime           UpdateAdsRequestLeadFormQuestionsItemType = "date_time"
-	UpdateAdsRequestLeadFormQuestionsItemTypeCustom             UpdateAdsRequestLeadFormQuestionsItemType = "custom"
-)
-
-func NewUpdateAdsRequestLeadFormQuestionsItemTypeFromString(s string) (UpdateAdsRequestLeadFormQuestionsItemType, error) {
-	switch s {
-	case "email":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeEmail, nil
-	case "phone":
-		return UpdateAdsRequestLeadFormQuestionsItemTypePhone, nil
-	case "full_name":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeFullName, nil
-	case "first_name":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeFirstName, nil
-	case "last_name":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeLastName, nil
-	case "city":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeCity, nil
-	case "state":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeState, nil
-	case "zip":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeZip, nil
-	case "country":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeCountry, nil
-	case "street_address":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeStreetAddress, nil
-	case "job_title":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeJobTitle, nil
-	case "company_name":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeCompanyName, nil
-	case "work_email":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeWorkEmail, nil
-	case "work_phone_number":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeWorkPhoneNumber, nil
-	case "dob":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeDob, nil
-	case "gender":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeGender, nil
-	case "marital_status":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeMaritalStatus, nil
-	case "relationship_status":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeRelationshipStatus, nil
-	case "military_status":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeMilitaryStatus, nil
-	case "date_time":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeDateTime, nil
-	case "custom":
-		return UpdateAdsRequestLeadFormQuestionsItemTypeCustom, nil
-	}
-	var t UpdateAdsRequestLeadFormQuestionsItemType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateAdsRequestLeadFormQuestionsItemType) Ptr() *UpdateAdsRequestLeadFormQuestionsItemType {
-	return &u
-}
-
-// Click-to-message welcome copy: the greeting (message) and the ice-breaker prompt (keyword).
-var (
-	updateAdsRequestMessagingConfigFieldKeyword = big.NewInt(1 << 0)
-	updateAdsRequestMessagingConfigFieldMessage = big.NewInt(1 << 1)
-)
-
-type UpdateAdsRequestMessagingConfig struct {
-	Keyword *string `json:"keyword,omitempty" url:"keyword,omitempty"`
-	Message *string `json:"message,omitempty" url:"message,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateAdsRequestMessagingConfig) GetKeyword() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Keyword
-}
-
-func (u *UpdateAdsRequestMessagingConfig) GetMessage() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Message
-}
-
-func (u *UpdateAdsRequestMessagingConfig) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateAdsRequestMessagingConfig) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetKeyword sets the Keyword field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestMessagingConfig) SetKeyword(keyword *string) {
-	u.Keyword = keyword
-	u.require(updateAdsRequestMessagingConfigFieldKeyword)
-}
-
-// SetMessage sets the Message field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestMessagingConfig) SetMessage(message *string) {
-	u.Message = message
-	u.require(updateAdsRequestMessagingConfigFieldMessage)
-}
-
-func (u *UpdateAdsRequestMessagingConfig) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateAdsRequestMessagingConfig
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateAdsRequestMessagingConfig(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateAdsRequestMessagingConfig) MarshalJSON() ([]byte, error) {
-	type embed UpdateAdsRequestMessagingConfig
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateAdsRequestMessagingConfig) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-// Identifies the network that owns `post_id`. The source is inferred from the ID shape when omitted.
-type UpdateAdsRequestPostSource string
-
-const (
-	UpdateAdsRequestPostSourceFacebook  UpdateAdsRequestPostSource = "facebook"
-	UpdateAdsRequestPostSourceInstagram UpdateAdsRequestPostSource = "instagram"
-)
-
-func NewUpdateAdsRequestPostSourceFromString(s string) (UpdateAdsRequestPostSource, error) {
-	switch s {
-	case "facebook":
-		return UpdateAdsRequestPostSourceFacebook, nil
-	case "instagram":
-		return UpdateAdsRequestPostSourceInstagram, nil
-	}
-	var t UpdateAdsRequestPostSource
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateAdsRequestPostSource) Ptr() *UpdateAdsRequestPostSource {
-	return &u
-}
-
-var (
-	updateAdsRequestSocialAccountsItemFieldID = big.NewInt(1 << 0)
-)
-
-type UpdateAdsRequestSocialAccountsItem struct {
-	// Social account ID, prefixed `sacc_`.
-	ID *string `json:"id,omitempty" url:"id,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateAdsRequestSocialAccountsItem) GetID() *string {
-	if u == nil {
-		return nil
-	}
-	return u.ID
-}
-
-func (u *UpdateAdsRequestSocialAccountsItem) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateAdsRequestSocialAccountsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequestSocialAccountsItem) SetID(id *string) {
-	u.ID = id
-	u.require(updateAdsRequestSocialAccountsItemFieldID)
-}
-
-func (u *UpdateAdsRequestSocialAccountsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateAdsRequestSocialAccountsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateAdsRequestSocialAccountsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateAdsRequestSocialAccountsItem) MarshalJSON() ([]byte, error) {
-	type embed UpdateAdsRequestSocialAccountsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateAdsRequestSocialAccountsItem) String() string {
+func (u *UpdateAdsRequestPrimaryTextsItem) String() string {
 	if u == nil {
 		return "<nil>"
 	}
@@ -7171,10 +5570,12 @@ type UnpauseAdsRequest struct {
 }
 
 func (u *UnpauseAdsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -7185,22 +5586,15 @@ func (u *UnpauseAdsRequest) SetID(id string) {
 }
 
 var (
-	updateAdsRequestFieldID                 = big.NewInt(1 << 0)
-	updateAdsRequestFieldCallToAction       = big.NewInt(1 << 1)
-	updateAdsRequestFieldCreatives          = big.NewInt(1 << 2)
-	updateAdsRequestFieldDescriptions       = big.NewInt(1 << 3)
-	updateAdsRequestFieldHeadlines          = big.NewInt(1 << 4)
-	updateAdsRequestFieldLeadForm           = big.NewInt(1 << 5)
-	updateAdsRequestFieldLeadFormID         = big.NewInt(1 << 6)
-	updateAdsRequestFieldMessagingConfig    = big.NewInt(1 << 7)
-	updateAdsRequestFieldMultiAdvertiserAds = big.NewInt(1 << 8)
-	updateAdsRequestFieldPostID             = big.NewInt(1 << 9)
-	updateAdsRequestFieldPostSource         = big.NewInt(1 << 10)
-	updateAdsRequestFieldPrimaryTexts       = big.NewInt(1 << 11)
-	updateAdsRequestFieldSocialAccounts     = big.NewInt(1 << 12)
-	updateAdsRequestFieldTitle              = big.NewInt(1 << 13)
-	updateAdsRequestFieldURL                = big.NewInt(1 << 14)
-	updateAdsRequestFieldURLParameters      = big.NewInt(1 << 15)
+	updateAdsRequestFieldID            = big.NewInt(1 << 0)
+	updateAdsRequestFieldCallToAction  = big.NewInt(1 << 1)
+	updateAdsRequestFieldCreatives     = big.NewInt(1 << 2)
+	updateAdsRequestFieldDescriptions  = big.NewInt(1 << 3)
+	updateAdsRequestFieldHeadlines     = big.NewInt(1 << 4)
+	updateAdsRequestFieldPrimaryTexts  = big.NewInt(1 << 5)
+	updateAdsRequestFieldTitle         = big.NewInt(1 << 6)
+	updateAdsRequestFieldURL           = big.NewInt(1 << 7)
+	updateAdsRequestFieldURLParameters = big.NewInt(1 << 8)
 )
 
 type UpdateAdsRequest struct {
@@ -7208,33 +5602,19 @@ type UpdateAdsRequest struct {
 	ID string `json:"-" url:"-"`
 	// The call-to-action button shown on the ad.
 	CallToAction *UpdateAdsRequestCallToAction `json:"call_to_action,omitempty" url:"-"`
-	// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Replaces a live ad's creative on the platform. Two or more entries with no format replace it with a carousel (2-10 attachments), in order, sharing the ad's copy.
+	// The ad's creative assets. Each entry is an uploaded file id with an optional format; omit format for the original asset. Replaces a live ad's creative. Entries with no format replace it with a carousel's ordered cards.
 	Creatives []*UpdateAdsRequestCreativesItem `json:"creatives,omitempty" url:"-"`
-	// The description variants shown on the ad.
-	Descriptions []string `json:"descriptions,omitempty" url:"-"`
-	// The headline variants shown on the ad.
-	Headlines []string `json:"headlines,omitempty" url:"-"`
-	// Instant lead form for the ad. Only allowed when the ad group's conversion_location is an instant-form destination (instant_forms, instant_forms_and_messenger, website_and_instant_forms). Mutually exclusive with lead_form_id.
-	LeadForm *UpdateAdsRequestLeadForm `json:"lead_form,omitempty" url:"-"`
-	// Use an existing instant form instead of creating one — the form's platform ID, from a form already on the ad's Facebook page. Only allowed when the ad group's conversion_location is an instant-form destination. Mutually exclusive with lead_form. Replaces a stored lead_form.
-	LeadFormID *string `json:"lead_form_id,omitempty" url:"-"`
-	// Click-to-message welcome copy: the greeting (message) and the ice-breaker prompt (keyword).
-	MessagingConfig *UpdateAdsRequestMessagingConfig `json:"messaging_config,omitempty" url:"-"`
-	// Whether the ad can appear alongside other advertisers' ads in the same unit. Defaults to true.
-	MultiAdvertiserAds *bool `json:"multi_advertiser_ads,omitempty" url:"-"`
-	// Promote an existing post instead of uploading creatives — a Facebook post or Instagram media id. Mutually exclusive with creatives. Pair with post_source.
-	PostID *string `json:"post_id,omitempty" url:"-"`
-	// Identifies the network that owns `post_id`. The source is inferred from the ID shape when omitted.
-	PostSource *UpdateAdsRequestPostSource `json:"post_source,omitempty" url:"-"`
-	// The primary text variants shown in the ad body.
-	PrimaryTexts []string `json:"primary_texts,omitempty" url:"-"`
-	// The social accounts the ad runs under — a connected Facebook page and, optionally, an Instagram profile.
-	SocialAccounts []*UpdateAdsRequestSocialAccountsItem `json:"social_accounts,omitempty" url:"-"`
+	// The description shown on the ad.
+	Descriptions []*UpdateAdsRequestDescriptionsItem `json:"descriptions,omitempty" url:"-"`
+	// The headline shown on the ad.
+	Headlines []*UpdateAdsRequestHeadlinesItem `json:"headlines,omitempty" url:"-"`
+	// The primary text shown in the ad body. Several entries make text variations.
+	PrimaryTexts []*UpdateAdsRequestPrimaryTextsItem `json:"primary_texts,omitempty" url:"-"`
 	// The display name of the ad.
 	Title *string `json:"title,omitempty" url:"-"`
 	// The URL the ad links to. Query parameters are merged into url_parameters, so the stored URL is always bare.
 	URL *string `json:"url,omitempty" url:"-"`
-	// Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved and rejected if you set them (utm_meta_ad_id, utm_meta_adset_id, utm_meta_campaign_id, utm_source, utm_placement, utm_medium, utm_content, utm_adset, utm_whop, wacid, wasid, waid, tw_source, tw_adid).
+	// Query parameters to append to the destination URL, keyed by parameter name. Merged with any query string on `url`. Whop adds its own click-attribution parameters; those are reserved, and setting one returns an error that names it.
 	URLParameters map[string]any `json:"url_parameters,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -7242,10 +5622,12 @@ type UpdateAdsRequest struct {
 }
 
 func (u *UpdateAdsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -7271,72 +5653,23 @@ func (u *UpdateAdsRequest) SetCreatives(creatives []*UpdateAdsRequestCreativesIt
 
 // SetDescriptions sets the Descriptions field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequest) SetDescriptions(descriptions []string) {
+func (u *UpdateAdsRequest) SetDescriptions(descriptions []*UpdateAdsRequestDescriptionsItem) {
 	u.Descriptions = descriptions
 	u.require(updateAdsRequestFieldDescriptions)
 }
 
 // SetHeadlines sets the Headlines field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequest) SetHeadlines(headlines []string) {
+func (u *UpdateAdsRequest) SetHeadlines(headlines []*UpdateAdsRequestHeadlinesItem) {
 	u.Headlines = headlines
 	u.require(updateAdsRequestFieldHeadlines)
 }
 
-// SetLeadForm sets the LeadForm field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequest) SetLeadForm(leadForm *UpdateAdsRequestLeadForm) {
-	u.LeadForm = leadForm
-	u.require(updateAdsRequestFieldLeadForm)
-}
-
-// SetLeadFormID sets the LeadFormID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequest) SetLeadFormID(leadFormID *string) {
-	u.LeadFormID = leadFormID
-	u.require(updateAdsRequestFieldLeadFormID)
-}
-
-// SetMessagingConfig sets the MessagingConfig field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequest) SetMessagingConfig(messagingConfig *UpdateAdsRequestMessagingConfig) {
-	u.MessagingConfig = messagingConfig
-	u.require(updateAdsRequestFieldMessagingConfig)
-}
-
-// SetMultiAdvertiserAds sets the MultiAdvertiserAds field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequest) SetMultiAdvertiserAds(multiAdvertiserAds *bool) {
-	u.MultiAdvertiserAds = multiAdvertiserAds
-	u.require(updateAdsRequestFieldMultiAdvertiserAds)
-}
-
-// SetPostID sets the PostID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequest) SetPostID(postID *string) {
-	u.PostID = postID
-	u.require(updateAdsRequestFieldPostID)
-}
-
-// SetPostSource sets the PostSource field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequest) SetPostSource(postSource *UpdateAdsRequestPostSource) {
-	u.PostSource = postSource
-	u.require(updateAdsRequestFieldPostSource)
-}
-
 // SetPrimaryTexts sets the PrimaryTexts field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequest) SetPrimaryTexts(primaryTexts []string) {
+func (u *UpdateAdsRequest) SetPrimaryTexts(primaryTexts []*UpdateAdsRequestPrimaryTextsItem) {
 	u.PrimaryTexts = primaryTexts
 	u.require(updateAdsRequestFieldPrimaryTexts)
-}
-
-// SetSocialAccounts sets the SocialAccounts field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdsRequest) SetSocialAccounts(socialAccounts []*UpdateAdsRequestSocialAccountsItem) {
-	u.SocialAccounts = socialAccounts
-	u.require(updateAdsRequestFieldSocialAccounts)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;

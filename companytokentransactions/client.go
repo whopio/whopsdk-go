@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of token transactions for a user or company, depending on the authenticated actor, with optional filtering by user and transaction type.
+// Lists an account's token transactions, newest first.
 //
 // Required permissions:
 //   - `company_token_transaction:read`
@@ -55,10 +55,10 @@ func NewClient(options *core.RequestOptions) *Client {
 //	    Last: whopsdk.Int(
 //	        42,
 //	    ),
-//	    CompanyID: "biz_xxxxxxxxxxxxxx",
 //	    UserID: whopsdk.String(
 //	        "user_xxxxxxxxxxxxx",
 //	    ),
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	}
 //	client.CompanyTokenTransactions.List(
 //	    context.TODO(),
@@ -72,7 +72,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/company_token_transactions"
@@ -127,7 +135,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Create a token transaction to add, subtract, or transfer tokens for a member within a company.
+// Creates a token transaction that adds, subtracts, or transfers tokens for a member of an account.
 //
 // Required permissions:
 //   - `company_token_transaction:create`
@@ -138,8 +146,8 @@ func (c *Client) List(
 //
 //	request := &whopsdk.CreateCompanyTokenTransactionsRequest{
 //	    Transfer: &whopsdk.CreateCompanyTokenTransactionsRequestTransfer{
+//	        AccountID: "biz_xxxxxxxxxxxxxx",
 //	        Amount: 6.9,
-//	        CompanyID: "biz_xxxxxxxxxxxxxx",
 //	        DestinationUserID: "destination_user_id",
 //	        UserID: "user_xxxxxxxxxxxxx",
 //	    },
@@ -164,7 +172,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Retrieves the details of an existing company token transaction.
+// Retrieves a token transaction.
 //
 // Required permissions:
 //   - `company_token_transaction:read`

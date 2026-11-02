@@ -6,12 +6,12 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
-	partners "github.com/whopio/whopsdk-go/partners"
-	earnings "github.com/whopio/whopsdk-go/partners/businesses/earnings"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
+	partners "github.com/whopio/whopsdk-go/v2/partners"
+	earnings "github.com/whopio/whopsdk-go/v2/partners/businesses/earnings"
 )
 
 type Client struct {
@@ -25,7 +25,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -60,7 +60,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/partners/businesses"
@@ -115,7 +123,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Retrieves a single referred business and its referral terms.
+// Retrieves a single referred business and its referral terms. The original referrer or a caller with company:basic:read on the business credited for the referral can read it.
 //
 // Example:
 //
@@ -132,6 +140,96 @@ func (c *Client) Retrieve(
 	opts ...option.RequestOption,
 ) (*partners.RetrieveBusinessesResponse, error) {
 	response, err := c.WithRawResponse.Retrieve(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Save annual payment projections for a business referred by the authenticated partner. Unaccepted projections can be replaced with updated annual card and BNPL payment volume. To qualify, payment volume over the last 30 days must reach 5% of the annual payment projection. Ads are excluded from CPA; ordinary ad commissions continue. Pass withdraw_projections: true without projection amounts to remove unaccepted projections. Accepted projections are immutable. Public API access requires a partner OAuth token; business API keys are not supported.
+//
+// Example:
+//
+//	request := &partners.UpdateBusinessesRequest{
+//	    ID: "id",
+//	}
+//	client.Partners.Businesses.Update(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Update(
+	ctx context.Context,
+	request *partners.UpdateBusinessesRequest,
+	opts ...option.RequestOption,
+) (*partners.UpdateBusinessesResponse, error) {
+	response, err := c.WithRawResponse.Update(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Accept the authenticated partner's CPA offer with the reviewed terms and signed offer token. Public API access requires a partner OAuth token; business API keys are not supported.
+//
+// Example:
+//
+//	request := &partners.AcceptCommissionAdvanceBusinessesRequest{
+//	    ID: "id",
+//	    Acknowledgments: []partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItem{
+//	        partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemCommissionReplacement,
+//	        partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemClawback,
+//	        partners.AcceptCommissionAdvanceBusinessesRequestAcknowledgmentsItemTerm,
+//	    },
+//	    ExpectedAmountUsd: "1079.99",
+//	    OfferToken: "eyJfcmFpbHMiOnsiZGF0YSI6MSwicHVyIjoiYmxvYl9pZCJ9fQ==--xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+//	    TermsVersion: "2026-01-01",
+//	}
+//	client.Partners.Businesses.AcceptCommissionAdvance(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) AcceptCommissionAdvance(
+	ctx context.Context,
+	request *partners.AcceptCommissionAdvanceBusinessesRequest,
+	opts ...option.RequestOption,
+) (*partners.AcceptCommissionAdvanceBusinessesResponse, error) {
+	response, err := c.WithRawResponse.AcceptCommissionAdvance(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Re-emails an outstanding invite to claim ownership of a referred business. Find the invite in the business's `pending_owner_invites`. Only the first-tier partner can resend, from a whop.com session or the Whop CLI or MCP with `partner:handoff`. Rate limited to one resend per invite every five minutes.
+//
+// Example:
+//
+//	request := &partners.ResendInviteBusinessesRequest{
+//	    ID: "id",
+//	    InviteID: "ausri_xxxxxxxxxxxxxx",
+//	}
+//	client.Partners.Businesses.ResendInvite(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ResendInvite(
+	ctx context.Context,
+	request *partners.ResendInviteBusinessesRequest,
+	opts ...option.RequestOption,
+) (*partners.ResendInviteBusinessesResponse, error) {
+	response, err := c.WithRawResponse.ResendInvite(
 		ctx,
 		request,
 		opts...,

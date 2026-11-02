@@ -2,5 +2,5 @@
 
 // A Dispute is a chargeback a customer files against a payment through their bank, or an inquiry that may become one. It carries the disputed payment, a deadline to respond, your evidence, and the outcome once the processor rules.
 //
-// Use the Disputes API to list disputes, edit the evidence packet while a dispute is still contestable, and submit it for review.
+// Use the Disputes API to list disputes, edit the evidence packet while a dispute is still contestable, and submit it for review, or accept a chargeback you don't want to contest.
 package disputes

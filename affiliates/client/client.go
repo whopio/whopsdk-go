@@ -6,11 +6,11 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	overrides "github.com/whopio/whopsdk-go/affiliates/overrides"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	overrides "github.com/whopio/whopsdk-go/v2/affiliates/overrides"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -24,7 +24,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -42,7 +42,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of affiliates for the actor in context, with optional filtering by status, search, and sorting.
+// Lists the affiliates of an account.
 //
 // Required permissions:
 //   - `affiliate:basic:read`
@@ -56,7 +56,7 @@ func NewClient(options *core.RequestOptions) *Client {
 //	    Last: whopsdk.Int(
 //	        42,
 //	    ),
-//	    CompanyID: "biz_xxxxxxxxxxxxxx",
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	}
 //	client.Affiliates.List(
 //	    context.TODO(),
@@ -70,7 +70,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/affiliates"
@@ -125,7 +133,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates or finds an affiliate for a company and user.
+// Creates an affiliate for a user on an account. If the user is already an affiliate of the account, returns that affiliate, reactivating it if it was archived.
 //
 // Required permissions:
 //   - `affiliate:create`
@@ -133,7 +141,7 @@ func (c *Client) List(
 // Example:
 //
 //	request := &whopsdk.CreateAffiliatesRequest{
-//	    CompanyID: "biz_xxxxxxxxxxxxxx",
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	    UserIdentifier: "user_identifier",
 //	}
 //	client.Affiliates.Create(
@@ -186,7 +194,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Archives an existing Affiliate
+// Archives an affiliate. The affiliate that handles Whop marketplace referrals cannot be archived.
 //
 // Required permissions:
 //   - `affiliate:update`
@@ -216,7 +224,7 @@ func (c *Client) Archive(
 	return response.Body, nil
 }
 
-// Unarchives an existing Affiliate
+// Unarchives an archived affiliate.
 //
 // Required permissions:
 //   - `affiliate:update`

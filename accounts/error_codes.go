@@ -3,19 +3,19 @@
 package accounts
 
 import (
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 )
 
 var ErrorCodes internal.ErrorCodes = internal.ErrorCodes{
-	401: func(apiError *core.APIError) error {
-		return &whopsdk.UnauthorizedError{
+	404: func(apiError *core.APIError) error {
+		return &whopsdk.NotFoundError{
 			APIError: apiError,
 		}
 	},
-	404: func(apiError *core.APIError) error {
-		return &whopsdk.NotFoundError{
+	401: func(apiError *core.APIError) error {
+		return &whopsdk.UnauthorizedError{
 			APIError: apiError,
 		}
 	},
@@ -26,6 +26,11 @@ var ErrorCodes internal.ErrorCodes = internal.ErrorCodes{
 	},
 	403: func(apiError *core.APIError) error {
 		return &whopsdk.ForbiddenError{
+			APIError: apiError,
+		}
+	},
+	409: func(apiError *core.APIError) error {
+		return &whopsdk.ConflictError{
 			APIError: apiError,
 		}
 	},

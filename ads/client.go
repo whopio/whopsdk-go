@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -37,6 +37,39 @@ func NewClient(options *core.RequestOptions) *Client {
 			},
 		),
 	}
+}
+
+// Records a runner's stats for one of their ads in one hour, and pays them for the spend. Send the ad's totals so far for an hour that started in the last 24 hours; they replace what the ad held for that hour, and its ad group's and campaign's hours are rebuilt from their ads. The spend can go up but never down. Reporting on a campaign starts with the hour of its first recorded report; earlier hours are refused. The spend is recorded and paid exactly as sent, with no markup added, so send it with the runner's markup already applied. Takes the runner's Whop session, a user API key, or a user OAuth token with `ad_campaign:update`. A token without that scope gets a 403, and anyone not holding the ad's campaign gets a 404.
+//
+// Example:
+//
+//	request := &whopsdk.ReportStatsAdsRequest{
+//	    AdID: "ad_xxxxxxxxxxxxxx",
+//	    HourStartedAt: whopsdk.MustParseDateTime(
+//	        "2026-01-01T12:00:00Z",
+//	    ),
+//	    Spend: &whopsdk.ReportStatsAdsRequestSpend{
+//	        Double: 1.1,
+//	    },
+//	}
+//	client.Ads.ReportStats(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ReportStats(
+	ctx context.Context,
+	request *whopsdk.ReportStatsAdsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.AdStat, error) {
+	response, err := c.WithRawResponse.ReportStats(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
 }
 
 // Lists the ads for an account, with stats over the requested window.
@@ -67,7 +100,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/ads"
@@ -122,7 +163,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates an ad in an ad group.
+// Creates an ad in an ad group. Any campaign status other than `draft` launches the campaign, which requires an ads payment method on the account.
 //
 // Example:
 //
@@ -228,7 +269,7 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Copies the ad into its own ad group, or into target_ad_group_id (which must belong to the same account and be compatible with the ad). Copies keep the source ad's active/paused state.
+// Copies an ad into its own ad group or into another one. Copies keep the source ad's active or paused state.
 //
 // Example:
 //

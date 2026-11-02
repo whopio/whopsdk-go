@@ -5,12 +5,12 @@ package client
 import (
 	context "context"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
-	users "github.com/whopio/whopsdk-go/users"
-	client "github.com/whopio/whopsdk-go/users/preferences/notifications/client"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
+	users "github.com/whopio/whopsdk-go/v2/users"
+	client "github.com/whopio/whopsdk-go/v2/users/preferences/notifications/client"
 )
 
 type Client struct {
@@ -24,7 +24,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -42,7 +42,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Retrieves the authenticated user's settings document. Addressed only as `me` — the document always belongs to the session user.
+// Retrieves the authenticated user's settings document.
 //
 // Example:
 //

@@ -6,16 +6,18 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	logs "github.com/whopio/whopsdk-go/members/logs"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	logs "github.com/whopio/whopsdk-go/v2/members/logs"
+	notes "github.com/whopio/whopsdk-go/v2/members/notes"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
 	WithRawResponse *RawClient
 	Logs            *logs.Client
+	Notes           *notes.Client
 
 	options *core.RequestOptions
 	baseURL string
@@ -24,11 +26,12 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
 		Logs:            logs.NewClient(options),
+		Notes:           notes.NewClient(options),
 		WithRawResponse: NewRawClient(options),
 		options:         options,
 		baseURL:         options.BaseURL,
@@ -46,7 +49,28 @@ func NewClient(options *core.RequestOptions) *Client {
 //
 // Example:
 //
-//	request := &whopsdk.ListMembersRequest{}
+//	request := &whopsdk.ListMembersRequest{
+//	    UserIDs: []*string{
+//	        whopsdk.String(
+//	            "user_xxxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	    ProductIDs: []*string{
+//	        whopsdk.String(
+//	            "prod_xxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	    VariantIDs: []*string{
+//	        whopsdk.String(
+//	            "plan_xxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	    PromoCodeIDs: []*string{
+//	        whopsdk.String(
+//	            "promo_xxxxxxxxxxxx",
+//	        ),
+//	    },
+//	}
 //	client.Members.List(
 //	    context.TODO(),
 //	    request,
@@ -59,7 +83,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/members"
@@ -131,6 +163,33 @@ func (c *Client) Retrieve(
 	opts ...option.RequestOption,
 ) (*whopsdk.Member, error) {
 	response, err := c.WithRawResponse.Retrieve(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Sets the name the account uses for a member. Every invoice for this member shows it as the customer name, paid invoices included, in place of the user's own name. It does not change the user's Whop profile.
+//
+// Example:
+//
+//	request := &whopsdk.UpdateMembersRequest{
+//	    ID: "id",
+//	}
+//	client.Members.Update(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Update(
+	ctx context.Context,
+	request *whopsdk.UpdateMembersRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Member, error) {
+	response, err := c.WithRawResponse.Update(
 		ctx,
 		request,
 		opts...,

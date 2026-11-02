@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -131,58 +131,6 @@ func TestAdGroupsCreateWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestAdGroupsCreateWithWireMock", "POST", "/ad_groups", nil, 1)
-}
-
-func TestAdGroupsEstimateReachWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.EstimateReachAdGroupsRequest{
-		Platform: whopsdk.EstimateReachAdGroupsRequestPlatformMeta,
-	}
-	_, invocationErr := client.AdGroups.EstimateReach(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestAdGroupsEstimateReachWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestAdGroupsEstimateReachWithWireMock", "POST", "/ad_groups/estimate_reach", nil, 1)
-}
-
-func TestAdGroupsSearchTargetingOptionsWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.SearchTargetingOptionsAdGroupsRequest{
-		Platform: whopsdk.SearchTargetingOptionsAdGroupsRequestPlatformMeta,
-	}
-	_, invocationErr := client.AdGroups.SearchTargetingOptions(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestAdGroupsSearchTargetingOptionsWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestAdGroupsSearchTargetingOptionsWithWireMock", "GET", "/ad_groups/targeting_options", map[string]interface{}{"platform": "meta"}, 1)
 }
 
 func TestAdGroupsRetrieveWithWireMock(

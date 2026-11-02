@@ -5,320 +5,101 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
 
 var (
-	describeStatsRequestFieldResource  = big.NewInt(1 << 0)
-	describeStatsRequestFieldCompanyID = big.NewInt(1 << 1)
-	describeStatsRequestFieldUserID    = big.NewInt(1 << 2)
-)
-
-type DescribeStatsRequest struct {
-	// Resource path using : as separator (e.g., 'receipts', 'payments:membership', 'receipts:gross_revenue').
-	Resource *string `json:"-" url:"resource,omitempty"`
-	// Scope query to a specific company.
-	CompanyID *string `json:"-" url:"company_id,omitempty"`
-	// Scope query to a specific user.
-	UserID *string `json:"-" url:"user_id,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (d *DescribeStatsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetResource sets the Resource field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsRequest) SetResource(resource *string) {
-	d.Resource = resource
-	d.require(describeStatsRequestFieldResource)
-}
-
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsRequest) SetCompanyID(companyID *string) {
-	d.CompanyID = companyID
-	d.require(describeStatsRequestFieldCompanyID)
-}
-
-// SetUserID sets the UserID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsRequest) SetUserID(userID *string) {
-	d.UserID = userID
-	d.require(describeStatsRequestFieldUserID)
-}
-
-var (
-	metricStatsRequestFieldResource    = big.NewInt(1 << 0)
-	metricStatsRequestFieldGranularity = big.NewInt(1 << 1)
-	metricStatsRequestFieldBreakdowns  = big.NewInt(1 << 2)
-	metricStatsRequestFieldFilters     = big.NewInt(1 << 3)
-	metricStatsRequestFieldTimeZone    = big.NewInt(1 << 4)
-	metricStatsRequestFieldFrom        = big.NewInt(1 << 5)
-	metricStatsRequestFieldTo          = big.NewInt(1 << 6)
-	metricStatsRequestFieldCompanyID   = big.NewInt(1 << 7)
-	metricStatsRequestFieldUserID      = big.NewInt(1 << 8)
-)
-
-type MetricStatsRequest struct {
-	// Metric resource using : as separator (e.g., 'receipts:gross_revenue', 'members:new_users').
-	Resource string `json:"-" url:"resource"`
-	// Time granularity (daily, weekly, monthly).
-	Granularity *string `json:"-" url:"granularity,omitempty"`
-	// Columns to break down the metric by.
-	Breakdowns []*string `json:"-" url:"breakdowns,omitempty"`
-	// Key-value pairs to filter the data.
-	Filters map[string]any `json:"-" url:"filters,omitempty"`
-	// IANA timezone for period bucketing (e.g. 'America/New_York'). Defaults to UTC. Only applies to ClickHouse metrics.
-	TimeZone *string `json:"-" url:"time_zone,omitempty"`
-	// Start of time range (unix timestamp).
-	From *time.Time `json:"-" url:"from,omitempty"`
-	// End of time range (unix timestamp).
-	To *time.Time `json:"-" url:"to,omitempty"`
-	// Scope query to a specific company.
-	CompanyID *string `json:"-" url:"company_id,omitempty"`
-	// Scope query to a specific user.
-	UserID *string `json:"-" url:"user_id,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (m *MetricStatsRequest) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
-	}
-	m.explicitFields.Or(m.explicitFields, field)
-}
-
-// SetResource sets the Resource field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsRequest) SetResource(resource string) {
-	m.Resource = resource
-	m.require(metricStatsRequestFieldResource)
-}
-
-// SetGranularity sets the Granularity field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsRequest) SetGranularity(granularity *string) {
-	m.Granularity = granularity
-	m.require(metricStatsRequestFieldGranularity)
-}
-
-// SetBreakdowns sets the Breakdowns field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsRequest) SetBreakdowns(breakdowns []*string) {
-	m.Breakdowns = breakdowns
-	m.require(metricStatsRequestFieldBreakdowns)
-}
-
-// SetFilters sets the Filters field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsRequest) SetFilters(filters map[string]any) {
-	m.Filters = filters
-	m.require(metricStatsRequestFieldFilters)
-}
-
-// SetTimeZone sets the TimeZone field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsRequest) SetTimeZone(timeZone *string) {
-	m.TimeZone = timeZone
-	m.require(metricStatsRequestFieldTimeZone)
-}
-
-// SetFrom sets the From field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsRequest) SetFrom(from *time.Time) {
-	m.From = from
-	m.require(metricStatsRequestFieldFrom)
-}
-
-// SetTo sets the To field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsRequest) SetTo(to *time.Time) {
-	m.To = to
-	m.require(metricStatsRequestFieldTo)
-}
-
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsRequest) SetCompanyID(companyID *string) {
-	m.CompanyID = companyID
-	m.require(metricStatsRequestFieldCompanyID)
-}
-
-// SetUserID sets the UserID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsRequest) SetUserID(userID *string) {
-	m.UserID = userID
-	m.require(metricStatsRequestFieldUserID)
-}
-
-var (
-	rawStatsRequestFieldResource      = big.NewInt(1 << 0)
-	rawStatsRequestFieldFrom          = big.NewInt(1 << 1)
-	rawStatsRequestFieldTo            = big.NewInt(1 << 2)
-	rawStatsRequestFieldLimit         = big.NewInt(1 << 3)
-	rawStatsRequestFieldCursor        = big.NewInt(1 << 4)
-	rawStatsRequestFieldSort          = big.NewInt(1 << 5)
-	rawStatsRequestFieldSortDirection = big.NewInt(1 << 6)
-	rawStatsRequestFieldCompanyID     = big.NewInt(1 << 7)
-	rawStatsRequestFieldUserID        = big.NewInt(1 << 8)
-)
-
-type RawStatsRequest struct {
-	// Resource path using : as separator (e.g., 'members', 'payments:membership').
-	Resource string `json:"-" url:"resource"`
-	// Start of time range (unix timestamp).
-	From *time.Time `json:"-" url:"from,omitempty"`
-	// End of time range (unix timestamp).
-	To *time.Time `json:"-" url:"to,omitempty"`
-	// Number of records to return (max 10000).
-	Limit *int `json:"-" url:"limit,omitempty"`
-	// Pagination cursor for next page.
-	Cursor *string `json:"-" url:"cursor,omitempty"`
-	// Column to sort by.
-	Sort          *string    `json:"-" url:"sort,omitempty"`
-	SortDirection *Direction `json:"-" url:"sort_direction,omitempty"`
-	// Scope query to a specific company.
-	CompanyID *string `json:"-" url:"company_id,omitempty"`
-	// Scope query to a specific user.
-	UserID *string `json:"-" url:"user_id,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (r *RawStatsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
-	}
-	r.explicitFields.Or(r.explicitFields, field)
-}
-
-// SetResource sets the Resource field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsRequest) SetResource(resource string) {
-	r.Resource = resource
-	r.require(rawStatsRequestFieldResource)
-}
-
-// SetFrom sets the From field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsRequest) SetFrom(from *time.Time) {
-	r.From = from
-	r.require(rawStatsRequestFieldFrom)
-}
-
-// SetTo sets the To field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsRequest) SetTo(to *time.Time) {
-	r.To = to
-	r.require(rawStatsRequestFieldTo)
-}
-
-// SetLimit sets the Limit field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsRequest) SetLimit(limit *int) {
-	r.Limit = limit
-	r.require(rawStatsRequestFieldLimit)
-}
-
-// SetCursor sets the Cursor field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsRequest) SetCursor(cursor *string) {
-	r.Cursor = cursor
-	r.require(rawStatsRequestFieldCursor)
-}
-
-// SetSort sets the Sort field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsRequest) SetSort(sort *string) {
-	r.Sort = sort
-	r.require(rawStatsRequestFieldSort)
-}
-
-// SetSortDirection sets the SortDirection field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsRequest) SetSortDirection(sortDirection *Direction) {
-	r.SortDirection = sortDirection
-	r.require(rawStatsRequestFieldSortDirection)
-}
-
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsRequest) SetCompanyID(companyID *string) {
-	r.CompanyID = companyID
-	r.require(rawStatsRequestFieldCompanyID)
-}
-
-// SetUserID sets the UserID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsRequest) SetUserID(userID *string) {
-	r.UserID = userID
-	r.require(rawStatsRequestFieldUserID)
-}
-
-var (
-	retrieveStatsRequestFieldMetric           = big.NewInt(1 << 0)
-	retrieveStatsRequestFieldAccountID        = big.NewInt(1 << 1)
-	retrieveStatsRequestFieldUserID           = big.NewInt(1 << 2)
-	retrieveStatsRequestFieldFrom             = big.NewInt(1 << 3)
-	retrieveStatsRequestFieldTo               = big.NewInt(1 << 4)
-	retrieveStatsRequestFieldInterval         = big.NewInt(1 << 5)
-	retrieveStatsRequestFieldBreakdownBy      = big.NewInt(1 << 6)
-	retrieveStatsRequestFieldConvertTo        = big.NewInt(1 << 7)
-	retrieveStatsRequestFieldCurrency         = big.NewInt(1 << 8)
-	retrieveStatsRequestFieldTimeZone         = big.NewInt(1 << 9)
-	retrieveStatsRequestFieldPaymentMethod    = big.NewInt(1 << 10)
-	retrieveStatsRequestFieldCardNetwork      = big.NewInt(1 << 11)
-	retrieveStatsRequestFieldDisputeReason    = big.NewInt(1 << 12)
-	retrieveStatsRequestFieldSource           = big.NewInt(1 << 13)
-	retrieveStatsRequestFieldHostname         = big.NewInt(1 << 14)
-	retrieveStatsRequestFieldPage             = big.NewInt(1 << 15)
-	retrieveStatsRequestFieldDeviceType       = big.NewInt(1 << 16)
-	retrieveStatsRequestFieldCountryCode      = big.NewInt(1 << 17)
-	retrieveStatsRequestFieldEventName        = big.NewInt(1 << 18)
-	retrieveStatsRequestFieldEventType        = big.NewInt(1 << 19)
-	retrieveStatsRequestFieldCustomName       = big.NewInt(1 << 20)
-	retrieveStatsRequestFieldSegment          = big.NewInt(1 << 21)
-	retrieveStatsRequestFieldCategory         = big.NewInt(1 << 22)
-	retrieveStatsRequestFieldMerchant         = big.NewInt(1 << 23)
-	retrieveStatsRequestFieldFeeType          = big.NewInt(1 << 24)
-	retrieveStatsRequestFieldProduct          = big.NewInt(1 << 25)
-	retrieveStatsRequestFieldStatus           = big.NewInt(1 << 26)
-	retrieveStatsRequestFieldAccessLevel      = big.NewInt(1 << 27)
-	retrieveStatsRequestFieldMostRecentAction = big.NewInt(1 << 28)
-	retrieveStatsRequestFieldReferredUserID   = big.NewInt(1 << 29)
-	retrieveStatsRequestFieldAdCampaignIDs    = big.NewInt(1 << 30)
-	retrieveStatsRequestFieldAdGroupIDs       = big.NewInt(1 << 31)
-	retrieveStatsRequestFieldAdIDs            = big.NewInt(1 << 32)
-	retrieveStatsRequestFieldSnapshotWindow   = big.NewInt(1 << 33)
-	retrieveStatsRequestFieldEvent            = big.NewInt(1 << 34)
+	retrieveStatsRequestFieldMetric              = big.NewInt(1 << 0)
+	retrieveStatsRequestFieldAccountID           = big.NewInt(1 << 1)
+	retrieveStatsRequestFieldUserID              = big.NewInt(1 << 2)
+	retrieveStatsRequestFieldFrom                = big.NewInt(1 << 3)
+	retrieveStatsRequestFieldTo                  = big.NewInt(1 << 4)
+	retrieveStatsRequestFieldInterval            = big.NewInt(1 << 5)
+	retrieveStatsRequestFieldBreakdownBy         = big.NewInt(1 << 6)
+	retrieveStatsRequestFieldConvertTo           = big.NewInt(1 << 7)
+	retrieveStatsRequestFieldCurrency            = big.NewInt(1 << 8)
+	retrieveStatsRequestFieldTimeZone            = big.NewInt(1 << 9)
+	retrieveStatsRequestFieldPaymentMethod       = big.NewInt(1 << 10)
+	retrieveStatsRequestFieldCardNetwork         = big.NewInt(1 << 11)
+	retrieveStatsRequestFieldDisputeReason       = big.NewInt(1 << 12)
+	retrieveStatsRequestFieldSource              = big.NewInt(1 << 13)
+	retrieveStatsRequestFieldHostname            = big.NewInt(1 << 14)
+	retrieveStatsRequestFieldPage                = big.NewInt(1 << 15)
+	retrieveStatsRequestFieldDeviceType          = big.NewInt(1 << 16)
+	retrieveStatsRequestFieldCountryCode         = big.NewInt(1 << 17)
+	retrieveStatsRequestFieldEventName           = big.NewInt(1 << 18)
+	retrieveStatsRequestFieldEventType           = big.NewInt(1 << 19)
+	retrieveStatsRequestFieldCustomName          = big.NewInt(1 << 20)
+	retrieveStatsRequestFieldSegment             = big.NewInt(1 << 21)
+	retrieveStatsRequestFieldCategory            = big.NewInt(1 << 22)
+	retrieveStatsRequestFieldMerchant            = big.NewInt(1 << 23)
+	retrieveStatsRequestFieldFeeType             = big.NewInt(1 << 24)
+	retrieveStatsRequestFieldProduct             = big.NewInt(1 << 25)
+	retrieveStatsRequestFieldStatus              = big.NewInt(1 << 26)
+	retrieveStatsRequestFieldAccessLevel         = big.NewInt(1 << 27)
+	retrieveStatsRequestFieldMostRecentAction    = big.NewInt(1 << 28)
+	retrieveStatsRequestFieldReferredUserID      = big.NewInt(1 << 29)
+	retrieveStatsRequestFieldAdCampaignIDs       = big.NewInt(1 << 30)
+	retrieveStatsRequestFieldAdGroupIDs          = big.NewInt(1 << 31)
+	retrieveStatsRequestFieldAdIDs               = big.NewInt(1 << 32)
+	retrieveStatsRequestFieldSnapshotWindow      = big.NewInt(1 << 33)
+	retrieveStatsRequestFieldEvent               = big.NewInt(1 << 34)
+	retrieveStatsRequestFieldBusinessType        = big.NewInt(1 << 35)
+	retrieveStatsRequestFieldIndustryType        = big.NewInt(1 << 36)
+	retrieveStatsRequestFieldProductCategory     = big.NewInt(1 << 37)
+	retrieveStatsRequestFieldAccountCountry      = big.NewInt(1 << 38)
+	retrieveStatsRequestFieldIssuer              = big.NewInt(1 << 39)
+	retrieveStatsRequestFieldConversionWindow    = big.NewInt(1 << 40)
+	retrieveStatsRequestFieldMatureOnly          = big.NewInt(1 << 41)
+	retrieveStatsRequestFieldSteps               = big.NewInt(1 << 42)
+	retrieveStatsRequestFieldCompareTo           = big.NewInt(1 << 43)
+	retrieveStatsRequestFieldConfidenceLevel     = big.NewInt(1 << 44)
+	retrieveStatsRequestFieldContactable         = big.NewInt(1 << 45)
+	retrieveStatsRequestFieldHasPurchased        = big.NewInt(1 << 46)
+	retrieveStatsRequestFieldFirstSeenAfter      = big.NewInt(1 << 47)
+	retrieveStatsRequestFieldFirstSeenBefore     = big.NewInt(1 << 48)
+	retrieveStatsRequestFieldLastSeenAfter       = big.NewInt(1 << 49)
+	retrieveStatsRequestFieldLastSeenBefore      = big.NewInt(1 << 50)
+	retrieveStatsRequestFieldFirstSeenWithinDays = big.NewInt(1 << 51)
+	retrieveStatsRequestFieldLastSeenWithinDays  = big.NewInt(1 << 52)
+	retrieveStatsRequestFieldKnown               = big.NewInt(1 << 53)
+	retrieveStatsRequestFieldHasEmail            = big.NewInt(1 << 54)
+	retrieveStatsRequestFieldHasPhone            = big.NewInt(1 << 55)
+	retrieveStatsRequestFieldLtvGt               = big.NewInt(1 << 56)
+	retrieveStatsRequestFieldLtvGte              = big.NewInt(1 << 57)
+	retrieveStatsRequestFieldLtvLt               = big.NewInt(1 << 58)
+	retrieveStatsRequestFieldLtvLte              = big.NewInt(1 << 59)
+	retrieveStatsRequestFieldAovGt               = big.NewInt(1 << 60)
+	retrieveStatsRequestFieldAovGte              = big.NewInt(1 << 61)
+	retrieveStatsRequestFieldAovLt               = big.NewInt(1 << 62)
+	retrieveStatsRequestFieldAovLte              = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	retrieveStatsRequestFieldPurchaseCountGt     = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	retrieveStatsRequestFieldPurchaseCountGte    = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	retrieveStatsRequestFieldPurchaseCountLt     = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	retrieveStatsRequestFieldPurchaseCountLte    = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	retrieveStatsRequestFieldEventCountGt        = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	retrieveStatsRequestFieldEventCountGte       = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	retrieveStatsRequestFieldEventCountLt        = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	retrieveStatsRequestFieldEventCountLte       = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	retrieveStatsRequestFieldReferringAccountID  = big.NewInt(0).Lsh(big.NewInt(1), 72)
 )
 
 type RetrieveStatsRequest struct {
-	// The metric to retrieve, for example net_revenue. Use GET /stats to see every metric key. The metric sets the unit and the properties you can filter or break down by.
+	// The metric to retrieve, for example net_revenue.
 	Metric string `json:"-" url:"-"`
-	// The account this query concerns, for example biz_AbC123.
+	// Account this query concerns, prefixed `biz_`, or `platform` for all of Whop.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// The user this query concerns, for example user_AbC123. Available on metrics that support user subjects, such as account_balance.
 	UserID *string `json:"-" url:"user_id,omitempty"`
 	// Start of the range — a date (YYYY-MM-DD), expanded to the start of that day, or an ISO 8601 timestamp (for example 2026-07-16T16:37:00Z), used exactly.
 	From string `json:"-" url:"from"`
-	// End of the range — a date (YYYY-MM-DD), expanded to the end of that day, or an ISO 8601 timestamp (for example 2026-07-17T16:37:00Z), used exactly.
+	// End of the range — a date (YYYY-MM-DD), expanded to the end of that day, or an ISO 8601 timestamp (for example 2026-07-17T16:37:00Z), used exactly. Funnel entry ranges cannot exceed 90 days.
 	To string `json:"-" url:"to"`
-	// How wide each point is. Defaults to day. Snapshot metrics are day-only.
+	// How wide each point is. Defaults to day. Snapshot metrics are day-only. Funnels support at most 2,000 first-entry cohort buckets.
 	Interval *RetrieveStatsRequestInterval `json:"-" url:"interval,omitempty"`
-	// Split the metric out by one of its properties — each point gets a breakdown array. For example breakdown_by=currency returns an entry for usd, an entry for eur, and so on.
+	// Split the metric out by one of its properties — each point gets a breakdown array. For example breakdown_by=currency returns an entry for usd, an entry for eur, and so on. Funnels use a property of the first matched event, with at most 300 groups. experiment_id and variant require an exposure as step 1. For funnel source breakdowns, steps[1][source]=whop:* groups by campaign, whop:<campaign>:* by ad group, and whop:<campaign>:<group>:* by ad. See the metric catalog for supported breakdowns.
 	BreakdownBy *string `json:"-" url:"breakdown_by,omitempty"`
 	// Display currency for money metrics — every amount is converted into this ISO currency using the exchange rate on each period's date. Defaults to usd. For the ads metrics (ad_spend, ad_delivery), pass the account's ads reporting currency to match the ad entity endpoints. On transaction metrics, it is ignored when you filter or break down by currency (those report the original transaction currency, unconverted).
 	ConvertTo *string `json:"-" url:"convert_to,omitempty"`
@@ -334,7 +115,7 @@ type RetrieveStatsRequest struct {
 	DisputeReason *string `json:"-" url:"dispute_reason,omitempty"`
 	// Filter to a single GMV source, for example payments — or, on the traffic metrics, a visit source (whop_ads, direct, or a utm_source value). Pair with breakdown_by=source to split by source. Available on metrics that list source.
 	Source *string `json:"-" url:"source,omitempty"`
-	// Filter traffic metrics to one website hostname, for example shop.example.com. Pair with breakdown_by=hostname to split by website.
+	// Filter traffic metrics to one website hostname, for example shop.example.com. On the events and people metrics, comma-separated hostnames match any listed hostname. Pair with breakdown_by=hostname to split by website.
 	Hostname *string `json:"-" url:"hostname,omitempty"`
 	// Filter traffic metrics to one page — a hostname plus normalized path, for example shop.example.com/pricing. Pair with breakdown_by=page to split by page.
 	Page *string `json:"-" url:"page,omitempty"`
@@ -372,20 +153,98 @@ type RetrieveStatsRequest struct {
 	AdGroupIDs []*string `json:"-" url:"ad_group_ids,omitempty"`
 	// Ad ids (ad_...) to scope the report to; stats are summed across them. Available on metrics that list ad_ids.
 	AdIDs []*string `json:"-" url:"ad_ids,omitempty"`
-	// Window used by a snapshot metric. Ordinary snapshots accept 30d as their trailing activity window. Cohorted dispute metrics accept 7d or 28d as the sales-transaction pool; their attribution window is fixed in the metric name. Each metric lists its accepted values in the catalog.
+	// Window used by a snapshot metric. Ordinary snapshots accept 30d as their trailing activity window. Cohorted dispute metrics accept 7d or 28d as the sales-transaction pool; their attribution window is fixed in the metric name. Card network program metrics accept 7d, 14d, 28d, or 56d. Each metric lists its accepted values in the catalog.
 	SnapshotWindow *RetrieveStatsRequestSnapshotWindow `json:"-" url:"snapshot_window,omitempty"`
-	// Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separate several to break the metric down by each event. Available on metrics that list event.
+	// Filter the events metric to one or more full event names, for example payment.completed or pixel.lead. Comma-separated names match any listed event. Use group_by=event for separate groups. Available on metrics that list event.
 	Event *string `json:"-" url:"event,omitempty"`
+	// Filter to one business type, for example `education`. Pair with `breakdown_by=business_type` to split by business type. Available on metrics that list `business_type`.
+	BusinessType *string `json:"-" url:"business_type,omitempty"`
+	// Filter to one industry type, for example `options_trading`. Pair with `breakdown_by=industry_type` to split by industry type. Available on metrics that list `industry_type`.
+	IndustryType *string `json:"-" url:"industry_type,omitempty"`
+	// Filter to one product category, for example `algo_trading_course`. Pair with `breakdown_by=product_category` to split by product category. Available on metrics that list `product_category`.
+	ProductCategory *string `json:"-" url:"product_category,omitempty"`
+	// Filter to accounts located in one country, as an ISO 3166-1 alpha-2 code such as `US`. Pair with `breakdown_by=account_country` to split by account country. Available on metrics that list `account_country`.
+	AccountCountry *string `json:"-" url:"account_country,omitempty"`
+	// Filter to one card-issuing bank, named as the processor reports it, for example JPMORGAN CHASE BANK N A, or unknown for payments with no reported bank. Available on metrics that list issuer.
+	Issuer *string `json:"-" url:"issuer,omitempty"`
+	// Funnel only. Time allowed from the first event to the final event: integer minutes, hours, or days, up to 30d.
+	ConversionWindow *string `json:"-" url:"conversion_window,omitempty"`
+	// Funnel only. Include only entrants whose full conversion window has elapsed. Required for confidence intervals and comparisons.
+	MatureOnly *bool `json:"-" url:"mature_only,omitempty"`
+	// Funnel only. Required when metric=funnel. 2 to 10 ordered events per person, as consecutive one-based bracket parameters such as `steps[1][event]=pixel.page&steps[1][page]=/pricing*&steps[2][event]=payment.completed`. Values are scalar strings, never JSON. A person's first step 1 match inside `from`/`to` anchors their cohort, breakdown, and conversion window; later matches do not restart it. Other events may occur between steps, and conversions may land after `to`. For an experiment funnel, make `experiment.exposure` step 1 and pass `breakdown_by=variant`.
+	Steps *RetrieveStatsRequestSteps `json:"-" url:"steps,omitempty"`
+	// Funnel only. The breakdown value to use as baseline for whole-window final conversion. Requires breakdown_by and mature_only=true; defaults confidence_level to 0.95.
+	CompareTo *string `json:"-" url:"compare_to,omitempty"`
+	// Funnel only. Confidence level for whole-window final conversion intervals, for example 0.95. Requires mature_only=true. Exposure steps must each filter one user-randomized experiment.
+	ConfidenceLevel *float64 `json:"-" url:"confidence_level,omitempty"`
+	// People metric only: contactable equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	Contactable *bool `json:"-" url:"contactable,omitempty"`
+	// People metric only: has_purchased equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	HasPurchased *bool `json:"-" url:"has_purchased,omitempty"`
+	// People metric only: first_seen_at greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	FirstSeenAfter *time.Time `json:"-" url:"first_seen_after,omitempty"`
+	// People metric only: first_seen_at less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	FirstSeenBefore *time.Time `json:"-" url:"first_seen_before,omitempty"`
+	// People metric only: last_seen_at greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	LastSeenAfter *time.Time `json:"-" url:"last_seen_after,omitempty"`
+	// People metric only: last_seen_at less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	LastSeenBefore *time.Time `json:"-" url:"last_seen_before,omitempty"`
+	// People metric only: first_seen_at within this many days of now. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	FirstSeenWithinDays *int `json:"-" url:"first_seen_within_days,omitempty"`
+	// People metric only: last_seen_at within this many days of now. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	LastSeenWithinDays *int `json:"-" url:"last_seen_within_days,omitempty"`
+	// People metric only: known equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	Known *bool `json:"-" url:"known,omitempty"`
+	// People metric only: has_email equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	HasEmail *bool `json:"-" url:"has_email,omitempty"`
+	// People metric only: has_phone equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	HasPhone *bool `json:"-" url:"has_phone,omitempty"`
+	// People metric only: ltv greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	LtvGt *float64 `json:"-" url:"ltv_gt,omitempty"`
+	// People metric only: ltv greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	LtvGte *float64 `json:"-" url:"ltv_gte,omitempty"`
+	// People metric only: ltv less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	LtvLt *float64 `json:"-" url:"ltv_lt,omitempty"`
+	// People metric only: ltv less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	LtvLte *float64 `json:"-" url:"ltv_lte,omitempty"`
+	// People metric only: aov greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	AovGt *float64 `json:"-" url:"aov_gt,omitempty"`
+	// People metric only: aov greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	AovGte *float64 `json:"-" url:"aov_gte,omitempty"`
+	// People metric only: aov less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	AovLt *float64 `json:"-" url:"aov_lt,omitempty"`
+	// People metric only: aov less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	AovLte *float64 `json:"-" url:"aov_lte,omitempty"`
+	// People metric only: purchase_count greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	PurchaseCountGt *float64 `json:"-" url:"purchase_count_gt,omitempty"`
+	// People metric only: purchase_count greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	PurchaseCountGte *float64 `json:"-" url:"purchase_count_gte,omitempty"`
+	// People metric only: purchase_count less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	PurchaseCountLt *float64 `json:"-" url:"purchase_count_lt,omitempty"`
+	// People metric only: purchase_count less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	PurchaseCountLte *float64 `json:"-" url:"purchase_count_lte,omitempty"`
+	// People metric only: event_count greater than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	EventCountGt *float64 `json:"-" url:"event_count_gt,omitempty"`
+	// People metric only: event_count greater than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	EventCountGte *float64 `json:"-" url:"event_count_gte,omitempty"`
+	// People metric only: event_count less than this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	EventCountLt *float64 `json:"-" url:"event_count_lt,omitempty"`
+	// People metric only: event_count less than or equal this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
+	EventCountLte *float64 `json:"-" url:"event_count_lte,omitempty"`
+	// Read a referral metric for a business instead of the caller: the referrals its team members made, past members included, for example biz_AbC123. Requires company:basic:read on that business and cannot be combined with user_id. Available on metrics that list referring_account_id.
+	ReferringAccountID *string `json:"-" url:"referring_account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (r *RetrieveStatsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetMetric sets the Metric field and marks it as non-optional;
@@ -633,38 +492,296 @@ func (r *RetrieveStatsRequest) SetEvent(event *string) {
 	r.require(retrieveStatsRequestFieldEvent)
 }
 
-// Description of a metric including its configuration and SQL.
+// SetBusinessType sets the BusinessType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetBusinessType(businessType *string) {
+	r.BusinessType = businessType
+	r.require(retrieveStatsRequestFieldBusinessType)
+}
+
+// SetIndustryType sets the IndustryType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetIndustryType(industryType *string) {
+	r.IndustryType = industryType
+	r.require(retrieveStatsRequestFieldIndustryType)
+}
+
+// SetProductCategory sets the ProductCategory field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetProductCategory(productCategory *string) {
+	r.ProductCategory = productCategory
+	r.require(retrieveStatsRequestFieldProductCategory)
+}
+
+// SetAccountCountry sets the AccountCountry field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetAccountCountry(accountCountry *string) {
+	r.AccountCountry = accountCountry
+	r.require(retrieveStatsRequestFieldAccountCountry)
+}
+
+// SetIssuer sets the Issuer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetIssuer(issuer *string) {
+	r.Issuer = issuer
+	r.require(retrieveStatsRequestFieldIssuer)
+}
+
+// SetConversionWindow sets the ConversionWindow field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetConversionWindow(conversionWindow *string) {
+	r.ConversionWindow = conversionWindow
+	r.require(retrieveStatsRequestFieldConversionWindow)
+}
+
+// SetMatureOnly sets the MatureOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetMatureOnly(matureOnly *bool) {
+	r.MatureOnly = matureOnly
+	r.require(retrieveStatsRequestFieldMatureOnly)
+}
+
+// SetSteps sets the Steps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetSteps(steps *RetrieveStatsRequestSteps) {
+	r.Steps = steps
+	r.require(retrieveStatsRequestFieldSteps)
+}
+
+// SetCompareTo sets the CompareTo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetCompareTo(compareTo *string) {
+	r.CompareTo = compareTo
+	r.require(retrieveStatsRequestFieldCompareTo)
+}
+
+// SetConfidenceLevel sets the ConfidenceLevel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetConfidenceLevel(confidenceLevel *float64) {
+	r.ConfidenceLevel = confidenceLevel
+	r.require(retrieveStatsRequestFieldConfidenceLevel)
+}
+
+// SetContactable sets the Contactable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetContactable(contactable *bool) {
+	r.Contactable = contactable
+	r.require(retrieveStatsRequestFieldContactable)
+}
+
+// SetHasPurchased sets the HasPurchased field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetHasPurchased(hasPurchased *bool) {
+	r.HasPurchased = hasPurchased
+	r.require(retrieveStatsRequestFieldHasPurchased)
+}
+
+// SetFirstSeenAfter sets the FirstSeenAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetFirstSeenAfter(firstSeenAfter *time.Time) {
+	r.FirstSeenAfter = firstSeenAfter
+	r.require(retrieveStatsRequestFieldFirstSeenAfter)
+}
+
+// SetFirstSeenBefore sets the FirstSeenBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetFirstSeenBefore(firstSeenBefore *time.Time) {
+	r.FirstSeenBefore = firstSeenBefore
+	r.require(retrieveStatsRequestFieldFirstSeenBefore)
+}
+
+// SetLastSeenAfter sets the LastSeenAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetLastSeenAfter(lastSeenAfter *time.Time) {
+	r.LastSeenAfter = lastSeenAfter
+	r.require(retrieveStatsRequestFieldLastSeenAfter)
+}
+
+// SetLastSeenBefore sets the LastSeenBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetLastSeenBefore(lastSeenBefore *time.Time) {
+	r.LastSeenBefore = lastSeenBefore
+	r.require(retrieveStatsRequestFieldLastSeenBefore)
+}
+
+// SetFirstSeenWithinDays sets the FirstSeenWithinDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetFirstSeenWithinDays(firstSeenWithinDays *int) {
+	r.FirstSeenWithinDays = firstSeenWithinDays
+	r.require(retrieveStatsRequestFieldFirstSeenWithinDays)
+}
+
+// SetLastSeenWithinDays sets the LastSeenWithinDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetLastSeenWithinDays(lastSeenWithinDays *int) {
+	r.LastSeenWithinDays = lastSeenWithinDays
+	r.require(retrieveStatsRequestFieldLastSeenWithinDays)
+}
+
+// SetKnown sets the Known field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetKnown(known *bool) {
+	r.Known = known
+	r.require(retrieveStatsRequestFieldKnown)
+}
+
+// SetHasEmail sets the HasEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetHasEmail(hasEmail *bool) {
+	r.HasEmail = hasEmail
+	r.require(retrieveStatsRequestFieldHasEmail)
+}
+
+// SetHasPhone sets the HasPhone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetHasPhone(hasPhone *bool) {
+	r.HasPhone = hasPhone
+	r.require(retrieveStatsRequestFieldHasPhone)
+}
+
+// SetLtvGt sets the LtvGt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetLtvGt(ltvGt *float64) {
+	r.LtvGt = ltvGt
+	r.require(retrieveStatsRequestFieldLtvGt)
+}
+
+// SetLtvGte sets the LtvGte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetLtvGte(ltvGte *float64) {
+	r.LtvGte = ltvGte
+	r.require(retrieveStatsRequestFieldLtvGte)
+}
+
+// SetLtvLt sets the LtvLt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetLtvLt(ltvLt *float64) {
+	r.LtvLt = ltvLt
+	r.require(retrieveStatsRequestFieldLtvLt)
+}
+
+// SetLtvLte sets the LtvLte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetLtvLte(ltvLte *float64) {
+	r.LtvLte = ltvLte
+	r.require(retrieveStatsRequestFieldLtvLte)
+}
+
+// SetAovGt sets the AovGt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetAovGt(aovGt *float64) {
+	r.AovGt = aovGt
+	r.require(retrieveStatsRequestFieldAovGt)
+}
+
+// SetAovGte sets the AovGte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetAovGte(aovGte *float64) {
+	r.AovGte = aovGte
+	r.require(retrieveStatsRequestFieldAovGte)
+}
+
+// SetAovLt sets the AovLt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetAovLt(aovLt *float64) {
+	r.AovLt = aovLt
+	r.require(retrieveStatsRequestFieldAovLt)
+}
+
+// SetAovLte sets the AovLte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetAovLte(aovLte *float64) {
+	r.AovLte = aovLte
+	r.require(retrieveStatsRequestFieldAovLte)
+}
+
+// SetPurchaseCountGt sets the PurchaseCountGt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetPurchaseCountGt(purchaseCountGt *float64) {
+	r.PurchaseCountGt = purchaseCountGt
+	r.require(retrieveStatsRequestFieldPurchaseCountGt)
+}
+
+// SetPurchaseCountGte sets the PurchaseCountGte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetPurchaseCountGte(purchaseCountGte *float64) {
+	r.PurchaseCountGte = purchaseCountGte
+	r.require(retrieveStatsRequestFieldPurchaseCountGte)
+}
+
+// SetPurchaseCountLt sets the PurchaseCountLt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetPurchaseCountLt(purchaseCountLt *float64) {
+	r.PurchaseCountLt = purchaseCountLt
+	r.require(retrieveStatsRequestFieldPurchaseCountLt)
+}
+
+// SetPurchaseCountLte sets the PurchaseCountLte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetPurchaseCountLte(purchaseCountLte *float64) {
+	r.PurchaseCountLte = purchaseCountLte
+	r.require(retrieveStatsRequestFieldPurchaseCountLte)
+}
+
+// SetEventCountGt sets the EventCountGt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetEventCountGt(eventCountGt *float64) {
+	r.EventCountGt = eventCountGt
+	r.require(retrieveStatsRequestFieldEventCountGt)
+}
+
+// SetEventCountGte sets the EventCountGte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetEventCountGte(eventCountGte *float64) {
+	r.EventCountGte = eventCountGte
+	r.require(retrieveStatsRequestFieldEventCountGte)
+}
+
+// SetEventCountLt sets the EventCountLt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetEventCountLt(eventCountLt *float64) {
+	r.EventCountLt = eventCountLt
+	r.require(retrieveStatsRequestFieldEventCountLt)
+}
+
+// SetEventCountLte sets the EventCountLte field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetEventCountLte(eventCountLte *float64) {
+	r.EventCountLte = eventCountLte
+	r.require(retrieveStatsRequestFieldEventCountLte)
+}
+
+// SetReferringAccountID sets the ReferringAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetReferringAccountID(referringAccountID *string) {
+	r.ReferringAccountID = referringAccountID
+	r.require(retrieveStatsRequestFieldReferringAccountID)
+}
+
 var (
-	describeStatsResponseDescribeMetricFieldMetric               = big.NewInt(1 << 0)
-	describeStatsResponseDescribeMetricFieldNode                 = big.NewInt(1 << 1)
-	describeStatsResponseDescribeMetricFieldEngine               = big.NewInt(1 << 2)
-	describeStatsResponseDescribeMetricFieldTimestampColumn      = big.NewInt(1 << 3)
-	describeStatsResponseDescribeMetricFieldSupportedEngines     = big.NewInt(1 << 4)
-	describeStatsResponseDescribeMetricFieldFilterableColumns    = big.NewInt(1 << 5)
-	describeStatsResponseDescribeMetricFieldBreakdownableColumns = big.NewInt(1 << 6)
-	describeStatsResponseDescribeMetricFieldSQL                  = big.NewInt(1 << 7)
-	describeStatsResponseDescribeMetricFieldDebug                = big.NewInt(1 << 8)
+	retrieveStatsRequestStepsFieldField1  = big.NewInt(1 << 0)
+	retrieveStatsRequestStepsFieldField2  = big.NewInt(1 << 1)
+	retrieveStatsRequestStepsFieldField3  = big.NewInt(1 << 2)
+	retrieveStatsRequestStepsFieldField4  = big.NewInt(1 << 3)
+	retrieveStatsRequestStepsFieldField5  = big.NewInt(1 << 4)
+	retrieveStatsRequestStepsFieldField6  = big.NewInt(1 << 5)
+	retrieveStatsRequestStepsFieldField7  = big.NewInt(1 << 6)
+	retrieveStatsRequestStepsFieldField8  = big.NewInt(1 << 7)
+	retrieveStatsRequestStepsFieldField9  = big.NewInt(1 << 8)
+	retrieveStatsRequestStepsFieldField10 = big.NewInt(1 << 9)
 )
 
-type DescribeStatsResponseDescribeMetric struct {
-	// The metric name.
-	Metric string `json:"metric" url:"metric"`
-	// The node path this metric operates on.
-	Node string `json:"node" url:"node"`
-	// The query engine being used.
-	Engine string `json:"engine" url:"engine"`
-	// The timestamp column used for time filtering.
-	TimestampColumn string `json:"timestamp_column" url:"timestamp_column"`
-	// Query engines that support this metric.
-	SupportedEngines []string `json:"supported_engines" url:"supported_engines"`
-	// Columns that can be used for filtering.
-	FilterableColumns []string `json:"filterable_columns" url:"filterable_columns"`
-	// Columns that can be used for breakdowns.
-	BreakdownableColumns []string `json:"breakdownable_columns" url:"breakdownable_columns"`
-	// The generated SQL query.
-	SQL *string `json:"sql,omitempty" url:"sql,omitempty"`
-	// Debug information.
-	Debug *DescribeStatsResponseDescribeMetricDebug `json:"debug,omitempty" url:"debug,omitempty"`
+type RetrieveStatsRequestSteps struct {
+	Field1  *FunnelStep `json:"1" url:"1"`
+	Field2  *FunnelStep `json:"2" url:"2"`
+	Field3  *FunnelStep `json:"3,omitempty" url:"3,omitempty"`
+	Field4  *FunnelStep `json:"4,omitempty" url:"4,omitempty"`
+	Field5  *FunnelStep `json:"5,omitempty" url:"5,omitempty"`
+	Field6  *FunnelStep `json:"6,omitempty" url:"6,omitempty"`
+	Field7  *FunnelStep `json:"7,omitempty" url:"7,omitempty"`
+	Field8  *FunnelStep `json:"8,omitempty" url:"8,omitempty"`
+	Field9  *FunnelStep `json:"9,omitempty" url:"9,omitempty"`
+	Field10 *FunnelStep `json:"10,omitempty" url:"10,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -673,1952 +790,202 @@ type DescribeStatsResponseDescribeMetric struct {
 	rawJSON         json.RawMessage
 }
 
-func (d *DescribeStatsResponseDescribeMetric) GetMetric() string {
-	if d == nil {
-		return ""
-	}
-	return d.Metric
-}
-
-func (d *DescribeStatsResponseDescribeMetric) GetNode() string {
-	if d == nil {
-		return ""
-	}
-	return d.Node
-}
-
-func (d *DescribeStatsResponseDescribeMetric) GetEngine() string {
-	if d == nil {
-		return ""
-	}
-	return d.Engine
-}
-
-func (d *DescribeStatsResponseDescribeMetric) GetTimestampColumn() string {
-	if d == nil {
-		return ""
-	}
-	return d.TimestampColumn
-}
-
-func (d *DescribeStatsResponseDescribeMetric) GetSupportedEngines() []string {
-	if d == nil {
+func (r *RetrieveStatsRequestSteps) GetField1() *FunnelStep {
+	if r == nil {
 		return nil
 	}
-	return d.SupportedEngines
+	return r.Field1
 }
 
-func (d *DescribeStatsResponseDescribeMetric) GetFilterableColumns() []string {
-	if d == nil {
+func (r *RetrieveStatsRequestSteps) GetField2() *FunnelStep {
+	if r == nil {
 		return nil
 	}
-	return d.FilterableColumns
+	return r.Field2
 }
 
-func (d *DescribeStatsResponseDescribeMetric) GetBreakdownableColumns() []string {
-	if d == nil {
+func (r *RetrieveStatsRequestSteps) GetField3() *FunnelStep {
+	if r == nil {
 		return nil
 	}
-	return d.BreakdownableColumns
+	return r.Field3
 }
 
-func (d *DescribeStatsResponseDescribeMetric) GetSQL() *string {
-	if d == nil {
+func (r *RetrieveStatsRequestSteps) GetField4() *FunnelStep {
+	if r == nil {
 		return nil
 	}
-	return d.SQL
+	return r.Field4
 }
 
-func (d *DescribeStatsResponseDescribeMetric) GetDebug() *DescribeStatsResponseDescribeMetricDebug {
-	if d == nil {
+func (r *RetrieveStatsRequestSteps) GetField5() *FunnelStep {
+	if r == nil {
 		return nil
 	}
-	return d.Debug
+	return r.Field5
 }
 
-func (d *DescribeStatsResponseDescribeMetric) GetExtraProperties() map[string]interface{} {
-	if d == nil {
+func (r *RetrieveStatsRequestSteps) GetField6() *FunnelStep {
+	if r == nil {
 		return nil
 	}
-	return d.extraProperties
+	return r.Field6
 }
 
-func (d *DescribeStatsResponseDescribeMetric) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+func (r *RetrieveStatsRequestSteps) GetField7() *FunnelStep {
+	if r == nil {
+		return nil
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	return r.Field7
 }
 
-// SetMetric sets the Metric field and marks it as non-optional;
+func (r *RetrieveStatsRequestSteps) GetField8() *FunnelStep {
+	if r == nil {
+		return nil
+	}
+	return r.Field8
+}
+
+func (r *RetrieveStatsRequestSteps) GetField9() *FunnelStep {
+	if r == nil {
+		return nil
+	}
+	return r.Field9
+}
+
+func (r *RetrieveStatsRequestSteps) GetField10() *FunnelStep {
+	if r == nil {
+		return nil
+	}
+	return r.Field10
+}
+
+func (r *RetrieveStatsRequestSteps) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrieveStatsRequestSteps) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetField1 sets the Field1 field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeMetric) SetMetric(metric string) {
-	d.Metric = metric
-	d.require(describeStatsResponseDescribeMetricFieldMetric)
+func (r *RetrieveStatsRequestSteps) SetField1(_1 *FunnelStep) {
+	r.Field1 = _1
+	r.require(retrieveStatsRequestStepsFieldField1)
 }
 
-// SetNode sets the Node field and marks it as non-optional;
+// SetField2 sets the Field2 field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeMetric) SetNode(node string) {
-	d.Node = node
-	d.require(describeStatsResponseDescribeMetricFieldNode)
+func (r *RetrieveStatsRequestSteps) SetField2(_2 *FunnelStep) {
+	r.Field2 = _2
+	r.require(retrieveStatsRequestStepsFieldField2)
 }
 
-// SetEngine sets the Engine field and marks it as non-optional;
+// SetField3 sets the Field3 field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeMetric) SetEngine(engine string) {
-	d.Engine = engine
-	d.require(describeStatsResponseDescribeMetricFieldEngine)
+func (r *RetrieveStatsRequestSteps) SetField3(_3 *FunnelStep) {
+	r.Field3 = _3
+	r.require(retrieveStatsRequestStepsFieldField3)
 }
 
-// SetTimestampColumn sets the TimestampColumn field and marks it as non-optional;
+// SetField4 sets the Field4 field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeMetric) SetTimestampColumn(timestampColumn string) {
-	d.TimestampColumn = timestampColumn
-	d.require(describeStatsResponseDescribeMetricFieldTimestampColumn)
+func (r *RetrieveStatsRequestSteps) SetField4(_4 *FunnelStep) {
+	r.Field4 = _4
+	r.require(retrieveStatsRequestStepsFieldField4)
 }
 
-// SetSupportedEngines sets the SupportedEngines field and marks it as non-optional;
+// SetField5 sets the Field5 field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeMetric) SetSupportedEngines(supportedEngines []string) {
-	d.SupportedEngines = supportedEngines
-	d.require(describeStatsResponseDescribeMetricFieldSupportedEngines)
+func (r *RetrieveStatsRequestSteps) SetField5(_5 *FunnelStep) {
+	r.Field5 = _5
+	r.require(retrieveStatsRequestStepsFieldField5)
 }
 
-// SetFilterableColumns sets the FilterableColumns field and marks it as non-optional;
+// SetField6 sets the Field6 field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeMetric) SetFilterableColumns(filterableColumns []string) {
-	d.FilterableColumns = filterableColumns
-	d.require(describeStatsResponseDescribeMetricFieldFilterableColumns)
+func (r *RetrieveStatsRequestSteps) SetField6(_6 *FunnelStep) {
+	r.Field6 = _6
+	r.require(retrieveStatsRequestStepsFieldField6)
 }
 
-// SetBreakdownableColumns sets the BreakdownableColumns field and marks it as non-optional;
+// SetField7 sets the Field7 field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeMetric) SetBreakdownableColumns(breakdownableColumns []string) {
-	d.BreakdownableColumns = breakdownableColumns
-	d.require(describeStatsResponseDescribeMetricFieldBreakdownableColumns)
+func (r *RetrieveStatsRequestSteps) SetField7(_7 *FunnelStep) {
+	r.Field7 = _7
+	r.require(retrieveStatsRequestStepsFieldField7)
 }
 
-// SetSQL sets the SQL field and marks it as non-optional;
+// SetField8 sets the Field8 field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeMetric) SetSQL(sql *string) {
-	d.SQL = sql
-	d.require(describeStatsResponseDescribeMetricFieldSQL)
+func (r *RetrieveStatsRequestSteps) SetField8(_8 *FunnelStep) {
+	r.Field8 = _8
+	r.require(retrieveStatsRequestStepsFieldField8)
 }
 
-// SetDebug sets the Debug field and marks it as non-optional;
+// SetField9 sets the Field9 field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeMetric) SetDebug(debug *DescribeStatsResponseDescribeMetricDebug) {
-	d.Debug = debug
-	d.require(describeStatsResponseDescribeMetricFieldDebug)
+func (r *RetrieveStatsRequestSteps) SetField9(_9 *FunnelStep) {
+	r.Field9 = _9
+	r.require(retrieveStatsRequestStepsFieldField9)
 }
 
-func (d *DescribeStatsResponseDescribeMetric) UnmarshalJSON(data []byte) error {
-	type unmarshaler DescribeStatsResponseDescribeMetric
+// SetField10 sets the Field10 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequestSteps) SetField10(_10 *FunnelStep) {
+	r.Field10 = _10
+	r.require(retrieveStatsRequestStepsFieldField10)
+}
+
+func (r *RetrieveStatsRequestSteps) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrieveStatsRequestSteps
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*d = DescribeStatsResponseDescribeMetric(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	*r = RetrieveStatsRequestSteps(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
 	if err != nil {
 		return err
 	}
-	d.extraProperties = extraProperties
-	d.rawJSON = json.RawMessage(data)
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (d *DescribeStatsResponseDescribeMetric) MarshalJSON() ([]byte, error) {
-	type embed DescribeStatsResponseDescribeMetric
+func (r *RetrieveStatsRequestSteps) MarshalJSON() ([]byte, error) {
+	type embed RetrieveStatsRequestSteps
 	var marshaler = struct {
 		embed
 	}{
-		embed: embed(*d),
+		embed: embed(*r),
 	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
 	return json.Marshal(explicitMarshaler)
 }
 
-func (d *DescribeStatsResponseDescribeMetric) String() string {
-	if d == nil {
+func (r *RetrieveStatsRequestSteps) String() string {
+	if r == nil {
 		return "<nil>"
 	}
-	if len(d.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := internal.StringifyJSON(d); err == nil {
+	if value, err := internal.StringifyJSON(r); err == nil {
 		return value
 	}
-	return fmt.Sprintf("%#v", d)
-}
-
-// Debug information.
-var (
-	describeStatsResponseDescribeMetricDebugFieldRequestID = big.NewInt(1 << 0)
-)
-
-type DescribeStatsResponseDescribeMetricDebug struct {
-	// Unique request identifier for debugging.
-	RequestID *string `json:"request_id,omitempty" url:"request_id,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (d *DescribeStatsResponseDescribeMetricDebug) GetRequestID() *string {
-	if d == nil {
-		return nil
-	}
-	return d.RequestID
-}
-
-func (d *DescribeStatsResponseDescribeMetricDebug) GetExtraProperties() map[string]interface{} {
-	if d == nil {
-		return nil
-	}
-	return d.extraProperties
-}
-
-func (d *DescribeStatsResponseDescribeMetricDebug) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetRequestID sets the RequestID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeMetricDebug) SetRequestID(requestID *string) {
-	d.RequestID = requestID
-	d.require(describeStatsResponseDescribeMetricDebugFieldRequestID)
-}
-
-func (d *DescribeStatsResponseDescribeMetricDebug) UnmarshalJSON(data []byte) error {
-	type unmarshaler DescribeStatsResponseDescribeMetricDebug
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*d = DescribeStatsResponseDescribeMetricDebug(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *d)
-	if err != nil {
-		return err
-	}
-	d.extraProperties = extraProperties
-	d.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d *DescribeStatsResponseDescribeMetricDebug) MarshalJSON() ([]byte, error) {
-	type embed DescribeStatsResponseDescribeMetricDebug
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*d),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (d *DescribeStatsResponseDescribeMetricDebug) String() string {
-	if d == nil {
-		return "<nil>"
-	}
-	if len(d.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(d); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", d)
-}
-
-// Description of a node (model) including its columns and associations.
-var (
-	describeStatsResponseDescribeNodeFieldNode            = big.NewInt(1 << 0)
-	describeStatsResponseDescribeNodeFieldEngine          = big.NewInt(1 << 1)
-	describeStatsResponseDescribeNodeFieldColumns         = big.NewInt(1 << 2)
-	describeStatsResponseDescribeNodeFieldSortableColumns = big.NewInt(1 << 3)
-	describeStatsResponseDescribeNodeFieldAssociations    = big.NewInt(1 << 4)
-	describeStatsResponseDescribeNodeFieldMetrics         = big.NewInt(1 << 5)
-	describeStatsResponseDescribeNodeFieldSample          = big.NewInt(1 << 6)
-	describeStatsResponseDescribeNodeFieldDebug           = big.NewInt(1 << 7)
-)
-
-type DescribeStatsResponseDescribeNode struct {
-	// The node path being described.
-	Node string `json:"node" url:"node"`
-	// The query engine being used.
-	Engine string `json:"engine" url:"engine"`
-	// Available columns.
-	Columns []string `json:"columns" url:"columns"`
-	// Columns that can be used for sorting.
-	SortableColumns []string `json:"sortable_columns" url:"sortable_columns"`
-	// Available associations or child paths.
-	Associations []*DescribeStatsResponseDescribeNodeAssociationsItem `json:"associations" url:"associations"`
-	// Available metrics for this node.
-	Metrics []*DescribeStatsResponseDescribeNodeMetricsItem `json:"metrics" url:"metrics"`
-	// Sample data rows.
-	Sample []map[string]any `json:"sample,omitempty" url:"sample,omitempty"`
-	// Debug information.
-	Debug *DescribeStatsResponseDescribeNodeDebug `json:"debug,omitempty" url:"debug,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (d *DescribeStatsResponseDescribeNode) GetNode() string {
-	if d == nil {
-		return ""
-	}
-	return d.Node
-}
-
-func (d *DescribeStatsResponseDescribeNode) GetEngine() string {
-	if d == nil {
-		return ""
-	}
-	return d.Engine
-}
-
-func (d *DescribeStatsResponseDescribeNode) GetColumns() []string {
-	if d == nil {
-		return nil
-	}
-	return d.Columns
-}
-
-func (d *DescribeStatsResponseDescribeNode) GetSortableColumns() []string {
-	if d == nil {
-		return nil
-	}
-	return d.SortableColumns
-}
-
-func (d *DescribeStatsResponseDescribeNode) GetAssociations() []*DescribeStatsResponseDescribeNodeAssociationsItem {
-	if d == nil {
-		return nil
-	}
-	return d.Associations
-}
-
-func (d *DescribeStatsResponseDescribeNode) GetMetrics() []*DescribeStatsResponseDescribeNodeMetricsItem {
-	if d == nil {
-		return nil
-	}
-	return d.Metrics
-}
-
-func (d *DescribeStatsResponseDescribeNode) GetSample() []map[string]any {
-	if d == nil {
-		return nil
-	}
-	return d.Sample
-}
-
-func (d *DescribeStatsResponseDescribeNode) GetDebug() *DescribeStatsResponseDescribeNodeDebug {
-	if d == nil {
-		return nil
-	}
-	return d.Debug
-}
-
-func (d *DescribeStatsResponseDescribeNode) GetExtraProperties() map[string]interface{} {
-	if d == nil {
-		return nil
-	}
-	return d.extraProperties
-}
-
-func (d *DescribeStatsResponseDescribeNode) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetNode sets the Node field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeNode) SetNode(node string) {
-	d.Node = node
-	d.require(describeStatsResponseDescribeNodeFieldNode)
-}
-
-// SetEngine sets the Engine field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeNode) SetEngine(engine string) {
-	d.Engine = engine
-	d.require(describeStatsResponseDescribeNodeFieldEngine)
-}
-
-// SetColumns sets the Columns field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeNode) SetColumns(columns []string) {
-	d.Columns = columns
-	d.require(describeStatsResponseDescribeNodeFieldColumns)
-}
-
-// SetSortableColumns sets the SortableColumns field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeNode) SetSortableColumns(sortableColumns []string) {
-	d.SortableColumns = sortableColumns
-	d.require(describeStatsResponseDescribeNodeFieldSortableColumns)
-}
-
-// SetAssociations sets the Associations field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeNode) SetAssociations(associations []*DescribeStatsResponseDescribeNodeAssociationsItem) {
-	d.Associations = associations
-	d.require(describeStatsResponseDescribeNodeFieldAssociations)
-}
-
-// SetMetrics sets the Metrics field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeNode) SetMetrics(metrics []*DescribeStatsResponseDescribeNodeMetricsItem) {
-	d.Metrics = metrics
-	d.require(describeStatsResponseDescribeNodeFieldMetrics)
-}
-
-// SetSample sets the Sample field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeNode) SetSample(sample []map[string]any) {
-	d.Sample = sample
-	d.require(describeStatsResponseDescribeNodeFieldSample)
-}
-
-// SetDebug sets the Debug field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeNode) SetDebug(debug *DescribeStatsResponseDescribeNodeDebug) {
-	d.Debug = debug
-	d.require(describeStatsResponseDescribeNodeFieldDebug)
-}
-
-func (d *DescribeStatsResponseDescribeNode) UnmarshalJSON(data []byte) error {
-	type unmarshaler DescribeStatsResponseDescribeNode
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*d = DescribeStatsResponseDescribeNode(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *d)
-	if err != nil {
-		return err
-	}
-	d.extraProperties = extraProperties
-	d.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d *DescribeStatsResponseDescribeNode) MarshalJSON() ([]byte, error) {
-	type embed DescribeStatsResponseDescribeNode
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*d),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (d *DescribeStatsResponseDescribeNode) String() string {
-	if d == nil {
-		return "<nil>"
-	}
-	if len(d.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(d); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", d)
-}
-
-var (
-	describeStatsResponseDescribeNodeAssociationsItemFieldName      = big.NewInt(1 << 0)
-	describeStatsResponseDescribeNodeAssociationsItemFieldType      = big.NewInt(1 << 1)
-	describeStatsResponseDescribeNodeAssociationsItemFieldModel     = big.NewInt(1 << 2)
-	describeStatsResponseDescribeNodeAssociationsItemFieldPath      = big.NewInt(1 << 3)
-	describeStatsResponseDescribeNodeAssociationsItemFieldEventName = big.NewInt(1 << 4)
-)
-
-type DescribeStatsResponseDescribeNodeAssociationsItem struct {
-	// The association name.
-	Name string `json:"name" url:"name"`
-	// The type (belongs_to, has_many, has_one, event, namespace).
-	Type string `json:"type" url:"type"`
-	// The associated model class name (for model associations).
-	Model *string `json:"model,omitempty" url:"model,omitempty"`
-	// The full path (for event associations).
-	Path *string `json:"path,omitempty" url:"path,omitempty"`
-	// The event name (for event type).
-	EventName *string `json:"event_name,omitempty" url:"event_name,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (d *DescribeStatsResponseDescribeNodeAssociationsItem) GetName() string {
-	if d == nil {
-		return ""
-	}
-	return d.Name
-}
-
-func (d *DescribeStatsResponseDescribeNodeAssociationsItem) GetType() string {
-	if d == nil {
-		return ""
-	}
-	return d.Type
-}
-
-func (d *DescribeStatsResponseDescribeNodeAssociationsItem) GetModel() *string {
-	if d == nil {
-		return nil
-	}
-	return d.Model
-}
-
-func (d *DescribeStatsResponseDescribeNodeAssociationsItem) GetPath() *string {
-	if d == nil {
-		return nil
-	}
-	return d.Path
-}
-
-func (d *DescribeStatsResponseDescribeNodeAssociationsItem) GetEventName() *string {
-	if d == nil {
-		return nil
-	}
-	return d.EventName
-}
-
-func (d *DescribeStatsResponseDescribeNodeAssociationsItem) GetExtraProperties() map[string]interface{} {
-	if d == nil {
-		return nil
-	}
-	return d.extraProperties
-}
-
-func (d *DescribeStatsResponseDescribeNodeAssociationsItem) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeNodeAssociationsItem) SetName(name string) {
-	d.Name = name
-	d.require(describeStatsResponseDescribeNodeAssociationsItemFieldName)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeNodeAssociationsItem) SetType(type_ string) {
-	d.Type = type_
-	d.require(describeStatsResponseDescribeNodeAssociationsItemFieldType)
-}
-
-// SetModel sets the Model field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeNodeAssociationsItem) SetModel(model *string) {
-	d.Model = model
-	d.require(describeStatsResponseDescribeNodeAssociationsItemFieldModel)
-}
-
-// SetPath sets the Path field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeNodeAssociationsItem) SetPath(path *string) {
-	d.Path = path
-	d.require(describeStatsResponseDescribeNodeAssociationsItemFieldPath)
-}
-
-// SetEventName sets the EventName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeNodeAssociationsItem) SetEventName(eventName *string) {
-	d.EventName = eventName
-	d.require(describeStatsResponseDescribeNodeAssociationsItemFieldEventName)
-}
-
-func (d *DescribeStatsResponseDescribeNodeAssociationsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler DescribeStatsResponseDescribeNodeAssociationsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*d = DescribeStatsResponseDescribeNodeAssociationsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *d)
-	if err != nil {
-		return err
-	}
-	d.extraProperties = extraProperties
-	d.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d *DescribeStatsResponseDescribeNodeAssociationsItem) MarshalJSON() ([]byte, error) {
-	type embed DescribeStatsResponseDescribeNodeAssociationsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*d),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (d *DescribeStatsResponseDescribeNodeAssociationsItem) String() string {
-	if d == nil {
-		return "<nil>"
-	}
-	if len(d.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(d); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", d)
-}
-
-// Debug information.
-var (
-	describeStatsResponseDescribeNodeDebugFieldRequestID = big.NewInt(1 << 0)
-)
-
-type DescribeStatsResponseDescribeNodeDebug struct {
-	// Unique request identifier for debugging.
-	RequestID *string `json:"request_id,omitempty" url:"request_id,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (d *DescribeStatsResponseDescribeNodeDebug) GetRequestID() *string {
-	if d == nil {
-		return nil
-	}
-	return d.RequestID
-}
-
-func (d *DescribeStatsResponseDescribeNodeDebug) GetExtraProperties() map[string]interface{} {
-	if d == nil {
-		return nil
-	}
-	return d.extraProperties
-}
-
-func (d *DescribeStatsResponseDescribeNodeDebug) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetRequestID sets the RequestID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeNodeDebug) SetRequestID(requestID *string) {
-	d.RequestID = requestID
-	d.require(describeStatsResponseDescribeNodeDebugFieldRequestID)
-}
-
-func (d *DescribeStatsResponseDescribeNodeDebug) UnmarshalJSON(data []byte) error {
-	type unmarshaler DescribeStatsResponseDescribeNodeDebug
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*d = DescribeStatsResponseDescribeNodeDebug(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *d)
-	if err != nil {
-		return err
-	}
-	d.extraProperties = extraProperties
-	d.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d *DescribeStatsResponseDescribeNodeDebug) MarshalJSON() ([]byte, error) {
-	type embed DescribeStatsResponseDescribeNodeDebug
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*d),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (d *DescribeStatsResponseDescribeNodeDebug) String() string {
-	if d == nil {
-		return "<nil>"
-	}
-	if len(d.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(d); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", d)
-}
-
-var (
-	describeStatsResponseDescribeNodeMetricsItemFieldName             = big.NewInt(1 << 0)
-	describeStatsResponseDescribeNodeMetricsItemFieldNodePath         = big.NewInt(1 << 1)
-	describeStatsResponseDescribeNodeMetricsItemFieldSupportedEngines = big.NewInt(1 << 2)
-)
-
-type DescribeStatsResponseDescribeNodeMetricsItem struct {
-	// The metric name.
-	Name string `json:"name" url:"name"`
-	// The node path this metric operates on.
-	NodePath string `json:"node_path" url:"node_path"`
-	// Query engines that support this metric.
-	SupportedEngines []string `json:"supported_engines" url:"supported_engines"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (d *DescribeStatsResponseDescribeNodeMetricsItem) GetName() string {
-	if d == nil {
-		return ""
-	}
-	return d.Name
-}
-
-func (d *DescribeStatsResponseDescribeNodeMetricsItem) GetNodePath() string {
-	if d == nil {
-		return ""
-	}
-	return d.NodePath
-}
-
-func (d *DescribeStatsResponseDescribeNodeMetricsItem) GetSupportedEngines() []string {
-	if d == nil {
-		return nil
-	}
-	return d.SupportedEngines
-}
-
-func (d *DescribeStatsResponseDescribeNodeMetricsItem) GetExtraProperties() map[string]interface{} {
-	if d == nil {
-		return nil
-	}
-	return d.extraProperties
-}
-
-func (d *DescribeStatsResponseDescribeNodeMetricsItem) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeNodeMetricsItem) SetName(name string) {
-	d.Name = name
-	d.require(describeStatsResponseDescribeNodeMetricsItemFieldName)
-}
-
-// SetNodePath sets the NodePath field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeNodeMetricsItem) SetNodePath(nodePath string) {
-	d.NodePath = nodePath
-	d.require(describeStatsResponseDescribeNodeMetricsItemFieldNodePath)
-}
-
-// SetSupportedEngines sets the SupportedEngines field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeNodeMetricsItem) SetSupportedEngines(supportedEngines []string) {
-	d.SupportedEngines = supportedEngines
-	d.require(describeStatsResponseDescribeNodeMetricsItemFieldSupportedEngines)
-}
-
-func (d *DescribeStatsResponseDescribeNodeMetricsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler DescribeStatsResponseDescribeNodeMetricsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*d = DescribeStatsResponseDescribeNodeMetricsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *d)
-	if err != nil {
-		return err
-	}
-	d.extraProperties = extraProperties
-	d.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d *DescribeStatsResponseDescribeNodeMetricsItem) MarshalJSON() ([]byte, error) {
-	type embed DescribeStatsResponseDescribeNodeMetricsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*d),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (d *DescribeStatsResponseDescribeNodeMetricsItem) String() string {
-	if d == nil {
-		return "<nil>"
-	}
-	if len(d.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(d); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", d)
-}
-
-// Root schema description showing available nodes, views, and metrics.
-var (
-	describeStatsResponseDescribeRootFieldNodes   = big.NewInt(1 << 0)
-	describeStatsResponseDescribeRootFieldViews   = big.NewInt(1 << 1)
-	describeStatsResponseDescribeRootFieldMetrics = big.NewInt(1 << 2)
-	describeStatsResponseDescribeRootFieldDebug   = big.NewInt(1 << 3)
-)
-
-type DescribeStatsResponseDescribeRoot struct {
-	// Available root nodes.
-	Nodes []string `json:"nodes" url:"nodes"`
-	// Available API resource views.
-	Views []string `json:"views" url:"views"`
-	// Available metrics.
-	Metrics []*DescribeStatsResponseDescribeRootMetricsItem `json:"metrics" url:"metrics"`
-	// Debug information.
-	Debug *DescribeStatsResponseDescribeRootDebug `json:"debug,omitempty" url:"debug,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (d *DescribeStatsResponseDescribeRoot) GetNodes() []string {
-	if d == nil {
-		return nil
-	}
-	return d.Nodes
-}
-
-func (d *DescribeStatsResponseDescribeRoot) GetViews() []string {
-	if d == nil {
-		return nil
-	}
-	return d.Views
-}
-
-func (d *DescribeStatsResponseDescribeRoot) GetMetrics() []*DescribeStatsResponseDescribeRootMetricsItem {
-	if d == nil {
-		return nil
-	}
-	return d.Metrics
-}
-
-func (d *DescribeStatsResponseDescribeRoot) GetDebug() *DescribeStatsResponseDescribeRootDebug {
-	if d == nil {
-		return nil
-	}
-	return d.Debug
-}
-
-func (d *DescribeStatsResponseDescribeRoot) GetExtraProperties() map[string]interface{} {
-	if d == nil {
-		return nil
-	}
-	return d.extraProperties
-}
-
-func (d *DescribeStatsResponseDescribeRoot) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetNodes sets the Nodes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeRoot) SetNodes(nodes []string) {
-	d.Nodes = nodes
-	d.require(describeStatsResponseDescribeRootFieldNodes)
-}
-
-// SetViews sets the Views field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeRoot) SetViews(views []string) {
-	d.Views = views
-	d.require(describeStatsResponseDescribeRootFieldViews)
-}
-
-// SetMetrics sets the Metrics field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeRoot) SetMetrics(metrics []*DescribeStatsResponseDescribeRootMetricsItem) {
-	d.Metrics = metrics
-	d.require(describeStatsResponseDescribeRootFieldMetrics)
-}
-
-// SetDebug sets the Debug field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeRoot) SetDebug(debug *DescribeStatsResponseDescribeRootDebug) {
-	d.Debug = debug
-	d.require(describeStatsResponseDescribeRootFieldDebug)
-}
-
-func (d *DescribeStatsResponseDescribeRoot) UnmarshalJSON(data []byte) error {
-	type unmarshaler DescribeStatsResponseDescribeRoot
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*d = DescribeStatsResponseDescribeRoot(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *d)
-	if err != nil {
-		return err
-	}
-	d.extraProperties = extraProperties
-	d.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d *DescribeStatsResponseDescribeRoot) MarshalJSON() ([]byte, error) {
-	type embed DescribeStatsResponseDescribeRoot
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*d),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (d *DescribeStatsResponseDescribeRoot) String() string {
-	if d == nil {
-		return "<nil>"
-	}
-	if len(d.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(d); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", d)
-}
-
-// Debug information.
-var (
-	describeStatsResponseDescribeRootDebugFieldRequestID = big.NewInt(1 << 0)
-)
-
-type DescribeStatsResponseDescribeRootDebug struct {
-	// Unique request identifier for debugging.
-	RequestID *string `json:"request_id,omitempty" url:"request_id,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (d *DescribeStatsResponseDescribeRootDebug) GetRequestID() *string {
-	if d == nil {
-		return nil
-	}
-	return d.RequestID
-}
-
-func (d *DescribeStatsResponseDescribeRootDebug) GetExtraProperties() map[string]interface{} {
-	if d == nil {
-		return nil
-	}
-	return d.extraProperties
-}
-
-func (d *DescribeStatsResponseDescribeRootDebug) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetRequestID sets the RequestID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeRootDebug) SetRequestID(requestID *string) {
-	d.RequestID = requestID
-	d.require(describeStatsResponseDescribeRootDebugFieldRequestID)
-}
-
-func (d *DescribeStatsResponseDescribeRootDebug) UnmarshalJSON(data []byte) error {
-	type unmarshaler DescribeStatsResponseDescribeRootDebug
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*d = DescribeStatsResponseDescribeRootDebug(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *d)
-	if err != nil {
-		return err
-	}
-	d.extraProperties = extraProperties
-	d.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d *DescribeStatsResponseDescribeRootDebug) MarshalJSON() ([]byte, error) {
-	type embed DescribeStatsResponseDescribeRootDebug
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*d),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (d *DescribeStatsResponseDescribeRootDebug) String() string {
-	if d == nil {
-		return "<nil>"
-	}
-	if len(d.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(d); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", d)
-}
-
-var (
-	describeStatsResponseDescribeRootMetricsItemFieldName             = big.NewInt(1 << 0)
-	describeStatsResponseDescribeRootMetricsItemFieldNodePath         = big.NewInt(1 << 1)
-	describeStatsResponseDescribeRootMetricsItemFieldSupportedEngines = big.NewInt(1 << 2)
-)
-
-type DescribeStatsResponseDescribeRootMetricsItem struct {
-	// The metric name.
-	Name string `json:"name" url:"name"`
-	// The node path this metric operates on.
-	NodePath string `json:"node_path" url:"node_path"`
-	// Query engines that support this metric.
-	SupportedEngines []string `json:"supported_engines" url:"supported_engines"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (d *DescribeStatsResponseDescribeRootMetricsItem) GetName() string {
-	if d == nil {
-		return ""
-	}
-	return d.Name
-}
-
-func (d *DescribeStatsResponseDescribeRootMetricsItem) GetNodePath() string {
-	if d == nil {
-		return ""
-	}
-	return d.NodePath
-}
-
-func (d *DescribeStatsResponseDescribeRootMetricsItem) GetSupportedEngines() []string {
-	if d == nil {
-		return nil
-	}
-	return d.SupportedEngines
-}
-
-func (d *DescribeStatsResponseDescribeRootMetricsItem) GetExtraProperties() map[string]interface{} {
-	if d == nil {
-		return nil
-	}
-	return d.extraProperties
-}
-
-func (d *DescribeStatsResponseDescribeRootMetricsItem) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeRootMetricsItem) SetName(name string) {
-	d.Name = name
-	d.require(describeStatsResponseDescribeRootMetricsItemFieldName)
-}
-
-// SetNodePath sets the NodePath field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeRootMetricsItem) SetNodePath(nodePath string) {
-	d.NodePath = nodePath
-	d.require(describeStatsResponseDescribeRootMetricsItemFieldNodePath)
-}
-
-// SetSupportedEngines sets the SupportedEngines field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeRootMetricsItem) SetSupportedEngines(supportedEngines []string) {
-	d.SupportedEngines = supportedEngines
-	d.require(describeStatsResponseDescribeRootMetricsItemFieldSupportedEngines)
-}
-
-func (d *DescribeStatsResponseDescribeRootMetricsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler DescribeStatsResponseDescribeRootMetricsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*d = DescribeStatsResponseDescribeRootMetricsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *d)
-	if err != nil {
-		return err
-	}
-	d.extraProperties = extraProperties
-	d.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d *DescribeStatsResponseDescribeRootMetricsItem) MarshalJSON() ([]byte, error) {
-	type embed DescribeStatsResponseDescribeRootMetricsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*d),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (d *DescribeStatsResponseDescribeRootMetricsItem) String() string {
-	if d == nil {
-		return "<nil>"
-	}
-	if len(d.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(d); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", d)
-}
-
-// Description of an API resource view including its columns and associations.
-var (
-	describeStatsResponseDescribeViewFieldView            = big.NewInt(1 << 0)
-	describeStatsResponseDescribeViewFieldResource        = big.NewInt(1 << 1)
-	describeStatsResponseDescribeViewFieldModel           = big.NewInt(1 << 2)
-	describeStatsResponseDescribeViewFieldEngine          = big.NewInt(1 << 3)
-	describeStatsResponseDescribeViewFieldColumns         = big.NewInt(1 << 4)
-	describeStatsResponseDescribeViewFieldSortableColumns = big.NewInt(1 << 5)
-	describeStatsResponseDescribeViewFieldAssociations    = big.NewInt(1 << 6)
-	describeStatsResponseDescribeViewFieldMetrics         = big.NewInt(1 << 7)
-	describeStatsResponseDescribeViewFieldSample          = big.NewInt(1 << 8)
-	describeStatsResponseDescribeViewFieldDebug           = big.NewInt(1 << 9)
-)
-
-type DescribeStatsResponseDescribeView struct {
-	// The view name being described.
-	View string `json:"view" url:"view"`
-	// The API resource name.
-	Resource string `json:"resource" url:"resource"`
-	// The underlying model class.
-	Model string `json:"model" url:"model"`
-	// The query engine being used.
-	Engine string `json:"engine" url:"engine"`
-	// Available columns.
-	Columns []string `json:"columns" url:"columns"`
-	// Columns that can be used for sorting.
-	SortableColumns []string `json:"sortable_columns" url:"sortable_columns"`
-	// Available associations.
-	Associations []*DescribeStatsResponseDescribeViewAssociationsItem `json:"associations" url:"associations"`
-	// Available metrics.
-	Metrics []*DescribeStatsResponseDescribeViewMetricsItem `json:"metrics" url:"metrics"`
-	// Sample data rows.
-	Sample []map[string]any `json:"sample,omitempty" url:"sample,omitempty"`
-	// Debug information.
-	Debug *DescribeStatsResponseDescribeViewDebug `json:"debug,omitempty" url:"debug,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (d *DescribeStatsResponseDescribeView) GetView() string {
-	if d == nil {
-		return ""
-	}
-	return d.View
-}
-
-func (d *DescribeStatsResponseDescribeView) GetResource() string {
-	if d == nil {
-		return ""
-	}
-	return d.Resource
-}
-
-func (d *DescribeStatsResponseDescribeView) GetModel() string {
-	if d == nil {
-		return ""
-	}
-	return d.Model
-}
-
-func (d *DescribeStatsResponseDescribeView) GetEngine() string {
-	if d == nil {
-		return ""
-	}
-	return d.Engine
-}
-
-func (d *DescribeStatsResponseDescribeView) GetColumns() []string {
-	if d == nil {
-		return nil
-	}
-	return d.Columns
-}
-
-func (d *DescribeStatsResponseDescribeView) GetSortableColumns() []string {
-	if d == nil {
-		return nil
-	}
-	return d.SortableColumns
-}
-
-func (d *DescribeStatsResponseDescribeView) GetAssociations() []*DescribeStatsResponseDescribeViewAssociationsItem {
-	if d == nil {
-		return nil
-	}
-	return d.Associations
-}
-
-func (d *DescribeStatsResponseDescribeView) GetMetrics() []*DescribeStatsResponseDescribeViewMetricsItem {
-	if d == nil {
-		return nil
-	}
-	return d.Metrics
-}
-
-func (d *DescribeStatsResponseDescribeView) GetSample() []map[string]any {
-	if d == nil {
-		return nil
-	}
-	return d.Sample
-}
-
-func (d *DescribeStatsResponseDescribeView) GetDebug() *DescribeStatsResponseDescribeViewDebug {
-	if d == nil {
-		return nil
-	}
-	return d.Debug
-}
-
-func (d *DescribeStatsResponseDescribeView) GetExtraProperties() map[string]interface{} {
-	if d == nil {
-		return nil
-	}
-	return d.extraProperties
-}
-
-func (d *DescribeStatsResponseDescribeView) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetView sets the View field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeView) SetView(view string) {
-	d.View = view
-	d.require(describeStatsResponseDescribeViewFieldView)
-}
-
-// SetResource sets the Resource field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeView) SetResource(resource string) {
-	d.Resource = resource
-	d.require(describeStatsResponseDescribeViewFieldResource)
-}
-
-// SetModel sets the Model field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeView) SetModel(model string) {
-	d.Model = model
-	d.require(describeStatsResponseDescribeViewFieldModel)
-}
-
-// SetEngine sets the Engine field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeView) SetEngine(engine string) {
-	d.Engine = engine
-	d.require(describeStatsResponseDescribeViewFieldEngine)
-}
-
-// SetColumns sets the Columns field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeView) SetColumns(columns []string) {
-	d.Columns = columns
-	d.require(describeStatsResponseDescribeViewFieldColumns)
-}
-
-// SetSortableColumns sets the SortableColumns field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeView) SetSortableColumns(sortableColumns []string) {
-	d.SortableColumns = sortableColumns
-	d.require(describeStatsResponseDescribeViewFieldSortableColumns)
-}
-
-// SetAssociations sets the Associations field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeView) SetAssociations(associations []*DescribeStatsResponseDescribeViewAssociationsItem) {
-	d.Associations = associations
-	d.require(describeStatsResponseDescribeViewFieldAssociations)
-}
-
-// SetMetrics sets the Metrics field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeView) SetMetrics(metrics []*DescribeStatsResponseDescribeViewMetricsItem) {
-	d.Metrics = metrics
-	d.require(describeStatsResponseDescribeViewFieldMetrics)
-}
-
-// SetSample sets the Sample field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeView) SetSample(sample []map[string]any) {
-	d.Sample = sample
-	d.require(describeStatsResponseDescribeViewFieldSample)
-}
-
-// SetDebug sets the Debug field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeView) SetDebug(debug *DescribeStatsResponseDescribeViewDebug) {
-	d.Debug = debug
-	d.require(describeStatsResponseDescribeViewFieldDebug)
-}
-
-func (d *DescribeStatsResponseDescribeView) UnmarshalJSON(data []byte) error {
-	type unmarshaler DescribeStatsResponseDescribeView
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*d = DescribeStatsResponseDescribeView(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *d)
-	if err != nil {
-		return err
-	}
-	d.extraProperties = extraProperties
-	d.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d *DescribeStatsResponseDescribeView) MarshalJSON() ([]byte, error) {
-	type embed DescribeStatsResponseDescribeView
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*d),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (d *DescribeStatsResponseDescribeView) String() string {
-	if d == nil {
-		return "<nil>"
-	}
-	if len(d.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(d); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", d)
-}
-
-var (
-	describeStatsResponseDescribeViewAssociationsItemFieldName      = big.NewInt(1 << 0)
-	describeStatsResponseDescribeViewAssociationsItemFieldType      = big.NewInt(1 << 1)
-	describeStatsResponseDescribeViewAssociationsItemFieldModel     = big.NewInt(1 << 2)
-	describeStatsResponseDescribeViewAssociationsItemFieldPath      = big.NewInt(1 << 3)
-	describeStatsResponseDescribeViewAssociationsItemFieldEventName = big.NewInt(1 << 4)
-)
-
-type DescribeStatsResponseDescribeViewAssociationsItem struct {
-	// The association name.
-	Name string `json:"name" url:"name"`
-	// The type (belongs_to, has_many, has_one, event, namespace).
-	Type string `json:"type" url:"type"`
-	// The associated model class name (for model associations).
-	Model *string `json:"model,omitempty" url:"model,omitempty"`
-	// The full path (for event associations).
-	Path *string `json:"path,omitempty" url:"path,omitempty"`
-	// The event name (for event type).
-	EventName *string `json:"event_name,omitempty" url:"event_name,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (d *DescribeStatsResponseDescribeViewAssociationsItem) GetName() string {
-	if d == nil {
-		return ""
-	}
-	return d.Name
-}
-
-func (d *DescribeStatsResponseDescribeViewAssociationsItem) GetType() string {
-	if d == nil {
-		return ""
-	}
-	return d.Type
-}
-
-func (d *DescribeStatsResponseDescribeViewAssociationsItem) GetModel() *string {
-	if d == nil {
-		return nil
-	}
-	return d.Model
-}
-
-func (d *DescribeStatsResponseDescribeViewAssociationsItem) GetPath() *string {
-	if d == nil {
-		return nil
-	}
-	return d.Path
-}
-
-func (d *DescribeStatsResponseDescribeViewAssociationsItem) GetEventName() *string {
-	if d == nil {
-		return nil
-	}
-	return d.EventName
-}
-
-func (d *DescribeStatsResponseDescribeViewAssociationsItem) GetExtraProperties() map[string]interface{} {
-	if d == nil {
-		return nil
-	}
-	return d.extraProperties
-}
-
-func (d *DescribeStatsResponseDescribeViewAssociationsItem) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeViewAssociationsItem) SetName(name string) {
-	d.Name = name
-	d.require(describeStatsResponseDescribeViewAssociationsItemFieldName)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeViewAssociationsItem) SetType(type_ string) {
-	d.Type = type_
-	d.require(describeStatsResponseDescribeViewAssociationsItemFieldType)
-}
-
-// SetModel sets the Model field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeViewAssociationsItem) SetModel(model *string) {
-	d.Model = model
-	d.require(describeStatsResponseDescribeViewAssociationsItemFieldModel)
-}
-
-// SetPath sets the Path field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeViewAssociationsItem) SetPath(path *string) {
-	d.Path = path
-	d.require(describeStatsResponseDescribeViewAssociationsItemFieldPath)
-}
-
-// SetEventName sets the EventName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeViewAssociationsItem) SetEventName(eventName *string) {
-	d.EventName = eventName
-	d.require(describeStatsResponseDescribeViewAssociationsItemFieldEventName)
-}
-
-func (d *DescribeStatsResponseDescribeViewAssociationsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler DescribeStatsResponseDescribeViewAssociationsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*d = DescribeStatsResponseDescribeViewAssociationsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *d)
-	if err != nil {
-		return err
-	}
-	d.extraProperties = extraProperties
-	d.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d *DescribeStatsResponseDescribeViewAssociationsItem) MarshalJSON() ([]byte, error) {
-	type embed DescribeStatsResponseDescribeViewAssociationsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*d),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (d *DescribeStatsResponseDescribeViewAssociationsItem) String() string {
-	if d == nil {
-		return "<nil>"
-	}
-	if len(d.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(d); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", d)
-}
-
-// Debug information.
-var (
-	describeStatsResponseDescribeViewDebugFieldRequestID = big.NewInt(1 << 0)
-)
-
-type DescribeStatsResponseDescribeViewDebug struct {
-	// Unique request identifier for debugging.
-	RequestID *string `json:"request_id,omitempty" url:"request_id,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (d *DescribeStatsResponseDescribeViewDebug) GetRequestID() *string {
-	if d == nil {
-		return nil
-	}
-	return d.RequestID
-}
-
-func (d *DescribeStatsResponseDescribeViewDebug) GetExtraProperties() map[string]interface{} {
-	if d == nil {
-		return nil
-	}
-	return d.extraProperties
-}
-
-func (d *DescribeStatsResponseDescribeViewDebug) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetRequestID sets the RequestID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeViewDebug) SetRequestID(requestID *string) {
-	d.RequestID = requestID
-	d.require(describeStatsResponseDescribeViewDebugFieldRequestID)
-}
-
-func (d *DescribeStatsResponseDescribeViewDebug) UnmarshalJSON(data []byte) error {
-	type unmarshaler DescribeStatsResponseDescribeViewDebug
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*d = DescribeStatsResponseDescribeViewDebug(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *d)
-	if err != nil {
-		return err
-	}
-	d.extraProperties = extraProperties
-	d.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d *DescribeStatsResponseDescribeViewDebug) MarshalJSON() ([]byte, error) {
-	type embed DescribeStatsResponseDescribeViewDebug
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*d),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (d *DescribeStatsResponseDescribeViewDebug) String() string {
-	if d == nil {
-		return "<nil>"
-	}
-	if len(d.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(d); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", d)
-}
-
-var (
-	describeStatsResponseDescribeViewMetricsItemFieldName             = big.NewInt(1 << 0)
-	describeStatsResponseDescribeViewMetricsItemFieldNodePath         = big.NewInt(1 << 1)
-	describeStatsResponseDescribeViewMetricsItemFieldSupportedEngines = big.NewInt(1 << 2)
-)
-
-type DescribeStatsResponseDescribeViewMetricsItem struct {
-	// The metric name.
-	Name string `json:"name" url:"name"`
-	// The node path this metric operates on.
-	NodePath string `json:"node_path" url:"node_path"`
-	// Query engines that support this metric.
-	SupportedEngines []string `json:"supported_engines" url:"supported_engines"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (d *DescribeStatsResponseDescribeViewMetricsItem) GetName() string {
-	if d == nil {
-		return ""
-	}
-	return d.Name
-}
-
-func (d *DescribeStatsResponseDescribeViewMetricsItem) GetNodePath() string {
-	if d == nil {
-		return ""
-	}
-	return d.NodePath
-}
-
-func (d *DescribeStatsResponseDescribeViewMetricsItem) GetSupportedEngines() []string {
-	if d == nil {
-		return nil
-	}
-	return d.SupportedEngines
-}
-
-func (d *DescribeStatsResponseDescribeViewMetricsItem) GetExtraProperties() map[string]interface{} {
-	if d == nil {
-		return nil
-	}
-	return d.extraProperties
-}
-
-func (d *DescribeStatsResponseDescribeViewMetricsItem) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
-	}
-	d.explicitFields.Or(d.explicitFields, field)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeViewMetricsItem) SetName(name string) {
-	d.Name = name
-	d.require(describeStatsResponseDescribeViewMetricsItemFieldName)
-}
-
-// SetNodePath sets the NodePath field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeViewMetricsItem) SetNodePath(nodePath string) {
-	d.NodePath = nodePath
-	d.require(describeStatsResponseDescribeViewMetricsItemFieldNodePath)
-}
-
-// SetSupportedEngines sets the SupportedEngines field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DescribeStatsResponseDescribeViewMetricsItem) SetSupportedEngines(supportedEngines []string) {
-	d.SupportedEngines = supportedEngines
-	d.require(describeStatsResponseDescribeViewMetricsItemFieldSupportedEngines)
-}
-
-func (d *DescribeStatsResponseDescribeViewMetricsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler DescribeStatsResponseDescribeViewMetricsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*d = DescribeStatsResponseDescribeViewMetricsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *d)
-	if err != nil {
-		return err
-	}
-	d.extraProperties = extraProperties
-	d.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d *DescribeStatsResponseDescribeViewMetricsItem) MarshalJSON() ([]byte, error) {
-	type embed DescribeStatsResponseDescribeViewMetricsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*d),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (d *DescribeStatsResponseDescribeViewMetricsItem) String() string {
-	if d == nil {
-		return "<nil>"
-	}
-	if len(d.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(d); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", d)
-}
-
-type DescribeStatsResponse struct {
-	Typename string
-	// Root schema description showing available nodes, views, and metrics.
-	DescribeRoot *DescribeStatsResponseDescribeRoot
-	// Description of a node (model) including its columns and associations.
-	DescribeNode *DescribeStatsResponseDescribeNode
-	// Description of a metric including its configuration and SQL.
-	DescribeMetric *DescribeStatsResponseDescribeMetric
-	// Description of an API resource view including its columns and associations.
-	DescribeView *DescribeStatsResponseDescribeView
-
-	rawJSON json.RawMessage
-}
-
-func (d *DescribeStatsResponse) GetTypename() string {
-	if d == nil {
-		return ""
-	}
-	return d.Typename
-}
-
-func (d *DescribeStatsResponse) GetDescribeRoot() *DescribeStatsResponseDescribeRoot {
-	if d == nil {
-		return nil
-	}
-	return d.DescribeRoot
-}
-
-func (d *DescribeStatsResponse) GetDescribeNode() *DescribeStatsResponseDescribeNode {
-	if d == nil {
-		return nil
-	}
-	return d.DescribeNode
-}
-
-func (d *DescribeStatsResponse) GetDescribeMetric() *DescribeStatsResponseDescribeMetric {
-	if d == nil {
-		return nil
-	}
-	return d.DescribeMetric
-}
-
-func (d *DescribeStatsResponse) GetDescribeView() *DescribeStatsResponseDescribeView {
-	if d == nil {
-		return nil
-	}
-	return d.DescribeView
-}
-
-func (d *DescribeStatsResponse) UnmarshalJSON(data []byte) error {
-	var unmarshaler struct {
-		Typename string `json:"typename"`
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	d.Typename = unmarshaler.Typename
-	if unmarshaler.Typename == "" {
-		return fmt.Errorf("%T did not include discriminant typename", d)
-	}
-	switch unmarshaler.Typename {
-	case "DescribeRoot":
-		value := new(DescribeStatsResponseDescribeRoot)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		d.DescribeRoot = value
-	case "DescribeNode":
-		value := new(DescribeStatsResponseDescribeNode)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		d.DescribeNode = value
-	case "DescribeMetric":
-		value := new(DescribeStatsResponseDescribeMetric)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		d.DescribeMetric = value
-	case "DescribeView":
-		value := new(DescribeStatsResponseDescribeView)
-		if err := json.Unmarshal(data, &value); err != nil {
-			return err
-		}
-		d.DescribeView = value
-	}
-	d.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (d DescribeStatsResponse) MarshalJSON() ([]byte, error) {
-	if err := d.validate(); err != nil {
-		return nil, err
-	}
-	if d.DescribeRoot != nil {
-		return internal.MarshalJSONWithExtraProperty(d.DescribeRoot, "typename", "DescribeRoot")
-	}
-	if d.DescribeNode != nil {
-		return internal.MarshalJSONWithExtraProperty(d.DescribeNode, "typename", "DescribeNode")
-	}
-	if d.DescribeMetric != nil {
-		return internal.MarshalJSONWithExtraProperty(d.DescribeMetric, "typename", "DescribeMetric")
-	}
-	if d.DescribeView != nil {
-		return internal.MarshalJSONWithExtraProperty(d.DescribeView, "typename", "DescribeView")
-	}
-	if len(d.rawJSON) > 0 {
-		return d.rawJSON, nil
-	}
-	return nil, fmt.Errorf("type %T does not define a non-empty union type", d)
-}
-
-type DescribeStatsResponseVisitor interface {
-	VisitDescribeRoot(*DescribeStatsResponseDescribeRoot) error
-	VisitDescribeNode(*DescribeStatsResponseDescribeNode) error
-	VisitDescribeMetric(*DescribeStatsResponseDescribeMetric) error
-	VisitDescribeView(*DescribeStatsResponseDescribeView) error
-}
-
-func (d *DescribeStatsResponse) Accept(visitor DescribeStatsResponseVisitor) error {
-	if d.DescribeRoot != nil {
-		return visitor.VisitDescribeRoot(d.DescribeRoot)
-	}
-	if d.DescribeNode != nil {
-		return visitor.VisitDescribeNode(d.DescribeNode)
-	}
-	if d.DescribeMetric != nil {
-		return visitor.VisitDescribeMetric(d.DescribeMetric)
-	}
-	if d.DescribeView != nil {
-		return visitor.VisitDescribeView(d.DescribeView)
-	}
-	return fmt.Errorf("type %T does not define a non-empty union type", d)
-}
-
-func (d *DescribeStatsResponse) validate() error {
-	if d == nil {
-		return fmt.Errorf("type %T is nil", d)
-	}
-	var fields []string
-	if d.DescribeRoot != nil {
-		fields = append(fields, "DescribeRoot")
-	}
-	if d.DescribeNode != nil {
-		fields = append(fields, "DescribeNode")
-	}
-	if d.DescribeMetric != nil {
-		fields = append(fields, "DescribeMetric")
-	}
-	if d.DescribeView != nil {
-		fields = append(fields, "DescribeView")
-	}
-	if len(fields) == 0 {
-		if d.Typename != "" {
-			if len(d.rawJSON) > 0 {
-				return nil
-			}
-			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", d, d.Typename)
-		}
-		return fmt.Errorf("type %T is empty", d)
-	}
-	if len(fields) > 1 {
-		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", d, fields)
-	}
-	if d.Typename != "" {
-		field := fields[0]
-		if d.Typename != field {
-			return fmt.Errorf(
-				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
-				d,
-				d.Typename,
-				d,
-			)
-		}
-	}
-	return nil
+	return fmt.Sprintf("%#v", r)
 }
 
 var (
@@ -2651,10 +1018,12 @@ func (l *ListStatsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListStatsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2707,18 +1076,21 @@ func (l *ListStatsResponse) String() string {
 }
 
 var (
-	listStatsResponseDataItemFieldDescription = big.NewInt(1 << 0)
-	listStatsResponseDataItemFieldKey         = big.NewInt(1 << 1)
-	listStatsResponseDataItemFieldName        = big.NewInt(1 << 2)
-	listStatsResponseDataItemFieldProperties  = big.NewInt(1 << 3)
-	listStatsResponseDataItemFieldUnit        = big.NewInt(1 << 4)
-	listStatsResponseDataItemFieldWindows     = big.NewInt(1 << 5)
+	listStatsResponseDataItemFieldBreakdowns  = big.NewInt(1 << 0)
+	listStatsResponseDataItemFieldDescription = big.NewInt(1 << 1)
+	listStatsResponseDataItemFieldKey         = big.NewInt(1 << 2)
+	listStatsResponseDataItemFieldName        = big.NewInt(1 << 3)
+	listStatsResponseDataItemFieldProperties  = big.NewInt(1 << 4)
+	listStatsResponseDataItemFieldUnit        = big.NewInt(1 << 5)
+	listStatsResponseDataItemFieldWindows     = big.NewInt(1 << 6)
 )
 
 type ListStatsResponseDataItem struct {
+	// Supported breakdown_by values when they differ from the filter properties.
+	Breakdowns []string `json:"breakdowns,omitempty" url:"breakdowns,omitempty"`
 	// A short description of what the metric measures.
 	Description string `json:"description" url:"description"`
-	// The metric's key. Pass it to GET /stats/{metric} to query its values.
+	// The metric's key. Pass it to GET /stats/time_series/{metric} to query its values.
 	Key string `json:"key" url:"key"`
 	// Human-readable display name for the metric.
 	Name string `json:"name" url:"name"`
@@ -2734,6 +1106,13 @@ type ListStatsResponseDataItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (l *ListStatsResponseDataItem) GetBreakdowns() []string {
+	if l == nil {
+		return nil
+	}
+	return l.Breakdowns
 }
 
 func (l *ListStatsResponseDataItem) GetDescription() string {
@@ -2786,10 +1165,19 @@ func (l *ListStatsResponseDataItem) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *ListStatsResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetBreakdowns sets the Breakdowns field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListStatsResponseDataItem) SetBreakdowns(breakdowns []string) {
+	l.Breakdowns = breakdowns
+	l.require(listStatsResponseDataItemFieldBreakdowns)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
@@ -2902,763 +1290,6 @@ func (l ListStatsResponseDataItemUnit) Ptr() *ListStatsResponseDataItemUnit {
 	return &l
 }
 
-// Result from a stats query (raw, metric, or SQL).
-var (
-	metricStatsResponseFieldColumns    = big.NewInt(1 << 0)
-	metricStatsResponseFieldData       = big.NewInt(1 << 1)
-	metricStatsResponseFieldDebug      = big.NewInt(1 << 2)
-	metricStatsResponseFieldNode       = big.NewInt(1 << 3)
-	metricStatsResponseFieldPagination = big.NewInt(1 << 4)
-	metricStatsResponseFieldTypename   = big.NewInt(1 << 5)
-)
-
-type MetricStatsResponse struct {
-	// Column names in the order they appear in each data row.
-	Columns []string `json:"columns,omitempty" url:"columns,omitempty"`
-	// Array of data rows, where each row is an array of values matching the columns order.
-	Data []map[string]any `json:"data,omitempty" url:"data,omitempty"`
-	// Debug information including engine and SQL.
-	Debug *MetricStatsResponseDebug `json:"debug,omitempty" url:"debug,omitempty"`
-	// The node path that was queried.
-	Node *string `json:"node,omitempty" url:"node,omitempty"`
-	// Pagination information.
-	Pagination *MetricStatsResponsePagination `json:"pagination,omitempty" url:"pagination,omitempty"`
-	// The typename of this object
-	Typename MetricStatsResponseTypename `json:"typename" url:"typename"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (m *MetricStatsResponse) GetColumns() []string {
-	if m == nil {
-		return nil
-	}
-	return m.Columns
-}
-
-func (m *MetricStatsResponse) GetData() []map[string]any {
-	if m == nil {
-		return nil
-	}
-	return m.Data
-}
-
-func (m *MetricStatsResponse) GetDebug() *MetricStatsResponseDebug {
-	if m == nil {
-		return nil
-	}
-	return m.Debug
-}
-
-func (m *MetricStatsResponse) GetNode() *string {
-	if m == nil {
-		return nil
-	}
-	return m.Node
-}
-
-func (m *MetricStatsResponse) GetPagination() *MetricStatsResponsePagination {
-	if m == nil {
-		return nil
-	}
-	return m.Pagination
-}
-
-func (m *MetricStatsResponse) GetTypename() MetricStatsResponseTypename {
-	if m == nil {
-		return ""
-	}
-	return m.Typename
-}
-
-func (m *MetricStatsResponse) GetExtraProperties() map[string]interface{} {
-	if m == nil {
-		return nil
-	}
-	return m.extraProperties
-}
-
-func (m *MetricStatsResponse) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
-	}
-	m.explicitFields.Or(m.explicitFields, field)
-}
-
-// SetColumns sets the Columns field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsResponse) SetColumns(columns []string) {
-	m.Columns = columns
-	m.require(metricStatsResponseFieldColumns)
-}
-
-// SetData sets the Data field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsResponse) SetData(data []map[string]any) {
-	m.Data = data
-	m.require(metricStatsResponseFieldData)
-}
-
-// SetDebug sets the Debug field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsResponse) SetDebug(debug *MetricStatsResponseDebug) {
-	m.Debug = debug
-	m.require(metricStatsResponseFieldDebug)
-}
-
-// SetNode sets the Node field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsResponse) SetNode(node *string) {
-	m.Node = node
-	m.require(metricStatsResponseFieldNode)
-}
-
-// SetPagination sets the Pagination field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsResponse) SetPagination(pagination *MetricStatsResponsePagination) {
-	m.Pagination = pagination
-	m.require(metricStatsResponseFieldPagination)
-}
-
-// SetTypename sets the Typename field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsResponse) SetTypename(typename MetricStatsResponseTypename) {
-	m.Typename = typename
-	m.require(metricStatsResponseFieldTypename)
-}
-
-func (m *MetricStatsResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler MetricStatsResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*m = MetricStatsResponse(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *m)
-	if err != nil {
-		return err
-	}
-	m.extraProperties = extraProperties
-	m.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (m *MetricStatsResponse) MarshalJSON() ([]byte, error) {
-	type embed MetricStatsResponse
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*m),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (m *MetricStatsResponse) String() string {
-	if m == nil {
-		return "<nil>"
-	}
-	if len(m.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(m); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", m)
-}
-
-// Debug information including engine and SQL.
-var (
-	metricStatsResponseDebugFieldEngine    = big.NewInt(1 << 0)
-	metricStatsResponseDebugFieldRequestID = big.NewInt(1 << 1)
-	metricStatsResponseDebugFieldSQL       = big.NewInt(1 << 2)
-)
-
-type MetricStatsResponseDebug struct {
-	// The query engine used.
-	Engine *string `json:"engine,omitempty" url:"engine,omitempty"`
-	// Unique request identifier for debugging.
-	RequestID *string `json:"request_id,omitempty" url:"request_id,omitempty"`
-	// The generated SQL query (with IDs sanitized).
-	SQL *string `json:"sql,omitempty" url:"sql,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (m *MetricStatsResponseDebug) GetEngine() *string {
-	if m == nil {
-		return nil
-	}
-	return m.Engine
-}
-
-func (m *MetricStatsResponseDebug) GetRequestID() *string {
-	if m == nil {
-		return nil
-	}
-	return m.RequestID
-}
-
-func (m *MetricStatsResponseDebug) GetSQL() *string {
-	if m == nil {
-		return nil
-	}
-	return m.SQL
-}
-
-func (m *MetricStatsResponseDebug) GetExtraProperties() map[string]interface{} {
-	if m == nil {
-		return nil
-	}
-	return m.extraProperties
-}
-
-func (m *MetricStatsResponseDebug) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
-	}
-	m.explicitFields.Or(m.explicitFields, field)
-}
-
-// SetEngine sets the Engine field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsResponseDebug) SetEngine(engine *string) {
-	m.Engine = engine
-	m.require(metricStatsResponseDebugFieldEngine)
-}
-
-// SetRequestID sets the RequestID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsResponseDebug) SetRequestID(requestID *string) {
-	m.RequestID = requestID
-	m.require(metricStatsResponseDebugFieldRequestID)
-}
-
-// SetSQL sets the SQL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsResponseDebug) SetSQL(sql *string) {
-	m.SQL = sql
-	m.require(metricStatsResponseDebugFieldSQL)
-}
-
-func (m *MetricStatsResponseDebug) UnmarshalJSON(data []byte) error {
-	type unmarshaler MetricStatsResponseDebug
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*m = MetricStatsResponseDebug(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *m)
-	if err != nil {
-		return err
-	}
-	m.extraProperties = extraProperties
-	m.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (m *MetricStatsResponseDebug) MarshalJSON() ([]byte, error) {
-	type embed MetricStatsResponseDebug
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*m),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (m *MetricStatsResponseDebug) String() string {
-	if m == nil {
-		return "<nil>"
-	}
-	if len(m.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(m); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", m)
-}
-
-// Pagination information.
-var (
-	metricStatsResponsePaginationFieldNextCursor = big.NewInt(1 << 0)
-)
-
-type MetricStatsResponsePagination struct {
-	// Cursor for the next page of results.
-	NextCursor *string `json:"next_cursor,omitempty" url:"next_cursor,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (m *MetricStatsResponsePagination) GetNextCursor() *string {
-	if m == nil {
-		return nil
-	}
-	return m.NextCursor
-}
-
-func (m *MetricStatsResponsePagination) GetExtraProperties() map[string]interface{} {
-	if m == nil {
-		return nil
-	}
-	return m.extraProperties
-}
-
-func (m *MetricStatsResponsePagination) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
-	}
-	m.explicitFields.Or(m.explicitFields, field)
-}
-
-// SetNextCursor sets the NextCursor field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MetricStatsResponsePagination) SetNextCursor(nextCursor *string) {
-	m.NextCursor = nextCursor
-	m.require(metricStatsResponsePaginationFieldNextCursor)
-}
-
-func (m *MetricStatsResponsePagination) UnmarshalJSON(data []byte) error {
-	type unmarshaler MetricStatsResponsePagination
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*m = MetricStatsResponsePagination(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *m)
-	if err != nil {
-		return err
-	}
-	m.extraProperties = extraProperties
-	m.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (m *MetricStatsResponsePagination) MarshalJSON() ([]byte, error) {
-	type embed MetricStatsResponsePagination
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*m),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (m *MetricStatsResponsePagination) String() string {
-	if m == nil {
-		return "<nil>"
-	}
-	if len(m.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(m); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", m)
-}
-
-// The typename of this object
-type MetricStatsResponseTypename string
-
-const (
-	MetricStatsResponseTypenameResult MetricStatsResponseTypename = "Result"
-)
-
-func NewMetricStatsResponseTypenameFromString(s string) (MetricStatsResponseTypename, error) {
-	switch s {
-	case "Result":
-		return MetricStatsResponseTypenameResult, nil
-	}
-	var t MetricStatsResponseTypename
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (m MetricStatsResponseTypename) Ptr() *MetricStatsResponseTypename {
-	return &m
-}
-
-// Result from a stats query (raw, metric, or SQL).
-var (
-	rawStatsResponseFieldColumns    = big.NewInt(1 << 0)
-	rawStatsResponseFieldData       = big.NewInt(1 << 1)
-	rawStatsResponseFieldDebug      = big.NewInt(1 << 2)
-	rawStatsResponseFieldNode       = big.NewInt(1 << 3)
-	rawStatsResponseFieldPagination = big.NewInt(1 << 4)
-)
-
-type RawStatsResponse struct {
-	// Column names in the order they appear in each data row.
-	Columns []string `json:"columns,omitempty" url:"columns,omitempty"`
-	// Array of data rows, where each row is an array of values matching the columns order.
-	Data []map[string]any `json:"data,omitempty" url:"data,omitempty"`
-	// Debug information including engine and SQL.
-	Debug *RawStatsResponseDebug `json:"debug,omitempty" url:"debug,omitempty"`
-	// The node path that was queried.
-	Node *string `json:"node,omitempty" url:"node,omitempty"`
-	// Pagination information.
-	Pagination *RawStatsResponsePagination `json:"pagination,omitempty" url:"pagination,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (r *RawStatsResponse) GetColumns() []string {
-	if r == nil {
-		return nil
-	}
-	return r.Columns
-}
-
-func (r *RawStatsResponse) GetData() []map[string]any {
-	if r == nil {
-		return nil
-	}
-	return r.Data
-}
-
-func (r *RawStatsResponse) GetDebug() *RawStatsResponseDebug {
-	if r == nil {
-		return nil
-	}
-	return r.Debug
-}
-
-func (r *RawStatsResponse) GetNode() *string {
-	if r == nil {
-		return nil
-	}
-	return r.Node
-}
-
-func (r *RawStatsResponse) GetPagination() *RawStatsResponsePagination {
-	if r == nil {
-		return nil
-	}
-	return r.Pagination
-}
-
-func (r *RawStatsResponse) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *RawStatsResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
-	}
-	r.explicitFields.Or(r.explicitFields, field)
-}
-
-// SetColumns sets the Columns field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsResponse) SetColumns(columns []string) {
-	r.Columns = columns
-	r.require(rawStatsResponseFieldColumns)
-}
-
-// SetData sets the Data field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsResponse) SetData(data []map[string]any) {
-	r.Data = data
-	r.require(rawStatsResponseFieldData)
-}
-
-// SetDebug sets the Debug field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsResponse) SetDebug(debug *RawStatsResponseDebug) {
-	r.Debug = debug
-	r.require(rawStatsResponseFieldDebug)
-}
-
-// SetNode sets the Node field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsResponse) SetNode(node *string) {
-	r.Node = node
-	r.require(rawStatsResponseFieldNode)
-}
-
-// SetPagination sets the Pagination field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsResponse) SetPagination(pagination *RawStatsResponsePagination) {
-	r.Pagination = pagination
-	r.require(rawStatsResponseFieldPagination)
-}
-
-func (r *RawStatsResponse) UnmarshalJSON(data []byte) error {
-	type unmarshaler RawStatsResponse
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*r = RawStatsResponse(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *RawStatsResponse) MarshalJSON() ([]byte, error) {
-	type embed RawStatsResponse
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*r),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *RawStatsResponse) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
-}
-
-// Debug information including engine and SQL.
-var (
-	rawStatsResponseDebugFieldEngine    = big.NewInt(1 << 0)
-	rawStatsResponseDebugFieldRequestID = big.NewInt(1 << 1)
-	rawStatsResponseDebugFieldSQL       = big.NewInt(1 << 2)
-)
-
-type RawStatsResponseDebug struct {
-	// The query engine used.
-	Engine *string `json:"engine,omitempty" url:"engine,omitempty"`
-	// Unique request identifier for debugging.
-	RequestID *string `json:"request_id,omitempty" url:"request_id,omitempty"`
-	// The generated SQL query (with IDs sanitized).
-	SQL *string `json:"sql,omitempty" url:"sql,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (r *RawStatsResponseDebug) GetEngine() *string {
-	if r == nil {
-		return nil
-	}
-	return r.Engine
-}
-
-func (r *RawStatsResponseDebug) GetRequestID() *string {
-	if r == nil {
-		return nil
-	}
-	return r.RequestID
-}
-
-func (r *RawStatsResponseDebug) GetSQL() *string {
-	if r == nil {
-		return nil
-	}
-	return r.SQL
-}
-
-func (r *RawStatsResponseDebug) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *RawStatsResponseDebug) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
-	}
-	r.explicitFields.Or(r.explicitFields, field)
-}
-
-// SetEngine sets the Engine field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsResponseDebug) SetEngine(engine *string) {
-	r.Engine = engine
-	r.require(rawStatsResponseDebugFieldEngine)
-}
-
-// SetRequestID sets the RequestID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsResponseDebug) SetRequestID(requestID *string) {
-	r.RequestID = requestID
-	r.require(rawStatsResponseDebugFieldRequestID)
-}
-
-// SetSQL sets the SQL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsResponseDebug) SetSQL(sql *string) {
-	r.SQL = sql
-	r.require(rawStatsResponseDebugFieldSQL)
-}
-
-func (r *RawStatsResponseDebug) UnmarshalJSON(data []byte) error {
-	type unmarshaler RawStatsResponseDebug
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*r = RawStatsResponseDebug(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *RawStatsResponseDebug) MarshalJSON() ([]byte, error) {
-	type embed RawStatsResponseDebug
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*r),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *RawStatsResponseDebug) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
-}
-
-// Pagination information.
-var (
-	rawStatsResponsePaginationFieldNextCursor = big.NewInt(1 << 0)
-)
-
-type RawStatsResponsePagination struct {
-	// Cursor for the next page of results.
-	NextCursor *string `json:"next_cursor,omitempty" url:"next_cursor,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (r *RawStatsResponsePagination) GetNextCursor() *string {
-	if r == nil {
-		return nil
-	}
-	return r.NextCursor
-}
-
-func (r *RawStatsResponsePagination) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *RawStatsResponsePagination) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
-	}
-	r.explicitFields.Or(r.explicitFields, field)
-}
-
-// SetNextCursor sets the NextCursor field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RawStatsResponsePagination) SetNextCursor(nextCursor *string) {
-	r.NextCursor = nextCursor
-	r.require(rawStatsResponsePaginationFieldNextCursor)
-}
-
-func (r *RawStatsResponsePagination) UnmarshalJSON(data []byte) error {
-	type unmarshaler RawStatsResponsePagination
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*r = RawStatsResponsePagination(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
-	if err != nil {
-		return err
-	}
-	r.extraProperties = extraProperties
-	r.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (r *RawStatsResponsePagination) MarshalJSON() ([]byte, error) {
-	type embed RawStatsResponsePagination
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*r),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (r *RawStatsResponsePagination) String() string {
-	if r == nil {
-		return "<nil>"
-	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(r); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", r)
-}
-
 type RetrieveStatsRequestEventType string
 
 const (
@@ -3728,18 +1359,24 @@ type RetrieveStatsRequestSnapshotWindow string
 
 const (
 	RetrieveStatsRequestSnapshotWindowSevenD       RetrieveStatsRequestSnapshotWindow = "7d"
+	RetrieveStatsRequestSnapshotWindowFourteenD    RetrieveStatsRequestSnapshotWindow = "14d"
 	RetrieveStatsRequestSnapshotWindowTwentyEightD RetrieveStatsRequestSnapshotWindow = "28d"
 	RetrieveStatsRequestSnapshotWindowThirtyD      RetrieveStatsRequestSnapshotWindow = "30d"
+	RetrieveStatsRequestSnapshotWindowFiftySixD    RetrieveStatsRequestSnapshotWindow = "56d"
 )
 
 func NewRetrieveStatsRequestSnapshotWindowFromString(s string) (RetrieveStatsRequestSnapshotWindow, error) {
 	switch s {
 	case "7d":
 		return RetrieveStatsRequestSnapshotWindowSevenD, nil
+	case "14d":
+		return RetrieveStatsRequestSnapshotWindowFourteenD, nil
 	case "28d":
 		return RetrieveStatsRequestSnapshotWindowTwentyEightD, nil
 	case "30d":
 		return RetrieveStatsRequestSnapshotWindowThirtyD, nil
+	case "56d":
+		return RetrieveStatsRequestSnapshotWindowFiftySixD, nil
 	}
 	var t RetrieveStatsRequestSnapshotWindow
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -3778,10 +1415,12 @@ func (r *RetrieveStatsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (r *RetrieveStatsResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -3839,12 +1478,18 @@ var (
 	retrieveStatsResponseDataFieldTotals   = big.NewInt(1 << 2)
 )
 
+// retrieveStatsResponseDataNullableFields maps the wire names of RetrieveStatsResponseData's nullable fields (required or optional) to their field bits.
+var retrieveStatsResponseDataNullableFields = map[string]*big.Int{
+	"currency": retrieveStatsResponseDataFieldCurrency,
+	"totals":   retrieveStatsResponseDataFieldTotals,
+}
+
 type RetrieveStatsResponseData struct {
 	// ISO currency the values are denominated in. Present for currency-unit metrics: the convert_to currency, or usd.
 	Currency *string `json:"currency,omitempty" url:"currency,omitempty"`
 	// One entry per period, oldest first.
 	Points []*RetrieveStatsResponseDataPointsItem `json:"points" url:"points"`
-	// Whole-window aggregates, present when the metric computes them. Don't derive these from `points`: a rate is measured across the whole window, not averaged across its points, and unique-people counts exist only at window level.
+	// Whole-window aggregates, present when the metric computes them. Don't derive these from `points`: a rate is measured across the whole window, not averaged across its points, and whole-window unique people are distinct across every bucket.
 	Totals []*RetrieveStatsResponseDataTotalsItem `json:"totals,omitempty" url:"totals,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3883,10 +1528,12 @@ func (r *RetrieveStatsResponseData) GetExtraProperties() map[string]interface{} 
 }
 
 func (r *RetrieveStatsResponseData) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
@@ -3922,6 +1569,13 @@ func (r *RetrieveStatsResponseData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveStatsResponseDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3954,16 +1608,24 @@ func (r *RetrieveStatsResponseData) String() string {
 
 var (
 	retrieveStatsResponseDataPointsItemFieldBreakdown = big.NewInt(1 << 0)
-	retrieveStatsResponseDataPointsItemFieldTimestamp = big.NewInt(1 << 1)
-	retrieveStatsResponseDataPointsItemFieldValue     = big.NewInt(1 << 2)
+	retrieveStatsResponseDataPointsItemFieldSteps     = big.NewInt(1 << 1)
+	retrieveStatsResponseDataPointsItemFieldTimestamp = big.NewInt(1 << 2)
+	retrieveStatsResponseDataPointsItemFieldValue     = big.NewInt(1 << 3)
 )
+
+// retrieveStatsResponseDataPointsItemNullableFields maps the wire names of RetrieveStatsResponseDataPointsItem's nullable fields (required or optional) to their field bits.
+var retrieveStatsResponseDataPointsItemNullableFields = map[string]*big.Int{
+	"value": retrieveStatsResponseDataPointsItemFieldValue,
+}
 
 type RetrieveStatsResponseDataPointsItem struct {
 	// Present only when broken down: one entry per property value in this period.
 	Breakdown []*RetrieveStatsResponseDataPointsItemBreakdownItem `json:"breakdown,omitempty" url:"breakdown,omitempty"`
+	// Present for the funnel metric. People reaching each step in order, starting with the entry step.
+	Steps []*FunnelStepResult `json:"steps,omitempty" url:"steps,omitempty"`
 	// Unix timestamp (seconds) of the period start.
 	Timestamp int `json:"timestamp" url:"timestamp"`
-	// The metric's value for this period, in the metric's unit.
+	// The metric's value for this period, in the metric's unit. For `funnel`, the final-step conversion percentage.
 	Value *float64 `json:"value,omitempty" url:"value,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3978,6 +1640,13 @@ func (r *RetrieveStatsResponseDataPointsItem) GetBreakdown() []*RetrieveStatsRes
 		return nil
 	}
 	return r.Breakdown
+}
+
+func (r *RetrieveStatsResponseDataPointsItem) GetSteps() []*FunnelStepResult {
+	if r == nil {
+		return nil
+	}
+	return r.Steps
 }
 
 func (r *RetrieveStatsResponseDataPointsItem) GetTimestamp() int {
@@ -4002,10 +1671,12 @@ func (r *RetrieveStatsResponseDataPointsItem) GetExtraProperties() map[string]in
 }
 
 func (r *RetrieveStatsResponseDataPointsItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetBreakdown sets the Breakdown field and marks it as non-optional;
@@ -4013,6 +1684,13 @@ func (r *RetrieveStatsResponseDataPointsItem) require(field *big.Int) {
 func (r *RetrieveStatsResponseDataPointsItem) SetBreakdown(breakdown []*RetrieveStatsResponseDataPointsItemBreakdownItem) {
 	r.Breakdown = breakdown
 	r.require(retrieveStatsResponseDataPointsItemFieldBreakdown)
+}
+
+// SetSteps sets the Steps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsResponseDataPointsItem) SetSteps(steps []*FunnelStepResult) {
+	r.Steps = steps
+	r.require(retrieveStatsResponseDataPointsItemFieldSteps)
 }
 
 // SetTimestamp sets the Timestamp field and marks it as non-optional;
@@ -4041,6 +1719,13 @@ func (r *RetrieveStatsResponseDataPointsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveStatsResponseDataPointsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4073,12 +1758,20 @@ func (r *RetrieveStatsResponseDataPointsItem) String() string {
 
 var (
 	retrieveStatsResponseDataPointsItemBreakdownItemFieldName  = big.NewInt(1 << 0)
-	retrieveStatsResponseDataPointsItemBreakdownItemFieldValue = big.NewInt(1 << 1)
+	retrieveStatsResponseDataPointsItemBreakdownItemFieldSteps = big.NewInt(1 << 1)
+	retrieveStatsResponseDataPointsItemBreakdownItemFieldValue = big.NewInt(1 << 2)
 )
+
+// retrieveStatsResponseDataPointsItemBreakdownItemNullableFields maps the wire names of RetrieveStatsResponseDataPointsItemBreakdownItem's nullable fields (required or optional) to their field bits.
+var retrieveStatsResponseDataPointsItemBreakdownItemNullableFields = map[string]*big.Int{
+	"value": retrieveStatsResponseDataPointsItemBreakdownItemFieldValue,
+}
 
 type RetrieveStatsResponseDataPointsItemBreakdownItem struct {
 	// The property value, for example usd or visa.
 	Name string `json:"name" url:"name"`
+	// Present for the funnel metric. People reaching each step in order, starting with the entry step.
+	Steps []*FunnelStepResult `json:"steps,omitempty" url:"steps,omitempty"`
 	// The metric's value for this entry.
 	Value *float64 `json:"value,omitempty" url:"value,omitempty"`
 
@@ -4096,6 +1789,13 @@ func (r *RetrieveStatsResponseDataPointsItemBreakdownItem) GetName() string {
 	return r.Name
 }
 
+func (r *RetrieveStatsResponseDataPointsItemBreakdownItem) GetSteps() []*FunnelStepResult {
+	if r == nil {
+		return nil
+	}
+	return r.Steps
+}
+
 func (r *RetrieveStatsResponseDataPointsItemBreakdownItem) GetValue() *float64 {
 	if r == nil {
 		return nil
@@ -4111,10 +1811,12 @@ func (r *RetrieveStatsResponseDataPointsItemBreakdownItem) GetExtraProperties() 
 }
 
 func (r *RetrieveStatsResponseDataPointsItemBreakdownItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -4122,6 +1824,13 @@ func (r *RetrieveStatsResponseDataPointsItemBreakdownItem) require(field *big.In
 func (r *RetrieveStatsResponseDataPointsItemBreakdownItem) SetName(name string) {
 	r.Name = name
 	r.require(retrieveStatsResponseDataPointsItemBreakdownItemFieldName)
+}
+
+// SetSteps sets the Steps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsResponseDataPointsItemBreakdownItem) SetSteps(steps []*FunnelStepResult) {
+	r.Steps = steps
+	r.require(retrieveStatsResponseDataPointsItemBreakdownItemFieldSteps)
 }
 
 // SetValue sets the Value field and marks it as non-optional;
@@ -4143,6 +1852,13 @@ func (r *RetrieveStatsResponseDataPointsItemBreakdownItem) UnmarshalJSON(data []
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveStatsResponseDataPointsItemBreakdownItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4174,13 +1890,28 @@ func (r *RetrieveStatsResponseDataPointsItemBreakdownItem) String() string {
 }
 
 var (
-	retrieveStatsResponseDataTotalsItemFieldName  = big.NewInt(1 << 0)
-	retrieveStatsResponseDataTotalsItemFieldValue = big.NewInt(1 << 1)
+	retrieveStatsResponseDataTotalsItemFieldComparison         = big.NewInt(1 << 0)
+	retrieveStatsResponseDataTotalsItemFieldConfidenceInterval = big.NewInt(1 << 1)
+	retrieveStatsResponseDataTotalsItemFieldName               = big.NewInt(1 << 2)
+	retrieveStatsResponseDataTotalsItemFieldSteps              = big.NewInt(1 << 3)
+	retrieveStatsResponseDataTotalsItemFieldValue              = big.NewInt(1 << 4)
 )
 
+// retrieveStatsResponseDataTotalsItemNullableFields maps the wire names of RetrieveStatsResponseDataTotalsItem's nullable fields (required or optional) to their field bits.
+var retrieveStatsResponseDataTotalsItemNullableFields = map[string]*big.Int{
+	"comparison":          retrieveStatsResponseDataTotalsItemFieldComparison,
+	"confidence_interval": retrieveStatsResponseDataTotalsItemFieldConfidenceInterval,
+	"value":               retrieveStatsResponseDataTotalsItemFieldValue,
+}
+
 type RetrieveStatsResponseDataTotalsItem struct {
+	Comparison *FunnelComparison `json:"comparison,omitempty" url:"comparison,omitempty"`
+	// Funnel only. The Wilson interval for final conversion, present when confidence_level or compare_to is supplied.
+	ConfidenceInterval *FunnelConfidenceInterval `json:"confidence_interval,omitempty" url:"confidence_interval,omitempty"`
 	// The property value this total is for, or the metric's name when it isn't split by a property.
 	Name string `json:"name" url:"name"`
+	// Present for the funnel metric. People reaching each step in order, starting with the entry step.
+	Steps []*FunnelStepResult `json:"steps,omitempty" url:"steps,omitempty"`
 	// The metric's whole-window value for this entry.
 	Value *float64 `json:"value,omitempty" url:"value,omitempty"`
 
@@ -4191,11 +1922,32 @@ type RetrieveStatsResponseDataTotalsItem struct {
 	rawJSON         json.RawMessage
 }
 
+func (r *RetrieveStatsResponseDataTotalsItem) GetComparison() *FunnelComparison {
+	if r == nil {
+		return nil
+	}
+	return r.Comparison
+}
+
+func (r *RetrieveStatsResponseDataTotalsItem) GetConfidenceInterval() *FunnelConfidenceInterval {
+	if r == nil {
+		return nil
+	}
+	return r.ConfidenceInterval
+}
+
 func (r *RetrieveStatsResponseDataTotalsItem) GetName() string {
 	if r == nil {
 		return ""
 	}
 	return r.Name
+}
+
+func (r *RetrieveStatsResponseDataTotalsItem) GetSteps() []*FunnelStepResult {
+	if r == nil {
+		return nil
+	}
+	return r.Steps
 }
 
 func (r *RetrieveStatsResponseDataTotalsItem) GetValue() *float64 {
@@ -4213,10 +1965,26 @@ func (r *RetrieveStatsResponseDataTotalsItem) GetExtraProperties() map[string]in
 }
 
 func (r *RetrieveStatsResponseDataTotalsItem) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetComparison sets the Comparison field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsResponseDataTotalsItem) SetComparison(comparison *FunnelComparison) {
+	r.Comparison = comparison
+	r.require(retrieveStatsResponseDataTotalsItemFieldComparison)
+}
+
+// SetConfidenceInterval sets the ConfidenceInterval field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsResponseDataTotalsItem) SetConfidenceInterval(confidenceInterval *FunnelConfidenceInterval) {
+	r.ConfidenceInterval = confidenceInterval
+	r.require(retrieveStatsResponseDataTotalsItemFieldConfidenceInterval)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -4224,6 +1992,13 @@ func (r *RetrieveStatsResponseDataTotalsItem) require(field *big.Int) {
 func (r *RetrieveStatsResponseDataTotalsItem) SetName(name string) {
 	r.Name = name
 	r.require(retrieveStatsResponseDataTotalsItemFieldName)
+}
+
+// SetSteps sets the Steps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsResponseDataTotalsItem) SetSteps(steps []*FunnelStepResult) {
+	r.Steps = steps
+	r.require(retrieveStatsResponseDataTotalsItemFieldSteps)
 }
 
 // SetValue sets the Value field and marks it as non-optional;
@@ -4245,6 +2020,13 @@ func (r *RetrieveStatsResponseDataTotalsItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveStatsResponseDataTotalsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
 	r.rawJSON = json.RawMessage(data)
 	return nil
 }

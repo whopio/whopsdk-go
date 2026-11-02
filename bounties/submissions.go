@@ -5,8 +5,8 @@ package bounties
 import (
 	json "encoding/json"
 	fmt "fmt"
-	whopsdkgo "github.com/whopio/whopsdk-go"
-	internal "github.com/whopio/whopsdk-go/internal"
+	v2 "github.com/whopio/whopsdk-go/v2"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 
@@ -36,13 +36,13 @@ type ListSubmissionsRequest struct {
 	Order *ListSubmissionsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
 	Direction *ListSubmissionsRequestDirection `json:"-" url:"direction,omitempty"`
-	// Number of submissions to return from the start of the window.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor to paginate forwards from.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// Number of submissions to return from the end of the window.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// Cursor to paginate backwards from.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -50,10 +50,12 @@ type ListSubmissionsRequest struct {
 }
 
 func (l *ListSubmissionsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetBountyID sets the BountyID field and marks it as non-optional;
@@ -142,10 +144,12 @@ type RetrieveSubmissionsRequest struct {
 }
 
 func (r *RetrieveSubmissionsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetBountyID sets the BountyID field and marks it as non-optional;
@@ -237,8 +241,8 @@ var (
 )
 
 type ListSubmissionsResponse struct {
-	Data     []*whopsdkgo.PublicBountySubmission `json:"data" url:"data"`
-	PageInfo *ListSubmissionsResponsePageInfo    `json:"page_info" url:"page_info"`
+	Data     []*v2.PublicBountySubmission     `json:"data" url:"data"`
+	PageInfo *ListSubmissionsResponsePageInfo `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -247,7 +251,7 @@ type ListSubmissionsResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListSubmissionsResponse) GetData() []*whopsdkgo.PublicBountySubmission {
+func (l *ListSubmissionsResponse) GetData() []*v2.PublicBountySubmission {
 	if l == nil {
 		return nil
 	}
@@ -269,15 +273,17 @@ func (l *ListSubmissionsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListSubmissionsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListSubmissionsResponse) SetData(data []*whopsdkgo.PublicBountySubmission) {
+func (l *ListSubmissionsResponse) SetData(data []*v2.PublicBountySubmission) {
 	l.Data = data
 	l.require(listSubmissionsResponseFieldData)
 }
@@ -338,6 +344,12 @@ var (
 	listSubmissionsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listSubmissionsResponsePageInfoNullableFields maps the wire names of ListSubmissionsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listSubmissionsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listSubmissionsResponsePageInfoFieldEndCursor,
+	"start_cursor": listSubmissionsResponsePageInfoFieldStartCursor,
+}
+
 type ListSubmissionsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -387,10 +399,12 @@ func (l *ListSubmissionsResponsePageInfo) GetExtraProperties() map[string]interf
 }
 
 func (l *ListSubmissionsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -433,6 +447,13 @@ func (l *ListSubmissionsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listSubmissionsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }

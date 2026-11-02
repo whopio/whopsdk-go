@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -95,7 +95,7 @@ func TestPromoCodesListWithWireMock(
 				"prod_xxxxxxxxxxxxxx",
 			),
 		},
-		PlanIDs: []*string{
+		VariantIDs: []*string{
 			whopsdk.String(
 				"plan_xxxxxxxxxxxxxx",
 			),
@@ -110,7 +110,7 @@ func TestPromoCodesListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPromoCodesListWithWireMock", "GET", "/promo_codes", map[string]interface{}{"account_id": "account_id", "product_ids": "prod_xxxxxxxxxxxxxx", "plan_ids": "plan_xxxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestPromoCodesListWithWireMock", "GET", "/promo_codes", map[string]interface{}{"account_id": "account_id", "product_ids": "prod_xxxxxxxxxxxxxx", "variant_ids": "plan_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestPromoCodesCreateWithWireMock(

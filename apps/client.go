@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists apps on the Whop platform: the app store's live apps, or — with `account_id` and developer access to that account — every app the account owns. Requires authentication, except for the publicly readable lists: `verified_apps_only=true`, and `app_type=website` with no `account_id`, which returns every live deployed website that Whop has not verified — verified templates are the curated `verified_apps_only=true` list instead.
+// Lists apps on the Whop platform: the app store's live apps, or — with `account_id` and developer access to that account — every app the account owns. Requires authentication except for Whop's public app and website discovery lists. Public website discovery includes built official blueprints (verified apps with a product) and built, live community blueprints that Whop recommends.
 //
 // Example:
 //
@@ -56,7 +56,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/apps"
@@ -138,44 +146,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Updates the permission requirements for an app
-//
-// Required permissions:
-//   - `developer:update_app_authorization`
-//
-// Example:
-//
-//	request := &whopsdk.UpdatePermissionsAppRequest{
-//	    AppID: "app_id",
-//	    RequestedPermissions: []*whopsdk.UpdatePermissionsAppRequestRequestedPermissionsItem{
-//	        &whopsdk.UpdatePermissionsAppRequestRequestedPermissionsItem{
-//	            Action: "action",
-//	            IsRequired: true,
-//	            Justification: "justification",
-//	        },
-//	    },
-//	}
-//	client.Apps.UpdatePermissionsApp(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) UpdatePermissionsApp(
-	ctx context.Context,
-	request *whopsdk.UpdatePermissionsAppRequest,
-	opts ...option.RequestOption,
-) (bool, error) {
-	response, err := c.WithRawResponse.UpdatePermissionsApp(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return false, err
-	}
-	return response.Body, nil
-}
-
-// Retrieves an app by ID, claimed route, or proxy domain id. Credential fields (api_key, default_api_key, secrets) render `null` unless the caller has the corresponding developer permission on the owning account.
+// Retrieves an app by ID, claimed route, active verified custom hostname, or proxy domain id. Authentication is optional; credential fields stay `null` unless you have the matching developer permission on the owning account.
 //
 // Example:
 //
@@ -283,7 +254,7 @@ func (c *Client) Deploy(
 	return response.Body, nil
 }
 
-// Lists a hosted app's server runtime logs, most recent first: console output, uncaught exceptions, and failed-request summaries captured on whop.app hosting. Logs are retained for 7 days.
+// Lists a hosted app's server runtime logs, most recent first: console output, uncaught exceptions, and failed-request summaries captured on whop.site hosting. Logs are retained for 7 days.
 //
 // Example:
 //
@@ -302,7 +273,15 @@ func (c *Client) Logs(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(

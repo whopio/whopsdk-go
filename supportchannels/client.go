@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of support channels for a specific company, with optional filtering by resolution status and custom sorting.
+// Lists support channels between an account's team and its customers, most recently active first by default. Pass `open=true` to find channels awaiting a support response.
 //
 // Required permissions:
 //   - `support_chat:read`
@@ -53,7 +53,7 @@ func NewClient(options *core.RequestOptions) *Client {
 //	    Last: whopsdk.Int(
 //	        42,
 //	    ),
-//	    CompanyID: whopsdk.String(
+//	    AccountID: whopsdk.String(
 //	        "biz_xxxxxxxxxxxxxx",
 //	    ),
 //	}
@@ -69,7 +69,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/support_channels"
@@ -124,7 +132,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Open a new support channel between a company team member and a customer. Returns the existing channel if one already exists for that user.
+// Opens a support channel between an account's team and a customer. Returns the existing channel if that customer already has one.
 //
 // Required permissions:
 //   - `support_chat:create`
@@ -132,7 +140,7 @@ func (c *Client) List(
 // Example:
 //
 //	request := &whopsdk.CreateSupportChannelsRequest{
-//	    CompanyID: "biz_xxxxxxxxxxxxxx",
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	    UserID: "user_xxxxxxxxxxxxx",
 //	}
 //	client.SupportChannels.Create(

@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -95,7 +95,7 @@ func TestPayoutMethodsListPayoutMethodWithWireMock(
 		Last: whopsdk.Int(
 			42,
 		),
-		CompanyID: "biz_xxxxxxxxxxxxxx",
+		AccountID: "biz_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.PayoutMethods.ListPayoutMethod(
 		context.TODO(),
@@ -106,7 +106,7 @@ func TestPayoutMethodsListPayoutMethodWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPayoutMethodsListPayoutMethodWithWireMock", "GET", "/payout_methods", map[string]interface{}{"first": "42", "last": "42", "company_id": "biz_xxxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestPayoutMethodsListPayoutMethodWithWireMock", "GET", "/payout_methods", map[string]interface{}{"first": "42", "last": "42", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestPayoutMethodsRetrievePayoutMethodWithWireMock(

@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of authorized team members for a company, with optional filtering by user, role, and creation date.
+// Lists the authorized users on an account's team.
 //
 // Required permissions:
 //   - `company:authorized_user:read`
@@ -54,9 +54,6 @@ func NewClient(options *core.RequestOptions) *Client {
 //	    Last: whopsdk.Int(
 //	        42,
 //	    ),
-//	    CompanyID: whopsdk.String(
-//	        "biz_xxxxxxxxxxxxxx",
-//	    ),
 //	    UserID: whopsdk.String(
 //	        "user_xxxxxxxxxxxxx",
 //	    ),
@@ -69,6 +66,9 @@ func NewClient(options *core.RequestOptions) *Client {
 //	        whopsdk.MustParseDateTime(
 //	            "2023-12-01T05:00:00Z",
 //	        ),
+//	    ),
+//	    AccountID: whopsdk.String(
+//	        "biz_xxxxxxxxxxxxxx",
 //	    ),
 //	}
 //	client.AuthorizedUsers.List(
@@ -83,7 +83,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/authorized_users"
@@ -138,7 +146,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Add a new authorized user to a company.
+// Adds a user to an account's team as an authorized user with the given role.
 //
 // Required permissions:
 //   - `authorized_user:create`
@@ -147,7 +155,7 @@ func (c *Client) List(
 // Example:
 //
 //	request := &whopsdk.CreateAuthorizedUsersRequest{
-//	    CompanyID: "biz_xxxxxxxxxxxxxx",
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	    Role: whopsdk.GrantableAuthorizedUserRolesOwner,
 //	    UserID: "user_xxxxxxxxxxxxx",
 //	}
@@ -202,7 +210,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Remove an authorized user from a company.
+// Removes an authorized user from an account's team.
 //
 // Required permissions:
 //   - `authorized_user:delete`
@@ -211,7 +219,7 @@ func (c *Client) Retrieve(
 //
 //	request := &whopsdk.DeleteAuthorizedUsersRequest{
 //	    ID: "ausr_xxxxxxxxxxxxx",
-//	    CompanyID: whopsdk.String(
+//	    AccountID: whopsdk.String(
 //	        "biz_xxxxxxxxxxxxxx",
 //	    ),
 //	}

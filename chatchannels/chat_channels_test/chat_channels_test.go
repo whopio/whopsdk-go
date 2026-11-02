@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -95,10 +95,10 @@ func TestChatChannelsListWithWireMock(
 		Last: whopsdk.Int(
 			42,
 		),
-		CompanyID: "biz_xxxxxxxxxxxxxx",
 		ProductID: whopsdk.String(
 			"prod_xxxxxxxxxxxxx",
 		),
+		AccountID: "biz_xxxxxxxxxxxxxx",
 	}
 	_, invocationErr := client.ChatChannels.List(
 		context.TODO(),
@@ -109,7 +109,7 @@ func TestChatChannelsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestChatChannelsListWithWireMock", "GET", "/chat_channels", map[string]interface{}{"first": "42", "last": "42", "company_id": "biz_xxxxxxxxxxxxxx", "product_id": "prod_xxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestChatChannelsListWithWireMock", "GET", "/chat_channels", map[string]interface{}{"first": "42", "last": "42", "product_id": "prod_xxxxxxxxxxxxx", "account_id": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestChatChannelsRetrieveWithWireMock(

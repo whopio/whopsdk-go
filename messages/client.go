@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of messages within a specific experience chat, DM, or group chat channel, sorted by creation time.
+// Lists messages in an experience chat, DM, or group chat channel, sorted by creation time.
 //
 // Required permissions (one of):
 //   - `chat:read`
@@ -69,7 +69,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/messages"
@@ -124,7 +132,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Send a new message in an experience chat, DM, or group chat channel. Supports text content, attachments, polls, and replies.
+// Sends a message in an experience chat, DM, or group chat channel. Supports text content, attachments, polls, and replies.
 //
 // Required permissions (one of):
 //   - `chat:message:create`
@@ -191,7 +199,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Permanently delete a message from an experience chat, DM, or group chat channel. Only the message author or a channel admin can delete a message.
+// Permanently deletes a message from an experience chat, DM, or group chat channel. Only the message author or a channel admin can delete a message.
 //
 // Required permissions (one of):
 //   - `chat:message:create` and `chat:read`
@@ -224,7 +232,7 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Edit the content, attachments, or pinned status of an existing message in an experience chat, DM, or group chat channel.
+// Edits the content, attachments, or pinned status of a message in an experience chat, DM, or group chat channel.
 //
 // Required permissions (one of):
 //   - `chat:message:create`

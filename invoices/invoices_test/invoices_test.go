@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -88,27 +88,7 @@ func TestInvoicesListWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ListInvoicesRequest{
-		First: whopsdk.Int(
-			42,
-		),
-		Last: whopsdk.Int(
-			42,
-		),
-		CompanyID: whopsdk.String(
-			"biz_xxxxxxxxxxxxxx",
-		),
-		CreatedBefore: whopsdk.Time(
-			whopsdk.MustParseDateTime(
-				"2023-12-01T05:00:00Z",
-			),
-		),
-		CreatedAfter: whopsdk.Time(
-			whopsdk.MustParseDateTime(
-				"2023-12-01T05:00:00Z",
-			),
-		),
-	}
+	request := &whopsdk.ListInvoicesRequest{}
 	_, invocationErr := client.Invoices.List(
 		context.TODO(),
 		request,
@@ -118,7 +98,7 @@ func TestInvoicesListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestInvoicesListWithWireMock", "GET", "/invoices", map[string]interface{}{"first": "42", "last": "42", "company_id": "biz_xxxxxxxxxxxxxx", "created_before": "2023-12-01T05:00:00.000Z", "created_after": "2023-12-01T05:00:00.000Z"}, 1)
+	VerifyRequestCount(t, "TestInvoicesListWithWireMock", "GET", "/invoices", nil, 1)
 }
 
 func TestInvoicesCreateWithWireMock(
@@ -133,14 +113,8 @@ func TestInvoicesCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateInvoicesRequest{
-		CreateInvoicesRequestProduct: &whopsdk.CreateInvoicesRequestProduct{
-			CollectionMethod: whopsdk.InvoiceCollectionMethodsSendInvoice,
-			CompanyID:        "biz_xxxxxxxxxxxxxx",
-			Plan:             &whopsdk.CreateInvoicesRequestProductPlan{},
-			Product: &whopsdk.CreateInvoicesRequestProductProduct{
-				Title: "title",
-			},
-		},
+		AccountID: "biz_xxxxxxxxxxxxxx",
+		Items:     []*whopsdk.CreateInvoicesRequestItemsItem{},
 	}
 	_, invocationErr := client.Invoices.Create(
 		context.TODO(),
@@ -166,7 +140,7 @@ func TestInvoicesRetrieveWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.RetrieveInvoicesRequest{
-		ID: "inv_xxxxxxxxxxxxxx",
+		ID: "id",
 	}
 	_, invocationErr := client.Invoices.Retrieve(
 		context.TODO(),
@@ -177,33 +151,7 @@ func TestInvoicesRetrieveWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestInvoicesRetrieveWithWireMock", "GET", "/invoices/inv_xxxxxxxxxxxxxx", nil, 1)
-}
-
-func TestInvoicesDeleteWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.DeleteInvoicesRequest{
-		ID: "inv_xxxxxxxxxxxxxx",
-	}
-	_, invocationErr := client.Invoices.Delete(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestInvoicesDeleteWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestInvoicesDeleteWithWireMock", "DELETE", "/invoices/inv_xxxxxxxxxxxxxx", nil, 1)
+	VerifyRequestCount(t, "TestInvoicesRetrieveWithWireMock", "GET", "/invoices/id", nil, 1)
 }
 
 func TestInvoicesUpdateWithWireMock(
@@ -218,7 +166,7 @@ func TestInvoicesUpdateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.UpdateInvoicesRequest{
-		ID: "inv_xxxxxxxxxxxxxx",
+		ID: "id",
 	}
 	_, invocationErr := client.Invoices.Update(
 		context.TODO(),
@@ -229,10 +177,10 @@ func TestInvoicesUpdateWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestInvoicesUpdateWithWireMock", "PATCH", "/invoices/inv_xxxxxxxxxxxxxx", nil, 1)
+	VerifyRequestCount(t, "TestInvoicesUpdateWithWireMock", "PATCH", "/invoices/id", nil, 1)
 }
 
-func TestInvoicesMarkPaidWithWireMock(
+func TestInvoicesChargeWithWireMock(
 	t *testing.T,
 ) {
 	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
@@ -243,19 +191,71 @@ func TestInvoicesMarkPaidWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.MarkPaidInvoicesRequest{
-		ID: "inv_xxxxxxxxxxxxxx",
+	request := &whopsdk.ChargeInvoicesRequest{
+		ID: "id",
 	}
-	_, invocationErr := client.Invoices.MarkPaid(
+	_, invocationErr := client.Invoices.Charge(
 		context.TODO(),
 		request,
 		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestInvoicesMarkPaidWithWireMock"}},
+			http.Header{"X-Test-Id": []string{"TestInvoicesChargeWithWireMock"}},
 		),
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestInvoicesMarkPaidWithWireMock", "POST", "/invoices/inv_xxxxxxxxxxxxxx/mark_paid", nil, 1)
+	VerifyRequestCount(t, "TestInvoicesChargeWithWireMock", "POST", "/invoices/id/charge", nil, 1)
+}
+
+func TestInvoicesGeneratePdfWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.GeneratePdfInvoicesRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Invoices.GeneratePdf(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInvoicesGeneratePdfWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInvoicesGeneratePdfWithWireMock", "POST", "/invoices/id/generate_pdf", nil, 1)
+}
+
+func TestInvoicesIssueWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.IssueInvoicesRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Invoices.Issue(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInvoicesIssueWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInvoicesIssueWithWireMock", "POST", "/invoices/id/issue", nil, 1)
 }
 
 func TestInvoicesMarkUncollectibleWithWireMock(
@@ -270,7 +270,7 @@ func TestInvoicesMarkUncollectibleWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.MarkUncollectibleInvoicesRequest{
-		ID: "inv_xxxxxxxxxxxxxx",
+		ID: "id",
 	}
 	_, invocationErr := client.Invoices.MarkUncollectible(
 		context.TODO(),
@@ -281,10 +281,10 @@ func TestInvoicesMarkUncollectibleWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestInvoicesMarkUncollectibleWithWireMock", "POST", "/invoices/inv_xxxxxxxxxxxxxx/mark_uncollectible", nil, 1)
+	VerifyRequestCount(t, "TestInvoicesMarkUncollectibleWithWireMock", "POST", "/invoices/id/mark_uncollectible", nil, 1)
 }
 
-func TestInvoicesResendWithWireMock(
+func TestInvoicesSendWithWireMock(
 	t *testing.T,
 ) {
 	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
@@ -295,19 +295,45 @@ func TestInvoicesResendWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ResendInvoicesRequest{
-		ID: "inv_xxxxxxxxxxxxxx",
+	request := &whopsdk.SendInvoicesRequest{
+		ID: "id",
 	}
-	_, invocationErr := client.Invoices.Resend(
+	_, invocationErr := client.Invoices.Send(
 		context.TODO(),
 		request,
 		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestInvoicesResendWithWireMock"}},
+			http.Header{"X-Test-Id": []string{"TestInvoicesSendWithWireMock"}},
 		),
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestInvoicesResendWithWireMock", "POST", "/invoices/inv_xxxxxxxxxxxxxx/resend", nil, 1)
+	VerifyRequestCount(t, "TestInvoicesSendWithWireMock", "POST", "/invoices/id/send", nil, 1)
+}
+
+func TestInvoicesUnscheduleWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.UnscheduleInvoicesRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Invoices.Unschedule(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInvoicesUnscheduleWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInvoicesUnscheduleWithWireMock", "POST", "/invoices/id/unschedule", nil, 1)
 }
 
 func TestInvoicesVoidWithWireMock(
@@ -322,7 +348,7 @@ func TestInvoicesVoidWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.VoidInvoicesRequest{
-		ID: "inv_xxxxxxxxxxxxxx",
+		ID: "id",
 	}
 	_, invocationErr := client.Invoices.Void(
 		context.TODO(),
@@ -333,5 +359,5 @@ func TestInvoicesVoidWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestInvoicesVoidWithWireMock", "POST", "/invoices/inv_xxxxxxxxxxxxxx/void", nil, 1)
+	VerifyRequestCount(t, "TestInvoicesVoidWithWireMock", "POST", "/invoices/id/void", nil, 1)
 }

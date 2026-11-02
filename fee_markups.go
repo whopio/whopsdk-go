@@ -5,13 +5,13 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
 
 var (
-	createFeeMarkupsRequestFieldCompanyID     = big.NewInt(1 << 0)
+	createFeeMarkupsRequestFieldAccountID     = big.NewInt(1 << 0)
 	createFeeMarkupsRequestFieldFeeType       = big.NewInt(1 << 1)
 	createFeeMarkupsRequestFieldFixedFeeUsd   = big.NewInt(1 << 2)
 	createFeeMarkupsRequestFieldMetadata      = big.NewInt(1 << 3)
@@ -21,7 +21,7 @@ var (
 
 type CreateFeeMarkupsRequest struct {
 	// The unique identifier of the company to create or update the fee markup for.
-	CompanyID string `json:"company_id" url:"-"`
+	AccountID string `json:"account_id" url:"-"`
 	// The type of fee this markup applies to, such as processing or platform fees.
 	FeeType FeeMarkupTypes `json:"fee_type" url:"-"`
 	// The fixed fee amount in USD to charge per transaction. Must be between 0 and 50.
@@ -38,17 +38,19 @@ type CreateFeeMarkupsRequest struct {
 }
 
 func (c *CreateFeeMarkupsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateFeeMarkupsRequest) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createFeeMarkupsRequestFieldCompanyID)
+func (c *CreateFeeMarkupsRequest) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(createFeeMarkupsRequestFieldAccountID)
 }
 
 // SetFeeType sets the FeeType field and marks it as non-optional;
@@ -120,10 +122,12 @@ type DeleteFeeMarkupsRequest struct {
 }
 
 func (d *DeleteFeeMarkupsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -138,7 +142,7 @@ var (
 	listFeeMarkupsRequestFieldBefore    = big.NewInt(1 << 1)
 	listFeeMarkupsRequestFieldFirst     = big.NewInt(1 << 2)
 	listFeeMarkupsRequestFieldLast      = big.NewInt(1 << 3)
-	listFeeMarkupsRequestFieldCompanyID = big.NewInt(1 << 4)
+	listFeeMarkupsRequestFieldAccountID = big.NewInt(1 << 4)
 )
 
 type ListFeeMarkupsRequest struct {
@@ -151,17 +155,19 @@ type ListFeeMarkupsRequest struct {
 	// Returns the last _n_ elements from the list.
 	Last *int `json:"-" url:"last,omitempty"`
 	// The unique identifier of the company to list fee markups for. Pass a platform account identifier to retrieve platform default markups.
-	CompanyID string `json:"-" url:"company_id"`
+	AccountID string `json:"-" url:"account_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (l *ListFeeMarkupsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -192,14 +198,13 @@ func (l *ListFeeMarkupsRequest) SetLast(last *int) {
 	l.require(listFeeMarkupsRequestFieldLast)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListFeeMarkupsRequest) SetCompanyID(companyID string) {
-	l.CompanyID = companyID
-	l.require(listFeeMarkupsRequestFieldCompanyID)
+func (l *ListFeeMarkupsRequest) SetAccountID(accountID string) {
+	l.AccountID = accountID
+	l.require(listFeeMarkupsRequestFieldAccountID)
 }
 
-// A fee markup configuration that defines additional charges applied to transactions for a platform's connected accounts.
 var (
 	feeMarkupFieldCreatedAt     = big.NewInt(1 << 0)
 	feeMarkupFieldFeeType       = big.NewInt(1 << 1)
@@ -210,6 +215,14 @@ var (
 	feeMarkupFieldUpdatedAt     = big.NewInt(1 << 6)
 )
 
+// feeMarkupNullableFields maps the wire names of FeeMarkup's nullable fields (required or optional) to their field bits.
+var feeMarkupNullableFields = map[string]*big.Int{
+	"fixed_fee_usd":  feeMarkupFieldFixedFeeUsd,
+	"notes":          feeMarkupFieldNotes,
+	"percentage_fee": feeMarkupFieldPercentageFee,
+}
+
+// A fee markup configuration that defines additional charges applied to transactions for a platform's connected accounts.
 type FeeMarkup struct {
 	// The datetime the fee markup was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -290,10 +303,12 @@ func (f *FeeMarkup) GetExtraProperties() map[string]interface{} {
 }
 
 func (f *FeeMarkup) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -365,6 +380,13 @@ func (f *FeeMarkup) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, feeMarkupNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
 	f.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -399,7 +421,6 @@ func (f *FeeMarkup) String() string {
 	return fmt.Sprintf("%#v", f)
 }
 
-// A fee markup configuration that defines additional charges applied to transactions for a platform's connected accounts.
 var (
 	feeMarkupListItemFieldCreatedAt     = big.NewInt(1 << 0)
 	feeMarkupListItemFieldFeeType       = big.NewInt(1 << 1)
@@ -410,6 +431,14 @@ var (
 	feeMarkupListItemFieldUpdatedAt     = big.NewInt(1 << 6)
 )
 
+// feeMarkupListItemNullableFields maps the wire names of FeeMarkupListItem's nullable fields (required or optional) to their field bits.
+var feeMarkupListItemNullableFields = map[string]*big.Int{
+	"fixed_fee_usd":  feeMarkupListItemFieldFixedFeeUsd,
+	"notes":          feeMarkupListItemFieldNotes,
+	"percentage_fee": feeMarkupListItemFieldPercentageFee,
+}
+
+// A fee markup configuration that defines additional charges applied to transactions for a platform's connected accounts.
 type FeeMarkupListItem struct {
 	// The datetime the fee markup was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
@@ -490,10 +519,12 @@ func (f *FeeMarkupListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (f *FeeMarkupListItem) require(field *big.Int) {
-	if f.explicitFields == nil {
-		f.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
 	}
-	f.explicitFields.Or(f.explicitFields, field)
+	next.Or(next, field)
+	f.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -565,6 +596,13 @@ func (f *FeeMarkupListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, feeMarkupListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
 	f.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -608,6 +646,11 @@ const (
 	FeeMarkupTypesNextDayBankWithdrawalMarkup   FeeMarkupTypes = "next_day_bank_withdrawal_markup"
 	FeeMarkupTypesBankWireWithdrawalMarkup      FeeMarkupTypes = "bank_wire_withdrawal_markup"
 	FeeMarkupTypesDigitalWalletWithdrawalMarkup FeeMarkupTypes = "digital_wallet_withdrawal_markup"
+	FeeMarkupTypesTransferMarkup                FeeMarkupTypes = "transfer_markup"
+	FeeMarkupTypesCryptoDepositMarkup           FeeMarkupTypes = "crypto_deposit_markup"
+	FeeMarkupTypesBankDepositMarkup             FeeMarkupTypes = "bank_deposit_markup"
+	FeeMarkupTypesCryptoSwapMarkup              FeeMarkupTypes = "crypto_swap_markup"
+	FeeMarkupTypesPaymentMarkup                 FeeMarkupTypes = "payment_markup"
 )
 
 func NewFeeMarkupTypesFromString(s string) (FeeMarkupTypes, error) {
@@ -622,6 +665,16 @@ func NewFeeMarkupTypesFromString(s string) (FeeMarkupTypes, error) {
 		return FeeMarkupTypesBankWireWithdrawalMarkup, nil
 	case "digital_wallet_withdrawal_markup":
 		return FeeMarkupTypesDigitalWalletWithdrawalMarkup, nil
+	case "transfer_markup":
+		return FeeMarkupTypesTransferMarkup, nil
+	case "crypto_deposit_markup":
+		return FeeMarkupTypesCryptoDepositMarkup, nil
+	case "bank_deposit_markup":
+		return FeeMarkupTypesBankDepositMarkup, nil
+	case "crypto_swap_markup":
+		return FeeMarkupTypesCryptoSwapMarkup, nil
+	case "payment_markup":
+		return FeeMarkupTypesPaymentMarkup, nil
 	}
 	var t FeeMarkupTypes
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -631,12 +684,12 @@ func (f FeeMarkupTypes) Ptr() *FeeMarkupTypes {
 	return &f
 }
 
-// The connection type for FeeMarkup.
 var (
 	listFeeMarkupsResponseFieldData     = big.NewInt(1 << 0)
 	listFeeMarkupsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for FeeMarkup.
 type ListFeeMarkupsResponse struct {
 	// A list of nodes.
 	Data []*FeeMarkupListItem `json:"data" url:"data"`
@@ -672,10 +725,12 @@ func (l *ListFeeMarkupsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListFeeMarkupsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;

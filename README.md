@@ -2,13 +2,16 @@
 
 [![fern shield](https://img.shields.io/badge/%F0%9F%8C%BF-Built%20with%20Fern-brightgreen)](https://buildwithfern.com?utm_source=github&utm_medium=github&utm_campaign=readme&utm_source=https%3A%2F%2Fgithub.com%2Fwhopio%2Fwhopsdk-go)
 
-The Whop Go library provides convenient access to the Whop APIs from Go.
+The Whop SDK gives you typed access to the Whop API. Pass your API key to the client explicitly — the SDK reads no environment variables, so a client built without a key sends unauthenticated requests and the API answers 401.
+
 
 ## Table of Contents
 
+- [Documentation](#documentation)
 - [Reference](#reference)
 - [Usage](#usage)
 - [Environments](#environments)
+- [Pagination](#pagination)
 - [Errors](#errors)
 - [Request Options](#request-options)
 - [Advanced](#advanced)
@@ -17,6 +20,10 @@ The Whop Go library provides convenient access to the Whop APIs from Go.
   - [Timeouts](#timeouts)
   - [Explicit Null](#explicit-null)
 - [Contributing](#contributing)
+
+## Documentation
+
+API reference documentation is available [here](https://docs.whop.com/api-reference).
 
 ## Reference
 
@@ -32,9 +39,9 @@ package example
 import (
     context "context"
 
-    whopsdk "github.com/whopio/whopsdk-go"
-    client "github.com/whopio/whopsdk-go/client"
-    option "github.com/whopio/whopsdk-go/option"
+    whopsdk "github.com/whopio/whopsdk-go/v2"
+    client "github.com/whopio/whopsdk-go/v2/client"
+    option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func do() {
@@ -53,13 +60,80 @@ func do() {
 
 ## Environments
 
-You can choose between different environments by using the `option.WithBaseURL` option. You can configure any arbitrary base
-URL, which is particularly useful in test environments.
+You can choose between different environments by passing one of the predefined `Environments` to the
+`option.WithEnvironment` option. Each environment carries the base URL of every service the SDK talks to.
+`option.WithBaseURL` points every request at one arbitrary base URL instead, which is particularly useful in
+test environments.
 
 ```go
-client := client.NewClient(
-    option.WithBaseURL(whopsdk.Environments.Default),
+client := client.NewWhop(
+    option.WithEnvironment(whopsdk.Environments.Production),
 )
+```
+
+## Pagination
+
+List endpoints are paginated. The SDK provides an iterator so that you can simply loop over the items.
+You can also iterate page-by-page using the `GetNextPage` helper method.
+
+The `Page.Results` attribute, which contains the relevant list of items returned by the call to the server,
+is the only attribute you will need for most use cases. But if need be, several other attributes are available:
+
+- `Page.Response` contains the full spec-defined response as returned by the server.
+- `Page.StatusCode` and `Page.Header` returns HTTP metadata associated with the call to the server.
+- `Page.RawResponse` returns the pagination object if you need to access its fields (like `Next`).
+
+```go
+// Loop over the items using the provided iterator.
+ctx := context.TODO()
+page, err := client.Accounts.List(
+    ctx,
+    ...
+)
+if err != nil {
+    return err
+}
+iter := page.Iterator()
+for iter.Next(ctx) {
+    item := iter.Current()
+    fmt.Printf("Got item: %v", *item)
+}
+if err := iter.Err(); err != nil {
+    return err
+}
+
+// Alternatively, iterate page-by-page.
+for page != nil {
+    for _, item := range page.Results {
+        fmt.Printf("Got item: %v", *item)
+    }
+    page, err = page.GetNextPage(ctx)
+    if errors.Is(err, core.ErrNoPages) {
+        break
+    }
+    if err != nil {
+        return err
+    }
+}
+
+// Paginated endpoints return a Page with directly accessible headers, status code, and full response
+page, err = client.Accounts.List(
+    ctx,
+    ...
+)
+if err != nil {
+    return err
+}
+
+// Access response metadata directly from the page
+fmt.Printf("Got headers: %v", page.Header)
+fmt.Printf("Got status code: %d", page.StatusCode)
+
+// Access the full spec-defined response object
+fullResponse := page.Response
+
+// Access individual fields from the pagination object
+nextCursor := page.RawResponse.Next
 ```
 
 ## Errors
@@ -71,7 +145,7 @@ with the `errors.Is` and `errors.As` APIs, so you can access the error like so:
 response, err := client.AccessTokens.Create(...)
 if err != nil {
     var apiError *core.APIError
-    if errors.As(err, apiError) {
+    if errors.As(err, &apiError) {
         // Do something with the API error ...
     }
     return err
@@ -92,7 +166,7 @@ specified on the client so that they're applied on every request, or for an indi
 
 ```go
 // Specify default options applied on every request.
-client := client.NewClient(
+client := client.NewWhop(
     option.WithToken("<YOUR_API_KEY>"),
     option.WithHTTPClient(
         &http.Client{
@@ -151,7 +225,7 @@ over the default exponential backoff.
 Use the `option.WithMaxAttempts` option to configure this behavior for the entire client or an individual request:
 
 ```go
-client := client.NewClient(
+client := client.NewWhop(
     option.WithMaxAttempts(1),
 )
 

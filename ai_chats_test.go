@@ -11,11 +11,19 @@ import (
 )
 
 func TestSettersCreateAiChatsRequest(t *testing.T) {
-	t.Run("SetCurrentCompanyID", func(t *testing.T) {
+	t.Run("SetAgentIdentifier", func(t *testing.T) {
 		obj := &CreateAiChatsRequest{}
-		var fernTestValueCurrentCompanyID *string
-		obj.SetCurrentCompanyID(fernTestValueCurrentCompanyID)
-		assert.Equal(t, fernTestValueCurrentCompanyID, obj.CurrentCompanyID)
+		var fernTestValueAgentIdentifier *AiChatAgentIdentifiers
+		obj.SetAgentIdentifier(fernTestValueAgentIdentifier)
+		assert.Equal(t, fernTestValueAgentIdentifier, obj.AgentIdentifier)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetCurrentAccountID", func(t *testing.T) {
+		obj := &CreateAiChatsRequest{}
+		var fernTestValueCurrentAccountID *string
+		obj.SetCurrentAccountID(fernTestValueCurrentAccountID)
+		assert.Equal(t, fernTestValueCurrentAccountID, obj.CurrentAccountID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -62,14 +70,45 @@ func TestSettersCreateAiChatsRequest(t *testing.T) {
 }
 
 func TestSettersMarkExplicitCreateAiChatsRequest(t *testing.T) {
-	t.Run("SetCurrentCompanyID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAgentIdentifier_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateAiChatsRequest{}
-		var fernTestValueCurrentCompanyID *string
+		var fernTestValueAgentIdentifier *AiChatAgentIdentifiers
 
 		// Act
-		obj.SetCurrentCompanyID(fernTestValueCurrentCompanyID)
+		obj.SetAgentIdentifier(fernTestValueAgentIdentifier)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCurrentAccountID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAiChatsRequest{}
+		var fernTestValueCurrentAccountID *string
+
+		// Act
+		obj.SetCurrentAccountID(fernTestValueCurrentAccountID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -328,6 +367,14 @@ func TestSettersListAiChatsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAgentIdentifier", func(t *testing.T) {
+		obj := &ListAiChatsRequest{}
+		var fernTestValueAgentIdentifier *AiChatAgentIdentifiers
+		obj.SetAgentIdentifier(fernTestValueAgentIdentifier)
+		assert.Equal(t, fernTestValueAgentIdentifier, obj.AgentIdentifier)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetOnlyActiveCrons", func(t *testing.T) {
 		obj := &ListAiChatsRequest{}
 		var fernTestValueOnlyActiveCrons *bool
@@ -463,6 +510,37 @@ func TestSettersMarkExplicitListAiChatsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetAgentIdentifier_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListAiChatsRequest{}
+		var fernTestValueAgentIdentifier *AiChatAgentIdentifiers
+
+		// Act
+		obj.SetAgentIdentifier(fernTestValueAgentIdentifier)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetOnlyActiveCrons_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -542,6 +620,14 @@ func TestSettersMarkExplicitRetrieveAiChatsRequest(t *testing.T) {
 }
 
 func TestSettersAiChat(t *testing.T) {
+	t.Run("SetAgentIdentifier", func(t *testing.T) {
+		obj := &AiChat{}
+		var fernTestValueAgentIdentifier AiChatAgentIdentifiers
+		obj.SetAgentIdentifier(fernTestValueAgentIdentifier)
+		assert.Equal(t, fernTestValueAgentIdentifier, obj.AgentIdentifier)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetBlendedTokenUsage", func(t *testing.T) {
 		obj := &AiChat{}
 		var fernTestValueBlendedTokenUsage string
@@ -617,6 +703,29 @@ func TestSettersAiChat(t *testing.T) {
 }
 
 func TestGettersAiChat(t *testing.T) {
+	t.Run("GetAgentIdentifier", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AiChat{}
+		var expected AiChatAgentIdentifiers
+		obj.AgentIdentifier = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAgentIdentifier(), "getter should return the property value")
+	})
+
+	t.Run("GetAgentIdentifier_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AiChat
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAgentIdentifier() // Should return zero value
+	})
+
 	t.Run("GetBlendedTokenUsage", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -857,6 +966,37 @@ func TestGettersAiChat(t *testing.T) {
 }
 
 func TestSettersMarkExplicitAiChat(t *testing.T) {
+	t.Run("SetAgentIdentifier_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AiChat{}
+		var fernTestValueAgentIdentifier AiChatAgentIdentifiers
+
+		// Act
+		obj.SetAgentIdentifier(fernTestValueAgentIdentifier)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetBlendedTokenUsage_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1139,6 +1279,14 @@ func TestSettersMarkExplicitAiChat(t *testing.T) {
 }
 
 func TestSettersAiChatListItem(t *testing.T) {
+	t.Run("SetAgentIdentifier", func(t *testing.T) {
+		obj := &AiChatListItem{}
+		var fernTestValueAgentIdentifier AiChatAgentIdentifiers
+		obj.SetAgentIdentifier(fernTestValueAgentIdentifier)
+		assert.Equal(t, fernTestValueAgentIdentifier, obj.AgentIdentifier)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetBlendedTokenUsage", func(t *testing.T) {
 		obj := &AiChatListItem{}
 		var fernTestValueBlendedTokenUsage string
@@ -1214,6 +1362,29 @@ func TestSettersAiChatListItem(t *testing.T) {
 }
 
 func TestGettersAiChatListItem(t *testing.T) {
+	t.Run("GetAgentIdentifier", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AiChatListItem{}
+		var expected AiChatAgentIdentifiers
+		obj.AgentIdentifier = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAgentIdentifier(), "getter should return the property value")
+	})
+
+	t.Run("GetAgentIdentifier_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AiChatListItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAgentIdentifier() // Should return zero value
+	})
+
 	t.Run("GetBlendedTokenUsage", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1454,6 +1625,37 @@ func TestGettersAiChatListItem(t *testing.T) {
 }
 
 func TestSettersMarkExplicitAiChatListItem(t *testing.T) {
+	t.Run("SetAgentIdentifier_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AiChatListItem{}
+		var fernTestValueAgentIdentifier AiChatAgentIdentifiers
+
+		// Act
+		obj.SetAgentIdentifier(fernTestValueAgentIdentifier)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetBlendedTokenUsage_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2110,11 +2312,11 @@ func TestSettersUpdateAiChatsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetCurrentCompanyID", func(t *testing.T) {
+	t.Run("SetCurrentAccountID", func(t *testing.T) {
 		obj := &UpdateAiChatsRequest{}
-		var fernTestValueCurrentCompanyID *string
-		obj.SetCurrentCompanyID(fernTestValueCurrentCompanyID)
-		assert.Equal(t, fernTestValueCurrentCompanyID, obj.CurrentCompanyID)
+		var fernTestValueCurrentAccountID *string
+		obj.SetCurrentAccountID(fernTestValueCurrentAccountID)
+		assert.Equal(t, fernTestValueCurrentAccountID, obj.CurrentAccountID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -2168,14 +2370,14 @@ func TestSettersMarkExplicitUpdateAiChatsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetCurrentCompanyID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetCurrentAccountID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdateAiChatsRequest{}
-		var fernTestValueCurrentCompanyID *string
+		var fernTestValueCurrentAccountID *string
 
 		// Act
-		obj.SetCurrentCompanyID(fernTestValueCurrentCompanyID)
+		obj.SetCurrentAccountID(fernTestValueCurrentAccountID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2461,6 +2663,94 @@ func TestJSONMarshalingListAiChatsResponse(t *testing.T) {
 	})
 }
 
+func TestRequiredNullableRoundTripAiChat(t *testing.T) {
+	requiredNullableKeys := []string{
+		"last_message_at",
+		"title",
+	}
+	marshalToMap := func(t *testing.T, obj *AiChat) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj AiChat
+		require.NoError(t, json.Unmarshal([]byte(`{"last_message_at":null,"title":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj AiChat
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &AiChat{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripAiChatListItem(t *testing.T) {
+	requiredNullableKeys := []string{
+		"last_message_at",
+		"title",
+	}
+	marshalToMap := func(t *testing.T, obj *AiChatListItem) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj AiChatListItem
+		require.NoError(t, json.Unmarshal([]byte(`{"last_message_at":null,"title":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj AiChatListItem
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &AiChatListItem{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestStringAiChat(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -2554,6 +2844,35 @@ func TestStringListAiChatsResponse(t *testing.T) {
 		var obj *ListAiChatsResponse
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestEnumAiChatAgentIdentifiers(t *testing.T) {
+	t.Run("NewFromString_general", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAiChatAgentIdentifiersFromString("general")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AiChatAgentIdentifiers("general"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_support", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAiChatAgentIdentifiersFromString("support")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AiChatAgentIdentifiers("support"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewAiChatAgentIdentifiersFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewAiChatAgentIdentifiersFromString("general")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
 	})
 }
 

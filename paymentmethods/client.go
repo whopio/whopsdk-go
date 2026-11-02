@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of payment methods for a member or company, or for the authenticated user when neither is given, with optional filtering by creation date. A payment method is a stored representation of how a customer intends to pay, such as a card, bank account, or digital wallet.
+// Returns a paginated list of saved payment methods for a member or account, or for the authenticated user when you pass neither.
 //
 // Required permissions:
 //   - `member:payment_methods:read`
@@ -56,9 +56,6 @@ func NewClient(options *core.RequestOptions) *Client {
 //	    MemberID: whopsdk.String(
 //	        "mber_xxxxxxxxxxxxx",
 //	    ),
-//	    CompanyID: whopsdk.String(
-//	        "biz_xxxxxxxxxxxxxx",
-//	    ),
 //	    CreatedBefore: whopsdk.Time(
 //	        whopsdk.MustParseDateTime(
 //	            "2023-12-01T05:00:00Z",
@@ -68,6 +65,9 @@ func NewClient(options *core.RequestOptions) *Client {
 //	        whopsdk.MustParseDateTime(
 //	            "2023-12-01T05:00:00Z",
 //	        ),
+//	    ),
+//	    AccountID: whopsdk.String(
+//	        "biz_xxxxxxxxxxxxxx",
 //	    ),
 //	}
 //	client.PaymentMethods.List(
@@ -82,7 +82,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/payment_methods"
@@ -137,7 +145,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Retrieves the details of an existing payment method. Addresses a member's wallet when member_id or company_id is given, otherwise your own.
+// Retrieves a saved payment method from a member's wallet when you pass `member_id` or `account_id`, or from your own otherwise.
 //
 // Required permissions:
 //   - `member:payment_methods:read`
@@ -146,11 +154,11 @@ func (c *Client) List(
 //
 //	request := &whopsdk.RetrievePaymentMethodsRequest{
 //	    ID: "payt_xxxxxxxxxxxxx",
-//	    CompanyID: whopsdk.String(
-//	        "biz_xxxxxxxxxxxxxx",
-//	    ),
 //	    MemberID: whopsdk.String(
 //	        "mber_xxxxxxxxxxxxx",
+//	    ),
+//	    AccountID: whopsdk.String(
+//	        "biz_xxxxxxxxxxxxxx",
 //	    ),
 //	}
 //	client.PaymentMethods.Retrieve(
@@ -182,11 +190,11 @@ func (c *Client) Retrieve(
 //
 //	request := &whopsdk.DeletePaymentMethodRequest{
 //	    ID: "payt_xxxxxxxxxxxxx",
-//	    CompanyID: whopsdk.String(
-//	        "biz_xxxxxxxxxxxxxx",
-//	    ),
 //	    MemberID: whopsdk.String(
 //	        "mber_xxxxxxxxxxxxx",
+//	    ),
+//	    AccountID: whopsdk.String(
+//	        "biz_xxxxxxxxxxxxxx",
 //	    ),
 //	}
 //	client.PaymentMethods.DeletePaymentMethod(

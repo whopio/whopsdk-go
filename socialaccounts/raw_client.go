@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type RawClient struct {
@@ -34,13 +34,21 @@ func NewRawClient(options *core.RequestOptions) *RawClient {
 
 func (r *RawClient) Create(
 	ctx context.Context,
-	request *whopsdk.CreateSocialAccountsRequest,
+	request *whopsdk.CreateSocialAccountsRequestBody,
 	opts ...option.RequestOption,
 ) (*core.Response[*whopsdk.SocialAccount], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/social_accounts"
@@ -48,7 +56,6 @@ func (r *RawClient) Create(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	headers.Add("Content-Type", "application/json")
 	var response *whopsdk.SocialAccount
 	raw, err := r.caller.Call(
 		ctx,
@@ -84,7 +91,15 @@ func (r *RawClient) Connect(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/social_accounts/connect"
@@ -128,7 +143,15 @@ func (r *RawClient) Delete(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
@@ -159,7 +182,6 @@ func (r *RawClient) Delete(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Response:        &response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		},
 	)
 	if err != nil {
@@ -172,44 +194,47 @@ func (r *RawClient) Delete(
 	}, nil
 }
 
-func (r *RawClient) LeadForms(
+func (r *RawClient) Refresh(
 	ctx context.Context,
-	request *whopsdk.LeadFormsSocialAccountsRequest,
+	request *whopsdk.RefreshSocialAccountsRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.LeadFormsSocialAccountsResponse], error) {
+) (*core.Response[*whopsdk.SocialAccount], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
-		baseURL+"/social_accounts/%v/lead_forms",
+		baseURL+"/social_accounts/%v/refresh",
 		request.ID,
 	)
-	queryParams, err := internal.QueryValues(request)
-	if err != nil {
-		return nil, err
-	}
-	if len(queryParams) > 0 {
-		endpointURL += "?" + queryParams.Encode()
-	}
 	headers := internal.MergeHeaders(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response *whopsdk.LeadFormsSocialAccountsResponse
+	headers.Add("Content-Type", "application/json")
+	var response *whopsdk.SocialAccount
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
 			URL:             endpointURL,
-			Method:          http.MethodGet,
+			Method:          http.MethodPost,
 			Headers:         headers,
 			MaxAttempts:     options.MaxAttempts,
 			DisableRetries:  options.DisableRetries,
 			BodyProperties:  options.BodyProperties,
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
+			Request:         request,
 			Response:        &response,
 			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		},
@@ -217,7 +242,7 @@ func (r *RawClient) LeadForms(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*whopsdk.LeadFormsSocialAccountsResponse]{
+	return &core.Response[*whopsdk.SocialAccount]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,

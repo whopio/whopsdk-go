@@ -6,7 +6,7 @@ import (
 	json "encoding/json"
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
-	whopsdkgo "github.com/whopio/whopsdk-go"
+	v2 "github.com/whopio/whopsdk-go/v2"
 	testing "testing"
 )
 
@@ -580,7 +580,7 @@ func TestSettersMarkExplicitSetNotificationsRequestPreferencesItemScope(t *testi
 func TestSettersSetNotificationsResponse(t *testing.T) {
 	t.Run("SetData", func(t *testing.T) {
 		obj := &SetNotificationsResponse{}
-		var fernTestValueData []*whopsdkgo.NotificationPreferenceState
+		var fernTestValueData []*v2.NotificationPreferenceState
 		obj.SetData(fernTestValueData)
 		assert.Equal(t, fernTestValueData, obj.Data)
 		assert.NotNil(t, obj.explicitFields)
@@ -593,7 +593,7 @@ func TestGettersSetNotificationsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &SetNotificationsResponse{}
-		var expected []*whopsdkgo.NotificationPreferenceState
+		var expected []*v2.NotificationPreferenceState
 		obj.Data = expected
 
 		// Act & Assert
@@ -629,7 +629,7 @@ func TestSettersMarkExplicitSetNotificationsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &SetNotificationsResponse{}
-		var fernTestValueData []*whopsdkgo.NotificationPreferenceState
+		var fernTestValueData []*v2.NotificationPreferenceState
 
 		// Act
 		obj.SetData(fernTestValueData)
@@ -754,6 +754,96 @@ func TestJSONMarshalingSetNotificationsResponse(t *testing.T) {
 		var obj SetNotificationsResponse
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestRequiredNullableRoundTripSetNotificationsRequestPreferencesItem(t *testing.T) {
+	requiredNullableKeys := []string{
+		"level",
+	}
+	marshalToMap := func(t *testing.T, obj *SetNotificationsRequestPreferencesItem) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj SetNotificationsRequestPreferencesItem
+		require.NoError(t, json.Unmarshal([]byte(`{"level":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj SetNotificationsRequestPreferencesItem
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &SetNotificationsRequestPreferencesItem{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestOptionalNullableRoundTripSetNotificationsRequestPreferencesItemScope(t *testing.T) {
+	optionalNullableKeys := []string{
+		"account_id",
+		"channel",
+		"experience_id",
+		"team_account_id",
+		"topic_id",
+	}
+	marshalToMap := func(t *testing.T, obj *SetNotificationsRequestPreferencesItemScope) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj SetNotificationsRequestPreferencesItemScope
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"channel":null,"experience_id":null,"team_account_id":null,"topic_id":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range optionalNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "optional nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "optional nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj SetNotificationsRequestPreferencesItemScope
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range optionalNullableKeys {
+			assert.NotContains(t, result, key, "optional nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &SetNotificationsRequestPreferencesItemScope{})
+		for _, key := range optionalNullableKeys {
+			assert.NotContains(t, result, key, "optional nullable field %q should be omitted from a freshly constructed value", key)
+		}
 	})
 }
 

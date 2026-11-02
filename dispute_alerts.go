@@ -5,7 +5,7 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
@@ -31,13 +31,13 @@ type ListDisputeAlertsRequest struct {
 	PaymentID *string `json:"-" url:"payment_id,omitempty"`
 	// Only alerts of this kind. `early_fraud_warning` for issuer fraud reports, `dispute_alert` for pre-dispute notices, `rapid_dispute_resolution` for Visa RDR cases the network already closed.
 	Type *ListDisputeAlertsRequestType `json:"-" url:"type,omitempty"`
-	// The number of alerts to return (default 20, max 100).
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor; returns alerts after this position.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of alerts to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// A cursor; returns alerts before this position.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 	// The field to sort alerts by.
 	Order *ListDisputeAlertsRequestOrder `json:"-" url:"order,omitempty"`
@@ -53,10 +53,12 @@ type ListDisputeAlertsRequest struct {
 }
 
 func (l *ListDisputeAlertsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -149,10 +151,12 @@ type RetrieveDisputeAlertsRequest struct {
 }
 
 func (r *RetrieveDisputeAlertsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -163,52 +167,72 @@ func (r *RetrieveDisputeAlertsRequest) SetID(id string) {
 }
 
 var (
-	disputeAlertFieldAccountID           = big.NewInt(1 << 0)
-	disputeAlertFieldActionable          = big.NewInt(1 << 1)
-	disputeAlertFieldAmount              = big.NewInt(1 << 2)
-	disputeAlertFieldCardBrand           = big.NewInt(1 << 3)
-	disputeAlertFieldCreatedAt           = big.NewInt(1 << 4)
-	disputeAlertFieldCurrency            = big.NewInt(1 << 5)
-	disputeAlertFieldFeeCharged          = big.NewInt(1 << 6)
-	disputeAlertFieldID                  = big.NewInt(1 << 7)
-	disputeAlertFieldIssuer              = big.NewInt(1 << 8)
-	disputeAlertFieldNotActionableReason = big.NewInt(1 << 9)
-	disputeAlertFieldPaymentID           = big.NewInt(1 << 10)
-	disputeAlertFieldProductID           = big.NewInt(1 << 11)
-	disputeAlertFieldReportedAt          = big.NewInt(1 << 12)
-	disputeAlertFieldTransactionAt       = big.NewInt(1 << 13)
-	disputeAlertFieldType                = big.NewInt(1 << 14)
-	disputeAlertFieldUpdatedAt           = big.NewInt(1 << 15)
+	disputeAlertFieldAccountID     = big.NewInt(1 << 0)
+	disputeAlertFieldAmount        = big.NewInt(1 << 1)
+	disputeAlertFieldAutoRefunded  = big.NewInt(1 << 2)
+	disputeAlertFieldCardBrand     = big.NewInt(1 << 3)
+	disputeAlertFieldCategory      = big.NewInt(1 << 4)
+	disputeAlertFieldCreatedAt     = big.NewInt(1 << 5)
+	disputeAlertFieldCurrency      = big.NewInt(1 << 6)
+	disputeAlertFieldFee           = big.NewInt(1 << 7)
+	disputeAlertFieldFeeCharged    = big.NewInt(1 << 8)
+	disputeAlertFieldID            = big.NewInt(1 << 9)
+	disputeAlertFieldIssuer        = big.NewInt(1 << 10)
+	disputeAlertFieldPaymentID     = big.NewInt(1 << 11)
+	disputeAlertFieldProductID     = big.NewInt(1 << 12)
+	disputeAlertFieldReportedAt    = big.NewInt(1 << 13)
+	disputeAlertFieldSource        = big.NewInt(1 << 14)
+	disputeAlertFieldTransactionAt = big.NewInt(1 << 15)
+	disputeAlertFieldType          = big.NewInt(1 << 16)
+	disputeAlertFieldUpdatedAt     = big.NewInt(1 << 17)
 )
+
+// disputeAlertNullableFields maps the wire names of DisputeAlert's nullable fields (required or optional) to their field bits.
+var disputeAlertNullableFields = map[string]*big.Int{
+	"account_id":     disputeAlertFieldAccountID,
+	"card_brand":     disputeAlertFieldCardBrand,
+	"category":       disputeAlertFieldCategory,
+	"fee":            disputeAlertFieldFee,
+	"issuer":         disputeAlertFieldIssuer,
+	"payment_id":     disputeAlertFieldPaymentID,
+	"product_id":     disputeAlertFieldProductID,
+	"source":         disputeAlertFieldSource,
+	"transaction_at": disputeAlertFieldTransactionAt,
+}
 
 type DisputeAlert struct {
 	// The account the alerted payment belongs to, prefixed `biz_`. `null` while the alert is unmatched.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// Whether refunding the payment can still avoid a chargeback. `false` once the payment has been disputed or fully refunded, or when the alert could not be matched to a payment — `not_actionable_reason` says which.
-	Actionable bool `json:"actionable" url:"actionable"`
 	// The alerted amount, in whole units of `currency`. This is what the issuer reported, which can differ from the payment's own amount.
 	Amount float64 `json:"amount" url:"amount"`
+	// Whether Whop automatically refunded the alerted payment. Reflects the payment, so it can be `true` for a refund issued by another flow (RDR, resolution) on the same payment.
+	AutoRefunded bool `json:"auto_refunded" url:"auto_refunded"`
 	// The card network as reported by the issuer, lowercased, such as `visa` or `mastercard`. `unknown` when the report carries neither a network nor a recognizable BIN.
 	CardBrand *string `json:"card_brand,omitempty" url:"card_brand,omitempty"`
+	// What the cardholder claims. `fraud` when they say they didn't make the payment: always for an `early_fraud_warning`, and for Ethoca fraud alerts and Visa RDR cases filed under a fraud reason. `customer_dispute` when they made the payment but dispute it, such as a product not received or a canceled subscription. `null` when the alert carries no claim, such as an issuer's request for transaction documents.
+	Category *DisputeAlertCategory `json:"category,omitempty" url:"category,omitempty"`
 	// When Whop received the alert, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Three-letter ISO currency code of the alerted amount.
 	Currency string `json:"currency" url:"currency"`
+	// The alert fee charged to the account, in the currency it was collected in. `null` when `fee_charged` is false.
+	Fee *Money `json:"fee,omitempty" url:"fee,omitempty"`
 	// Whether Whop charged the account an alert fee for this one. Always `false` for `early_fraud_warning`, which Whop is not billed for and never passes on.
 	FeeCharged bool `json:"fee_charged" url:"fee_charged"`
 	// Dispute alert ID, prefixed `dspa_`.
 	ID string `json:"id" url:"id"`
-	// Name of the bank that issued the card and filed the report.
+	// Deprecated: always `null` outside Whop's own dashboard. Name of the bank that issued the card and filed the report.
+	// DEPRECATED: Always null outside Whop's own dashboard.
 	Issuer *string `json:"issuer,omitempty" url:"issuer,omitempty"`
-	// Why refunding can no longer avoid a chargeback. `network_resolved` when a Visa RDR already closed the case, `payment_unmatched` when no payment matched, `payment_not_captured` when it never captured money, `payment_disputed` once the payment carries a dispute, `payment_refunded` once fully refunded. `null` while `actionable` is true.
-	NotActionableReason *DisputeAlertNotActionableReason `json:"not_actionable_reason,omitempty" url:"not_actionable_reason,omitempty"`
 	// The payment the issuer reported, prefixed `pay_`. `null` when Whop could not match the report to a payment.
 	PaymentID *string `json:"payment_id,omitempty" url:"payment_id,omitempty"`
 	// The product the alerted payment was for, prefixed `prod_`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// When the issuer filed the report, as an ISO 8601 timestamp. Earlier than `created_at`, which is when Whop received it.
 	ReportedAt string `json:"reported_at" url:"reported_at"`
-	// When the reported transaction was made, as an ISO 8601 timestamp.
+	// The network program that sent the alert, which `type` alone doesn't tell apart. `ethoca` for Mastercard Ethoca, `cdrn` for Visa Verifi CDRN, `rdr` for Visa RDR, `tc40` / `safe` for a Visa / Mastercard fraud report, `paypal` for a PayPal alert. `null` when the network didn't say.
+	Source *DisputeAlertSource `json:"source,omitempty" url:"source,omitempty"`
+	// When the reported transaction was made, as an ISO 8601 timestamp — falls back to when the matched payment was made if the issuer's own report didn't carry one. Should not be `null` in practice; treat one as a data issue rather than expected behavior.
 	TransactionAt *string `json:"transaction_at,omitempty" url:"transaction_at,omitempty"`
 	// What the issuer sent. `early_fraud_warning` is a fraud report on a settled payment (Visa TC40 / Mastercard SAFE) — refunding still avoids the chargeback, and Whop never charges a fee for one. `dispute_alert` is a pre-dispute notice from the issuer's alert network, which Whop pays for and passes on as a fee. `rapid_dispute_resolution` is a Visa RDR case the network already closed by refunding the payment — nothing is left to act on.
 	Type DisputeAlertType `json:"type" url:"type"`
@@ -229,13 +253,6 @@ func (d *DisputeAlert) GetAccountID() *string {
 	return d.AccountID
 }
 
-func (d *DisputeAlert) GetActionable() bool {
-	if d == nil {
-		return false
-	}
-	return d.Actionable
-}
-
 func (d *DisputeAlert) GetAmount() float64 {
 	if d == nil {
 		return 0
@@ -243,11 +260,25 @@ func (d *DisputeAlert) GetAmount() float64 {
 	return d.Amount
 }
 
+func (d *DisputeAlert) GetAutoRefunded() bool {
+	if d == nil {
+		return false
+	}
+	return d.AutoRefunded
+}
+
 func (d *DisputeAlert) GetCardBrand() *string {
 	if d == nil {
 		return nil
 	}
 	return d.CardBrand
+}
+
+func (d *DisputeAlert) GetCategory() *DisputeAlertCategory {
+	if d == nil {
+		return nil
+	}
+	return d.Category
 }
 
 func (d *DisputeAlert) GetCreatedAt() string {
@@ -262,6 +293,13 @@ func (d *DisputeAlert) GetCurrency() string {
 		return ""
 	}
 	return d.Currency
+}
+
+func (d *DisputeAlert) GetFee() *Money {
+	if d == nil {
+		return nil
+	}
+	return d.Fee
 }
 
 func (d *DisputeAlert) GetFeeCharged() bool {
@@ -285,13 +323,6 @@ func (d *DisputeAlert) GetIssuer() *string {
 	return d.Issuer
 }
 
-func (d *DisputeAlert) GetNotActionableReason() *DisputeAlertNotActionableReason {
-	if d == nil {
-		return nil
-	}
-	return d.NotActionableReason
-}
-
 func (d *DisputeAlert) GetPaymentID() *string {
 	if d == nil {
 		return nil
@@ -311,6 +342,13 @@ func (d *DisputeAlert) GetReportedAt() string {
 		return ""
 	}
 	return d.ReportedAt
+}
+
+func (d *DisputeAlert) GetSource() *DisputeAlertSource {
+	if d == nil {
+		return nil
+	}
+	return d.Source
 }
 
 func (d *DisputeAlert) GetTransactionAt() *string {
@@ -342,10 +380,12 @@ func (d *DisputeAlert) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DisputeAlert) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -355,13 +395,6 @@ func (d *DisputeAlert) SetAccountID(accountID *string) {
 	d.require(disputeAlertFieldAccountID)
 }
 
-// SetActionable sets the Actionable field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DisputeAlert) SetActionable(actionable bool) {
-	d.Actionable = actionable
-	d.require(disputeAlertFieldActionable)
-}
-
 // SetAmount sets the Amount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *DisputeAlert) SetAmount(amount float64) {
@@ -369,11 +402,25 @@ func (d *DisputeAlert) SetAmount(amount float64) {
 	d.require(disputeAlertFieldAmount)
 }
 
+// SetAutoRefunded sets the AutoRefunded field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeAlert) SetAutoRefunded(autoRefunded bool) {
+	d.AutoRefunded = autoRefunded
+	d.require(disputeAlertFieldAutoRefunded)
+}
+
 // SetCardBrand sets the CardBrand field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *DisputeAlert) SetCardBrand(cardBrand *string) {
 	d.CardBrand = cardBrand
 	d.require(disputeAlertFieldCardBrand)
+}
+
+// SetCategory sets the Category field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeAlert) SetCategory(category *DisputeAlertCategory) {
+	d.Category = category
+	d.require(disputeAlertFieldCategory)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -388,6 +435,13 @@ func (d *DisputeAlert) SetCreatedAt(createdAt string) {
 func (d *DisputeAlert) SetCurrency(currency string) {
 	d.Currency = currency
 	d.require(disputeAlertFieldCurrency)
+}
+
+// SetFee sets the Fee field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeAlert) SetFee(fee *Money) {
+	d.Fee = fee
+	d.require(disputeAlertFieldFee)
 }
 
 // SetFeeCharged sets the FeeCharged field and marks it as non-optional;
@@ -411,13 +465,6 @@ func (d *DisputeAlert) SetIssuer(issuer *string) {
 	d.require(disputeAlertFieldIssuer)
 }
 
-// SetNotActionableReason sets the NotActionableReason field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (d *DisputeAlert) SetNotActionableReason(notActionableReason *DisputeAlertNotActionableReason) {
-	d.NotActionableReason = notActionableReason
-	d.require(disputeAlertFieldNotActionableReason)
-}
-
 // SetPaymentID sets the PaymentID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (d *DisputeAlert) SetPaymentID(paymentID *string) {
@@ -437,6 +484,13 @@ func (d *DisputeAlert) SetProductID(productID *string) {
 func (d *DisputeAlert) SetReportedAt(reportedAt string) {
 	d.ReportedAt = reportedAt
 	d.require(disputeAlertFieldReportedAt)
+}
+
+// SetSource sets the Source field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeAlert) SetSource(source *DisputeAlertSource) {
+	d.Source = source
+	d.require(disputeAlertFieldSource)
 }
 
 // SetTransactionAt sets the TransactionAt field and marks it as non-optional;
@@ -472,6 +526,13 @@ func (d *DisputeAlert) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, disputeAlertNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -502,35 +563,61 @@ func (d *DisputeAlert) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
-// Why refunding can no longer avoid a chargeback. `network_resolved` when a Visa RDR already closed the case, `payment_unmatched` when no payment matched, `payment_not_captured` when it never captured money, `payment_disputed` once the payment carries a dispute, `payment_refunded` once fully refunded. `null` while `actionable` is true.
-type DisputeAlertNotActionableReason string
+// What the cardholder claims. `fraud` when they say they didn't make the payment: always for an `early_fraud_warning`, and for Ethoca fraud alerts and Visa RDR cases filed under a fraud reason. `customer_dispute` when they made the payment but dispute it, such as a product not received or a canceled subscription. `null` when the alert carries no claim, such as an issuer's request for transaction documents.
+type DisputeAlertCategory string
 
 const (
-	DisputeAlertNotActionableReasonNetworkResolved    DisputeAlertNotActionableReason = "network_resolved"
-	DisputeAlertNotActionableReasonPaymentUnmatched   DisputeAlertNotActionableReason = "payment_unmatched"
-	DisputeAlertNotActionableReasonPaymentNotCaptured DisputeAlertNotActionableReason = "payment_not_captured"
-	DisputeAlertNotActionableReasonPaymentDisputed    DisputeAlertNotActionableReason = "payment_disputed"
-	DisputeAlertNotActionableReasonPaymentRefunded    DisputeAlertNotActionableReason = "payment_refunded"
+	DisputeAlertCategoryFraud           DisputeAlertCategory = "fraud"
+	DisputeAlertCategoryCustomerDispute DisputeAlertCategory = "customer_dispute"
 )
 
-func NewDisputeAlertNotActionableReasonFromString(s string) (DisputeAlertNotActionableReason, error) {
+func NewDisputeAlertCategoryFromString(s string) (DisputeAlertCategory, error) {
 	switch s {
-	case "network_resolved":
-		return DisputeAlertNotActionableReasonNetworkResolved, nil
-	case "payment_unmatched":
-		return DisputeAlertNotActionableReasonPaymentUnmatched, nil
-	case "payment_not_captured":
-		return DisputeAlertNotActionableReasonPaymentNotCaptured, nil
-	case "payment_disputed":
-		return DisputeAlertNotActionableReasonPaymentDisputed, nil
-	case "payment_refunded":
-		return DisputeAlertNotActionableReasonPaymentRefunded, nil
+	case "fraud":
+		return DisputeAlertCategoryFraud, nil
+	case "customer_dispute":
+		return DisputeAlertCategoryCustomerDispute, nil
 	}
-	var t DisputeAlertNotActionableReason
+	var t DisputeAlertCategory
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (d DisputeAlertNotActionableReason) Ptr() *DisputeAlertNotActionableReason {
+func (d DisputeAlertCategory) Ptr() *DisputeAlertCategory {
+	return &d
+}
+
+// The network program that sent the alert, which `type` alone doesn't tell apart. `ethoca` for Mastercard Ethoca, `cdrn` for Visa Verifi CDRN, `rdr` for Visa RDR, `tc40` / `safe` for a Visa / Mastercard fraud report, `paypal` for a PayPal alert. `null` when the network didn't say.
+type DisputeAlertSource string
+
+const (
+	DisputeAlertSourceEthoca DisputeAlertSource = "ethoca"
+	DisputeAlertSourceCdrn   DisputeAlertSource = "cdrn"
+	DisputeAlertSourceRdr    DisputeAlertSource = "rdr"
+	DisputeAlertSourceTc40   DisputeAlertSource = "tc40"
+	DisputeAlertSourceSafe   DisputeAlertSource = "safe"
+	DisputeAlertSourcePaypal DisputeAlertSource = "paypal"
+)
+
+func NewDisputeAlertSourceFromString(s string) (DisputeAlertSource, error) {
+	switch s {
+	case "ethoca":
+		return DisputeAlertSourceEthoca, nil
+	case "cdrn":
+		return DisputeAlertSourceCdrn, nil
+	case "rdr":
+		return DisputeAlertSourceRdr, nil
+	case "tc40":
+		return DisputeAlertSourceTc40, nil
+	case "safe":
+		return DisputeAlertSourceSafe, nil
+	case "paypal":
+		return DisputeAlertSourcePaypal, nil
+	}
+	var t DisputeAlertSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DisputeAlertSource) Ptr() *DisputeAlertSource {
 	return &d
 }
 
@@ -670,10 +757,12 @@ func (l *ListDisputeAlertsResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *ListDisputeAlertsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -739,6 +828,12 @@ var (
 	listDisputeAlertsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listDisputeAlertsResponsePageInfoNullableFields maps the wire names of ListDisputeAlertsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listDisputeAlertsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listDisputeAlertsResponsePageInfoFieldEndCursor,
+	"start_cursor": listDisputeAlertsResponsePageInfoFieldStartCursor,
+}
+
 type ListDisputeAlertsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -788,10 +883,12 @@ func (l *ListDisputeAlertsResponsePageInfo) GetExtraProperties() map[string]inte
 }
 
 func (l *ListDisputeAlertsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -834,6 +931,13 @@ func (l *ListDisputeAlertsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listDisputeAlertsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -874,6 +978,12 @@ var (
 	postDisputeAlertCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postDisputeAlertCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postDisputeAlertCreatedPayloadNullableFields maps the wire names of PostDisputeAlertCreatedPayload's nullable fields (required or optional) to their field bits.
+var postDisputeAlertCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postDisputeAlertCreatedPayloadFieldAccountID,
+	"api_version_date": postDisputeAlertCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostDisputeAlertCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -963,10 +1073,12 @@ func (p *PostDisputeAlertCreatedPayload) GetExtraProperties() map[string]interfa
 }
 
 func (p *PostDisputeAlertCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1043,6 +1155,13 @@ func (p *PostDisputeAlertCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postDisputeAlertCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }

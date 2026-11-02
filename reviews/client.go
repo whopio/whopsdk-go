@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,33 +39,16 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of customer reviews for a specific product, with optional filtering by star rating and creation date.
+// Lists the published reviews for a product or account. Without `account_id` or `product_id`, a user lists the reviews they wrote, an account or app API key lists its account's reviews, and a request without credentials returns 400.
 //
 // Example:
 //
 //	request := &whopsdk.ListReviewsRequest{
-//	    First: whopsdk.Int(
-//	        42,
+//	    AccountID: whopsdk.String(
+//	        "biz_xxxxxxxxxxxxxx",
 //	    ),
-//	    Last: whopsdk.Int(
-//	        42,
-//	    ),
-//	    ProductID: "prod_xxxxxxxxxxxxx",
-//	    MinStars: whopsdk.Int(
-//	        42,
-//	    ),
-//	    MaxStars: whopsdk.Int(
-//	        42,
-//	    ),
-//	    CreatedBefore: whopsdk.Time(
-//	        whopsdk.MustParseDateTime(
-//	            "2023-12-01T05:00:00Z",
-//	        ),
-//	    ),
-//	    CreatedAfter: whopsdk.Time(
-//	        whopsdk.MustParseDateTime(
-//	            "2023-12-01T05:00:00Z",
-//	        ),
+//	    ProductID: whopsdk.String(
+//	        "prod_xxxxxxxxxxxxx",
 //	    ),
 //	}
 //	client.Reviews.List(
@@ -80,7 +63,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/reviews"
@@ -135,7 +126,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Retrieves the details of an existing review.
+// Retrieves a published review. Reviews that are not published return 404.
 //
 // Example:
 //
@@ -152,6 +143,33 @@ func (c *Client) Retrieve(
 	opts ...option.RequestOption,
 ) (*whopsdk.Review, error) {
 	response, err := c.WithRawResponse.Retrieve(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Deletes a review the signed-in user wrote. Requires the `review:delete` scope, and returns 404 for a review another user wrote.
+//
+// Example:
+//
+//	request := &whopsdk.DeleteReviewsRequest{
+//	    ID: "rev_xxxxxxxxxxxxxx",
+//	}
+//	client.Reviews.Delete(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Delete(
+	ctx context.Context,
+	request *whopsdk.DeleteReviewsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.DeleteReviewsResponse, error) {
+	response, err := c.WithRawResponse.Delete(
 		ctx,
 		request,
 		opts...,

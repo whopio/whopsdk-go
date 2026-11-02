@@ -5,24 +5,30 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
 
 var (
-	listMembersRequestFieldAccountID     = big.NewInt(1 << 0)
-	listMembersRequestFieldAccessLevel   = big.NewInt(1 << 1)
-	listMembersRequestFieldStatus        = big.NewInt(1 << 2)
-	listMembersRequestFieldQuery         = big.NewInt(1 << 3)
-	listMembersRequestFieldCreatedAfter  = big.NewInt(1 << 4)
-	listMembersRequestFieldCreatedBefore = big.NewInt(1 << 5)
-	listMembersRequestFieldOrder         = big.NewInt(1 << 6)
-	listMembersRequestFieldDirection     = big.NewInt(1 << 7)
-	listMembersRequestFieldFirst         = big.NewInt(1 << 8)
-	listMembersRequestFieldAfter         = big.NewInt(1 << 9)
-	listMembersRequestFieldLast          = big.NewInt(1 << 10)
-	listMembersRequestFieldBefore        = big.NewInt(1 << 11)
+	listMembersRequestFieldAccountID         = big.NewInt(1 << 0)
+	listMembersRequestFieldAccessLevel       = big.NewInt(1 << 1)
+	listMembersRequestFieldStatus            = big.NewInt(1 << 2)
+	listMembersRequestFieldUserIDs           = big.NewInt(1 << 3)
+	listMembersRequestFieldMostRecentActions = big.NewInt(1 << 4)
+	listMembersRequestFieldMembershipStatus  = big.NewInt(1 << 5)
+	listMembersRequestFieldProductIDs        = big.NewInt(1 << 6)
+	listMembersRequestFieldVariantIDs        = big.NewInt(1 << 7)
+	listMembersRequestFieldPromoCodeIDs      = big.NewInt(1 << 8)
+	listMembersRequestFieldQuery             = big.NewInt(1 << 9)
+	listMembersRequestFieldCreatedAfter      = big.NewInt(1 << 10)
+	listMembersRequestFieldCreatedBefore     = big.NewInt(1 << 11)
+	listMembersRequestFieldOrder             = big.NewInt(1 << 12)
+	listMembersRequestFieldDirection         = big.NewInt(1 << 13)
+	listMembersRequestFieldFirst             = big.NewInt(1 << 14)
+	listMembersRequestFieldAfter             = big.NewInt(1 << 15)
+	listMembersRequestFieldLast              = big.NewInt(1 << 16)
+	listMembersRequestFieldBefore            = big.NewInt(1 << 17)
 )
 
 type ListMembersRequest struct {
@@ -32,23 +38,35 @@ type ListMembersRequest struct {
 	AccessLevel *ListMembersRequestAccessLevel `json:"-" url:"access_level,omitempty"`
 	// Filter by whether the member is still part of the account.
 	Status *ListMembersRequestStatus `json:"-" url:"status,omitempty"`
+	// Only return members whose users match these `user_` identifiers.
+	UserIDs []*string `json:"-" url:"user_ids,omitempty"`
+	// Only return members whose `most_recent_action` is one of these values.
+	MostRecentActions []*ListMembersRequestMostRecentActionsItem `json:"-" url:"most_recent_actions,omitempty"`
+	// `active` returns members holding at least one membership that currently grants access; `inactive` returns members holding at least one membership that does not. Combined with `product_ids`, `variant_ids`, or `promo_code_ids`, one membership must match all of them.
+	MembershipStatus *ListMembersRequestMembershipStatus `json:"-" url:"membership_status,omitempty"`
+	// Only return members holding a membership to one of these products, prefixed `prod_`. Unknown IDs match nothing.
+	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
+	// Only return members holding a membership on one of these variants, prefixed `plan_`. Unknown IDs match nothing.
+	VariantIDs []*string `json:"-" url:"variant_ids,omitempty"`
+	// Only return members holding a membership bought with one of these promo codes, prefixed `promo_`. Unknown IDs match nothing.
+	PromoCodeIDs []*string `json:"-" url:"promo_code_ids,omitempty"`
 	// Search members by name or username. An exact email address also matches when the credential holds the member:email:read scope.
 	Query *string `json:"-" url:"query,omitempty"`
 	// Only members who joined after this ISO 8601 timestamp.
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
 	// Only members who joined before this ISO 8601 timestamp.
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
-	// Sort field.
+	// Sort field. `most_recent_action_at` places members without one first when ascending and last when descending.
 	Order *ListMembersRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
 	Direction *ListMembersRequestDirection `json:"-" url:"direction,omitempty"`
-	// Number of members to return from the start of the window.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor to paginate forwards from.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// Number of members to return from the end of the window.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// Cursor to paginate backwards from.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -56,10 +74,12 @@ type ListMembersRequest struct {
 }
 
 func (l *ListMembersRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -81,6 +101,48 @@ func (l *ListMembersRequest) SetAccessLevel(accessLevel *ListMembersRequestAcces
 func (l *ListMembersRequest) SetStatus(status *ListMembersRequestStatus) {
 	l.Status = status
 	l.require(listMembersRequestFieldStatus)
+}
+
+// SetUserIDs sets the UserIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembersRequest) SetUserIDs(userIDs []*string) {
+	l.UserIDs = userIDs
+	l.require(listMembersRequestFieldUserIDs)
+}
+
+// SetMostRecentActions sets the MostRecentActions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembersRequest) SetMostRecentActions(mostRecentActions []*ListMembersRequestMostRecentActionsItem) {
+	l.MostRecentActions = mostRecentActions
+	l.require(listMembersRequestFieldMostRecentActions)
+}
+
+// SetMembershipStatus sets the MembershipStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembersRequest) SetMembershipStatus(membershipStatus *ListMembersRequestMembershipStatus) {
+	l.MembershipStatus = membershipStatus
+	l.require(listMembersRequestFieldMembershipStatus)
+}
+
+// SetProductIDs sets the ProductIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembersRequest) SetProductIDs(productIDs []*string) {
+	l.ProductIDs = productIDs
+	l.require(listMembersRequestFieldProductIDs)
+}
+
+// SetVariantIDs sets the VariantIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembersRequest) SetVariantIDs(variantIDs []*string) {
+	l.VariantIDs = variantIDs
+	l.require(listMembersRequestFieldVariantIDs)
+}
+
+// SetPromoCodeIDs sets the PromoCodeIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembersRequest) SetPromoCodeIDs(promoCodeIDs []*string) {
+	l.PromoCodeIDs = promoCodeIDs
+	l.require(listMembersRequestFieldPromoCodeIDs)
 }
 
 // SetQuery sets the Query field and marks it as non-optional;
@@ -159,10 +221,12 @@ type RetrieveMembersRequest struct {
 }
 
 func (r *RetrieveMembersRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -173,15 +237,36 @@ func (r *RetrieveMembersRequest) SetID(id string) {
 }
 
 var (
-	memberFieldAccessLevel    = big.NewInt(1 << 0)
-	memberFieldAccountID      = big.NewInt(1 << 1)
-	memberFieldCreatedAt      = big.NewInt(1 << 2)
-	memberFieldID             = big.NewInt(1 << 3)
-	memberFieldJoinedAt       = big.NewInt(1 << 4)
-	memberFieldLastAccessedAt = big.NewInt(1 << 5)
-	memberFieldStatus         = big.NewInt(1 << 6)
-	memberFieldUser           = big.NewInt(1 << 7)
+	memberFieldAccessLevel        = big.NewInt(1 << 0)
+	memberFieldAccountID          = big.NewInt(1 << 1)
+	memberFieldCreatedAt          = big.NewInt(1 << 2)
+	memberFieldDisplayName        = big.NewInt(1 << 3)
+	memberFieldEarningsUsd        = big.NewInt(1 << 4)
+	memberFieldEmail              = big.NewInt(1 << 5)
+	memberFieldID                 = big.NewInt(1 << 6)
+	memberFieldJoinedAt           = big.NewInt(1 << 7)
+	memberFieldLastAccessedAt     = big.NewInt(1 << 8)
+	memberFieldMostRecentAction   = big.NewInt(1 << 9)
+	memberFieldMostRecentActionAt = big.NewInt(1 << 10)
+	memberFieldName               = big.NewInt(1 << 11)
+	memberFieldPhoneNumber        = big.NewInt(1 << 12)
+	memberFieldStatus             = big.NewInt(1 << 13)
+	memberFieldTokenBalance       = big.NewInt(1 << 14)
+	memberFieldUsdTotalSpent      = big.NewInt(1 << 15)
+	memberFieldUser               = big.NewInt(1 << 16)
 )
+
+// memberNullableFields maps the wire names of Member's nullable fields (required or optional) to their field bits.
+var memberNullableFields = map[string]*big.Int{
+	"earnings_usd":          memberFieldEarningsUsd,
+	"email":                 memberFieldEmail,
+	"last_accessed_at":      memberFieldLastAccessedAt,
+	"most_recent_action":    memberFieldMostRecentAction,
+	"most_recent_action_at": memberFieldMostRecentActionAt,
+	"name":                  memberFieldName,
+	"phone_number":          memberFieldPhoneNumber,
+	"user":                  memberFieldUser,
+}
 
 type Member struct {
 	// What the member can reach on the account: `customer` for paying members, `admin` for team members, `no_access` once every grant has lapsed.
@@ -190,14 +275,32 @@ type Member struct {
 	AccountID string `json:"account_id" url:"account_id"`
 	// When the member record was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
+	// The name to show for this member: the user's name, or their username when they have not set one. The buying business's name when `user` is `null`.
+	DisplayName string `json:"display_name" url:"display_name"`
+	// The user's gross income across Whop, in USD, refreshed periodically. `null` when the user hides their earnings or the buyer is another business.
+	EarningsUsd *UserEarningsAmount `json:"earnings_usd,omitempty" url:"earnings_usd,omitempty"`
+	// The user's email address. `null` without `member:email:read` on the account, when the buyer is another business, or when the user has no assigned email.
+	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// Member ID, prefixed `mber_`.
 	ID string `json:"id" url:"id"`
 	// When the member first joined the account, as an ISO 8601 timestamp.
 	JoinedAt string `json:"joined_at" url:"joined_at"`
 	// When the member last opened the account's content, as an ISO 8601 timestamp. `null` if they never have.
 	LastAccessedAt *string `json:"last_accessed_at,omitempty" url:"last_accessed_at,omitempty"`
+	// The member's latest lifecycle state on the account, derived from their memberships, such as `paid_subscriber`, `canceling`, or `churned`. `null` until it is first computed.
+	MostRecentAction *MemberMostRecentAction `json:"most_recent_action,omitempty" url:"most_recent_action,omitempty"`
+	// When `most_recent_action` took effect, as an ISO 8601 timestamp. `null` when `most_recent_action` is `null`.
+	MostRecentActionAt *string `json:"most_recent_action_at,omitempty" url:"most_recent_action_at,omitempty"`
+	// The name the account gave this customer with `PATCH /members/:id`. Invoices show it as the customer name on every invoice for this member, in place of the user's own name. `null` when the account has not set one.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The member's phone number: the most recent number collected (or verified) at checkout, otherwise their account number when they have shared one with this seller. `null` without `member:phone:read` on the account, or when there is neither.
+	PhoneNumber *string `json:"phone_number,omitempty" url:"phone_number,omitempty"`
 	// `joined` while the member is part of the account, `left` after they leave.
 	Status MemberStatus `json:"status" url:"status"`
+	// The member's current token balance for this account, computed from token transactions.
+	TokenBalance float64 `json:"token_balance" url:"token_balance"`
+	// How much the member has spent on the account's products, in USD.
+	UsdTotalSpent *Money `json:"usd_total_spent" url:"usd_total_spent"`
 	// The user behind this member. `null` when the buyer is another business rather than a person.
 	User *UserSummary `json:"user,omitempty" url:"user,omitempty"`
 
@@ -229,6 +332,27 @@ func (m *Member) GetCreatedAt() string {
 	return m.CreatedAt
 }
 
+func (m *Member) GetDisplayName() string {
+	if m == nil {
+		return ""
+	}
+	return m.DisplayName
+}
+
+func (m *Member) GetEarningsUsd() *UserEarningsAmount {
+	if m == nil {
+		return nil
+	}
+	return m.EarningsUsd
+}
+
+func (m *Member) GetEmail() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Email
+}
+
 func (m *Member) GetID() string {
 	if m == nil {
 		return ""
@@ -250,11 +374,53 @@ func (m *Member) GetLastAccessedAt() *string {
 	return m.LastAccessedAt
 }
 
+func (m *Member) GetMostRecentAction() *MemberMostRecentAction {
+	if m == nil {
+		return nil
+	}
+	return m.MostRecentAction
+}
+
+func (m *Member) GetMostRecentActionAt() *string {
+	if m == nil {
+		return nil
+	}
+	return m.MostRecentActionAt
+}
+
+func (m *Member) GetName() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Name
+}
+
+func (m *Member) GetPhoneNumber() *string {
+	if m == nil {
+		return nil
+	}
+	return m.PhoneNumber
+}
+
 func (m *Member) GetStatus() MemberStatus {
 	if m == nil {
 		return ""
 	}
 	return m.Status
+}
+
+func (m *Member) GetTokenBalance() float64 {
+	if m == nil {
+		return 0
+	}
+	return m.TokenBalance
+}
+
+func (m *Member) GetUsdTotalSpent() *Money {
+	if m == nil {
+		return nil
+	}
+	return m.UsdTotalSpent
 }
 
 func (m *Member) GetUser() *UserSummary {
@@ -272,10 +438,12 @@ func (m *Member) GetExtraProperties() map[string]interface{} {
 }
 
 func (m *Member) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetAccessLevel sets the AccessLevel field and marks it as non-optional;
@@ -299,6 +467,27 @@ func (m *Member) SetCreatedAt(createdAt string) {
 	m.require(memberFieldCreatedAt)
 }
 
+// SetDisplayName sets the DisplayName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetDisplayName(displayName string) {
+	m.DisplayName = displayName
+	m.require(memberFieldDisplayName)
+}
+
+// SetEarningsUsd sets the EarningsUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetEarningsUsd(earningsUsd *UserEarningsAmount) {
+	m.EarningsUsd = earningsUsd
+	m.require(memberFieldEarningsUsd)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetEmail(email *string) {
+	m.Email = email
+	m.require(memberFieldEmail)
+}
+
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (m *Member) SetID(id string) {
@@ -320,11 +509,53 @@ func (m *Member) SetLastAccessedAt(lastAccessedAt *string) {
 	m.require(memberFieldLastAccessedAt)
 }
 
+// SetMostRecentAction sets the MostRecentAction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetMostRecentAction(mostRecentAction *MemberMostRecentAction) {
+	m.MostRecentAction = mostRecentAction
+	m.require(memberFieldMostRecentAction)
+}
+
+// SetMostRecentActionAt sets the MostRecentActionAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetMostRecentActionAt(mostRecentActionAt *string) {
+	m.MostRecentActionAt = mostRecentActionAt
+	m.require(memberFieldMostRecentActionAt)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetName(name *string) {
+	m.Name = name
+	m.require(memberFieldName)
+}
+
+// SetPhoneNumber sets the PhoneNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetPhoneNumber(phoneNumber *string) {
+	m.PhoneNumber = phoneNumber
+	m.require(memberFieldPhoneNumber)
+}
+
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (m *Member) SetStatus(status MemberStatus) {
 	m.Status = status
 	m.require(memberFieldStatus)
+}
+
+// SetTokenBalance sets the TokenBalance field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetTokenBalance(tokenBalance float64) {
+	m.TokenBalance = tokenBalance
+	m.require(memberFieldTokenBalance)
+}
+
+// SetUsdTotalSpent sets the UsdTotalSpent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetUsdTotalSpent(usdTotalSpent *Money) {
+	m.UsdTotalSpent = usdTotalSpent
+	m.require(memberFieldUsdTotalSpent)
 }
 
 // SetUser sets the User field and marks it as non-optional;
@@ -346,6 +577,13 @@ func (m *Member) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, memberNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -399,6 +637,62 @@ func NewMemberAccessLevelFromString(s string) (MemberAccessLevel, error) {
 }
 
 func (m MemberAccessLevel) Ptr() *MemberAccessLevel {
+	return &m
+}
+
+// The member's latest lifecycle state on the account, derived from their memberships, such as `paid_subscriber`, `canceling`, or `churned`. `null` until it is first computed.
+type MemberMostRecentAction string
+
+const (
+	MemberMostRecentActionCanceling        MemberMostRecentAction = "canceling"
+	MemberMostRecentActionChurned          MemberMostRecentAction = "churned"
+	MemberMostRecentActionFinishedSplitPay MemberMostRecentAction = "finished_split_pay"
+	MemberMostRecentActionPaused           MemberMostRecentAction = "paused"
+	MemberMostRecentActionPaidSubscriber   MemberMostRecentAction = "paid_subscriber"
+	MemberMostRecentActionPaidOnce         MemberMostRecentAction = "paid_once"
+	MemberMostRecentActionExpiring         MemberMostRecentAction = "expiring"
+	MemberMostRecentActionJoined           MemberMostRecentAction = "joined"
+	MemberMostRecentActionLeft             MemberMostRecentAction = "left"
+	MemberMostRecentActionTrialing         MemberMostRecentAction = "trialing"
+	MemberMostRecentActionPendingEntry     MemberMostRecentAction = "pending_entry"
+	MemberMostRecentActionRenewing         MemberMostRecentAction = "renewing"
+	MemberMostRecentActionPastDue          MemberMostRecentAction = "past_due"
+)
+
+func NewMemberMostRecentActionFromString(s string) (MemberMostRecentAction, error) {
+	switch s {
+	case "canceling":
+		return MemberMostRecentActionCanceling, nil
+	case "churned":
+		return MemberMostRecentActionChurned, nil
+	case "finished_split_pay":
+		return MemberMostRecentActionFinishedSplitPay, nil
+	case "paused":
+		return MemberMostRecentActionPaused, nil
+	case "paid_subscriber":
+		return MemberMostRecentActionPaidSubscriber, nil
+	case "paid_once":
+		return MemberMostRecentActionPaidOnce, nil
+	case "expiring":
+		return MemberMostRecentActionExpiring, nil
+	case "joined":
+		return MemberMostRecentActionJoined, nil
+	case "left":
+		return MemberMostRecentActionLeft, nil
+	case "trialing":
+		return MemberMostRecentActionTrialing, nil
+	case "pending_entry":
+		return MemberMostRecentActionPendingEntry, nil
+	case "renewing":
+		return MemberMostRecentActionRenewing, nil
+	case "past_due":
+		return MemberMostRecentActionPastDue, nil
+	}
+	var t MemberMostRecentAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MemberMostRecentAction) Ptr() *MemberMostRecentAction {
 	return &m
 }
 
@@ -472,13 +766,91 @@ func (l ListMembersRequestDirection) Ptr() *ListMembersRequestDirection {
 	return &l
 }
 
+type ListMembersRequestMembershipStatus string
+
+const (
+	ListMembersRequestMembershipStatusActive   ListMembersRequestMembershipStatus = "active"
+	ListMembersRequestMembershipStatusInactive ListMembersRequestMembershipStatus = "inactive"
+)
+
+func NewListMembersRequestMembershipStatusFromString(s string) (ListMembersRequestMembershipStatus, error) {
+	switch s {
+	case "active":
+		return ListMembersRequestMembershipStatusActive, nil
+	case "inactive":
+		return ListMembersRequestMembershipStatusInactive, nil
+	}
+	var t ListMembersRequestMembershipStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListMembersRequestMembershipStatus) Ptr() *ListMembersRequestMembershipStatus {
+	return &l
+}
+
+type ListMembersRequestMostRecentActionsItem string
+
+const (
+	ListMembersRequestMostRecentActionsItemCanceling        ListMembersRequestMostRecentActionsItem = "canceling"
+	ListMembersRequestMostRecentActionsItemChurned          ListMembersRequestMostRecentActionsItem = "churned"
+	ListMembersRequestMostRecentActionsItemFinishedSplitPay ListMembersRequestMostRecentActionsItem = "finished_split_pay"
+	ListMembersRequestMostRecentActionsItemPaused           ListMembersRequestMostRecentActionsItem = "paused"
+	ListMembersRequestMostRecentActionsItemPaidSubscriber   ListMembersRequestMostRecentActionsItem = "paid_subscriber"
+	ListMembersRequestMostRecentActionsItemPaidOnce         ListMembersRequestMostRecentActionsItem = "paid_once"
+	ListMembersRequestMostRecentActionsItemExpiring         ListMembersRequestMostRecentActionsItem = "expiring"
+	ListMembersRequestMostRecentActionsItemJoined           ListMembersRequestMostRecentActionsItem = "joined"
+	ListMembersRequestMostRecentActionsItemLeft             ListMembersRequestMostRecentActionsItem = "left"
+	ListMembersRequestMostRecentActionsItemTrialing         ListMembersRequestMostRecentActionsItem = "trialing"
+	ListMembersRequestMostRecentActionsItemPendingEntry     ListMembersRequestMostRecentActionsItem = "pending_entry"
+	ListMembersRequestMostRecentActionsItemRenewing         ListMembersRequestMostRecentActionsItem = "renewing"
+	ListMembersRequestMostRecentActionsItemPastDue          ListMembersRequestMostRecentActionsItem = "past_due"
+)
+
+func NewListMembersRequestMostRecentActionsItemFromString(s string) (ListMembersRequestMostRecentActionsItem, error) {
+	switch s {
+	case "canceling":
+		return ListMembersRequestMostRecentActionsItemCanceling, nil
+	case "churned":
+		return ListMembersRequestMostRecentActionsItemChurned, nil
+	case "finished_split_pay":
+		return ListMembersRequestMostRecentActionsItemFinishedSplitPay, nil
+	case "paused":
+		return ListMembersRequestMostRecentActionsItemPaused, nil
+	case "paid_subscriber":
+		return ListMembersRequestMostRecentActionsItemPaidSubscriber, nil
+	case "paid_once":
+		return ListMembersRequestMostRecentActionsItemPaidOnce, nil
+	case "expiring":
+		return ListMembersRequestMostRecentActionsItemExpiring, nil
+	case "joined":
+		return ListMembersRequestMostRecentActionsItemJoined, nil
+	case "left":
+		return ListMembersRequestMostRecentActionsItemLeft, nil
+	case "trialing":
+		return ListMembersRequestMostRecentActionsItemTrialing, nil
+	case "pending_entry":
+		return ListMembersRequestMostRecentActionsItemPendingEntry, nil
+	case "renewing":
+		return ListMembersRequestMostRecentActionsItemRenewing, nil
+	case "past_due":
+		return ListMembersRequestMostRecentActionsItemPastDue, nil
+	}
+	var t ListMembersRequestMostRecentActionsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListMembersRequestMostRecentActionsItem) Ptr() *ListMembersRequestMostRecentActionsItem {
+	return &l
+}
+
 type ListMembersRequestOrder string
 
 const (
-	ListMembersRequestOrderCreatedAt      ListMembersRequestOrder = "created_at"
-	ListMembersRequestOrderJoinedAt       ListMembersRequestOrder = "joined_at"
-	ListMembersRequestOrderLastAccessedAt ListMembersRequestOrder = "last_accessed_at"
-	ListMembersRequestOrderUsdTotalSpent  ListMembersRequestOrder = "usd_total_spent"
+	ListMembersRequestOrderCreatedAt          ListMembersRequestOrder = "created_at"
+	ListMembersRequestOrderJoinedAt           ListMembersRequestOrder = "joined_at"
+	ListMembersRequestOrderLastAccessedAt     ListMembersRequestOrder = "last_accessed_at"
+	ListMembersRequestOrderMostRecentActionAt ListMembersRequestOrder = "most_recent_action_at"
+	ListMembersRequestOrderUsdTotalSpent      ListMembersRequestOrder = "usd_total_spent"
 )
 
 func NewListMembersRequestOrderFromString(s string) (ListMembersRequestOrder, error) {
@@ -489,6 +861,8 @@ func NewListMembersRequestOrderFromString(s string) (ListMembersRequestOrder, er
 		return ListMembersRequestOrderJoinedAt, nil
 	case "last_accessed_at":
 		return ListMembersRequestOrderLastAccessedAt, nil
+	case "most_recent_action_at":
+		return ListMembersRequestOrderMostRecentActionAt, nil
 	case "usd_total_spent":
 		return ListMembersRequestOrderUsdTotalSpent, nil
 	}
@@ -560,10 +934,12 @@ func (l *ListMembersResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListMembersResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -629,6 +1005,12 @@ var (
 	listMembersResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listMembersResponsePageInfoNullableFields maps the wire names of ListMembersResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listMembersResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listMembersResponsePageInfoFieldEndCursor,
+	"start_cursor": listMembersResponsePageInfoFieldStartCursor,
+}
+
 type ListMembersResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -678,10 +1060,12 @@ func (l *ListMembersResponsePageInfo) GetExtraProperties() map[string]interface{
 }
 
 func (l *ListMembersResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -724,6 +1108,13 @@ func (l *ListMembersResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listMembersResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -764,6 +1155,12 @@ var (
 	postMemberCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postMemberCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postMemberCreatedPayloadNullableFields maps the wire names of PostMemberCreatedPayload's nullable fields (required or optional) to their field bits.
+var postMemberCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postMemberCreatedPayloadFieldAccountID,
+	"api_version_date": postMemberCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostMemberCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -853,10 +1250,12 @@ func (p *PostMemberCreatedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostMemberCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -933,6 +1332,13 @@ func (p *PostMemberCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postMemberCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1003,4 +1409,329 @@ func NewPostMemberCreatedPayloadTypeFromString(s string) (PostMemberCreatedPaylo
 
 func (p PostMemberCreatedPayloadType) Ptr() *PostMemberCreatedPayloadType {
 	return &p
+}
+
+var (
+	postMemberUpdatedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postMemberUpdatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postMemberUpdatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postMemberUpdatedPayloadFieldData               = big.NewInt(1 << 3)
+	postMemberUpdatedPayloadFieldID                 = big.NewInt(1 << 4)
+	postMemberUpdatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postMemberUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postMemberUpdatedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+// postMemberUpdatedPayloadNullableFields maps the wire names of PostMemberUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postMemberUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postMemberUpdatedPayloadFieldAccountID,
+	"api_version_date": postMemberUpdatedPayloadFieldAPIVersionDate,
+}
+
+type PostMemberUpdatedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostMemberUpdatedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Member `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostMemberUpdatedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostMemberUpdatedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostMemberUpdatedPayload) GetAPIVersion() PostMemberUpdatedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostMemberUpdatedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostMemberUpdatedPayload) GetData() *Member {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostMemberUpdatedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostMemberUpdatedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostMemberUpdatedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostMemberUpdatedPayload) GetType() PostMemberUpdatedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostMemberUpdatedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostMemberUpdatedPayload) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMemberUpdatedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postMemberUpdatedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMemberUpdatedPayload) SetAPIVersion(apiVersion PostMemberUpdatedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postMemberUpdatedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMemberUpdatedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postMemberUpdatedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMemberUpdatedPayload) SetData(data *Member) {
+	p.Data = data
+	p.require(postMemberUpdatedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMemberUpdatedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postMemberUpdatedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMemberUpdatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postMemberUpdatedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMemberUpdatedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postMemberUpdatedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMemberUpdatedPayload) SetType(type_ PostMemberUpdatedPayloadType) {
+	p.Type = type_
+	p.require(postMemberUpdatedPayloadFieldType)
+}
+
+func (p *PostMemberUpdatedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostMemberUpdatedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostMemberUpdatedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postMemberUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostMemberUpdatedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostMemberUpdatedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostMemberUpdatedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostMemberUpdatedPayloadAPIVersion string
+
+const (
+	PostMemberUpdatedPayloadAPIVersionV1 PostMemberUpdatedPayloadAPIVersion = "v1"
+)
+
+func NewPostMemberUpdatedPayloadAPIVersionFromString(s string) (PostMemberUpdatedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostMemberUpdatedPayloadAPIVersionV1, nil
+	}
+	var t PostMemberUpdatedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostMemberUpdatedPayloadAPIVersion) Ptr() *PostMemberUpdatedPayloadAPIVersion {
+	return &p
+}
+
+// The webhook event type
+type PostMemberUpdatedPayloadType string
+
+const (
+	PostMemberUpdatedPayloadTypeMemberUpdated PostMemberUpdatedPayloadType = "member.updated"
+)
+
+func NewPostMemberUpdatedPayloadTypeFromString(s string) (PostMemberUpdatedPayloadType, error) {
+	switch s {
+	case "member.updated":
+		return PostMemberUpdatedPayloadTypeMemberUpdated, nil
+	}
+	var t PostMemberUpdatedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostMemberUpdatedPayloadType) Ptr() *PostMemberUpdatedPayloadType {
+	return &p
+}
+
+var (
+	updateMembersRequestFieldID   = big.NewInt(1 << 0)
+	updateMembersRequestFieldName = big.NewInt(1 << 1)
+)
+
+type UpdateMembersRequest struct {
+	// Member ID (`mber_` tag).
+	ID string `json:"-" url:"-"`
+	// The customer name to show on this member's invoices, at most 255 bytes. Leading and trailing spaces are trimmed. `null` or a blank string clears it, so invoices show the user's own name again.
+	Name *string `json:"name,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UpdateMembersRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMembersRequest) SetID(id string) {
+	u.ID = id
+	u.require(updateMembersRequestFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMembersRequest) SetName(name *string) {
+	u.Name = name
+	u.require(updateMembersRequestFieldName)
+}
+
+func (u *UpdateMembersRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateMembersRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*u = UpdateMembersRequest(body)
+	return nil
+}
+
+func (u *UpdateMembersRequest) MarshalJSON() ([]byte, error) {
+	type embed UpdateMembersRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }

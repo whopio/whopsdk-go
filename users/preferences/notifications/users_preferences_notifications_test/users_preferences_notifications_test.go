@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
-	preferences "github.com/whopio/whopsdk-go/users/preferences"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
+	preferences "github.com/whopio/whopsdk-go/v2/users/preferences"
 )
 
 func VerifyRequestCount(

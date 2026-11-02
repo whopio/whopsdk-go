@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -136,8 +136,10 @@ func TestAccountsMeWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
+	request := &whopsdk.MeAccountsRequest{}
 	_, invocationErr := client.Accounts.Me(
 		context.TODO(),
+		request,
 		option.WithHTTPHeader(
 			http.Header{"X-Test-Id": []string{"TestAccountsMeWithWireMock"}},
 		),
@@ -145,6 +147,32 @@ func TestAccountsMeWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestAccountsMeWithWireMock", "GET", "/accounts/me", nil, 1)
+}
+
+func TestAccountsSearchWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.SearchAccountsRequest{
+		Query: "query",
+	}
+	_, invocationErr := client.Accounts.Search(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAccountsSearchWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAccountsSearchWithWireMock", "GET", "/accounts/search", map[string]interface{}{"query": "query"}, 1)
 }
 
 func TestAccountsRetrieveWithWireMock(
@@ -171,6 +199,32 @@ func TestAccountsRetrieveWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestAccountsRetrieveWithWireMock", "GET", "/accounts/id", nil, 1)
+}
+
+func TestAccountsDeleteWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.DeleteAccountsRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Accounts.Delete(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAccountsDeleteWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAccountsDeleteWithWireMock", "DELETE", "/accounts/id", nil, 1)
 }
 
 func TestAccountsUpdateWithWireMock(
@@ -226,7 +280,6 @@ func TestAccountsFormCompanyWithWireMock(
 		BusinessPhone: whopsdk.String(
 			"+15125550142",
 		),
-		BusinessType: "brick_and_mortar",
 		BusinessWebsite: whopsdk.String(
 			"https://shinetime.example",
 		),
@@ -235,7 +288,7 @@ func TestAccountsFormCompanyWithWireMock(
 		ExpediteEin: whopsdk.Bool(
 			true,
 		),
-		FormationState: whopsdk.FormCompanyAccountsRequestFormationStateTx,
+		FormationState: whopsdk.FormCompanyAccountsRequestFormationStateWy,
 		Founders: []*whopsdk.FormCompanyAccountsRequestFoundersItem{
 			&whopsdk.FormCompanyAccountsRequestFoundersItem{
 				Address: &whopsdk.FormCompanyAccountsRequestFoundersItemAddress{
@@ -267,8 +320,6 @@ func TestAccountsFormCompanyWithWireMock(
 				),
 			},
 		},
-		IndustryGroup: "automotive",
-		IndustryType:  "car_wash",
 		ShareStructure: &whopsdk.FormCompanyAccountsRequestShareStructure{
 			NumberOfShares: 123,
 			Value:          123,
@@ -287,6 +338,58 @@ func TestAccountsFormCompanyWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestAccountsFormCompanyWithWireMock", "POST", "/accounts/id/form_company", nil, 1)
+}
+
+func TestAccountsRetryAdsPaymentWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.RetryAdsPaymentAccountsRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Accounts.RetryAdsPayment(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAccountsRetryAdsPaymentWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAccountsRetryAdsPaymentWithWireMock", "POST", "/accounts/id/retry_ads_payment", nil, 1)
+}
+
+func TestAccountsSuspendWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.SuspendAccountsRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Accounts.Suspend(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAccountsSuspendWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAccountsSuspendWithWireMock", "POST", "/accounts/id/suspend", nil, 1)
 }
 
 func TestAccountsTransferOwnershipWithWireMock(

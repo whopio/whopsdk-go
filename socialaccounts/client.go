@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists the social accounts linked to an account or user.
+// Deprecated compatibility endpoint. List external accounts with `GET /external_accounts` instead.
 //
 // Example:
 //
@@ -56,7 +56,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/social_accounts"
@@ -86,7 +94,6 @@ func (c *Client) List(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Response:        pageRequest.Response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		}
 	}
 	readPageResponse := func(response *whopsdk.ListSocialAccountsResponse) *core.PageResponse[*string, *whopsdk.SocialAccount, *whopsdk.ListSocialAccountsResponse] {
@@ -111,12 +118,12 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates or returns a Whop-managed Facebook page for an account.
+// Deprecated compatibility endpoint. Create external accounts with `POST /external_accounts` instead.
 //
 // Example:
 //
-//	request := &whopsdk.CreateSocialAccountsRequest{
-//	    Platform: whopsdk.CreateSocialAccountsRequestPlatformFacebook,
+//	request := &whopsdk.CreateSocialAccountsRequestBody{
+//	    Facebook: &whopsdk.CreateSocialAccountsRequestBodyFacebook{},
 //	}
 //	client.SocialAccounts.Create(
 //	    context.TODO(),
@@ -124,7 +131,7 @@ func (c *Client) List(
 //	)
 func (c *Client) Create(
 	ctx context.Context,
-	request *whopsdk.CreateSocialAccountsRequest,
+	request *whopsdk.CreateSocialAccountsRequestBody,
 	opts ...option.RequestOption,
 ) (*whopsdk.SocialAccount, error) {
 	response, err := c.WithRawResponse.Create(
@@ -138,12 +145,13 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Starts an OAuth connection flow and returns an authorize_url where the user can connect a social account.
+// Deprecated compatibility endpoint. Connect external accounts with `POST /external_accounts/connect` instead.
 //
 // Example:
 //
 //	request := &whopsdk.ConnectSocialAccountsRequest{
-//	    Platform: whopsdk.ConnectSocialAccountsRequestPlatformMetaBusiness,
+//	    Platform: whopsdk.ConnectSocialAccountsRequestPlatformTiktok,
+//	    RedirectURL: "https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/ads/settings",
 //	}
 //	client.SocialAccounts.Connect(
 //	    context.TODO(),
@@ -165,7 +173,7 @@ func (c *Client) Connect(
 	return response.Body, nil
 }
 
-// Disconnects a social account from an account or user without deleting the underlying platform account.
+// Deprecated compatibility endpoint. Disconnect external accounts with `DELETE /external_accounts/{id}` instead.
 //
 // Example:
 //
@@ -192,24 +200,23 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Lists the active lead (instant) forms that already exist on a connected Facebook page, so an ad can reuse one as its `lead_gen_form_id` instead of authoring a new form. Every active form comes back in a single response — the list is not paginated.
+// Deprecated compatibility endpoint. Refresh external accounts with `POST /external_accounts/{id}/refresh` instead.
 //
 // Example:
 //
-//	request := &whopsdk.LeadFormsSocialAccountsRequest{
+//	request := &whopsdk.RefreshSocialAccountsRequest{
 //	    ID: "id",
-//	    AccountID: "account_id",
 //	}
-//	client.SocialAccounts.LeadForms(
+//	client.SocialAccounts.Refresh(
 //	    context.TODO(),
 //	    request,
 //	)
-func (c *Client) LeadForms(
+func (c *Client) Refresh(
 	ctx context.Context,
-	request *whopsdk.LeadFormsSocialAccountsRequest,
+	request *whopsdk.RefreshSocialAccountsRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.LeadFormsSocialAccountsResponse, error) {
-	response, err := c.WithRawResponse.LeadForms(
+) (*whopsdk.SocialAccount, error) {
+	response, err := c.WithRawResponse.Refresh(
 		ctx,
 		request,
 		opts...,
@@ -218,82 +225,4 @@ func (c *Client) LeadForms(
 		return nil, err
 	}
 	return response.Body, nil
-}
-
-// Lists the existing posts of a connected Facebook page, Instagram account, or TikTok account.
-//
-// Example:
-//
-//	request := &whopsdk.PostsSocialAccountsRequest{
-//	    ID: "id",
-//	    AccountID: "account_id",
-//	}
-//	client.SocialAccounts.Posts(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) Posts(
-	ctx context.Context,
-	request *whopsdk.PostsSocialAccountsRequest,
-	opts ...option.RequestOption,
-) (*core.Page[*string, *whopsdk.SocialAccountPost, *whopsdk.PostsSocialAccountsResponse], error) {
-	options := core.NewRequestOptions(opts...)
-	baseURL := internal.ResolveBaseURL(
-		options.BaseURL,
-		c.baseURL,
-		"https://api.whop.com/api/v1",
-	)
-	endpointURL := internal.EncodeURL(
-		baseURL+"/social_accounts/%v/posts",
-		request.ID,
-	)
-	queryParams, err := internal.QueryValues(request)
-	if err != nil {
-		return nil, err
-	}
-	headers := internal.MergeHeaders(
-		c.options.ToHeader(),
-		options.ToHeader(),
-	)
-	prepareCall := func(pageRequest *core.PageRequest[*string]) *internal.CallParams {
-		if pageRequest.Cursor != nil {
-			queryParams.Set("after", *pageRequest.Cursor)
-		}
-		nextURL := endpointURL
-		if len(queryParams) > 0 {
-			nextURL += "?" + queryParams.Encode()
-		}
-		return &internal.CallParams{
-			URL:             nextURL,
-			Method:          http.MethodGet,
-			Headers:         headers,
-			MaxAttempts:     options.MaxAttempts,
-			DisableRetries:  options.DisableRetries,
-			BodyProperties:  options.BodyProperties,
-			QueryParameters: options.QueryParameters,
-			Client:          options.HTTPClient,
-			Response:        pageRequest.Response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
-		}
-	}
-	readPageResponse := func(response *whopsdk.PostsSocialAccountsResponse) *core.PageResponse[*string, *whopsdk.SocialAccountPost, *whopsdk.PostsSocialAccountsResponse] {
-		var zeroValue *string
-		var next *string
-		if response.PageInfo != nil {
-			next = response.PageInfo.EndCursor
-		}
-		results := response.GetData()
-		return &core.PageResponse[*string, *whopsdk.SocialAccountPost, *whopsdk.PostsSocialAccountsResponse]{
-			Results:  results,
-			Response: response,
-			Next:     next,
-			Done:     next == zeroValue || *next == "",
-		}
-	}
-	pager := internal.NewCursorPager(
-		c.caller,
-		prepareCall,
-		readPageResponse,
-	)
-	return pager.GetPage(ctx, request.After)
 }

@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of fee markups configured for a company. If the company is a platform account, returns the platform default markups.
+// Lists the fee markups configured for an account. For a platform account, returns the platform's default markups.
 //
 // Required permissions:
 //   - `company:update_child_fees`
@@ -53,7 +53,7 @@ func NewClient(options *core.RequestOptions) *Client {
 //	    Last: whopsdk.Int(
 //	        42,
 //	    ),
-//	    CompanyID: "biz_xxxxxxxxxxxxxx",
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	}
 //	client.FeeMarkups.List(
 //	    context.TODO(),
@@ -67,7 +67,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/fee_markups"
@@ -122,7 +130,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Create or update a fee markup for a company. If a markup for the specified fee type already exists, it will be updated with the new values.
+// Creates or updates an account's markup for one fee type. If the account already has a markup for that `fee_type`, it is updated with the new values.
 //
 // Required permissions:
 //   - `company:update_child_fees`
@@ -130,7 +138,7 @@ func (c *Client) List(
 // Example:
 //
 //	request := &whopsdk.CreateFeeMarkupsRequest{
-//	    CompanyID: "biz_xxxxxxxxxxxxxx",
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	    FeeType: whopsdk.FeeMarkupTypesCryptoWithdrawalMarkup,
 //	}
 //	client.FeeMarkups.Create(
@@ -153,7 +161,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Delete a fee markup configuration for a company. This removes the custom fee override and reverts to the parent company's default fees.
+// Deletes a fee markup, removing the custom fee override so the account reverts to its parent account's default fees.
 //
 // Required permissions:
 //   - `company:update_child_fees`

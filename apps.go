@@ -5,19 +5,21 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
 
 var (
-	createAppsRequestFieldAccountID    = big.NewInt(1 << 0)
-	createAppsRequestFieldAppType      = big.NewInt(1 << 1)
-	createAppsRequestFieldBaseURL      = big.NewInt(1 << 2)
-	createAppsRequestFieldIcon         = big.NewInt(1 << 3)
-	createAppsRequestFieldName         = big.NewInt(1 << 4)
-	createAppsRequestFieldRedirectURIs = big.NewInt(1 << 5)
-	createAppsRequestFieldRoute        = big.NewInt(1 << 6)
+	createAppsRequestFieldAccountID       = big.NewInt(1 << 0)
+	createAppsRequestFieldAppType         = big.NewInt(1 << 1)
+	createAppsRequestFieldBaseURL         = big.NewInt(1 << 2)
+	createAppsRequestFieldDomainID        = big.NewInt(1 << 3)
+	createAppsRequestFieldIcon            = big.NewInt(1 << 4)
+	createAppsRequestFieldImportedFromURL = big.NewInt(1 << 5)
+	createAppsRequestFieldName            = big.NewInt(1 << 6)
+	createAppsRequestFieldRedirectURIs    = big.NewInt(1 << 7)
+	createAppsRequestFieldRoute           = big.NewInt(1 << 8)
 )
 
 type CreateAppsRequest struct {
@@ -27,13 +29,17 @@ type CreateAppsRequest struct {
 	AppType *CreateAppsRequestAppType `json:"app_type,omitempty" url:"-"`
 	// The base production URL where the app is hosted, such as `https://myapp.example.com`.
 	BaseURL *string `json:"base_url,omitempty" url:"-"`
+	// A domain on the account (`dom_` tag) to serve the app at, such as a whop.site address claimed with `POST /domains`. Required with `template_id`.
+	DomainID *string `json:"domain_id,omitempty" url:"-"`
 	// The icon image for the app in PNG, JPEG, or GIF format, referencing an uploaded file: `{ id }` for an existing attachment or `{ direct_upload_id }` for a new direct upload.
 	Icon *CreateAppsRequestIcon `json:"icon,omitempty" url:"-"`
+	// The address of the existing website this app is imported from, such as `https://shop.example.com`. Must be an `http` or `https` URL.
+	ImportedFromURL *string `json:"imported_from_url,omitempty" url:"-"`
 	// The display name for the app, shown to users on the app store and product pages.
 	Name string `json:"name" url:"-"`
 	// The whitelisted OAuth callback URLs that users are redirected to after authorizing the app.
 	RedirectURIs []string `json:"redirect_uris,omitempty" url:"-"`
-	// The subdomain route where the app's hosted web builds are served, such as `myapp` for myapp.whop.app.
+	// Deprecated: claim an address with `POST /domains` and pass `domain_id`. The subdomain route where the app's hosted web builds are served, such as `myapp` for myapp.whop.site.
 	Route *string `json:"route,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -41,10 +47,12 @@ type CreateAppsRequest struct {
 }
 
 func (c *CreateAppsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -68,11 +76,25 @@ func (c *CreateAppsRequest) SetBaseURL(baseURL *string) {
 	c.require(createAppsRequestFieldBaseURL)
 }
 
+// SetDomainID sets the DomainID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAppsRequest) SetDomainID(domainID *string) {
+	c.DomainID = domainID
+	c.require(createAppsRequestFieldDomainID)
+}
+
 // SetIcon sets the Icon field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateAppsRequest) SetIcon(icon *CreateAppsRequestIcon) {
 	c.Icon = icon
 	c.require(createAppsRequestFieldIcon)
+}
+
+// SetImportedFromURL sets the ImportedFromURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAppsRequest) SetImportedFromURL(importedFromURL *string) {
+	c.ImportedFromURL = importedFromURL
+	c.require(createAppsRequestFieldImportedFromURL)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -122,7 +144,7 @@ var (
 )
 
 type DeleteAppsRequest struct {
-	// App ID (prefixed `app_`), the app's claimed route, or its proxy domain id.
+	// App ID (prefixed `app_`). Retrieval also accepts the app's claimed route, an active verified custom hostname, or its proxy domain id; a custom hostname returns `404` when its assignment is inactive, the owning account is suspended, or the app is deleted.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -130,10 +152,12 @@ type DeleteAppsRequest struct {
 }
 
 func (d *DeleteAppsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -159,10 +183,12 @@ type DeployAppsRequest struct {
 }
 
 func (d *DeployAppsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -204,14 +230,17 @@ var (
 	listAppsRequestFieldAccountID        = big.NewInt(1 << 0)
 	listAppsRequestFieldAppType          = big.NewInt(1 << 1)
 	listAppsRequestFieldViewType         = big.NewInt(1 << 2)
-	listAppsRequestFieldVerifiedAppsOnly = big.NewInt(1 << 3)
-	listAppsRequestFieldQuery            = big.NewInt(1 << 4)
-	listAppsRequestFieldOrder            = big.NewInt(1 << 5)
-	listAppsRequestFieldDirection        = big.NewInt(1 << 6)
-	listAppsRequestFieldFirst            = big.NewInt(1 << 7)
-	listAppsRequestFieldAfter            = big.NewInt(1 << 8)
-	listAppsRequestFieldLast             = big.NewInt(1 << 9)
-	listAppsRequestFieldBefore           = big.NewInt(1 << 10)
+	listAppsRequestFieldVerified         = big.NewInt(1 << 3)
+	listAppsRequestFieldVerifiedAppsOnly = big.NewInt(1 << 4)
+	listAppsRequestFieldRecommended      = big.NewInt(1 << 5)
+	listAppsRequestFieldQuery            = big.NewInt(1 << 6)
+	listAppsRequestFieldProductCategory  = big.NewInt(1 << 7)
+	listAppsRequestFieldOrder            = big.NewInt(1 << 8)
+	listAppsRequestFieldDirection        = big.NewInt(1 << 9)
+	listAppsRequestFieldFirst            = big.NewInt(1 << 10)
+	listAppsRequestFieldAfter            = big.NewInt(1 << 11)
+	listAppsRequestFieldLast             = big.NewInt(1 << 12)
+	listAppsRequestFieldBefore           = big.NewInt(1 << 13)
 )
 
 type ListAppsRequest struct {
@@ -221,21 +250,27 @@ type ListAppsRequest struct {
 	AppType *ListAppsRequestAppType `json:"-" url:"app_type,omitempty"`
 	// Only return apps supporting this view type, such as `dashboard` or `hub`.
 	ViewType *ListAppsRequestViewType `json:"-" url:"view_type,omitempty"`
-	// Whether to only return apps verified by Whop. Verified website templates — websites with a published web build — are included, even though websites are otherwise left out of app lists.
+	// Only return apps whose Whop verification status matches this value. Omit this filter to include every verification status the caller can see.
+	Verified *bool `json:"-" url:"verified,omitempty"`
+	// Legacy compatibility filter. Use `verified` for field equality. `true` returns verified apps; clients pinned before `2026-08-25-2` retain the earlier public website discovery behavior.
 	VerifiedAppsOnly *bool `json:"-" url:"verified_apps_only,omitempty"`
+	// Only return apps Whop recommends (or, with `false`, only those it does not), independently of verification status.
+	Recommended *bool `json:"-" url:"recommended,omitempty"`
 	// A search string matched against app names.
 	Query *string `json:"-" url:"query,omitempty"`
-	// The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then apps with a banner image, then by how many apps were created from each app as a template.
+	// Only return apps whose `product_category` is this product category, such as `pressure_washing`. An unknown product category is rejected.
+	ProductCategory *string `json:"-" url:"product_category,omitempty"`
+	// The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then by how many businesses created apps from each app as a template. `template_recent_sales` ranks them by how many of those businesses processed a payment in the last 24 hours, recounted hourly, breaking ties by `template_usage`.
 	Order *ListAppsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
 	Direction *ListAppsRequestDirection `json:"-" url:"direction,omitempty"`
-	// The number of apps to return (default 20, max 100).
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor; returns apps after this position.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of apps to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// A cursor; returns apps before this position.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -243,10 +278,12 @@ type ListAppsRequest struct {
 }
 
 func (l *ListAppsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -270,6 +307,13 @@ func (l *ListAppsRequest) SetViewType(viewType *ListAppsRequestViewType) {
 	l.require(listAppsRequestFieldViewType)
 }
 
+// SetVerified sets the Verified field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAppsRequest) SetVerified(verified *bool) {
+	l.Verified = verified
+	l.require(listAppsRequestFieldVerified)
+}
+
 // SetVerifiedAppsOnly sets the VerifiedAppsOnly field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListAppsRequest) SetVerifiedAppsOnly(verifiedAppsOnly *bool) {
@@ -277,11 +321,25 @@ func (l *ListAppsRequest) SetVerifiedAppsOnly(verifiedAppsOnly *bool) {
 	l.require(listAppsRequestFieldVerifiedAppsOnly)
 }
 
+// SetRecommended sets the Recommended field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAppsRequest) SetRecommended(recommended *bool) {
+	l.Recommended = recommended
+	l.require(listAppsRequestFieldRecommended)
+}
+
 // SetQuery sets the Query field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListAppsRequest) SetQuery(query *string) {
 	l.Query = query
 	l.require(listAppsRequestFieldQuery)
+}
+
+// SetProductCategory sets the ProductCategory field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAppsRequest) SetProductCategory(productCategory *string) {
+	l.ProductCategory = productCategory
+	l.require(listAppsRequestFieldProductCategory)
 }
 
 // SetOrder sets the Order field and marks it as non-optional;
@@ -351,11 +409,11 @@ type LogsAppsRequest struct {
 	CreatedAfter *time.Time `json:"-" url:"created_after,omitempty"`
 	// End of the time window as an ISO 8601 timestamp. Defaults to now.
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
-	// The number of log lines to return (max 500).
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor for fetching logs after a previous page.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// A cursor for fetching logs before a later page.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -363,10 +421,12 @@ type LogsAppsRequest struct {
 }
 
 func (l *LogsAppsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -437,7 +497,7 @@ var (
 )
 
 type RetrieveAppsRequest struct {
-	// App ID (prefixed `app_`), the app's claimed route, or its proxy domain id.
+	// App ID (prefixed `app_`). Retrieval also accepts the app's claimed route, an active verified custom hostname, or its proxy domain id; a custom hostname returns `404` when its assignment is inactive, the owning account is suspended, or the app is deleted.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -445,10 +505,12 @@ type RetrieveAppsRequest struct {
 }
 
 func (r *RetrieveAppsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -459,43 +521,81 @@ func (r *RetrieveAppsRequest) SetID(id string) {
 }
 
 var (
-	appFieldAccount                   = big.NewInt(1 << 0)
-	appFieldAPIKey                    = big.NewInt(1 << 1)
-	appFieldAppStoreDescription       = big.NewInt(1 << 2)
-	appFieldAppType                   = big.NewInt(1 << 3)
-	appFieldBannerImage               = big.NewInt(1 << 4)
-	appFieldBaseURL                   = big.NewInt(1 << 5)
-	appFieldBusinessesCreatedCount    = big.NewInt(1 << 6)
-	appFieldBusinessesCreatedLogoURLs = big.NewInt(1 << 7)
-	appFieldCreator                   = big.NewInt(1 << 8)
-	appFieldDashboardPath             = big.NewInt(1 << 9)
-	appFieldDefaultAPIKey             = big.NewInt(1 << 10)
-	appFieldDeployment                = big.NewInt(1 << 11)
-	appFieldDescription               = big.NewInt(1 << 12)
-	appFieldDiscoverPath              = big.NewInt(1 << 13)
-	appFieldDomainID                  = big.NewInt(1 << 14)
-	appFieldExperiencePath            = big.NewInt(1 << 15)
-	appFieldHostedURL                 = big.NewInt(1 << 16)
-	appFieldIcon                      = big.NewInt(1 << 17)
-	appFieldID                        = big.NewInt(1 << 18)
-	appFieldMarketplaceStatus         = big.NewInt(1 << 19)
-	appFieldName                      = big.NewInt(1 << 20)
-	appFieldOauthClientType           = big.NewInt(1 << 21)
-	appFieldOpenapiPath               = big.NewInt(1 << 22)
-	appFieldOrigin                    = big.NewInt(1 << 23)
-	appFieldProductID                 = big.NewInt(1 << 24)
-	appFieldProductionAndroidBuild    = big.NewInt(1 << 25)
-	appFieldProductionIosBuild        = big.NewInt(1 << 26)
-	appFieldProductionWebBuild        = big.NewInt(1 << 27)
-	appFieldRedirectURIs              = big.NewInt(1 << 28)
-	appFieldRequestedPermissions      = big.NewInt(1 << 29)
-	appFieldRequiredScopes            = big.NewInt(1 << 30)
-	appFieldRoute                     = big.NewInt(1 << 31)
-	appFieldSecrets                   = big.NewInt(1 << 32)
-	appFieldSkillsPath                = big.NewInt(1 << 33)
-	appFieldStatus                    = big.NewInt(1 << 34)
-	appFieldVerified                  = big.NewInt(1 << 35)
+	appFieldAccount                        = big.NewInt(1 << 0)
+	appFieldAPIKey                         = big.NewInt(1 << 1)
+	appFieldAppStoreDescription            = big.NewInt(1 << 2)
+	appFieldAppType                        = big.NewInt(1 << 3)
+	appFieldBannerImage                    = big.NewInt(1 << 4)
+	appFieldBaseURL                        = big.NewInt(1 << 5)
+	appFieldBusinessesCreatedCount         = big.NewInt(1 << 6)
+	appFieldBusinessesCreatedLogoURLs      = big.NewInt(1 << 7)
+	appFieldBusinessesWithRecentSalesCount = big.NewInt(1 << 8)
+	appFieldCreator                        = big.NewInt(1 << 9)
+	appFieldDashboardPath                  = big.NewInt(1 << 10)
+	appFieldDefaultAPIKey                  = big.NewInt(1 << 11)
+	appFieldDeployment                     = big.NewInt(1 << 12)
+	appFieldDescription                    = big.NewInt(1 << 13)
+	appFieldDiscoverPath                   = big.NewInt(1 << 14)
+	appFieldDomainID                       = big.NewInt(1 << 15)
+	appFieldDomains                        = big.NewInt(1 << 16)
+	appFieldElementsUsed                   = big.NewInt(1 << 17)
+	appFieldExperiencePath                 = big.NewInt(1 << 18)
+	appFieldHostedURL                      = big.NewInt(1 << 19)
+	appFieldIcon                           = big.NewInt(1 << 20)
+	appFieldID                             = big.NewInt(1 << 21)
+	appFieldImportedFromURL                = big.NewInt(1 << 22)
+	appFieldMarketplaceStatus              = big.NewInt(1 << 23)
+	appFieldName                           = big.NewInt(1 << 24)
+	appFieldOauthClientType                = big.NewInt(1 << 25)
+	appFieldOpenapiPath                    = big.NewInt(1 << 26)
+	appFieldOrigin                         = big.NewInt(1 << 27)
+	appFieldPerInstallSchedule             = big.NewInt(1 << 28)
+	appFieldPreviewToken                   = big.NewInt(1 << 29)
+	appFieldProductCategory                = big.NewInt(1 << 30)
+	appFieldProductID                      = big.NewInt(1 << 31)
+	appFieldProductionAndroidBuild         = big.NewInt(1 << 32)
+	appFieldProductionIosBuild             = big.NewInt(1 << 33)
+	appFieldProductionWebBuild             = big.NewInt(1 << 34)
+	appFieldRedirectURIs                   = big.NewInt(1 << 35)
+	appFieldRequestedPermissions           = big.NewInt(1 << 36)
+	appFieldRequiredScopes                 = big.NewInt(1 << 37)
+	appFieldRoute                          = big.NewInt(1 << 38)
+	appFieldSchedule                       = big.NewInt(1 << 39)
+	appFieldSecrets                        = big.NewInt(1 << 40)
+	appFieldSkillsPath                     = big.NewInt(1 << 41)
+	appFieldStatus                         = big.NewInt(1 << 42)
+	appFieldVerified                       = big.NewInt(1 << 43)
 )
+
+// appNullableFields maps the wire names of App's nullable fields (required or optional) to their field bits.
+var appNullableFields = map[string]*big.Int{
+	"api_key":                  appFieldAPIKey,
+	"app_store_description":    appFieldAppStoreDescription,
+	"banner_image":             appFieldBannerImage,
+	"base_url":                 appFieldBaseURL,
+	"dashboard_path":           appFieldDashboardPath,
+	"default_api_key":          appFieldDefaultAPIKey,
+	"deployment":               appFieldDeployment,
+	"description":              appFieldDescription,
+	"discover_path":            appFieldDiscoverPath,
+	"experience_path":          appFieldExperiencePath,
+	"hosted_url":               appFieldHostedURL,
+	"imported_from_url":        appFieldImportedFromURL,
+	"marketplace_status":       appFieldMarketplaceStatus,
+	"openapi_path":             appFieldOpenapiPath,
+	"origin":                   appFieldOrigin,
+	"per_install_schedule":     appFieldPerInstallSchedule,
+	"preview_token":            appFieldPreviewToken,
+	"product_category":         appFieldProductCategory,
+	"product_id":               appFieldProductID,
+	"production_android_build": appFieldProductionAndroidBuild,
+	"production_ios_build":     appFieldProductionIosBuild,
+	"production_web_build":     appFieldProductionWebBuild,
+	"route":                    appFieldRoute,
+	"schedule":                 appFieldSchedule,
+	"secrets":                  appFieldSecrets,
+	"skills_path":              appFieldSkillsPath,
+}
 
 type App struct {
 	// The account that owns the app.
@@ -513,6 +613,8 @@ type App struct {
 	// Website businesses created from this app as a template.
 	BusinessesCreatedCount    int      `json:"businesses_created_count" url:"businesses_created_count"`
 	BusinessesCreatedLogoURLs []string `json:"businesses_created_logo_urls" url:"businesses_created_logo_urls"`
+	// Website businesses created from this app as a template that processed a payment in the last 24 hours. Recounted hourly, so it can be up to an hour behind.
+	BusinessesWithRecentSalesCount int `json:"businesses_with_recent_sales_count" url:"businesses_with_recent_sales_count"`
 	// The user who owns the publishing account.
 	Creator *AppCreator `json:"creator" url:"creator"`
 	// URL path for the account dashboard view, or `null` when not configured.
@@ -526,15 +628,20 @@ type App struct {
 	// URL path for the discover view, or `null` when not configured.
 	DiscoverPath *string `json:"discover_path,omitempty" url:"discover_path,omitempty"`
 	// Subdomain identifier for the app's proxied URL, forming https://{domain_id}.apps.whop.com.
-	DomainID string `json:"domain_id" url:"domain_id"`
+	DomainID     string                `json:"domain_id" url:"domain_id"`
+	Domains      []*AppDomain          `json:"domains" url:"domains"`
+	ElementsUsed []AppElementsUsedItem `json:"elements_used" url:"elements_used"`
 	// URL path for the member-facing hub view, or `null` when not configured.
 	ExperiencePath *string `json:"experience_path,omitempty" url:"experience_path,omitempty"`
 	// Full URL where the app's hosted web build is served, or `null` if no route is claimed.
+	// DEPRECATED: Read `domains` instead.
 	HostedURL *string `json:"hosted_url,omitempty" url:"hosted_url,omitempty"`
 	// The app's icon. Falls back to the default app icon when none is uploaded.
 	Icon *AppIcon `json:"icon" url:"icon"`
 	// App ID, prefixed `app_`.
 	ID string `json:"id" url:"id"`
+	// The address of the existing website this app was imported from, such as `https://shop.example.com`. `null` if the app was not imported from another site, or if the caller lacks the `developer:basic:read` permission on the app's account.
+	ImportedFromURL *string `json:"imported_from_url,omitempty" url:"imported_from_url,omitempty"`
 	// Approval status of the app's product listing on the Whop app store, or `null` when the app has no associated product.
 	MarketplaceStatus *AppMarketplaceStatus `json:"marketplace_status,omitempty" url:"marketplace_status,omitempty"`
 	// Display name shown on the app store and in experience navigation.
@@ -545,6 +652,12 @@ type App struct {
 	OpenapiPath *string `json:"openapi_path,omitempty" url:"openapi_path,omitempty"`
 	// Full origin URL of the app's proxied domain, for example https://ab1c2d3e4f.apps.whop.com.
 	Origin *string `json:"origin,omitempty" url:"origin,omitempty"`
+	// Five-field cron expression, read in UTC, on which Whop runs the production web build's `scheduled()` export once for every installation, with the installation in `ctx.props.app_installation`, no more often than every 15 minutes. Slots are skipped while the app has no production web build with a server entry. `null` when the app has no per-install schedule, or if the caller lacks the `developer:basic:read` permission on the app's account.
+	PerInstallSchedule *string `json:"per_install_schedule,omitempty" url:"per_install_schedule,omitempty"`
+	// A short-lived signed pass scoping the caller to this app's gated preview hosts — every build preview and the live dev-server sandbox. Add it to a preview host as the `__whop_preview` query param (or `x-whop-preview-token` header). `null` unless the caller is a team member who can read the app's developer settings.
+	PreviewToken *string `json:"preview_token,omitempty" url:"preview_token,omitempty"`
+	// Product category a business built from this app as a template sells, such as `pressure_washing`, or `null` when none has been set.
+	ProductCategory *string `json:"product_category,omitempty" url:"product_category,omitempty"`
 	// ID of the app's product listing on the Whop app store, or `null` when the app has no associated product.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The approved build currently served on Android, or `null` when none is deployed.
@@ -556,8 +669,11 @@ type App struct {
 	RedirectURIs         []string                  `json:"redirect_uris" url:"redirect_uris"`
 	RequestedPermissions []*AppRequestedPermission `json:"requested_permissions" url:"requested_permissions"`
 	RequiredScopes       []AppRequiredScopesItem   `json:"required_scopes" url:"required_scopes"`
-	// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.app), or `null` if no route is claimed.
+	// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.site), or `null` if no route is claimed.
+	// DEPRECATED: Read `domains` instead.
 	Route *string `json:"route,omitempty" url:"route,omitempty"`
+	// Five-field cron expression, read in UTC, on which Whop runs the production web build's `scheduled()` export once per slot. Slots are skipped while the app has no production web build with a server entry. `null` when the app has no global schedule, or if the caller lacks the `developer:basic:read` permission on the app's account.
+	Schedule *string `json:"schedule,omitempty" url:"schedule,omitempty"`
 	// The app's production secrets as an object of string values, injected into the hosted server runtime. `null` when the caller lacks the `developer:update_app` permission.
 	Secrets map[string]any `json:"secrets,omitempty" url:"secrets,omitempty"`
 	// URL path to the app's skills directory, or `null` when not configured.
@@ -630,6 +746,13 @@ func (a *App) GetBusinessesCreatedLogoURLs() []string {
 	return a.BusinessesCreatedLogoURLs
 }
 
+func (a *App) GetBusinessesWithRecentSalesCount() int {
+	if a == nil {
+		return 0
+	}
+	return a.BusinessesWithRecentSalesCount
+}
+
 func (a *App) GetCreator() *AppCreator {
 	if a == nil {
 		return nil
@@ -679,6 +802,20 @@ func (a *App) GetDomainID() string {
 	return a.DomainID
 }
 
+func (a *App) GetDomains() []*AppDomain {
+	if a == nil {
+		return nil
+	}
+	return a.Domains
+}
+
+func (a *App) GetElementsUsed() []AppElementsUsedItem {
+	if a == nil {
+		return nil
+	}
+	return a.ElementsUsed
+}
+
 func (a *App) GetExperiencePath() *string {
 	if a == nil {
 		return nil
@@ -705,6 +842,13 @@ func (a *App) GetID() string {
 		return ""
 	}
 	return a.ID
+}
+
+func (a *App) GetImportedFromURL() *string {
+	if a == nil {
+		return nil
+	}
+	return a.ImportedFromURL
 }
 
 func (a *App) GetMarketplaceStatus() *AppMarketplaceStatus {
@@ -740,6 +884,27 @@ func (a *App) GetOrigin() *string {
 		return nil
 	}
 	return a.Origin
+}
+
+func (a *App) GetPerInstallSchedule() *string {
+	if a == nil {
+		return nil
+	}
+	return a.PerInstallSchedule
+}
+
+func (a *App) GetPreviewToken() *string {
+	if a == nil {
+		return nil
+	}
+	return a.PreviewToken
+}
+
+func (a *App) GetProductCategory() *string {
+	if a == nil {
+		return nil
+	}
+	return a.ProductCategory
 }
 
 func (a *App) GetProductID() *string {
@@ -798,6 +963,13 @@ func (a *App) GetRoute() *string {
 	return a.Route
 }
 
+func (a *App) GetSchedule() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Schedule
+}
+
 func (a *App) GetSecrets() map[string]any {
 	if a == nil {
 		return nil
@@ -834,10 +1006,12 @@ func (a *App) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *App) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -896,6 +1070,13 @@ func (a *App) SetBusinessesCreatedLogoURLs(businessesCreatedLogoURLs []string) {
 	a.require(appFieldBusinessesCreatedLogoURLs)
 }
 
+// SetBusinessesWithRecentSalesCount sets the BusinessesWithRecentSalesCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetBusinessesWithRecentSalesCount(businessesWithRecentSalesCount int) {
+	a.BusinessesWithRecentSalesCount = businessesWithRecentSalesCount
+	a.require(appFieldBusinessesWithRecentSalesCount)
+}
+
 // SetCreator sets the Creator field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *App) SetCreator(creator *AppCreator) {
@@ -945,6 +1126,20 @@ func (a *App) SetDomainID(domainID string) {
 	a.require(appFieldDomainID)
 }
 
+// SetDomains sets the Domains field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetDomains(domains []*AppDomain) {
+	a.Domains = domains
+	a.require(appFieldDomains)
+}
+
+// SetElementsUsed sets the ElementsUsed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetElementsUsed(elementsUsed []AppElementsUsedItem) {
+	a.ElementsUsed = elementsUsed
+	a.require(appFieldElementsUsed)
+}
+
 // SetExperiencePath sets the ExperiencePath field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *App) SetExperiencePath(experiencePath *string) {
@@ -971,6 +1166,13 @@ func (a *App) SetIcon(icon *AppIcon) {
 func (a *App) SetID(id string) {
 	a.ID = id
 	a.require(appFieldID)
+}
+
+// SetImportedFromURL sets the ImportedFromURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetImportedFromURL(importedFromURL *string) {
+	a.ImportedFromURL = importedFromURL
+	a.require(appFieldImportedFromURL)
 }
 
 // SetMarketplaceStatus sets the MarketplaceStatus field and marks it as non-optional;
@@ -1006,6 +1208,27 @@ func (a *App) SetOpenapiPath(openapiPath *string) {
 func (a *App) SetOrigin(origin *string) {
 	a.Origin = origin
 	a.require(appFieldOrigin)
+}
+
+// SetPerInstallSchedule sets the PerInstallSchedule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetPerInstallSchedule(perInstallSchedule *string) {
+	a.PerInstallSchedule = perInstallSchedule
+	a.require(appFieldPerInstallSchedule)
+}
+
+// SetPreviewToken sets the PreviewToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetPreviewToken(previewToken *string) {
+	a.PreviewToken = previewToken
+	a.require(appFieldPreviewToken)
+}
+
+// SetProductCategory sets the ProductCategory field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetProductCategory(productCategory *string) {
+	a.ProductCategory = productCategory
+	a.require(appFieldProductCategory)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
@@ -1064,6 +1287,13 @@ func (a *App) SetRoute(route *string) {
 	a.require(appFieldRoute)
 }
 
+// SetSchedule sets the Schedule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetSchedule(schedule *string) {
+	a.Schedule = schedule
+	a.require(appFieldSchedule)
+}
+
 // SetSecrets sets the Secrets field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *App) SetSecrets(secrets map[string]any) {
@@ -1104,6 +1334,13 @@ func (a *App) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, appNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1184,10 +1421,12 @@ func (a *AppAPIKey) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppAPIKey) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -1315,10 +1554,12 @@ func (a *AppBannerImage) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppBannerImage) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -1376,6 +1617,11 @@ var (
 	appCreatorFieldUsername = big.NewInt(1 << 2)
 )
 
+// appCreatorNullableFields maps the wire names of AppCreator's nullable fields (required or optional) to their field bits.
+var appCreatorNullableFields = map[string]*big.Int{
+	"name": appCreatorFieldName,
+}
+
 type AppCreator struct {
 	// User ID, prefixed `user_`.
 	ID string `json:"id" url:"id"`
@@ -1420,10 +1666,12 @@ func (a *AppCreator) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppCreator) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1459,6 +1707,13 @@ func (a *AppCreator) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, appCreatorNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1495,6 +1750,12 @@ var (
 	appDefaultAPIKeyFieldObfuscatedSecretKey = big.NewInt(1 << 2)
 	appDefaultAPIKeyFieldSecretKey           = big.NewInt(1 << 3)
 )
+
+// appDefaultAPIKeyNullableFields maps the wire names of AppDefaultAPIKey's nullable fields (required or optional) to their field bits.
+var appDefaultAPIKeyNullableFields = map[string]*big.Int{
+	"name":       appDefaultAPIKeyFieldName,
+	"secret_key": appDefaultAPIKeyFieldSecretKey,
+}
 
 type AppDefaultAPIKey struct {
 	// API key ID, prefixed `apik_`.
@@ -1549,10 +1810,12 @@ func (a *AppDefaultAPIKey) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppDefaultAPIKey) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1595,6 +1858,13 @@ func (a *AppDefaultAPIKey) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, appDefaultAPIKeyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1639,6 +1909,19 @@ var (
 	appDeploymentFieldStatus               = big.NewInt(1 << 10)
 	appDeploymentFieldURL                  = big.NewInt(1 << 11)
 )
+
+// appDeploymentNullableFields maps the wire names of AppDeployment's nullable fields (required or optional) to their field bits.
+var appDeploymentNullableFields = map[string]*big.Int{
+	"build_id":               appDeploymentFieldBuildID,
+	"error":                  appDeploymentFieldError,
+	"estimated_duration_ms":  appDeploymentFieldEstimatedDurationMs,
+	"estimated_remaining_ms": appDeploymentFieldEstimatedRemainingMs,
+	"finished_at":            appDeploymentFieldFinishedAt,
+	"phase":                  appDeploymentFieldPhase,
+	"progress":               appDeploymentFieldProgress,
+	"started_at":             appDeploymentFieldStartedAt,
+	"url":                    appDeploymentFieldURL,
+}
 
 type AppDeployment struct {
 	// The app being deployed, prefixed `app_`.
@@ -1765,10 +2048,12 @@ func (a *AppDeployment) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppDeployment) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAppID sets the AppID field and marks it as non-optional;
@@ -1867,6 +2152,13 @@ func (a *AppDeployment) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, appDeploymentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1971,12 +2263,18 @@ func (a AppDeploymentStatus) Ptr() *AppDeploymentStatus {
 }
 
 var (
-	appIconFieldURL = big.NewInt(1 << 0)
+	appDomainFieldDomain = big.NewInt(1 << 0)
+	appDomainFieldID     = big.NewInt(1 << 1)
+	appDomainFieldStatus = big.NewInt(1 << 2)
 )
 
-type AppIcon struct {
-	// Icon image URL. Always present — the default app icon when none is uploaded.
-	URL string `json:"url" url:"url"`
+type AppDomain struct {
+	// Normalized hostname assigned to this app.
+	Domain string `json:"domain" url:"domain"`
+	// Domain ID, prefixed `dom_`.
+	ID string `json:"id" url:"id"`
+	// Domain lifecycle status, matching the domain resource.
+	Status AppDomainStatus `json:"status" url:"status"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1985,41 +2283,71 @@ type AppIcon struct {
 	rawJSON         json.RawMessage
 }
 
-func (a *AppIcon) GetURL() string {
+func (a *AppDomain) GetDomain() string {
 	if a == nil {
 		return ""
 	}
-	return a.URL
+	return a.Domain
 }
 
-func (a *AppIcon) GetExtraProperties() map[string]interface{} {
+func (a *AppDomain) GetID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ID
+}
+
+func (a *AppDomain) GetStatus() AppDomainStatus {
+	if a == nil {
+		return ""
+	}
+	return a.Status
+}
+
+func (a *AppDomain) GetExtraProperties() map[string]interface{} {
 	if a == nil {
 		return nil
 	}
 	return a.extraProperties
 }
 
-func (a *AppIcon) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+func (a *AppDomain) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
-// SetURL sets the URL field and marks it as non-optional;
+// SetDomain sets the Domain field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AppIcon) SetURL(url string) {
-	a.URL = url
-	a.require(appIconFieldURL)
+func (a *AppDomain) SetDomain(domain string) {
+	a.Domain = domain
+	a.require(appDomainFieldDomain)
 }
 
-func (a *AppIcon) UnmarshalJSON(data []byte) error {
-	type unmarshaler AppIcon
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppDomain) SetID(id string) {
+	a.ID = id
+	a.require(appDomainFieldID)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppDomain) SetStatus(status AppDomainStatus) {
+	a.Status = status
+	a.require(appDomainFieldStatus)
+}
+
+func (a *AppDomain) UnmarshalJSON(data []byte) error {
+	type unmarshaler AppDomain
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*a = AppIcon(value)
+	*a = AppDomain(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *a)
 	if err != nil {
 		return err
@@ -2029,8 +2357,8 @@ func (a *AppIcon) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (a *AppIcon) MarshalJSON() ([]byte, error) {
-	type embed AppIcon
+func (a *AppDomain) MarshalJSON() ([]byte, error) {
+	type embed AppDomain
 	var marshaler = struct {
 		embed
 	}{
@@ -2040,7 +2368,7 @@ func (a *AppIcon) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (a *AppIcon) String() string {
+func (a *AppDomain) String() string {
 	if a == nil {
 		return "<nil>"
 	}
@@ -2055,30 +2383,203 @@ func (a *AppIcon) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-var (
-	appListItemFieldAccount                   = big.NewInt(1 << 0)
-	appListItemFieldAppType                   = big.NewInt(1 << 1)
-	appListItemFieldBannerImage               = big.NewInt(1 << 2)
-	appListItemFieldBaseURL                   = big.NewInt(1 << 3)
-	appListItemFieldBusinessesCreatedCount    = big.NewInt(1 << 4)
-	appListItemFieldBusinessesCreatedLogoURLs = big.NewInt(1 << 5)
-	appListItemFieldCreator                   = big.NewInt(1 << 6)
-	appListItemFieldDashboardPath             = big.NewInt(1 << 7)
-	appListItemFieldDescription               = big.NewInt(1 << 8)
-	appListItemFieldDiscoverPath              = big.NewInt(1 << 9)
-	appListItemFieldDomainID                  = big.NewInt(1 << 10)
-	appListItemFieldExperiencePath            = big.NewInt(1 << 11)
-	appListItemFieldHostedURL                 = big.NewInt(1 << 12)
-	appListItemFieldIcon                      = big.NewInt(1 << 13)
-	appListItemFieldID                        = big.NewInt(1 << 14)
-	appListItemFieldName                      = big.NewInt(1 << 15)
-	appListItemFieldOpenapiPath               = big.NewInt(1 << 16)
-	appListItemFieldOrigin                    = big.NewInt(1 << 17)
-	appListItemFieldRoute                     = big.NewInt(1 << 18)
-	appListItemFieldSkillsPath                = big.NewInt(1 << 19)
-	appListItemFieldStatus                    = big.NewInt(1 << 20)
-	appListItemFieldVerified                  = big.NewInt(1 << 21)
+// Domain lifecycle status, matching the domain resource.
+type AppDomainStatus string
+
+const (
+	AppDomainStatusIdle           AppDomainStatus = "idle"
+	AppDomainStatusPending        AppDomainStatus = "pending"
+	AppDomainStatusReady          AppDomainStatus = "ready"
+	AppDomainStatusActionRequired AppDomainStatus = "action_required"
+	AppDomainStatusReleasing      AppDomainStatus = "releasing"
 )
+
+func NewAppDomainStatusFromString(s string) (AppDomainStatus, error) {
+	switch s {
+	case "idle":
+		return AppDomainStatusIdle, nil
+	case "pending":
+		return AppDomainStatusPending, nil
+	case "ready":
+		return AppDomainStatusReady, nil
+	case "action_required":
+		return AppDomainStatusActionRequired, nil
+	case "releasing":
+		return AppDomainStatusReleasing, nil
+	}
+	var t AppDomainStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AppDomainStatus) Ptr() *AppDomainStatus {
+	return &a
+}
+
+// Whop Elements the app's production web build mounts, as `<namespace>.<element>` keys (sub-controller children take a third segment, e.g. `payments.cardFields.cardNumber`). A bare namespace means the build reaches that namespace but the individual elements could not be resolved. Empty when the build mounts none, when it has not been scanned yet, or when the app has no production web build.
+type AppElementsUsedItem string
+
+const (
+	AppElementsUsedItemAds                          AppElementsUsedItem = "ads"
+	AppElementsUsedItemAdsBillingSetup              AppElementsUsedItem = "ads.billing-setup"
+	AppElementsUsedItemAdsCampaignCreator           AppElementsUsedItem = "ads.campaign-creator"
+	AppElementsUsedItemAdsReporting                 AppElementsUsedItem = "ads.reporting"
+	AppElementsUsedItemAdsReportingChart            AppElementsUsedItem = "ads.reporting.chart"
+	AppElementsUsedItemAdsReportingTable            AppElementsUsedItem = "ads.reporting.table"
+	AppElementsUsedItemCheckout                     AppElementsUsedItem = "checkout"
+	AppElementsUsedItemCheckoutCheckout             AppElementsUsedItem = "checkout.checkout"
+	AppElementsUsedItemCheckoutExpressCheckout      AppElementsUsedItem = "checkout.expressCheckout"
+	AppElementsUsedItemPayments                     AppElementsUsedItem = "payments"
+	AppElementsUsedItemPaymentsAddress              AppElementsUsedItem = "payments.address"
+	AppElementsUsedItemPaymentsBranding             AppElementsUsedItem = "payments.branding"
+	AppElementsUsedItemPaymentsCard                 AppElementsUsedItem = "payments.card"
+	AppElementsUsedItemPaymentsCardFields           AppElementsUsedItem = "payments.cardFields"
+	AppElementsUsedItemPaymentsCardFieldsCardCvc    AppElementsUsedItem = "payments.cardFields.cardCvc"
+	AppElementsUsedItemPaymentsCardFieldsCardExpiry AppElementsUsedItem = "payments.cardFields.cardExpiry"
+	AppElementsUsedItemPaymentsCardFieldsCardNumber AppElementsUsedItem = "payments.cardFields.cardNumber"
+	AppElementsUsedItemPaymentsEmail                AppElementsUsedItem = "payments.email"
+	AppElementsUsedItemPaymentsPayment              AppElementsUsedItem = "payments.payment"
+	AppElementsUsedItemPaymentsTaxID                AppElementsUsedItem = "payments.taxId"
+	AppElementsUsedItemTracking                     AppElementsUsedItem = "tracking"
+	AppElementsUsedItemTrackingEvents               AppElementsUsedItem = "tracking.events"
+	AppElementsUsedItemTrackingPeople               AppElementsUsedItem = "tracking.people"
+	AppElementsUsedItemWallet                       AppElementsUsedItem = "wallet"
+	AppElementsUsedItemWalletActivity               AppElementsUsedItem = "wallet.activity"
+	AppElementsUsedItemWalletBalances               AppElementsUsedItem = "wallet.balances"
+	AppElementsUsedItemWalletBalancesBalance        AppElementsUsedItem = "wallet.balances.balance"
+	AppElementsUsedItemWalletBalancesList           AppElementsUsedItem = "wallet.balances.list"
+	AppElementsUsedItemWalletCards                  AppElementsUsedItem = "wallet.cards"
+	AppElementsUsedItemWalletDeposit                AppElementsUsedItem = "wallet.deposit"
+	AppElementsUsedItemWalletSend                   AppElementsUsedItem = "wallet.send"
+	AppElementsUsedItemWalletWithdraw               AppElementsUsedItem = "wallet.withdraw"
+	AppElementsUsedItemWebsites                     AppElementsUsedItem = "websites"
+	AppElementsUsedItemWebsitesPixelSetup           AppElementsUsedItem = "websites.pixel-setup"
+	AppElementsUsedItemWebsitesWebsites             AppElementsUsedItem = "websites.websites"
+)
+
+func NewAppElementsUsedItemFromString(s string) (AppElementsUsedItem, error) {
+	switch s {
+	case "ads":
+		return AppElementsUsedItemAds, nil
+	case "ads.billing-setup":
+		return AppElementsUsedItemAdsBillingSetup, nil
+	case "ads.campaign-creator":
+		return AppElementsUsedItemAdsCampaignCreator, nil
+	case "ads.reporting":
+		return AppElementsUsedItemAdsReporting, nil
+	case "ads.reporting.chart":
+		return AppElementsUsedItemAdsReportingChart, nil
+	case "ads.reporting.table":
+		return AppElementsUsedItemAdsReportingTable, nil
+	case "checkout":
+		return AppElementsUsedItemCheckout, nil
+	case "checkout.checkout":
+		return AppElementsUsedItemCheckoutCheckout, nil
+	case "checkout.expressCheckout":
+		return AppElementsUsedItemCheckoutExpressCheckout, nil
+	case "payments":
+		return AppElementsUsedItemPayments, nil
+	case "payments.address":
+		return AppElementsUsedItemPaymentsAddress, nil
+	case "payments.branding":
+		return AppElementsUsedItemPaymentsBranding, nil
+	case "payments.card":
+		return AppElementsUsedItemPaymentsCard, nil
+	case "payments.cardFields":
+		return AppElementsUsedItemPaymentsCardFields, nil
+	case "payments.cardFields.cardCvc":
+		return AppElementsUsedItemPaymentsCardFieldsCardCvc, nil
+	case "payments.cardFields.cardExpiry":
+		return AppElementsUsedItemPaymentsCardFieldsCardExpiry, nil
+	case "payments.cardFields.cardNumber":
+		return AppElementsUsedItemPaymentsCardFieldsCardNumber, nil
+	case "payments.email":
+		return AppElementsUsedItemPaymentsEmail, nil
+	case "payments.payment":
+		return AppElementsUsedItemPaymentsPayment, nil
+	case "payments.taxId":
+		return AppElementsUsedItemPaymentsTaxID, nil
+	case "tracking":
+		return AppElementsUsedItemTracking, nil
+	case "tracking.events":
+		return AppElementsUsedItemTrackingEvents, nil
+	case "tracking.people":
+		return AppElementsUsedItemTrackingPeople, nil
+	case "wallet":
+		return AppElementsUsedItemWallet, nil
+	case "wallet.activity":
+		return AppElementsUsedItemWalletActivity, nil
+	case "wallet.balances":
+		return AppElementsUsedItemWalletBalances, nil
+	case "wallet.balances.balance":
+		return AppElementsUsedItemWalletBalancesBalance, nil
+	case "wallet.balances.list":
+		return AppElementsUsedItemWalletBalancesList, nil
+	case "wallet.cards":
+		return AppElementsUsedItemWalletCards, nil
+	case "wallet.deposit":
+		return AppElementsUsedItemWalletDeposit, nil
+	case "wallet.send":
+		return AppElementsUsedItemWalletSend, nil
+	case "wallet.withdraw":
+		return AppElementsUsedItemWalletWithdraw, nil
+	case "websites":
+		return AppElementsUsedItemWebsites, nil
+	case "websites.pixel-setup":
+		return AppElementsUsedItemWebsitesPixelSetup, nil
+	case "websites.websites":
+		return AppElementsUsedItemWebsitesWebsites, nil
+	}
+	var t AppElementsUsedItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AppElementsUsedItem) Ptr() *AppElementsUsedItem {
+	return &a
+}
+
+var (
+	appListItemFieldAccount                        = big.NewInt(1 << 0)
+	appListItemFieldAppType                        = big.NewInt(1 << 1)
+	appListItemFieldBannerImage                    = big.NewInt(1 << 2)
+	appListItemFieldBaseURL                        = big.NewInt(1 << 3)
+	appListItemFieldBusinessesCreatedCount         = big.NewInt(1 << 4)
+	appListItemFieldBusinessesCreatedLogoURLs      = big.NewInt(1 << 5)
+	appListItemFieldBusinessesWithRecentSalesCount = big.NewInt(1 << 6)
+	appListItemFieldCreator                        = big.NewInt(1 << 7)
+	appListItemFieldDashboardPath                  = big.NewInt(1 << 8)
+	appListItemFieldDescription                    = big.NewInt(1 << 9)
+	appListItemFieldDiscoverPath                   = big.NewInt(1 << 10)
+	appListItemFieldDomainID                       = big.NewInt(1 << 11)
+	appListItemFieldDomains                        = big.NewInt(1 << 12)
+	appListItemFieldExperiencePath                 = big.NewInt(1 << 13)
+	appListItemFieldHostedURL                      = big.NewInt(1 << 14)
+	appListItemFieldIcon                           = big.NewInt(1 << 15)
+	appListItemFieldID                             = big.NewInt(1 << 16)
+	appListItemFieldName                           = big.NewInt(1 << 17)
+	appListItemFieldOpenapiPath                    = big.NewInt(1 << 18)
+	appListItemFieldOrigin                         = big.NewInt(1 << 19)
+	appListItemFieldProductCategory                = big.NewInt(1 << 20)
+	appListItemFieldRoute                          = big.NewInt(1 << 21)
+	appListItemFieldSkillsPath                     = big.NewInt(1 << 22)
+	appListItemFieldStatus                         = big.NewInt(1 << 23)
+	appListItemFieldVerified                       = big.NewInt(1 << 24)
+)
+
+// appListItemNullableFields maps the wire names of AppListItem's nullable fields (required or optional) to their field bits.
+var appListItemNullableFields = map[string]*big.Int{
+	"banner_image":     appListItemFieldBannerImage,
+	"base_url":         appListItemFieldBaseURL,
+	"dashboard_path":   appListItemFieldDashboardPath,
+	"description":      appListItemFieldDescription,
+	"discover_path":    appListItemFieldDiscoverPath,
+	"experience_path":  appListItemFieldExperiencePath,
+	"hosted_url":       appListItemFieldHostedURL,
+	"openapi_path":     appListItemFieldOpenapiPath,
+	"origin":           appListItemFieldOrigin,
+	"product_category": appListItemFieldProductCategory,
+	"route":            appListItemFieldRoute,
+	"skills_path":      appListItemFieldSkillsPath,
+}
 
 type AppListItem struct {
 	// The account that owns the app.
@@ -2092,6 +2593,8 @@ type AppListItem struct {
 	// Number of businesses created from this app as a template.
 	BusinessesCreatedCount    int      `json:"businesses_created_count" url:"businesses_created_count"`
 	BusinessesCreatedLogoURLs []string `json:"businesses_created_logo_urls" url:"businesses_created_logo_urls"`
+	// Number of businesses created from this app as a template that processed a payment in the last 24 hours. Recounted hourly, so it can be up to an hour behind.
+	BusinessesWithRecentSalesCount int `json:"businesses_with_recent_sales_count" url:"businesses_with_recent_sales_count"`
 	// The user who owns the publishing account.
 	Creator *AppCreator `json:"creator" url:"creator"`
 	// URL path for the account dashboard view, or `null` when not configured.
@@ -2101,10 +2604,12 @@ type AppListItem struct {
 	// URL path for the discover view, or `null` when not configured.
 	DiscoverPath *string `json:"discover_path,omitempty" url:"discover_path,omitempty"`
 	// Subdomain identifier for the app's proxied URL, forming https://{domain_id}.apps.whop.com.
-	DomainID string `json:"domain_id" url:"domain_id"`
+	DomainID string       `json:"domain_id" url:"domain_id"`
+	Domains  []*AppDomain `json:"domains" url:"domains"`
 	// URL path for the member-facing hub view, or `null` when not configured.
 	ExperiencePath *string `json:"experience_path,omitempty" url:"experience_path,omitempty"`
 	// Full URL where the app's hosted web build is served, or `null` if no route is claimed.
+	// DEPRECATED: Read `domains` instead.
 	HostedURL *string `json:"hosted_url,omitempty" url:"hosted_url,omitempty"`
 	// The app's icon. Falls back to the default app icon when none is uploaded.
 	Icon *AppIcon `json:"icon" url:"icon"`
@@ -2116,7 +2621,10 @@ type AppListItem struct {
 	OpenapiPath *string `json:"openapi_path,omitempty" url:"openapi_path,omitempty"`
 	// Full origin URL of the app's proxied domain, for example https://ab1c2d3e4f.apps.whop.com.
 	Origin *string `json:"origin,omitempty" url:"origin,omitempty"`
-	// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.app), or `null` if no route is claimed.
+	// Product category a business built from this app as a template sells, such as `pressure_washing`, or `null` when none has been set.
+	ProductCategory *string `json:"product_category,omitempty" url:"product_category,omitempty"`
+	// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.site), or `null` if no route is claimed.
+	// DEPRECATED: Read `domains` instead.
 	Route *string `json:"route,omitempty" url:"route,omitempty"`
 	// URL path to the app's skills directory, or `null` when not configured.
 	SkillsPath *string `json:"skills_path,omitempty" url:"skills_path,omitempty"`
@@ -2174,6 +2682,13 @@ func (a *AppListItem) GetBusinessesCreatedLogoURLs() []string {
 	return a.BusinessesCreatedLogoURLs
 }
 
+func (a *AppListItem) GetBusinessesWithRecentSalesCount() int {
+	if a == nil {
+		return 0
+	}
+	return a.BusinessesWithRecentSalesCount
+}
+
 func (a *AppListItem) GetCreator() *AppCreator {
 	if a == nil {
 		return nil
@@ -2207,6 +2722,13 @@ func (a *AppListItem) GetDomainID() string {
 		return ""
 	}
 	return a.DomainID
+}
+
+func (a *AppListItem) GetDomains() []*AppDomain {
+	if a == nil {
+		return nil
+	}
+	return a.Domains
 }
 
 func (a *AppListItem) GetExperiencePath() *string {
@@ -2258,6 +2780,13 @@ func (a *AppListItem) GetOrigin() *string {
 	return a.Origin
 }
 
+func (a *AppListItem) GetProductCategory() *string {
+	if a == nil {
+		return nil
+	}
+	return a.ProductCategory
+}
+
 func (a *AppListItem) GetRoute() *string {
 	if a == nil {
 		return nil
@@ -2294,10 +2823,12 @@ func (a *AppListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppListItem) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
@@ -2342,6 +2873,13 @@ func (a *AppListItem) SetBusinessesCreatedLogoURLs(businessesCreatedLogoURLs []s
 	a.require(appListItemFieldBusinessesCreatedLogoURLs)
 }
 
+// SetBusinessesWithRecentSalesCount sets the BusinessesWithRecentSalesCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppListItem) SetBusinessesWithRecentSalesCount(businessesWithRecentSalesCount int) {
+	a.BusinessesWithRecentSalesCount = businessesWithRecentSalesCount
+	a.require(appListItemFieldBusinessesWithRecentSalesCount)
+}
+
 // SetCreator sets the Creator field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AppListItem) SetCreator(creator *AppCreator) {
@@ -2375,6 +2913,13 @@ func (a *AppListItem) SetDiscoverPath(discoverPath *string) {
 func (a *AppListItem) SetDomainID(domainID string) {
 	a.DomainID = domainID
 	a.require(appListItemFieldDomainID)
+}
+
+// SetDomains sets the Domains field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppListItem) SetDomains(domains []*AppDomain) {
+	a.Domains = domains
+	a.require(appListItemFieldDomains)
 }
 
 // SetExperiencePath sets the ExperiencePath field and marks it as non-optional;
@@ -2426,6 +2971,13 @@ func (a *AppListItem) SetOrigin(origin *string) {
 	a.require(appListItemFieldOrigin)
 }
 
+// SetProductCategory sets the ProductCategory field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppListItem) SetProductCategory(productCategory *string) {
+	a.ProductCategory = productCategory
+	a.require(appListItemFieldProductCategory)
+}
+
 // SetRoute sets the Route field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AppListItem) SetRoute(route *string) {
@@ -2466,6 +3018,13 @@ func (a *AppListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, appListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2611,6 +3170,13 @@ var (
 	appProductionBuildFieldStatus    = big.NewInt(1 << 4)
 )
 
+// appProductionBuildNullableFields maps the wire names of AppProductionBuild's nullable fields (required or optional) to their field bits.
+var appProductionBuildNullableFields = map[string]*big.Int{
+	"checksum":   appProductionBuildFieldChecksum,
+	"file_url":   appProductionBuildFieldFileURL,
+	"source_url": appProductionBuildFieldSourceURL,
+}
+
 type AppProductionBuild struct {
 	// Client-generated checksum of the build file, used to verify file integrity.
 	Checksum *string `json:"checksum,omitempty" url:"checksum,omitempty"`
@@ -2673,10 +3239,12 @@ func (a *AppProductionBuild) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppProductionBuild) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetChecksum sets the Checksum field and marks it as non-optional;
@@ -2726,6 +3294,13 @@ func (a *AppProductionBuild) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, appProductionBuildNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2791,6 +3366,11 @@ var (
 	appRequestedPermissionFieldPermissionAction = big.NewInt(1 << 2)
 )
 
+// appRequestedPermissionNullableFields maps the wire names of AppRequestedPermission's nullable fields (required or optional) to their field bits.
+var appRequestedPermissionNullableFields = map[string]*big.Int{
+	"justification": appRequestedPermissionFieldJustification,
+}
+
 type AppRequestedPermission struct {
 	// Whether the app requires the permission to be granted on install, as opposed to requesting it optionally.
 	IsRequired bool `json:"is_required" url:"is_required"`
@@ -2835,10 +3415,12 @@ func (a *AppRequestedPermission) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AppRequestedPermission) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetIsRequired sets the IsRequired field and marks it as non-optional;
@@ -2874,6 +3456,13 @@ func (a *AppRequestedPermission) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, appRequestedPermissionNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2944,10 +3533,12 @@ func (a *AppRequestedPermissionAction) GetExtraProperties() map[string]interface
 }
 
 func (a *AppRequestedPermissionAction) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAction sets the Action field and marks it as non-optional;
@@ -3084,12 +3675,12 @@ func (c CreateAppsRequestAppType) Ptr() *CreateAppsRequestAppType {
 	return &c
 }
 
-// The icon image for the app in PNG, JPEG, or GIF format, referencing an uploaded file: `{ id }` for an existing attachment or `{ direct_upload_id }` for a new direct upload.
 var (
 	createAppsRequestIconFieldDirectUploadID = big.NewInt(1 << 0)
 	createAppsRequestIconFieldID             = big.NewInt(1 << 1)
 )
 
+// The icon image for the app in PNG, JPEG, or GIF format, referencing an uploaded file: `{ id }` for an existing attachment or `{ direct_upload_id }` for a new direct upload.
 type CreateAppsRequestIcon struct {
 	// The signed id of a completed direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
@@ -3125,10 +3716,12 @@ func (c *CreateAppsRequestIcon) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CreateAppsRequestIcon) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -3227,10 +3820,12 @@ func (d *DeleteAppsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeleteAppsResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -3347,6 +3942,7 @@ type ListAppsRequestOrder string
 const (
 	ListAppsRequestOrderCreatedAt               ListAppsRequestOrder = "created_at"
 	ListAppsRequestOrderDiscoverableAt          ListAppsRequestOrder = "discoverable_at"
+	ListAppsRequestOrderTemplateRecentSales     ListAppsRequestOrder = "template_recent_sales"
 	ListAppsRequestOrderTemplateUsage           ListAppsRequestOrder = "template_usage"
 	ListAppsRequestOrderTotalInstallsLast30Days ListAppsRequestOrder = "total_installs_last_30_days"
 	ListAppsRequestOrderTotalInstallsLast7Days  ListAppsRequestOrder = "total_installs_last_7_days"
@@ -3358,6 +3954,8 @@ func NewListAppsRequestOrderFromString(s string) (ListAppsRequestOrder, error) {
 		return ListAppsRequestOrderCreatedAt, nil
 	case "discoverable_at":
 		return ListAppsRequestOrderDiscoverableAt, nil
+	case "template_recent_sales":
+		return ListAppsRequestOrderTemplateRecentSales, nil
 	case "template_usage":
 		return ListAppsRequestOrderTemplateUsage, nil
 	case "total_installs_last_30_days":
@@ -3448,10 +4046,12 @@ func (l *ListAppsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAppsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -3517,6 +4117,12 @@ var (
 	listAppsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listAppsResponsePageInfoNullableFields maps the wire names of ListAppsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listAppsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listAppsResponsePageInfoFieldEndCursor,
+	"start_cursor": listAppsResponsePageInfoFieldStartCursor,
+}
+
 type ListAppsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -3566,10 +4172,12 @@ func (l *ListAppsResponsePageInfo) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAppsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -3612,6 +4220,13 @@ func (l *ListAppsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listAppsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3711,10 +4326,12 @@ func (l *LogsAppsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LogsAppsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -3790,6 +4407,15 @@ var (
 	logsAppsResponseDataItemFieldTruncated      = big.NewInt(1 << 13)
 	logsAppsResponseDataItemFieldWallTimeMs     = big.NewInt(1 << 14)
 )
+
+// logsAppsResponseDataItemNullableFields maps the wire names of LogsAppsResponseDataItem's nullable fields (required or optional) to their field bits.
+var logsAppsResponseDataItemNullableFields = map[string]*big.Int{
+	"outcome":         logsAppsResponseDataItemFieldOutcome,
+	"request_method":  logsAppsResponseDataItemFieldRequestMethod,
+	"request_path":    logsAppsResponseDataItemFieldRequestPath,
+	"response_status": logsAppsResponseDataItemFieldResponseStatus,
+	"stack":           logsAppsResponseDataItemFieldStack,
+}
 
 type LogsAppsResponseDataItem struct {
 	AppBuildID     string                         `json:"app_build_id" url:"app_build_id"`
@@ -3928,10 +4554,12 @@ func (l *LogsAppsResponseDataItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LogsAppsResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAppBuildID sets the AppBuildID field and marks it as non-optional;
@@ -4057,6 +4685,13 @@ func (l *LogsAppsResponseDataItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, logsAppsResponseDataItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4152,6 +4787,12 @@ var (
 	logsAppsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// logsAppsResponsePageInfoNullableFields maps the wire names of LogsAppsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var logsAppsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   logsAppsResponsePageInfoFieldEndCursor,
+	"start_cursor": logsAppsResponsePageInfoFieldStartCursor,
+}
+
 type LogsAppsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -4201,10 +4842,12 @@ func (l *LogsAppsResponsePageInfo) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *LogsAppsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -4247,6 +4890,13 @@ func (l *LogsAppsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, logsAppsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -4309,12 +4959,12 @@ func (u UpdateAppsRequestAppType) Ptr() *UpdateAppsRequestAppType {
 	return &u
 }
 
-// The icon image for the app in PNG, JPEG, or GIF format, referencing an uploaded file: `{ id }` for an existing attachment or `{ direct_upload_id }` for a new direct upload.
 var (
 	updateAppsRequestIconFieldDirectUploadID = big.NewInt(1 << 0)
 	updateAppsRequestIconFieldID             = big.NewInt(1 << 1)
 )
 
+// The icon image for the app in PNG, JPEG, or GIF format, referencing an uploaded file: `{ id }` for an existing attachment or `{ direct_upload_id }` for a new direct upload.
 type UpdateAppsRequestIcon struct {
 	// The signed id of a completed direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
@@ -4350,10 +5000,12 @@ func (u *UpdateAppsRequestIcon) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UpdateAppsRequestIcon) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -4461,126 +5113,6 @@ func (u UpdateAppsRequestStatus) Ptr() *UpdateAppsRequestStatus {
 	return &u
 }
 
-// Input for creating a requested permission
-var (
-	updatePermissionsAppRequestRequestedPermissionsItemFieldAction        = big.NewInt(1 << 0)
-	updatePermissionsAppRequestRequestedPermissionsItemFieldIsRequired    = big.NewInt(1 << 1)
-	updatePermissionsAppRequestRequestedPermissionsItemFieldJustification = big.NewInt(1 << 2)
-)
-
-type UpdatePermissionsAppRequestRequestedPermissionsItem struct {
-	// The action that the app will request off of users when a user installs the app.
-	Action string `json:"action" url:"action"`
-	// Whether the action is required for the app to function.
-	IsRequired bool `json:"is_required" url:"is_required"`
-	// The reason for requesting the action.
-	Justification string `json:"justification" url:"justification"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdatePermissionsAppRequestRequestedPermissionsItem) GetAction() string {
-	if u == nil {
-		return ""
-	}
-	return u.Action
-}
-
-func (u *UpdatePermissionsAppRequestRequestedPermissionsItem) GetIsRequired() bool {
-	if u == nil {
-		return false
-	}
-	return u.IsRequired
-}
-
-func (u *UpdatePermissionsAppRequestRequestedPermissionsItem) GetJustification() string {
-	if u == nil {
-		return ""
-	}
-	return u.Justification
-}
-
-func (u *UpdatePermissionsAppRequestRequestedPermissionsItem) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdatePermissionsAppRequestRequestedPermissionsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetAction sets the Action field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdatePermissionsAppRequestRequestedPermissionsItem) SetAction(action string) {
-	u.Action = action
-	u.require(updatePermissionsAppRequestRequestedPermissionsItemFieldAction)
-}
-
-// SetIsRequired sets the IsRequired field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdatePermissionsAppRequestRequestedPermissionsItem) SetIsRequired(isRequired bool) {
-	u.IsRequired = isRequired
-	u.require(updatePermissionsAppRequestRequestedPermissionsItemFieldIsRequired)
-}
-
-// SetJustification sets the Justification field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdatePermissionsAppRequestRequestedPermissionsItem) SetJustification(justification string) {
-	u.Justification = justification
-	u.require(updatePermissionsAppRequestRequestedPermissionsItemFieldJustification)
-}
-
-func (u *UpdatePermissionsAppRequestRequestedPermissionsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdatePermissionsAppRequestRequestedPermissionsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdatePermissionsAppRequestRequestedPermissionsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdatePermissionsAppRequestRequestedPermissionsItem) MarshalJSON() ([]byte, error) {
-	type embed UpdatePermissionsAppRequestRequestedPermissionsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdatePermissionsAppRequestRequestedPermissionsItem) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
 var (
 	updatePermissionsAppsRequestRequestedPermissionsItemFieldAction        = big.NewInt(1 << 0)
 	updatePermissionsAppsRequestRequestedPermissionsItemFieldIsRequired    = big.NewInt(1 << 1)
@@ -4631,10 +5163,12 @@ func (u *UpdatePermissionsAppsRequestRequestedPermissionsItem) GetExtraPropertie
 }
 
 func (u *UpdatePermissionsAppsRequestRequestedPermissionsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAction sets the Action field and marks it as non-optional;
@@ -4710,22 +5244,25 @@ var (
 	updateAppsRequestFieldDiscoverPath             = big.NewInt(1 << 6)
 	updateAppsRequestFieldExperiencePath           = big.NewInt(1 << 7)
 	updateAppsRequestFieldIcon                     = big.NewInt(1 << 8)
-	updateAppsRequestFieldName                     = big.NewInt(1 << 9)
-	updateAppsRequestFieldOauthClientType          = big.NewInt(1 << 10)
-	updateAppsRequestFieldOpenapiPath              = big.NewInt(1 << 11)
-	updateAppsRequestFieldProductionAndroidBuildID = big.NewInt(1 << 12)
-	updateAppsRequestFieldProductionIosBuildID     = big.NewInt(1 << 13)
-	updateAppsRequestFieldProductionWebBuildID     = big.NewInt(1 << 14)
-	updateAppsRequestFieldRedirectURIs             = big.NewInt(1 << 15)
-	updateAppsRequestFieldRequiredScopes           = big.NewInt(1 << 16)
-	updateAppsRequestFieldRoute                    = big.NewInt(1 << 17)
-	updateAppsRequestFieldSecrets                  = big.NewInt(1 << 18)
-	updateAppsRequestFieldSkillsPath               = big.NewInt(1 << 19)
-	updateAppsRequestFieldStatus                   = big.NewInt(1 << 20)
+	updateAppsRequestFieldImportedFromURL          = big.NewInt(1 << 9)
+	updateAppsRequestFieldName                     = big.NewInt(1 << 10)
+	updateAppsRequestFieldOauthClientType          = big.NewInt(1 << 11)
+	updateAppsRequestFieldOpenapiPath              = big.NewInt(1 << 12)
+	updateAppsRequestFieldPerInstallSchedule       = big.NewInt(1 << 13)
+	updateAppsRequestFieldProductionAndroidBuildID = big.NewInt(1 << 14)
+	updateAppsRequestFieldProductionIosBuildID     = big.NewInt(1 << 15)
+	updateAppsRequestFieldProductionWebBuildID     = big.NewInt(1 << 16)
+	updateAppsRequestFieldRedirectURIs             = big.NewInt(1 << 17)
+	updateAppsRequestFieldRequiredScopes           = big.NewInt(1 << 18)
+	updateAppsRequestFieldRoute                    = big.NewInt(1 << 19)
+	updateAppsRequestFieldSchedule                 = big.NewInt(1 << 20)
+	updateAppsRequestFieldSecrets                  = big.NewInt(1 << 21)
+	updateAppsRequestFieldSkillsPath               = big.NewInt(1 << 22)
+	updateAppsRequestFieldStatus                   = big.NewInt(1 << 23)
 )
 
 type UpdateAppsRequest struct {
-	// App ID (prefixed `app_`), the app's claimed route, or its proxy domain id.
+	// App ID (prefixed `app_`). Retrieval also accepts the app's claimed route, an active verified custom hostname, or its proxy domain id; a custom hostname returns `404` when its assignment is inactive, the owning account is suspended, or the app is deleted.
 	ID string `json:"-" url:"-"`
 	// The detailed description shown on the app store's in-depth app view page.
 	AppStoreDescription *string `json:"app_store_description,omitempty" url:"-"`
@@ -4743,12 +5280,16 @@ type UpdateAppsRequest struct {
 	ExperiencePath *string `json:"experience_path,omitempty" url:"-"`
 	// The icon image for the app in PNG, JPEG, or GIF format, referencing an uploaded file: `{ id }` for an existing attachment or `{ direct_upload_id }` for a new direct upload.
 	Icon *UpdateAppsRequestIcon `json:"icon,omitempty" url:"-"`
+	// The address of the existing website this app is imported from, such as `https://shop.example.com`. Must be an `http` or `https` URL. Set to `null` to clear it.
+	ImportedFromURL *string `json:"imported_from_url,omitempty" url:"-"`
 	// The display name for the app, shown to users on the app store and product pages.
 	Name *string `json:"name,omitempty" url:"-"`
 	// How the app authenticates at the OAuth token endpoint.
 	OauthClientType *UpdateAppsRequestOauthClientType `json:"oauth_client_type,omitempty" url:"-"`
 	// The URL path to the app's OpenAPI spec file (requires the ai_chat capability).
 	OpenapiPath *string `json:"openapi_path,omitempty" url:"-"`
+	// Five-field cron expression, read in UTC, on which Whop runs the production web build's `scheduled()` export once for every installation, with the installation in `ctx.props.app_installation`. It must fire at least once and no more often than every 15 minutes. Slots are skipped while the app has no production web build with a server entry. Set to `null` or an empty string to stop the per-install schedule.
+	PerInstallSchedule *string `json:"per_install_schedule,omitempty" url:"-"`
 	// The app build (`abld_` tag) to serve as the Android production build, or `null` to unassign it. Same rules as `production_web_build_id`.
 	ProductionAndroidBuildID *string `json:"production_android_build_id,omitempty" url:"-"`
 	// The app build (`abld_` tag) to serve as the iOS production build, or `null` to unassign it. Same rules as `production_web_build_id`.
@@ -4761,6 +5302,8 @@ type UpdateAppsRequest struct {
 	RequiredScopes []string `json:"required_scopes,omitempty" url:"-"`
 	// The subdomain route where the app's hosted web builds are served.
 	Route *string `json:"route,omitempty" url:"-"`
+	// Five-field cron expression, read in UTC, on which Whop runs the production web build's `scheduled()` export once per slot, such as `* /15 * * * *`. It must fire at least once. Slots are skipped while the app has no production web build with a server entry. Set to `null` or an empty string to stop the global schedule.
+	Schedule *string `json:"schedule,omitempty" url:"-"`
 	// Secrets to add or overwrite on the app, as an object of string values. Keys not included are left untouched; pass null or an empty string as the value to delete a secret. Encrypted at rest and injected into the app's hosted server runtime.
 	Secrets map[string]any `json:"secrets,omitempty" url:"-"`
 	// The URL path to the app's skills directory (requires the ai_chat capability).
@@ -4773,10 +5316,12 @@ type UpdateAppsRequest struct {
 }
 
 func (u *UpdateAppsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4842,6 +5387,13 @@ func (u *UpdateAppsRequest) SetIcon(icon *UpdateAppsRequestIcon) {
 	u.require(updateAppsRequestFieldIcon)
 }
 
+// SetImportedFromURL sets the ImportedFromURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAppsRequest) SetImportedFromURL(importedFromURL *string) {
+	u.ImportedFromURL = importedFromURL
+	u.require(updateAppsRequestFieldImportedFromURL)
+}
+
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateAppsRequest) SetName(name *string) {
@@ -4861,6 +5413,13 @@ func (u *UpdateAppsRequest) SetOauthClientType(oauthClientType *UpdateAppsReques
 func (u *UpdateAppsRequest) SetOpenapiPath(openapiPath *string) {
 	u.OpenapiPath = openapiPath
 	u.require(updateAppsRequestFieldOpenapiPath)
+}
+
+// SetPerInstallSchedule sets the PerInstallSchedule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAppsRequest) SetPerInstallSchedule(perInstallSchedule *string) {
+	u.PerInstallSchedule = perInstallSchedule
+	u.require(updateAppsRequestFieldPerInstallSchedule)
 }
 
 // SetProductionAndroidBuildID sets the ProductionAndroidBuildID field and marks it as non-optional;
@@ -4903,6 +5462,13 @@ func (u *UpdateAppsRequest) SetRequiredScopes(requiredScopes []string) {
 func (u *UpdateAppsRequest) SetRoute(route *string) {
 	u.Route = route
 	u.require(updateAppsRequestFieldRoute)
+}
+
+// SetSchedule sets the Schedule field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAppsRequest) SetSchedule(schedule *string) {
+	u.Schedule = schedule
+	u.require(updateAppsRequestFieldSchedule)
 }
 
 // SetSecrets sets the Secrets field and marks it as non-optional;
@@ -4963,10 +5529,12 @@ type UpdatePermissionsAppsRequest struct {
 }
 
 func (u *UpdatePermissionsAppsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -4995,63 +5563,6 @@ func (u *UpdatePermissionsAppsRequest) UnmarshalJSON(data []byte) error {
 
 func (u *UpdatePermissionsAppsRequest) MarshalJSON() ([]byte, error) {
 	type embed UpdatePermissionsAppsRequest
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-var (
-	updatePermissionsAppRequestFieldAppID                = big.NewInt(1 << 0)
-	updatePermissionsAppRequestFieldRequestedPermissions = big.NewInt(1 << 1)
-)
-
-type UpdatePermissionsAppRequest struct {
-	// The ID of the app the permission requirements are being updated for
-	AppID string `json:"-" url:"-"`
-	// The permissions that the app will request off of users when a user installs the app.
-	RequestedPermissions []*UpdatePermissionsAppRequestRequestedPermissionsItem `json:"requested_permissions" url:"-"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (u *UpdatePermissionsAppRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetAppID sets the AppID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdatePermissionsAppRequest) SetAppID(appID string) {
-	u.AppID = appID
-	u.require(updatePermissionsAppRequestFieldAppID)
-}
-
-// SetRequestedPermissions sets the RequestedPermissions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdatePermissionsAppRequest) SetRequestedPermissions(requestedPermissions []*UpdatePermissionsAppRequestRequestedPermissionsItem) {
-	u.RequestedPermissions = requestedPermissions
-	u.require(updatePermissionsAppRequestFieldRequestedPermissions)
-}
-
-func (u *UpdatePermissionsAppRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdatePermissionsAppRequest
-	var body unmarshaler
-	if err := json.Unmarshal(data, &body); err != nil {
-		return err
-	}
-	*u = UpdatePermissionsAppRequest(body)
-	return nil
-}
-
-func (u *UpdatePermissionsAppRequest) MarshalJSON() ([]byte, error) {
-	type embed UpdatePermissionsAppRequest
 	var marshaler = struct {
 		embed
 	}{

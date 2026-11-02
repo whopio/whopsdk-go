@@ -5,8 +5,9 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
+	time "time"
 )
 
 var (
@@ -25,10 +26,12 @@ type CheckAccessUsersRequest struct {
 }
 
 func (c *CheckAccessUsersRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -56,13 +59,13 @@ var (
 type ListUsersRequest struct {
 	// A search term to filter users by name or username.
 	Query *string `json:"-" url:"query,omitempty"`
-	// The number of users to return (max 50).
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor; returns users after this position.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of users to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// A cursor; returns users before this position.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -70,10 +73,12 @@ type ListUsersRequest struct {
 }
 
 func (l *ListUsersRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetQuery sets the Query field and marks it as non-optional;
@@ -112,17 +117,23 @@ func (l *ListUsersRequest) SetBefore(before *string) {
 }
 
 var (
-	meUsersRequestFieldAccountID             = big.NewInt(1 << 0)
-	meUsersRequestFieldIncludeBalanceHistory = big.NewInt(1 << 1)
-	meUsersRequestFieldFrom                  = big.NewInt(1 << 2)
-	meUsersRequestFieldTo                    = big.NewInt(1 << 3)
-	meUsersRequestFieldInterval              = big.NewInt(1 << 4)
-	meUsersRequestFieldTimeZone              = big.NewInt(1 << 5)
+	meUsersRequestFieldIncludeTrading        = big.NewInt(1 << 0)
+	meUsersRequestFieldAccountID             = big.NewInt(1 << 1)
+	meUsersRequestFieldIncludeBalance        = big.NewInt(1 << 2)
+	meUsersRequestFieldIncludeBalanceHistory = big.NewInt(1 << 3)
+	meUsersRequestFieldFrom                  = big.NewInt(1 << 4)
+	meUsersRequestFieldTo                    = big.NewInt(1 << 5)
+	meUsersRequestFieldInterval              = big.NewInt(1 << 6)
+	meUsersRequestFieldTimeZone              = big.NewInt(1 << 7)
 )
 
 type MeUsersRequest struct {
+	// Also return the trading account under `trading`: its address and its Hyperliquid WebSocket subscriptions. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet.
+	IncludeTrading *bool `json:"-" url:"include_trading,omitempty"`
 	// When set, returns your account-specific profile overrides for this account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// Compute live wallet and owned-account balances (default true). Set false for identity-only reads. Ignored for callers without balance-read scope.
+	IncludeBalance *bool `json:"-" url:"include_balance,omitempty"`
 	// Also compute your balance history (opt-in; runs a heavier query). Ignored for callers without balance-read scope.
 	IncludeBalanceHistory *bool `json:"-" url:"include_balance_history,omitempty"`
 	// Balance-history window start, ISO 8601 date or datetime. Defaults to 30 days ago. Only used with `include_balance_history`.
@@ -139,10 +150,19 @@ type MeUsersRequest struct {
 }
 
 func (m *MeUsersRequest) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetIncludeTrading sets the IncludeTrading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MeUsersRequest) SetIncludeTrading(includeTrading *bool) {
+	m.IncludeTrading = includeTrading
+	m.require(meUsersRequestFieldIncludeTrading)
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -150,6 +170,13 @@ func (m *MeUsersRequest) require(field *big.Int) {
 func (m *MeUsersRequest) SetAccountID(accountID *string) {
 	m.AccountID = accountID
 	m.require(meUsersRequestFieldAccountID)
+}
+
+// SetIncludeBalance sets the IncludeBalance field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MeUsersRequest) SetIncludeBalance(includeBalance *bool) {
+	m.IncludeBalance = includeBalance
+	m.require(meUsersRequestFieldIncludeBalance)
 }
 
 // SetIncludeBalanceHistory sets the IncludeBalanceHistory field and marks it as non-optional;
@@ -200,10 +227,12 @@ type RecommendActionsUsersRequest struct {
 }
 
 func (r *RecommendActionsUsersRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -215,19 +244,25 @@ func (r *RecommendActionsUsersRequest) SetID(id string) {
 
 var (
 	retrieveUsersRequestFieldID                    = big.NewInt(1 << 0)
-	retrieveUsersRequestFieldAccountID             = big.NewInt(1 << 1)
-	retrieveUsersRequestFieldIncludeBalanceHistory = big.NewInt(1 << 2)
-	retrieveUsersRequestFieldFrom                  = big.NewInt(1 << 3)
-	retrieveUsersRequestFieldTo                    = big.NewInt(1 << 4)
-	retrieveUsersRequestFieldInterval              = big.NewInt(1 << 5)
-	retrieveUsersRequestFieldTimeZone              = big.NewInt(1 << 6)
+	retrieveUsersRequestFieldIncludeTrading        = big.NewInt(1 << 1)
+	retrieveUsersRequestFieldAccountID             = big.NewInt(1 << 2)
+	retrieveUsersRequestFieldIncludeBalance        = big.NewInt(1 << 3)
+	retrieveUsersRequestFieldIncludeBalanceHistory = big.NewInt(1 << 4)
+	retrieveUsersRequestFieldFrom                  = big.NewInt(1 << 5)
+	retrieveUsersRequestFieldTo                    = big.NewInt(1 << 6)
+	retrieveUsersRequestFieldInterval              = big.NewInt(1 << 7)
+	retrieveUsersRequestFieldTimeZone              = big.NewInt(1 << 8)
 )
 
 type RetrieveUsersRequest struct {
 	// User ID (prefixed `user_`), username, or `me` for the authenticated user.
 	ID string `json:"-" url:"-"`
+	// Also return the trading account under `trading`: its address and its Hyperliquid WebSocket subscriptions. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet.
+	IncludeTrading *bool `json:"-" url:"include_trading,omitempty"`
 	// When set, returns the user's account-specific profile overrides for this account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// Compute live wallet and owned-account balances on the self view (default true). Set false for identity-only reads. Ignored when the id is not `me` or the caller lacks balance-read scope.
+	IncludeBalance *bool `json:"-" url:"include_balance,omitempty"`
 	// Also compute your balance history (opt-in; runs a heavier query). Only applies when the id is `me`; ignored for callers without balance-read scope.
 	IncludeBalanceHistory *bool `json:"-" url:"include_balance_history,omitempty"`
 	// Balance-history window start, ISO 8601 date or datetime. Defaults to 30 days ago. Only used with `include_balance_history`.
@@ -244,10 +279,12 @@ type RetrieveUsersRequest struct {
 }
 
 func (r *RetrieveUsersRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -257,11 +294,25 @@ func (r *RetrieveUsersRequest) SetID(id string) {
 	r.require(retrieveUsersRequestFieldID)
 }
 
+// SetIncludeTrading sets the IncludeTrading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveUsersRequest) SetIncludeTrading(includeTrading *bool) {
+	r.IncludeTrading = includeTrading
+	r.require(retrieveUsersRequestFieldIncludeTrading)
+}
+
 // SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (r *RetrieveUsersRequest) SetAccountID(accountID *string) {
 	r.AccountID = accountID
 	r.require(retrieveUsersRequestFieldAccountID)
+}
+
+// SetIncludeBalance sets the IncludeBalance field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveUsersRequest) SetIncludeBalance(includeBalance *bool) {
+	r.IncludeBalance = includeBalance
+	r.require(retrieveUsersRequestFieldIncludeBalance)
 }
 
 // SetIncludeBalanceHistory sets the IncludeBalanceHistory field and marks it as non-optional;
@@ -300,53 +351,360 @@ func (r *RetrieveUsersRequest) SetTimeZone(timeZone *string) {
 }
 
 var (
-	userFieldBalance              = big.NewInt(1 << 0)
-	userFieldBalanceHistory       = big.NewInt(1 << 1)
-	userFieldBanner               = big.NewInt(1 << 2)
-	userFieldBio                  = big.NewInt(1 << 3)
-	userFieldCreatedAt            = big.NewInt(1 << 4)
-	userFieldEarningsUsd          = big.NewInt(1 << 5)
-	userFieldEmail                = big.NewInt(1 << 6)
-	userFieldID                   = big.NewInt(1 << 7)
-	userFieldName                 = big.NewInt(1 << 8)
-	userFieldProfilePicture       = big.NewInt(1 << 9)
-	userFieldSocialAccounts       = big.NewInt(1 << 10)
-	userFieldStaff                = big.NewInt(1 << 11)
-	userFieldUsername             = big.NewInt(1 << 12)
-	userFieldVerification         = big.NewInt(1 << 13)
-	userFieldWhopPartnerEnabledAt = big.NewInt(1 << 14)
+	ownerLevelFieldCurrent                  = big.NewInt(1 << 0)
+	ownerLevelFieldLevels                   = big.NewInt(1 << 1)
+	ownerLevelFieldMonthlyAdsSpend          = big.NewInt(1 << 2)
+	ownerLevelFieldMonthlyCardSpend         = big.NewInt(1 << 3)
+	ownerLevelFieldMonthlyQualifyingSpend   = big.NewInt(1 << 4)
+	ownerLevelFieldMonthlyTradingVolume     = big.NewInt(1 << 5)
+	ownerLevelFieldPoints                   = big.NewInt(1 << 6)
+	ownerLevelFieldPointsBySource           = big.NewInt(1 << 7)
+	ownerLevelFieldPointsToNext             = big.NewInt(1 << 8)
+	ownerLevelFieldProcessingRatePercentage = big.NewInt(1 << 9)
+	ownerLevelFieldResetsAt                 = big.NewInt(1 << 10)
 )
 
+// ownerLevelNullableFields maps the wire names of OwnerLevel's nullable fields (required or optional) to their field bits.
+var ownerLevelNullableFields = map[string]*big.Int{
+	"points_to_next": ownerLevelFieldPointsToNext,
+}
+
+type OwnerLevel struct {
+	// Current level, from `0` before the first threshold up to `10`.
+	Current int                            `json:"current" url:"current"`
+	Levels  []*AccountProcessingOfferLevel `json:"levels" url:"levels"`
+	// Charged Whop Ads spend this calendar month across every account the owner owns, in USD.
+	MonthlyAdsSpend *Money `json:"monthly_ads_spend" url:"monthly_ads_spend"`
+	// Effective Whop Card spend this calendar month across every account the owner owns, in USD.
+	MonthlyCardSpend *Money `json:"monthly_card_spend" url:"monthly_card_spend"`
+	// Qualifying spend this calendar month across every account the owner owns, in USD: Whop Ads spend, Whop Card spend, and a tenth of perpetual trading volume.
+	MonthlyQualifyingSpend *Money `json:"monthly_qualifying_spend" url:"monthly_qualifying_spend"`
+	// Perpetual trading notional volume this calendar month across every account the owner owns, in USD.
+	MonthlyTradingVolume *Money `json:"monthly_trading_volume" url:"monthly_trading_volume"`
+	// Points earned this month across every account the owner owns.
+	Points int `json:"points" url:"points"`
+	// This month's points, split by where they were earned.
+	PointsBySource *OwnerLevelPoints `json:"points_by_source" url:"points_by_source"`
+	// Points still needed this month to reach the next level, or `null` at level `10`.
+	PointsToNext *int `json:"points_to_next,omitempty" url:"points_to_next,omitempty"`
+	// The standard US and Canada card processing percentage at `current`, before any account's custom rate.
+	ProcessingRatePercentage float64 `json:"processing_rate_percentage" url:"processing_rate_percentage"`
+	// When this month's points reset to zero, as an ISO 8601 timestamp.
+	ResetsAt string `json:"resets_at" url:"resets_at"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (o *OwnerLevel) GetCurrent() int {
+	if o == nil {
+		return 0
+	}
+	return o.Current
+}
+
+func (o *OwnerLevel) GetLevels() []*AccountProcessingOfferLevel {
+	if o == nil {
+		return nil
+	}
+	return o.Levels
+}
+
+func (o *OwnerLevel) GetMonthlyAdsSpend() *Money {
+	if o == nil {
+		return nil
+	}
+	return o.MonthlyAdsSpend
+}
+
+func (o *OwnerLevel) GetMonthlyCardSpend() *Money {
+	if o == nil {
+		return nil
+	}
+	return o.MonthlyCardSpend
+}
+
+func (o *OwnerLevel) GetMonthlyQualifyingSpend() *Money {
+	if o == nil {
+		return nil
+	}
+	return o.MonthlyQualifyingSpend
+}
+
+func (o *OwnerLevel) GetMonthlyTradingVolume() *Money {
+	if o == nil {
+		return nil
+	}
+	return o.MonthlyTradingVolume
+}
+
+func (o *OwnerLevel) GetPoints() int {
+	if o == nil {
+		return 0
+	}
+	return o.Points
+}
+
+func (o *OwnerLevel) GetPointsBySource() *OwnerLevelPoints {
+	if o == nil {
+		return nil
+	}
+	return o.PointsBySource
+}
+
+func (o *OwnerLevel) GetPointsToNext() *int {
+	if o == nil {
+		return nil
+	}
+	return o.PointsToNext
+}
+
+func (o *OwnerLevel) GetProcessingRatePercentage() float64 {
+	if o == nil {
+		return 0
+	}
+	return o.ProcessingRatePercentage
+}
+
+func (o *OwnerLevel) GetResetsAt() string {
+	if o == nil {
+		return ""
+	}
+	return o.ResetsAt
+}
+
+func (o *OwnerLevel) GetExtraProperties() map[string]interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.extraProperties
+}
+
+func (o *OwnerLevel) require(field *big.Int) {
+	next := new(big.Int)
+	if o.explicitFields != nil {
+		next.Set(o.explicitFields)
+	}
+	next.Or(next, field)
+	o.explicitFields = next
+}
+
+// SetCurrent sets the Current field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetCurrent(current int) {
+	o.Current = current
+	o.require(ownerLevelFieldCurrent)
+}
+
+// SetLevels sets the Levels field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetLevels(levels []*AccountProcessingOfferLevel) {
+	o.Levels = levels
+	o.require(ownerLevelFieldLevels)
+}
+
+// SetMonthlyAdsSpend sets the MonthlyAdsSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetMonthlyAdsSpend(monthlyAdsSpend *Money) {
+	o.MonthlyAdsSpend = monthlyAdsSpend
+	o.require(ownerLevelFieldMonthlyAdsSpend)
+}
+
+// SetMonthlyCardSpend sets the MonthlyCardSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetMonthlyCardSpend(monthlyCardSpend *Money) {
+	o.MonthlyCardSpend = monthlyCardSpend
+	o.require(ownerLevelFieldMonthlyCardSpend)
+}
+
+// SetMonthlyQualifyingSpend sets the MonthlyQualifyingSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetMonthlyQualifyingSpend(monthlyQualifyingSpend *Money) {
+	o.MonthlyQualifyingSpend = monthlyQualifyingSpend
+	o.require(ownerLevelFieldMonthlyQualifyingSpend)
+}
+
+// SetMonthlyTradingVolume sets the MonthlyTradingVolume field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetMonthlyTradingVolume(monthlyTradingVolume *Money) {
+	o.MonthlyTradingVolume = monthlyTradingVolume
+	o.require(ownerLevelFieldMonthlyTradingVolume)
+}
+
+// SetPoints sets the Points field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetPoints(points int) {
+	o.Points = points
+	o.require(ownerLevelFieldPoints)
+}
+
+// SetPointsBySource sets the PointsBySource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetPointsBySource(pointsBySource *OwnerLevelPoints) {
+	o.PointsBySource = pointsBySource
+	o.require(ownerLevelFieldPointsBySource)
+}
+
+// SetPointsToNext sets the PointsToNext field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetPointsToNext(pointsToNext *int) {
+	o.PointsToNext = pointsToNext
+	o.require(ownerLevelFieldPointsToNext)
+}
+
+// SetProcessingRatePercentage sets the ProcessingRatePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetProcessingRatePercentage(processingRatePercentage float64) {
+	o.ProcessingRatePercentage = processingRatePercentage
+	o.require(ownerLevelFieldProcessingRatePercentage)
+}
+
+// SetResetsAt sets the ResetsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetResetsAt(resetsAt string) {
+	o.ResetsAt = resetsAt
+	o.require(ownerLevelFieldResetsAt)
+}
+
+func (o *OwnerLevel) UnmarshalJSON(data []byte) error {
+	type unmarshaler OwnerLevel
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*o = OwnerLevel(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ownerLevelNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		o.require(presentFields)
+	}
+	o.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (o *OwnerLevel) MarshalJSON() ([]byte, error) {
+	type embed OwnerLevel
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*o),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, o.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (o *OwnerLevel) String() string {
+	if o == nil {
+		return "<nil>"
+	}
+	if len(o.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(o.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(o); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", o)
+}
+
+var (
+	userFieldBalance                           = big.NewInt(1 << 0)
+	userFieldBalanceHistory                    = big.NewInt(1 << 1)
+	userFieldBalances                          = big.NewInt(1 << 2)
+	userFieldBanner                            = big.NewInt(1 << 3)
+	userFieldBio                               = big.NewInt(1 << 4)
+	userFieldCards                             = big.NewInt(1 << 5)
+	userFieldCreatedAt                         = big.NewInt(1 << 6)
+	userFieldDateOfBirth                       = big.NewInt(1 << 7)
+	userFieldEarningsUsd                       = big.NewInt(1 << 8)
+	userFieldEmail                             = big.NewInt(1 << 9)
+	userFieldID                                = big.NewInt(1 << 10)
+	userFieldLevel                             = big.NewInt(1 << 11)
+	userFieldName                              = big.NewInt(1 << 12)
+	userFieldProfilePicture                    = big.NewInt(1 << 13)
+	userFieldSocialLinks                       = big.NewInt(1 << 14)
+	userFieldTotalUsd                          = big.NewInt(1 << 15)
+	userFieldTrading                           = big.NewInt(1 << 16)
+	userFieldUsername                          = big.NewInt(1 << 17)
+	userFieldVerification                      = big.NewInt(1 << 18)
+	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 19)
+	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 20)
+	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 21)
+)
+
+// userNullableFields maps the wire names of User's nullable fields (required or optional) to their field bits.
+var userNullableFields = map[string]*big.Int{
+	"balance":                               userFieldBalance,
+	"balance_history":                       userFieldBalanceHistory,
+	"banner":                                userFieldBanner,
+	"bio":                                   userFieldBio,
+	"cards":                                 userFieldCards,
+	"date_of_birth":                         userFieldDateOfBirth,
+	"earnings_usd":                          userFieldEarningsUsd,
+	"email":                                 userFieldEmail,
+	"level":                                 userFieldLevel,
+	"name":                                  userFieldName,
+	"total_usd":                             userFieldTotalUsd,
+	"trading":                               userFieldTrading,
+	"whop_partner_enabled_at":               userFieldWhopPartnerEnabledAt,
+	"whop_partner_onboarded_accounts_count": userFieldWhopPartnerOnboardedAccountsCount,
+	"whop_partner_verified_at":              userFieldWhopPartnerVerifiedAt,
+}
+
 type User struct {
-	// The user's balance: personal cash + crypto + in-flight treasury deposits, plus account balances for accounts they own. Computed only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise.
+	// The user's balance: personal cash + other holdings + deposits still in flight, plus account balances for accounts they own. Computed only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise, or when `include_balance=false`.
 	Balance *UserBalance `json:"balance,omitempty" url:"balance,omitempty"`
 	// The user's cumulative wallet balance over time (USD `{ t, v }` points plus last/min/max), for the balance chart. Opt in with `include_balance_history=true` when retrieving yourself with the reserved id `me`; populated only for callers with balance-read scope and `null` otherwise. A user with no wallet activity returns an empty series.
-	BalanceHistory *UserBalanceHistory `json:"balance_history,omitempty" url:"balance_history,omitempty"`
+	BalanceHistory *UserBalanceHistory    `json:"balance_history,omitempty" url:"balance_history,omitempty"`
+	Balances       []*AccountBalanceToken `json:"balances" url:"balances"`
 	// The user's profile banner wrapper. `null` when the user has no banner.
 	Banner *UserBanner `json:"banner,omitempty" url:"banner,omitempty"`
 	// The user's biography
 	Bio *string `json:"bio,omitempty" url:"bio,omitempty"`
+	// Where the user's personal card application stands. Populated only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise, or when the user has never applied for a card.
+	Cards *AccountCards `json:"cards,omitempty" url:"cards,omitempty"`
 	// When the user was created, as an ISO 8601 timestamp
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// The user's gross USD income over time. Populated only on single-user self reads for callers with balance-read scope; `null` otherwise.
+	// The user's date of birth as an ISO 8601 date, like `1998-04-23`. Populated only on the self view (retrieved with the reserved id `me`) for callers with email-read scope; `null` otherwise, or when the user has not set one.
+	DateOfBirth *string `json:"date_of_birth,omitempty" url:"date_of_birth,omitempty"`
+	// The user's gross USD income over time, including a Partner commission breakdown. Populated only on single-user self reads for callers with balance-read scope; `null` otherwise.
 	EarningsUsd *UserEarnings `json:"earnings_usd,omitempty" url:"earnings_usd,omitempty"`
 	// The user's email address. Populated only on the self view (retrieved with the reserved id `me`) for callers with email-read scope; `null` otherwise, or while the account has no confirmed email yet.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// User ID, prefixed `user_`.
 	ID string `json:"id" url:"id"`
+	// The user's Whop Levels progress, counted across every account they own. Populated only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise, and when none of their accounts are in Whop Levels.
+	Level *OwnerLevel `json:"level,omitempty" url:"level,omitempty"`
 	// The user's display name
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
 	// Avatar wrapper; its `url` is always present, using a generated placeholder when the user set no picture.
 	ProfilePicture *UserProfilePicture `json:"profile_picture" url:"profile_picture"`
-	SocialAccounts []*SocialAccount    `json:"social_accounts" url:"social_accounts"`
-	// Whop staff access flags. Populated only on the self view (retrieved with the reserved id `me`) for callers with staff-read scope; `null` there for every user who is not Whop staff, and always `null` elsewhere.
-	Staff *UserStaffAccess `json:"staff,omitempty" url:"staff,omitempty"`
+	SocialLinks    []*UserSocialLink   `json:"social_links" url:"social_links"`
+	// Total USD value of the user's personal holdings in `balances`, across those with known exchange rates. Computed only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise, when `include_balance=false`, or when the balance source is unavailable.
+	TotalUsd *string `json:"total_usd,omitempty" url:"total_usd,omitempty"`
+	// The trading account address and its WebSocket subscriptions. Opt in with `include_trading=true` when retrieving `me`. `null` otherwise, without trading permission, or without an Ethereum wallet.
+	Trading *TradingAccount `json:"trading,omitempty" url:"trading,omitempty"`
 	// The user's unique username
 	Username string `json:"username" url:"username"`
 	// Identity verification status for the user's `individual` (KYC) and `business` (KYB) profiles. Each is `null` until created, otherwise a `status` of `not_started`, `pending`, `approved`, or `rejected`.
 	Verification map[string]any `json:"verification" url:"verification"`
 	// When the user became an enrolled Whop Partner, as an ISO 8601 timestamp. `null` if never enrolled.
 	WhopPartnerEnabledAt *string `json:"whop_partner_enabled_at,omitempty" url:"whop_partner_enabled_at,omitempty"`
+	// Number of accounts the user referred to Whop as a Whop Partner that have processed more than $1 in volume attributed to the user. Populated only when retrieving a single user who is a Verified Whop Partner; `null` otherwise.
+	WhopPartnerOnboardedAccountsCount *int `json:"whop_partner_onboarded_accounts_count,omitempty" url:"whop_partner_onboarded_accounts_count,omitempty"`
+	// When the user became a Verified Whop Partner, as an ISO 8601 timestamp. `null` for users who are not Verified Whop Partners, including partners who left the program and suspended users.
+	WhopPartnerVerifiedAt *string `json:"whop_partner_verified_at,omitempty" url:"whop_partner_verified_at,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -369,6 +727,13 @@ func (u *User) GetBalanceHistory() *UserBalanceHistory {
 	return u.BalanceHistory
 }
 
+func (u *User) GetBalances() []*AccountBalanceToken {
+	if u == nil {
+		return nil
+	}
+	return u.Balances
+}
+
 func (u *User) GetBanner() *UserBanner {
 	if u == nil {
 		return nil
@@ -383,11 +748,25 @@ func (u *User) GetBio() *string {
 	return u.Bio
 }
 
+func (u *User) GetCards() *AccountCards {
+	if u == nil {
+		return nil
+	}
+	return u.Cards
+}
+
 func (u *User) GetCreatedAt() string {
 	if u == nil {
 		return ""
 	}
 	return u.CreatedAt
+}
+
+func (u *User) GetDateOfBirth() *string {
+	if u == nil {
+		return nil
+	}
+	return u.DateOfBirth
 }
 
 func (u *User) GetEarningsUsd() *UserEarnings {
@@ -411,6 +790,13 @@ func (u *User) GetID() string {
 	return u.ID
 }
 
+func (u *User) GetLevel() *OwnerLevel {
+	if u == nil {
+		return nil
+	}
+	return u.Level
+}
+
 func (u *User) GetName() *string {
 	if u == nil {
 		return nil
@@ -425,18 +811,25 @@ func (u *User) GetProfilePicture() *UserProfilePicture {
 	return u.ProfilePicture
 }
 
-func (u *User) GetSocialAccounts() []*SocialAccount {
+func (u *User) GetSocialLinks() []*UserSocialLink {
 	if u == nil {
 		return nil
 	}
-	return u.SocialAccounts
+	return u.SocialLinks
 }
 
-func (u *User) GetStaff() *UserStaffAccess {
+func (u *User) GetTotalUsd() *string {
 	if u == nil {
 		return nil
 	}
-	return u.Staff
+	return u.TotalUsd
+}
+
+func (u *User) GetTrading() *TradingAccount {
+	if u == nil {
+		return nil
+	}
+	return u.Trading
 }
 
 func (u *User) GetUsername() string {
@@ -460,6 +853,20 @@ func (u *User) GetWhopPartnerEnabledAt() *string {
 	return u.WhopPartnerEnabledAt
 }
 
+func (u *User) GetWhopPartnerOnboardedAccountsCount() *int {
+	if u == nil {
+		return nil
+	}
+	return u.WhopPartnerOnboardedAccountsCount
+}
+
+func (u *User) GetWhopPartnerVerifiedAt() *string {
+	if u == nil {
+		return nil
+	}
+	return u.WhopPartnerVerifiedAt
+}
+
 func (u *User) GetExtraProperties() map[string]interface{} {
 	if u == nil {
 		return nil
@@ -468,10 +875,12 @@ func (u *User) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *User) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBalance sets the Balance field and marks it as non-optional;
@@ -488,6 +897,13 @@ func (u *User) SetBalanceHistory(balanceHistory *UserBalanceHistory) {
 	u.require(userFieldBalanceHistory)
 }
 
+// SetBalances sets the Balances field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetBalances(balances []*AccountBalanceToken) {
+	u.Balances = balances
+	u.require(userFieldBalances)
+}
+
 // SetBanner sets the Banner field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *User) SetBanner(banner *UserBanner) {
@@ -502,11 +918,25 @@ func (u *User) SetBio(bio *string) {
 	u.require(userFieldBio)
 }
 
+// SetCards sets the Cards field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetCards(cards *AccountCards) {
+	u.Cards = cards
+	u.require(userFieldCards)
+}
+
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *User) SetCreatedAt(createdAt string) {
 	u.CreatedAt = createdAt
 	u.require(userFieldCreatedAt)
+}
+
+// SetDateOfBirth sets the DateOfBirth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetDateOfBirth(dateOfBirth *string) {
+	u.DateOfBirth = dateOfBirth
+	u.require(userFieldDateOfBirth)
 }
 
 // SetEarningsUsd sets the EarningsUsd field and marks it as non-optional;
@@ -530,6 +960,13 @@ func (u *User) SetID(id string) {
 	u.require(userFieldID)
 }
 
+// SetLevel sets the Level field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetLevel(level *OwnerLevel) {
+	u.Level = level
+	u.require(userFieldLevel)
+}
+
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *User) SetName(name *string) {
@@ -544,18 +981,25 @@ func (u *User) SetProfilePicture(profilePicture *UserProfilePicture) {
 	u.require(userFieldProfilePicture)
 }
 
-// SetSocialAccounts sets the SocialAccounts field and marks it as non-optional;
+// SetSocialLinks sets the SocialLinks field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *User) SetSocialAccounts(socialAccounts []*SocialAccount) {
-	u.SocialAccounts = socialAccounts
-	u.require(userFieldSocialAccounts)
+func (u *User) SetSocialLinks(socialLinks []*UserSocialLink) {
+	u.SocialLinks = socialLinks
+	u.require(userFieldSocialLinks)
 }
 
-// SetStaff sets the Staff field and marks it as non-optional;
+// SetTotalUsd sets the TotalUsd field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *User) SetStaff(staff *UserStaffAccess) {
-	u.Staff = staff
-	u.require(userFieldStaff)
+func (u *User) SetTotalUsd(totalUsd *string) {
+	u.TotalUsd = totalUsd
+	u.require(userFieldTotalUsd)
+}
+
+// SetTrading sets the Trading field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetTrading(trading *TradingAccount) {
+	u.Trading = trading
+	u.require(userFieldTrading)
 }
 
 // SetUsername sets the Username field and marks it as non-optional;
@@ -579,6 +1023,20 @@ func (u *User) SetWhopPartnerEnabledAt(whopPartnerEnabledAt *string) {
 	u.require(userFieldWhopPartnerEnabledAt)
 }
 
+// SetWhopPartnerOnboardedAccountsCount sets the WhopPartnerOnboardedAccountsCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetWhopPartnerOnboardedAccountsCount(whopPartnerOnboardedAccountsCount *int) {
+	u.WhopPartnerOnboardedAccountsCount = whopPartnerOnboardedAccountsCount
+	u.require(userFieldWhopPartnerOnboardedAccountsCount)
+}
+
+// SetWhopPartnerVerifiedAt sets the WhopPartnerVerifiedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetWhopPartnerVerifiedAt(whopPartnerVerifiedAt *string) {
+	u.WhopPartnerVerifiedAt = whopPartnerVerifiedAt
+	u.require(userFieldWhopPartnerVerifiedAt)
+}
+
 func (u *User) UnmarshalJSON(data []byte) error {
 	type unmarshaler User
 	var value unmarshaler
@@ -591,6 +1049,13 @@ func (u *User) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, userNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -645,9 +1110,9 @@ type UserBalance struct {
 	CryptoUsd string `json:"crypto_usd" url:"crypto_usd"`
 	// Fiat pending and in-transit balances, plus in-flight treasury deposits, in USD.
 	PendingUsd string `json:"pending_usd" url:"pending_usd"`
-	// The user's personal balance in USD: cash (available + pending + in-transit + reserve) + crypto + in-flight treasury deposits. Excludes account balances (see businesses_total_usd).
+	// The user's personal balance in USD: cash (available + pending + in-transit + reserve) + other holdings + deposits still in flight. Excludes account balances (see businesses_total_usd).
 	TotalUsd string `json:"total_usd" url:"total_usd"`
-	// Balance-to-wallet USDT0 withdrawals still in flight, in USD.
+	// Balance moves into the user's wallet still in flight, in USD.
 	TreasuryPendingUsd string `json:"treasury_pending_usd" url:"treasury_pending_usd"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -728,10 +1193,12 @@ func (u *UserBalance) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserBalance) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBusinesses sets the Businesses field and marks it as non-optional;
@@ -846,6 +1313,12 @@ var (
 	userBalanceBusinessFieldName       = big.NewInt(1 << 3)
 )
 
+// userBalanceBusinessNullableFields maps the wire names of UserBalanceBusiness's nullable fields (required or optional) to their field bits.
+var userBalanceBusinessNullableFields = map[string]*big.Int{
+	"logo_url": userBalanceBusinessFieldLogoURL,
+	"name":     userBalanceBusinessFieldName,
+}
+
 type UserBalanceBusiness struct {
 	// The account's total balance in USD.
 	BalanceUsd string `json:"balance_usd" url:"balance_usd"`
@@ -899,10 +1372,12 @@ func (u *UserBalanceBusiness) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserBalanceBusiness) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBalanceUsd sets the BalanceUsd field and marks it as non-optional;
@@ -945,6 +1420,13 @@ func (u *UserBalanceBusiness) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, userBalanceBusinessNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -985,6 +1467,11 @@ var (
 	userBalanceCashFieldReserveBalanceUsd        = big.NewInt(1 << 6)
 	userBalanceCashFieldTotalWithdrawableBalance = big.NewInt(1 << 7)
 )
+
+// userBalanceCashNullableFields maps the wire names of UserBalanceCash's nullable fields (required or optional) to their field bits.
+var userBalanceCashNullableFields = map[string]*big.Int{
+	"price_usd": userBalanceCashFieldPriceUsd,
+}
 
 type UserBalanceCash struct {
 	// Available balance in the native currency.
@@ -1075,10 +1562,12 @@ func (u *UserBalanceCash) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserBalanceCash) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBalance sets the Balance field and marks it as non-optional;
@@ -1149,6 +1638,13 @@ func (u *UserBalanceCash) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, userBalanceCashNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1238,10 +1734,12 @@ func (u *UserBalanceHistory) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserBalanceHistory) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1354,10 +1852,12 @@ func (u *UserBalanceHistoryPoint) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserBalanceHistoryPoint) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetT sets the T field and marks it as non-optional;
@@ -1425,6 +1925,13 @@ var (
 	userBalanceTokenFieldSymbol    = big.NewInt(1 << 5)
 	userBalanceTokenFieldValueUsd  = big.NewInt(1 << 6)
 )
+
+// userBalanceTokenNullableFields maps the wire names of UserBalanceToken's nullable fields (required or optional) to their field bits.
+var userBalanceTokenNullableFields = map[string]*big.Int{
+	"icon_url":  userBalanceTokenFieldIconURL,
+	"name":      userBalanceTokenFieldName,
+	"price_usd": userBalanceTokenFieldPriceUsd,
+}
 
 type UserBalanceToken struct {
 	// Amount held in native token units, as a decimal string.
@@ -1506,10 +2013,12 @@ func (u *UserBalanceToken) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserBalanceToken) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetBalance sets the Balance field and marks it as non-optional;
@@ -1573,6 +2082,13 @@ func (u *UserBalanceToken) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, userBalanceTokenNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1633,10 +2149,12 @@ func (u *UserBanner) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserBanner) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -1691,15 +2209,23 @@ func (u *UserBanner) String() string {
 var (
 	userEarningsFieldFirstEarnedAt = big.NewInt(1 << 0)
 	userEarningsFieldOwnedAccounts = big.NewInt(1 << 1)
-	userEarningsFieldPersonal      = big.NewInt(1 << 2)
-	userEarningsFieldTotal         = big.NewInt(1 << 3)
+	userEarningsFieldPartners      = big.NewInt(1 << 2)
+	userEarningsFieldPersonal      = big.NewInt(1 << 3)
+	userEarningsFieldTotal         = big.NewInt(1 << 4)
 )
+
+// userEarningsNullableFields maps the wire names of UserEarnings's nullable fields (required or optional) to their field bits.
+var userEarningsNullableFields = map[string]*big.Int{
+	"first_earned_at": userEarningsFieldFirstEarnedAt,
+}
 
 type UserEarnings struct {
 	// The first time the user earned gross income, as an ISO 8601 timestamp.
 	FirstEarnedAt *string `json:"first_earned_at,omitempty" url:"first_earned_at,omitempty"`
 	// Gross income from accounts the user owns or is owner-authorized on.
 	OwnedAccounts *UserEarningsAmount `json:"owned_accounts" url:"owned_accounts"`
+	// Partner commissions posted to the user's wallet. Pending Partner payouts are excluded until they post; later reversals do not reduce gross income.
+	Partners *UserEarningsAmount `json:"partners" url:"partners"`
 	// Gross income from the user's personal wallet.
 	Personal *UserEarningsAmount `json:"personal" url:"personal"`
 	// Gross income from the user's personal wallet plus accounts they own or are owner-authorized on.
@@ -1726,6 +2252,13 @@ func (u *UserEarnings) GetOwnedAccounts() *UserEarningsAmount {
 	return u.OwnedAccounts
 }
 
+func (u *UserEarnings) GetPartners() *UserEarningsAmount {
+	if u == nil {
+		return nil
+	}
+	return u.Partners
+}
+
 func (u *UserEarnings) GetPersonal() *UserEarningsAmount {
 	if u == nil {
 		return nil
@@ -1748,10 +2281,12 @@ func (u *UserEarnings) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserEarnings) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetFirstEarnedAt sets the FirstEarnedAt field and marks it as non-optional;
@@ -1766,6 +2301,13 @@ func (u *UserEarnings) SetFirstEarnedAt(firstEarnedAt *string) {
 func (u *UserEarnings) SetOwnedAccounts(ownedAccounts *UserEarningsAmount) {
 	u.OwnedAccounts = ownedAccounts
 	u.require(userEarningsFieldOwnedAccounts)
+}
+
+// SetPartners sets the Partners field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserEarnings) SetPartners(partners *UserEarningsAmount) {
+	u.Partners = partners
+	u.require(userEarningsFieldPartners)
 }
 
 // SetPersonal sets the Personal field and marks it as non-optional;
@@ -1794,6 +2336,13 @@ func (u *UserEarnings) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, userEarningsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1825,142 +2374,6 @@ func (u *UserEarnings) String() string {
 }
 
 var (
-	userEarningsAmountFieldLast24Hours = big.NewInt(1 << 0)
-	userEarningsAmountFieldLast30Days  = big.NewInt(1 << 1)
-	userEarningsAmountFieldLast7Days   = big.NewInt(1 << 2)
-	userEarningsAmountFieldLifetime    = big.NewInt(1 << 3)
-)
-
-type UserEarningsAmount struct {
-	// Gross income in USD over the last 24 hours.
-	Last24Hours string `json:"last_24_hours" url:"last_24_hours"`
-	// Gross income in USD over the last 30 days.
-	Last30Days string `json:"last_30_days" url:"last_30_days"`
-	// Gross income in USD over the last 7 days.
-	Last7Days string `json:"last_7_days" url:"last_7_days"`
-	// All-time gross income in USD.
-	Lifetime string `json:"lifetime" url:"lifetime"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UserEarningsAmount) GetLast24Hours() string {
-	if u == nil {
-		return ""
-	}
-	return u.Last24Hours
-}
-
-func (u *UserEarningsAmount) GetLast30Days() string {
-	if u == nil {
-		return ""
-	}
-	return u.Last30Days
-}
-
-func (u *UserEarningsAmount) GetLast7Days() string {
-	if u == nil {
-		return ""
-	}
-	return u.Last7Days
-}
-
-func (u *UserEarningsAmount) GetLifetime() string {
-	if u == nil {
-		return ""
-	}
-	return u.Lifetime
-}
-
-func (u *UserEarningsAmount) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UserEarningsAmount) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetLast24Hours sets the Last24Hours field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserEarningsAmount) SetLast24Hours(last24Hours string) {
-	u.Last24Hours = last24Hours
-	u.require(userEarningsAmountFieldLast24Hours)
-}
-
-// SetLast30Days sets the Last30Days field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserEarningsAmount) SetLast30Days(last30Days string) {
-	u.Last30Days = last30Days
-	u.require(userEarningsAmountFieldLast30Days)
-}
-
-// SetLast7Days sets the Last7Days field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserEarningsAmount) SetLast7Days(last7Days string) {
-	u.Last7Days = last7Days
-	u.require(userEarningsAmountFieldLast7Days)
-}
-
-// SetLifetime sets the Lifetime field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserEarningsAmount) SetLifetime(lifetime string) {
-	u.Lifetime = lifetime
-	u.require(userEarningsAmountFieldLifetime)
-}
-
-func (u *UserEarningsAmount) UnmarshalJSON(data []byte) error {
-	type unmarshaler UserEarningsAmount
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UserEarningsAmount(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UserEarningsAmount) MarshalJSON() ([]byte, error) {
-	type embed UserEarningsAmount
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UserEarningsAmount) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-var (
 	userRecommendedActionFieldAccountID           = big.NewInt(1 << 0)
 	userRecommendedActionFieldAccountName         = big.NewInt(1 << 1)
 	userRecommendedActionFieldAction              = big.NewInt(1 << 2)
@@ -1975,10 +2388,19 @@ var (
 	userRecommendedActionFieldTitle               = big.NewInt(1 << 11)
 )
 
+// userRecommendedActionNullableFields maps the wire names of UserRecommendedAction's nullable fields (required or optional) to their field bits.
+var userRecommendedActionNullableFields = map[string]*big.Int{
+	"account_id":   userRecommendedActionFieldAccountID,
+	"account_name": userRecommendedActionFieldAccountName,
+	"icon_url":     userRecommendedActionFieldIconURL,
+	"impact_score": userRecommendedActionFieldImpactScore,
+	"reasoning":    userRecommendedActionFieldReasoning,
+}
+
 type UserRecommendedAction struct {
 	// The account (`biz_`) a business recommendation is for, or `null` for personal recommendations
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// The account's display name, or `null`
+	// The account's display name, or `null` for personal recommendations
 	AccountName *string `json:"account_name,omitempty" url:"account_name,omitempty"`
 	// The recommendation; new values may be added, so handle unknown actions gracefully
 	Action              UserRecommendedActionAction `json:"action" url:"action"`
@@ -2099,10 +2521,12 @@ func (u *UserRecommendedAction) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UserRecommendedAction) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -2201,6 +2625,13 @@ func (u *UserRecommendedAction) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, userRecommendedActionNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2338,21 +2769,26 @@ func (u UserRecommendedActionStatus) Ptr() *UserRecommendedActionStatus {
 }
 
 var (
-	userStaffAccessFieldAdmin               = big.NewInt(1 << 0)
-	userStaffAccessFieldInvestigationAccess = big.NewInt(1 << 1)
-	userStaffAccessFieldManager             = big.NewInt(1 << 2)
-	userStaffAccessFieldSupport             = big.NewInt(1 << 3)
+	userSocialLinkFieldURL      = big.NewInt(1 << 0)
+	userSocialLinkFieldUsername = big.NewInt(1 << 1)
+	userSocialLinkFieldVerified = big.NewInt(1 << 2)
+	userSocialLinkFieldWebsite  = big.NewInt(1 << 3)
 )
 
-type UserStaffAccess struct {
-	// Whether the user holds the admin staff role with a valid second factor.
-	Admin bool `json:"admin" url:"admin"`
-	// Whether the user can open Whop-internal investigation tooling right now: a qualifying staff role plus their investigation toggle switched on.
-	InvestigationAccess bool `json:"investigation_access" url:"investigation_access"`
-	// Whether the user holds the manager staff role with a valid second factor.
-	Manager bool `json:"manager" url:"manager"`
-	// Whether the user holds the support staff role with a valid second factor.
-	Support bool `json:"support" url:"support"`
+// userSocialLinkNullableFields maps the wire names of UserSocialLink's nullable fields (required or optional) to their field bits.
+var userSocialLinkNullableFields = map[string]*big.Int{
+	"username": userSocialLinkFieldUsername,
+}
+
+type UserSocialLink struct {
+	// The link's URL.
+	URL string `json:"url" url:"url"`
+	// The user's handle on the platform, as entered or as reported by the connected account. `null` for links without a handle, such as a personal site.
+	Username *string `json:"username,omitempty" url:"username,omitempty"`
+	// Whether Whop verified that the user owns the account.
+	Verified bool `json:"verified" url:"verified"`
+	// The platform the link points to. `website` is a personal site rather than a social platform.
+	Website UserSocialLinkWebsite `json:"website" url:"website"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2361,94 +2797,103 @@ type UserStaffAccess struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UserStaffAccess) GetAdmin() bool {
+func (u *UserSocialLink) GetURL() string {
+	if u == nil {
+		return ""
+	}
+	return u.URL
+}
+
+func (u *UserSocialLink) GetUsername() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Username
+}
+
+func (u *UserSocialLink) GetVerified() bool {
 	if u == nil {
 		return false
 	}
-	return u.Admin
+	return u.Verified
 }
 
-func (u *UserStaffAccess) GetInvestigationAccess() bool {
+func (u *UserSocialLink) GetWebsite() UserSocialLinkWebsite {
 	if u == nil {
-		return false
+		return ""
 	}
-	return u.InvestigationAccess
+	return u.Website
 }
 
-func (u *UserStaffAccess) GetManager() bool {
-	if u == nil {
-		return false
-	}
-	return u.Manager
-}
-
-func (u *UserStaffAccess) GetSupport() bool {
-	if u == nil {
-		return false
-	}
-	return u.Support
-}
-
-func (u *UserStaffAccess) GetExtraProperties() map[string]interface{} {
+func (u *UserSocialLink) GetExtraProperties() map[string]interface{} {
 	if u == nil {
 		return nil
 	}
 	return u.extraProperties
 }
 
-func (u *UserStaffAccess) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+func (u *UserSocialLink) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
-// SetAdmin sets the Admin field and marks it as non-optional;
+// SetURL sets the URL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserStaffAccess) SetAdmin(admin bool) {
-	u.Admin = admin
-	u.require(userStaffAccessFieldAdmin)
+func (u *UserSocialLink) SetURL(url string) {
+	u.URL = url
+	u.require(userSocialLinkFieldURL)
 }
 
-// SetInvestigationAccess sets the InvestigationAccess field and marks it as non-optional;
+// SetUsername sets the Username field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserStaffAccess) SetInvestigationAccess(investigationAccess bool) {
-	u.InvestigationAccess = investigationAccess
-	u.require(userStaffAccessFieldInvestigationAccess)
+func (u *UserSocialLink) SetUsername(username *string) {
+	u.Username = username
+	u.require(userSocialLinkFieldUsername)
 }
 
-// SetManager sets the Manager field and marks it as non-optional;
+// SetVerified sets the Verified field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserStaffAccess) SetManager(manager bool) {
-	u.Manager = manager
-	u.require(userStaffAccessFieldManager)
+func (u *UserSocialLink) SetVerified(verified bool) {
+	u.Verified = verified
+	u.require(userSocialLinkFieldVerified)
 }
 
-// SetSupport sets the Support field and marks it as non-optional;
+// SetWebsite sets the Website field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserStaffAccess) SetSupport(support bool) {
-	u.Support = support
-	u.require(userStaffAccessFieldSupport)
+func (u *UserSocialLink) SetWebsite(website UserSocialLinkWebsite) {
+	u.Website = website
+	u.require(userSocialLinkFieldWebsite)
 }
 
-func (u *UserStaffAccess) UnmarshalJSON(data []byte) error {
-	type unmarshaler UserStaffAccess
+func (u *UserSocialLink) UnmarshalJSON(data []byte) error {
+	type unmarshaler UserSocialLink
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*u = UserStaffAccess(value)
+	*u = UserSocialLink(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *u)
 	if err != nil {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, userSocialLinkNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (u *UserStaffAccess) MarshalJSON() ([]byte, error) {
-	type embed UserStaffAccess
+func (u *UserSocialLink) MarshalJSON() ([]byte, error) {
+	type embed UserSocialLink
 	var marshaler = struct {
 		embed
 	}{
@@ -2458,7 +2903,7 @@ func (u *UserStaffAccess) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (u *UserStaffAccess) String() string {
+func (u *UserSocialLink) String() string {
 	if u == nil {
 		return "<nil>"
 	}
@@ -2471,6 +2916,47 @@ func (u *UserStaffAccess) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", u)
+}
+
+// The platform the link points to. `website` is a personal site rather than a social platform.
+type UserSocialLinkWebsite string
+
+const (
+	UserSocialLinkWebsiteX         UserSocialLinkWebsite = "x"
+	UserSocialLinkWebsiteInstagram UserSocialLinkWebsite = "instagram"
+	UserSocialLinkWebsiteFacebook  UserSocialLinkWebsite = "facebook"
+	UserSocialLinkWebsiteTiktok    UserSocialLinkWebsite = "tiktok"
+	UserSocialLinkWebsiteYoutube   UserSocialLinkWebsite = "youtube"
+	UserSocialLinkWebsiteLinkedin  UserSocialLinkWebsite = "linkedin"
+	UserSocialLinkWebsiteTwitch    UserSocialLinkWebsite = "twitch"
+	UserSocialLinkWebsiteWebsite   UserSocialLinkWebsite = "website"
+)
+
+func NewUserSocialLinkWebsiteFromString(s string) (UserSocialLinkWebsite, error) {
+	switch s {
+	case "x":
+		return UserSocialLinkWebsiteX, nil
+	case "instagram":
+		return UserSocialLinkWebsiteInstagram, nil
+	case "facebook":
+		return UserSocialLinkWebsiteFacebook, nil
+	case "tiktok":
+		return UserSocialLinkWebsiteTiktok, nil
+	case "youtube":
+		return UserSocialLinkWebsiteYoutube, nil
+	case "linkedin":
+		return UserSocialLinkWebsiteLinkedin, nil
+	case "twitch":
+		return UserSocialLinkWebsiteTwitch, nil
+	case "website":
+		return UserSocialLinkWebsiteWebsite, nil
+	}
+	var t UserSocialLinkWebsite
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UserSocialLinkWebsite) Ptr() *UserSocialLinkWebsite {
+	return &u
 }
 
 var (
@@ -2511,10 +2997,12 @@ func (c *CheckAccessUsersResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (c *CheckAccessUsersResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccessLevel sets the AccessLevel field and marks it as non-optional;
@@ -2636,10 +3124,12 @@ func (l *ListUsersResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListUsersResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2705,6 +3195,12 @@ var (
 	listUsersResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listUsersResponsePageInfoNullableFields maps the wire names of ListUsersResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listUsersResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listUsersResponsePageInfoFieldEndCursor,
+	"start_cursor": listUsersResponsePageInfoFieldStartCursor,
+}
+
 type ListUsersResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2754,10 +3250,12 @@ func (l *ListUsersResponsePageInfo) GetExtraProperties() map[string]interface{} 
 }
 
 func (l *ListUsersResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2800,6 +3298,13 @@ func (l *ListUsersResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listUsersResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2887,10 +3392,12 @@ func (r *RecommendActionsUsersResponse) GetExtraProperties() map[string]interfac
 }
 
 func (r *RecommendActionsUsersResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -3008,10 +3515,12 @@ func (u *UpdateMeUsersRequestBanner) GetExtraProperties() map[string]interface{}
 }
 
 func (u *UpdateMeUsersRequestBanner) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -3108,10 +3617,12 @@ func (u *UpdateMeUsersRequestProfilePicture) GetExtraProperties() map[string]int
 }
 
 func (u *UpdateMeUsersRequestProfilePicture) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -3208,10 +3719,12 @@ func (u *UpdateUsersRequestBanner) GetExtraProperties() map[string]interface{} {
 }
 
 func (u *UpdateUsersRequestBanner) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -3308,10 +3821,12 @@ func (u *UpdateUsersRequestProfilePicture) GetExtraProperties() map[string]inter
 }
 
 func (u *UpdateUsersRequestProfilePicture) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
@@ -3375,18 +3890,21 @@ var (
 	updateUsersRequestFieldAccountID      = big.NewInt(1 << 1)
 	updateUsersRequestFieldBanner         = big.NewInt(1 << 2)
 	updateUsersRequestFieldBio            = big.NewInt(1 << 3)
-	updateUsersRequestFieldName           = big.NewInt(1 << 4)
-	updateUsersRequestFieldProfilePicture = big.NewInt(1 << 5)
-	updateUsersRequestFieldUsername       = big.NewInt(1 << 6)
+	updateUsersRequestFieldDateOfBirth    = big.NewInt(1 << 4)
+	updateUsersRequestFieldName           = big.NewInt(1 << 5)
+	updateUsersRequestFieldProfilePicture = big.NewInt(1 << 6)
+	updateUsersRequestFieldUsername       = big.NewInt(1 << 7)
 )
 
 type UpdateUsersRequest struct {
 	// User ID (prefixed `user_`), username, or `me` for the authenticated user.
 	ID string `json:"-" url:"-"`
 	// The account whose profile override to update. Required for API key callers.
-	AccountID      *string                           `json:"-" url:"account_id,omitempty"`
-	Banner         *UpdateUsersRequestBanner         `json:"banner,omitempty" url:"-"`
-	Bio            *string                           `json:"bio,omitempty" url:"-"`
+	AccountID *string                   `json:"-" url:"account_id,omitempty"`
+	Banner    *UpdateUsersRequestBanner `json:"banner,omitempty" url:"-"`
+	Bio       *string                   `json:"bio,omitempty" url:"-"`
+	// The user's date of birth as an ISO 8601 date, like `1998-04-23`. The user must be at least 13. Global profile only; refused with `account_id`.
+	DateOfBirth    *time.Time                        `json:"date_of_birth,omitempty" url:"-" format:"date"`
 	Name           *string                           `json:"name,omitempty" url:"-"`
 	ProfilePicture *UpdateUsersRequestProfilePicture `json:"profile_picture,omitempty" url:"-"`
 	Username       *string                           `json:"username,omitempty" url:"-"`
@@ -3396,10 +3914,12 @@ type UpdateUsersRequest struct {
 }
 
 func (u *UpdateUsersRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -3430,6 +3950,13 @@ func (u *UpdateUsersRequest) SetBio(bio *string) {
 	u.require(updateUsersRequestFieldBio)
 }
 
+// SetDateOfBirth sets the DateOfBirth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateUsersRequest) SetDateOfBirth(dateOfBirth *time.Time) {
+	u.DateOfBirth = dateOfBirth
+	u.require(updateUsersRequestFieldDateOfBirth)
+}
+
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateUsersRequest) SetName(name *string) {
@@ -3452,12 +3979,18 @@ func (u *UpdateUsersRequest) SetUsername(username *string) {
 }
 
 func (u *UpdateUsersRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateUsersRequest
-	var body unmarshaler
+	type embed UpdateUsersRequest
+	var body = struct {
+		embed
+		DateOfBirth *internal.Date `json:"date_of_birth,omitempty"`
+	}{
+		embed: embed(*u),
+	}
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}
-	*u = UpdateUsersRequest(body)
+	*u = UpdateUsersRequest(body.embed)
+	u.DateOfBirth = body.DateOfBirth.TimePtr()
 	return nil
 }
 
@@ -3465,8 +3998,10 @@ func (u *UpdateUsersRequest) MarshalJSON() ([]byte, error) {
 	type embed UpdateUsersRequest
 	var marshaler = struct {
 		embed
+		DateOfBirth *internal.Date `json:"date_of_birth,omitempty"`
 	}{
-		embed: embed(*u),
+		embed:       embed(*u),
+		DateOfBirth: internal.NewOptionalDate(u.DateOfBirth),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
 	return json.Marshal(explicitMarshaler)
@@ -3476,16 +4011,19 @@ var (
 	updateMeUsersRequestFieldAccountID      = big.NewInt(1 << 0)
 	updateMeUsersRequestFieldBanner         = big.NewInt(1 << 1)
 	updateMeUsersRequestFieldBio            = big.NewInt(1 << 2)
-	updateMeUsersRequestFieldName           = big.NewInt(1 << 3)
-	updateMeUsersRequestFieldProfilePicture = big.NewInt(1 << 4)
-	updateMeUsersRequestFieldUsername       = big.NewInt(1 << 5)
+	updateMeUsersRequestFieldDateOfBirth    = big.NewInt(1 << 3)
+	updateMeUsersRequestFieldName           = big.NewInt(1 << 4)
+	updateMeUsersRequestFieldProfilePicture = big.NewInt(1 << 5)
+	updateMeUsersRequestFieldUsername       = big.NewInt(1 << 6)
 )
 
 type UpdateMeUsersRequest struct {
 	// When set, updates the authenticated user's profile override for this account instead of their global profile.
-	AccountID      *string                             `json:"-" url:"account_id,omitempty"`
-	Banner         *UpdateMeUsersRequestBanner         `json:"banner,omitempty" url:"-"`
-	Bio            *string                             `json:"bio,omitempty" url:"-"`
+	AccountID *string                     `json:"-" url:"account_id,omitempty"`
+	Banner    *UpdateMeUsersRequestBanner `json:"banner,omitempty" url:"-"`
+	Bio       *string                     `json:"bio,omitempty" url:"-"`
+	// The user's date of birth as an ISO 8601 date, like `1998-04-23`. The user must be at least 13. Global profile only; refused with `account_id`.
+	DateOfBirth    *time.Time                          `json:"date_of_birth,omitempty" url:"-" format:"date"`
 	Name           *string                             `json:"name,omitempty" url:"-"`
 	ProfilePicture *UpdateMeUsersRequestProfilePicture `json:"profile_picture,omitempty" url:"-"`
 	Username       *string                             `json:"username,omitempty" url:"-"`
@@ -3495,10 +4033,12 @@ type UpdateMeUsersRequest struct {
 }
 
 func (u *UpdateMeUsersRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -3520,6 +4060,13 @@ func (u *UpdateMeUsersRequest) SetBanner(banner *UpdateMeUsersRequestBanner) {
 func (u *UpdateMeUsersRequest) SetBio(bio *string) {
 	u.Bio = bio
 	u.require(updateMeUsersRequestFieldBio)
+}
+
+// SetDateOfBirth sets the DateOfBirth field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMeUsersRequest) SetDateOfBirth(dateOfBirth *time.Time) {
+	u.DateOfBirth = dateOfBirth
+	u.require(updateMeUsersRequestFieldDateOfBirth)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -3544,12 +4091,18 @@ func (u *UpdateMeUsersRequest) SetUsername(username *string) {
 }
 
 func (u *UpdateMeUsersRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateMeUsersRequest
-	var body unmarshaler
+	type embed UpdateMeUsersRequest
+	var body = struct {
+		embed
+		DateOfBirth *internal.Date `json:"date_of_birth,omitempty"`
+	}{
+		embed: embed(*u),
+	}
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}
-	*u = UpdateMeUsersRequest(body)
+	*u = UpdateMeUsersRequest(body.embed)
+	u.DateOfBirth = body.DateOfBirth.TimePtr()
 	return nil
 }
 
@@ -3557,8 +4110,10 @@ func (u *UpdateMeUsersRequest) MarshalJSON() ([]byte, error) {
 	type embed UpdateMeUsersRequest
 	var marshaler = struct {
 		embed
+		DateOfBirth *internal.Date `json:"date_of_birth,omitempty"`
 	}{
-		embed: embed(*u),
+		embed:       embed(*u),
+		DateOfBirth: internal.NewOptionalDate(u.DateOfBirth),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
 	return json.Marshal(explicitMarshaler)

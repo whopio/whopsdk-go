@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists an account's transfers.
+// Lists the transfers you can see, sent or received, newest first by default. Optional account filters narrow the results.
 //
 // Example:
 //
@@ -56,7 +56,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/transfers"
@@ -86,7 +94,6 @@ func (c *Client) List(
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
 			Response:        pageRequest.Response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		}
 	}
 	readPageResponse := func(response *whopsdk.ListTransfersResponse) *core.PageResponse[*string, *whopsdk.ListTransfersResponseDataItem, *whopsdk.ListTransfersResponse] {
@@ -111,13 +118,17 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Moves money between accounts, or into a claim link anyone with the URL can redeem.
+// Moves money between Whop balances or funds a claim link anyone with the URL can redeem. The `type` you send decides which object comes back.
 //
 // Example:
 //
-//	request := &whopsdk.CreateTransfersRequest{
-//	    Amount: 25,
-//	    OriginID: "biz_xxxxxxxxxxxxxx",
+//	request := &whopsdk.CreateTransfersRequestBody{
+//	    Balance: &whopsdk.CreateTransfersRequestBodyBalance{
+//	        Amount: 25,
+//	        Currency: "usd",
+//	        DestinationID: "user_xxxxxxxxxxxxxx",
+//	        OriginID: "biz_xxxxxxxxxxxxxx",
+//	    },
 //	}
 //	client.Transfers.Create(
 //	    context.TODO(),
@@ -125,7 +136,7 @@ func (c *Client) List(
 //	)
 func (c *Client) Create(
 	ctx context.Context,
-	request *whopsdk.CreateTransfersRequest,
+	request *whopsdk.CreateTransfersRequestBody,
 	opts ...option.RequestOption,
 ) (*whopsdk.CreateTransfersResponse, error) {
 	response, err := c.WithRawResponse.Create(
@@ -139,7 +150,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Lists the people and accounts you can send money to.
+// Lists the people and accounts you can send money to from a balance. Pass a result's ID as `destination_id` when creating a transfer.
 //
 // Example:
 //
@@ -158,7 +169,15 @@ func (c *Client) ListRecipients(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/transfers/recipients"

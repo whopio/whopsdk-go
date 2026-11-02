@@ -5,13 +5,13 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
 
 var (
-	createDmChannelsRequestFieldCompanyID            = big.NewInt(1 << 0)
+	createDmChannelsRequestFieldAccountID            = big.NewInt(1 << 0)
 	createDmChannelsRequestFieldCustomName           = big.NewInt(1 << 1)
 	createDmChannelsRequestFieldNotificationsEnabled = big.NewInt(1 << 2)
 	createDmChannelsRequestFieldWithUserIDs          = big.NewInt(1 << 3)
@@ -19,7 +19,7 @@ var (
 
 type CreateDmChannelsRequest struct {
 	// The unique identifier of the company to scope this DM channel to. When set, the channel is visible only within that company context.
-	CompanyID *string `json:"company_id,omitempty" url:"-"`
+	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// A custom display name for the DM channel. For example, 'Project Discussion'.
 	CustomName *string `json:"custom_name,omitempty" url:"-"`
 	// Whether Whop app notifications are enabled for this direct message channel. Webhooks still fire.
@@ -32,17 +32,19 @@ type CreateDmChannelsRequest struct {
 }
 
 func (c *CreateDmChannelsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateDmChannelsRequest) SetCompanyID(companyID *string) {
-	c.CompanyID = companyID
-	c.require(createDmChannelsRequestFieldCompanyID)
+func (c *CreateDmChannelsRequest) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createDmChannelsRequestFieldAccountID)
 }
 
 // SetCustomName sets the CustomName field and marks it as non-optional;
@@ -100,10 +102,12 @@ type DeleteDmChannelsRequest struct {
 }
 
 func (d *DeleteDmChannelsRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -118,7 +122,7 @@ var (
 	listDmChannelsRequestFieldBefore    = big.NewInt(1 << 1)
 	listDmChannelsRequestFieldFirst     = big.NewInt(1 << 2)
 	listDmChannelsRequestFieldLast      = big.NewInt(1 << 3)
-	listDmChannelsRequestFieldCompanyID = big.NewInt(1 << 4)
+	listDmChannelsRequestFieldAccountID = big.NewInt(1 << 4)
 )
 
 type ListDmChannelsRequest struct {
@@ -131,17 +135,19 @@ type ListDmChannelsRequest struct {
 	// Returns the last _n_ elements from the list.
 	Last *int `json:"-" url:"last,omitempty"`
 	// The unique identifier of a company to filter DM channels by. Only returns channels scoped to this company.
-	CompanyID *string `json:"-" url:"company_id,omitempty"`
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (l *ListDmChannelsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -172,11 +178,11 @@ func (l *ListDmChannelsRequest) SetLast(last *int) {
 	l.require(listDmChannelsRequestFieldLast)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListDmChannelsRequest) SetCompanyID(companyID *string) {
-	l.CompanyID = companyID
-	l.require(listDmChannelsRequestFieldCompanyID)
+func (l *ListDmChannelsRequest) SetAccountID(accountID *string) {
+	l.AccountID = accountID
+	l.require(listDmChannelsRequestFieldAccountID)
 }
 
 var (
@@ -192,10 +198,12 @@ type RetrieveDmChannelsRequest struct {
 }
 
 func (r *RetrieveDmChannelsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -205,7 +213,6 @@ func (r *RetrieveDmChannelsRequest) SetID(id string) {
 	r.require(retrieveDmChannelsRequestFieldID)
 }
 
-// A messaging channel that can be a one-on-one DM, group chat, company support conversation, or platform-level direct message.
 var (
 	dmChannelFieldCreatedAt     = big.NewInt(1 << 0)
 	dmChannelFieldID            = big.NewInt(1 << 1)
@@ -213,6 +220,13 @@ var (
 	dmChannelFieldName          = big.NewInt(1 << 3)
 )
 
+// dmChannelNullableFields maps the wire names of DmChannel's nullable fields (required or optional) to their field bits.
+var dmChannelNullableFields = map[string]*big.Int{
+	"last_message_at": dmChannelFieldLastMessageAt,
+	"name":            dmChannelFieldName,
+}
+
+// A messaging channel that can be a one-on-one DM, group chat, company support conversation, or platform-level direct message.
 type DmChannel struct {
 	// The time the entity was created (in milliseconds since Unix epoch)
 	CreatedAt string `json:"created_at" url:"created_at"`
@@ -266,10 +280,12 @@ func (d *DmChannel) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DmChannel) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -318,6 +334,13 @@ func (d *DmChannel) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, dmChannelNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -350,7 +373,6 @@ func (d *DmChannel) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
-// A messaging channel that can be a one-on-one DM, group chat, company support conversation, or platform-level direct message.
 var (
 	dmChannelListItemFieldCreatedAt     = big.NewInt(1 << 0)
 	dmChannelListItemFieldID            = big.NewInt(1 << 1)
@@ -358,6 +380,13 @@ var (
 	dmChannelListItemFieldName          = big.NewInt(1 << 3)
 )
 
+// dmChannelListItemNullableFields maps the wire names of DmChannelListItem's nullable fields (required or optional) to their field bits.
+var dmChannelListItemNullableFields = map[string]*big.Int{
+	"last_message_at": dmChannelListItemFieldLastMessageAt,
+	"name":            dmChannelListItemFieldName,
+}
+
+// A messaging channel that can be a one-on-one DM, group chat, company support conversation, or platform-level direct message.
 type DmChannelListItem struct {
 	// The time the entity was created (in milliseconds since Unix epoch)
 	CreatedAt string `json:"created_at" url:"created_at"`
@@ -411,10 +440,12 @@ func (d *DmChannelListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DmChannelListItem) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -463,6 +494,13 @@ func (d *DmChannelListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, dmChannelListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		d.require(presentFields)
+	}
 	d.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -495,12 +533,12 @@ func (d *DmChannelListItem) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
-// The connection type for DmsFeed.
 var (
 	listDmChannelsResponseFieldData     = big.NewInt(1 << 0)
 	listDmChannelsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for DmsFeed.
 type ListDmChannelsResponse struct {
 	// A list of nodes.
 	Data []*DmChannelListItem `json:"data" url:"data"`
@@ -536,10 +574,12 @@ func (l *ListDmChannelsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListDmChannelsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -614,10 +654,12 @@ type UpdateDmChannelsRequest struct {
 }
 
 func (u *UpdateDmChannelsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

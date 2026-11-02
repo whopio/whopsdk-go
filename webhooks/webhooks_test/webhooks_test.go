@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -88,9 +88,7 @@ func TestWebhooksListWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ListWebhooksRequest{
-		AccountID: "account_id",
-	}
+	request := &whopsdk.ListWebhooksRequest{}
 	_, invocationErr := client.Webhooks.List(
 		context.TODO(),
 		request,
@@ -100,7 +98,7 @@ func TestWebhooksListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestWebhooksListWithWireMock", "GET", "/webhooks", map[string]interface{}{"account_id": "account_id"}, 1)
+	VerifyRequestCount(t, "TestWebhooksListWithWireMock", "GET", "/webhooks", nil, 1)
 }
 
 func TestWebhooksCreateWithWireMock(
@@ -220,6 +218,9 @@ func TestWebhooksListDeliveriesWithWireMock(
 	)
 	request := &whopsdk.ListDeliveriesWebhooksRequest{
 		ID: "id",
+		ResourceID: whopsdk.String(
+			"pay_xxxxxxxxxxxxx",
+		),
 	}
 	_, invocationErr := client.Webhooks.ListDeliveries(
 		context.TODO(),
@@ -230,7 +231,7 @@ func TestWebhooksListDeliveriesWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestWebhooksListDeliveriesWithWireMock", "GET", "/webhooks/id/deliveries", nil, 1)
+	VerifyRequestCount(t, "TestWebhooksListDeliveriesWithWireMock", "GET", "/webhooks/id/deliveries", map[string]interface{}{"resource_id": "pay_xxxxxxxxxxxxx"}, 1)
 }
 
 func TestWebhooksReplayDeliveryWithWireMock(
@@ -312,36 +313,4 @@ func TestWebhooksTestWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestWebhooksTestWithWireMock", "POST", "/webhooks/id/test", nil, 1)
-}
-
-func TestWebhooksDeliveriesWebhookWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.DeliveriesWebhookRequest{
-		WebhookID: "webhook_id",
-		First: whopsdk.Int(
-			42,
-		),
-		Last: whopsdk.Int(
-			42,
-		),
-	}
-	_, invocationErr := client.Webhooks.DeliveriesWebhook(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestWebhooksDeliveriesWebhookWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestWebhooksDeliveriesWebhookWithWireMock", "GET", "/webhooks/webhook_id/deliveries", map[string]interface{}{"first": "42", "last": "42"}, 1)
 }

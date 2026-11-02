@@ -11,11 +11,11 @@ import (
 )
 
 func TestSettersCreateFeeMarkupsRequest(t *testing.T) {
-	t.Run("SetCompanyID", func(t *testing.T) {
+	t.Run("SetAccountID", func(t *testing.T) {
 		obj := &CreateFeeMarkupsRequest{}
-		var fernTestValueCompanyID string
-		obj.SetCompanyID(fernTestValueCompanyID)
-		assert.Equal(t, fernTestValueCompanyID, obj.CompanyID)
+		var fernTestValueAccountID string
+		obj.SetAccountID(fernTestValueAccountID)
+		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -62,14 +62,14 @@ func TestSettersCreateFeeMarkupsRequest(t *testing.T) {
 }
 
 func TestSettersMarkExplicitCreateFeeMarkupsRequest(t *testing.T) {
-	t.Run("SetCompanyID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateFeeMarkupsRequest{}
-		var fernTestValueCompanyID string
+		var fernTestValueAccountID string
 
 		// Act
-		obj.SetCompanyID(fernTestValueCompanyID)
+		obj.SetAccountID(fernTestValueAccountID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -328,11 +328,11 @@ func TestSettersListFeeMarkupsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetCompanyID", func(t *testing.T) {
+	t.Run("SetAccountID", func(t *testing.T) {
 		obj := &ListFeeMarkupsRequest{}
-		var fernTestValueCompanyID string
-		obj.SetCompanyID(fernTestValueCompanyID)
-		assert.Equal(t, fernTestValueCompanyID, obj.CompanyID)
+		var fernTestValueAccountID string
+		obj.SetAccountID(fernTestValueAccountID)
+		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -463,14 +463,14 @@ func TestSettersMarkExplicitListFeeMarkupsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetCompanyID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListFeeMarkupsRequest{}
-		var fernTestValueCompanyID string
+		var fernTestValueAccountID string
 
 		// Act
-		obj.SetCompanyID(fernTestValueCompanyID)
+		obj.SetAccountID(fernTestValueAccountID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1694,6 +1694,96 @@ func TestJSONMarshalingListFeeMarkupsResponse(t *testing.T) {
 	})
 }
 
+func TestRequiredNullableRoundTripFeeMarkup(t *testing.T) {
+	requiredNullableKeys := []string{
+		"fixed_fee_usd",
+		"notes",
+		"percentage_fee",
+	}
+	marshalToMap := func(t *testing.T, obj *FeeMarkup) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj FeeMarkup
+		require.NoError(t, json.Unmarshal([]byte(`{"fixed_fee_usd":null,"notes":null,"percentage_fee":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj FeeMarkup
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &FeeMarkup{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripFeeMarkupListItem(t *testing.T) {
+	requiredNullableKeys := []string{
+		"fixed_fee_usd",
+		"notes",
+		"percentage_fee",
+	}
+	marshalToMap := func(t *testing.T, obj *FeeMarkupListItem) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj FeeMarkupListItem
+		require.NoError(t, json.Unmarshal([]byte(`{"fixed_fee_usd":null,"notes":null,"percentage_fee":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj FeeMarkupListItem
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &FeeMarkupListItem{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestStringFeeMarkup(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -1776,6 +1866,41 @@ func TestEnumFeeMarkupTypes(t *testing.T) {
 		val, err := NewFeeMarkupTypesFromString("digital_wallet_withdrawal_markup")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, FeeMarkupTypes("digital_wallet_withdrawal_markup"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_transfer_markup", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFeeMarkupTypesFromString("transfer_markup")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FeeMarkupTypes("transfer_markup"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_crypto_deposit_markup", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFeeMarkupTypesFromString("crypto_deposit_markup")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FeeMarkupTypes("crypto_deposit_markup"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_bank_deposit_markup", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFeeMarkupTypesFromString("bank_deposit_markup")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FeeMarkupTypes("bank_deposit_markup"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_crypto_swap_markup", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFeeMarkupTypesFromString("crypto_swap_markup")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FeeMarkupTypes("crypto_swap_markup"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_payment_markup", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFeeMarkupTypesFromString("payment_markup")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FeeMarkupTypes("payment_markup"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

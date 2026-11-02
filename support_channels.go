@@ -5,13 +5,13 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
 
 var (
-	createSupportChannelsRequestFieldCompanyID            = big.NewInt(1 << 0)
+	createSupportChannelsRequestFieldAccountID            = big.NewInt(1 << 0)
 	createSupportChannelsRequestFieldCustomName           = big.NewInt(1 << 1)
 	createSupportChannelsRequestFieldNotificationsEnabled = big.NewInt(1 << 2)
 	createSupportChannelsRequestFieldUserID               = big.NewInt(1 << 3)
@@ -19,7 +19,7 @@ var (
 
 type CreateSupportChannelsRequest struct {
 	// The unique identifier of the company to create the support channel in.
-	CompanyID string `json:"company_id" url:"-"`
+	AccountID string `json:"account_id" url:"-"`
 	// Optional custom display name for the support channel.
 	CustomName *string `json:"custom_name,omitempty" url:"-"`
 	// Whether Whop app notifications are enabled for this support channel. Webhooks still fire.
@@ -32,17 +32,19 @@ type CreateSupportChannelsRequest struct {
 }
 
 func (c *CreateSupportChannelsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateSupportChannelsRequest) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createSupportChannelsRequestFieldCompanyID)
+func (c *CreateSupportChannelsRequest) SetAccountID(accountID string) {
+	c.AccountID = accountID
+	c.require(createSupportChannelsRequestFieldAccountID)
 }
 
 // SetCustomName sets the CustomName field and marks it as non-optional;
@@ -88,15 +90,20 @@ func (c *CreateSupportChannelsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	listSupportChannelsRequestFieldAfter     = big.NewInt(1 << 0)
-	listSupportChannelsRequestFieldBefore    = big.NewInt(1 << 1)
-	listSupportChannelsRequestFieldFirst     = big.NewInt(1 << 2)
-	listSupportChannelsRequestFieldLast      = big.NewInt(1 << 3)
-	listSupportChannelsRequestFieldCompanyID = big.NewInt(1 << 4)
-	listSupportChannelsRequestFieldView      = big.NewInt(1 << 5)
-	listSupportChannelsRequestFieldOpen      = big.NewInt(1 << 6)
-	listSupportChannelsRequestFieldDirection = big.NewInt(1 << 7)
-	listSupportChannelsRequestFieldOrder     = big.NewInt(1 << 8)
+	listSupportChannelsRequestFieldAfter               = big.NewInt(1 << 0)
+	listSupportChannelsRequestFieldBefore              = big.NewInt(1 << 1)
+	listSupportChannelsRequestFieldFirst               = big.NewInt(1 << 2)
+	listSupportChannelsRequestFieldLast                = big.NewInt(1 << 3)
+	listSupportChannelsRequestFieldView                = big.NewInt(1 << 4)
+	listSupportChannelsRequestFieldOpen                = big.NewInt(1 << 5)
+	listSupportChannelsRequestFieldCustomerUserID      = big.NewInt(1 << 6)
+	listSupportChannelsRequestFieldCustomerUserIDs     = big.NewInt(1 << 7)
+	listSupportChannelsRequestFieldParticipated        = big.NewInt(1 << 8)
+	listSupportChannelsRequestFieldIncludeLastMessage  = big.NewInt(1 << 9)
+	listSupportChannelsRequestFieldIncludeParticipated = big.NewInt(1 << 10)
+	listSupportChannelsRequestFieldDirection           = big.NewInt(1 << 11)
+	listSupportChannelsRequestFieldOrder               = big.NewInt(1 << 12)
+	listSupportChannelsRequestFieldAccountID           = big.NewInt(1 << 13)
 )
 
 type ListSupportChannelsRequest struct {
@@ -107,24 +114,36 @@ type ListSupportChannelsRequest struct {
 	// Returns the first _n_ elements from the list.
 	First *int `json:"-" url:"first,omitempty"`
 	// Returns the last _n_ elements from the list.
-	Last *int `json:"-" url:"last,omitempty"`
-	// The unique identifier of the company to list support channels for. Includes channels of child companies. When omitted, returns support channels across all companies the user has access to.
-	CompanyID *string             `json:"-" url:"company_id,omitempty"`
-	View      *SupportChannelView `json:"-" url:"view,omitempty"`
+	Last *int                `json:"-" url:"last,omitempty"`
+	View *SupportChannelView `json:"-" url:"view,omitempty"`
 	// Whether to filter by open or resolved support channels. Set to true to only return channels awaiting a response, or false for resolved channels.
-	Open      *bool                `json:"-" url:"open,omitempty"`
-	Direction *Direction           `json:"-" url:"direction,omitempty"`
-	Order     *MessageChannelOrder `json:"-" url:"order,omitempty"`
+	Open *bool `json:"-" url:"open,omitempty"`
+	// Only return support channels opened by this customer.
+	CustomerUserID *string `json:"-" url:"customer_user_id,omitempty"`
+	// Only return support channels opened by any of these customers. Maximum 100 IDs per request.
+	CustomerUserIDs []*string `json:"-" url:"customer_user_ids,omitempty"`
+	// Set to true to only return channels the authenticated user has joined as a participant. Requires a user.
+	Participated *bool `json:"-" url:"participated,omitempty"`
+	// Set to true to return `last_message` and `unread` on each channel. Both are `null` otherwise, which keeps large lists fast.
+	IncludeLastMessage *bool `json:"-" url:"include_last_message,omitempty"`
+	// Set to true to return `participated` on each channel. It is `null` otherwise, which keeps large lists fast.
+	IncludeParticipated *bool                `json:"-" url:"include_participated,omitempty"`
+	Direction           *Direction           `json:"-" url:"direction,omitempty"`
+	Order               *MessageChannelOrder `json:"-" url:"order,omitempty"`
+	// The unique identifier of the company to list support channels for. Includes channels of child companies. When omitted, returns support channels across all companies the user has access to.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (l *ListSupportChannelsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAfter sets the After field and marks it as non-optional;
@@ -155,13 +174,6 @@ func (l *ListSupportChannelsRequest) SetLast(last *int) {
 	l.require(listSupportChannelsRequestFieldLast)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListSupportChannelsRequest) SetCompanyID(companyID *string) {
-	l.CompanyID = companyID
-	l.require(listSupportChannelsRequestFieldCompanyID)
-}
-
 // SetView sets the View field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListSupportChannelsRequest) SetView(view *SupportChannelView) {
@@ -174,6 +186,41 @@ func (l *ListSupportChannelsRequest) SetView(view *SupportChannelView) {
 func (l *ListSupportChannelsRequest) SetOpen(open *bool) {
 	l.Open = open
 	l.require(listSupportChannelsRequestFieldOpen)
+}
+
+// SetCustomerUserID sets the CustomerUserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportChannelsRequest) SetCustomerUserID(customerUserID *string) {
+	l.CustomerUserID = customerUserID
+	l.require(listSupportChannelsRequestFieldCustomerUserID)
+}
+
+// SetCustomerUserIDs sets the CustomerUserIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportChannelsRequest) SetCustomerUserIDs(customerUserIDs []*string) {
+	l.CustomerUserIDs = customerUserIDs
+	l.require(listSupportChannelsRequestFieldCustomerUserIDs)
+}
+
+// SetParticipated sets the Participated field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportChannelsRequest) SetParticipated(participated *bool) {
+	l.Participated = participated
+	l.require(listSupportChannelsRequestFieldParticipated)
+}
+
+// SetIncludeLastMessage sets the IncludeLastMessage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportChannelsRequest) SetIncludeLastMessage(includeLastMessage *bool) {
+	l.IncludeLastMessage = includeLastMessage
+	l.require(listSupportChannelsRequestFieldIncludeLastMessage)
+}
+
+// SetIncludeParticipated sets the IncludeParticipated field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportChannelsRequest) SetIncludeParticipated(includeParticipated *bool) {
+	l.IncludeParticipated = includeParticipated
+	l.require(listSupportChannelsRequestFieldIncludeParticipated)
 }
 
 // SetDirection sets the Direction field and marks it as non-optional;
@@ -190,6 +237,13 @@ func (l *ListSupportChannelsRequest) SetOrder(order *MessageChannelOrder) {
 	l.require(listSupportChannelsRequestFieldOrder)
 }
 
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportChannelsRequest) SetAccountID(accountID *string) {
+	l.AccountID = accountID
+	l.require(listSupportChannelsRequestFieldAccountID)
+}
+
 var (
 	retrieveSupportChannelsRequestFieldID = big.NewInt(1 << 0)
 )
@@ -203,10 +257,12 @@ type RetrieveSupportChannelsRequest struct {
 }
 
 func (r *RetrieveSupportChannelsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -239,18 +295,39 @@ func (m MessageChannelOrder) Ptr() *MessageChannelOrder {
 	return &m
 }
 
-// A messaging channel that can be a one-on-one DM, group chat, company support conversation, or platform-level direct message.
 var (
-	supportChannelFieldCompanyID     = big.NewInt(1 << 0)
-	supportChannelFieldCustomName    = big.NewInt(1 << 1)
-	supportChannelFieldCustomerUser  = big.NewInt(1 << 2)
-	supportChannelFieldID            = big.NewInt(1 << 3)
-	supportChannelFieldLastMessageAt = big.NewInt(1 << 4)
-	supportChannelFieldResolvedAt    = big.NewInt(1 << 5)
+	supportChannelFieldAccountID     = big.NewInt(1 << 0)
+	supportChannelFieldCompanyID     = big.NewInt(1 << 1)
+	supportChannelFieldCustomName    = big.NewInt(1 << 2)
+	supportChannelFieldCustomerUser  = big.NewInt(1 << 3)
+	supportChannelFieldID            = big.NewInt(1 << 4)
+	supportChannelFieldLastMessage   = big.NewInt(1 << 5)
+	supportChannelFieldLastMessageAt = big.NewInt(1 << 6)
+	supportChannelFieldNeedsReply    = big.NewInt(1 << 7)
+	supportChannelFieldParticipated  = big.NewInt(1 << 8)
+	supportChannelFieldResolvedAt    = big.NewInt(1 << 9)
+	supportChannelFieldUnread        = big.NewInt(1 << 10)
 )
 
+// supportChannelNullableFields maps the wire names of SupportChannel's nullable fields (required or optional) to their field bits.
+var supportChannelNullableFields = map[string]*big.Int{
+	"account_id":      supportChannelFieldAccountID,
+	"company_id":      supportChannelFieldCompanyID,
+	"custom_name":     supportChannelFieldCustomName,
+	"customer_user":   supportChannelFieldCustomerUser,
+	"last_message":    supportChannelFieldLastMessage,
+	"last_message_at": supportChannelFieldLastMessageAt,
+	"needs_reply":     supportChannelFieldNeedsReply,
+	"participated":    supportChannelFieldParticipated,
+	"resolved_at":     supportChannelFieldResolvedAt,
+	"unread":          supportChannelFieldUnread,
+}
+
+// A messaging channel that can be a one-on-one DM, group chat, company support conversation, or platform-level direct message.
 type SupportChannel struct {
-	// The unique identifier of the company associated with this channel. Null if this is not a support or company-scoped conversation.
+	// The unique identifier of the account associated with this channel. Null if this is not a support or account-scoped conversation.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The unique identifier of the account associated with this channel. Null if this is not a support or account-scoped conversation.
 	CompanyID *string `json:"company_id,omitempty" url:"company_id,omitempty"`
 	// A custom display name assigned to this channel by the user. Null if no custom name has been set.
 	CustomName *string `json:"custom_name,omitempty" url:"custom_name,omitempty"`
@@ -258,16 +335,31 @@ type SupportChannel struct {
 	CustomerUser *SupportChannelCustomerUser `json:"customer_user,omitempty" url:"customer_user,omitempty"`
 	// The unique identifier for the entity
 	ID string `json:"id" url:"id"`
+	// The most recent message in this channel. Null if no messages have been sent, or when listing support channels without `include_last_message`.
+	LastMessage *SupportChannelLastMessage `json:"last_message,omitempty" url:"last_message,omitempty"`
 	// The timestamp when the most recent message was sent in this channel. Null if no messages have been sent.
 	LastMessageAt *time.Time `json:"last_message_at,omitempty" url:"last_message_at,omitempty"`
+	// Whether the customer sent the latest message and the linked support ticket is unresolved. Null if not a support chat.
+	NeedsReply *bool `json:"needs_reply,omitempty" url:"needs_reply,omitempty"`
+	// Whether the authenticated user has joined this channel as a participant. Null when the caller is not a user, or when listing support channels without `include_participated`.
+	Participated *bool `json:"participated,omitempty" url:"participated,omitempty"`
 	// The timestamp when the linked support ticket was marked as resolved. Null if unresolved or not a support chat.
 	ResolvedAt *time.Time `json:"resolved_at,omitempty" url:"resolved_at,omitempty"`
+	// Whether this channel has a message from someone else that the authenticated user has not viewed yet. Null when the caller is not a user, or when listing support channels without `include_last_message`.
+	Unread *bool `json:"unread,omitempty" url:"unread,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (s *SupportChannel) GetAccountID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.AccountID
 }
 
 func (s *SupportChannel) GetCompanyID() *string {
@@ -298,6 +390,13 @@ func (s *SupportChannel) GetID() string {
 	return s.ID
 }
 
+func (s *SupportChannel) GetLastMessage() *SupportChannelLastMessage {
+	if s == nil {
+		return nil
+	}
+	return s.LastMessage
+}
+
 func (s *SupportChannel) GetLastMessageAt() *time.Time {
 	if s == nil {
 		return nil
@@ -305,11 +404,32 @@ func (s *SupportChannel) GetLastMessageAt() *time.Time {
 	return s.LastMessageAt
 }
 
+func (s *SupportChannel) GetNeedsReply() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.NeedsReply
+}
+
+func (s *SupportChannel) GetParticipated() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Participated
+}
+
 func (s *SupportChannel) GetResolvedAt() *time.Time {
 	if s == nil {
 		return nil
 	}
 	return s.ResolvedAt
+}
+
+func (s *SupportChannel) GetUnread() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Unread
 }
 
 func (s *SupportChannel) GetExtraProperties() map[string]interface{} {
@@ -320,10 +440,19 @@ func (s *SupportChannel) GetExtraProperties() map[string]interface{} {
 }
 
 func (s *SupportChannel) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannel) SetAccountID(accountID *string) {
+	s.AccountID = accountID
+	s.require(supportChannelFieldAccountID)
 }
 
 // SetCompanyID sets the CompanyID field and marks it as non-optional;
@@ -354,6 +483,13 @@ func (s *SupportChannel) SetID(id string) {
 	s.require(supportChannelFieldID)
 }
 
+// SetLastMessage sets the LastMessage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannel) SetLastMessage(lastMessage *SupportChannelLastMessage) {
+	s.LastMessage = lastMessage
+	s.require(supportChannelFieldLastMessage)
+}
+
 // SetLastMessageAt sets the LastMessageAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SupportChannel) SetLastMessageAt(lastMessageAt *time.Time) {
@@ -361,11 +497,32 @@ func (s *SupportChannel) SetLastMessageAt(lastMessageAt *time.Time) {
 	s.require(supportChannelFieldLastMessageAt)
 }
 
+// SetNeedsReply sets the NeedsReply field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannel) SetNeedsReply(needsReply *bool) {
+	s.NeedsReply = needsReply
+	s.require(supportChannelFieldNeedsReply)
+}
+
+// SetParticipated sets the Participated field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannel) SetParticipated(participated *bool) {
+	s.Participated = participated
+	s.require(supportChannelFieldParticipated)
+}
+
 // SetResolvedAt sets the ResolvedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SupportChannel) SetResolvedAt(resolvedAt *time.Time) {
 	s.ResolvedAt = resolvedAt
 	s.require(supportChannelFieldResolvedAt)
+}
+
+// SetUnread sets the Unread field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannel) SetUnread(unread *bool) {
+	s.Unread = unread
+	s.require(supportChannelFieldUnread)
 }
 
 func (s *SupportChannel) UnmarshalJSON(data []byte) error {
@@ -388,6 +545,13 @@ func (s *SupportChannel) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, supportChannelNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -422,13 +586,18 @@ func (s *SupportChannel) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// The customer who initiated this support conversation. Null if this is not a support chat.
 var (
 	supportChannelCustomerUserFieldID       = big.NewInt(1 << 0)
 	supportChannelCustomerUserFieldName     = big.NewInt(1 << 1)
 	supportChannelCustomerUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// supportChannelCustomerUserNullableFields maps the wire names of SupportChannelCustomerUser's nullable fields (required or optional) to their field bits.
+var supportChannelCustomerUserNullableFields = map[string]*big.Int{
+	"name": supportChannelCustomerUserFieldName,
+}
+
+// The customer who initiated this support conversation. Null if this is not a support chat.
 type SupportChannelCustomerUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -473,10 +642,12 @@ func (s *SupportChannelCustomerUser) GetExtraProperties() map[string]interface{}
 }
 
 func (s *SupportChannelCustomerUser) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -512,6 +683,13 @@ func (s *SupportChannelCustomerUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, supportChannelCustomerUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -542,18 +720,644 @@ func (s *SupportChannelCustomerUser) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// A messaging channel that can be a one-on-one DM, group chat, company support conversation, or platform-level direct message.
 var (
-	supportChannelListItemFieldCompanyID     = big.NewInt(1 << 0)
-	supportChannelListItemFieldCustomName    = big.NewInt(1 << 1)
-	supportChannelListItemFieldCustomerUser  = big.NewInt(1 << 2)
-	supportChannelListItemFieldID            = big.NewInt(1 << 3)
-	supportChannelListItemFieldLastMessageAt = big.NewInt(1 << 4)
-	supportChannelListItemFieldResolvedAt    = big.NewInt(1 << 5)
+	supportChannelLastMessageFieldAttachments = big.NewInt(1 << 0)
+	supportChannelLastMessageFieldContent     = big.NewInt(1 << 1)
+	supportChannelLastMessageFieldCreatedAt   = big.NewInt(1 << 2)
+	supportChannelLastMessageFieldGifs        = big.NewInt(1 << 3)
+	supportChannelLastMessageFieldID          = big.NewInt(1 << 4)
+	supportChannelLastMessageFieldPoll        = big.NewInt(1 << 5)
+	supportChannelLastMessageFieldUserID      = big.NewInt(1 << 6)
 )
 
+// supportChannelLastMessageNullableFields maps the wire names of SupportChannelLastMessage's nullable fields (required or optional) to their field bits.
+var supportChannelLastMessageNullableFields = map[string]*big.Int{
+	"content": supportChannelLastMessageFieldContent,
+	"poll":    supportChannelLastMessageFieldPoll,
+}
+
+// The most recent message in this channel. Null if no messages have been sent, or when listing support channels without `include_last_message`.
+type SupportChannelLastMessage struct {
+	// A list of all attachments on this message, including files and media.
+	Attachments []*SupportChannelLastMessageAttachmentsItem `json:"attachments" url:"attachments"`
+	// The message content formatted as Markdown. Null if the message has no text content.
+	Content *string `json:"content,omitempty" url:"content,omitempty"`
+	// The timestamp when this message was originally created.
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// A list of GIF animations attached to this message.
+	Gifs []*SupportChannelLastMessageGifsItem `json:"gifs" url:"gifs"`
+	// Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"VXNlci0xMA=="`) or integer (such as `4`) input value will be accepted as an ID.
+	ID string `json:"id" url:"id"`
+	// A poll attached to this message. Null if the message does not contain a poll.
+	Poll *SupportChannelLastMessagePoll `json:"poll,omitempty" url:"poll,omitempty"`
+	// The unique identifier of the user who authored this message.
+	UserID string `json:"user_id" url:"user_id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SupportChannelLastMessage) GetAttachments() []*SupportChannelLastMessageAttachmentsItem {
+	if s == nil {
+		return nil
+	}
+	return s.Attachments
+}
+
+func (s *SupportChannelLastMessage) GetContent() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Content
+}
+
+func (s *SupportChannelLastMessage) GetCreatedAt() time.Time {
+	if s == nil {
+		return time.Time{}
+	}
+	return s.CreatedAt
+}
+
+func (s *SupportChannelLastMessage) GetGifs() []*SupportChannelLastMessageGifsItem {
+	if s == nil {
+		return nil
+	}
+	return s.Gifs
+}
+
+func (s *SupportChannelLastMessage) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SupportChannelLastMessage) GetPoll() *SupportChannelLastMessagePoll {
+	if s == nil {
+		return nil
+	}
+	return s.Poll
+}
+
+func (s *SupportChannelLastMessage) GetUserID() string {
+	if s == nil {
+		return ""
+	}
+	return s.UserID
+}
+
+func (s *SupportChannelLastMessage) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SupportChannelLastMessage) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetAttachments sets the Attachments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelLastMessage) SetAttachments(attachments []*SupportChannelLastMessageAttachmentsItem) {
+	s.Attachments = attachments
+	s.require(supportChannelLastMessageFieldAttachments)
+}
+
+// SetContent sets the Content field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelLastMessage) SetContent(content *string) {
+	s.Content = content
+	s.require(supportChannelLastMessageFieldContent)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelLastMessage) SetCreatedAt(createdAt time.Time) {
+	s.CreatedAt = createdAt
+	s.require(supportChannelLastMessageFieldCreatedAt)
+}
+
+// SetGifs sets the Gifs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelLastMessage) SetGifs(gifs []*SupportChannelLastMessageGifsItem) {
+	s.Gifs = gifs
+	s.require(supportChannelLastMessageFieldGifs)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelLastMessage) SetID(id string) {
+	s.ID = id
+	s.require(supportChannelLastMessageFieldID)
+}
+
+// SetPoll sets the Poll field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelLastMessage) SetPoll(poll *SupportChannelLastMessagePoll) {
+	s.Poll = poll
+	s.require(supportChannelLastMessageFieldPoll)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelLastMessage) SetUserID(userID string) {
+	s.UserID = userID
+	s.require(supportChannelLastMessageFieldUserID)
+}
+
+func (s *SupportChannelLastMessage) UnmarshalJSON(data []byte) error {
+	type embed SupportChannelLastMessage
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SupportChannelLastMessage(unmarshaler.embed)
+	s.CreatedAt = unmarshaler.CreatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, supportChannelLastMessageNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SupportChannelLastMessage) MarshalJSON() ([]byte, error) {
+	type embed SupportChannelLastMessage
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed:     embed(*s),
+		CreatedAt: internal.NewDateTime(s.CreatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SupportChannelLastMessage) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	supportChannelLastMessageAttachmentsItemFieldContentType = big.NewInt(1 << 0)
+	supportChannelLastMessageAttachmentsItemFieldFilename    = big.NewInt(1 << 1)
+)
+
+// supportChannelLastMessageAttachmentsItemNullableFields maps the wire names of SupportChannelLastMessageAttachmentsItem's nullable fields (required or optional) to their field bits.
+var supportChannelLastMessageAttachmentsItemNullableFields = map[string]*big.Int{
+	"content_type": supportChannelLastMessageAttachmentsItemFieldContentType,
+	"filename":     supportChannelLastMessageAttachmentsItemFieldFilename,
+}
+
+// Represents an image attachment
+type SupportChannelLastMessageAttachmentsItem struct {
+	// Uploaded file MIME type, such as image/jpeg, video/mp4, or audio/mpeg.
+	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
+	// The original filename of the uploaded attachment, including its file extension.
+	Filename *string `json:"filename,omitempty" url:"filename,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SupportChannelLastMessageAttachmentsItem) GetContentType() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ContentType
+}
+
+func (s *SupportChannelLastMessageAttachmentsItem) GetFilename() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Filename
+}
+
+func (s *SupportChannelLastMessageAttachmentsItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SupportChannelLastMessageAttachmentsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetContentType sets the ContentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelLastMessageAttachmentsItem) SetContentType(contentType *string) {
+	s.ContentType = contentType
+	s.require(supportChannelLastMessageAttachmentsItemFieldContentType)
+}
+
+// SetFilename sets the Filename field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelLastMessageAttachmentsItem) SetFilename(filename *string) {
+	s.Filename = filename
+	s.require(supportChannelLastMessageAttachmentsItemFieldFilename)
+}
+
+func (s *SupportChannelLastMessageAttachmentsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SupportChannelLastMessageAttachmentsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SupportChannelLastMessageAttachmentsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, supportChannelLastMessageAttachmentsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SupportChannelLastMessageAttachmentsItem) MarshalJSON() ([]byte, error) {
+	type embed SupportChannelLastMessageAttachmentsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SupportChannelLastMessageAttachmentsItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	supportChannelLastMessageGifsItemFieldSlug = big.NewInt(1 << 0)
+)
+
+// Represents a GIF attachment in a feed post
+type SupportChannelLastMessageGifsItem struct {
+	// The unique identifier of the GIF
+	Slug string `json:"slug" url:"slug"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SupportChannelLastMessageGifsItem) GetSlug() string {
+	if s == nil {
+		return ""
+	}
+	return s.Slug
+}
+
+func (s *SupportChannelLastMessageGifsItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SupportChannelLastMessageGifsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetSlug sets the Slug field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelLastMessageGifsItem) SetSlug(slug string) {
+	s.Slug = slug
+	s.require(supportChannelLastMessageGifsItemFieldSlug)
+}
+
+func (s *SupportChannelLastMessageGifsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SupportChannelLastMessageGifsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SupportChannelLastMessageGifsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SupportChannelLastMessageGifsItem) MarshalJSON() ([]byte, error) {
+	type embed SupportChannelLastMessageGifsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SupportChannelLastMessageGifsItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	supportChannelLastMessagePollFieldOptions = big.NewInt(1 << 0)
+)
+
+// supportChannelLastMessagePollNullableFields maps the wire names of SupportChannelLastMessagePoll's nullable fields (required or optional) to their field bits.
+var supportChannelLastMessagePollNullableFields = map[string]*big.Int{
+	"options": supportChannelLastMessagePollFieldOptions,
+}
+
+// A poll attached to this message. Null if the message does not contain a poll.
+type SupportChannelLastMessagePoll struct {
+	// The options for the poll
+	Options []*SupportChannelLastMessagePollOptionsItem `json:"options,omitempty" url:"options,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SupportChannelLastMessagePoll) GetOptions() []*SupportChannelLastMessagePollOptionsItem {
+	if s == nil {
+		return nil
+	}
+	return s.Options
+}
+
+func (s *SupportChannelLastMessagePoll) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SupportChannelLastMessagePoll) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetOptions sets the Options field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelLastMessagePoll) SetOptions(options []*SupportChannelLastMessagePollOptionsItem) {
+	s.Options = options
+	s.require(supportChannelLastMessagePollFieldOptions)
+}
+
+func (s *SupportChannelLastMessagePoll) UnmarshalJSON(data []byte) error {
+	type unmarshaler SupportChannelLastMessagePoll
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SupportChannelLastMessagePoll(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, supportChannelLastMessagePollNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SupportChannelLastMessagePoll) MarshalJSON() ([]byte, error) {
+	type embed SupportChannelLastMessagePoll
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SupportChannelLastMessagePoll) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	supportChannelLastMessagePollOptionsItemFieldID = big.NewInt(1 << 0)
+)
+
+// Represents a single poll option
+type SupportChannelLastMessagePollOptionsItem struct {
+	// The unique identifier for the poll option.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SupportChannelLastMessagePollOptionsItem) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SupportChannelLastMessagePollOptionsItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SupportChannelLastMessagePollOptionsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelLastMessagePollOptionsItem) SetID(id string) {
+	s.ID = id
+	s.require(supportChannelLastMessagePollOptionsItemFieldID)
+}
+
+func (s *SupportChannelLastMessagePollOptionsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SupportChannelLastMessagePollOptionsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SupportChannelLastMessagePollOptionsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SupportChannelLastMessagePollOptionsItem) MarshalJSON() ([]byte, error) {
+	type embed SupportChannelLastMessagePollOptionsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SupportChannelLastMessagePollOptionsItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	supportChannelListItemFieldAccountID     = big.NewInt(1 << 0)
+	supportChannelListItemFieldCompanyID     = big.NewInt(1 << 1)
+	supportChannelListItemFieldCustomName    = big.NewInt(1 << 2)
+	supportChannelListItemFieldCustomerUser  = big.NewInt(1 << 3)
+	supportChannelListItemFieldID            = big.NewInt(1 << 4)
+	supportChannelListItemFieldLastMessage   = big.NewInt(1 << 5)
+	supportChannelListItemFieldLastMessageAt = big.NewInt(1 << 6)
+	supportChannelListItemFieldNeedsReply    = big.NewInt(1 << 7)
+	supportChannelListItemFieldParticipated  = big.NewInt(1 << 8)
+	supportChannelListItemFieldResolvedAt    = big.NewInt(1 << 9)
+	supportChannelListItemFieldUnread        = big.NewInt(1 << 10)
+)
+
+// supportChannelListItemNullableFields maps the wire names of SupportChannelListItem's nullable fields (required or optional) to their field bits.
+var supportChannelListItemNullableFields = map[string]*big.Int{
+	"account_id":      supportChannelListItemFieldAccountID,
+	"company_id":      supportChannelListItemFieldCompanyID,
+	"custom_name":     supportChannelListItemFieldCustomName,
+	"customer_user":   supportChannelListItemFieldCustomerUser,
+	"last_message":    supportChannelListItemFieldLastMessage,
+	"last_message_at": supportChannelListItemFieldLastMessageAt,
+	"needs_reply":     supportChannelListItemFieldNeedsReply,
+	"participated":    supportChannelListItemFieldParticipated,
+	"resolved_at":     supportChannelListItemFieldResolvedAt,
+	"unread":          supportChannelListItemFieldUnread,
+}
+
+// A messaging channel that can be a one-on-one DM, group chat, company support conversation, or platform-level direct message.
 type SupportChannelListItem struct {
-	// The unique identifier of the company associated with this channel. Null if this is not a support or company-scoped conversation.
+	// The unique identifier of the account associated with this channel. Null if this is not a support or account-scoped conversation.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The unique identifier of the account associated with this channel. Null if this is not a support or account-scoped conversation.
 	CompanyID *string `json:"company_id,omitempty" url:"company_id,omitempty"`
 	// A custom display name assigned to this channel by the user. Null if no custom name has been set.
 	CustomName *string `json:"custom_name,omitempty" url:"custom_name,omitempty"`
@@ -561,16 +1365,31 @@ type SupportChannelListItem struct {
 	CustomerUser *SupportChannelListItemCustomerUser `json:"customer_user,omitempty" url:"customer_user,omitempty"`
 	// The unique identifier for the entity
 	ID string `json:"id" url:"id"`
+	// The most recent message in this channel. Null if no messages have been sent, or when listing support channels without `include_last_message`.
+	LastMessage *SupportChannelListItemLastMessage `json:"last_message,omitempty" url:"last_message,omitempty"`
 	// The timestamp when the most recent message was sent in this channel. Null if no messages have been sent.
 	LastMessageAt *time.Time `json:"last_message_at,omitempty" url:"last_message_at,omitempty"`
+	// Whether the customer sent the latest message and the linked support ticket is unresolved. Null if not a support chat.
+	NeedsReply *bool `json:"needs_reply,omitempty" url:"needs_reply,omitempty"`
+	// Whether the authenticated user has joined this channel as a participant. Null when the caller is not a user, or when listing support channels without `include_participated`.
+	Participated *bool `json:"participated,omitempty" url:"participated,omitempty"`
 	// The timestamp when the linked support ticket was marked as resolved. Null if unresolved or not a support chat.
 	ResolvedAt *time.Time `json:"resolved_at,omitempty" url:"resolved_at,omitempty"`
+	// Whether this channel has a message from someone else that the authenticated user has not viewed yet. Null when the caller is not a user, or when listing support channels without `include_last_message`.
+	Unread *bool `json:"unread,omitempty" url:"unread,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (s *SupportChannelListItem) GetAccountID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.AccountID
 }
 
 func (s *SupportChannelListItem) GetCompanyID() *string {
@@ -601,6 +1420,13 @@ func (s *SupportChannelListItem) GetID() string {
 	return s.ID
 }
 
+func (s *SupportChannelListItem) GetLastMessage() *SupportChannelListItemLastMessage {
+	if s == nil {
+		return nil
+	}
+	return s.LastMessage
+}
+
 func (s *SupportChannelListItem) GetLastMessageAt() *time.Time {
 	if s == nil {
 		return nil
@@ -608,11 +1434,32 @@ func (s *SupportChannelListItem) GetLastMessageAt() *time.Time {
 	return s.LastMessageAt
 }
 
+func (s *SupportChannelListItem) GetNeedsReply() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.NeedsReply
+}
+
+func (s *SupportChannelListItem) GetParticipated() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Participated
+}
+
 func (s *SupportChannelListItem) GetResolvedAt() *time.Time {
 	if s == nil {
 		return nil
 	}
 	return s.ResolvedAt
+}
+
+func (s *SupportChannelListItem) GetUnread() *bool {
+	if s == nil {
+		return nil
+	}
+	return s.Unread
 }
 
 func (s *SupportChannelListItem) GetExtraProperties() map[string]interface{} {
@@ -623,10 +1470,19 @@ func (s *SupportChannelListItem) GetExtraProperties() map[string]interface{} {
 }
 
 func (s *SupportChannelListItem) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItem) SetAccountID(accountID *string) {
+	s.AccountID = accountID
+	s.require(supportChannelListItemFieldAccountID)
 }
 
 // SetCompanyID sets the CompanyID field and marks it as non-optional;
@@ -657,6 +1513,13 @@ func (s *SupportChannelListItem) SetID(id string) {
 	s.require(supportChannelListItemFieldID)
 }
 
+// SetLastMessage sets the LastMessage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItem) SetLastMessage(lastMessage *SupportChannelListItemLastMessage) {
+	s.LastMessage = lastMessage
+	s.require(supportChannelListItemFieldLastMessage)
+}
+
 // SetLastMessageAt sets the LastMessageAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SupportChannelListItem) SetLastMessageAt(lastMessageAt *time.Time) {
@@ -664,11 +1527,32 @@ func (s *SupportChannelListItem) SetLastMessageAt(lastMessageAt *time.Time) {
 	s.require(supportChannelListItemFieldLastMessageAt)
 }
 
+// SetNeedsReply sets the NeedsReply field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItem) SetNeedsReply(needsReply *bool) {
+	s.NeedsReply = needsReply
+	s.require(supportChannelListItemFieldNeedsReply)
+}
+
+// SetParticipated sets the Participated field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItem) SetParticipated(participated *bool) {
+	s.Participated = participated
+	s.require(supportChannelListItemFieldParticipated)
+}
+
 // SetResolvedAt sets the ResolvedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *SupportChannelListItem) SetResolvedAt(resolvedAt *time.Time) {
 	s.ResolvedAt = resolvedAt
 	s.require(supportChannelListItemFieldResolvedAt)
+}
+
+// SetUnread sets the Unread field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItem) SetUnread(unread *bool) {
+	s.Unread = unread
+	s.require(supportChannelListItemFieldUnread)
 }
 
 func (s *SupportChannelListItem) UnmarshalJSON(data []byte) error {
@@ -691,6 +1575,13 @@ func (s *SupportChannelListItem) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, supportChannelListItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -725,13 +1616,18 @@ func (s *SupportChannelListItem) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// The customer who initiated this support conversation. Null if this is not a support chat.
 var (
 	supportChannelListItemCustomerUserFieldID       = big.NewInt(1 << 0)
 	supportChannelListItemCustomerUserFieldName     = big.NewInt(1 << 1)
 	supportChannelListItemCustomerUserFieldUsername = big.NewInt(1 << 2)
 )
 
+// supportChannelListItemCustomerUserNullableFields maps the wire names of SupportChannelListItemCustomerUser's nullable fields (required or optional) to their field bits.
+var supportChannelListItemCustomerUserNullableFields = map[string]*big.Int{
+	"name": supportChannelListItemCustomerUserFieldName,
+}
+
+// The customer who initiated this support conversation. Null if this is not a support chat.
 type SupportChannelListItemCustomerUser struct {
 	// The unique identifier for the user.
 	ID string `json:"id" url:"id"`
@@ -776,10 +1672,12 @@ func (s *SupportChannelListItemCustomerUser) GetExtraProperties() map[string]int
 }
 
 func (s *SupportChannelListItemCustomerUser) require(field *big.Int) {
-	if s.explicitFields == nil {
-		s.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	s.explicitFields.Or(s.explicitFields, field)
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -815,6 +1713,13 @@ func (s *SupportChannelListItemCustomerUser) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, supportChannelListItemCustomerUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -831,6 +1736,611 @@ func (s *SupportChannelListItemCustomerUser) MarshalJSON() ([]byte, error) {
 }
 
 func (s *SupportChannelListItemCustomerUser) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	supportChannelListItemLastMessageFieldAttachments = big.NewInt(1 << 0)
+	supportChannelListItemLastMessageFieldContent     = big.NewInt(1 << 1)
+	supportChannelListItemLastMessageFieldCreatedAt   = big.NewInt(1 << 2)
+	supportChannelListItemLastMessageFieldGifs        = big.NewInt(1 << 3)
+	supportChannelListItemLastMessageFieldID          = big.NewInt(1 << 4)
+	supportChannelListItemLastMessageFieldPoll        = big.NewInt(1 << 5)
+	supportChannelListItemLastMessageFieldUserID      = big.NewInt(1 << 6)
+)
+
+// supportChannelListItemLastMessageNullableFields maps the wire names of SupportChannelListItemLastMessage's nullable fields (required or optional) to their field bits.
+var supportChannelListItemLastMessageNullableFields = map[string]*big.Int{
+	"content": supportChannelListItemLastMessageFieldContent,
+	"poll":    supportChannelListItemLastMessageFieldPoll,
+}
+
+// The most recent message in this channel. Null if no messages have been sent, or when listing support channels without `include_last_message`.
+type SupportChannelListItemLastMessage struct {
+	// A list of all attachments on this message, including files and media.
+	Attachments []*SupportChannelListItemLastMessageAttachmentsItem `json:"attachments" url:"attachments"`
+	// The message content formatted as Markdown. Null if the message has no text content.
+	Content *string `json:"content,omitempty" url:"content,omitempty"`
+	// The timestamp when this message was originally created.
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// A list of GIF animations attached to this message.
+	Gifs []*SupportChannelListItemLastMessageGifsItem `json:"gifs" url:"gifs"`
+	// Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"VXNlci0xMA=="`) or integer (such as `4`) input value will be accepted as an ID.
+	ID string `json:"id" url:"id"`
+	// A poll attached to this message. Null if the message does not contain a poll.
+	Poll *SupportChannelListItemLastMessagePoll `json:"poll,omitempty" url:"poll,omitempty"`
+	// The unique identifier of the user who authored this message.
+	UserID string `json:"user_id" url:"user_id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SupportChannelListItemLastMessage) GetAttachments() []*SupportChannelListItemLastMessageAttachmentsItem {
+	if s == nil {
+		return nil
+	}
+	return s.Attachments
+}
+
+func (s *SupportChannelListItemLastMessage) GetContent() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Content
+}
+
+func (s *SupportChannelListItemLastMessage) GetCreatedAt() time.Time {
+	if s == nil {
+		return time.Time{}
+	}
+	return s.CreatedAt
+}
+
+func (s *SupportChannelListItemLastMessage) GetGifs() []*SupportChannelListItemLastMessageGifsItem {
+	if s == nil {
+		return nil
+	}
+	return s.Gifs
+}
+
+func (s *SupportChannelListItemLastMessage) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SupportChannelListItemLastMessage) GetPoll() *SupportChannelListItemLastMessagePoll {
+	if s == nil {
+		return nil
+	}
+	return s.Poll
+}
+
+func (s *SupportChannelListItemLastMessage) GetUserID() string {
+	if s == nil {
+		return ""
+	}
+	return s.UserID
+}
+
+func (s *SupportChannelListItemLastMessage) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SupportChannelListItemLastMessage) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetAttachments sets the Attachments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItemLastMessage) SetAttachments(attachments []*SupportChannelListItemLastMessageAttachmentsItem) {
+	s.Attachments = attachments
+	s.require(supportChannelListItemLastMessageFieldAttachments)
+}
+
+// SetContent sets the Content field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItemLastMessage) SetContent(content *string) {
+	s.Content = content
+	s.require(supportChannelListItemLastMessageFieldContent)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItemLastMessage) SetCreatedAt(createdAt time.Time) {
+	s.CreatedAt = createdAt
+	s.require(supportChannelListItemLastMessageFieldCreatedAt)
+}
+
+// SetGifs sets the Gifs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItemLastMessage) SetGifs(gifs []*SupportChannelListItemLastMessageGifsItem) {
+	s.Gifs = gifs
+	s.require(supportChannelListItemLastMessageFieldGifs)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItemLastMessage) SetID(id string) {
+	s.ID = id
+	s.require(supportChannelListItemLastMessageFieldID)
+}
+
+// SetPoll sets the Poll field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItemLastMessage) SetPoll(poll *SupportChannelListItemLastMessagePoll) {
+	s.Poll = poll
+	s.require(supportChannelListItemLastMessageFieldPoll)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItemLastMessage) SetUserID(userID string) {
+	s.UserID = userID
+	s.require(supportChannelListItemLastMessageFieldUserID)
+}
+
+func (s *SupportChannelListItemLastMessage) UnmarshalJSON(data []byte) error {
+	type embed SupportChannelListItemLastMessage
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed: embed(*s),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*s = SupportChannelListItemLastMessage(unmarshaler.embed)
+	s.CreatedAt = unmarshaler.CreatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, supportChannelListItemLastMessageNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SupportChannelListItemLastMessage) MarshalJSON() ([]byte, error) {
+	type embed SupportChannelListItemLastMessage
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed:     embed(*s),
+		CreatedAt: internal.NewDateTime(s.CreatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SupportChannelListItemLastMessage) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	supportChannelListItemLastMessageAttachmentsItemFieldContentType = big.NewInt(1 << 0)
+	supportChannelListItemLastMessageAttachmentsItemFieldFilename    = big.NewInt(1 << 1)
+)
+
+// supportChannelListItemLastMessageAttachmentsItemNullableFields maps the wire names of SupportChannelListItemLastMessageAttachmentsItem's nullable fields (required or optional) to their field bits.
+var supportChannelListItemLastMessageAttachmentsItemNullableFields = map[string]*big.Int{
+	"content_type": supportChannelListItemLastMessageAttachmentsItemFieldContentType,
+	"filename":     supportChannelListItemLastMessageAttachmentsItemFieldFilename,
+}
+
+// Represents an image attachment
+type SupportChannelListItemLastMessageAttachmentsItem struct {
+	// Uploaded file MIME type, such as image/jpeg, video/mp4, or audio/mpeg.
+	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
+	// The original filename of the uploaded attachment, including its file extension.
+	Filename *string `json:"filename,omitempty" url:"filename,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SupportChannelListItemLastMessageAttachmentsItem) GetContentType() *string {
+	if s == nil {
+		return nil
+	}
+	return s.ContentType
+}
+
+func (s *SupportChannelListItemLastMessageAttachmentsItem) GetFilename() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Filename
+}
+
+func (s *SupportChannelListItemLastMessageAttachmentsItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SupportChannelListItemLastMessageAttachmentsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetContentType sets the ContentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItemLastMessageAttachmentsItem) SetContentType(contentType *string) {
+	s.ContentType = contentType
+	s.require(supportChannelListItemLastMessageAttachmentsItemFieldContentType)
+}
+
+// SetFilename sets the Filename field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItemLastMessageAttachmentsItem) SetFilename(filename *string) {
+	s.Filename = filename
+	s.require(supportChannelListItemLastMessageAttachmentsItemFieldFilename)
+}
+
+func (s *SupportChannelListItemLastMessageAttachmentsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SupportChannelListItemLastMessageAttachmentsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SupportChannelListItemLastMessageAttachmentsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, supportChannelListItemLastMessageAttachmentsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SupportChannelListItemLastMessageAttachmentsItem) MarshalJSON() ([]byte, error) {
+	type embed SupportChannelListItemLastMessageAttachmentsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SupportChannelListItemLastMessageAttachmentsItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	supportChannelListItemLastMessageGifsItemFieldSlug = big.NewInt(1 << 0)
+)
+
+// Represents a GIF attachment in a feed post
+type SupportChannelListItemLastMessageGifsItem struct {
+	// The unique identifier of the GIF
+	Slug string `json:"slug" url:"slug"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SupportChannelListItemLastMessageGifsItem) GetSlug() string {
+	if s == nil {
+		return ""
+	}
+	return s.Slug
+}
+
+func (s *SupportChannelListItemLastMessageGifsItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SupportChannelListItemLastMessageGifsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetSlug sets the Slug field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItemLastMessageGifsItem) SetSlug(slug string) {
+	s.Slug = slug
+	s.require(supportChannelListItemLastMessageGifsItemFieldSlug)
+}
+
+func (s *SupportChannelListItemLastMessageGifsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SupportChannelListItemLastMessageGifsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SupportChannelListItemLastMessageGifsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SupportChannelListItemLastMessageGifsItem) MarshalJSON() ([]byte, error) {
+	type embed SupportChannelListItemLastMessageGifsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SupportChannelListItemLastMessageGifsItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	supportChannelListItemLastMessagePollFieldOptions = big.NewInt(1 << 0)
+)
+
+// supportChannelListItemLastMessagePollNullableFields maps the wire names of SupportChannelListItemLastMessagePoll's nullable fields (required or optional) to their field bits.
+var supportChannelListItemLastMessagePollNullableFields = map[string]*big.Int{
+	"options": supportChannelListItemLastMessagePollFieldOptions,
+}
+
+// A poll attached to this message. Null if the message does not contain a poll.
+type SupportChannelListItemLastMessagePoll struct {
+	// The options for the poll
+	Options []*SupportChannelListItemLastMessagePollOptionsItem `json:"options,omitempty" url:"options,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SupportChannelListItemLastMessagePoll) GetOptions() []*SupportChannelListItemLastMessagePollOptionsItem {
+	if s == nil {
+		return nil
+	}
+	return s.Options
+}
+
+func (s *SupportChannelListItemLastMessagePoll) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SupportChannelListItemLastMessagePoll) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetOptions sets the Options field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItemLastMessagePoll) SetOptions(options []*SupportChannelListItemLastMessagePollOptionsItem) {
+	s.Options = options
+	s.require(supportChannelListItemLastMessagePollFieldOptions)
+}
+
+func (s *SupportChannelListItemLastMessagePoll) UnmarshalJSON(data []byte) error {
+	type unmarshaler SupportChannelListItemLastMessagePoll
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SupportChannelListItemLastMessagePoll(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, supportChannelListItemLastMessagePollNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SupportChannelListItemLastMessagePoll) MarshalJSON() ([]byte, error) {
+	type embed SupportChannelListItemLastMessagePoll
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SupportChannelListItemLastMessagePoll) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	supportChannelListItemLastMessagePollOptionsItemFieldID = big.NewInt(1 << 0)
+)
+
+// Represents a single poll option
+type SupportChannelListItemLastMessagePollOptionsItem struct {
+	// The unique identifier for the poll option.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SupportChannelListItemLastMessagePollOptionsItem) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *SupportChannelListItemLastMessagePollOptionsItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SupportChannelListItemLastMessagePollOptionsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SupportChannelListItemLastMessagePollOptionsItem) SetID(id string) {
+	s.ID = id
+	s.require(supportChannelListItemLastMessagePollOptionsItemFieldID)
+}
+
+func (s *SupportChannelListItemLastMessagePollOptionsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler SupportChannelListItemLastMessagePollOptionsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SupportChannelListItemLastMessagePollOptionsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SupportChannelListItemLastMessagePollOptionsItem) MarshalJSON() ([]byte, error) {
+	type embed SupportChannelListItemLastMessagePollOptionsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SupportChannelListItemLastMessagePollOptionsItem) String() string {
 	if s == nil {
 		return "<nil>"
 	}
@@ -871,12 +2381,12 @@ func (s SupportChannelView) Ptr() *SupportChannelView {
 	return &s
 }
 
-// The connection type for DmsFeed.
 var (
 	listSupportChannelsResponseFieldData     = big.NewInt(1 << 0)
 	listSupportChannelsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
+// The connection type for DmsFeed.
 type ListSupportChannelsResponse struct {
 	// A list of nodes.
 	Data []*SupportChannelListItem `json:"data" url:"data"`
@@ -912,10 +2422,12 @@ func (l *ListSupportChannelsResponse) GetExtraProperties() map[string]interface{
 }
 
 func (l *ListSupportChannelsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;

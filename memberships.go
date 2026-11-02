@@ -5,59 +5,160 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
 
 var (
-	addFreeDaysMembershipRequestFieldID       = big.NewInt(1 << 0)
-	addFreeDaysMembershipRequestFieldFreeDays = big.NewInt(1 << 1)
+	applyPromoCodeMembershipsRequestFieldID        = big.NewInt(1 << 0)
+	applyPromoCodeMembershipsRequestFieldPromoCode = big.NewInt(1 << 1)
 )
 
-type AddFreeDaysMembershipRequest struct {
-	// The unique identifier of the membership.
+type ApplyPromoCodeMembershipsRequest struct {
+	// Membership ID (`mem_` tag).
 	ID string `json:"-" url:"-"`
-	// The number of free days to add (1-1095). Extends the billing period, expiration date, or Stripe trial depending on plan type.
-	FreeDays int `json:"free_days" url:"-"`
+	// The promo code to apply, as customers enter it at checkout (for example `SAVE20`). Its stock, variant eligibility, and expiry are checked as at checkout.
+	PromoCode string `json:"promo_code" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
-func (a *AddFreeDaysMembershipRequest) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+func (a *ApplyPromoCodeMembershipsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AddFreeDaysMembershipRequest) SetID(id string) {
+func (a *ApplyPromoCodeMembershipsRequest) SetID(id string) {
 	a.ID = id
-	a.require(addFreeDaysMembershipRequestFieldID)
+	a.require(applyPromoCodeMembershipsRequestFieldID)
 }
 
-// SetFreeDays sets the FreeDays field and marks it as non-optional;
+// SetPromoCode sets the PromoCode field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AddFreeDaysMembershipRequest) SetFreeDays(freeDays int) {
-	a.FreeDays = freeDays
-	a.require(addFreeDaysMembershipRequestFieldFreeDays)
+func (a *ApplyPromoCodeMembershipsRequest) SetPromoCode(promoCode string) {
+	a.PromoCode = promoCode
+	a.require(applyPromoCodeMembershipsRequestFieldPromoCode)
 }
 
-func (a *AddFreeDaysMembershipRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler AddFreeDaysMembershipRequest
+func (a *ApplyPromoCodeMembershipsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ApplyPromoCodeMembershipsRequest
 	var body unmarshaler
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}
-	*a = AddFreeDaysMembershipRequest(body)
+	*a = ApplyPromoCodeMembershipsRequest(body)
 	return nil
 }
 
-func (a *AddFreeDaysMembershipRequest) MarshalJSON() ([]byte, error) {
-	type embed AddFreeDaysMembershipRequest
+func (a *ApplyPromoCodeMembershipsRequest) MarshalJSON() ([]byte, error) {
+	type embed ApplyPromoCodeMembershipsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	assignAffiliateMembershipsRequestFieldID              = big.NewInt(1 << 0)
+	assignAffiliateMembershipsRequestFieldCommissionType  = big.NewInt(1 << 1)
+	assignAffiliateMembershipsRequestFieldCommissionValue = big.NewInt(1 << 2)
+	assignAffiliateMembershipsRequestFieldEmail           = big.NewInt(1 << 3)
+	assignAffiliateMembershipsRequestFieldUserID          = big.NewInt(1 << 4)
+	assignAffiliateMembershipsRequestFieldUsername        = big.NewInt(1 << 5)
+)
+
+type AssignAffiliateMembershipsRequest struct {
+	// Membership ID (`mem_` tag).
+	ID string `json:"-" url:"-"`
+	// Whether the commission is a percentage of each payment or a fixed amount per payment.
+	CommissionType AssignAffiliateMembershipsRequestCommissionType `json:"commission_type" url:"-"`
+	// A whole number from 1 to 90 for `percentage`, or an amount greater than 1 in the membership currency for `flat_fee`. The payout cannot exceed 90% of the next renewal amount. Flat fees need matching billing and settlement currencies.
+	CommissionValue float64 `json:"commission_value" url:"-"`
+	// Email address of the user to assign. Pass exactly one of `user_id`, `email`, or `username`.
+	Email *string `json:"email,omitempty" url:"-"`
+	// The user to assign, prefixed `user_`. Pass exactly one of `user_id`, `email`, or `username`.
+	UserID *string `json:"user_id,omitempty" url:"-"`
+	// Whop username of the user to assign. Pass exactly one of `user_id`, `email`, or `username`.
+	Username *string `json:"username,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (a *AssignAffiliateMembershipsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AssignAffiliateMembershipsRequest) SetID(id string) {
+	a.ID = id
+	a.require(assignAffiliateMembershipsRequestFieldID)
+}
+
+// SetCommissionType sets the CommissionType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AssignAffiliateMembershipsRequest) SetCommissionType(commissionType AssignAffiliateMembershipsRequestCommissionType) {
+	a.CommissionType = commissionType
+	a.require(assignAffiliateMembershipsRequestFieldCommissionType)
+}
+
+// SetCommissionValue sets the CommissionValue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AssignAffiliateMembershipsRequest) SetCommissionValue(commissionValue float64) {
+	a.CommissionValue = commissionValue
+	a.require(assignAffiliateMembershipsRequestFieldCommissionValue)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AssignAffiliateMembershipsRequest) SetEmail(email *string) {
+	a.Email = email
+	a.require(assignAffiliateMembershipsRequestFieldEmail)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AssignAffiliateMembershipsRequest) SetUserID(userID *string) {
+	a.UserID = userID
+	a.require(assignAffiliateMembershipsRequestFieldUserID)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AssignAffiliateMembershipsRequest) SetUsername(username *string) {
+	a.Username = username
+	a.require(assignAffiliateMembershipsRequestFieldUsername)
+}
+
+func (a *AssignAffiliateMembershipsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler AssignAffiliateMembershipsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*a = AssignAffiliateMembershipsRequest(body)
+	return nil
+}
+
+func (a *AssignAffiliateMembershipsRequest) MarshalJSON() ([]byte, error) {
+	type embed AssignAffiliateMembershipsRequest
 	var marshaler = struct {
 		embed
 	}{
@@ -70,7 +171,8 @@ func (a *AddFreeDaysMembershipRequest) MarshalJSON() ([]byte, error) {
 var (
 	cancelMembershipsRequestFieldID                = big.NewInt(1 << 0)
 	cancelMembershipsRequestFieldCancelAtPeriodEnd = big.NewInt(1 << 1)
-	cancelMembershipsRequestFieldReason            = big.NewInt(1 << 2)
+	cancelMembershipsRequestFieldFeedbackOptionID  = big.NewInt(1 << 2)
+	cancelMembershipsRequestFieldReason            = big.NewInt(1 << 3)
 )
 
 type CancelMembershipsRequest struct {
@@ -78,6 +180,8 @@ type CancelMembershipsRequest struct {
 	ID string `json:"-" url:"-"`
 	// `true` stops auto-renewal and keeps access until the current billing period ends. Omit or `false` revokes access immediately.
 	CancelAtPeriodEnd *bool `json:"cancel_at_period_end,omitempty" url:"-"`
+	// The ID of the feedback option the customer picked as their reason for canceling, from the account's `feedback_options` preference. The membership records the option's label as the customer saw it and its category as `cancel_option`.
+	FeedbackOptionID *string `json:"feedback_option_id,omitempty" url:"-"`
 	// Free-form note recording why the membership was canceled.
 	Reason *string `json:"reason,omitempty" url:"-"`
 
@@ -86,10 +190,12 @@ type CancelMembershipsRequest struct {
 }
 
 func (c *CancelMembershipsRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -104,6 +210,13 @@ func (c *CancelMembershipsRequest) SetID(id string) {
 func (c *CancelMembershipsRequest) SetCancelAtPeriodEnd(cancelAtPeriodEnd *bool) {
 	c.CancelAtPeriodEnd = cancelAtPeriodEnd
 	c.require(cancelMembershipsRequestFieldCancelAtPeriodEnd)
+}
+
+// SetFeedbackOptionID sets the FeedbackOptionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelMembershipsRequest) SetFeedbackOptionID(feedbackOptionID *string) {
+	c.FeedbackOptionID = feedbackOptionID
+	c.require(cancelMembershipsRequestFieldFeedbackOptionID)
 }
 
 // SetReason sets the Reason field and marks it as non-optional;
@@ -150,10 +263,12 @@ type ExtendMembershipsRequest struct {
 }
 
 func (e *ExtendMembershipsRequest) require(field *big.Int) {
-	if e.explicitFields == nil {
-		e.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
 	}
-	e.explicitFields.Or(e.explicitFields, field)
+	next.Or(next, field)
+	e.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -192,19 +307,25 @@ func (e *ExtendMembershipsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	listMembershipsRequestFieldAccountID     = big.NewInt(1 << 0)
-	listMembershipsRequestFieldUserID        = big.NewInt(1 << 1)
-	listMembershipsRequestFieldStatus        = big.NewInt(1 << 2)
-	listMembershipsRequestFieldProductID     = big.NewInt(1 << 3)
-	listMembershipsRequestFieldPlanID        = big.NewInt(1 << 4)
-	listMembershipsRequestFieldCreatedAfter  = big.NewInt(1 << 5)
-	listMembershipsRequestFieldCreatedBefore = big.NewInt(1 << 6)
-	listMembershipsRequestFieldOrder         = big.NewInt(1 << 7)
-	listMembershipsRequestFieldDirection     = big.NewInt(1 << 8)
-	listMembershipsRequestFieldFirst         = big.NewInt(1 << 9)
-	listMembershipsRequestFieldAfter         = big.NewInt(1 << 10)
-	listMembershipsRequestFieldLast          = big.NewInt(1 << 11)
-	listMembershipsRequestFieldBefore        = big.NewInt(1 << 12)
+	listMembershipsRequestFieldAccountID       = big.NewInt(1 << 0)
+	listMembershipsRequestFieldUserID          = big.NewInt(1 << 1)
+	listMembershipsRequestFieldMemberID        = big.NewInt(1 << 2)
+	listMembershipsRequestFieldExternalAccount = big.NewInt(1 << 3)
+	listMembershipsRequestFieldStatus          = big.NewInt(1 << 4)
+	listMembershipsRequestFieldStatuses        = big.NewInt(1 << 5)
+	listMembershipsRequestFieldProductID       = big.NewInt(1 << 6)
+	listMembershipsRequestFieldProductIDs      = big.NewInt(1 << 7)
+	listMembershipsRequestFieldVariantID       = big.NewInt(1 << 8)
+	listMembershipsRequestFieldVariantIDs      = big.NewInt(1 << 9)
+	listMembershipsRequestFieldPromoCodeIDs    = big.NewInt(1 << 10)
+	listMembershipsRequestFieldCreatedAfter    = big.NewInt(1 << 11)
+	listMembershipsRequestFieldCreatedBefore   = big.NewInt(1 << 12)
+	listMembershipsRequestFieldOrder           = big.NewInt(1 << 13)
+	listMembershipsRequestFieldDirection       = big.NewInt(1 << 14)
+	listMembershipsRequestFieldFirst           = big.NewInt(1 << 15)
+	listMembershipsRequestFieldAfter           = big.NewInt(1 << 16)
+	listMembershipsRequestFieldLast            = big.NewInt(1 << 17)
+	listMembershipsRequestFieldBefore          = big.NewInt(1 << 18)
 )
 
 type ListMembershipsRequest struct {
@@ -212,12 +333,24 @@ type ListMembershipsRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Narrow to one user's memberships (`user_` tag, or `me` for the caller). A user outside the caller's visible set returns an empty list.
 	UserID *string `json:"-" url:"user_id,omitempty"`
-	// Filter by billing state. `canceling` matches active memberships set to cancel at period end; `paused` matches memberships with payment collection paused.
+	// Narrow to one member's memberships (`mber_` tag), including memberships bought by another business. A member outside the caller's visible set returns an empty list.
+	MemberID *string `json:"-" url:"member_id,omitempty"`
+	// Narrow to memberships linked to one Discord or Telegram account, given as the platform's user ID prefixed with `discord_` or `telegram_`. Discord matches include memberships imported with that Discord ID. Any other format is a 400.
+	ExternalAccount *string `json:"-" url:"external_account,omitempty"`
+	// Filter by billing state. `trialing`, `active`, `past_due`, `completed`, `canceled`, and `expired` match the membership's `status`; `active`, `trialing`, and `past_due` exclude memberships set to cancel at period end. The other values are derived buckets that never appear as a `status`: `canceling` matches memberships set to cancel at period end; `paused` matches memberships with payment collection paused; `expiring` matches one-time purchases that have not yet expired; `one_time` matches one-time purchases that never expire; `unclaimed` matches memberships with no buyer user, including memberships bought by another business; `banned` matches memberships whose buyer is banned from the account.
 	Status *ListMembershipsRequestStatus `json:"-" url:"status,omitempty"`
-	// Filter to memberships of this product (`prod_` tag). Repeat as product_ids[] for several.
+	// Filter to memberships matching any of these billing states, with the same meanings as `status`. Repeat the parameter to pass several. Combined with `status` when both are sent.
+	Statuses []*ListMembershipsRequestStatusesItem `json:"-" url:"statuses,omitempty"`
+	// Filter to memberships of this product (`prod_` tag).
 	ProductID *string `json:"-" url:"product_id,omitempty"`
-	// Filter to memberships of this plan (`plan_` tag). Repeat as plan_ids[] for several.
-	PlanID *string `json:"-" url:"plan_id,omitempty"`
+	// Filter to memberships of any of these products, each prefixed `prod_`. Repeat the parameter to pass several.
+	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
+	// Filter to memberships of this variant (`plan_` tag).
+	VariantID *string `json:"-" url:"variant_id,omitempty"`
+	// Filter to memberships of any of these variants, each prefixed `plan_`. Repeat the parameter to pass several.
+	VariantIDs []*string `json:"-" url:"variant_ids,omitempty"`
+	// Filter to memberships discounted by any of these promo codes, each prefixed `promo_`. Repeat the parameter to pass several.
+	PromoCodeIDs []*string `json:"-" url:"promo_code_ids,omitempty"`
 	// Only memberships created after this ISO 8601 timestamp.
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
 	// Only memberships created before this ISO 8601 timestamp.
@@ -226,13 +359,13 @@ type ListMembershipsRequest struct {
 	Order *ListMembershipsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
 	Direction *ListMembershipsRequestDirection `json:"-" url:"direction,omitempty"`
-	// Number of memberships to return from the start of the window.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor to paginate forwards from.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// Number of memberships to return from the end of the window.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// Cursor to paginate backwards from.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -240,10 +373,12 @@ type ListMembershipsRequest struct {
 }
 
 func (l *ListMembershipsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -260,11 +395,32 @@ func (l *ListMembershipsRequest) SetUserID(userID *string) {
 	l.require(listMembershipsRequestFieldUserID)
 }
 
+// SetMemberID sets the MemberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembershipsRequest) SetMemberID(memberID *string) {
+	l.MemberID = memberID
+	l.require(listMembershipsRequestFieldMemberID)
+}
+
+// SetExternalAccount sets the ExternalAccount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembershipsRequest) SetExternalAccount(externalAccount *string) {
+	l.ExternalAccount = externalAccount
+	l.require(listMembershipsRequestFieldExternalAccount)
+}
+
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListMembershipsRequest) SetStatus(status *ListMembershipsRequestStatus) {
 	l.Status = status
 	l.require(listMembershipsRequestFieldStatus)
+}
+
+// SetStatuses sets the Statuses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembershipsRequest) SetStatuses(statuses []*ListMembershipsRequestStatusesItem) {
+	l.Statuses = statuses
+	l.require(listMembershipsRequestFieldStatuses)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
@@ -274,11 +430,32 @@ func (l *ListMembershipsRequest) SetProductID(productID *string) {
 	l.require(listMembershipsRequestFieldProductID)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
+// SetProductIDs sets the ProductIDs field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListMembershipsRequest) SetPlanID(planID *string) {
-	l.PlanID = planID
-	l.require(listMembershipsRequestFieldPlanID)
+func (l *ListMembershipsRequest) SetProductIDs(productIDs []*string) {
+	l.ProductIDs = productIDs
+	l.require(listMembershipsRequestFieldProductIDs)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembershipsRequest) SetVariantID(variantID *string) {
+	l.VariantID = variantID
+	l.require(listMembershipsRequestFieldVariantID)
+}
+
+// SetVariantIDs sets the VariantIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembershipsRequest) SetVariantIDs(variantIDs []*string) {
+	l.VariantIDs = variantIDs
+	l.require(listMembershipsRequestFieldVariantIDs)
+}
+
+// SetPromoCodeIDs sets the PromoCodeIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembershipsRequest) SetPromoCodeIDs(promoCodeIDs []*string) {
+	l.PromoCodeIDs = promoCodeIDs
+	l.require(listMembershipsRequestFieldPromoCodeIDs)
 }
 
 // SetCreatedAfter sets the CreatedAfter field and marks it as non-optional;
@@ -353,10 +530,12 @@ type PauseMembershipsRequest struct {
 }
 
 func (p *PauseMembershipsRequest) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -395,6 +574,65 @@ func (p *PauseMembershipsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	reactivateMembershipsRequestFieldID   = big.NewInt(1 << 0)
+	reactivateMembershipsRequestFieldDays = big.NewInt(1 << 1)
+)
+
+type ReactivateMembershipsRequest struct {
+	// Membership ID (`mem_` tag).
+	ID string `json:"-" url:"-"`
+	// Days of access from now (1-1095), which sets `current_period_end`. Omit to keep the original `current_period_end`; required once it has passed. Ignored for lifetime memberships.
+	Days *int `json:"days,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *ReactivateMembershipsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReactivateMembershipsRequest) SetID(id string) {
+	r.ID = id
+	r.require(reactivateMembershipsRequestFieldID)
+}
+
+// SetDays sets the Days field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReactivateMembershipsRequest) SetDays(days *int) {
+	r.Days = days
+	r.require(reactivateMembershipsRequestFieldDays)
+}
+
+func (r *ReactivateMembershipsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ReactivateMembershipsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*r = ReactivateMembershipsRequest(body)
+	return nil
+}
+
+func (r *ReactivateMembershipsRequest) MarshalJSON() ([]byte, error) {
+	type embed ReactivateMembershipsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	resumeMembershipsRequestFieldID = big.NewInt(1 << 0)
 )
 
@@ -407,10 +645,12 @@ type ResumeMembershipsRequest struct {
 }
 
 func (r *ResumeMembershipsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -421,29 +661,31 @@ func (r *ResumeMembershipsRequest) SetID(id string) {
 }
 
 var (
-	resyncAccessMembershipRequestFieldID = big.NewInt(1 << 0)
+	resyncAccessMembershipsRequestFieldID = big.NewInt(1 << 0)
 )
 
-type ResyncAccessMembershipRequest struct {
-	// The unique identifier of the membership to resync access for.
+type ResyncAccessMembershipsRequest struct {
+	// Membership ID (`mem_` tag).
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
-func (r *ResyncAccessMembershipRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+func (r *ResyncAccessMembershipsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ResyncAccessMembershipRequest) SetID(id string) {
+func (r *ResyncAccessMembershipsRequest) SetID(id string) {
 	r.ID = id
-	r.require(resyncAccessMembershipRequestFieldID)
+	r.require(resyncAccessMembershipsRequestFieldID)
 }
 
 var (
@@ -459,10 +701,12 @@ type RetrieveMembershipsRequest struct {
 }
 
 func (r *RetrieveMembershipsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -485,10 +729,12 @@ type TransferMembershipsRequest struct {
 }
 
 func (t *TransferMembershipsRequest) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -499,45 +745,134 @@ func (t *TransferMembershipsRequest) SetID(id string) {
 }
 
 var (
-	membershipFieldAccount           = big.NewInt(1 << 0)
-	membershipFieldCancelAtPeriodEnd = big.NewInt(1 << 1)
-	membershipFieldCreatedAt         = big.NewInt(1 << 2)
-	membershipFieldCurrentPeriodEnd  = big.NewInt(1 << 3)
-	membershipFieldID                = big.NewInt(1 << 4)
-	membershipFieldLicenseKey        = big.NewInt(1 << 5)
-	membershipFieldMember            = big.NewInt(1 << 6)
-	membershipFieldMetadata          = big.NewInt(1 << 7)
-	membershipFieldPlanID            = big.NewInt(1 << 8)
-	membershipFieldProductID         = big.NewInt(1 << 9)
-	membershipFieldStatus            = big.NewInt(1 << 10)
-	membershipFieldUserID            = big.NewInt(1 << 11)
+	membershipFieldAccount                  = big.NewInt(1 << 0)
+	membershipFieldAffiliate                = big.NewInt(1 << 1)
+	membershipFieldBillingPeriodDays        = big.NewInt(1 << 2)
+	membershipFieldCancelAtPeriodEnd        = big.NewInt(1 << 3)
+	membershipFieldCancelOption             = big.NewInt(1 << 4)
+	membershipFieldCanceledAt               = big.NewInt(1 << 5)
+	membershipFieldCancellationReason       = big.NewInt(1 << 6)
+	membershipFieldCollectionMethod         = big.NewInt(1 << 7)
+	membershipFieldCreatedAt                = big.NewInt(1 << 8)
+	membershipFieldCurrentPeriodEnd         = big.NewInt(1 << 9)
+	membershipFieldCurrentPeriodStart       = big.NewInt(1 << 10)
+	membershipFieldExpiresAt                = big.NewInt(1 << 11)
+	membershipFieldFeedbackOption           = big.NewInt(1 << 12)
+	membershipFieldID                       = big.NewInt(1 << 13)
+	membershipFieldInitialPrice             = big.NewInt(1 << 14)
+	membershipFieldLicenseKey               = big.NewInt(1 << 15)
+	membershipFieldManageURL                = big.NewInt(1 << 16)
+	membershipFieldMember                   = big.NewInt(1 << 17)
+	membershipFieldMemberID                 = big.NewInt(1 << 18)
+	membershipFieldMetadata                 = big.NewInt(1 << 19)
+	membershipFieldMostRecentAction         = big.NewInt(1 << 20)
+	membershipFieldMostRecentActionAt       = big.NewInt(1 << 21)
+	membershipFieldPhoneNumber              = big.NewInt(1 << 22)
+	membershipFieldProduct                  = big.NewInt(1 << 23)
+	membershipFieldProductID                = big.NewInt(1 << 24)
+	membershipFieldPromoCodeID              = big.NewInt(1 << 25)
+	membershipFieldRenewalPrice             = big.NewInt(1 << 26)
+	membershipFieldSplitPayCurrentPayments  = big.NewInt(1 << 27)
+	membershipFieldSplitPayRequiredPayments = big.NewInt(1 << 28)
+	membershipFieldStatus                   = big.NewInt(1 << 29)
+	membershipFieldUpdatedAt                = big.NewInt(1 << 30)
+	membershipFieldUserID                   = big.NewInt(1 << 31)
+	membershipFieldVariantID                = big.NewInt(1 << 32)
 )
+
+// membershipNullableFields maps the wire names of Membership's nullable fields (required or optional) to their field bits.
+var membershipNullableFields = map[string]*big.Int{
+	"affiliate":                   membershipFieldAffiliate,
+	"billing_period_days":         membershipFieldBillingPeriodDays,
+	"cancel_option":               membershipFieldCancelOption,
+	"canceled_at":                 membershipFieldCanceledAt,
+	"cancellation_reason":         membershipFieldCancellationReason,
+	"collection_method":           membershipFieldCollectionMethod,
+	"current_period_end":          membershipFieldCurrentPeriodEnd,
+	"current_period_start":        membershipFieldCurrentPeriodStart,
+	"expires_at":                  membershipFieldExpiresAt,
+	"feedback_option":             membershipFieldFeedbackOption,
+	"license_key":                 membershipFieldLicenseKey,
+	"manage_url":                  membershipFieldManageURL,
+	"member":                      membershipFieldMember,
+	"member_id":                   membershipFieldMemberID,
+	"most_recent_action":          membershipFieldMostRecentAction,
+	"most_recent_action_at":       membershipFieldMostRecentActionAt,
+	"phone_number":                membershipFieldPhoneNumber,
+	"promo_code_id":               membershipFieldPromoCodeID,
+	"renewal_price":               membershipFieldRenewalPrice,
+	"split_pay_current_payments":  membershipFieldSplitPayCurrentPayments,
+	"split_pay_required_payments": membershipFieldSplitPayRequiredPayments,
+	"user_id":                     membershipFieldUserID,
+}
 
 type Membership struct {
 	// The account (seller) this membership belongs to.
-	Account *MembershipAccount `json:"account" url:"account"`
-	// Whether the membership is set to cancel when the current billing period ends. Only meaningful for recurring plans.
+	Account *StorefrontAccount `json:"account" url:"account"`
+	// The membership's affiliate commission. `null` without an affiliate, without `affiliate:basic:read` on the account, and always in webhooks.
+	Affiliate *MembershipAffiliate `json:"affiliate,omitempty" url:"affiliate,omitempty"`
+	// Number of days between recurring charges. `null` for non-renewing memberships or memberships with multiple renewal schedules.
+	BillingPeriodDays *int `json:"billing_period_days,omitempty" url:"billing_period_days,omitempty"`
+	// Whether the membership is set to cancel when the current billing period ends. Only meaningful for recurring variants.
 	CancelAtPeriodEnd bool `json:"cancel_at_period_end" url:"cancel_at_period_end"`
+	// The category the member picked for why they canceled. `null` when no category was picked.
+	CancelOption *MembershipCancelOption `json:"cancel_option,omitempty" url:"cancel_option,omitempty"`
+	// When cancellation was requested, or when the membership was canceled if no request time is recorded, as an ISO 8601 timestamp. `null` when neither is recorded.
+	CanceledAt *string `json:"canceled_at,omitempty" url:"canceled_at,omitempty"`
+	// Free-text explanation provided when canceling. `null` when no reason was provided.
+	CancellationReason *string `json:"cancellation_reason,omitempty" url:"cancellation_reason,omitempty"`
+	// How renewals are collected. `charge_automatically` charges the saved payment method each period; `send_invoice` emails the buyer an invoice each period. `null` when not set.
+	CollectionMethod *MembershipCollectionMethod `json:"collection_method,omitempty" url:"collection_method,omitempty"`
 	// When the membership was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// When the current billing period renews, or when a non-renewing membership expires, as an ISO 8601 timestamp. `null` for one-time purchases with no expiration.
 	CurrentPeriodEnd *string `json:"current_period_end,omitempty" url:"current_period_end,omitempty"`
+	// When the current billing period started, as an ISO 8601 timestamp. `null` when no billing period is recorded.
+	CurrentPeriodStart *string `json:"current_period_start,omitempty" url:"current_period_start,omitempty"`
+	// When access ends for a membership with a fixed expiration, as an ISO 8601 timestamp. `null` when the membership has no expiration, such as a renewing membership.
+	ExpiresAt *string `json:"expires_at,omitempty" url:"expires_at,omitempty"`
+	// The account's own cancel reason the member picked, as they saw it. `null` when the member picked a default category or gave no reason.
+	FeedbackOption *MembershipFeedbackOption `json:"feedback_option,omitempty" url:"feedback_option,omitempty"`
 	// Membership ID, prefixed `mem_`.
 	ID string `json:"id" url:"id"`
+	// The variant's current up-front price, in the variant's currency. A list price, not necessarily what the buyer paid. `amount` is `"0.00"` when the first charge is free.
+	InitialPrice *Money `json:"initial_price" url:"initial_price"`
 	// The software license key for this membership. Only present when the product includes a software licensing experience.
 	LicenseKey *string `json:"license_key,omitempty" url:"license_key,omitempty"`
+	// URL where the buyer can sign in to manage billing. `null` without a member record or unless the caller is the buyer or has `member:manage` on the account.
+	ManageURL *string `json:"manage_url,omitempty" url:"manage_url,omitempty"`
 	// The caller's member row on the account. Present only when the membership belongs to the caller; `null` on seller-side reads.
 	Member *MembershipMember `json:"member,omitempty" url:"member,omitempty"`
+	// The buyer's member record on the account, prefixed `mber_`. `null` when the membership has no member record, such as an unclaimed membership.
+	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
 	// Custom key-value pairs stored on the membership, commonly used for software licensing.
 	Metadata map[string]any `json:"metadata" url:"metadata"`
-	// The plan the buyer purchased, prefixed `plan_`.
-	PlanID string `json:"plan_id" url:"plan_id"`
+	// The membership's latest lifecycle event, such as `renewing_on` or `canceled_on`. Pair it with `most_recent_action_at`. `null` when none is recorded.
+	MostRecentAction *MembershipMostRecentAction `json:"most_recent_action,omitempty" url:"most_recent_action,omitempty"`
+	// When `most_recent_action` happened or is scheduled to happen, as an ISO 8601 timestamp. A future time for upcoming events such as `renewing_on`. `null` when no action is recorded.
+	MostRecentActionAt *string `json:"most_recent_action_at,omitempty" url:"most_recent_action_at,omitempty"`
+	// The buyer's phone number recorded for this membership, or `null`. The number collected (or verified) at checkout when the seller's phone collection is on; falls back to the buyer's account number when they have shared one with this seller.
+	PhoneNumber *string `json:"phone_number,omitempty" url:"phone_number,omitempty"`
+	// The product this membership grants access to.
+	Product *MembershipProduct `json:"product" url:"product"`
 	// The product this membership grants access to, prefixed `prod_`.
 	ProductID string `json:"product_id" url:"product_id"`
+	// The promo code discounting this membership, prefixed `promo_`. `null` when none is applied. Set at checkout or by Apply Promo Code to Membership.
+	PromoCodeID *string `json:"promo_code_id,omitempty" url:"promo_code_id,omitempty"`
+	// What the next renewal charges, after any promo code that still applies. `null` for non-renewing memberships.
+	RenewalPrice *Money `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
+	// Paid installments counted so far on a split pay membership. `null` when the membership is not on split pay, or before its first installment is counted.
+	SplitPayCurrentPayments *int `json:"split_pay_current_payments,omitempty" url:"split_pay_current_payments,omitempty"`
+	// Installment payments required before the membership stops billing. `null` when the membership is not on split pay.
+	SplitPayRequiredPayments *int `json:"split_pay_required_payments,omitempty" url:"split_pay_required_payments,omitempty"`
 	// Billing state of the membership. `active`/`trialing` memberships grant access; `past_due` is the grace period after a failed payment; `completed` one-time purchases keep access; `canceled`/`expired` do not.
 	Status MembershipStatus `json:"status" url:"status"`
+	// When the membership was last changed, as an ISO 8601 timestamp. Reflects the most recent change to the membership itself, so you can reconcile against webhook retries, replays, and backfills.
+	UpdatedAt string `json:"updated_at" url:"updated_at"`
 	// The buyer, prefixed `user_`. `null` when the buyer is another business or the membership is unclaimed.
 	UserID *string `json:"user_id,omitempty" url:"user_id,omitempty"`
+	// The variant the buyer purchased, prefixed `plan_`.
+	VariantID string `json:"variant_id" url:"variant_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -546,11 +881,25 @@ type Membership struct {
 	rawJSON         json.RawMessage
 }
 
-func (m *Membership) GetAccount() *MembershipAccount {
+func (m *Membership) GetAccount() *StorefrontAccount {
 	if m == nil {
 		return nil
 	}
 	return m.Account
+}
+
+func (m *Membership) GetAffiliate() *MembershipAffiliate {
+	if m == nil {
+		return nil
+	}
+	return m.Affiliate
+}
+
+func (m *Membership) GetBillingPeriodDays() *int {
+	if m == nil {
+		return nil
+	}
+	return m.BillingPeriodDays
 }
 
 func (m *Membership) GetCancelAtPeriodEnd() bool {
@@ -558,6 +907,34 @@ func (m *Membership) GetCancelAtPeriodEnd() bool {
 		return false
 	}
 	return m.CancelAtPeriodEnd
+}
+
+func (m *Membership) GetCancelOption() *MembershipCancelOption {
+	if m == nil {
+		return nil
+	}
+	return m.CancelOption
+}
+
+func (m *Membership) GetCanceledAt() *string {
+	if m == nil {
+		return nil
+	}
+	return m.CanceledAt
+}
+
+func (m *Membership) GetCancellationReason() *string {
+	if m == nil {
+		return nil
+	}
+	return m.CancellationReason
+}
+
+func (m *Membership) GetCollectionMethod() *MembershipCollectionMethod {
+	if m == nil {
+		return nil
+	}
+	return m.CollectionMethod
 }
 
 func (m *Membership) GetCreatedAt() string {
@@ -574,11 +951,39 @@ func (m *Membership) GetCurrentPeriodEnd() *string {
 	return m.CurrentPeriodEnd
 }
 
+func (m *Membership) GetCurrentPeriodStart() *string {
+	if m == nil {
+		return nil
+	}
+	return m.CurrentPeriodStart
+}
+
+func (m *Membership) GetExpiresAt() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ExpiresAt
+}
+
+func (m *Membership) GetFeedbackOption() *MembershipFeedbackOption {
+	if m == nil {
+		return nil
+	}
+	return m.FeedbackOption
+}
+
 func (m *Membership) GetID() string {
 	if m == nil {
 		return ""
 	}
 	return m.ID
+}
+
+func (m *Membership) GetInitialPrice() *Money {
+	if m == nil {
+		return nil
+	}
+	return m.InitialPrice
 }
 
 func (m *Membership) GetLicenseKey() *string {
@@ -588,11 +993,25 @@ func (m *Membership) GetLicenseKey() *string {
 	return m.LicenseKey
 }
 
+func (m *Membership) GetManageURL() *string {
+	if m == nil {
+		return nil
+	}
+	return m.ManageURL
+}
+
 func (m *Membership) GetMember() *MembershipMember {
 	if m == nil {
 		return nil
 	}
 	return m.Member
+}
+
+func (m *Membership) GetMemberID() *string {
+	if m == nil {
+		return nil
+	}
+	return m.MemberID
 }
 
 func (m *Membership) GetMetadata() map[string]any {
@@ -602,11 +1021,32 @@ func (m *Membership) GetMetadata() map[string]any {
 	return m.Metadata
 }
 
-func (m *Membership) GetPlanID() string {
+func (m *Membership) GetMostRecentAction() *MembershipMostRecentAction {
 	if m == nil {
-		return ""
+		return nil
 	}
-	return m.PlanID
+	return m.MostRecentAction
+}
+
+func (m *Membership) GetMostRecentActionAt() *string {
+	if m == nil {
+		return nil
+	}
+	return m.MostRecentActionAt
+}
+
+func (m *Membership) GetPhoneNumber() *string {
+	if m == nil {
+		return nil
+	}
+	return m.PhoneNumber
+}
+
+func (m *Membership) GetProduct() *MembershipProduct {
+	if m == nil {
+		return nil
+	}
+	return m.Product
 }
 
 func (m *Membership) GetProductID() string {
@@ -616,6 +1056,34 @@ func (m *Membership) GetProductID() string {
 	return m.ProductID
 }
 
+func (m *Membership) GetPromoCodeID() *string {
+	if m == nil {
+		return nil
+	}
+	return m.PromoCodeID
+}
+
+func (m *Membership) GetRenewalPrice() *Money {
+	if m == nil {
+		return nil
+	}
+	return m.RenewalPrice
+}
+
+func (m *Membership) GetSplitPayCurrentPayments() *int {
+	if m == nil {
+		return nil
+	}
+	return m.SplitPayCurrentPayments
+}
+
+func (m *Membership) GetSplitPayRequiredPayments() *int {
+	if m == nil {
+		return nil
+	}
+	return m.SplitPayRequiredPayments
+}
+
 func (m *Membership) GetStatus() MembershipStatus {
 	if m == nil {
 		return ""
@@ -623,11 +1091,25 @@ func (m *Membership) GetStatus() MembershipStatus {
 	return m.Status
 }
 
+func (m *Membership) GetUpdatedAt() string {
+	if m == nil {
+		return ""
+	}
+	return m.UpdatedAt
+}
+
 func (m *Membership) GetUserID() *string {
 	if m == nil {
 		return nil
 	}
 	return m.UserID
+}
+
+func (m *Membership) GetVariantID() string {
+	if m == nil {
+		return ""
+	}
+	return m.VariantID
 }
 
 func (m *Membership) GetExtraProperties() map[string]interface{} {
@@ -638,17 +1120,33 @@ func (m *Membership) GetExtraProperties() map[string]interface{} {
 }
 
 func (m *Membership) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetAccount sets the Account field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Membership) SetAccount(account *MembershipAccount) {
+func (m *Membership) SetAccount(account *StorefrontAccount) {
 	m.Account = account
 	m.require(membershipFieldAccount)
+}
+
+// SetAffiliate sets the Affiliate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetAffiliate(affiliate *MembershipAffiliate) {
+	m.Affiliate = affiliate
+	m.require(membershipFieldAffiliate)
+}
+
+// SetBillingPeriodDays sets the BillingPeriodDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetBillingPeriodDays(billingPeriodDays *int) {
+	m.BillingPeriodDays = billingPeriodDays
+	m.require(membershipFieldBillingPeriodDays)
 }
 
 // SetCancelAtPeriodEnd sets the CancelAtPeriodEnd field and marks it as non-optional;
@@ -656,6 +1154,34 @@ func (m *Membership) SetAccount(account *MembershipAccount) {
 func (m *Membership) SetCancelAtPeriodEnd(cancelAtPeriodEnd bool) {
 	m.CancelAtPeriodEnd = cancelAtPeriodEnd
 	m.require(membershipFieldCancelAtPeriodEnd)
+}
+
+// SetCancelOption sets the CancelOption field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetCancelOption(cancelOption *MembershipCancelOption) {
+	m.CancelOption = cancelOption
+	m.require(membershipFieldCancelOption)
+}
+
+// SetCanceledAt sets the CanceledAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetCanceledAt(canceledAt *string) {
+	m.CanceledAt = canceledAt
+	m.require(membershipFieldCanceledAt)
+}
+
+// SetCancellationReason sets the CancellationReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetCancellationReason(cancellationReason *string) {
+	m.CancellationReason = cancellationReason
+	m.require(membershipFieldCancellationReason)
+}
+
+// SetCollectionMethod sets the CollectionMethod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetCollectionMethod(collectionMethod *MembershipCollectionMethod) {
+	m.CollectionMethod = collectionMethod
+	m.require(membershipFieldCollectionMethod)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -672,11 +1198,39 @@ func (m *Membership) SetCurrentPeriodEnd(currentPeriodEnd *string) {
 	m.require(membershipFieldCurrentPeriodEnd)
 }
 
+// SetCurrentPeriodStart sets the CurrentPeriodStart field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetCurrentPeriodStart(currentPeriodStart *string) {
+	m.CurrentPeriodStart = currentPeriodStart
+	m.require(membershipFieldCurrentPeriodStart)
+}
+
+// SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetExpiresAt(expiresAt *string) {
+	m.ExpiresAt = expiresAt
+	m.require(membershipFieldExpiresAt)
+}
+
+// SetFeedbackOption sets the FeedbackOption field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetFeedbackOption(feedbackOption *MembershipFeedbackOption) {
+	m.FeedbackOption = feedbackOption
+	m.require(membershipFieldFeedbackOption)
+}
+
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (m *Membership) SetID(id string) {
 	m.ID = id
 	m.require(membershipFieldID)
+}
+
+// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetInitialPrice(initialPrice *Money) {
+	m.InitialPrice = initialPrice
+	m.require(membershipFieldInitialPrice)
 }
 
 // SetLicenseKey sets the LicenseKey field and marks it as non-optional;
@@ -686,11 +1240,25 @@ func (m *Membership) SetLicenseKey(licenseKey *string) {
 	m.require(membershipFieldLicenseKey)
 }
 
+// SetManageURL sets the ManageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetManageURL(manageURL *string) {
+	m.ManageURL = manageURL
+	m.require(membershipFieldManageURL)
+}
+
 // SetMember sets the Member field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (m *Membership) SetMember(member *MembershipMember) {
 	m.Member = member
 	m.require(membershipFieldMember)
+}
+
+// SetMemberID sets the MemberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetMemberID(memberID *string) {
+	m.MemberID = memberID
+	m.require(membershipFieldMemberID)
 }
 
 // SetMetadata sets the Metadata field and marks it as non-optional;
@@ -700,11 +1268,32 @@ func (m *Membership) SetMetadata(metadata map[string]any) {
 	m.require(membershipFieldMetadata)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
+// SetMostRecentAction sets the MostRecentAction field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Membership) SetPlanID(planID string) {
-	m.PlanID = planID
-	m.require(membershipFieldPlanID)
+func (m *Membership) SetMostRecentAction(mostRecentAction *MembershipMostRecentAction) {
+	m.MostRecentAction = mostRecentAction
+	m.require(membershipFieldMostRecentAction)
+}
+
+// SetMostRecentActionAt sets the MostRecentActionAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetMostRecentActionAt(mostRecentActionAt *string) {
+	m.MostRecentActionAt = mostRecentActionAt
+	m.require(membershipFieldMostRecentActionAt)
+}
+
+// SetPhoneNumber sets the PhoneNumber field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetPhoneNumber(phoneNumber *string) {
+	m.PhoneNumber = phoneNumber
+	m.require(membershipFieldPhoneNumber)
+}
+
+// SetProduct sets the Product field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetProduct(product *MembershipProduct) {
+	m.Product = product
+	m.require(membershipFieldProduct)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
@@ -714,6 +1303,34 @@ func (m *Membership) SetProductID(productID string) {
 	m.require(membershipFieldProductID)
 }
 
+// SetPromoCodeID sets the PromoCodeID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetPromoCodeID(promoCodeID *string) {
+	m.PromoCodeID = promoCodeID
+	m.require(membershipFieldPromoCodeID)
+}
+
+// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetRenewalPrice(renewalPrice *Money) {
+	m.RenewalPrice = renewalPrice
+	m.require(membershipFieldRenewalPrice)
+}
+
+// SetSplitPayCurrentPayments sets the SplitPayCurrentPayments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetSplitPayCurrentPayments(splitPayCurrentPayments *int) {
+	m.SplitPayCurrentPayments = splitPayCurrentPayments
+	m.require(membershipFieldSplitPayCurrentPayments)
+}
+
+// SetSplitPayRequiredPayments sets the SplitPayRequiredPayments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetSplitPayRequiredPayments(splitPayRequiredPayments *int) {
+	m.SplitPayRequiredPayments = splitPayRequiredPayments
+	m.require(membershipFieldSplitPayRequiredPayments)
+}
+
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (m *Membership) SetStatus(status MembershipStatus) {
@@ -721,11 +1338,25 @@ func (m *Membership) SetStatus(status MembershipStatus) {
 	m.require(membershipFieldStatus)
 }
 
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetUpdatedAt(updatedAt string) {
+	m.UpdatedAt = updatedAt
+	m.require(membershipFieldUpdatedAt)
+}
+
 // SetUserID sets the UserID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (m *Membership) SetUserID(userID *string) {
 	m.UserID = userID
 	m.require(membershipFieldUserID)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Membership) SetVariantID(variantID string) {
+	m.VariantID = variantID
+	m.require(membershipFieldVariantID)
 }
 
 func (m *Membership) UnmarshalJSON(data []byte) error {
@@ -740,6 +1371,13 @@ func (m *Membership) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, membershipNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -771,21 +1409,39 @@ func (m *Membership) String() string {
 }
 
 var (
-	membershipAccountFieldID      = big.NewInt(1 << 0)
-	membershipAccountFieldLogoURL = big.NewInt(1 << 1)
-	membershipAccountFieldRoute   = big.NewInt(1 << 2)
-	membershipAccountFieldTitle   = big.NewInt(1 << 3)
+	membershipAffiliateFieldAppliesToPayments    = big.NewInt(1 << 0)
+	membershipAffiliateFieldCommissionAmount     = big.NewInt(1 << 1)
+	membershipAffiliateFieldCommissionPercentage = big.NewInt(1 << 2)
+	membershipAffiliateFieldCommissionSource     = big.NewInt(1 << 3)
+	membershipAffiliateFieldCommissionType       = big.NewInt(1 << 4)
+	membershipAffiliateFieldEnabled              = big.NewInt(1 << 5)
+	membershipAffiliateFieldID                   = big.NewInt(1 << 6)
+	membershipAffiliateFieldUserID               = big.NewInt(1 << 7)
 )
 
-type MembershipAccount struct {
-	// Account ID, prefixed `biz_`.
+// membershipAffiliateNullableFields maps the wire names of MembershipAffiliate's nullable fields (required or optional) to their field bits.
+var membershipAffiliateNullableFields = map[string]*big.Int{
+	"commission_amount":     membershipAffiliateFieldCommissionAmount,
+	"commission_percentage": membershipAffiliateFieldCommissionPercentage,
+}
+
+type MembershipAffiliate struct {
+	// Whether the commission is paid on the membership's first payment only or on all its payments.
+	AppliesToPayments MembershipAffiliateAppliesToPayments `json:"applies_to_payments" url:"applies_to_payments"`
+	// The flat fee commission in the membership currency, or `null` for a percentage.
+	CommissionAmount *Money `json:"commission_amount,omitempty" url:"commission_amount,omitempty"`
+	// The percentage commission in percentage points, so `20` means 20%, or `null` for a flat fee.
+	CommissionPercentage *float64 `json:"commission_percentage,omitempty" url:"commission_percentage,omitempty"`
+	// How the commission rate was set: `custom` for a rate set for this affiliate, `member` for the member affiliate rate of the plan or product, `global` for the product's global affiliate rate, or `marketplace` for a Whop marketplace referral.
+	CommissionSource MembershipAffiliateCommissionSource `json:"commission_source" url:"commission_source"`
+	// Whether the commission is a percentage or a flat fee.
+	CommissionType MembershipAffiliateCommissionType `json:"commission_type" url:"commission_type"`
+	// Whether this membership pays affiliate commissions. `false` means the affiliate is kept on the membership but is no longer paid.
+	Enabled bool `json:"enabled" url:"enabled"`
+	// Affiliate ID, prefixed `aff_`.
 	ID string `json:"id" url:"id"`
-	// Account logo image URL.
-	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
-	// Account public route identifier — the `whop.com/{route}` storefront path.
-	Route string `json:"route" url:"route"`
-	// Account display name.
-	Title string `json:"title" url:"title"`
+	// ID of the affiliate's user, prefixed `user_`.
+	UserID string `json:"user_id" url:"user_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -794,94 +1450,159 @@ type MembershipAccount struct {
 	rawJSON         json.RawMessage
 }
 
-func (m *MembershipAccount) GetID() string {
+func (m *MembershipAffiliate) GetAppliesToPayments() MembershipAffiliateAppliesToPayments {
+	if m == nil {
+		return ""
+	}
+	return m.AppliesToPayments
+}
+
+func (m *MembershipAffiliate) GetCommissionAmount() *Money {
+	if m == nil {
+		return nil
+	}
+	return m.CommissionAmount
+}
+
+func (m *MembershipAffiliate) GetCommissionPercentage() *float64 {
+	if m == nil {
+		return nil
+	}
+	return m.CommissionPercentage
+}
+
+func (m *MembershipAffiliate) GetCommissionSource() MembershipAffiliateCommissionSource {
+	if m == nil {
+		return ""
+	}
+	return m.CommissionSource
+}
+
+func (m *MembershipAffiliate) GetCommissionType() MembershipAffiliateCommissionType {
+	if m == nil {
+		return ""
+	}
+	return m.CommissionType
+}
+
+func (m *MembershipAffiliate) GetEnabled() bool {
+	if m == nil {
+		return false
+	}
+	return m.Enabled
+}
+
+func (m *MembershipAffiliate) GetID() string {
 	if m == nil {
 		return ""
 	}
 	return m.ID
 }
 
-func (m *MembershipAccount) GetLogoURL() *string {
-	if m == nil {
-		return nil
-	}
-	return m.LogoURL
-}
-
-func (m *MembershipAccount) GetRoute() string {
+func (m *MembershipAffiliate) GetUserID() string {
 	if m == nil {
 		return ""
 	}
-	return m.Route
+	return m.UserID
 }
 
-func (m *MembershipAccount) GetTitle() string {
-	if m == nil {
-		return ""
-	}
-	return m.Title
-}
-
-func (m *MembershipAccount) GetExtraProperties() map[string]interface{} {
+func (m *MembershipAffiliate) GetExtraProperties() map[string]interface{} {
 	if m == nil {
 		return nil
 	}
 	return m.extraProperties
 }
 
-func (m *MembershipAccount) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+func (m *MembershipAffiliate) require(field *big.Int) {
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetAppliesToPayments sets the AppliesToPayments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipAffiliate) SetAppliesToPayments(appliesToPayments MembershipAffiliateAppliesToPayments) {
+	m.AppliesToPayments = appliesToPayments
+	m.require(membershipAffiliateFieldAppliesToPayments)
+}
+
+// SetCommissionAmount sets the CommissionAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipAffiliate) SetCommissionAmount(commissionAmount *Money) {
+	m.CommissionAmount = commissionAmount
+	m.require(membershipAffiliateFieldCommissionAmount)
+}
+
+// SetCommissionPercentage sets the CommissionPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipAffiliate) SetCommissionPercentage(commissionPercentage *float64) {
+	m.CommissionPercentage = commissionPercentage
+	m.require(membershipAffiliateFieldCommissionPercentage)
+}
+
+// SetCommissionSource sets the CommissionSource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipAffiliate) SetCommissionSource(commissionSource MembershipAffiliateCommissionSource) {
+	m.CommissionSource = commissionSource
+	m.require(membershipAffiliateFieldCommissionSource)
+}
+
+// SetCommissionType sets the CommissionType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipAffiliate) SetCommissionType(commissionType MembershipAffiliateCommissionType) {
+	m.CommissionType = commissionType
+	m.require(membershipAffiliateFieldCommissionType)
+}
+
+// SetEnabled sets the Enabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipAffiliate) SetEnabled(enabled bool) {
+	m.Enabled = enabled
+	m.require(membershipAffiliateFieldEnabled)
 }
 
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MembershipAccount) SetID(id string) {
+func (m *MembershipAffiliate) SetID(id string) {
 	m.ID = id
-	m.require(membershipAccountFieldID)
+	m.require(membershipAffiliateFieldID)
 }
 
-// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// SetUserID sets the UserID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MembershipAccount) SetLogoURL(logoURL *string) {
-	m.LogoURL = logoURL
-	m.require(membershipAccountFieldLogoURL)
+func (m *MembershipAffiliate) SetUserID(userID string) {
+	m.UserID = userID
+	m.require(membershipAffiliateFieldUserID)
 }
 
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MembershipAccount) SetRoute(route string) {
-	m.Route = route
-	m.require(membershipAccountFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MembershipAccount) SetTitle(title string) {
-	m.Title = title
-	m.require(membershipAccountFieldTitle)
-}
-
-func (m *MembershipAccount) UnmarshalJSON(data []byte) error {
-	type unmarshaler MembershipAccount
+func (m *MembershipAffiliate) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipAffiliate
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*m = MembershipAccount(value)
+	*m = MembershipAffiliate(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *m)
 	if err != nil {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, membershipAffiliateNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (m *MembershipAccount) MarshalJSON() ([]byte, error) {
-	type embed MembershipAccount
+func (m *MembershipAffiliate) MarshalJSON() ([]byte, error) {
+	type embed MembershipAffiliate
 	var marshaler = struct {
 		embed
 	}{
@@ -891,7 +1612,233 @@ func (m *MembershipAccount) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (m *MembershipAccount) String() string {
+func (m *MembershipAffiliate) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// Whether the commission is paid on the membership's first payment only or on all its payments.
+type MembershipAffiliateAppliesToPayments string
+
+const (
+	MembershipAffiliateAppliesToPaymentsFirstPayment MembershipAffiliateAppliesToPayments = "first_payment"
+	MembershipAffiliateAppliesToPaymentsAllPayments  MembershipAffiliateAppliesToPayments = "all_payments"
+)
+
+func NewMembershipAffiliateAppliesToPaymentsFromString(s string) (MembershipAffiliateAppliesToPayments, error) {
+	switch s {
+	case "first_payment":
+		return MembershipAffiliateAppliesToPaymentsFirstPayment, nil
+	case "all_payments":
+		return MembershipAffiliateAppliesToPaymentsAllPayments, nil
+	}
+	var t MembershipAffiliateAppliesToPayments
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MembershipAffiliateAppliesToPayments) Ptr() *MembershipAffiliateAppliesToPayments {
+	return &m
+}
+
+// How the commission rate was set: `custom` for a rate set for this affiliate, `member` for the member affiliate rate of the plan or product, `global` for the product's global affiliate rate, or `marketplace` for a Whop marketplace referral.
+type MembershipAffiliateCommissionSource string
+
+const (
+	MembershipAffiliateCommissionSourceCustom      MembershipAffiliateCommissionSource = "custom"
+	MembershipAffiliateCommissionSourceMember      MembershipAffiliateCommissionSource = "member"
+	MembershipAffiliateCommissionSourceMarketplace MembershipAffiliateCommissionSource = "marketplace"
+	MembershipAffiliateCommissionSourceGlobal      MembershipAffiliateCommissionSource = "global"
+)
+
+func NewMembershipAffiliateCommissionSourceFromString(s string) (MembershipAffiliateCommissionSource, error) {
+	switch s {
+	case "custom":
+		return MembershipAffiliateCommissionSourceCustom, nil
+	case "member":
+		return MembershipAffiliateCommissionSourceMember, nil
+	case "marketplace":
+		return MembershipAffiliateCommissionSourceMarketplace, nil
+	case "global":
+		return MembershipAffiliateCommissionSourceGlobal, nil
+	}
+	var t MembershipAffiliateCommissionSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MembershipAffiliateCommissionSource) Ptr() *MembershipAffiliateCommissionSource {
+	return &m
+}
+
+// Whether the commission is a percentage or a flat fee.
+type MembershipAffiliateCommissionType string
+
+const (
+	MembershipAffiliateCommissionTypeFlatFee    MembershipAffiliateCommissionType = "flat_fee"
+	MembershipAffiliateCommissionTypePercentage MembershipAffiliateCommissionType = "percentage"
+)
+
+func NewMembershipAffiliateCommissionTypeFromString(s string) (MembershipAffiliateCommissionType, error) {
+	switch s {
+	case "flat_fee":
+		return MembershipAffiliateCommissionTypeFlatFee, nil
+	case "percentage":
+		return MembershipAffiliateCommissionTypePercentage, nil
+	}
+	var t MembershipAffiliateCommissionType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MembershipAffiliateCommissionType) Ptr() *MembershipAffiliateCommissionType {
+	return &m
+}
+
+// The category the member picked for why they canceled. `null` when no category was picked.
+type MembershipCancelOption string
+
+const (
+	MembershipCancelOptionTooExpensive    MembershipCancelOption = "too_expensive"
+	MembershipCancelOptionSwitching       MembershipCancelOption = "switching"
+	MembershipCancelOptionMissingFeatures MembershipCancelOption = "missing_features"
+	MembershipCancelOptionTechnicalIssues MembershipCancelOption = "technical_issues"
+	MembershipCancelOptionBadExperience   MembershipCancelOption = "bad_experience"
+	MembershipCancelOptionUnused          MembershipCancelOption = "unused"
+	MembershipCancelOptionOther           MembershipCancelOption = "other"
+	MembershipCancelOptionTesting         MembershipCancelOption = "testing"
+)
+
+func NewMembershipCancelOptionFromString(s string) (MembershipCancelOption, error) {
+	switch s {
+	case "too_expensive":
+		return MembershipCancelOptionTooExpensive, nil
+	case "switching":
+		return MembershipCancelOptionSwitching, nil
+	case "missing_features":
+		return MembershipCancelOptionMissingFeatures, nil
+	case "technical_issues":
+		return MembershipCancelOptionTechnicalIssues, nil
+	case "bad_experience":
+		return MembershipCancelOptionBadExperience, nil
+	case "unused":
+		return MembershipCancelOptionUnused, nil
+	case "other":
+		return MembershipCancelOptionOther, nil
+	case "testing":
+		return MembershipCancelOptionTesting, nil
+	}
+	var t MembershipCancelOption
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MembershipCancelOption) Ptr() *MembershipCancelOption {
+	return &m
+}
+
+// How renewals are collected. `charge_automatically` charges the saved payment method each period; `send_invoice` emails the buyer an invoice each period. `null` when not set.
+type MembershipCollectionMethod string
+
+const (
+	MembershipCollectionMethodChargeAutomatically MembershipCollectionMethod = "charge_automatically"
+	MembershipCollectionMethodSendInvoice         MembershipCollectionMethod = "send_invoice"
+)
+
+func NewMembershipCollectionMethodFromString(s string) (MembershipCollectionMethod, error) {
+	switch s {
+	case "charge_automatically":
+		return MembershipCollectionMethodChargeAutomatically, nil
+	case "send_invoice":
+		return MembershipCollectionMethodSendInvoice, nil
+	}
+	var t MembershipCollectionMethod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MembershipCollectionMethod) Ptr() *MembershipCollectionMethod {
+	return &m
+}
+
+var (
+	membershipFeedbackOptionFieldLabel = big.NewInt(1 << 0)
+)
+
+type MembershipFeedbackOption struct {
+	// The option's label when the member picked it. Renaming the option later does not change it.
+	Label string `json:"label" url:"label"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipFeedbackOption) GetLabel() string {
+	if m == nil {
+		return ""
+	}
+	return m.Label
+}
+
+func (m *MembershipFeedbackOption) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipFeedbackOption) require(field *big.Int) {
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
+	}
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipFeedbackOption) SetLabel(label string) {
+	m.Label = label
+	m.require(membershipFeedbackOptionFieldLabel)
+}
+
+func (m *MembershipFeedbackOption) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipFeedbackOption
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipFeedbackOption(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipFeedbackOption) MarshalJSON() ([]byte, error) {
+	type embed MembershipFeedbackOption
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipFeedbackOption) String() string {
 	if m == nil {
 		return "<nil>"
 	}
@@ -911,6 +1858,12 @@ var (
 	membershipMemberFieldLastAccessedAt = big.NewInt(1 << 1)
 	membershipMemberFieldPosition       = big.NewInt(1 << 2)
 )
+
+// membershipMemberNullableFields maps the wire names of MembershipMember's nullable fields (required or optional) to their field bits.
+var membershipMemberNullableFields = map[string]*big.Int{
+	"last_accessed_at": membershipMemberFieldLastAccessedAt,
+	"position":         membershipMemberFieldPosition,
+}
 
 type MembershipMember struct {
 	// What the member can reach on the account: `customer` for paying members, `admin` for team members, `no_access` once every grant has lapsed.
@@ -956,10 +1909,12 @@ func (m *MembershipMember) GetExtraProperties() map[string]interface{} {
 }
 
 func (m *MembershipMember) require(field *big.Int) {
-	if m.explicitFields == nil {
-		m.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
 	}
-	m.explicitFields.Or(m.explicitFields, field)
+	next.Or(next, field)
+	m.explicitFields = next
 }
 
 // SetAccessLevel sets the AccessLevel field and marks it as non-optional;
@@ -995,6 +1950,13 @@ func (m *MembershipMember) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, membershipMemberNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
 	m.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1051,6 +2013,256 @@ func (m MembershipMemberAccessLevel) Ptr() *MembershipMemberAccessLevel {
 	return &m
 }
 
+// The membership's latest lifecycle event, such as `renewing_on` or `canceled_on`. Pair it with `most_recent_action_at`. `null` when none is recorded.
+type MembershipMostRecentAction string
+
+const (
+	MembershipMostRecentActionCanceledOn         MembershipMostRecentAction = "canceled_on"
+	MembershipMostRecentActionFinishedSplitPayAt MembershipMostRecentAction = "finished_split_pay_at"
+	MembershipMostRecentActionCancelingOn        MembershipMostRecentAction = "canceling_on"
+	MembershipMostRecentActionEndingOn           MembershipMostRecentAction = "ending_on"
+	MembershipMostRecentActionRenewingOn         MembershipMostRecentAction = "renewing_on"
+	MembershipMostRecentActionPastDue            MembershipMostRecentAction = "past_due"
+	MembershipMostRecentActionNextPaymentAttempt MembershipMostRecentAction = "next_payment_attempt"
+	MembershipMostRecentActionPausedAt           MembershipMostRecentAction = "paused_at"
+	MembershipMostRecentActionTrialEndsAt        MembershipMostRecentAction = "trial_ends_at"
+	MembershipMostRecentActionUnresolvedAt       MembershipMostRecentAction = "unresolved_at"
+	MembershipMostRecentActionTrialCancelingOn   MembershipMostRecentAction = "trial_canceling_on"
+)
+
+func NewMembershipMostRecentActionFromString(s string) (MembershipMostRecentAction, error) {
+	switch s {
+	case "canceled_on":
+		return MembershipMostRecentActionCanceledOn, nil
+	case "finished_split_pay_at":
+		return MembershipMostRecentActionFinishedSplitPayAt, nil
+	case "canceling_on":
+		return MembershipMostRecentActionCancelingOn, nil
+	case "ending_on":
+		return MembershipMostRecentActionEndingOn, nil
+	case "renewing_on":
+		return MembershipMostRecentActionRenewingOn, nil
+	case "past_due":
+		return MembershipMostRecentActionPastDue, nil
+	case "next_payment_attempt":
+		return MembershipMostRecentActionNextPaymentAttempt, nil
+	case "paused_at":
+		return MembershipMostRecentActionPausedAt, nil
+	case "trial_ends_at":
+		return MembershipMostRecentActionTrialEndsAt, nil
+	case "unresolved_at":
+		return MembershipMostRecentActionUnresolvedAt, nil
+	case "trial_canceling_on":
+		return MembershipMostRecentActionTrialCancelingOn, nil
+	}
+	var t MembershipMostRecentAction
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MembershipMostRecentAction) Ptr() *MembershipMostRecentAction {
+	return &m
+}
+
+var (
+	membershipProductFieldID      = big.NewInt(1 << 0)
+	membershipProductFieldLogoURL = big.NewInt(1 << 1)
+	membershipProductFieldTitle   = big.NewInt(1 << 2)
+)
+
+// membershipProductNullableFields maps the wire names of MembershipProduct's nullable fields (required or optional) to their field bits.
+var membershipProductNullableFields = map[string]*big.Int{
+	"logo_url": membershipProductFieldLogoURL,
+}
+
+type MembershipProduct struct {
+	// Product ID, prefixed `prod_`.
+	ID string `json:"id" url:"id"`
+	// Product logo image URL. `null` when the product has no logo.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Product display name.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipProduct) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MembershipProduct) GetLogoURL() *string {
+	if m == nil {
+		return nil
+	}
+	return m.LogoURL
+}
+
+func (m *MembershipProduct) GetTitle() string {
+	if m == nil {
+		return ""
+	}
+	return m.Title
+}
+
+func (m *MembershipProduct) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipProduct) require(field *big.Int) {
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
+	}
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipProduct) SetID(id string) {
+	m.ID = id
+	m.require(membershipProductFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipProduct) SetLogoURL(logoURL *string) {
+	m.LogoURL = logoURL
+	m.require(membershipProductFieldLogoURL)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipProduct) SetTitle(title string) {
+	m.Title = title
+	m.require(membershipProductFieldTitle)
+}
+
+func (m *MembershipProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipProduct
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipProduct(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, membershipProductNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipProduct) MarshalJSON() ([]byte, error) {
+	type embed MembershipProduct
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipProduct) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// The status of a membership
+type MembershipStatus string
+
+const (
+	MembershipStatusTrialing   MembershipStatus = "trialing"
+	MembershipStatusActive     MembershipStatus = "active"
+	MembershipStatusPastDue    MembershipStatus = "past_due"
+	MembershipStatusCompleted  MembershipStatus = "completed"
+	MembershipStatusCanceled   MembershipStatus = "canceled"
+	MembershipStatusExpired    MembershipStatus = "expired"
+	MembershipStatusUnresolved MembershipStatus = "unresolved"
+	MembershipStatusDrafted    MembershipStatus = "drafted"
+	MembershipStatusCanceling  MembershipStatus = "canceling"
+)
+
+func NewMembershipStatusFromString(s string) (MembershipStatus, error) {
+	switch s {
+	case "trialing":
+		return MembershipStatusTrialing, nil
+	case "active":
+		return MembershipStatusActive, nil
+	case "past_due":
+		return MembershipStatusPastDue, nil
+	case "completed":
+		return MembershipStatusCompleted, nil
+	case "canceled":
+		return MembershipStatusCanceled, nil
+	case "expired":
+		return MembershipStatusExpired, nil
+	case "unresolved":
+		return MembershipStatusUnresolved, nil
+	case "drafted":
+		return MembershipStatusDrafted, nil
+	case "canceling":
+		return MembershipStatusCanceling, nil
+	}
+	var t MembershipStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MembershipStatus) Ptr() *MembershipStatus {
+	return &m
+}
+
+// Whether the commission is a percentage of each payment or a fixed amount per payment.
+type AssignAffiliateMembershipsRequestCommissionType string
+
+const (
+	AssignAffiliateMembershipsRequestCommissionTypeFlatFee    AssignAffiliateMembershipsRequestCommissionType = "flat_fee"
+	AssignAffiliateMembershipsRequestCommissionTypePercentage AssignAffiliateMembershipsRequestCommissionType = "percentage"
+)
+
+func NewAssignAffiliateMembershipsRequestCommissionTypeFromString(s string) (AssignAffiliateMembershipsRequestCommissionType, error) {
+	switch s {
+	case "flat_fee":
+		return AssignAffiliateMembershipsRequestCommissionTypeFlatFee, nil
+	case "percentage":
+		return AssignAffiliateMembershipsRequestCommissionTypePercentage, nil
+	}
+	var t AssignAffiliateMembershipsRequestCommissionType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AssignAffiliateMembershipsRequestCommissionType) Ptr() *AssignAffiliateMembershipsRequestCommissionType {
+	return &a
+}
+
 type InviteMembershipsRequestBody struct {
 	InviteMembershipsRequestBodyUserID *InviteMembershipsRequestBodyUserID
 	InviteMembershipsRequestBodyEmail  *InviteMembershipsRequestBodyEmail
@@ -1073,6 +2285,38 @@ func (i *InviteMembershipsRequestBody) GetInviteMembershipsRequestBodyEmail() *I
 }
 
 func (i *InviteMembershipsRequestBody) UnmarshalJSON(data []byte) error {
+	if internal.MatchesObjectKeys(data, []string{"user_id", "variant_id"}, []string{"user_id", "variant_id"}) {
+		valueInviteMembershipsRequestBodyUserID := new(InviteMembershipsRequestBodyUserID)
+		if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyUserID); err == nil {
+			i.typ = "InviteMembershipsRequestBodyUserID"
+			i.InviteMembershipsRequestBodyUserID = valueInviteMembershipsRequestBodyUserID
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"email", "variant_id"}, []string{"email", "variant_id"}) {
+		valueInviteMembershipsRequestBodyEmail := new(InviteMembershipsRequestBodyEmail)
+		if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyEmail); err == nil {
+			i.typ = "InviteMembershipsRequestBodyEmail"
+			i.InviteMembershipsRequestBodyEmail = valueInviteMembershipsRequestBodyEmail
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"user_id", "variant_id"}) {
+		valueInviteMembershipsRequestBodyUserID := new(InviteMembershipsRequestBodyUserID)
+		if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyUserID); err == nil {
+			i.typ = "InviteMembershipsRequestBodyUserID"
+			i.InviteMembershipsRequestBodyUserID = valueInviteMembershipsRequestBodyUserID
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"email", "variant_id"}) {
+		valueInviteMembershipsRequestBodyEmail := new(InviteMembershipsRequestBodyEmail)
+		if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyEmail); err == nil {
+			i.typ = "InviteMembershipsRequestBodyEmail"
+			i.InviteMembershipsRequestBodyEmail = valueInviteMembershipsRequestBodyEmail
+			return nil
+		}
+	}
 	valueInviteMembershipsRequestBodyUserID := new(InviteMembershipsRequestBodyUserID)
 	if err := json.Unmarshal(data, &valueInviteMembershipsRequestBodyUserID); err == nil {
 		i.typ = "InviteMembershipsRequestBodyUserID"
@@ -1114,15 +2358,15 @@ func (i *InviteMembershipsRequestBody) Accept(visitor InviteMembershipsRequestBo
 }
 
 var (
-	inviteMembershipsRequestBodyEmailFieldEmail  = big.NewInt(1 << 0)
-	inviteMembershipsRequestBodyEmailFieldPlanID = big.NewInt(1 << 1)
+	inviteMembershipsRequestBodyEmailFieldEmail     = big.NewInt(1 << 0)
+	inviteMembershipsRequestBodyEmailFieldVariantID = big.NewInt(1 << 1)
 )
 
 type InviteMembershipsRequestBodyEmail struct {
 	// Recipient email address.
 	Email string `json:"email" url:"email"`
-	// Free plan whose membership the recipient is invited to, prefixed `plan_`.
-	PlanID string `json:"plan_id" url:"plan_id"`
+	// Free variant whose membership the recipient is invited to, prefixed `plan_`.
+	VariantID string `json:"variant_id" url:"variant_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1138,11 +2382,11 @@ func (i *InviteMembershipsRequestBodyEmail) GetEmail() string {
 	return i.Email
 }
 
-func (i *InviteMembershipsRequestBodyEmail) GetPlanID() string {
+func (i *InviteMembershipsRequestBodyEmail) GetVariantID() string {
 	if i == nil {
 		return ""
 	}
-	return i.PlanID
+	return i.VariantID
 }
 
 func (i *InviteMembershipsRequestBodyEmail) GetExtraProperties() map[string]interface{} {
@@ -1153,10 +2397,12 @@ func (i *InviteMembershipsRequestBodyEmail) GetExtraProperties() map[string]inte
 }
 
 func (i *InviteMembershipsRequestBodyEmail) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -1166,11 +2412,11 @@ func (i *InviteMembershipsRequestBodyEmail) SetEmail(email string) {
 	i.require(inviteMembershipsRequestBodyEmailFieldEmail)
 }
 
-// SetPlanID sets the PlanID field and marks it as non-optional;
+// SetVariantID sets the VariantID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InviteMembershipsRequestBodyEmail) SetPlanID(planID string) {
-	i.PlanID = planID
-	i.require(inviteMembershipsRequestBodyEmailFieldPlanID)
+func (i *InviteMembershipsRequestBodyEmail) SetVariantID(variantID string) {
+	i.VariantID = variantID
+	i.require(inviteMembershipsRequestBodyEmailFieldVariantID)
 }
 
 func (i *InviteMembershipsRequestBodyEmail) UnmarshalJSON(data []byte) error {
@@ -1216,15 +2462,15 @@ func (i *InviteMembershipsRequestBodyEmail) String() string {
 }
 
 var (
-	inviteMembershipsRequestBodyUserIDFieldPlanID = big.NewInt(1 << 0)
-	inviteMembershipsRequestBodyUserIDFieldUserID = big.NewInt(1 << 1)
+	inviteMembershipsRequestBodyUserIDFieldUserID    = big.NewInt(1 << 0)
+	inviteMembershipsRequestBodyUserIDFieldVariantID = big.NewInt(1 << 1)
 )
 
 type InviteMembershipsRequestBodyUserID struct {
-	// Free plan whose membership the recipient is invited to, prefixed `plan_`.
-	PlanID string `json:"plan_id" url:"plan_id"`
 	// Recipient user ID, prefixed `user_`.
 	UserID string `json:"user_id" url:"user_id"`
+	// Free variant whose membership the recipient is invited to, prefixed `plan_`.
+	VariantID string `json:"variant_id" url:"variant_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1233,18 +2479,18 @@ type InviteMembershipsRequestBodyUserID struct {
 	rawJSON         json.RawMessage
 }
 
-func (i *InviteMembershipsRequestBodyUserID) GetPlanID() string {
-	if i == nil {
-		return ""
-	}
-	return i.PlanID
-}
-
 func (i *InviteMembershipsRequestBodyUserID) GetUserID() string {
 	if i == nil {
 		return ""
 	}
 	return i.UserID
+}
+
+func (i *InviteMembershipsRequestBodyUserID) GetVariantID() string {
+	if i == nil {
+		return ""
+	}
+	return i.VariantID
 }
 
 func (i *InviteMembershipsRequestBodyUserID) GetExtraProperties() map[string]interface{} {
@@ -1255,17 +2501,12 @@ func (i *InviteMembershipsRequestBodyUserID) GetExtraProperties() map[string]int
 }
 
 func (i *InviteMembershipsRequestBodyUserID) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
-}
-
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (i *InviteMembershipsRequestBodyUserID) SetPlanID(planID string) {
-	i.PlanID = planID
-	i.require(inviteMembershipsRequestBodyUserIDFieldPlanID)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetUserID sets the UserID field and marks it as non-optional;
@@ -1273,6 +2514,13 @@ func (i *InviteMembershipsRequestBodyUserID) SetPlanID(planID string) {
 func (i *InviteMembershipsRequestBodyUserID) SetUserID(userID string) {
 	i.UserID = userID
 	i.require(inviteMembershipsRequestBodyUserIDFieldUserID)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InviteMembershipsRequestBodyUserID) SetVariantID(variantID string) {
+	i.VariantID = variantID
+	i.require(inviteMembershipsRequestBodyUserIDFieldVariantID)
 }
 
 func (i *InviteMembershipsRequestBodyUserID) UnmarshalJSON(data []byte) error {
@@ -1346,10 +2594,12 @@ func (i *InviteMembershipsResponse) GetExtraProperties() map[string]interface{} 
 }
 
 func (i *InviteMembershipsResponse) require(field *big.Int) {
-	if i.explicitFields == nil {
-		i.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
 	}
-	i.explicitFields.Or(i.explicitFields, field)
+	next.Or(next, field)
+	i.explicitFields = next
 }
 
 // SetInvitationSent sets the InvitationSent field and marks it as non-optional;
@@ -1453,6 +2703,10 @@ const (
 	ListMembershipsRequestStatusExpired   ListMembershipsRequestStatus = "expired"
 	ListMembershipsRequestStatusCanceling ListMembershipsRequestStatus = "canceling"
 	ListMembershipsRequestStatusPaused    ListMembershipsRequestStatus = "paused"
+	ListMembershipsRequestStatusExpiring  ListMembershipsRequestStatus = "expiring"
+	ListMembershipsRequestStatusOneTime   ListMembershipsRequestStatus = "one_time"
+	ListMembershipsRequestStatusUnclaimed ListMembershipsRequestStatus = "unclaimed"
+	ListMembershipsRequestStatusBanned    ListMembershipsRequestStatus = "banned"
 )
 
 func NewListMembershipsRequestStatusFromString(s string) (ListMembershipsRequestStatus, error) {
@@ -1473,12 +2727,72 @@ func NewListMembershipsRequestStatusFromString(s string) (ListMembershipsRequest
 		return ListMembershipsRequestStatusCanceling, nil
 	case "paused":
 		return ListMembershipsRequestStatusPaused, nil
+	case "expiring":
+		return ListMembershipsRequestStatusExpiring, nil
+	case "one_time":
+		return ListMembershipsRequestStatusOneTime, nil
+	case "unclaimed":
+		return ListMembershipsRequestStatusUnclaimed, nil
+	case "banned":
+		return ListMembershipsRequestStatusBanned, nil
 	}
 	var t ListMembershipsRequestStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
 func (l ListMembershipsRequestStatus) Ptr() *ListMembershipsRequestStatus {
+	return &l
+}
+
+type ListMembershipsRequestStatusesItem string
+
+const (
+	ListMembershipsRequestStatusesItemActive    ListMembershipsRequestStatusesItem = "active"
+	ListMembershipsRequestStatusesItemTrialing  ListMembershipsRequestStatusesItem = "trialing"
+	ListMembershipsRequestStatusesItemPastDue   ListMembershipsRequestStatusesItem = "past_due"
+	ListMembershipsRequestStatusesItemCompleted ListMembershipsRequestStatusesItem = "completed"
+	ListMembershipsRequestStatusesItemCanceled  ListMembershipsRequestStatusesItem = "canceled"
+	ListMembershipsRequestStatusesItemExpired   ListMembershipsRequestStatusesItem = "expired"
+	ListMembershipsRequestStatusesItemCanceling ListMembershipsRequestStatusesItem = "canceling"
+	ListMembershipsRequestStatusesItemPaused    ListMembershipsRequestStatusesItem = "paused"
+	ListMembershipsRequestStatusesItemExpiring  ListMembershipsRequestStatusesItem = "expiring"
+	ListMembershipsRequestStatusesItemOneTime   ListMembershipsRequestStatusesItem = "one_time"
+	ListMembershipsRequestStatusesItemUnclaimed ListMembershipsRequestStatusesItem = "unclaimed"
+	ListMembershipsRequestStatusesItemBanned    ListMembershipsRequestStatusesItem = "banned"
+)
+
+func NewListMembershipsRequestStatusesItemFromString(s string) (ListMembershipsRequestStatusesItem, error) {
+	switch s {
+	case "active":
+		return ListMembershipsRequestStatusesItemActive, nil
+	case "trialing":
+		return ListMembershipsRequestStatusesItemTrialing, nil
+	case "past_due":
+		return ListMembershipsRequestStatusesItemPastDue, nil
+	case "completed":
+		return ListMembershipsRequestStatusesItemCompleted, nil
+	case "canceled":
+		return ListMembershipsRequestStatusesItemCanceled, nil
+	case "expired":
+		return ListMembershipsRequestStatusesItemExpired, nil
+	case "canceling":
+		return ListMembershipsRequestStatusesItemCanceling, nil
+	case "paused":
+		return ListMembershipsRequestStatusesItemPaused, nil
+	case "expiring":
+		return ListMembershipsRequestStatusesItemExpiring, nil
+	case "one_time":
+		return ListMembershipsRequestStatusesItemOneTime, nil
+	case "unclaimed":
+		return ListMembershipsRequestStatusesItemUnclaimed, nil
+	case "banned":
+		return ListMembershipsRequestStatusesItemBanned, nil
+	}
+	var t ListMembershipsRequestStatusesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListMembershipsRequestStatusesItem) Ptr() *ListMembershipsRequestStatusesItem {
 	return &l
 }
 
@@ -1520,10 +2834,12 @@ func (l *ListMembershipsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListMembershipsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1589,6 +2905,12 @@ var (
 	listMembershipsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listMembershipsResponsePageInfoNullableFields maps the wire names of ListMembershipsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listMembershipsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listMembershipsResponsePageInfoFieldEndCursor,
+	"start_cursor": listMembershipsResponsePageInfoFieldStartCursor,
+}
+
 type ListMembershipsResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1638,10 +2960,12 @@ func (l *ListMembershipsResponsePageInfo) GetExtraProperties() map[string]interf
 }
 
 func (l *ListMembershipsResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1684,6 +3008,13 @@ func (l *ListMembershipsResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listMembershipsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1724,6 +3055,12 @@ var (
 	postMembershipActivatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postMembershipActivatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postMembershipActivatedPayloadNullableFields maps the wire names of PostMembershipActivatedPayload's nullable fields (required or optional) to their field bits.
+var postMembershipActivatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postMembershipActivatedPayloadFieldAccountID,
+	"api_version_date": postMembershipActivatedPayloadFieldAPIVersionDate,
+}
 
 type PostMembershipActivatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -1813,10 +3150,12 @@ func (p *PostMembershipActivatedPayload) GetExtraProperties() map[string]interfa
 }
 
 func (p *PostMembershipActivatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -1893,6 +3232,13 @@ func (p *PostMembershipActivatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postMembershipActivatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1966,508 +3312,6 @@ func (p PostMembershipActivatedPayloadType) Ptr() *PostMembershipActivatedPayloa
 }
 
 var (
-	postMembershipCancelAtPeriodEndChangedPayloadFieldAccountID          = big.NewInt(1 << 0)
-	postMembershipCancelAtPeriodEndChangedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
-	postMembershipCancelAtPeriodEndChangedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
-	postMembershipCancelAtPeriodEndChangedPayloadFieldData               = big.NewInt(1 << 3)
-	postMembershipCancelAtPeriodEndChangedPayloadFieldID                 = big.NewInt(1 << 4)
-	postMembershipCancelAtPeriodEndChangedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
-	postMembershipCancelAtPeriodEndChangedPayloadFieldTimestamp          = big.NewInt(1 << 6)
-	postMembershipCancelAtPeriodEndChangedPayloadFieldType               = big.NewInt(1 << 7)
-)
-
-type PostMembershipCancelAtPeriodEndChangedPayload struct {
-	// The account ID that this webhook event is associated with
-	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// The API version for this webhook
-	APIVersion PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion `json:"api_version" url:"api_version"`
-	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string     `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *Membership `json:"data" url:"data"`
-	// A unique ID for every single webhook request
-	ID string `json:"id" url:"id"`
-	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
-	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
-	// The timestamp in ISO 8601 format that the webhook was sent at on the server
-	Timestamp time.Time `json:"timestamp" url:"timestamp"`
-	// The webhook event type
-	Type PostMembershipCancelAtPeriodEndChangedPayloadType `json:"type" url:"type"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetAccountID() *string {
-	if p == nil {
-		return nil
-	}
-	return p.AccountID
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetAPIVersion() PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion {
-	if p == nil {
-		return ""
-	}
-	return p.APIVersion
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetAPIVersionDate() *string {
-	if p == nil {
-		return nil
-	}
-	return p.APIVersionDate
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetData() *Membership {
-	if p == nil {
-		return nil
-	}
-	return p.Data
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetPreviousAttributes() map[string]any {
-	if p == nil {
-		return nil
-	}
-	return p.PreviousAttributes
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetTimestamp() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.Timestamp
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetType() PostMembershipCancelAtPeriodEndChangedPayloadType {
-	if p == nil {
-		return ""
-	}
-	return p.Type
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) SetAccountID(accountID *string) {
-	p.AccountID = accountID
-	p.require(postMembershipCancelAtPeriodEndChangedPayloadFieldAccountID)
-}
-
-// SetAPIVersion sets the APIVersion field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) SetAPIVersion(apiVersion PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion) {
-	p.APIVersion = apiVersion
-	p.require(postMembershipCancelAtPeriodEndChangedPayloadFieldAPIVersion)
-}
-
-// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) SetAPIVersionDate(apiVersionDate *string) {
-	p.APIVersionDate = apiVersionDate
-	p.require(postMembershipCancelAtPeriodEndChangedPayloadFieldAPIVersionDate)
-}
-
-// SetData sets the Data field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) SetData(data *Membership) {
-	p.Data = data
-	p.require(postMembershipCancelAtPeriodEndChangedPayloadFieldData)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) SetID(id string) {
-	p.ID = id
-	p.require(postMembershipCancelAtPeriodEndChangedPayloadFieldID)
-}
-
-// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
-	p.PreviousAttributes = previousAttributes
-	p.require(postMembershipCancelAtPeriodEndChangedPayloadFieldPreviousAttributes)
-}
-
-// SetTimestamp sets the Timestamp field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) SetTimestamp(timestamp time.Time) {
-	p.Timestamp = timestamp
-	p.require(postMembershipCancelAtPeriodEndChangedPayloadFieldTimestamp)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) SetType(type_ PostMembershipCancelAtPeriodEndChangedPayloadType) {
-	p.Type = type_
-	p.require(postMembershipCancelAtPeriodEndChangedPayloadFieldType)
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) UnmarshalJSON(data []byte) error {
-	type embed PostMembershipCancelAtPeriodEndChangedPayload
-	var unmarshaler = struct {
-		embed
-		Timestamp *internal.DateTime `json:"timestamp"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PostMembershipCancelAtPeriodEndChangedPayload(unmarshaler.embed)
-	p.Timestamp = unmarshaler.Timestamp.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) MarshalJSON() ([]byte, error) {
-	type embed PostMembershipCancelAtPeriodEndChangedPayload
-	var marshaler = struct {
-		embed
-		Timestamp *internal.DateTime `json:"timestamp"`
-	}{
-		embed:     embed(*p),
-		Timestamp: internal.NewDateTime(p.Timestamp),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostMembershipCancelAtPeriodEndChangedPayload) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The API version for this webhook
-type PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion string
-
-const (
-	PostMembershipCancelAtPeriodEndChangedPayloadAPIVersionV1 PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion = "v1"
-)
-
-func NewPostMembershipCancelAtPeriodEndChangedPayloadAPIVersionFromString(s string) (PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion, error) {
-	switch s {
-	case "v1":
-		return PostMembershipCancelAtPeriodEndChangedPayloadAPIVersionV1, nil
-	}
-	var t PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion) Ptr() *PostMembershipCancelAtPeriodEndChangedPayloadAPIVersion {
-	return &p
-}
-
-// The webhook event type
-type PostMembershipCancelAtPeriodEndChangedPayloadType string
-
-const (
-	PostMembershipCancelAtPeriodEndChangedPayloadTypeMembershipCancelAtPeriodEndChanged PostMembershipCancelAtPeriodEndChangedPayloadType = "membership.cancel_at_period_end_changed"
-)
-
-func NewPostMembershipCancelAtPeriodEndChangedPayloadTypeFromString(s string) (PostMembershipCancelAtPeriodEndChangedPayloadType, error) {
-	switch s {
-	case "membership.cancel_at_period_end_changed":
-		return PostMembershipCancelAtPeriodEndChangedPayloadTypeMembershipCancelAtPeriodEndChanged, nil
-	}
-	var t PostMembershipCancelAtPeriodEndChangedPayloadType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostMembershipCancelAtPeriodEndChangedPayloadType) Ptr() *PostMembershipCancelAtPeriodEndChangedPayloadType {
-	return &p
-}
-
-var (
-	postMembershipDeactivatedPayloadFieldAccountID          = big.NewInt(1 << 0)
-	postMembershipDeactivatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
-	postMembershipDeactivatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
-	postMembershipDeactivatedPayloadFieldData               = big.NewInt(1 << 3)
-	postMembershipDeactivatedPayloadFieldID                 = big.NewInt(1 << 4)
-	postMembershipDeactivatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
-	postMembershipDeactivatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
-	postMembershipDeactivatedPayloadFieldType               = big.NewInt(1 << 7)
-)
-
-type PostMembershipDeactivatedPayload struct {
-	// The account ID that this webhook event is associated with
-	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// The API version for this webhook
-	APIVersion PostMembershipDeactivatedPayloadAPIVersion `json:"api_version" url:"api_version"`
-	// The dated API version (Api-Version-Date) the payload is serialized to
-	APIVersionDate *string     `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	Data           *Membership `json:"data" url:"data"`
-	// A unique ID for every single webhook request
-	ID string `json:"id" url:"id"`
-	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
-	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
-	// The timestamp in ISO 8601 format that the webhook was sent at on the server
-	Timestamp time.Time `json:"timestamp" url:"timestamp"`
-	// The webhook event type
-	Type PostMembershipDeactivatedPayloadType `json:"type" url:"type"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PostMembershipDeactivatedPayload) GetAccountID() *string {
-	if p == nil {
-		return nil
-	}
-	return p.AccountID
-}
-
-func (p *PostMembershipDeactivatedPayload) GetAPIVersion() PostMembershipDeactivatedPayloadAPIVersion {
-	if p == nil {
-		return ""
-	}
-	return p.APIVersion
-}
-
-func (p *PostMembershipDeactivatedPayload) GetAPIVersionDate() *string {
-	if p == nil {
-		return nil
-	}
-	return p.APIVersionDate
-}
-
-func (p *PostMembershipDeactivatedPayload) GetData() *Membership {
-	if p == nil {
-		return nil
-	}
-	return p.Data
-}
-
-func (p *PostMembershipDeactivatedPayload) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PostMembershipDeactivatedPayload) GetPreviousAttributes() map[string]any {
-	if p == nil {
-		return nil
-	}
-	return p.PreviousAttributes
-}
-
-func (p *PostMembershipDeactivatedPayload) GetTimestamp() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.Timestamp
-}
-
-func (p *PostMembershipDeactivatedPayload) GetType() PostMembershipDeactivatedPayloadType {
-	if p == nil {
-		return ""
-	}
-	return p.Type
-}
-
-func (p *PostMembershipDeactivatedPayload) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PostMembershipDeactivatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetAccountID sets the AccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipDeactivatedPayload) SetAccountID(accountID *string) {
-	p.AccountID = accountID
-	p.require(postMembershipDeactivatedPayloadFieldAccountID)
-}
-
-// SetAPIVersion sets the APIVersion field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipDeactivatedPayload) SetAPIVersion(apiVersion PostMembershipDeactivatedPayloadAPIVersion) {
-	p.APIVersion = apiVersion
-	p.require(postMembershipDeactivatedPayloadFieldAPIVersion)
-}
-
-// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipDeactivatedPayload) SetAPIVersionDate(apiVersionDate *string) {
-	p.APIVersionDate = apiVersionDate
-	p.require(postMembershipDeactivatedPayloadFieldAPIVersionDate)
-}
-
-// SetData sets the Data field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipDeactivatedPayload) SetData(data *Membership) {
-	p.Data = data
-	p.require(postMembershipDeactivatedPayloadFieldData)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipDeactivatedPayload) SetID(id string) {
-	p.ID = id
-	p.require(postMembershipDeactivatedPayloadFieldID)
-}
-
-// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipDeactivatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
-	p.PreviousAttributes = previousAttributes
-	p.require(postMembershipDeactivatedPayloadFieldPreviousAttributes)
-}
-
-// SetTimestamp sets the Timestamp field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipDeactivatedPayload) SetTimestamp(timestamp time.Time) {
-	p.Timestamp = timestamp
-	p.require(postMembershipDeactivatedPayloadFieldTimestamp)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostMembershipDeactivatedPayload) SetType(type_ PostMembershipDeactivatedPayloadType) {
-	p.Type = type_
-	p.require(postMembershipDeactivatedPayloadFieldType)
-}
-
-func (p *PostMembershipDeactivatedPayload) UnmarshalJSON(data []byte) error {
-	type embed PostMembershipDeactivatedPayload
-	var unmarshaler = struct {
-		embed
-		Timestamp *internal.DateTime `json:"timestamp"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PostMembershipDeactivatedPayload(unmarshaler.embed)
-	p.Timestamp = unmarshaler.Timestamp.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PostMembershipDeactivatedPayload) MarshalJSON() ([]byte, error) {
-	type embed PostMembershipDeactivatedPayload
-	var marshaler = struct {
-		embed
-		Timestamp *internal.DateTime `json:"timestamp"`
-	}{
-		embed:     embed(*p),
-		Timestamp: internal.NewDateTime(p.Timestamp),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PostMembershipDeactivatedPayload) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The API version for this webhook
-type PostMembershipDeactivatedPayloadAPIVersion string
-
-const (
-	PostMembershipDeactivatedPayloadAPIVersionV1 PostMembershipDeactivatedPayloadAPIVersion = "v1"
-)
-
-func NewPostMembershipDeactivatedPayloadAPIVersionFromString(s string) (PostMembershipDeactivatedPayloadAPIVersion, error) {
-	switch s {
-	case "v1":
-		return PostMembershipDeactivatedPayloadAPIVersionV1, nil
-	}
-	var t PostMembershipDeactivatedPayloadAPIVersion
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostMembershipDeactivatedPayloadAPIVersion) Ptr() *PostMembershipDeactivatedPayloadAPIVersion {
-	return &p
-}
-
-// The webhook event type
-type PostMembershipDeactivatedPayloadType string
-
-const (
-	PostMembershipDeactivatedPayloadTypeMembershipDeactivated PostMembershipDeactivatedPayloadType = "membership.deactivated"
-)
-
-func NewPostMembershipDeactivatedPayloadTypeFromString(s string) (PostMembershipDeactivatedPayloadType, error) {
-	switch s {
-	case "membership.deactivated":
-		return PostMembershipDeactivatedPayloadTypeMembershipDeactivated, nil
-	}
-	var t PostMembershipDeactivatedPayloadType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostMembershipDeactivatedPayloadType) Ptr() *PostMembershipDeactivatedPayloadType {
-	return &p
-}
-
-var (
 	postMembershipTrialEndingSoonPayloadFieldAccountID          = big.NewInt(1 << 0)
 	postMembershipTrialEndingSoonPayloadFieldAPIVersion         = big.NewInt(1 << 1)
 	postMembershipTrialEndingSoonPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
@@ -2477,6 +3321,12 @@ var (
 	postMembershipTrialEndingSoonPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postMembershipTrialEndingSoonPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postMembershipTrialEndingSoonPayloadNullableFields maps the wire names of PostMembershipTrialEndingSoonPayload's nullable fields (required or optional) to their field bits.
+var postMembershipTrialEndingSoonPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postMembershipTrialEndingSoonPayloadFieldAccountID,
+	"api_version_date": postMembershipTrialEndingSoonPayloadFieldAPIVersionDate,
+}
 
 type PostMembershipTrialEndingSoonPayload struct {
 	// The account ID that this webhook event is associated with
@@ -2566,10 +3416,12 @@ func (p *PostMembershipTrialEndingSoonPayload) GetExtraProperties() map[string]i
 }
 
 func (p *PostMembershipTrialEndingSoonPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -2646,6 +3498,13 @@ func (p *PostMembershipTrialEndingSoonPayload) UnmarshalJSON(data []byte) error 
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postMembershipTrialEndingSoonPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2719,6 +3578,272 @@ func (p PostMembershipTrialEndingSoonPayloadType) Ptr() *PostMembershipTrialEndi
 }
 
 var (
+	postMembershipUpdatedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postMembershipUpdatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postMembershipUpdatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postMembershipUpdatedPayloadFieldData               = big.NewInt(1 << 3)
+	postMembershipUpdatedPayloadFieldID                 = big.NewInt(1 << 4)
+	postMembershipUpdatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postMembershipUpdatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postMembershipUpdatedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+// postMembershipUpdatedPayloadNullableFields maps the wire names of PostMembershipUpdatedPayload's nullable fields (required or optional) to their field bits.
+var postMembershipUpdatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postMembershipUpdatedPayloadFieldAccountID,
+	"api_version_date": postMembershipUpdatedPayloadFieldAPIVersionDate,
+}
+
+type PostMembershipUpdatedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostMembershipUpdatedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string     `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Membership `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostMembershipUpdatedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostMembershipUpdatedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostMembershipUpdatedPayload) GetAPIVersion() PostMembershipUpdatedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostMembershipUpdatedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostMembershipUpdatedPayload) GetData() *Membership {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostMembershipUpdatedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostMembershipUpdatedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostMembershipUpdatedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostMembershipUpdatedPayload) GetType() PostMembershipUpdatedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostMembershipUpdatedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostMembershipUpdatedPayload) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMembershipUpdatedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postMembershipUpdatedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMembershipUpdatedPayload) SetAPIVersion(apiVersion PostMembershipUpdatedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postMembershipUpdatedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMembershipUpdatedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postMembershipUpdatedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMembershipUpdatedPayload) SetData(data *Membership) {
+	p.Data = data
+	p.require(postMembershipUpdatedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMembershipUpdatedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postMembershipUpdatedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMembershipUpdatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postMembershipUpdatedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMembershipUpdatedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postMembershipUpdatedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostMembershipUpdatedPayload) SetType(type_ PostMembershipUpdatedPayloadType) {
+	p.Type = type_
+	p.require(postMembershipUpdatedPayloadFieldType)
+}
+
+func (p *PostMembershipUpdatedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostMembershipUpdatedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostMembershipUpdatedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postMembershipUpdatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostMembershipUpdatedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostMembershipUpdatedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostMembershipUpdatedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostMembershipUpdatedPayloadAPIVersion string
+
+const (
+	PostMembershipUpdatedPayloadAPIVersionV1 PostMembershipUpdatedPayloadAPIVersion = "v1"
+)
+
+func NewPostMembershipUpdatedPayloadAPIVersionFromString(s string) (PostMembershipUpdatedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostMembershipUpdatedPayloadAPIVersionV1, nil
+	}
+	var t PostMembershipUpdatedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostMembershipUpdatedPayloadAPIVersion) Ptr() *PostMembershipUpdatedPayloadAPIVersion {
+	return &p
+}
+
+// The webhook event type
+type PostMembershipUpdatedPayloadType string
+
+const (
+	PostMembershipUpdatedPayloadTypeMembershipUpdated PostMembershipUpdatedPayloadType = "membership.updated"
+)
+
+func NewPostMembershipUpdatedPayloadTypeFromString(s string) (PostMembershipUpdatedPayloadType, error) {
+	switch s {
+	case "membership.updated":
+		return PostMembershipUpdatedPayloadTypeMembershipUpdated, nil
+	}
+	var t PostMembershipUpdatedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostMembershipUpdatedPayloadType) Ptr() *PostMembershipUpdatedPayloadType {
+	return &p
+}
+
+var (
 	transferMembershipsResponseFieldURL = big.NewInt(1 << 0)
 )
 
@@ -2748,10 +3873,12 @@ func (t *TransferMembershipsResponse) GetExtraProperties() map[string]interface{
 }
 
 func (t *TransferMembershipsResponse) require(field *big.Int) {
-	if t.explicitFields == nil {
-		t.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
 	}
-	t.explicitFields.Or(t.explicitFields, field)
+	next.Or(next, field)
+	t.explicitFields = next
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -2804,54 +3931,39 @@ func (t *TransferMembershipsResponse) String() string {
 }
 
 var (
-	uncancelMembershipRequestFieldID = big.NewInt(1 << 0)
-)
-
-type UncancelMembershipRequest struct {
-	// The unique identifier of the membership to uncancel.
-	ID string `json:"-" url:"-"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-}
-
-func (u *UncancelMembershipRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
-	}
-	u.explicitFields.Or(u.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UncancelMembershipRequest) SetID(id string) {
-	u.ID = id
-	u.require(uncancelMembershipRequestFieldID)
-}
-
-var (
 	updateMembershipsRequestFieldID                = big.NewInt(1 << 0)
-	updateMembershipsRequestFieldCancelAtPeriodEnd = big.NewInt(1 << 1)
-	updateMembershipsRequestFieldMetadata          = big.NewInt(1 << 2)
+	updateMembershipsRequestFieldBillingPeriodDays = big.NewInt(1 << 1)
+	updateMembershipsRequestFieldCancelAtPeriodEnd = big.NewInt(1 << 2)
+	updateMembershipsRequestFieldCurrentPeriodEnd  = big.NewInt(1 << 3)
+	updateMembershipsRequestFieldMetadata          = big.NewInt(1 << 4)
+	updateMembershipsRequestFieldPaymentMethodID   = big.NewInt(1 << 5)
 )
 
 type UpdateMembershipsRequest struct {
 	// Membership ID (`mem_` tag), or a software license key.
 	ID string `json:"-" url:"-"`
+	// Number of days between recurring charges, applied to every recurring variant so future renewals use the same cadence. Sets the current period end to the current period start plus this value; when the value is a multiple of 30 or is 365, a membership that renews on a fixed day of the month (for example, after `current_period_end` was set) ends on that day instead. The new period end must remain in the future. Only for active, trialing, or past-due memberships billed automatically by Whop; invoice, externally billed, and canceling memberships are not supported. Existing non-daily memberships cannot be changed to daily billing. Cannot be combined with other fields.
+	BillingPeriodDays *int `json:"billing_period_days,omitempty" url:"-"`
 	// `true` cancels at the end of the current billing period (the customer keeps access until then); `false` reverses a pending cancellation.
 	CancelAtPeriodEnd *bool `json:"cancel_at_period_end,omitempty" url:"-"`
+	// When the next renewal charges, as an ISO 8601 timestamp; a date without a time means midnight UTC. Must fall after today in UTC. Later renewals follow on from this date, and a membership charged automatically on a variant billed every 30, 60, 90 … 360 or 365 days keeps renewing on this day of the month in UTC, or on the month's last day when a month is shorter. Only for active or trialing renewing memberships billed by Whop whose payments are not paused. Cannot be combined with other fields.
+	CurrentPeriodEnd *time.Time `json:"current_period_end,omitempty" url:"-"`
 	// Key-value pairs to merge into the membership's metadata. Pass an empty object to clear it.
 	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
+	// The ID of a payment method the customer has saved with your account. Future renewals charge it, and an open past-due payment is retried on it right away. Requires the `member:payment_methods:manage` permission.
+	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (u *UpdateMembershipsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -2861,11 +3973,25 @@ func (u *UpdateMembershipsRequest) SetID(id string) {
 	u.require(updateMembershipsRequestFieldID)
 }
 
+// SetBillingPeriodDays sets the BillingPeriodDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMembershipsRequest) SetBillingPeriodDays(billingPeriodDays *int) {
+	u.BillingPeriodDays = billingPeriodDays
+	u.require(updateMembershipsRequestFieldBillingPeriodDays)
+}
+
 // SetCancelAtPeriodEnd sets the CancelAtPeriodEnd field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateMembershipsRequest) SetCancelAtPeriodEnd(cancelAtPeriodEnd *bool) {
 	u.CancelAtPeriodEnd = cancelAtPeriodEnd
 	u.require(updateMembershipsRequestFieldCancelAtPeriodEnd)
+}
+
+// SetCurrentPeriodEnd sets the CurrentPeriodEnd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMembershipsRequest) SetCurrentPeriodEnd(currentPeriodEnd *time.Time) {
+	u.CurrentPeriodEnd = currentPeriodEnd
+	u.require(updateMembershipsRequestFieldCurrentPeriodEnd)
 }
 
 // SetMetadata sets the Metadata field and marks it as non-optional;
@@ -2875,13 +4001,26 @@ func (u *UpdateMembershipsRequest) SetMetadata(metadata map[string]any) {
 	u.require(updateMembershipsRequestFieldMetadata)
 }
 
+// SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMembershipsRequest) SetPaymentMethodID(paymentMethodID *string) {
+	u.PaymentMethodID = paymentMethodID
+	u.require(updateMembershipsRequestFieldPaymentMethodID)
+}
+
 func (u *UpdateMembershipsRequest) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateMembershipsRequest
-	var body unmarshaler
+	type embed UpdateMembershipsRequest
+	var body = struct {
+		embed
+		CurrentPeriodEnd *internal.DateTime `json:"current_period_end,omitempty"`
+	}{
+		embed: embed(*u),
+	}
 	if err := json.Unmarshal(data, &body); err != nil {
 		return err
 	}
-	*u = UpdateMembershipsRequest(body)
+	*u = UpdateMembershipsRequest(body.embed)
+	u.CurrentPeriodEnd = body.CurrentPeriodEnd.TimePtr()
 	return nil
 }
 
@@ -2889,8 +4028,10 @@ func (u *UpdateMembershipsRequest) MarshalJSON() ([]byte, error) {
 	type embed UpdateMembershipsRequest
 	var marshaler = struct {
 		embed
+		CurrentPeriodEnd *internal.DateTime `json:"current_period_end,omitempty"`
 	}{
-		embed: embed(*u),
+		embed:            embed(*u),
+		CurrentPeriodEnd: internal.NewOptionalDateTime(u.CurrentPeriodEnd),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
 	return json.Marshal(explicitMarshaler)

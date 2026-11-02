@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -88,29 +88,7 @@ func TestPlansListWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ListPlansRequest{
-		AccountID: "account_id",
-		ReleaseMethods: []*string{
-			whopsdk.String(
-				"buy_now",
-			),
-		},
-		Visibilities: []*string{
-			whopsdk.String(
-				"visible",
-			),
-		},
-		PlanTypes: []*string{
-			whopsdk.String(
-				"renewal",
-			),
-		},
-		ProductIDs: []*string{
-			whopsdk.String(
-				"prod_xxxxxxxxxxxxxx",
-			),
-		},
-	}
+	request := &whopsdk.ListPlansRequest{}
 	_, invocationErr := client.Plans.List(
 		context.TODO(),
 		request,
@@ -120,7 +98,7 @@ func TestPlansListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPlansListWithWireMock", "GET", "/plans", map[string]interface{}{"account_id": "account_id", "release_methods": "buy_now", "visibilities": "visible", "plan_types": "renewal", "product_ids": "prod_xxxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestPlansListWithWireMock", "GET", "/plans", nil, 1)
 }
 
 func TestPlansCreateWithWireMock(
@@ -238,12 +216,6 @@ func TestPlansCalculateTaxWithWireMock(
 	)
 	request := &whopsdk.CalculateTaxPlansRequest{
 		ID: "id",
-		Address: &whopsdk.CalculateTaxPlansRequestAddress{
-			Country: "DE",
-			PostalCode: whopsdk.String(
-				"10115",
-			),
-		},
 	}
 	_, invocationErr := client.Plans.CalculateTax(
 		context.TODO(),

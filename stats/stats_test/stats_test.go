@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -97,124 +97,6 @@ func TestStatsListWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestStatsListWithWireMock", "GET", "/stats", nil, 1)
-}
-
-func TestStatsDescribeStatsWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.DescribeStatsRequest{
-		CompanyID: whopsdk.String(
-			"biz_xxxxxxxxxxxxxx",
-		),
-		UserID: whopsdk.String(
-			"user_xxxxxxxxxxxxx",
-		),
-	}
-	_, invocationErr := client.Stats.DescribeStats(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestStatsDescribeStatsWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestStatsDescribeStatsWithWireMock", "GET", "/stats/describe", map[string]interface{}{"company_id": "biz_xxxxxxxxxxxxxx", "user_id": "user_xxxxxxxxxxxxx"}, 1)
-}
-
-func TestStatsMetricStatsWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.MetricStatsRequest{
-		Resource: "resource",
-		From: whopsdk.Time(
-			whopsdk.MustParseDateTime(
-				"2023-12-01T05:00:00Z",
-			),
-		),
-		To: whopsdk.Time(
-			whopsdk.MustParseDateTime(
-				"2023-12-01T05:00:00Z",
-			),
-		),
-		CompanyID: whopsdk.String(
-			"biz_xxxxxxxxxxxxxx",
-		),
-		UserID: whopsdk.String(
-			"user_xxxxxxxxxxxxx",
-		),
-	}
-	_, invocationErr := client.Stats.MetricStats(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestStatsMetricStatsWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestStatsMetricStatsWithWireMock", "GET", "/stats/metric", map[string]interface{}{"resource": "resource", "from": "2023-12-01T05:00:00.000Z", "to": "2023-12-01T05:00:00.000Z", "company_id": "biz_xxxxxxxxxxxxxx", "user_id": "user_xxxxxxxxxxxxx"}, 1)
-}
-
-func TestStatsRawStatsWithWireMock(
-	t *testing.T,
-) {
-	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
-	if WireMockBaseURL == "" {
-		WireMockBaseURL = "http://localhost:8080"
-	}
-	client := client.NewWhop(
-		option.WithBaseURL(WireMockBaseURL),
-		option.WithToken("test-token"),
-	)
-	request := &whopsdk.RawStatsRequest{
-		Resource: "resource",
-		From: whopsdk.Time(
-			whopsdk.MustParseDateTime(
-				"2023-12-01T05:00:00Z",
-			),
-		),
-		To: whopsdk.Time(
-			whopsdk.MustParseDateTime(
-				"2023-12-01T05:00:00Z",
-			),
-		),
-		Limit: whopsdk.Int(
-			42,
-		),
-		CompanyID: whopsdk.String(
-			"biz_xxxxxxxxxxxxxx",
-		),
-		UserID: whopsdk.String(
-			"user_xxxxxxxxxxxxx",
-		),
-	}
-	_, invocationErr := client.Stats.RawStats(
-		context.TODO(),
-		request,
-		option.WithHTTPHeader(
-			http.Header{"X-Test-Id": []string{"TestStatsRawStatsWithWireMock"}},
-		),
-	)
-
-	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestStatsRawStatsWithWireMock", "GET", "/stats/raw", map[string]interface{}{"resource": "resource", "from": "2023-12-01T05:00:00.000Z", "to": "2023-12-01T05:00:00.000Z", "limit": "42", "company_id": "biz_xxxxxxxxxxxxxx", "user_id": "user_xxxxxxxxxxxxx"}, 1)
 }
 
 func TestStatsRetrieveWithWireMock(

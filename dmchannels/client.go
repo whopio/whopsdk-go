@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of DM channels for the currently authenticated user, sorted by most recently active.
+// Lists the authenticated user's DM channels, most recently active first.
 //
 // Required permissions:
 //   - `dms:read`
@@ -53,7 +53,7 @@ func NewClient(options *core.RequestOptions) *Client {
 //	    Last: whopsdk.Int(
 //	        42,
 //	    ),
-//	    CompanyID: whopsdk.String(
+//	    AccountID: whopsdk.String(
 //	        "biz_xxxxxxxxxxxxxx",
 //	    ),
 //	}
@@ -69,7 +69,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/dm_channels"
@@ -124,7 +132,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Create a new DM channel between two or more users, optionally scoped to a specific company. Returns the existing channel if one already exists.
+// Creates a DM channel between two or more users, optionally scoped to an account. Returns the existing channel if one already exists.
 //
 // Required permissions:
 //   - `dms:channel:manage`
@@ -187,7 +195,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Permanently delete a DM channel and all of its messages. Only an admin of the channel can perform this action.
+// Permanently deletes a DM channel and all of its messages. Only a channel admin can delete it.
 //
 // Required permissions (one of):
 //   - `dms:channel:manage`
@@ -218,7 +226,7 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Update the settings of an existing DM channel, such as its display name. Only an admin of the channel can perform this action.
+// Updates a DM channel's settings, such as its display name. Only a channel admin can update it.
 //
 // Required permissions (one of):
 //   - `dms:channel:manage`

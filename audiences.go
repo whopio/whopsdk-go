@@ -5,7 +5,7 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 )
 
@@ -25,10 +25,12 @@ type AddPeopleAudiencesRequest struct {
 }
 
 func (a *AddPeopleAudiencesRequest) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -77,39 +79,44 @@ var (
 	createAudiencesRequestFieldName             = big.NewInt(1 << 7)
 	createAudiencesRequestFieldPercentage       = big.NewInt(1 << 8)
 	createAudiencesRequestFieldSourceAudienceID = big.NewInt(1 << 9)
+	createAudiencesRequestFieldSourceType       = big.NewInt(1 << 10)
 )
 
 type CreateAudiencesRequest struct {
 	// Account ID, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"-"`
-	// What to create. Defaults to `custom` (CSV upload).
+	// Audience type. Defaults to `custom`.
 	AudienceType *CreateAudiencesRequestAudienceType `json:"audience_type,omitempty" url:"-"`
 	// Filter audiences only, and set only at creation. `true` (the default) rebuilds membership from the filters twice a day. `false` keeps whoever matched at creation and never rebuilds.
 	AutoRefresh *bool `json:"auto_refresh,omitempty" url:"-"`
-	// Custom audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
+	// CSV audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
 	ColumnMapping *CreateAudiencesRequestColumnMapping `json:"column_mapping,omitempty" url:"-"`
 	// Lookalikes only. Number of lookalike audiences to create (1–6).
 	Count *int `json:"count,omitempty" url:"-"`
-	// Custom audiences only. The uploaded customer CSV — a file id (`file_...`) returned by `POST /files`.
+	// CSV audiences only. The uploaded customer CSV — a file id (`file_...`) returned by `POST /files`.
 	FileID *string `json:"file_id,omitempty" url:"-"`
-	// Filter audiences only. The People filters that define membership, keyed exactly as `GET /people` accepts them — for example `{"os": "iOS", "country": "US"}`. Date filters must be rolling windows — `first_seen_within_days` or `last_seen_within_days` — so the audience re-anchors on every refresh; fixed dates such as `first_seen_after` are rejected. Source values are canonical source paths (`whop:<campaign>:<group>:<ad>`, `ext:<platform>:...`, `referrer:<domain>`, `direct`), exact or with a trailing `:*` wildcard.
+	// Filter audiences only. The People filters that define membership, keyed exactly as `GET /people` accepts them — for example `{"os": "iOS", "country": "US"}`. Activity dates `event_from` and `event_to` are inclusive and remain fixed on refresh. Use `event_within_days`, `first_seen_within_days` or `last_seen_within_days` for a rolling window. Source values are canonical source paths (`whop:<campaign>:<group>:<ad>`, `ext:<platform>:...`, `referrer:<domain>`, `direct`), exact or with a trailing `:*` wildcard.
 	Filters map[string]any `json:"filters,omitempty" url:"-"`
 	// Audience display name. Required for custom audiences; lookalike names are generated from the source audience.
 	Name *string `json:"name,omitempty" url:"-"`
-	// Lookalikes only. Total similarity reach as a whole percent (1–20), sliced evenly across `count` — must be divisible by `count`.
+	// Lookalikes only. Total similarity reach as a whole percent (1–20), sliced evenly across `count` — must be divisible by `count`. For example, 3 audiences at 6% creates 0–2%, 2–4%, and 4–6% bands.
 	Percentage *int `json:"percentage,omitempty" url:"-"`
-	// Lookalikes only. The ready custom audience (`adaud_`) to build from; it needs at least 100 matched people.
+	// Lookalikes only. The ready custom audience (`adaud_`) to build from; uploaded and People audiences need at least 100 matched people.
 	SourceAudienceID *string `json:"source_audience_id,omitempty" url:"-"`
+	// Custom audience source. Inferred from `filters`, otherwise defaults to `csv_upload`. Supply only the fields for the selected source.
+	SourceType *CreateAudiencesRequestSourceType `json:"source_type,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (c *CreateAudiencesRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -182,6 +189,13 @@ func (c *CreateAudiencesRequest) SetSourceAudienceID(sourceAudienceID *string) {
 	c.require(createAudiencesRequestFieldSourceAudienceID)
 }
 
+// SetSourceType sets the SourceType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAudiencesRequest) SetSourceType(sourceType *CreateAudiencesRequestSourceType) {
+	c.SourceType = sourceType
+	c.require(createAudiencesRequestFieldSourceType)
+}
+
 func (c *CreateAudiencesRequest) UnmarshalJSON(data []byte) error {
 	type unmarshaler CreateAudiencesRequest
 	var body unmarshaler
@@ -216,10 +230,12 @@ type DeleteAudiencesRequest struct {
 }
 
 func (d *DeleteAudiencesRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -243,13 +259,13 @@ type ListAudiencesRequest struct {
 	AccountID string `json:"-" url:"account_id"`
 	// Audience ID, prefixed `adaud_`, used to filter the response to one audience.
 	AudienceID *string `json:"-" url:"audience_id,omitempty"`
-	// Filter by audience type: `custom` (uploaded lists) or `lookalike`.
+	// Filter by custom or lookalike audiences.
 	AudienceType *ListAudiencesRequestAudienceType `json:"-" url:"audience_type,omitempty"`
-	// Filter by member source: `csv_upload` (uploaded lists) or `people_filter` (automatic audiences built from saved People filters).
+	// Filter by uploaded customer lists, Whop People filters, or social engagement.
 	SourceType *ListAudiencesRequestSourceType `json:"-" url:"source_type,omitempty"`
-	// Number of audiences to return. Defaults to 20; maximum 100.
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Cursor for the next page of audiences.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -257,10 +273,12 @@ type ListAudiencesRequest struct {
 }
 
 func (l *ListAudiencesRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -328,16 +346,26 @@ var (
 	audienceFieldUpdatedAt              = big.NewInt(1 << 19)
 )
 
+// audienceNullableFields maps the wire names of Audience's nullable fields (required or optional) to their field bits.
+var audienceNullableFields = map[string]*big.Int{
+	"error_message":            audienceFieldErrorMessage,
+	"filters":                  audienceFieldFilters,
+	"last_refreshed_at":        audienceFieldLastRefreshedAt,
+	"lookalike_ratio":          audienceFieldLookalikeRatio,
+	"lookalike_starting_ratio": audienceFieldLookalikeStartingRatio,
+	"source_audience_id":       audienceFieldSourceAudienceID,
+}
+
 type Audience struct {
-	// `custom` = a customer list (uploaded, or built from saved People filters); `lookalike` = Meta lookalike built from a custom audience.
+	// Whether the audience targets a defined group of people or people similar to an existing audience.
 	AudienceType AudienceAudienceType `json:"audience_type" url:"audience_type"`
-	// Whether membership keeps updating. `true` rebuilds it from the saved filters twice a day, so people join and leave as they start and stop matching. `false` keeps whoever matched when it was built and never rebuilds. Always `false` for uploaded lists and lookalikes.
+	// Whether Whop rebuilds membership from saved People filters twice a day. When `false`, People audiences keep the members matched at creation. Always `false` for uploaded lists, lookalikes, and engagement audiences.
 	AutoRefresh bool `json:"auto_refresh" url:"auto_refresh"`
 	// When the audience was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// Processing error message. `null` unless processing is partial or failed.
+	// Why a `pending` audience hasn't started, or why a `partial` or `failed` one isn't fully built. `null` when there is nothing to report.
 	ErrorMessage *string `json:"error_message,omitempty" url:"error_message,omitempty"`
-	// For audiences built from People filters: the filters that define membership, keyed exactly as `GET /people` accepts them — for example `{"os": "iOS", "country": "US"}`. `null` for uploaded lists and lookalikes.
+	// Saved Whop People filters that define membership, using the same keys as `GET /people`. `null` for uploaded lists, engagement audiences, and lookalikes.
 	Filters map[string]any `json:"filters,omitempty" url:"filters,omitempty"`
 	// Audience ID, prefixed `adaud_`.
 	ID string `json:"id" url:"id"`
@@ -348,22 +376,22 @@ type Audience struct {
 	// For lookalikes: the lower bound of the similarity band as a fraction. `null` for custom audiences and first-tier lookalikes.
 	LookalikeStartingRatio *float64             `json:"lookalike_starting_ratio,omitempty" url:"lookalike_starting_ratio,omitempty"`
 	MatchRates             []*AudienceMatchRate `json:"match_rates" url:"match_rates"`
-	// Members successfully uploaded to connected ad accounts. Always 0 for lookalikes.
+	// Members successfully uploaded to connected ad accounts. Always 0 for lookalikes and engagement audiences.
 	MatchedRows float64 `json:"matched_rows" url:"matched_rows"`
 	// Audience display name.
 	Name                string   `json:"name" url:"name"`
 	PlatformAudienceIDs []string `json:"platform_audience_ids" url:"platform_audience_ids"`
-	// Members processed from the source so far. Always 0 for lookalikes.
+	// Members processed from the source so far. Always 0 for lookalikes and engagement audiences.
 	ProcessedRows float64 `json:"processed_rows" url:"processed_rows"`
 	// Processing progress from 0 to 100.
 	ProgressPercent float64 `json:"progress_percent" url:"progress_percent"`
 	// For lookalikes: the audience this lookalike was built from. `null` for custom audiences.
 	SourceAudienceID *string `json:"source_audience_id,omitempty" url:"source_audience_id,omitempty"`
-	// Where members come from. `csv_upload` = an uploaded customer list; `people_filter` = built from saved People filters. See `auto_refresh` for whether a `people_filter` audience keeps updating.
+	// Membership source: an uploaded CSV, Whop People filters, or social engagement. Engagement audiences can no longer be created.
 	SourceType AudienceSourceType `json:"source_type" url:"source_type"`
-	// Current state of the audience import. `syncing` means Whop is sending matched rows to connected ad accounts. When status is `partial` or `failed`, `error_message` explains what went wrong.
+	// Current state of audience creation. `syncing` means Whop is sending matched rows to connected ad accounts. When a `pending` audience is waiting on something, such as an ad account to upload to, `error_message` says what. When status is `partial` or `failed`, `error_message` explains what went wrong.
 	Status AudienceStatus `json:"status" url:"status"`
-	// Total members detected in the source — CSV rows for uploaded lists, matching people for automatic audiences. Always 0 for lookalikes.
+	// Total members detected in the source — CSV rows for uploaded lists, matching people for automatic audiences. Always 0 for lookalikes and engagement audiences.
 	TotalRows float64 `json:"total_rows" url:"total_rows"`
 	// When the audience was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
@@ -523,10 +551,12 @@ func (a *Audience) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *Audience) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAudienceType sets the AudienceType field and marks it as non-optional;
@@ -681,6 +711,13 @@ func (a *Audience) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, audienceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -711,7 +748,7 @@ func (a *Audience) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// `custom` = a customer list (uploaded, or built from saved People filters); `lookalike` = Meta lookalike built from a custom audience.
+// Whether the audience targets a defined group of people or people similar to an existing audience.
 type AudienceAudienceType string
 
 const (
@@ -740,6 +777,13 @@ var (
 	audienceMatchRateFieldStatus     = big.NewInt(1 << 2)
 	audienceMatchRateFieldUpperBound = big.NewInt(1 << 3)
 )
+
+// audienceMatchRateNullableFields maps the wire names of AudienceMatchRate's nullable fields (required or optional) to their field bits.
+var audienceMatchRateNullableFields = map[string]*big.Int{
+	"lower_bound": audienceMatchRateFieldLowerBound,
+	"status":      audienceMatchRateFieldStatus,
+	"upper_bound": audienceMatchRateFieldUpperBound,
+}
 
 type AudienceMatchRate struct {
 	// Lower bound of the estimated match rate percentage. `null` until available.
@@ -794,10 +838,12 @@ func (a *AudienceMatchRate) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *AudienceMatchRate) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetLowerBound sets the LowerBound field and marks it as non-optional;
@@ -840,6 +886,13 @@ func (a *AudienceMatchRate) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, audienceMatchRateNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -916,12 +969,13 @@ func (a AudienceMatchRateStatus) Ptr() *AudienceMatchRateStatus {
 	return &a
 }
 
-// Where members come from. `csv_upload` = an uploaded customer list; `people_filter` = built from saved People filters. See `auto_refresh` for whether a `people_filter` audience keeps updating.
+// Membership source: an uploaded CSV, Whop People filters, or social engagement. Engagement audiences can no longer be created.
 type AudienceSourceType string
 
 const (
 	AudienceSourceTypeCsvUpload    AudienceSourceType = "csv_upload"
 	AudienceSourceTypePeopleFilter AudienceSourceType = "people_filter"
+	AudienceSourceTypeEngagement   AudienceSourceType = "engagement"
 )
 
 func NewAudienceSourceTypeFromString(s string) (AudienceSourceType, error) {
@@ -930,6 +984,8 @@ func NewAudienceSourceTypeFromString(s string) (AudienceSourceType, error) {
 		return AudienceSourceTypeCsvUpload, nil
 	case "people_filter":
 		return AudienceSourceTypePeopleFilter, nil
+	case "engagement":
+		return AudienceSourceTypeEngagement, nil
 	}
 	var t AudienceSourceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -939,7 +995,7 @@ func (a AudienceSourceType) Ptr() *AudienceSourceType {
 	return &a
 }
 
-// Current state of the audience import. `syncing` means Whop is sending matched rows to connected ad accounts. When status is `partial` or `failed`, `error_message` explains what went wrong.
+// Current state of audience creation. `syncing` means Whop is sending matched rows to connected ad accounts. When a `pending` audience is waiting on something, such as an ad account to upload to, `error_message` says what. When status is `partial` or `failed`, `error_message` explains what went wrong.
 type AudienceStatus string
 
 const (
@@ -974,7 +1030,7 @@ func (a AudienceStatus) Ptr() *AudienceStatus {
 	return &a
 }
 
-// What to create. Defaults to `custom` (CSV upload).
+// Audience type. Defaults to `custom`.
 type CreateAudiencesRequestAudienceType string
 
 const (
@@ -997,7 +1053,6 @@ func (c CreateAudiencesRequestAudienceType) Ptr() *CreateAudiencesRequestAudienc
 	return &c
 }
 
-// Custom audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
 var (
 	createAudiencesRequestColumnMappingFieldCountry   = big.NewInt(1 << 0)
 	createAudiencesRequestColumnMappingFieldEmail     = big.NewInt(1 << 1)
@@ -1007,6 +1062,7 @@ var (
 	createAudiencesRequestColumnMappingFieldPhone     = big.NewInt(1 << 5)
 )
 
+// CSV audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
 type CreateAudiencesRequestColumnMapping struct {
 	// CSV header for ISO 3166-1 alpha-2 country codes, such as `US`.
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
@@ -1078,10 +1134,12 @@ func (c *CreateAudiencesRequestColumnMapping) GetExtraProperties() map[string]in
 }
 
 func (c *CreateAudiencesRequestColumnMapping) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCountry sets the Country field and marks it as non-optional;
@@ -1168,6 +1226,29 @@ func (c *CreateAudiencesRequestColumnMapping) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
+// Custom audience source. Inferred from `filters`, otherwise defaults to `csv_upload`. Supply only the fields for the selected source.
+type CreateAudiencesRequestSourceType string
+
+const (
+	CreateAudiencesRequestSourceTypeCsvUpload    CreateAudiencesRequestSourceType = "csv_upload"
+	CreateAudiencesRequestSourceTypePeopleFilter CreateAudiencesRequestSourceType = "people_filter"
+)
+
+func NewCreateAudiencesRequestSourceTypeFromString(s string) (CreateAudiencesRequestSourceType, error) {
+	switch s {
+	case "csv_upload":
+		return CreateAudiencesRequestSourceTypeCsvUpload, nil
+	case "people_filter":
+		return CreateAudiencesRequestSourceTypePeopleFilter, nil
+	}
+	var t CreateAudiencesRequestSourceType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateAudiencesRequestSourceType) Ptr() *CreateAudiencesRequestSourceType {
+	return &c
+}
+
 type CreateAudiencesResponse struct {
 	Audience                    *Audience
 	CreateAudiencesResponseData *CreateAudiencesResponseData
@@ -1190,6 +1271,38 @@ func (c *CreateAudiencesResponse) GetCreateAudiencesResponseData() *CreateAudien
 }
 
 func (c *CreateAudiencesResponse) UnmarshalJSON(data []byte) error {
+	if internal.MatchesObjectKeys(data, []string{"audience_type", "auto_refresh", "created_at", "error_message", "filters", "id", "last_refreshed_at", "lookalike_ratio", "lookalike_starting_ratio", "match_rates", "matched_rows", "name", "platform_audience_ids", "processed_rows", "progress_percent", "source_audience_id", "source_type", "status", "total_rows", "updated_at"}, []string{"audience_type", "auto_refresh", "created_at", "id", "match_rates", "matched_rows", "name", "platform_audience_ids", "processed_rows", "progress_percent", "source_type", "status", "total_rows", "updated_at"}) {
+		valueAudience := new(Audience)
+		if err := json.Unmarshal(data, &valueAudience); err == nil {
+			c.typ = "Audience"
+			c.Audience = valueAudience
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"data"}, []string{"data"}) {
+		valueCreateAudiencesResponseData := new(CreateAudiencesResponseData)
+		if err := json.Unmarshal(data, &valueCreateAudiencesResponseData); err == nil {
+			c.typ = "CreateAudiencesResponseData"
+			c.CreateAudiencesResponseData = valueCreateAudiencesResponseData
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"audience_type", "auto_refresh", "created_at", "id", "match_rates", "matched_rows", "name", "platform_audience_ids", "processed_rows", "progress_percent", "source_type", "status", "total_rows", "updated_at"}) {
+		valueAudience := new(Audience)
+		if err := json.Unmarshal(data, &valueAudience); err == nil {
+			c.typ = "Audience"
+			c.Audience = valueAudience
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"data"}) {
+		valueCreateAudiencesResponseData := new(CreateAudiencesResponseData)
+		if err := json.Unmarshal(data, &valueCreateAudiencesResponseData); err == nil {
+			c.typ = "CreateAudiencesResponseData"
+			c.CreateAudiencesResponseData = valueCreateAudiencesResponseData
+			return nil
+		}
+	}
 	valueAudience := new(Audience)
 	if err := json.Unmarshal(data, &valueAudience); err == nil {
 		c.typ = "Audience"
@@ -1259,10 +1372,12 @@ func (c *CreateAudiencesResponseData) GetExtraProperties() map[string]interface{
 }
 
 func (c *CreateAudiencesResponseData) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1343,10 +1458,12 @@ func (d *DeleteAudiencesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeleteAudiencesResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetSuccess sets the Success field and marks it as non-optional;
@@ -1425,6 +1542,7 @@ type ListAudiencesRequestSourceType string
 const (
 	ListAudiencesRequestSourceTypeCsvUpload    ListAudiencesRequestSourceType = "csv_upload"
 	ListAudiencesRequestSourceTypePeopleFilter ListAudiencesRequestSourceType = "people_filter"
+	ListAudiencesRequestSourceTypeEngagement   ListAudiencesRequestSourceType = "engagement"
 )
 
 func NewListAudiencesRequestSourceTypeFromString(s string) (ListAudiencesRequestSourceType, error) {
@@ -1433,6 +1551,8 @@ func NewListAudiencesRequestSourceTypeFromString(s string) (ListAudiencesRequest
 		return ListAudiencesRequestSourceTypeCsvUpload, nil
 	case "people_filter":
 		return ListAudiencesRequestSourceTypePeopleFilter, nil
+	case "engagement":
+		return ListAudiencesRequestSourceTypeEngagement, nil
 	}
 	var t ListAudiencesRequestSourceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1480,10 +1600,12 @@ func (l *ListAudiencesResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAudiencesResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1549,6 +1671,12 @@ var (
 	listAudiencesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listAudiencesResponsePageInfoNullableFields maps the wire names of ListAudiencesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listAudiencesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listAudiencesResponsePageInfoFieldEndCursor,
+	"start_cursor": listAudiencesResponsePageInfoFieldStartCursor,
+}
+
 type ListAudiencesResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -1598,10 +1726,12 @@ func (l *ListAudiencesResponsePageInfo) GetExtraProperties() map[string]interfac
 }
 
 func (l *ListAudiencesResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -1644,6 +1774,13 @@ func (l *ListAudiencesResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listAudiencesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1693,10 +1830,12 @@ type UpdateAudiencesRequest struct {
 }
 
 func (u *UpdateAudiencesRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

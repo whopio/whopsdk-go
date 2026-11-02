@@ -5,7 +5,7 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	url "net/url"
 )
@@ -31,7 +31,7 @@ type CreateAPIKeysRequest struct {
 	Name string `json:"name" url:"-"`
 	// The permissions policy for the API key: explicit permission statements, or a system role to inherit from. Statements without a `resources` array default to the owning account (Account API keys) or every key-addressable resource (App API keys).
 	Permissions *CreateAPIKeysRequestPermissions `json:"permissions" url:"-"`
-	// The account (`biz_`) or app (`app_`) tag to create the API key for.
+	// The account (`biz_`), app (`app_`), or your own user (`user_`) tag to create the API key for.
 	ResourceID string `json:"resource_id" url:"-"`
 	// The type of resource that will own this API key.
 	ResourceType CreateAPIKeysRequestResourceType `json:"resource_type" url:"-"`
@@ -41,10 +41,12 @@ type CreateAPIKeysRequest struct {
 }
 
 func (c *CreateAPIKeysRequest) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
@@ -130,10 +132,12 @@ type DeleteAPIKeysRequest struct {
 }
 
 func (d *DeleteAPIKeysRequest) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -157,7 +161,7 @@ var (
 )
 
 type ListAPIKeysRequest struct {
-	// The account (`biz_`) or app (`app_`) tag to list API keys for.
+	// The account (`biz_`), app (`app_`), or your own user (`user_`) tag to list API keys for.
 	ResourceID string `json:"-" url:"resource_id"`
 	// The type of resource that owns the API keys.
 	ResourceType ListAPIKeysRequestResourceType `json:"-" url:"resource_type"`
@@ -165,13 +169,13 @@ type ListAPIKeysRequest struct {
 	CreatedBefore *ListAPIKeysRequestCreatedBefore `json:"-" url:"created_before,omitempty"`
 	// Only return API keys created after this ISO 8601 timestamp.
 	CreatedAfter *ListAPIKeysRequestCreatedAfter `json:"-" url:"created_after,omitempty"`
-	// The number of API keys to return (default 20, max 100).
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// A cursor; returns API keys after this position.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
-	// The number of API keys to return from the end of the range.
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// A cursor; returns API keys before this position.
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
 	// The field to sort API keys by.
 	Order *ListAPIKeysRequestOrder `json:"-" url:"order,omitempty"`
@@ -183,10 +187,12 @@ type ListAPIKeysRequest struct {
 }
 
 func (l *ListAPIKeysRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetResourceID sets the ResourceID field and marks it as non-optional;
@@ -272,10 +278,12 @@ type RetrieveAPIKeysRequest struct {
 }
 
 func (r *RetrieveAPIKeysRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -298,10 +306,12 @@ type RotateAPIKeysRequest struct {
 }
 
 func (r *RotateAPIKeysRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -325,6 +335,14 @@ var (
 	aPIKeyFieldSystemRole           = big.NewInt(1 << 10)
 	aPIKeyFieldUpdatedAt            = big.NewInt(1 << 11)
 )
+
+// aPIKeyNullableFields maps the wire names of APIKey's nullable fields (required or optional) to their field bits.
+var aPIKeyNullableFields = map[string]*big.Int{
+	"expires_at":   aPIKeyFieldExpiresAt,
+	"ip_allowlist": aPIKeyFieldIPAllowlist,
+	"name":         aPIKeyFieldName,
+	"system_role":  aPIKeyFieldSystemRole,
+}
 
 type APIKey struct {
 	// Dated API version used when requests authenticated with this key omit the `Api-Version-Date` header.
@@ -449,10 +467,12 @@ func (a *APIKey) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *APIKey) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
@@ -551,6 +571,13 @@ func (a *APIKey) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, aPIKeyNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
 	a.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -610,6 +637,65 @@ const (
 	APIKeyAPIVersionDateTwoThousandTwentySix0813  APIKeyAPIVersionDate = "2026-08-13"
 	APIKeyAPIVersionDateTwoThousandTwentySix0814  APIKeyAPIVersionDate = "2026-08-14"
 	APIKeyAPIVersionDateTwoThousandTwentySix0821  APIKeyAPIVersionDate = "2026-08-21"
+	APIKeyAPIVersionDateTwoThousandTwentySix08211 APIKeyAPIVersionDate = "2026-08-21-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix0825  APIKeyAPIVersionDate = "2026-08-25"
+	APIKeyAPIVersionDateTwoThousandTwentySix08251 APIKeyAPIVersionDate = "2026-08-25-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix08252 APIKeyAPIVersionDate = "2026-08-25-2"
+	APIKeyAPIVersionDateTwoThousandTwentySix0831  APIKeyAPIVersionDate = "2026-08-31"
+	APIKeyAPIVersionDateTwoThousandTwentySix0902  APIKeyAPIVersionDate = "2026-09-02"
+	APIKeyAPIVersionDateTwoThousandTwentySix09021 APIKeyAPIVersionDate = "2026-09-02-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix09022 APIKeyAPIVersionDate = "2026-09-02-2"
+	APIKeyAPIVersionDateTwoThousandTwentySix0904  APIKeyAPIVersionDate = "2026-09-04"
+	APIKeyAPIVersionDateTwoThousandTwentySix0906  APIKeyAPIVersionDate = "2026-09-06"
+	APIKeyAPIVersionDateTwoThousandTwentySix0909  APIKeyAPIVersionDate = "2026-09-09"
+	APIKeyAPIVersionDateTwoThousandTwentySix09091 APIKeyAPIVersionDate = "2026-09-09-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix0911  APIKeyAPIVersionDate = "2026-09-11"
+	APIKeyAPIVersionDateTwoThousandTwentySix09111 APIKeyAPIVersionDate = "2026-09-11-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix0913  APIKeyAPIVersionDate = "2026-09-13"
+	APIKeyAPIVersionDateTwoThousandTwentySix0915  APIKeyAPIVersionDate = "2026-09-15"
+	APIKeyAPIVersionDateTwoThousandTwentySix0922  APIKeyAPIVersionDate = "2026-09-22"
+	APIKeyAPIVersionDateTwoThousandTwentySix09221 APIKeyAPIVersionDate = "2026-09-22-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix09222 APIKeyAPIVersionDate = "2026-09-22-2"
+	APIKeyAPIVersionDateTwoThousandTwentySix09223 APIKeyAPIVersionDate = "2026-09-22-3"
+	APIKeyAPIVersionDateTwoThousandTwentySix09224 APIKeyAPIVersionDate = "2026-09-22-4"
+	APIKeyAPIVersionDateTwoThousandTwentySix0923  APIKeyAPIVersionDate = "2026-09-23"
+	APIKeyAPIVersionDateTwoThousandTwentySix0924  APIKeyAPIVersionDate = "2026-09-24"
+	APIKeyAPIVersionDateTwoThousandTwentySix09241 APIKeyAPIVersionDate = "2026-09-24-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix0925  APIKeyAPIVersionDate = "2026-09-25"
+	APIKeyAPIVersionDateTwoThousandTwentySix0928  APIKeyAPIVersionDate = "2026-09-28"
+	APIKeyAPIVersionDateTwoThousandTwentySix0929  APIKeyAPIVersionDate = "2026-09-29"
+	APIKeyAPIVersionDateTwoThousandTwentySix1005  APIKeyAPIVersionDate = "2026-10-05"
+	APIKeyAPIVersionDateTwoThousandTwentySix10051 APIKeyAPIVersionDate = "2026-10-05-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix1006  APIKeyAPIVersionDate = "2026-10-06"
+	APIKeyAPIVersionDateTwoThousandTwentySix10061 APIKeyAPIVersionDate = "2026-10-06-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix10062 APIKeyAPIVersionDate = "2026-10-06-2"
+	APIKeyAPIVersionDateTwoThousandTwentySix1007  APIKeyAPIVersionDate = "2026-10-07"
+	APIKeyAPIVersionDateTwoThousandTwentySix10071 APIKeyAPIVersionDate = "2026-10-07-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix10072 APIKeyAPIVersionDate = "2026-10-07-2"
+	APIKeyAPIVersionDateTwoThousandTwentySix1008  APIKeyAPIVersionDate = "2026-10-08"
+	APIKeyAPIVersionDateTwoThousandTwentySix1009  APIKeyAPIVersionDate = "2026-10-09"
+	APIKeyAPIVersionDateTwoThousandTwentySix10091 APIKeyAPIVersionDate = "2026-10-09-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix10092 APIKeyAPIVersionDate = "2026-10-09-2"
+	APIKeyAPIVersionDateTwoThousandTwentySix1013  APIKeyAPIVersionDate = "2026-10-13"
+	APIKeyAPIVersionDateTwoThousandTwentySix10131 APIKeyAPIVersionDate = "2026-10-13-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix1014  APIKeyAPIVersionDate = "2026-10-14"
+	APIKeyAPIVersionDateTwoThousandTwentySix10141 APIKeyAPIVersionDate = "2026-10-14-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix1015  APIKeyAPIVersionDate = "2026-10-15"
+	APIKeyAPIVersionDateTwoThousandTwentySix10151 APIKeyAPIVersionDate = "2026-10-15-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix1024  APIKeyAPIVersionDate = "2026-10-24"
+	APIKeyAPIVersionDateTwoThousandTwentySix1027  APIKeyAPIVersionDate = "2026-10-27"
+	APIKeyAPIVersionDateTwoThousandTwentySix10271 APIKeyAPIVersionDate = "2026-10-27-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix10272 APIKeyAPIVersionDate = "2026-10-27-2"
+	APIKeyAPIVersionDateTwoThousandTwentySix10273 APIKeyAPIVersionDate = "2026-10-27-3"
+	APIKeyAPIVersionDateTwoThousandTwentySix1028  APIKeyAPIVersionDate = "2026-10-28"
+	APIKeyAPIVersionDateTwoThousandTwentySix10281 APIKeyAPIVersionDate = "2026-10-28-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix1029  APIKeyAPIVersionDate = "2026-10-29"
+	APIKeyAPIVersionDateTwoThousandTwentySix10291 APIKeyAPIVersionDate = "2026-10-29-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix10292 APIKeyAPIVersionDate = "2026-10-29-2"
+	APIKeyAPIVersionDateTwoThousandTwentySix10293 APIKeyAPIVersionDate = "2026-10-29-3"
+	APIKeyAPIVersionDateTwoThousandTwentySix10294 APIKeyAPIVersionDate = "2026-10-29-4"
+	APIKeyAPIVersionDateTwoThousandTwentySix10295 APIKeyAPIVersionDate = "2026-10-29-5"
+	APIKeyAPIVersionDateTwoThousandTwentySix10298 APIKeyAPIVersionDate = "2026-10-29-8"
 )
 
 func NewAPIKeyAPIVersionDateFromString(s string) (APIKeyAPIVersionDate, error) {
@@ -664,6 +750,124 @@ func NewAPIKeyAPIVersionDateFromString(s string) (APIKeyAPIVersionDate, error) {
 		return APIKeyAPIVersionDateTwoThousandTwentySix0814, nil
 	case "2026-08-21":
 		return APIKeyAPIVersionDateTwoThousandTwentySix0821, nil
+	case "2026-08-21-1":
+		return APIKeyAPIVersionDateTwoThousandTwentySix08211, nil
+	case "2026-08-25":
+		return APIKeyAPIVersionDateTwoThousandTwentySix0825, nil
+	case "2026-08-25-1":
+		return APIKeyAPIVersionDateTwoThousandTwentySix08251, nil
+	case "2026-08-25-2":
+		return APIKeyAPIVersionDateTwoThousandTwentySix08252, nil
+	case "2026-08-31":
+		return APIKeyAPIVersionDateTwoThousandTwentySix0831, nil
+	case "2026-09-02":
+		return APIKeyAPIVersionDateTwoThousandTwentySix0902, nil
+	case "2026-09-02-1":
+		return APIKeyAPIVersionDateTwoThousandTwentySix09021, nil
+	case "2026-09-02-2":
+		return APIKeyAPIVersionDateTwoThousandTwentySix09022, nil
+	case "2026-09-04":
+		return APIKeyAPIVersionDateTwoThousandTwentySix0904, nil
+	case "2026-09-06":
+		return APIKeyAPIVersionDateTwoThousandTwentySix0906, nil
+	case "2026-09-09":
+		return APIKeyAPIVersionDateTwoThousandTwentySix0909, nil
+	case "2026-09-09-1":
+		return APIKeyAPIVersionDateTwoThousandTwentySix09091, nil
+	case "2026-09-11":
+		return APIKeyAPIVersionDateTwoThousandTwentySix0911, nil
+	case "2026-09-11-1":
+		return APIKeyAPIVersionDateTwoThousandTwentySix09111, nil
+	case "2026-09-13":
+		return APIKeyAPIVersionDateTwoThousandTwentySix0913, nil
+	case "2026-09-15":
+		return APIKeyAPIVersionDateTwoThousandTwentySix0915, nil
+	case "2026-09-22":
+		return APIKeyAPIVersionDateTwoThousandTwentySix0922, nil
+	case "2026-09-22-1":
+		return APIKeyAPIVersionDateTwoThousandTwentySix09221, nil
+	case "2026-09-22-2":
+		return APIKeyAPIVersionDateTwoThousandTwentySix09222, nil
+	case "2026-09-22-3":
+		return APIKeyAPIVersionDateTwoThousandTwentySix09223, nil
+	case "2026-09-22-4":
+		return APIKeyAPIVersionDateTwoThousandTwentySix09224, nil
+	case "2026-09-23":
+		return APIKeyAPIVersionDateTwoThousandTwentySix0923, nil
+	case "2026-09-24":
+		return APIKeyAPIVersionDateTwoThousandTwentySix0924, nil
+	case "2026-09-24-1":
+		return APIKeyAPIVersionDateTwoThousandTwentySix09241, nil
+	case "2026-09-25":
+		return APIKeyAPIVersionDateTwoThousandTwentySix0925, nil
+	case "2026-09-28":
+		return APIKeyAPIVersionDateTwoThousandTwentySix0928, nil
+	case "2026-09-29":
+		return APIKeyAPIVersionDateTwoThousandTwentySix0929, nil
+	case "2026-10-05":
+		return APIKeyAPIVersionDateTwoThousandTwentySix1005, nil
+	case "2026-10-05-1":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10051, nil
+	case "2026-10-06":
+		return APIKeyAPIVersionDateTwoThousandTwentySix1006, nil
+	case "2026-10-06-1":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10061, nil
+	case "2026-10-06-2":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10062, nil
+	case "2026-10-07":
+		return APIKeyAPIVersionDateTwoThousandTwentySix1007, nil
+	case "2026-10-07-1":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10071, nil
+	case "2026-10-07-2":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10072, nil
+	case "2026-10-08":
+		return APIKeyAPIVersionDateTwoThousandTwentySix1008, nil
+	case "2026-10-09":
+		return APIKeyAPIVersionDateTwoThousandTwentySix1009, nil
+	case "2026-10-09-1":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10091, nil
+	case "2026-10-09-2":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10092, nil
+	case "2026-10-13":
+		return APIKeyAPIVersionDateTwoThousandTwentySix1013, nil
+	case "2026-10-13-1":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10131, nil
+	case "2026-10-14":
+		return APIKeyAPIVersionDateTwoThousandTwentySix1014, nil
+	case "2026-10-14-1":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10141, nil
+	case "2026-10-15":
+		return APIKeyAPIVersionDateTwoThousandTwentySix1015, nil
+	case "2026-10-15-1":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10151, nil
+	case "2026-10-24":
+		return APIKeyAPIVersionDateTwoThousandTwentySix1024, nil
+	case "2026-10-27":
+		return APIKeyAPIVersionDateTwoThousandTwentySix1027, nil
+	case "2026-10-27-1":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10271, nil
+	case "2026-10-27-2":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10272, nil
+	case "2026-10-27-3":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10273, nil
+	case "2026-10-28":
+		return APIKeyAPIVersionDateTwoThousandTwentySix1028, nil
+	case "2026-10-28-1":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10281, nil
+	case "2026-10-29":
+		return APIKeyAPIVersionDateTwoThousandTwentySix1029, nil
+	case "2026-10-29-1":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10291, nil
+	case "2026-10-29-2":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10292, nil
+	case "2026-10-29-3":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10293, nil
+	case "2026-10-29-4":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10294, nil
+	case "2026-10-29-5":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10295, nil
+	case "2026-10-29-8":
+		return APIKeyAPIVersionDateTwoThousandTwentySix10298, nil
 	}
 	var t APIKeyAPIVersionDate
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -683,7 +887,7 @@ type APIKeyGrant struct {
 	Actions []*APIKeyGrantAction `json:"actions" url:"actions"`
 	// ID of the resource the actions apply to.
 	ResourceID string `json:"resource_id" url:"resource_id"`
-	// The type of resource the actions apply to, such as `account`, `product`, or `app`.
+	// The type of resource the actions apply to, such as `account`, `product`, `app`, or `user`.
 	ResourceType string `json:"resource_type" url:"resource_type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -722,10 +926,12 @@ func (a *APIKeyGrant) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *APIKeyGrant) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetActions sets the Actions field and marks it as non-optional;
@@ -831,10 +1037,12 @@ func (a *APIKeyGrantAction) GetExtraProperties() map[string]interface{} {
 }
 
 func (a *APIKeyGrantAction) require(field *big.Int) {
-	if a.explicitFields == nil {
-		a.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
 	}
-	a.explicitFields.Or(a.explicitFields, field)
+	next.Or(next, field)
+	a.explicitFields = next
 }
 
 // SetAction sets the Action field and marks it as non-optional;
@@ -1090,6 +1298,11 @@ var (
 	permissionFieldName                 = big.NewInt(1 << 7)
 )
 
+// permissionNullableFields maps the wire names of Permission's nullable fields (required or optional) to their field bits.
+var permissionNullableFields = map[string]*big.Int{
+	"category": permissionFieldCategory,
+}
+
 type Permission struct {
 	// The permission action's identifier, for example `company:basic:read`.
 	Action string `json:"action" url:"action"`
@@ -1178,10 +1391,12 @@ func (p *Permission) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *Permission) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAction sets the Action field and marks it as non-optional;
@@ -1252,6 +1467,13 @@ func (p *Permission) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, permissionNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1291,6 +1513,7 @@ const (
 	PermissionGrantedToSystemRolesItemModerator    PermissionGrantedToSystemRolesItem = "moderator"
 	PermissionGrantedToSystemRolesItemSalesManager PermissionGrantedToSystemRolesItem = "sales_manager"
 	PermissionGrantedToSystemRolesItemAdvertiser   PermissionGrantedToSystemRolesItem = "advertiser"
+	PermissionGrantedToSystemRolesItemPartner      PermissionGrantedToSystemRolesItem = "partner"
 )
 
 func NewPermissionGrantedToSystemRolesItemFromString(s string) (PermissionGrantedToSystemRolesItem, error) {
@@ -1305,6 +1528,8 @@ func NewPermissionGrantedToSystemRolesItemFromString(s string) (PermissionGrante
 		return PermissionGrantedToSystemRolesItemSalesManager, nil
 	case "advertiser":
 		return PermissionGrantedToSystemRolesItemAdvertiser, nil
+	case "partner":
+		return PermissionGrantedToSystemRolesItemPartner, nil
 	}
 	var t PermissionGrantedToSystemRolesItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1343,6 +1568,65 @@ const (
 	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0813  CreateAPIKeysRequestAPIVersionDate = "2026-08-13"
 	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0814  CreateAPIKeysRequestAPIVersionDate = "2026-08-14"
 	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0821  CreateAPIKeysRequestAPIVersionDate = "2026-08-21"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix08211 CreateAPIKeysRequestAPIVersionDate = "2026-08-21-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0825  CreateAPIKeysRequestAPIVersionDate = "2026-08-25"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix08251 CreateAPIKeysRequestAPIVersionDate = "2026-08-25-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix08252 CreateAPIKeysRequestAPIVersionDate = "2026-08-25-2"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0831  CreateAPIKeysRequestAPIVersionDate = "2026-08-31"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0902  CreateAPIKeysRequestAPIVersionDate = "2026-09-02"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09021 CreateAPIKeysRequestAPIVersionDate = "2026-09-02-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09022 CreateAPIKeysRequestAPIVersionDate = "2026-09-02-2"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0904  CreateAPIKeysRequestAPIVersionDate = "2026-09-04"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0906  CreateAPIKeysRequestAPIVersionDate = "2026-09-06"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0909  CreateAPIKeysRequestAPIVersionDate = "2026-09-09"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09091 CreateAPIKeysRequestAPIVersionDate = "2026-09-09-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0911  CreateAPIKeysRequestAPIVersionDate = "2026-09-11"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09111 CreateAPIKeysRequestAPIVersionDate = "2026-09-11-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0913  CreateAPIKeysRequestAPIVersionDate = "2026-09-13"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0915  CreateAPIKeysRequestAPIVersionDate = "2026-09-15"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0922  CreateAPIKeysRequestAPIVersionDate = "2026-09-22"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09221 CreateAPIKeysRequestAPIVersionDate = "2026-09-22-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09222 CreateAPIKeysRequestAPIVersionDate = "2026-09-22-2"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09223 CreateAPIKeysRequestAPIVersionDate = "2026-09-22-3"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09224 CreateAPIKeysRequestAPIVersionDate = "2026-09-22-4"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0923  CreateAPIKeysRequestAPIVersionDate = "2026-09-23"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0924  CreateAPIKeysRequestAPIVersionDate = "2026-09-24"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09241 CreateAPIKeysRequestAPIVersionDate = "2026-09-24-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0925  CreateAPIKeysRequestAPIVersionDate = "2026-09-25"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0928  CreateAPIKeysRequestAPIVersionDate = "2026-09-28"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0929  CreateAPIKeysRequestAPIVersionDate = "2026-09-29"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1005  CreateAPIKeysRequestAPIVersionDate = "2026-10-05"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10051 CreateAPIKeysRequestAPIVersionDate = "2026-10-05-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1006  CreateAPIKeysRequestAPIVersionDate = "2026-10-06"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10061 CreateAPIKeysRequestAPIVersionDate = "2026-10-06-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10062 CreateAPIKeysRequestAPIVersionDate = "2026-10-06-2"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1007  CreateAPIKeysRequestAPIVersionDate = "2026-10-07"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10071 CreateAPIKeysRequestAPIVersionDate = "2026-10-07-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10072 CreateAPIKeysRequestAPIVersionDate = "2026-10-07-2"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1008  CreateAPIKeysRequestAPIVersionDate = "2026-10-08"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1009  CreateAPIKeysRequestAPIVersionDate = "2026-10-09"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10091 CreateAPIKeysRequestAPIVersionDate = "2026-10-09-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10092 CreateAPIKeysRequestAPIVersionDate = "2026-10-09-2"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1013  CreateAPIKeysRequestAPIVersionDate = "2026-10-13"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10131 CreateAPIKeysRequestAPIVersionDate = "2026-10-13-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1014  CreateAPIKeysRequestAPIVersionDate = "2026-10-14"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10141 CreateAPIKeysRequestAPIVersionDate = "2026-10-14-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1015  CreateAPIKeysRequestAPIVersionDate = "2026-10-15"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10151 CreateAPIKeysRequestAPIVersionDate = "2026-10-15-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1024  CreateAPIKeysRequestAPIVersionDate = "2026-10-24"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1027  CreateAPIKeysRequestAPIVersionDate = "2026-10-27"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10271 CreateAPIKeysRequestAPIVersionDate = "2026-10-27-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10272 CreateAPIKeysRequestAPIVersionDate = "2026-10-27-2"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10273 CreateAPIKeysRequestAPIVersionDate = "2026-10-27-3"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1028  CreateAPIKeysRequestAPIVersionDate = "2026-10-28"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10281 CreateAPIKeysRequestAPIVersionDate = "2026-10-28-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1029  CreateAPIKeysRequestAPIVersionDate = "2026-10-29"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10291 CreateAPIKeysRequestAPIVersionDate = "2026-10-29-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10292 CreateAPIKeysRequestAPIVersionDate = "2026-10-29-2"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10293 CreateAPIKeysRequestAPIVersionDate = "2026-10-29-3"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10294 CreateAPIKeysRequestAPIVersionDate = "2026-10-29-4"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10295 CreateAPIKeysRequestAPIVersionDate = "2026-10-29-5"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10298 CreateAPIKeysRequestAPIVersionDate = "2026-10-29-8"
 )
 
 func NewCreateAPIKeysRequestAPIVersionDateFromString(s string) (CreateAPIKeysRequestAPIVersionDate, error) {
@@ -1397,6 +1681,124 @@ func NewCreateAPIKeysRequestAPIVersionDateFromString(s string) (CreateAPIKeysReq
 		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0814, nil
 	case "2026-08-21":
 		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0821, nil
+	case "2026-08-21-1":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix08211, nil
+	case "2026-08-25":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0825, nil
+	case "2026-08-25-1":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix08251, nil
+	case "2026-08-25-2":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix08252, nil
+	case "2026-08-31":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0831, nil
+	case "2026-09-02":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0902, nil
+	case "2026-09-02-1":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09021, nil
+	case "2026-09-02-2":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09022, nil
+	case "2026-09-04":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0904, nil
+	case "2026-09-06":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0906, nil
+	case "2026-09-09":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0909, nil
+	case "2026-09-09-1":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09091, nil
+	case "2026-09-11":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0911, nil
+	case "2026-09-11-1":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09111, nil
+	case "2026-09-13":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0913, nil
+	case "2026-09-15":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0915, nil
+	case "2026-09-22":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0922, nil
+	case "2026-09-22-1":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09221, nil
+	case "2026-09-22-2":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09222, nil
+	case "2026-09-22-3":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09223, nil
+	case "2026-09-22-4":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09224, nil
+	case "2026-09-23":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0923, nil
+	case "2026-09-24":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0924, nil
+	case "2026-09-24-1":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09241, nil
+	case "2026-09-25":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0925, nil
+	case "2026-09-28":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0928, nil
+	case "2026-09-29":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0929, nil
+	case "2026-10-05":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1005, nil
+	case "2026-10-05-1":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10051, nil
+	case "2026-10-06":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1006, nil
+	case "2026-10-06-1":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10061, nil
+	case "2026-10-06-2":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10062, nil
+	case "2026-10-07":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1007, nil
+	case "2026-10-07-1":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10071, nil
+	case "2026-10-07-2":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10072, nil
+	case "2026-10-08":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1008, nil
+	case "2026-10-09":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1009, nil
+	case "2026-10-09-1":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10091, nil
+	case "2026-10-09-2":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10092, nil
+	case "2026-10-13":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1013, nil
+	case "2026-10-13-1":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10131, nil
+	case "2026-10-14":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1014, nil
+	case "2026-10-14-1":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10141, nil
+	case "2026-10-15":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1015, nil
+	case "2026-10-15-1":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10151, nil
+	case "2026-10-24":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1024, nil
+	case "2026-10-27":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1027, nil
+	case "2026-10-27-1":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10271, nil
+	case "2026-10-27-2":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10272, nil
+	case "2026-10-27-3":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10273, nil
+	case "2026-10-28":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1028, nil
+	case "2026-10-28-1":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10281, nil
+	case "2026-10-29":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1029, nil
+	case "2026-10-29-1":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10291, nil
+	case "2026-10-29-2":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10292, nil
+	case "2026-10-29-3":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10293, nil
+	case "2026-10-29-4":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10294, nil
+	case "2026-10-29-5":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10295, nil
+	case "2026-10-29-8":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10298, nil
 	}
 	var t CreateAPIKeysRequestAPIVersionDate
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1406,12 +1808,17 @@ func (c CreateAPIKeysRequestAPIVersionDate) Ptr() *CreateAPIKeysRequestAPIVersio
 	return &c
 }
 
-// The permissions policy for the API key: explicit permission statements, or a system role to inherit from. Statements without a `resources` array default to the owning account (Account API keys) or every key-addressable resource (App API keys).
 var (
 	createAPIKeysRequestPermissionsFieldStatements = big.NewInt(1 << 0)
 	createAPIKeysRequestPermissionsFieldSystemRole = big.NewInt(1 << 1)
 )
 
+// createAPIKeysRequestPermissionsNullableFields maps the wire names of CreateAPIKeysRequestPermissions's nullable fields (required or optional) to their field bits.
+var createAPIKeysRequestPermissionsNullableFields = map[string]*big.Int{
+	"system_role": createAPIKeysRequestPermissionsFieldSystemRole,
+}
+
+// The permissions policy for the API key: explicit permission statements, or a system role to inherit from. Statements without a `resources` array default to the owning account (Account API keys) or every key-addressable resource (App API keys).
 type CreateAPIKeysRequestPermissions struct {
 	// Explicit permission statements. Required unless `system_role` is set.
 	Statements []*CreateAPIKeysRequestPermissionsStatementsItem `json:"statements,omitempty" url:"statements,omitempty"`
@@ -1447,10 +1854,12 @@ func (c *CreateAPIKeysRequestPermissions) GetExtraProperties() map[string]interf
 }
 
 func (c *CreateAPIKeysRequestPermissions) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetStatements sets the Statements field and marks it as non-optional;
@@ -1479,6 +1888,13 @@ func (c *CreateAPIKeysRequestPermissions) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createAPIKeysRequestPermissionsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -1559,10 +1975,12 @@ func (c *CreateAPIKeysRequestPermissionsStatementsItem) GetExtraProperties() map
 }
 
 func (c *CreateAPIKeysRequestPermissionsStatementsItem) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetActions sets the Actions field and marks it as non-optional;
@@ -1666,6 +2084,7 @@ type CreateAPIKeysRequestResourceType string
 const (
 	CreateAPIKeysRequestResourceTypeAccount CreateAPIKeysRequestResourceType = "account"
 	CreateAPIKeysRequestResourceTypeApp     CreateAPIKeysRequestResourceType = "app"
+	CreateAPIKeysRequestResourceTypeUser    CreateAPIKeysRequestResourceType = "user"
 )
 
 func NewCreateAPIKeysRequestResourceTypeFromString(s string) (CreateAPIKeysRequestResourceType, error) {
@@ -1674,6 +2093,8 @@ func NewCreateAPIKeysRequestResourceTypeFromString(s string) (CreateAPIKeysReque
 		return CreateAPIKeysRequestResourceTypeAccount, nil
 	case "app":
 		return CreateAPIKeysRequestResourceTypeApp, nil
+	case "user":
+		return CreateAPIKeysRequestResourceTypeUser, nil
 	}
 	var t CreateAPIKeysRequestResourceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1723,10 +2144,12 @@ func (d *DeleteAPIKeysResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (d *DeleteAPIKeysResponse) require(field *big.Int) {
-	if d.explicitFields == nil {
-		d.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
 	}
-	d.explicitFields.Or(d.explicitFields, field)
+	next.Or(next, field)
+	d.explicitFields = next
 }
 
 // SetDeleted sets the Deleted field and marks it as non-optional;
@@ -1831,6 +2254,7 @@ type ListAPIKeysRequestResourceType string
 const (
 	ListAPIKeysRequestResourceTypeAccount ListAPIKeysRequestResourceType = "account"
 	ListAPIKeysRequestResourceTypeApp     ListAPIKeysRequestResourceType = "app"
+	ListAPIKeysRequestResourceTypeUser    ListAPIKeysRequestResourceType = "user"
 )
 
 func NewListAPIKeysRequestResourceTypeFromString(s string) (ListAPIKeysRequestResourceType, error) {
@@ -1839,6 +2263,8 @@ func NewListAPIKeysRequestResourceTypeFromString(s string) (ListAPIKeysRequestRe
 		return ListAPIKeysRequestResourceTypeAccount, nil
 	case "app":
 		return ListAPIKeysRequestResourceTypeApp, nil
+	case "user":
+		return ListAPIKeysRequestResourceTypeUser, nil
 	}
 	var t ListAPIKeysRequestResourceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1886,10 +2312,12 @@ func (l *ListAPIKeysResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListAPIKeysResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -1955,6 +2383,12 @@ var (
 	listAPIKeysResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listAPIKeysResponsePageInfoNullableFields maps the wire names of ListAPIKeysResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listAPIKeysResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listAPIKeysResponsePageInfoFieldEndCursor,
+	"start_cursor": listAPIKeysResponsePageInfoFieldStartCursor,
+}
+
 type ListAPIKeysResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2004,10 +2438,12 @@ func (l *ListAPIKeysResponsePageInfo) GetExtraProperties() map[string]interface{
 }
 
 func (l *ListAPIKeysResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2050,6 +2486,13 @@ func (l *ListAPIKeysResponsePageInfo) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listAPIKeysResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2118,10 +2561,12 @@ func (l *ListPermissionsAPIKeysResponse) GetExtraProperties() map[string]interfa
 }
 
 func (l *ListPermissionsAPIKeysResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
@@ -2187,6 +2632,12 @@ var (
 	listPermissionsAPIKeysResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
+// listPermissionsAPIKeysResponsePageInfoNullableFields maps the wire names of ListPermissionsAPIKeysResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listPermissionsAPIKeysResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listPermissionsAPIKeysResponsePageInfoFieldEndCursor,
+	"start_cursor": listPermissionsAPIKeysResponsePageInfoFieldStartCursor,
+}
+
 type ListPermissionsAPIKeysResponsePageInfo struct {
 	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
@@ -2236,10 +2687,12 @@ func (l *ListPermissionsAPIKeysResponsePageInfo) GetExtraProperties() map[string
 }
 
 func (l *ListPermissionsAPIKeysResponsePageInfo) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetEndCursor sets the EndCursor field and marks it as non-optional;
@@ -2282,6 +2735,13 @@ func (l *ListPermissionsAPIKeysResponsePageInfo) UnmarshalJSON(data []byte) erro
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPermissionsAPIKeysResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2341,6 +2801,65 @@ const (
 	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0813  UpdateAPIKeysRequestAPIVersionDate = "2026-08-13"
 	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0814  UpdateAPIKeysRequestAPIVersionDate = "2026-08-14"
 	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0821  UpdateAPIKeysRequestAPIVersionDate = "2026-08-21"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix08211 UpdateAPIKeysRequestAPIVersionDate = "2026-08-21-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0825  UpdateAPIKeysRequestAPIVersionDate = "2026-08-25"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix08251 UpdateAPIKeysRequestAPIVersionDate = "2026-08-25-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix08252 UpdateAPIKeysRequestAPIVersionDate = "2026-08-25-2"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0831  UpdateAPIKeysRequestAPIVersionDate = "2026-08-31"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0902  UpdateAPIKeysRequestAPIVersionDate = "2026-09-02"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09021 UpdateAPIKeysRequestAPIVersionDate = "2026-09-02-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09022 UpdateAPIKeysRequestAPIVersionDate = "2026-09-02-2"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0904  UpdateAPIKeysRequestAPIVersionDate = "2026-09-04"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0906  UpdateAPIKeysRequestAPIVersionDate = "2026-09-06"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0909  UpdateAPIKeysRequestAPIVersionDate = "2026-09-09"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09091 UpdateAPIKeysRequestAPIVersionDate = "2026-09-09-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0911  UpdateAPIKeysRequestAPIVersionDate = "2026-09-11"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09111 UpdateAPIKeysRequestAPIVersionDate = "2026-09-11-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0913  UpdateAPIKeysRequestAPIVersionDate = "2026-09-13"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0915  UpdateAPIKeysRequestAPIVersionDate = "2026-09-15"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0922  UpdateAPIKeysRequestAPIVersionDate = "2026-09-22"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09221 UpdateAPIKeysRequestAPIVersionDate = "2026-09-22-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09222 UpdateAPIKeysRequestAPIVersionDate = "2026-09-22-2"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09223 UpdateAPIKeysRequestAPIVersionDate = "2026-09-22-3"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09224 UpdateAPIKeysRequestAPIVersionDate = "2026-09-22-4"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0923  UpdateAPIKeysRequestAPIVersionDate = "2026-09-23"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0924  UpdateAPIKeysRequestAPIVersionDate = "2026-09-24"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09241 UpdateAPIKeysRequestAPIVersionDate = "2026-09-24-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0925  UpdateAPIKeysRequestAPIVersionDate = "2026-09-25"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0928  UpdateAPIKeysRequestAPIVersionDate = "2026-09-28"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0929  UpdateAPIKeysRequestAPIVersionDate = "2026-09-29"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1005  UpdateAPIKeysRequestAPIVersionDate = "2026-10-05"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10051 UpdateAPIKeysRequestAPIVersionDate = "2026-10-05-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1006  UpdateAPIKeysRequestAPIVersionDate = "2026-10-06"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10061 UpdateAPIKeysRequestAPIVersionDate = "2026-10-06-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10062 UpdateAPIKeysRequestAPIVersionDate = "2026-10-06-2"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1007  UpdateAPIKeysRequestAPIVersionDate = "2026-10-07"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10071 UpdateAPIKeysRequestAPIVersionDate = "2026-10-07-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10072 UpdateAPIKeysRequestAPIVersionDate = "2026-10-07-2"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1008  UpdateAPIKeysRequestAPIVersionDate = "2026-10-08"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1009  UpdateAPIKeysRequestAPIVersionDate = "2026-10-09"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10091 UpdateAPIKeysRequestAPIVersionDate = "2026-10-09-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10092 UpdateAPIKeysRequestAPIVersionDate = "2026-10-09-2"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1013  UpdateAPIKeysRequestAPIVersionDate = "2026-10-13"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10131 UpdateAPIKeysRequestAPIVersionDate = "2026-10-13-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1014  UpdateAPIKeysRequestAPIVersionDate = "2026-10-14"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10141 UpdateAPIKeysRequestAPIVersionDate = "2026-10-14-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1015  UpdateAPIKeysRequestAPIVersionDate = "2026-10-15"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10151 UpdateAPIKeysRequestAPIVersionDate = "2026-10-15-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1024  UpdateAPIKeysRequestAPIVersionDate = "2026-10-24"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1027  UpdateAPIKeysRequestAPIVersionDate = "2026-10-27"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10271 UpdateAPIKeysRequestAPIVersionDate = "2026-10-27-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10272 UpdateAPIKeysRequestAPIVersionDate = "2026-10-27-2"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10273 UpdateAPIKeysRequestAPIVersionDate = "2026-10-27-3"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1028  UpdateAPIKeysRequestAPIVersionDate = "2026-10-28"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10281 UpdateAPIKeysRequestAPIVersionDate = "2026-10-28-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1029  UpdateAPIKeysRequestAPIVersionDate = "2026-10-29"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10291 UpdateAPIKeysRequestAPIVersionDate = "2026-10-29-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10292 UpdateAPIKeysRequestAPIVersionDate = "2026-10-29-2"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10293 UpdateAPIKeysRequestAPIVersionDate = "2026-10-29-3"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10294 UpdateAPIKeysRequestAPIVersionDate = "2026-10-29-4"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10295 UpdateAPIKeysRequestAPIVersionDate = "2026-10-29-5"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10298 UpdateAPIKeysRequestAPIVersionDate = "2026-10-29-8"
 )
 
 func NewUpdateAPIKeysRequestAPIVersionDateFromString(s string) (UpdateAPIKeysRequestAPIVersionDate, error) {
@@ -2395,6 +2914,124 @@ func NewUpdateAPIKeysRequestAPIVersionDateFromString(s string) (UpdateAPIKeysReq
 		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0814, nil
 	case "2026-08-21":
 		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0821, nil
+	case "2026-08-21-1":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix08211, nil
+	case "2026-08-25":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0825, nil
+	case "2026-08-25-1":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix08251, nil
+	case "2026-08-25-2":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix08252, nil
+	case "2026-08-31":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0831, nil
+	case "2026-09-02":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0902, nil
+	case "2026-09-02-1":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09021, nil
+	case "2026-09-02-2":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09022, nil
+	case "2026-09-04":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0904, nil
+	case "2026-09-06":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0906, nil
+	case "2026-09-09":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0909, nil
+	case "2026-09-09-1":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09091, nil
+	case "2026-09-11":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0911, nil
+	case "2026-09-11-1":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09111, nil
+	case "2026-09-13":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0913, nil
+	case "2026-09-15":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0915, nil
+	case "2026-09-22":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0922, nil
+	case "2026-09-22-1":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09221, nil
+	case "2026-09-22-2":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09222, nil
+	case "2026-09-22-3":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09223, nil
+	case "2026-09-22-4":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09224, nil
+	case "2026-09-23":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0923, nil
+	case "2026-09-24":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0924, nil
+	case "2026-09-24-1":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix09241, nil
+	case "2026-09-25":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0925, nil
+	case "2026-09-28":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0928, nil
+	case "2026-09-29":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix0929, nil
+	case "2026-10-05":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1005, nil
+	case "2026-10-05-1":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10051, nil
+	case "2026-10-06":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1006, nil
+	case "2026-10-06-1":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10061, nil
+	case "2026-10-06-2":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10062, nil
+	case "2026-10-07":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1007, nil
+	case "2026-10-07-1":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10071, nil
+	case "2026-10-07-2":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10072, nil
+	case "2026-10-08":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1008, nil
+	case "2026-10-09":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1009, nil
+	case "2026-10-09-1":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10091, nil
+	case "2026-10-09-2":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10092, nil
+	case "2026-10-13":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1013, nil
+	case "2026-10-13-1":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10131, nil
+	case "2026-10-14":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1014, nil
+	case "2026-10-14-1":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10141, nil
+	case "2026-10-15":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1015, nil
+	case "2026-10-15-1":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10151, nil
+	case "2026-10-24":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1024, nil
+	case "2026-10-27":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1027, nil
+	case "2026-10-27-1":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10271, nil
+	case "2026-10-27-2":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10272, nil
+	case "2026-10-27-3":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10273, nil
+	case "2026-10-28":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1028, nil
+	case "2026-10-28-1":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10281, nil
+	case "2026-10-29":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1029, nil
+	case "2026-10-29-1":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10291, nil
+	case "2026-10-29-2":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10292, nil
+	case "2026-10-29-3":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10293, nil
+	case "2026-10-29-4":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10294, nil
+	case "2026-10-29-5":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10295, nil
+	case "2026-10-29-8":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix10298, nil
 	}
 	var t UpdateAPIKeysRequestAPIVersionDate
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2404,12 +3041,17 @@ func (u UpdateAPIKeysRequestAPIVersionDate) Ptr() *UpdateAPIKeysRequestAPIVersio
 	return &u
 }
 
-// The permissions policy for the API key: explicit permission statements, or a system role to inherit from. Statements without a `resources` array default to the owning account (Account API keys) or every key-addressable resource (App API keys).
 var (
 	updateAPIKeysRequestPermissionsFieldStatements = big.NewInt(1 << 0)
 	updateAPIKeysRequestPermissionsFieldSystemRole = big.NewInt(1 << 1)
 )
 
+// updateAPIKeysRequestPermissionsNullableFields maps the wire names of UpdateAPIKeysRequestPermissions's nullable fields (required or optional) to their field bits.
+var updateAPIKeysRequestPermissionsNullableFields = map[string]*big.Int{
+	"system_role": updateAPIKeysRequestPermissionsFieldSystemRole,
+}
+
+// The permissions policy for the API key: explicit permission statements, or a system role to inherit from. Statements without a `resources` array default to the owning account (Account API keys) or every key-addressable resource (App API keys).
 type UpdateAPIKeysRequestPermissions struct {
 	// Explicit permission statements. Required unless `system_role` is set.
 	Statements []*UpdateAPIKeysRequestPermissionsStatementsItem `json:"statements,omitempty" url:"statements,omitempty"`
@@ -2445,10 +3087,12 @@ func (u *UpdateAPIKeysRequestPermissions) GetExtraProperties() map[string]interf
 }
 
 func (u *UpdateAPIKeysRequestPermissions) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetStatements sets the Statements field and marks it as non-optional;
@@ -2477,6 +3121,13 @@ func (u *UpdateAPIKeysRequestPermissions) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateAPIKeysRequestPermissionsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
 	u.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -2557,10 +3208,12 @@ func (u *UpdateAPIKeysRequestPermissionsStatementsItem) GetExtraProperties() map
 }
 
 func (u *UpdateAPIKeysRequestPermissionsStatementsItem) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetActions sets the Actions field and marks it as non-optional;
@@ -2686,10 +3339,12 @@ type UpdateAPIKeysRequest struct {
 }
 
 func (u *UpdateAPIKeysRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

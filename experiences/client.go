@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Returns a paginated list of experiences belonging to a company, with optional filtering by product and app.
+// Lists the experiences in an account, optionally filtered to those attached to one product or powered by one app.
 //
 // Example:
 //
@@ -50,7 +50,6 @@ func NewClient(options *core.RequestOptions) *Client {
 //	    Last: whopsdk.Int(
 //	        42,
 //	    ),
-//	    CompanyID: "biz_xxxxxxxxxxxxxx",
 //	    ProductID: whopsdk.String(
 //	        "prod_xxxxxxxxxxxxx",
 //	    ),
@@ -67,6 +66,7 @@ func NewClient(options *core.RequestOptions) *Client {
 //	            "2023-12-01T05:00:00Z",
 //	        ),
 //	    ),
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	}
 //	client.Experiences.List(
 //	    context.TODO(),
@@ -80,7 +80,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/experiences"
@@ -135,14 +143,16 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
+// Creates an experience for an account, powered by an app such as courses, forums, or chat. Attach it to a product with `POST /experiences/:id/attach` to give that product's customers access.
+//
 // Required permissions:
 //   - `experience:create`
 //
 // Example:
 //
 //	request := &whopsdk.CreateExperiencesRequest{
+//	    AccountID: "biz_xxxxxxxxxxxxxx",
 //	    AppID: "app_xxxxxxxxxxxxxx",
-//	    CompanyID: "biz_xxxxxxxxxxxxxx",
 //	}
 //	client.Experiences.Create(
 //	    context.TODO(),
@@ -191,6 +201,8 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
+// Deletes an experience and detaches it from every product, removing customer access to it. Returns `true` on success.
+//
 // Required permissions:
 //   - `experience:delete`
 //
@@ -219,6 +231,8 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
+// Updates an experience's name, logo, visibility, or notification setting, or moves it to another section or position.
+//
 // Required permissions:
 //   - `experience:update`
 //
@@ -247,7 +261,7 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Attach an experience to a product, making it accessible to the product's customers.
+// Attaches an experience to a product, giving the product's customers access to it.
 //
 // Required permissions:
 //   - `experience:attach`
@@ -278,7 +292,7 @@ func (c *Client) Attach(
 	return response.Body, nil
 }
 
-// Detach an experience from a product, removing customer access to it through that product.
+// Detaches an experience from a product, removing customer access to it through that product.
 //
 // Required permissions:
 //   - `experience:detach`
@@ -309,9 +323,7 @@ func (c *Client) Detach(
 	return response.Body, nil
 }
 
-// Duplicates an existing experience. The name will be copied, unless provided. The new experience will be attached to the same products as the original experience.
-// If duplicating a Forum or Chat experience, the new experience will have the same settings as the original experience, e.g. who can post, who can comment, etc.
-// No content, e.g. posts, messages, lessons from within the original experience will be copied.
+// Duplicates an experience and attaches the copy to the same products as the original. Forum and chat copies keep the original's settings, such as who can post or comment. No content, such as posts, messages, or lessons, is copied.
 //
 // Required permissions:
 //   - `experience:create`

@@ -6,11 +6,11 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
-	payouts "github.com/whopio/whopsdk-go/payouts"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
+	payouts "github.com/whopio/whopsdk-go/v2/payouts"
 )
 
 type Client struct {
@@ -23,7 +23,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -40,7 +40,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists the bank accounts, wallets, and crypto addresses an account or user can withdraw to, newest first.
+// Lists the bank accounts, wallets, and crypto addresses an account or user can pay out to, newest first.
 //
 // Example:
 //
@@ -57,7 +57,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/payouts/methods"
@@ -112,7 +120,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Saves a new place an account or user can withdraw to. Sensitive details are vaulted in transit and never stored raw.
+// Saves a bank account, wallet, or crypto address an account or user can pay out to, from a method listed by `GET /payouts/supported_methods`. Sensitive details are vaulted in transit and never stored raw.
 //
 // Example:
 //
@@ -166,13 +174,12 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Changes the label used to identify a saved payout method.
+// Changes the label used to identify a saved payout method, makes it the account's default payout method, or updates the payout address on file for it. Send `address` on its own: it cannot be combined with `nickname` or `is_default`. Address updates require the `payout:account:update` scope as well, on the same account, and are supported only for bank and wallet payout methods, not recipient payout methods.
 //
 // Example:
 //
 //	request := &payouts.UpdateMethodsRequest{
 //	    ID: "id",
-//	    Nickname: "Primary checking",
 //	}
 //	client.Payouts.Methods.Update(
 //	    context.TODO(),

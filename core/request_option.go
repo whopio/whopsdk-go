@@ -19,6 +19,7 @@ type RequestOption interface {
 // to be used directly; use the option package instead.
 type RequestOptions struct {
 	BaseURL                    string
+	Environment                interface{}
 	HTTPClient                 HTTPClient
 	HTTPHeader                 http.Header
 	BodyProperties             map[string]interface{}
@@ -73,9 +74,9 @@ func (r *RequestOptions) ToHeader() http.Header {
 func (r *RequestOptions) cloneHeader() http.Header {
 	headers := r.HTTPHeader.Clone()
 	headers.Set("X-Fern-Language", "Go")
-	headers.Set("X-Fern-SDK-Name", "github.com/whopio/whopsdk-go")
-	headers.Set("X-Fern-SDK-Version", "v1.0.11")
-	headers.Set("User-Agent", "github.com/whopio/whopsdk-go/1.0.11")
+	headers.Set("X-Fern-SDK-Name", "github.com/whopio/whopsdk-go/v2")
+	headers.Set("X-Fern-SDK-Version", "v2.7.0")
+	headers.Set("User-Agent", "github.com/whopio/whopsdk-go/v2/2.7.0")
 	return headers
 }
 
@@ -163,6 +164,15 @@ type WithoutRetriesOption struct{}
 
 func (w *WithoutRetriesOption) applyRequestOptions(opts *RequestOptions) {
 	opts.DisableRetries = true
+}
+
+// EnvironmentOption implements the RequestOption interface.
+type EnvironmentOption struct {
+	Environment interface{}
+}
+
+func (e *EnvironmentOption) applyRequestOptions(opts *RequestOptions) {
+	opts.Environment = e.Environment
 }
 
 // TokenOption implements the RequestOption interface.

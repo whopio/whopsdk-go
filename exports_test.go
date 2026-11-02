@@ -2745,6 +2745,266 @@ func TestJSONMarshalingPostExportFailedPayload(t *testing.T) {
 	})
 }
 
+func TestRequiredNullableRoundTripExport(t *testing.T) {
+	requiredNullableKeys := []string{
+		"download_url",
+		"progress_percent",
+	}
+	marshalToMap := func(t *testing.T, obj *Export) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj Export
+		require.NoError(t, json.Unmarshal([]byte(`{"download_url":null,"progress_percent":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj Export
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &Export{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripListExportsResponsePageInfo(t *testing.T) {
+	requiredNullableKeys := []string{
+		"end_cursor",
+		"start_cursor",
+	}
+	marshalToMap := func(t *testing.T, obj *ListExportsResponsePageInfo) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj ListExportsResponsePageInfo
+		require.NoError(t, json.Unmarshal([]byte(`{"end_cursor":null,"start_cursor":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj ListExportsResponsePageInfo
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &ListExportsResponsePageInfo{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripPostExportCompletedPayload(t *testing.T) {
+	requiredNullableKeys := []string{
+		"api_version_date",
+	}
+	marshalToMap := func(t *testing.T, obj *PostExportCompletedPayload) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj PostExportCompletedPayload
+		require.NoError(t, json.Unmarshal([]byte(`{"api_version_date":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj PostExportCompletedPayload
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &PostExportCompletedPayload{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripPostExportFailedPayload(t *testing.T) {
+	requiredNullableKeys := []string{
+		"api_version_date",
+	}
+	marshalToMap := func(t *testing.T, obj *PostExportFailedPayload) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj PostExportFailedPayload
+		require.NoError(t, json.Unmarshal([]byte(`{"api_version_date":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj PostExportFailedPayload
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &PostExportFailedPayload{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestOptionalNullableRoundTripPostExportCompletedPayload(t *testing.T) {
+	optionalNullableKeys := []string{
+		"account_id",
+	}
+	marshalToMap := func(t *testing.T, obj *PostExportCompletedPayload) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj PostExportCompletedPayload
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range optionalNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "optional nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "optional nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj PostExportCompletedPayload
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range optionalNullableKeys {
+			assert.NotContains(t, result, key, "optional nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &PostExportCompletedPayload{})
+		for _, key := range optionalNullableKeys {
+			assert.NotContains(t, result, key, "optional nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestOptionalNullableRoundTripPostExportFailedPayload(t *testing.T) {
+	optionalNullableKeys := []string{
+		"account_id",
+	}
+	marshalToMap := func(t *testing.T, obj *PostExportFailedPayload) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj PostExportFailedPayload
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range optionalNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "optional nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "optional nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj PostExportFailedPayload
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range optionalNullableKeys {
+			assert.NotContains(t, result, key, "optional nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &PostExportFailedPayload{})
+		for _, key := range optionalNullableKeys {
+			assert.NotContains(t, result, key, "optional nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestStringExport(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -2903,25 +3163,18 @@ func TestEnumCreateExportsRequestResource(t *testing.T) {
 		assert.Equal(t, CreateExportsRequestResource("events"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_external_accounts", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateExportsRequestResourceFromString("external_accounts")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateExportsRequestResource("external_accounts"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_financial_activity", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCreateExportsRequestResourceFromString("financial-activity")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, CreateExportsRequestResource("financial-activity"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_members", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateExportsRequestResourceFromString("members")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateExportsRequestResource("members"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_memberships", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateExportsRequestResourceFromString("memberships")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateExportsRequestResource("memberships"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_payout_methods", func(t *testing.T) {
@@ -2957,6 +3210,13 @@ func TestEnumCreateExportsRequestResource(t *testing.T) {
 		val, err := NewCreateExportsRequestResourceFromString("products")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, CreateExportsRequestResource("products"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_receipt_invoices", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateExportsRequestResourceFromString("receipt_invoices")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateExportsRequestResource("receipt_invoices"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_resolution_center_cases", func(t *testing.T) {
@@ -3001,6 +3261,13 @@ func TestEnumCreateExportsRequestResource(t *testing.T) {
 		assert.Equal(t, CreateExportsRequestResource("webhooks"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_members", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateExportsRequestResourceFromString("members")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateExportsRequestResource("members"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_receipts", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCreateExportsRequestResourceFromString("receipts")
@@ -3013,6 +3280,13 @@ func TestEnumCreateExportsRequestResource(t *testing.T) {
 		val, err := NewCreateExportsRequestResourceFromString("unclaimed_memberships")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, CreateExportsRequestResource("unclaimed_memberships"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_memberships", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateExportsRequestResourceFromString("memberships")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateExportsRequestResource("memberships"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_tracking_links", func(t *testing.T) {
@@ -3048,13 +3322,6 @@ func TestEnumCreateExportsRequestResource(t *testing.T) {
 		val, err := NewCreateExportsRequestResourceFromString("leads")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, CreateExportsRequestResource("leads"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_content_rewards_submissions", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateExportsRequestResourceFromString("content_rewards_submissions")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateExportsRequestResource("content_rewards_submissions"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_invoices", func(t *testing.T) {
@@ -3170,25 +3437,18 @@ func TestEnumExportResource(t *testing.T) {
 		assert.Equal(t, ExportResource("events"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_external_accounts", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExportResourceFromString("external_accounts")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExportResource("external_accounts"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_financial_activity", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewExportResourceFromString("financial-activity")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ExportResource("financial-activity"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_members", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewExportResourceFromString("members")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ExportResource("members"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_memberships", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewExportResourceFromString("memberships")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ExportResource("memberships"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_payout_methods", func(t *testing.T) {
@@ -3224,6 +3484,13 @@ func TestEnumExportResource(t *testing.T) {
 		val, err := NewExportResourceFromString("products")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ExportResource("products"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_receipt_invoices", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExportResourceFromString("receipt_invoices")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExportResource("receipt_invoices"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_resolution_center_cases", func(t *testing.T) {
@@ -3268,6 +3535,13 @@ func TestEnumExportResource(t *testing.T) {
 		assert.Equal(t, ExportResource("webhooks"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_members", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExportResourceFromString("members")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExportResource("members"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_receipts", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewExportResourceFromString("receipts")
@@ -3280,6 +3554,13 @@ func TestEnumExportResource(t *testing.T) {
 		val, err := NewExportResourceFromString("unclaimed_memberships")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ExportResource("unclaimed_memberships"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_memberships", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExportResourceFromString("memberships")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExportResource("memberships"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_tracking_links", func(t *testing.T) {
@@ -3315,13 +3596,6 @@ func TestEnumExportResource(t *testing.T) {
 		val, err := NewExportResourceFromString("leads")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ExportResource("leads"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_content_rewards_submissions", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewExportResourceFromString("content_rewards_submissions")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ExportResource("content_rewards_submissions"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_invoices", func(t *testing.T) {
@@ -3552,25 +3826,18 @@ func TestEnumListExportsRequestResource(t *testing.T) {
 		assert.Equal(t, ListExportsRequestResource("events"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_external_accounts", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListExportsRequestResourceFromString("external_accounts")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListExportsRequestResource("external_accounts"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_financial_activity", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListExportsRequestResourceFromString("financial-activity")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListExportsRequestResource("financial-activity"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_members", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListExportsRequestResourceFromString("members")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListExportsRequestResource("members"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_memberships", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListExportsRequestResourceFromString("memberships")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListExportsRequestResource("memberships"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_payout_methods", func(t *testing.T) {
@@ -3606,6 +3873,13 @@ func TestEnumListExportsRequestResource(t *testing.T) {
 		val, err := NewListExportsRequestResourceFromString("products")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListExportsRequestResource("products"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_receipt_invoices", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListExportsRequestResourceFromString("receipt_invoices")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListExportsRequestResource("receipt_invoices"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_resolution_center_cases", func(t *testing.T) {
@@ -3650,6 +3924,13 @@ func TestEnumListExportsRequestResource(t *testing.T) {
 		assert.Equal(t, ListExportsRequestResource("webhooks"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_members", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListExportsRequestResourceFromString("members")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListExportsRequestResource("members"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_receipts", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListExportsRequestResourceFromString("receipts")
@@ -3662,6 +3943,13 @@ func TestEnumListExportsRequestResource(t *testing.T) {
 		val, err := NewListExportsRequestResourceFromString("unclaimed_memberships")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListExportsRequestResource("unclaimed_memberships"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_memberships", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListExportsRequestResourceFromString("memberships")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListExportsRequestResource("memberships"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_tracking_links", func(t *testing.T) {
@@ -3697,13 +3985,6 @@ func TestEnumListExportsRequestResource(t *testing.T) {
 		val, err := NewListExportsRequestResourceFromString("leads")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListExportsRequestResource("leads"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_content_rewards_submissions", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewListExportsRequestResourceFromString("content_rewards_submissions")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ListExportsRequestResource("content_rewards_submissions"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_invoices", func(t *testing.T) {

@@ -5,181 +5,508 @@ package whopsdk
 import (
 	json "encoding/json"
 	fmt "fmt"
-	internal "github.com/whopio/whopsdk-go/internal"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
 	time "time"
 )
 
 var (
-	listPaymentsRequestFieldAfter                    = big.NewInt(1 << 0)
-	listPaymentsRequestFieldBefore                   = big.NewInt(1 << 1)
-	listPaymentsRequestFieldFirst                    = big.NewInt(1 << 2)
-	listPaymentsRequestFieldLast                     = big.NewInt(1 << 3)
-	listPaymentsRequestFieldCompanyID                = big.NewInt(1 << 4)
-	listPaymentsRequestFieldDirection                = big.NewInt(1 << 5)
-	listPaymentsRequestFieldOrder                    = big.NewInt(1 << 6)
-	listPaymentsRequestFieldProductIDs               = big.NewInt(1 << 7)
-	listPaymentsRequestFieldBillingReasons           = big.NewInt(1 << 8)
-	listPaymentsRequestFieldCurrencies               = big.NewInt(1 << 9)
-	listPaymentsRequestFieldPlanIDs                  = big.NewInt(1 << 10)
-	listPaymentsRequestFieldStatuses                 = big.NewInt(1 << 11)
-	listPaymentsRequestFieldSubstatuses              = big.NewInt(1 << 12)
-	listPaymentsRequestFieldIncludeFree              = big.NewInt(1 << 13)
-	listPaymentsRequestFieldCreatedBefore            = big.NewInt(1 << 14)
-	listPaymentsRequestFieldCreatedAfter             = big.NewInt(1 << 15)
-	listPaymentsRequestFieldUpdatedBefore            = big.NewInt(1 << 16)
-	listPaymentsRequestFieldUpdatedAfter             = big.NewInt(1 << 17)
-	listPaymentsRequestFieldQuery                    = big.NewInt(1 << 18)
-	listPaymentsRequestFieldCheckoutConfigurationIDs = big.NewInt(1 << 19)
+	capturePaymentsRequestFieldID = big.NewInt(1 << 0)
+)
+
+type CapturePaymentsRequest struct {
+	// The unique identifier of the payment.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CapturePaymentsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CapturePaymentsRequest) SetID(id string) {
+	c.ID = id
+	c.require(capturePaymentsRequestFieldID)
+}
+
+var (
+	createPaymentsRequestFieldAffiliateCode           = big.NewInt(1 << 0)
+	createPaymentsRequestFieldAutoCaptureAfterMinutes = big.NewInt(1 << 1)
+	createPaymentsRequestFieldBillingAddress          = big.NewInt(1 << 2)
+	createPaymentsRequestFieldCapture                 = big.NewInt(1 << 3)
+	createPaymentsRequestFieldConfirmationToken       = big.NewInt(1 << 4)
+	createPaymentsRequestFieldEmail                   = big.NewInt(1 << 5)
+	createPaymentsRequestFieldIPAddress               = big.NewInt(1 << 6)
+	createPaymentsRequestFieldLineItems               = big.NewInt(1 << 7)
+	createPaymentsRequestFieldMemberID                = big.NewInt(1 << 8)
+	createPaymentsRequestFieldMetadata                = big.NewInt(1 << 9)
+	createPaymentsRequestFieldOffSession              = big.NewInt(1 << 10)
+	createPaymentsRequestFieldPaymentMethod           = big.NewInt(1 << 11)
+	createPaymentsRequestFieldPaymentMethodID         = big.NewInt(1 << 12)
+	createPaymentsRequestFieldQuoteID                 = big.NewInt(1 << 13)
+	createPaymentsRequestFieldReturnURL               = big.NewInt(1 << 14)
+	createPaymentsRequestFieldSetupFutureUsage        = big.NewInt(1 << 15)
+	createPaymentsRequestFieldShippingAddress         = big.NewInt(1 << 16)
+	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 17)
+)
+
+type CreatePaymentsRequest struct {
+	// The account the purchase belongs to, prefixed `biz_`.
+	AccountID string `json:"account_id" url:"-"`
+	// The promo code as the buyer typed it, matched within the account regardless of case and surrounding spaces, as checkout matches it. It must be valid for the variant. Send it or `promo_code_id`, not both; an empty or whitespace-only string counts as not sent. A code the account does not have, or one that is no longer active, is refused before anything is written, with the error code `promo_invalid`. A code this purchase cannot use, such as one with no uses left or one restricted to other variants, products or buyers, is refused with `promo_invalid` too, and the error's message says why.
+	PromoCode *string `json:"promo_code,omitempty" url:"-"`
+	// An active promo code to apply, prefixed `promo_`. It must belong to the account and be valid for the variant. Send it or `promo_code`, not both. A code this purchase cannot use is refused with the error code `promo_invalid`, and the error's message says why.
+	PromoCodeID *string `json:"promo_code_id,omitempty" url:"-"`
+	// The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `variant_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
+	Variant *PaymentInputVariant `json:"variant,omitempty" url:"-"`
+	// The variant purchased, prefixed `plan_`. It must belong to the account. Mutually exclusive with `variant` and `line_items`.
+	VariantID *string `json:"variant_id,omitempty" url:"-"`
+	// The code an affiliate link carries, which is the affiliate's username. The affiliate is credited for this payment as on a checkout session. A code naming no one eligible to earn on the product is ignored, and the payment goes ahead. A promo code with its own affiliate takes precedence. No affiliate is credited on a variant without a product or on a purchase of several variants. At most 255 characters. Not supported with a `card_present` `payment_method`.
+	AffiliateCode *string `json:"affiliate_code,omitempty" url:"-"`
+	// Minutes after authorization at which Whop captures the hold automatically unless it has been voided. Requires `capture: false`. Between 5 and 5760 (4 days).
+	AutoCaptureAfterMinutes *int `json:"auto_capture_after_minutes,omitempty" url:"-"`
+	// The buyer's billing address, returned on the payment as `billing_address` and used to calculate tax when Whop calculates it for the account. Only with a `paypal` `payment_method`. Only the keys you supply are kept.
+	BillingAddress *CreatePaymentsRequestBillingAddress `json:"billing_address,omitempty" url:"-"`
+	// Whether to capture a card payment immediately. Defaults to true. Pass false to place an authorization hold that must be captured in full within five days via the capture endpoint, or automatically after `auto_capture_after_minutes`.
+	Capture *bool `json:"capture,omitempty" url:"-"`
+	// A confirmation token describing a payment method the buyer just supplied. Provide this instead of `member_id` and `payment_method_id`; the buyer is resolved from the token's billing email, or from `email`. The buyer may still have a step to complete — poll the payment's status for what to do next.
+	ConfirmationToken *string `json:"confirmation_token,omitempty" url:"-"`
+	// The buyer's email, resolving or creating the user the payment belongs to. With `confirmation_token` it overrides the email the token carries, and is ignored when the token was created by a signed-in buyer; with a `card_present` `payment_method` it names a buyer the point of sale already knows, otherwise the sale belongs to a guest until a buyer is attached; with a `paypal` `payment_method` it names the buyer, and when it and `member_id` are both omitted the buyer is the PayPal account that approves the payment. Ignored with `member_id`.
+	Email *string `json:"email,omitempty" url:"-"`
+	// The buyer's IPv4 or IPv6 address, used to assess the charge's risk and passed to the processor. Ignored unless a saved payment method is charged with `off_session` set to false.
+	IPAddress *string `json:"ip_address,omitempty" url:"-"`
+	// What the buyer is purchasing. Each entry takes exactly one of `variant_id` or an inline `variant`. One entry charges that variant; several entries form a cart, which requires every variant to be compatible, belong to this account, and use the same currency. Mutually exclusive with `variant_id` and `variant`.
+	LineItems []*CreatePaymentsRequestLineItemsItem `json:"line_items,omitempty" url:"-"`
+	// The member to charge, prefixed `mber_`. Required with `payment_method_id` unless `confirmation_token` is provided. With a `paypal` `payment_method` it names the buyer instead of `email`, and must belong to a user; omit both to take the buyer from the PayPal account that approves.
+	MemberID *string `json:"member_id,omitempty" url:"-"`
+	// Custom metadata to attach to the payment.
+	Metadata map[string]*string `json:"metadata,omitempty" url:"-"`
+	// Whether the buyer is absent from your checkout and can't authenticate. Pass true when you charge the card without the buyer, such as a renewal on your own schedule. Pass false when the buyer is present, such as a one-click upsell right after checkout: the charge is processed as a customer-initiated card-on-file payment, and if the issuer asks the buyer to authenticate, the payment's status is `requires_action` with a `next_action` to send them to, after which they return to `return_url`. From API version 2026-10-07-1 it defaults to false when `return_url` is provided and to true otherwise; before that version it defaults to true. A saved Apple Pay, Google Pay or PayPal payment method is always charged with `off_session` true. Ignored unless `member_id` and `payment_method_id` are provided.
+	OffSession *bool `json:"off_session,omitempty" url:"-"`
+	// A payment method named on this call rather than described by a confirmation token. `type` names it and the member named after it carries its details. Nothing is collected on this call: the payment is created first and the buyer or device then acts on the `next_action` the status endpoint serves. `card_present` (Tap to Pay): the reader collects against the payment with the client secret in `next_action`. `paypal`: the buyer approves on PayPal's page, reached through a `redirect` `next_action`, then returns to `return_url`; `member_id` or `email` names the buyer. Mutually exclusive with `confirmation_token` and `payment_method_id`, and with `member_id` except for `paypal`.
+	PaymentMethod *CreatePaymentsRequestPaymentMethod `json:"payment_method,omitempty" url:"-"`
+	// The stored payment method to charge, prefixed `payt_`. It must belong to the member. Required unless `confirmation_token` is provided.
+	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
+	// A payment quote from `POST /payment_quotes`, prefixed `pq_`. The payment charges exactly the quote: its purchase (its variants and quantities, or the `variant` it priced), which this body may then omit, its promo code, and its tax, the quote's `tax_amount` rather than a figure calculated now. Omit it, or send null, to have tax calculated when the payment is charged. The quote must belong to `account_id`. A purchase field you omit or send as null takes the quote's value; the buyer's email, the addresses and the payment method are this request's own, never the quote's. Whatever you do send must describe the quoted purchase: the same variants, quantities and promo code. A quote that priced `variant` takes only the same `variant` you sent to `POST /payment_quotes` (or omit the purchase to take the quoted one), never `variant_id` or `line_items`, and a quote that priced variants by id never takes `variant`. Unless the quote located no buyer (`located_by` is null), the address the payment carries (its shipping address, else its billing address) must put the buyer where the quote priced tax, by country, state and postal code; otherwise the payment is refused with 400 before the payment method is used. A quote located by IP address or by the country the buyer chose (`located_by` is `ip_address` or `presentment_country`) is a preview and cannot be paid. A quote is consumed by one payment: a declined payment keeps it and can be retried; a new payment needs a new quote. A quote cannot be charged by a processor that doesn't take quotes, such as a seller's own connected PayPal account; such a payment is refused before the payment method is used. A quote priced in a `presentment_currency` is charged in that currency at the quote's `exchange_rate`. A payment refused over its quote carries an error `code`. `quote_expired`: the quote has expired; quote again. `quote_tax_unavailable`: the quote could not price tax; quote again, or omit `quote_id`. `quote_preview_only`: the quote was located by IP address or by the country the buyer chose; quote again with the buyer's address. `quote_in_use` (409): another payment holds the quote. `quote_mismatch`: the purchase or the buyer's address is not the one quoted. `quote_rate_expired`: the exchange rate the quote was priced at has moved too far to charge; quote again. `payment_method_currency_unsupported`: the payment method cannot pay in the quote's currency; use another method, or quote again in another currency. `quote_processor_unsupported`: the payment would be processed by a processor that doesn't take quotes, such as a seller's own connected PayPal account; use another method, or omit `quote_id` to have tax calculated when the payment is charged.
+	QuoteID *string `json:"quote_id,omitempty" url:"-"`
+	// Where the buyer continues after completing an off-site step such as 3D Secure. An absolute https URL without credentials, at most 2,048 characters. Required when a saved payment method is charged with `off_session` false; otherwise ignored unless `confirmation_token` or a `paypal` `payment_method` is provided.
+	ReturnURL *string `json:"return_url,omitempty" url:"-"`
+	// Attests that the buyer was told the payment method will be saved for later charges, and saves it once they approve, so it can be charged with `member_id` and `payment_method_id`. PayPal shows the buyer the agreement to future charges on its approval page. Omit it for a one-time payment that saves nothing. Ignored unless a `paypal` `payment_method` is provided.
+	SetupFutureUsage *CreatePaymentsRequestSetupFutureUsage `json:"setup_future_usage,omitempty" url:"-"`
+	// Where physical goods ship, returned on the payment as `shipping_address`. Only the keys you supply are kept; omit it for digital goods.
+	ShippingAddress *CreatePaymentsRequestShippingAddress `json:"shipping_address,omitempty" url:"-"`
+	// Overrides the text on the buyer's card statement for this payment only. Takes precedence over the product's and account's custom descriptors, and changes neither. Must start with `WHOP*` unless the business processes as the merchant of record. For businesses processing as the merchant of record, omit the `WHOP*` prefix; the descriptor appears as provided. Must be 5-22 characters, contain at least one letter, and use only Latin letters, numbers, spaces, underscores, hyphens, or asterisks.
+	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CreatePaymentsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAffiliateCode sets the AffiliateCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetAffiliateCode(affiliateCode *string) {
+	c.AffiliateCode = affiliateCode
+	c.require(createPaymentsRequestFieldAffiliateCode)
+}
+
+// SetAutoCaptureAfterMinutes sets the AutoCaptureAfterMinutes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetAutoCaptureAfterMinutes(autoCaptureAfterMinutes *int) {
+	c.AutoCaptureAfterMinutes = autoCaptureAfterMinutes
+	c.require(createPaymentsRequestFieldAutoCaptureAfterMinutes)
+}
+
+// SetBillingAddress sets the BillingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetBillingAddress(billingAddress *CreatePaymentsRequestBillingAddress) {
+	c.BillingAddress = billingAddress
+	c.require(createPaymentsRequestFieldBillingAddress)
+}
+
+// SetCapture sets the Capture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetCapture(capture *bool) {
+	c.Capture = capture
+	c.require(createPaymentsRequestFieldCapture)
+}
+
+// SetConfirmationToken sets the ConfirmationToken field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetConfirmationToken(confirmationToken *string) {
+	c.ConfirmationToken = confirmationToken
+	c.require(createPaymentsRequestFieldConfirmationToken)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetEmail(email *string) {
+	c.Email = email
+	c.require(createPaymentsRequestFieldEmail)
+}
+
+// SetIPAddress sets the IPAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetIPAddress(ipAddress *string) {
+	c.IPAddress = ipAddress
+	c.require(createPaymentsRequestFieldIPAddress)
+}
+
+// SetLineItems sets the LineItems field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetLineItems(lineItems []*CreatePaymentsRequestLineItemsItem) {
+	c.LineItems = lineItems
+	c.require(createPaymentsRequestFieldLineItems)
+}
+
+// SetMemberID sets the MemberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetMemberID(memberID *string) {
+	c.MemberID = memberID
+	c.require(createPaymentsRequestFieldMemberID)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetMetadata(metadata map[string]*string) {
+	c.Metadata = metadata
+	c.require(createPaymentsRequestFieldMetadata)
+}
+
+// SetOffSession sets the OffSession field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetOffSession(offSession *bool) {
+	c.OffSession = offSession
+	c.require(createPaymentsRequestFieldOffSession)
+}
+
+// SetPaymentMethod sets the PaymentMethod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetPaymentMethod(paymentMethod *CreatePaymentsRequestPaymentMethod) {
+	c.PaymentMethod = paymentMethod
+	c.require(createPaymentsRequestFieldPaymentMethod)
+}
+
+// SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetPaymentMethodID(paymentMethodID *string) {
+	c.PaymentMethodID = paymentMethodID
+	c.require(createPaymentsRequestFieldPaymentMethodID)
+}
+
+// SetQuoteID sets the QuoteID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetQuoteID(quoteID *string) {
+	c.QuoteID = quoteID
+	c.require(createPaymentsRequestFieldQuoteID)
+}
+
+// SetReturnURL sets the ReturnURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetReturnURL(returnURL *string) {
+	c.ReturnURL = returnURL
+	c.require(createPaymentsRequestFieldReturnURL)
+}
+
+// SetSetupFutureUsage sets the SetupFutureUsage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetSetupFutureUsage(setupFutureUsage *CreatePaymentsRequestSetupFutureUsage) {
+	c.SetupFutureUsage = setupFutureUsage
+	c.require(createPaymentsRequestFieldSetupFutureUsage)
+}
+
+// SetShippingAddress sets the ShippingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetShippingAddress(shippingAddress *CreatePaymentsRequestShippingAddress) {
+	c.ShippingAddress = shippingAddress
+	c.require(createPaymentsRequestFieldShippingAddress)
+}
+
+// SetStatementDescriptor sets the StatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetStatementDescriptor(statementDescriptor *string) {
+	c.StatementDescriptor = statementDescriptor
+	c.require(createPaymentsRequestFieldStatementDescriptor)
+}
+
+func (c *CreatePaymentsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePaymentsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = CreatePaymentsRequest(body)
+	return nil
+}
+
+func (c *CreatePaymentsRequest) MarshalJSON() ([]byte, error) {
+	type embed CreatePaymentsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	generatePdfPaymentsRequestFieldID = big.NewInt(1 << 0)
+)
+
+type GeneratePdfPaymentsRequest struct {
+	// The payment whose receipt to generate, prefixed `pay_`.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GeneratePdfPaymentsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if g.explicitFields != nil {
+		next.Set(g.explicitFields)
+	}
+	next.Or(next, field)
+	g.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GeneratePdfPaymentsRequest) SetID(id string) {
+	g.ID = id
+	g.require(generatePdfPaymentsRequestFieldID)
+}
+
+var (
+	listPaymentsRequestFieldMode                     = big.NewInt(1 << 0)
+	listPaymentsRequestFieldAccountID                = big.NewInt(1 << 1)
+	listPaymentsRequestFieldStatus                   = big.NewInt(1 << 2)
+	listPaymentsRequestFieldTrackingStatus           = big.NewInt(1 << 3)
+	listPaymentsRequestFieldBillingReason            = big.NewInt(1 << 4)
+	listPaymentsRequestFieldCurrency                 = big.NewInt(1 << 5)
+	listPaymentsRequestFieldUserID                   = big.NewInt(1 << 6)
+	listPaymentsRequestFieldQuery                    = big.NewInt(1 << 7)
+	listPaymentsRequestFieldIncludeConnectedAccounts = big.NewInt(1 << 8)
+	listPaymentsRequestFieldMemberID                 = big.NewInt(1 << 9)
+	listPaymentsRequestFieldMembershipID             = big.NewInt(1 << 10)
+	listPaymentsRequestFieldProductID                = big.NewInt(1 << 11)
+	listPaymentsRequestFieldVariantID                = big.NewInt(1 << 12)
+	listPaymentsRequestFieldCreatedBefore            = big.NewInt(1 << 13)
+	listPaymentsRequestFieldCreatedAfter             = big.NewInt(1 << 14)
+	listPaymentsRequestFieldStatuses                 = big.NewInt(1 << 15)
+	listPaymentsRequestFieldSubstatuses              = big.NewInt(1 << 16)
+	listPaymentsRequestFieldBillingReasons           = big.NewInt(1 << 17)
+	listPaymentsRequestFieldCurrencies               = big.NewInt(1 << 18)
+	listPaymentsRequestFieldVariantIDs               = big.NewInt(1 << 19)
+	listPaymentsRequestFieldProductIDs               = big.NewInt(1 << 20)
+	listPaymentsRequestFieldPaymentMethods           = big.NewInt(1 << 21)
+	listPaymentsRequestFieldTrackingStates           = big.NewInt(1 << 22)
+	listPaymentsRequestFieldRefundedAfter            = big.NewInt(1 << 23)
+	listPaymentsRequestFieldRefundedBefore           = big.NewInt(1 << 24)
+	listPaymentsRequestFieldDisputeAlertedAfter      = big.NewInt(1 << 25)
+	listPaymentsRequestFieldDisputeAlertedBefore     = big.NewInt(1 << 26)
+	listPaymentsRequestFieldDisputeCreatedAfter      = big.NewInt(1 << 27)
+	listPaymentsRequestFieldDisputeCreatedBefore     = big.NewInt(1 << 28)
+	listPaymentsRequestFieldOrder                    = big.NewInt(1 << 29)
+	listPaymentsRequestFieldDirection                = big.NewInt(1 << 30)
+	listPaymentsRequestFieldFirst                    = big.NewInt(1 << 31)
+	listPaymentsRequestFieldAfter                    = big.NewInt(1 << 32)
+	listPaymentsRequestFieldLast                     = big.NewInt(1 << 33)
+	listPaymentsRequestFieldBefore                   = big.NewInt(1 << 34)
 )
 
 type ListPaymentsRequest struct {
-	// Returns the elements in the list that come after the specified cursor.
-	After *string `json:"-" url:"after,omitempty"`
-	// Returns the elements in the list that come before the specified cursor.
-	Before *string `json:"-" url:"before,omitempty"`
-	// Returns the first _n_ elements from the list.
-	First *int `json:"-" url:"first,omitempty"`
-	// Returns the last _n_ elements from the list.
-	Last *int `json:"-" url:"last,omitempty"`
-	// The unique identifier of the company to list payments for.
-	CompanyID *string         `json:"-" url:"company_id,omitempty"`
-	Direction *Direction      `json:"-" url:"direction,omitempty"`
-	Order     *ReceiptV2Order `json:"-" url:"order,omitempty"`
-	// Filter payments to only those associated with these specific product identifiers.
-	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
-	// Filter payments by their billing reason.
-	BillingReasons []*BillingReasons `json:"-" url:"billing_reasons,omitempty"`
-	// Filter payments by their currency code.
-	Currencies []*Currencies `json:"-" url:"currencies,omitempty"`
-	// Filter payments to only those associated with these specific plan identifiers.
-	PlanIDs []*string `json:"-" url:"plan_ids,omitempty"`
-	// Filter payments by their current status.
-	Statuses []*ReceiptStatus `json:"-" url:"statuses,omitempty"`
-	// Filter payments by their current substatus for more granular filtering.
-	Substatuses []*FriendlyReceiptStatus `json:"-" url:"substatuses,omitempty"`
-	// Whether to include payments with a zero amount.
-	IncludeFree *bool `json:"-" url:"include_free,omitempty"`
-	// Only return payments created before this timestamp.
-	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
-	// Only return payments created after this timestamp.
-	CreatedAfter *time.Time `json:"-" url:"created_after,omitempty"`
-	// Only return payments last updated before this timestamp.
-	UpdatedBefore *time.Time `json:"-" url:"updated_before,omitempty"`
-	// Only return payments last updated after this timestamp.
-	UpdatedAfter *time.Time `json:"-" url:"updated_after,omitempty"`
-	// Search payments by user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
+	// Which sales to list. `account_sales` returns sales for the accounts the caller can read. `user_sales` returns only sales the signed-in user received personally, outside any account; it requires the user's own Whop login session and cannot be combined with `account_id`.
+	Mode *ListPaymentsRequestMode `json:"-" url:"mode,omitempty"`
+	// Only payments charged by this account, prefixed `biz_`.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// Only payments in this lifecycle state.
+	Status *ListPaymentsRequestStatus `json:"-" url:"status,omitempty"`
+	// Only payments whose most recently attached kept shipment is in this tracking state. `missing_tracking` selects paid payments with a captured shipping address and no kept shipment, excluding fully refunded payments. `needs_tracking` selects payments with an open pre-shipment funds hold and no kept shipment. Shipment states do not imply a payment or refund state. Requires `shipment:basic:read` as well as `payment:basic:read`; user-wide lists include only accounts readable under both scopes. Only supported with `mode=account_sales`.
+	TrackingStatus *ListPaymentsRequestTrackingStatus `json:"-" url:"tracking_status,omitempty"`
+	// Only payments charged for this reason. `subscription_cycle` also matches renewals recorded as `subscription_update`.
+	BillingReason *ListPaymentsRequestBillingReason `json:"-" url:"billing_reason,omitempty"`
+	// Only payments presented in this three-letter currency, such as `usd`.
+	Currency *string `json:"-" url:"currency,omitempty"`
+	// Only payments made by this buyer, prefixed `user_`. This filters sales the caller can read, so `me` is not accepted; list the caller's own purchases with `GET /memberships?user_id=me`.
+	UserID *string `json:"-" url:"user_id,omitempty"`
+	// Search payments by payment ID, dispute ID, user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
 	Query *string `json:"-" url:"query,omitempty"`
-	// Only return payments from these checkout configurations.
-	CheckoutConfigurationIDs []*string `json:"-" url:"checkout_configuration_ids,omitempty"`
+	// Also cover the account's connected accounts. Requires `account_id`, and is a 400 without it. Without `query`, lists the payments of the account and every connected account, newest first by `created_at` only; another `order` is a 400. The listing is cut off after 10 seconds, which a rare filter on an account with little recent activity can reach; add a `query` to narrow it. With `query`, matches on payment, dispute, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`); free-text queries such as a name search only the named account. Connected accounts' payments are returned only for connected accounts you can read payments on.
+	IncludeConnectedAccounts *bool `json:"-" url:"include_connected_accounts,omitempty"`
+	// Only payments made by this member, prefixed `mber_`.
+	MemberID *string `json:"-" url:"member_id,omitempty"`
+	// Only payments billed under this membership, prefixed `mem_`.
+	MembershipID *string `json:"-" url:"membership_id,omitempty"`
+	// Only payments for this product, prefixed `prod_`.
+	ProductID *string `json:"-" url:"product_id,omitempty"`
+	// Only payments priced by this variant, prefixed `plan_`.
+	VariantID *string `json:"-" url:"variant_id,omitempty"`
+	// Only payments created before this ISO 8601 timestamp.
+	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
+	// Only payments created after this ISO 8601 timestamp.
+	CreatedAfter *time.Time `json:"-" url:"created_after,omitempty"`
+	// Only payments in any of these lifecycle states, with the same meanings as `status`. Repeat the parameter to pass several. Combined with `status` when both are sent.
+	Statuses []*ListPaymentsRequestStatusesItem `json:"-" url:"statuses,omitempty"`
+	// Only payments whose `substatus` is any of these. Repeat the parameter to pass several. `incomplete` also matches payments that report `incomplete` because no finer status was recorded.
+	Substatuses []*ListPaymentsRequestSubstatusesItem `json:"-" url:"substatuses,omitempty"`
+	// Only payments charged for any of these reasons, with the same meanings as `billing_reason`. Repeat the parameter to pass several. Combined with `billing_reason` when both are sent.
+	BillingReasons []*ListPaymentsRequestBillingReasonsItem `json:"-" url:"billing_reasons,omitempty"`
+	// Only payments presented in any of these three-letter currencies. Repeat the parameter to pass several. Combined with `currency` when both are sent.
+	Currencies []*string `json:"-" url:"currencies,omitempty"`
+	// Only payments priced by any of these variants, each prefixed `plan_`. Repeat the parameter to pass several. Combined with `variant_id` when both are sent.
+	VariantIDs []*string `json:"-" url:"variant_ids,omitempty"`
+	// Only payments for any of these products, each prefixed `prod_`. Repeat the parameter to pass several. Combined with `product_id` when both are sent.
+	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
+	// Only payments paid with any of these methods: a card brand such as `amex`, a wallet such as `apple_pay`, or a payment method type such as `paypal`. Repeat the parameter to pass several.
+	PaymentMethods []*ListPaymentsRequestPaymentMethodsItem `json:"-" url:"payment_methods,omitempty"`
+	// Only payments whose shipment is in any of these tracking states, or that still need a tracking number (`needs_tracking`). Repeat the parameter to pass several. Requires `account_id` and the shipment:basic:read permission.
+	TrackingStates []*ListPaymentsRequestTrackingStatesItem `json:"-" url:"tracking_states,omitempty"`
+	// Only payments refunded after this ISO 8601 timestamp.
+	RefundedAfter *time.Time `json:"-" url:"refunded_after,omitempty"`
+	// Only payments refunded before this ISO 8601 timestamp.
+	RefundedBefore *time.Time `json:"-" url:"refunded_before,omitempty"`
+	// Only payments with a dispute alert after this ISO 8601 timestamp.
+	DisputeAlertedAfter *time.Time `json:"-" url:"dispute_alerted_after,omitempty"`
+	// Only payments with a dispute alert before this ISO 8601 timestamp.
+	DisputeAlertedBefore *time.Time `json:"-" url:"dispute_alerted_before,omitempty"`
+	// Only payments with a dispute opened after this ISO 8601 timestamp.
+	DisputeCreatedAfter *time.Time `json:"-" url:"dispute_created_after,omitempty"`
+	// Only payments with a dispute opened before this ISO 8601 timestamp.
+	DisputeCreatedBefore *time.Time `json:"-" url:"dispute_created_before,omitempty"`
+	// The field to sort by. `amount` sorts by the amount charged, in the currency it was charged in.
+	Order *ListPaymentsRequestOrder `json:"-" url:"order,omitempty"`
+	// The sort direction.
+	Direction *ListPaymentsRequestDirection `json:"-" url:"direction,omitempty"`
+	// Number of results to return from the start of the range.
+	First *int `json:"-" url:"first,omitempty"`
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+	After *string `json:"-" url:"after,omitempty"`
+	// Number of results to return from the end of the range.
+	Last *int `json:"-" url:"last,omitempty"`
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (l *ListPaymentsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
-// SetAfter sets the After field and marks it as non-optional;
+// SetMode sets the Mode field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetAfter(after *string) {
-	l.After = after
-	l.require(listPaymentsRequestFieldAfter)
+func (l *ListPaymentsRequest) SetMode(mode *ListPaymentsRequestMode) {
+	l.Mode = mode
+	l.require(listPaymentsRequestFieldMode)
 }
 
-// SetBefore sets the Before field and marks it as non-optional;
+// SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetBefore(before *string) {
-	l.Before = before
-	l.require(listPaymentsRequestFieldBefore)
+func (l *ListPaymentsRequest) SetAccountID(accountID *string) {
+	l.AccountID = accountID
+	l.require(listPaymentsRequestFieldAccountID)
 }
 
-// SetFirst sets the First field and marks it as non-optional;
+// SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetFirst(first *int) {
-	l.First = first
-	l.require(listPaymentsRequestFieldFirst)
+func (l *ListPaymentsRequest) SetStatus(status *ListPaymentsRequestStatus) {
+	l.Status = status
+	l.require(listPaymentsRequestFieldStatus)
 }
 
-// SetLast sets the Last field and marks it as non-optional;
+// SetTrackingStatus sets the TrackingStatus field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetLast(last *int) {
-	l.Last = last
-	l.require(listPaymentsRequestFieldLast)
+func (l *ListPaymentsRequest) SetTrackingStatus(trackingStatus *ListPaymentsRequestTrackingStatus) {
+	l.TrackingStatus = trackingStatus
+	l.require(listPaymentsRequestFieldTrackingStatus)
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetBillingReason sets the BillingReason field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetCompanyID(companyID *string) {
-	l.CompanyID = companyID
-	l.require(listPaymentsRequestFieldCompanyID)
+func (l *ListPaymentsRequest) SetBillingReason(billingReason *ListPaymentsRequestBillingReason) {
+	l.BillingReason = billingReason
+	l.require(listPaymentsRequestFieldBillingReason)
 }
 
-// SetDirection sets the Direction field and marks it as non-optional;
+// SetCurrency sets the Currency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetDirection(direction *Direction) {
-	l.Direction = direction
-	l.require(listPaymentsRequestFieldDirection)
+func (l *ListPaymentsRequest) SetCurrency(currency *string) {
+	l.Currency = currency
+	l.require(listPaymentsRequestFieldCurrency)
 }
 
-// SetOrder sets the Order field and marks it as non-optional;
+// SetUserID sets the UserID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetOrder(order *ReceiptV2Order) {
-	l.Order = order
-	l.require(listPaymentsRequestFieldOrder)
+func (l *ListPaymentsRequest) SetUserID(userID *string) {
+	l.UserID = userID
+	l.require(listPaymentsRequestFieldUserID)
 }
 
-// SetProductIDs sets the ProductIDs field and marks it as non-optional;
+// SetQuery sets the Query field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetProductIDs(productIDs []*string) {
-	l.ProductIDs = productIDs
-	l.require(listPaymentsRequestFieldProductIDs)
+func (l *ListPaymentsRequest) SetQuery(query *string) {
+	l.Query = query
+	l.require(listPaymentsRequestFieldQuery)
 }
 
-// SetBillingReasons sets the BillingReasons field and marks it as non-optional;
+// SetIncludeConnectedAccounts sets the IncludeConnectedAccounts field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetBillingReasons(billingReasons []*BillingReasons) {
-	l.BillingReasons = billingReasons
-	l.require(listPaymentsRequestFieldBillingReasons)
+func (l *ListPaymentsRequest) SetIncludeConnectedAccounts(includeConnectedAccounts *bool) {
+	l.IncludeConnectedAccounts = includeConnectedAccounts
+	l.require(listPaymentsRequestFieldIncludeConnectedAccounts)
 }
 
-// SetCurrencies sets the Currencies field and marks it as non-optional;
+// SetMemberID sets the MemberID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetCurrencies(currencies []*Currencies) {
-	l.Currencies = currencies
-	l.require(listPaymentsRequestFieldCurrencies)
+func (l *ListPaymentsRequest) SetMemberID(memberID *string) {
+	l.MemberID = memberID
+	l.require(listPaymentsRequestFieldMemberID)
 }
 
-// SetPlanIDs sets the PlanIDs field and marks it as non-optional;
+// SetMembershipID sets the MembershipID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetPlanIDs(planIDs []*string) {
-	l.PlanIDs = planIDs
-	l.require(listPaymentsRequestFieldPlanIDs)
+func (l *ListPaymentsRequest) SetMembershipID(membershipID *string) {
+	l.MembershipID = membershipID
+	l.require(listPaymentsRequestFieldMembershipID)
 }
 
-// SetStatuses sets the Statuses field and marks it as non-optional;
+// SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetStatuses(statuses []*ReceiptStatus) {
-	l.Statuses = statuses
-	l.require(listPaymentsRequestFieldStatuses)
+func (l *ListPaymentsRequest) SetProductID(productID *string) {
+	l.ProductID = productID
+	l.require(listPaymentsRequestFieldProductID)
 }
 
-// SetSubstatuses sets the Substatuses field and marks it as non-optional;
+// SetVariantID sets the VariantID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetSubstatuses(substatuses []*FriendlyReceiptStatus) {
-	l.Substatuses = substatuses
-	l.require(listPaymentsRequestFieldSubstatuses)
-}
-
-// SetIncludeFree sets the IncludeFree field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetIncludeFree(includeFree *bool) {
-	l.IncludeFree = includeFree
-	l.require(listPaymentsRequestFieldIncludeFree)
+func (l *ListPaymentsRequest) SetVariantID(variantID *string) {
+	l.VariantID = variantID
+	l.require(listPaymentsRequestFieldVariantID)
 }
 
 // SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;
@@ -196,63 +523,165 @@ func (l *ListPaymentsRequest) SetCreatedAfter(createdAfter *time.Time) {
 	l.require(listPaymentsRequestFieldCreatedAfter)
 }
 
-// SetUpdatedBefore sets the UpdatedBefore field and marks it as non-optional;
+// SetStatuses sets the Statuses field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetUpdatedBefore(updatedBefore *time.Time) {
-	l.UpdatedBefore = updatedBefore
-	l.require(listPaymentsRequestFieldUpdatedBefore)
+func (l *ListPaymentsRequest) SetStatuses(statuses []*ListPaymentsRequestStatusesItem) {
+	l.Statuses = statuses
+	l.require(listPaymentsRequestFieldStatuses)
 }
 
-// SetUpdatedAfter sets the UpdatedAfter field and marks it as non-optional;
+// SetSubstatuses sets the Substatuses field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetUpdatedAfter(updatedAfter *time.Time) {
-	l.UpdatedAfter = updatedAfter
-	l.require(listPaymentsRequestFieldUpdatedAfter)
+func (l *ListPaymentsRequest) SetSubstatuses(substatuses []*ListPaymentsRequestSubstatusesItem) {
+	l.Substatuses = substatuses
+	l.require(listPaymentsRequestFieldSubstatuses)
 }
 
-// SetQuery sets the Query field and marks it as non-optional;
+// SetBillingReasons sets the BillingReasons field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetQuery(query *string) {
-	l.Query = query
-	l.require(listPaymentsRequestFieldQuery)
+func (l *ListPaymentsRequest) SetBillingReasons(billingReasons []*ListPaymentsRequestBillingReasonsItem) {
+	l.BillingReasons = billingReasons
+	l.require(listPaymentsRequestFieldBillingReasons)
 }
 
-// SetCheckoutConfigurationIDs sets the CheckoutConfigurationIDs field and marks it as non-optional;
+// SetCurrencies sets the Currencies field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetCheckoutConfigurationIDs(checkoutConfigurationIDs []*string) {
-	l.CheckoutConfigurationIDs = checkoutConfigurationIDs
-	l.require(listPaymentsRequestFieldCheckoutConfigurationIDs)
+func (l *ListPaymentsRequest) SetCurrencies(currencies []*string) {
+	l.Currencies = currencies
+	l.require(listPaymentsRequestFieldCurrencies)
+}
+
+// SetVariantIDs sets the VariantIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetVariantIDs(variantIDs []*string) {
+	l.VariantIDs = variantIDs
+	l.require(listPaymentsRequestFieldVariantIDs)
+}
+
+// SetProductIDs sets the ProductIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetProductIDs(productIDs []*string) {
+	l.ProductIDs = productIDs
+	l.require(listPaymentsRequestFieldProductIDs)
+}
+
+// SetPaymentMethods sets the PaymentMethods field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetPaymentMethods(paymentMethods []*ListPaymentsRequestPaymentMethodsItem) {
+	l.PaymentMethods = paymentMethods
+	l.require(listPaymentsRequestFieldPaymentMethods)
+}
+
+// SetTrackingStates sets the TrackingStates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetTrackingStates(trackingStates []*ListPaymentsRequestTrackingStatesItem) {
+	l.TrackingStates = trackingStates
+	l.require(listPaymentsRequestFieldTrackingStates)
+}
+
+// SetRefundedAfter sets the RefundedAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetRefundedAfter(refundedAfter *time.Time) {
+	l.RefundedAfter = refundedAfter
+	l.require(listPaymentsRequestFieldRefundedAfter)
+}
+
+// SetRefundedBefore sets the RefundedBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetRefundedBefore(refundedBefore *time.Time) {
+	l.RefundedBefore = refundedBefore
+	l.require(listPaymentsRequestFieldRefundedBefore)
+}
+
+// SetDisputeAlertedAfter sets the DisputeAlertedAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetDisputeAlertedAfter(disputeAlertedAfter *time.Time) {
+	l.DisputeAlertedAfter = disputeAlertedAfter
+	l.require(listPaymentsRequestFieldDisputeAlertedAfter)
+}
+
+// SetDisputeAlertedBefore sets the DisputeAlertedBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetDisputeAlertedBefore(disputeAlertedBefore *time.Time) {
+	l.DisputeAlertedBefore = disputeAlertedBefore
+	l.require(listPaymentsRequestFieldDisputeAlertedBefore)
+}
+
+// SetDisputeCreatedAfter sets the DisputeCreatedAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetDisputeCreatedAfter(disputeCreatedAfter *time.Time) {
+	l.DisputeCreatedAfter = disputeCreatedAfter
+	l.require(listPaymentsRequestFieldDisputeCreatedAfter)
+}
+
+// SetDisputeCreatedBefore sets the DisputeCreatedBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetDisputeCreatedBefore(disputeCreatedBefore *time.Time) {
+	l.DisputeCreatedBefore = disputeCreatedBefore
+	l.require(listPaymentsRequestFieldDisputeCreatedBefore)
+}
+
+// SetOrder sets the Order field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetOrder(order *ListPaymentsRequestOrder) {
+	l.Order = order
+	l.require(listPaymentsRequestFieldOrder)
+}
+
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetDirection(direction *ListPaymentsRequestDirection) {
+	l.Direction = direction
+	l.require(listPaymentsRequestFieldDirection)
+}
+
+// SetFirst sets the First field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetFirst(first *int) {
+	l.First = first
+	l.require(listPaymentsRequestFieldFirst)
+}
+
+// SetAfter sets the After field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetAfter(after *string) {
+	l.After = after
+	l.require(listPaymentsRequestFieldAfter)
+}
+
+// SetLast sets the Last field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetLast(last *int) {
+	l.Last = last
+	l.require(listPaymentsRequestFieldLast)
+}
+
+// SetBefore sets the Before field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetBefore(before *string) {
+	l.Before = before
+	l.require(listPaymentsRequestFieldBefore)
 }
 
 var (
-	listFeesPaymentsRequestFieldID     = big.NewInt(1 << 0)
-	listFeesPaymentsRequestFieldAfter  = big.NewInt(1 << 1)
-	listFeesPaymentsRequestFieldBefore = big.NewInt(1 << 2)
-	listFeesPaymentsRequestFieldFirst  = big.NewInt(1 << 3)
-	listFeesPaymentsRequestFieldLast   = big.NewInt(1 << 4)
+	listFeesPaymentsRequestFieldID = big.NewInt(1 << 0)
 )
 
 type ListFeesPaymentsRequest struct {
-	// The unique identifier of the payment to list fees for.
+	// The payment whose fees to list, prefixed `pay_`.
 	ID string `json:"-" url:"-"`
-	// Returns the elements in the list that come after the specified cursor.
-	After *string `json:"-" url:"after,omitempty"`
-	// Returns the elements in the list that come before the specified cursor.
-	Before *string `json:"-" url:"before,omitempty"`
-	// Returns the first _n_ elements from the list.
-	First *int `json:"-" url:"first,omitempty"`
-	// Returns the last _n_ elements from the list.
-	Last *int `json:"-" url:"last,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (l *ListFeesPaymentsRequest) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -262,43 +691,18 @@ func (l *ListFeesPaymentsRequest) SetID(id string) {
 	l.require(listFeesPaymentsRequestFieldID)
 }
 
-// SetAfter sets the After field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListFeesPaymentsRequest) SetAfter(after *string) {
-	l.After = after
-	l.require(listFeesPaymentsRequestFieldAfter)
-}
-
-// SetBefore sets the Before field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListFeesPaymentsRequest) SetBefore(before *string) {
-	l.Before = before
-	l.require(listFeesPaymentsRequestFieldBefore)
-}
-
-// SetFirst sets the First field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListFeesPaymentsRequest) SetFirst(first *int) {
-	l.First = first
-	l.require(listFeesPaymentsRequestFieldFirst)
-}
-
-// SetLast sets the Last field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListFeesPaymentsRequest) SetLast(last *int) {
-	l.Last = last
-	l.require(listFeesPaymentsRequestFieldLast)
-}
-
 var (
 	refundPaymentsRequestFieldID            = big.NewInt(1 << 0)
-	refundPaymentsRequestFieldPartialAmount = big.NewInt(1 << 1)
+	refundPaymentsRequestFieldMetadata      = big.NewInt(1 << 1)
+	refundPaymentsRequestFieldPartialAmount = big.NewInt(1 << 2)
 )
 
 type RefundPaymentsRequest struct {
-	// The unique identifier of the payment to refund.
+	// The payment to refund, prefixed `pay_`.
 	ID string `json:"-" url:"-"`
-	// The amount to refund. For multi-currency payments, this is in the charge currency (what the buyer paid). For single-currency, this is in the payment currency. If omitted, the full payment amount is refunded.
+	// Your own key-value data to attach to the refund, returned on it and on its `refund.created` and `refund.updated` webhooks. At most 50 keys; keys up to 100 characters and values up to 500.
+	Metadata map[string]*string `json:"metadata,omitempty" url:"-"`
+	// The amount to refund, stated in this payment's `currency` like every other amount on it. When the buyer was billed in a different currency, it is converted at the payment's own exchange rate before the refund is issued. An amount that covers everything still refundable refunds the rest of the payment — omit it to refund the rest without having to work out what that is.
 	PartialAmount *float64 `json:"partial_amount,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -306,10 +710,12 @@ type RefundPaymentsRequest struct {
 }
 
 func (r *RefundPaymentsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -317,6 +723,13 @@ func (r *RefundPaymentsRequest) require(field *big.Int) {
 func (r *RefundPaymentsRequest) SetID(id string) {
 	r.ID = id
 	r.require(refundPaymentsRequestFieldID)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RefundPaymentsRequest) SetMetadata(metadata map[string]*string) {
+	r.Metadata = metadata
+	r.require(refundPaymentsRequestFieldMetadata)
 }
 
 // SetPartialAmount sets the PartialAmount field and marks it as non-optional;
@@ -348,11 +761,80 @@ func (r *RefundPaymentsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	resumePaymentsRequestFieldPaymentID    = big.NewInt(1 << 0)
+	resumePaymentsRequestFieldClientSecret = big.NewInt(1 << 1)
+	resumePaymentsRequestFieldReturnURL    = big.NewInt(1 << 2)
+)
+
+type ResumePaymentsRequest struct {
+	// The unique identifier of the payment.
+	PaymentID string `json:"-" url:"-"`
+	// The payment's own `client_secret`, for a buyer without a token.
+	ClientSecret *string `json:"client_secret,omitempty" url:"-"`
+	// Where the buyer continues after completing an off-site step. Must be an absolute https URL without credentials (http is allowed for localhost), at most 2,048 characters. Defaults to Whop's hosted verification page. Ignored when the payment is not waiting on authentication.
+	ReturnURL *string `json:"return_url,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *ResumePaymentsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetPaymentID sets the PaymentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResumePaymentsRequest) SetPaymentID(paymentID string) {
+	r.PaymentID = paymentID
+	r.require(resumePaymentsRequestFieldPaymentID)
+}
+
+// SetClientSecret sets the ClientSecret field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResumePaymentsRequest) SetClientSecret(clientSecret *string) {
+	r.ClientSecret = clientSecret
+	r.require(resumePaymentsRequestFieldClientSecret)
+}
+
+// SetReturnURL sets the ReturnURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResumePaymentsRequest) SetReturnURL(returnURL *string) {
+	r.ReturnURL = returnURL
+	r.require(resumePaymentsRequestFieldReturnURL)
+}
+
+func (r *ResumePaymentsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResumePaymentsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*r = ResumePaymentsRequest(body)
+	return nil
+}
+
+func (r *ResumePaymentsRequest) MarshalJSON() ([]byte, error) {
+	type embed ResumePaymentsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	retrievePaymentsRequestFieldID = big.NewInt(1 << 0)
 )
 
 type RetrievePaymentsRequest struct {
-	// The unique identifier of the payment.
+	// The payment, prefixed `pay_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -360,10 +842,12 @@ type RetrievePaymentsRequest struct {
 }
 
 func (r *RetrievePaymentsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -374,22 +858,27 @@ func (r *RetrievePaymentsRequest) SetID(id string) {
 }
 
 var (
-	retrieveStatusPaymentsRequestFieldPaymentID = big.NewInt(1 << 0)
+	retrieveStatusPaymentsRequestFieldPaymentID    = big.NewInt(1 << 0)
+	retrieveStatusPaymentsRequestFieldClientSecret = big.NewInt(1 << 1)
 )
 
 type RetrieveStatusPaymentsRequest struct {
 	// The unique identifier of the payment.
 	PaymentID string `json:"-" url:"-"`
+	// The payment's own `client_secret`, for a caller without a secret key.
+	ClientSecret *string `json:"-" url:"client_secret,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
 }
 
 func (r *RetrieveStatusPaymentsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetPaymentID sets the PaymentID field and marks it as non-optional;
@@ -399,12 +888,19 @@ func (r *RetrieveStatusPaymentsRequest) SetPaymentID(paymentID string) {
 	r.require(retrieveStatusPaymentsRequestFieldPaymentID)
 }
 
+// SetClientSecret sets the ClientSecret field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatusPaymentsRequest) SetClientSecret(clientSecret *string) {
+	r.ClientSecret = clientSecret
+	r.require(retrieveStatusPaymentsRequestFieldClientSecret)
+}
+
 var (
 	retryPaymentsRequestFieldID = big.NewInt(1 << 0)
 )
 
 type RetryPaymentsRequest struct {
-	// The unique identifier of the payment to retry.
+	// The payment to retry, prefixed `pay_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -412,10 +908,12 @@ type RetryPaymentsRequest struct {
 }
 
 func (r *RetryPaymentsRequest) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
 	}
-	r.explicitFields.Or(r.explicitFields, field)
+	next.Or(next, field)
+	r.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -425,365 +923,255 @@ func (r *RetryPaymentsRequest) SetID(id string) {
 	r.require(retryPaymentsRequestFieldID)
 }
 
-// The possible statuses of a dispute
-type DisputeStatuses string
-
-const (
-	DisputeStatusesWarningNeedsResponse DisputeStatuses = "warning_needs_response"
-	DisputeStatusesWarningUnderReview   DisputeStatuses = "warning_under_review"
-	DisputeStatusesWarningClosed        DisputeStatuses = "warning_closed"
-	DisputeStatusesNeedsResponse        DisputeStatuses = "needs_response"
-	DisputeStatusesUnderReview          DisputeStatuses = "under_review"
-	DisputeStatusesWon                  DisputeStatuses = "won"
-	DisputeStatusesLost                 DisputeStatuses = "lost"
-	DisputeStatusesClosed               DisputeStatuses = "closed"
-	DisputeStatusesOther                DisputeStatuses = "other"
-)
-
-func NewDisputeStatusesFromString(s string) (DisputeStatuses, error) {
-	switch s {
-	case "warning_needs_response":
-		return DisputeStatusesWarningNeedsResponse, nil
-	case "warning_under_review":
-		return DisputeStatusesWarningUnderReview, nil
-	case "warning_closed":
-		return DisputeStatusesWarningClosed, nil
-	case "needs_response":
-		return DisputeStatusesNeedsResponse, nil
-	case "under_review":
-		return DisputeStatusesUnderReview, nil
-	case "won":
-		return DisputeStatusesWon, nil
-	case "lost":
-		return DisputeStatusesLost, nil
-	case "closed":
-		return DisputeStatusesClosed, nil
-	case "other":
-		return DisputeStatusesOther, nil
-	}
-	var t DisputeStatuses
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (d DisputeStatuses) Ptr() *DisputeStatuses {
-	return &d
-}
-
-// The friendly status of a payment. This is a derived status that provides a human-readable summary of the payment state, combining the underlying status and substatus fields.
-type FriendlyReceiptStatus string
-
-const (
-	FriendlyReceiptStatusSucceeded                   FriendlyReceiptStatus = "succeeded"
-	FriendlyReceiptStatusPending                     FriendlyReceiptStatus = "pending"
-	FriendlyReceiptStatusFailed                      FriendlyReceiptStatus = "failed"
-	FriendlyReceiptStatusPastDue                     FriendlyReceiptStatus = "past_due"
-	FriendlyReceiptStatusCanceled                    FriendlyReceiptStatus = "canceled"
-	FriendlyReceiptStatusPriceTooLow                 FriendlyReceiptStatus = "price_too_low"
-	FriendlyReceiptStatusUncollectible               FriendlyReceiptStatus = "uncollectible"
-	FriendlyReceiptStatusRefunded                    FriendlyReceiptStatus = "refunded"
-	FriendlyReceiptStatusAutoRefunded                FriendlyReceiptStatus = "auto_refunded"
-	FriendlyReceiptStatusPartiallyRefunded           FriendlyReceiptStatus = "partially_refunded"
-	FriendlyReceiptStatusDisputeWarning              FriendlyReceiptStatus = "dispute_warning"
-	FriendlyReceiptStatusDisputeNeedsResponse        FriendlyReceiptStatus = "dispute_needs_response"
-	FriendlyReceiptStatusDisputeWarningNeedsResponse FriendlyReceiptStatus = "dispute_warning_needs_response"
-	FriendlyReceiptStatusResolutionNeedsResponse     FriendlyReceiptStatus = "resolution_needs_response"
-	FriendlyReceiptStatusDisputeUnderReview          FriendlyReceiptStatus = "dispute_under_review"
-	FriendlyReceiptStatusDisputeWarningUnderReview   FriendlyReceiptStatus = "dispute_warning_under_review"
-	FriendlyReceiptStatusResolutionUnderReview       FriendlyReceiptStatus = "resolution_under_review"
-	FriendlyReceiptStatusDisputeWon                  FriendlyReceiptStatus = "dispute_won"
-	FriendlyReceiptStatusDisputeWarningClosed        FriendlyReceiptStatus = "dispute_warning_closed"
-	FriendlyReceiptStatusResolutionWon               FriendlyReceiptStatus = "resolution_won"
-	FriendlyReceiptStatusDisputeLost                 FriendlyReceiptStatus = "dispute_lost"
-	FriendlyReceiptStatusDisputeClosed               FriendlyReceiptStatus = "dispute_closed"
-	FriendlyReceiptStatusResolutionLost              FriendlyReceiptStatus = "resolution_lost"
-	FriendlyReceiptStatusDrafted                     FriendlyReceiptStatus = "drafted"
-	FriendlyReceiptStatusIncomplete                  FriendlyReceiptStatus = "incomplete"
-	FriendlyReceiptStatusUnresolved                  FriendlyReceiptStatus = "unresolved"
-	FriendlyReceiptStatusOpenDispute                 FriendlyReceiptStatus = "open_dispute"
-	FriendlyReceiptStatusOpenResolution              FriendlyReceiptStatus = "open_resolution"
-)
-
-func NewFriendlyReceiptStatusFromString(s string) (FriendlyReceiptStatus, error) {
-	switch s {
-	case "succeeded":
-		return FriendlyReceiptStatusSucceeded, nil
-	case "pending":
-		return FriendlyReceiptStatusPending, nil
-	case "failed":
-		return FriendlyReceiptStatusFailed, nil
-	case "past_due":
-		return FriendlyReceiptStatusPastDue, nil
-	case "canceled":
-		return FriendlyReceiptStatusCanceled, nil
-	case "price_too_low":
-		return FriendlyReceiptStatusPriceTooLow, nil
-	case "uncollectible":
-		return FriendlyReceiptStatusUncollectible, nil
-	case "refunded":
-		return FriendlyReceiptStatusRefunded, nil
-	case "auto_refunded":
-		return FriendlyReceiptStatusAutoRefunded, nil
-	case "partially_refunded":
-		return FriendlyReceiptStatusPartiallyRefunded, nil
-	case "dispute_warning":
-		return FriendlyReceiptStatusDisputeWarning, nil
-	case "dispute_needs_response":
-		return FriendlyReceiptStatusDisputeNeedsResponse, nil
-	case "dispute_warning_needs_response":
-		return FriendlyReceiptStatusDisputeWarningNeedsResponse, nil
-	case "resolution_needs_response":
-		return FriendlyReceiptStatusResolutionNeedsResponse, nil
-	case "dispute_under_review":
-		return FriendlyReceiptStatusDisputeUnderReview, nil
-	case "dispute_warning_under_review":
-		return FriendlyReceiptStatusDisputeWarningUnderReview, nil
-	case "resolution_under_review":
-		return FriendlyReceiptStatusResolutionUnderReview, nil
-	case "dispute_won":
-		return FriendlyReceiptStatusDisputeWon, nil
-	case "dispute_warning_closed":
-		return FriendlyReceiptStatusDisputeWarningClosed, nil
-	case "resolution_won":
-		return FriendlyReceiptStatusResolutionWon, nil
-	case "dispute_lost":
-		return FriendlyReceiptStatusDisputeLost, nil
-	case "dispute_closed":
-		return FriendlyReceiptStatusDisputeClosed, nil
-	case "resolution_lost":
-		return FriendlyReceiptStatusResolutionLost, nil
-	case "drafted":
-		return FriendlyReceiptStatusDrafted, nil
-	case "incomplete":
-		return FriendlyReceiptStatusIncomplete, nil
-	case "unresolved":
-		return FriendlyReceiptStatusUnresolved, nil
-	case "open_dispute":
-		return FriendlyReceiptStatusOpenDispute, nil
-	case "open_resolution":
-		return FriendlyReceiptStatusOpenResolution, nil
-	}
-	var t FriendlyReceiptStatus
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (f FriendlyReceiptStatus) Ptr() *FriendlyReceiptStatus {
-	return &f
-}
-
-// The different statuses of the global affiliate program for a product.
-type GlobalAffiliateStatuses string
-
-const (
-	GlobalAffiliateStatusesEnabled  GlobalAffiliateStatuses = "enabled"
-	GlobalAffiliateStatusesDisabled GlobalAffiliateStatuses = "disabled"
-)
-
-func NewGlobalAffiliateStatusesFromString(s string) (GlobalAffiliateStatuses, error) {
-	switch s {
-	case "enabled":
-		return GlobalAffiliateStatusesEnabled, nil
-	case "disabled":
-		return GlobalAffiliateStatusesDisabled, nil
-	}
-	var t GlobalAffiliateStatuses
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (g GlobalAffiliateStatuses) Ptr() *GlobalAffiliateStatuses {
-	return &g
-}
-
-// A payment represents a completed or attempted charge. Payments track the amount, status, currency, and payment method used.
 var (
-	paymentFieldAmountAfterFees            = big.NewInt(1 << 0)
-	paymentFieldApplicationFee             = big.NewInt(1 << 1)
-	paymentFieldAutoRefunded               = big.NewInt(1 << 2)
-	paymentFieldBillingAddress             = big.NewInt(1 << 3)
-	paymentFieldBillingReason              = big.NewInt(1 << 4)
-	paymentFieldCardBrand                  = big.NewInt(1 << 5)
-	paymentFieldCardExpMonth               = big.NewInt(1 << 6)
-	paymentFieldCardExpYear                = big.NewInt(1 << 7)
-	paymentFieldCardLast4                  = big.NewInt(1 << 8)
-	paymentFieldCheckoutConfigurationID    = big.NewInt(1 << 9)
-	paymentFieldCompany                    = big.NewInt(1 << 10)
-	paymentFieldCreatedAt                  = big.NewInt(1 << 11)
-	paymentFieldCurrency                   = big.NewInt(1 << 12)
-	paymentFieldCustomerPhone              = big.NewInt(1 << 13)
-	paymentFieldDeclineCode                = big.NewInt(1 << 14)
-	paymentFieldDisputeAlertedAt           = big.NewInt(1 << 15)
-	paymentFieldDisputes                   = big.NewInt(1 << 16)
-	paymentFieldFailureMessage             = big.NewInt(1 << 17)
-	paymentFieldFinancingInstallmentsCount = big.NewInt(1 << 18)
-	paymentFieldFinancingTransactions      = big.NewInt(1 << 19)
-	paymentFieldID                         = big.NewInt(1 << 20)
-	paymentFieldLastPaymentAttempt         = big.NewInt(1 << 21)
-	paymentFieldMember                     = big.NewInt(1 << 22)
-	paymentFieldMembership                 = big.NewInt(1 << 23)
-	paymentFieldMetadata                   = big.NewInt(1 << 24)
-	paymentFieldNeedsTracking              = big.NewInt(1 << 25)
-	paymentFieldNextPaymentAttempt         = big.NewInt(1 << 26)
-	paymentFieldPaidAt                     = big.NewInt(1 << 27)
-	paymentFieldPaymentInstrument          = big.NewInt(1 << 28)
-	paymentFieldPaymentMethod              = big.NewInt(1 << 29)
-	paymentFieldPaymentMethodType          = big.NewInt(1 << 30)
-	paymentFieldPaymentsFailed             = big.NewInt(1 << 31)
-	paymentFieldPlan                       = big.NewInt(1 << 32)
-	paymentFieldProduct                    = big.NewInt(1 << 33)
-	paymentFieldPromoCode                  = big.NewInt(1 << 34)
-	paymentFieldRefundable                 = big.NewInt(1 << 35)
-	paymentFieldRefundedAmount             = big.NewInt(1 << 36)
-	paymentFieldRefundedAt                 = big.NewInt(1 << 37)
-	paymentFieldRefunds                    = big.NewInt(1 << 38)
-	paymentFieldResolutions                = big.NewInt(1 << 39)
-	paymentFieldRetryable                  = big.NewInt(1 << 40)
-	paymentFieldRiskScore                  = big.NewInt(1 << 41)
-	paymentFieldRiskSignals                = big.NewInt(1 << 42)
-	paymentFieldSettlementAmount           = big.NewInt(1 << 43)
-	paymentFieldSettlementCurrency         = big.NewInt(1 << 44)
-	paymentFieldSettlementExchangeRate     = big.NewInt(1 << 45)
-	paymentFieldSettlementTimeAt           = big.NewInt(1 << 46)
-	paymentFieldShipment                   = big.NewInt(1 << 47)
-	paymentFieldShippingAddress            = big.NewInt(1 << 48)
-	paymentFieldStatus                     = big.NewInt(1 << 49)
-	paymentFieldSubstatus                  = big.NewInt(1 << 50)
-	paymentFieldSubtotal                   = big.NewInt(1 << 51)
-	paymentFieldTaxAmount                  = big.NewInt(1 << 52)
-	paymentFieldTaxBehavior                = big.NewInt(1 << 53)
-	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 54)
-	paymentFieldThreeDsVerified            = big.NewInt(1 << 55)
-	paymentFieldTotal                      = big.NewInt(1 << 56)
-	paymentFieldUpdatedAt                  = big.NewInt(1 << 57)
-	paymentFieldUsdTotal                   = big.NewInt(1 << 58)
-	paymentFieldUser                       = big.NewInt(1 << 59)
-	paymentFieldVerificationChecks         = big.NewInt(1 << 60)
-	paymentFieldVoidable                   = big.NewInt(1 << 61)
+	summaryPaymentsRequestFieldGroups                   = big.NewInt(1 << 0)
+	summaryPaymentsRequestFieldAccountID                = big.NewInt(1 << 1)
+	summaryPaymentsRequestFieldStatuses                 = big.NewInt(1 << 2)
+	summaryPaymentsRequestFieldSubstatuses              = big.NewInt(1 << 3)
+	summaryPaymentsRequestFieldBillingReasons           = big.NewInt(1 << 4)
+	summaryPaymentsRequestFieldCurrencies               = big.NewInt(1 << 5)
+	summaryPaymentsRequestFieldVariantIDs               = big.NewInt(1 << 6)
+	summaryPaymentsRequestFieldProductIDs               = big.NewInt(1 << 7)
+	summaryPaymentsRequestFieldPaymentMethods           = big.NewInt(1 << 8)
+	summaryPaymentsRequestFieldTrackingStates           = big.NewInt(1 << 9)
+	summaryPaymentsRequestFieldCreatedAfter             = big.NewInt(1 << 10)
+	summaryPaymentsRequestFieldCreatedBefore            = big.NewInt(1 << 11)
+	summaryPaymentsRequestFieldRefundedAfter            = big.NewInt(1 << 12)
+	summaryPaymentsRequestFieldRefundedBefore           = big.NewInt(1 << 13)
+	summaryPaymentsRequestFieldDisputeAlertedAfter      = big.NewInt(1 << 14)
+	summaryPaymentsRequestFieldDisputeAlertedBefore     = big.NewInt(1 << 15)
+	summaryPaymentsRequestFieldDisputeCreatedAfter      = big.NewInt(1 << 16)
+	summaryPaymentsRequestFieldDisputeCreatedBefore     = big.NewInt(1 << 17)
+	summaryPaymentsRequestFieldQuery                    = big.NewInt(1 << 18)
+	summaryPaymentsRequestFieldIncludeConnectedAccounts = big.NewInt(1 << 19)
 )
 
-type Payment struct {
-	// How much the payment is for after fees
-	AmountAfterFees float64 `json:"amount_after_fees" url:"amount_after_fees"`
-	// The application fee charged on this payment.
-	ApplicationFee *PaymentApplicationFee `json:"application_fee,omitempty" url:"application_fee,omitempty"`
-	// Whether this payment was auto refunded or not
-	AutoRefunded bool `json:"auto_refunded" url:"auto_refunded"`
-	// The address of the user who made the payment.
-	BillingAddress *PaymentBillingAddress `json:"billing_address,omitempty" url:"billing_address,omitempty"`
-	// The machine-readable reason this charge was created, such as initial subscription purchase, renewal cycle, or one-time payment.
-	BillingReason *BillingReasons `json:"billing_reason,omitempty" url:"billing_reason,omitempty"`
-	// Card network reported by the processor (e.g., 'visa', 'mastercard', 'amex'). Present only when the payment method type is 'card'.
-	CardBrand *CardBrands `json:"card_brand,omitempty" url:"card_brand,omitempty"`
-	// The expiration month (1-12) of the card used for this payment. Falls back to the declined card on failed payments with no saved card. Null when the payment was not made with a card or the expiry is unavailable.
-	CardExpMonth *int `json:"card_exp_month,omitempty" url:"card_exp_month,omitempty"`
-	// The four-digit expiration year of the card used for this payment. Falls back to the declined card on failed payments with no saved card. Null when the payment was not made with a card or the expiry is unavailable.
-	CardExpYear *int `json:"card_exp_year,omitempty" url:"card_exp_year,omitempty"`
-	// The last four digits of the card used to make this payment. Null if the payment was not made with a card.
-	CardLast4 *string `json:"card_last4,omitempty" url:"card_last4,omitempty"`
-	// The ID of the checkout session/configuration that produced this payment, if any. Use this to map payments back to the checkout configuration that created them.
-	CheckoutConfigurationID *string `json:"checkout_configuration_id,omitempty" url:"checkout_configuration_id,omitempty"`
-	// The company for the payment.
-	Company *PaymentCompany `json:"company,omitempty" url:"company,omitempty"`
-	// The datetime the payment was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The three-letter ISO currency code for this payment (e.g., 'usd', 'eur').
-	Currency Currencies `json:"currency" url:"currency"`
-	// Phone number the customer provided at checkout, or their verified phone number when your checkout requires phone verification. `null` when no phone number was collected.
-	CustomerPhone *string `json:"customer_phone,omitempty" url:"customer_phone,omitempty"`
-	// The reason the payment was declined. Null if the payment did not fail.
-	DeclineCode *PaymentDeclineCodes `json:"decline_code,omitempty" url:"decline_code,omitempty"`
-	// When an alert came in that this transaction will be disputed
-	DisputeAlertedAt *time.Time `json:"dispute_alerted_at,omitempty" url:"dispute_alerted_at,omitempty"`
-	// The disputes attached to this payment. Null if the actor in context does not have the payment:dispute:read permission.
-	Disputes []*PaymentDisputesItem `json:"disputes,omitempty" url:"disputes,omitempty"`
-	// If the payment failed, the reason for the failure.
-	FailureMessage *string `json:"failure_message,omitempty" url:"failure_message,omitempty"`
-	// The number of financing installments for the payment. Present if the payment is a financing payment (e.g. Splitit, Klarna, etc.).
-	FinancingInstallmentsCount *int `json:"financing_installments_count,omitempty" url:"financing_installments_count,omitempty"`
-	// The financing transactions attached to this payment. Present if the payment is a financing payment (e.g. Splitit, Klarna, etc.).
-	FinancingTransactions []*PaymentFinancingTransactionsItem `json:"financing_transactions" url:"financing_transactions"`
-	// The unique identifier for the payment.
-	ID string `json:"id" url:"id"`
-	// The time of the last payment attempt.
-	LastPaymentAttempt *time.Time `json:"last_payment_attempt,omitempty" url:"last_payment_attempt,omitempty"`
-	// The member attached to this payment.
-	Member *PaymentMember `json:"member,omitempty" url:"member,omitempty"`
-	// The membership attached to this payment.
-	Membership *PaymentMembership `json:"membership,omitempty" url:"membership,omitempty"`
-	// The custom metadata stored on this payment. This will be copied over to the checkout configuration for which this payment was made
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// Whether this payment is holding funds until the order ships and has no tracking number yet.
-	NeedsTracking *bool `json:"needs_tracking,omitempty" url:"needs_tracking,omitempty"`
-	// The time of the next schedule payment retry.
-	NextPaymentAttempt *time.Time `json:"next_payment_attempt,omitempty" url:"next_payment_attempt,omitempty"`
-	// The time at which this payment was successfully collected. Null if the payment has not yet succeeded. As a Unix timestamp.
-	PaidAt *time.Time `json:"paid_at,omitempty" url:"paid_at,omitempty"`
-	// The instrument this payment was made with, shaped for display: the method type, a buyer-facing name, the standard icon set, and the card facts when it was a card. Null when the receipt names no payment method.
-	PaymentInstrument *PaymentPaymentInstrument `json:"payment_instrument,omitempty" url:"payment_instrument,omitempty"`
-	// The tokenized payment method reference used for this payment. Null if no token was used.
-	PaymentMethod *PaymentPaymentMethod `json:"payment_method,omitempty" url:"payment_method,omitempty"`
-	// The type of payment instrument used for this payment (e.g., card, Cash App, iDEAL, Klarna, crypto). Null when the processor does not supply a type.
-	PaymentMethodType *PaymentMethodTypes `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
-	// The number of failed payment attempts for the payment.
-	PaymentsFailed *int `json:"payments_failed,omitempty" url:"payments_failed,omitempty"`
-	// The plan attached to this payment.
-	Plan *PaymentPlan `json:"plan,omitempty" url:"plan,omitempty"`
-	// The product this payment was made for
-	Product *PaymentProduct `json:"product,omitempty" url:"product,omitempty"`
-	// The promo code used for this payment.
-	PromoCode *PaymentPromoCode `json:"promo_code,omitempty" url:"promo_code,omitempty"`
-	// True only for payments that are `paid`, have not been fully refunded, and were processed by a payment processor that allows refunds.
-	Refundable bool `json:"refundable" url:"refundable"`
-	// The payment refund amount(if applicable).
-	RefundedAmount *float64 `json:"refunded_amount,omitempty" url:"refunded_amount,omitempty"`
-	// When the payment was refunded (if applicable).
-	RefundedAt *time.Time `json:"refunded_at,omitempty" url:"refunded_at,omitempty"`
-	// The refunds issued against this payment, newest first, including failed and canceled refund attempts. Limited to the 100 most recent.
-	Refunds []*PaymentRefundsItem `json:"refunds" url:"refunds"`
-	// The resolution center cases opened by the customer on this payment. Null if the actor in context does not have the payment:resolution_center_case:read permission.
-	Resolutions []*PaymentResolutionsItem `json:"resolutions,omitempty" url:"resolutions,omitempty"`
-	// True when the payment status is `open` and its membership is in one of the retry-eligible states (`active`, `trialing`, `completed`, or `past_due`), or when it is a failed initial billing-engine payment on a `drafted` membership with an unlimited-stock plan; otherwise false. Used to decide if Whop can attempt the charge again.
-	Retryable bool `json:"retryable" url:"retryable"`
-	// Whop's in-house fraud risk score for this payment, from 0 (lowest risk) to 100 (highest risk). Null when the payment has not been scored or scoring has not yet completed.
-	RiskScore *int `json:"risk_score,omitempty" url:"risk_score,omitempty"`
-	// A curated set of factors behind the risk score, grouped by category (business transaction history, buyer, device). Each entry has a key, human-readable label, category, and value. Null when there is no risk assessment for this payment.
-	RiskSignals map[string]any `json:"risk_signals,omitempty" url:"risk_signals,omitempty"`
-	// The total amount charged to the customer for this payment, including taxes and after any discounts. In the currency specified by the currency field.
-	SettlementAmount float64 `json:"settlement_amount" url:"settlement_amount"`
-	// The three-letter ISO currency code for this payment (e.g., 'usd', 'eur').
-	SettlementCurrency Currencies `json:"settlement_currency" url:"settlement_currency"`
-	// Deprecated. Always returns null.
-	SettlementExchangeRate *float64 `json:"settlement_exchange_rate,omitempty" url:"settlement_exchange_rate,omitempty"`
-	// When this payment's funds post to the company's available balance, at midnight UTC. Known at payment time and never changes. The `ledger_account.funds_available` webhook carries the same `settlement_time_at` when that batch posts — match them to know these funds are now withdrawable.
-	SettlementTimeAt *time.Time `json:"settlement_time_at,omitempty" url:"settlement_time_at,omitempty"`
-	// The shipment attached to this payment.
-	Shipment *PaymentShipment `json:"shipment,omitempty" url:"shipment,omitempty"`
-	// The shipping address provided by the customer for physical goods. Null if no shipping address was collected.
-	ShippingAddress *PaymentShippingAddress `json:"shipping_address,omitempty" url:"shipping_address,omitempty"`
-	// The current lifecycle state of this payment (e.g., 'draft', 'open', 'paid', 'void').
-	Status *ReceiptStatus `json:"status,omitempty" url:"status,omitempty"`
-	// The friendly status of the payment.
-	Substatus FriendlyReceiptStatus `json:"substatus" url:"substatus"`
-	// The subtotal to show to the creator (excluding buyer fees).
-	Subtotal *float64 `json:"subtotal,omitempty" url:"subtotal,omitempty"`
-	// The calculated amount of the sales/VAT tax (if applicable).
-	TaxAmount *float64 `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
-	// The type of tax inclusivity applied to the payment, for determining whether the tax is included in the final price, or paid on top.
-	TaxBehavior *ReceiptTaxBehaviors `json:"tax_behavior,omitempty" url:"tax_behavior,omitempty"`
-	// The amount of tax that has been refunded (if applicable).
-	TaxRefundedAmount *float64 `json:"tax_refunded_amount,omitempty" url:"tax_refunded_amount,omitempty"`
-	// Whether 3D Secure authentication was completed for this payment.
-	ThreeDsVerified bool `json:"three_ds_verified" url:"three_ds_verified"`
-	// The total to show to the creator (excluding buyer fees).
-	Total *float64 `json:"total,omitempty" url:"total,omitempty"`
-	// The datetime the payment was last updated.
-	UpdatedAt time.Time `json:"updated_at" url:"updated_at"`
-	// The total in USD to show to the creator (excluding buyer fees).
-	UsdTotal *float64 `json:"usd_total,omitempty" url:"usd_total,omitempty"`
-	// The user that made this payment.
-	User *PaymentUser `json:"user,omitempty" url:"user,omitempty"`
-	// The issuer's address and card security code check results for this payment. Null when the processor returned none.
-	VerificationChecks *PaymentVerificationChecks `json:"verification_checks,omitempty" url:"verification_checks,omitempty"`
-	// True when the payment is tied to a membership in `past_due`, the payment status is `open`, and the processor allows voiding payments; otherwise false.
-	Voidable bool `json:"voidable" url:"voidable"`
+type SummaryPaymentsRequest struct {
+	// Which breakdowns to return, keyed by these names under `groups`. Repeat the parameter to ask for several; omit it for all of them.
+	Groups []*SummaryPaymentsRequestGroupsItem `json:"-" url:"groups,omitempty"`
+	// Only payments charged by this account, prefixed `biz_`.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// Only payments in any of these lifecycle states. Repeat the parameter to pass several.
+	Statuses []*SummaryPaymentsRequestStatusesItem `json:"-" url:"statuses,omitempty"`
+	// Only payments whose `substatus` is any of these. Repeat the parameter to pass several.
+	Substatuses []*SummaryPaymentsRequestSubstatusesItem `json:"-" url:"substatuses,omitempty"`
+	// Only payments charged for any of these reasons. Repeat the parameter to pass several.
+	BillingReasons []*SummaryPaymentsRequestBillingReasonsItem `json:"-" url:"billing_reasons,omitempty"`
+	// Only payments presented in any of these three-letter currencies. Repeat the parameter to pass several.
+	Currencies []*string `json:"-" url:"currencies,omitempty"`
+	// Only payments priced by any of these variants, each prefixed `plan_`. Repeat the parameter to pass several.
+	VariantIDs []*string `json:"-" url:"variant_ids,omitempty"`
+	// Only payments for any of these products, each prefixed `prod_`. Repeat the parameter to pass several.
+	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
+	// Only payments paid with any of these methods. Repeat the parameter to pass several.
+	PaymentMethods []*SummaryPaymentsRequestPaymentMethodsItem `json:"-" url:"payment_methods,omitempty"`
+	// Only payments in any of these tracking states. Requires `account_id` and the shipment:basic:read permission.
+	TrackingStates []*SummaryPaymentsRequestTrackingStatesItem `json:"-" url:"tracking_states,omitempty"`
+	// Only payments created after this ISO 8601 timestamp.
+	CreatedAfter *time.Time `json:"-" url:"created_after,omitempty"`
+	// Only payments created before this ISO 8601 timestamp.
+	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
+	// Only payments refunded after this ISO 8601 timestamp.
+	RefundedAfter *time.Time `json:"-" url:"refunded_after,omitempty"`
+	// Only payments refunded before this ISO 8601 timestamp.
+	RefundedBefore *time.Time `json:"-" url:"refunded_before,omitempty"`
+	// Only payments with a dispute alert after this ISO 8601 timestamp.
+	DisputeAlertedAfter *time.Time `json:"-" url:"dispute_alerted_after,omitempty"`
+	// Only payments with a dispute alert before this ISO 8601 timestamp.
+	DisputeAlertedBefore *time.Time `json:"-" url:"dispute_alerted_before,omitempty"`
+	// Only payments with a dispute opened after this ISO 8601 timestamp.
+	DisputeCreatedAfter *time.Time `json:"-" url:"dispute_created_after,omitempty"`
+	// Only payments with a dispute opened before this ISO 8601 timestamp.
+	DisputeCreatedBefore *time.Time `json:"-" url:"dispute_created_before,omitempty"`
+	// Search payments by payment ID, dispute ID, user ID, membership ID, user email, name, or username.
+	Query *string `json:"-" url:"query,omitempty"`
+	// Only for searches: with `query`, also search the account's connected accounts. Requires `account_id` and `query`, and is a 400 without either; it never lists connected accounts' payments on its own. Matches on payment, dispute, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`). Free-text queries such as a name search only the named account. Connected accounts' payments are returned only for connected accounts you can read payments on.
+	IncludeConnectedAccounts *bool `json:"-" url:"include_connected_accounts,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (s *SummaryPaymentsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetGroups sets the Groups field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetGroups(groups []*SummaryPaymentsRequestGroupsItem) {
+	s.Groups = groups
+	s.require(summaryPaymentsRequestFieldGroups)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetAccountID(accountID *string) {
+	s.AccountID = accountID
+	s.require(summaryPaymentsRequestFieldAccountID)
+}
+
+// SetStatuses sets the Statuses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetStatuses(statuses []*SummaryPaymentsRequestStatusesItem) {
+	s.Statuses = statuses
+	s.require(summaryPaymentsRequestFieldStatuses)
+}
+
+// SetSubstatuses sets the Substatuses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetSubstatuses(substatuses []*SummaryPaymentsRequestSubstatusesItem) {
+	s.Substatuses = substatuses
+	s.require(summaryPaymentsRequestFieldSubstatuses)
+}
+
+// SetBillingReasons sets the BillingReasons field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetBillingReasons(billingReasons []*SummaryPaymentsRequestBillingReasonsItem) {
+	s.BillingReasons = billingReasons
+	s.require(summaryPaymentsRequestFieldBillingReasons)
+}
+
+// SetCurrencies sets the Currencies field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetCurrencies(currencies []*string) {
+	s.Currencies = currencies
+	s.require(summaryPaymentsRequestFieldCurrencies)
+}
+
+// SetVariantIDs sets the VariantIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetVariantIDs(variantIDs []*string) {
+	s.VariantIDs = variantIDs
+	s.require(summaryPaymentsRequestFieldVariantIDs)
+}
+
+// SetProductIDs sets the ProductIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetProductIDs(productIDs []*string) {
+	s.ProductIDs = productIDs
+	s.require(summaryPaymentsRequestFieldProductIDs)
+}
+
+// SetPaymentMethods sets the PaymentMethods field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetPaymentMethods(paymentMethods []*SummaryPaymentsRequestPaymentMethodsItem) {
+	s.PaymentMethods = paymentMethods
+	s.require(summaryPaymentsRequestFieldPaymentMethods)
+}
+
+// SetTrackingStates sets the TrackingStates field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetTrackingStates(trackingStates []*SummaryPaymentsRequestTrackingStatesItem) {
+	s.TrackingStates = trackingStates
+	s.require(summaryPaymentsRequestFieldTrackingStates)
+}
+
+// SetCreatedAfter sets the CreatedAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetCreatedAfter(createdAfter *time.Time) {
+	s.CreatedAfter = createdAfter
+	s.require(summaryPaymentsRequestFieldCreatedAfter)
+}
+
+// SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetCreatedBefore(createdBefore *time.Time) {
+	s.CreatedBefore = createdBefore
+	s.require(summaryPaymentsRequestFieldCreatedBefore)
+}
+
+// SetRefundedAfter sets the RefundedAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetRefundedAfter(refundedAfter *time.Time) {
+	s.RefundedAfter = refundedAfter
+	s.require(summaryPaymentsRequestFieldRefundedAfter)
+}
+
+// SetRefundedBefore sets the RefundedBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetRefundedBefore(refundedBefore *time.Time) {
+	s.RefundedBefore = refundedBefore
+	s.require(summaryPaymentsRequestFieldRefundedBefore)
+}
+
+// SetDisputeAlertedAfter sets the DisputeAlertedAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetDisputeAlertedAfter(disputeAlertedAfter *time.Time) {
+	s.DisputeAlertedAfter = disputeAlertedAfter
+	s.require(summaryPaymentsRequestFieldDisputeAlertedAfter)
+}
+
+// SetDisputeAlertedBefore sets the DisputeAlertedBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetDisputeAlertedBefore(disputeAlertedBefore *time.Time) {
+	s.DisputeAlertedBefore = disputeAlertedBefore
+	s.require(summaryPaymentsRequestFieldDisputeAlertedBefore)
+}
+
+// SetDisputeCreatedAfter sets the DisputeCreatedAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetDisputeCreatedAfter(disputeCreatedAfter *time.Time) {
+	s.DisputeCreatedAfter = disputeCreatedAfter
+	s.require(summaryPaymentsRequestFieldDisputeCreatedAfter)
+}
+
+// SetDisputeCreatedBefore sets the DisputeCreatedBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetDisputeCreatedBefore(disputeCreatedBefore *time.Time) {
+	s.DisputeCreatedBefore = disputeCreatedBefore
+	s.require(summaryPaymentsRequestFieldDisputeCreatedBefore)
+}
+
+// SetQuery sets the Query field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetQuery(query *string) {
+	s.Query = query
+	s.require(summaryPaymentsRequestFieldQuery)
+}
+
+// SetIncludeConnectedAccounts sets the IncludeConnectedAccounts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetIncludeConnectedAccounts(includeConnectedAccounts *bool) {
+	s.IncludeConnectedAccounts = includeConnectedAccounts
+	s.require(summaryPaymentsRequestFieldIncludeConnectedAccounts)
+}
+
+var (
+	paymentFeeFieldAmount           = big.NewInt(1 << 0)
+	paymentFeeFieldCollectedAt      = big.NewInt(1 << 1)
+	paymentFeeFieldDescription      = big.NewInt(1 << 2)
+	paymentFeeFieldLabel            = big.NewInt(1 << 3)
+	paymentFeeFieldOrigin           = big.NewInt(1 << 4)
+	paymentFeeFieldSettlementAmount = big.NewInt(1 << 5)
+	paymentFeeFieldType             = big.NewInt(1 << 6)
+)
+
+// paymentFeeNullableFields maps the wire names of PaymentFee's nullable fields (required or optional) to their field bits.
+var paymentFeeNullableFields = map[string]*big.Int{
+	"collected_at": paymentFeeFieldCollectedAt,
+	"description":  paymentFeeFieldDescription,
+}
+
+type PaymentFee struct {
+	// The fee in the currency it was collected in.
+	Amount *Money `json:"amount" url:"amount"`
+	// When the fee was collected, as an ISO 8601 timestamp, or null when it has not been.
+	CollectedAt *string `json:"collected_at,omitempty" url:"collected_at,omitempty"`
+	// A longer explanation of the fee, when there is one.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// The name the dashboard shows for this fee.
+	Label string `json:"label" url:"label"`
+	// The specific fee this line is, such as `payment_processing_percentage_fee` or `revshare_percentage_fee`.
+	Origin PaymentFeeOrigin `json:"origin" url:"origin"`
+	// The fee converted to the payment's settlement currency, so lines can be totalled against the payment.
+	SettlementAmount *Money `json:"settlement_amount" url:"settlement_amount"`
+	// The family the fee belongs to: `whop_fee`, `processing_fee`, `affiliate_program_fee`, or `other_fee`.
+	Type PaymentFeeType `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -792,1309 +1180,145 @@ type Payment struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *Payment) GetAmountAfterFees() float64 {
-	if p == nil {
-		return 0
-	}
-	return p.AmountAfterFees
-}
-
-func (p *Payment) GetApplicationFee() *PaymentApplicationFee {
+func (p *PaymentFee) GetAmount() *Money {
 	if p == nil {
 		return nil
 	}
-	return p.ApplicationFee
+	return p.Amount
 }
 
-func (p *Payment) GetAutoRefunded() bool {
-	if p == nil {
-		return false
-	}
-	return p.AutoRefunded
-}
-
-func (p *Payment) GetBillingAddress() *PaymentBillingAddress {
+func (p *PaymentFee) GetCollectedAt() *string {
 	if p == nil {
 		return nil
 	}
-	return p.BillingAddress
+	return p.CollectedAt
 }
 
-func (p *Payment) GetBillingReason() *BillingReasons {
+func (p *PaymentFee) GetDescription() *string {
 	if p == nil {
 		return nil
 	}
-	return p.BillingReason
+	return p.Description
 }
 
-func (p *Payment) GetCardBrand() *CardBrands {
-	if p == nil {
-		return nil
-	}
-	return p.CardBrand
-}
-
-func (p *Payment) GetCardExpMonth() *int {
-	if p == nil {
-		return nil
-	}
-	return p.CardExpMonth
-}
-
-func (p *Payment) GetCardExpYear() *int {
-	if p == nil {
-		return nil
-	}
-	return p.CardExpYear
-}
-
-func (p *Payment) GetCardLast4() *string {
-	if p == nil {
-		return nil
-	}
-	return p.CardLast4
-}
-
-func (p *Payment) GetCheckoutConfigurationID() *string {
-	if p == nil {
-		return nil
-	}
-	return p.CheckoutConfigurationID
-}
-
-func (p *Payment) GetCompany() *PaymentCompany {
-	if p == nil {
-		return nil
-	}
-	return p.Company
-}
-
-func (p *Payment) GetCreatedAt() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.CreatedAt
-}
-
-func (p *Payment) GetCurrency() Currencies {
+func (p *PaymentFee) GetLabel() string {
 	if p == nil {
 		return ""
 	}
-	return p.Currency
+	return p.Label
 }
 
-func (p *Payment) GetCustomerPhone() *string {
-	if p == nil {
-		return nil
-	}
-	return p.CustomerPhone
-}
-
-func (p *Payment) GetDeclineCode() *PaymentDeclineCodes {
-	if p == nil {
-		return nil
-	}
-	return p.DeclineCode
-}
-
-func (p *Payment) GetDisputeAlertedAt() *time.Time {
-	if p == nil {
-		return nil
-	}
-	return p.DisputeAlertedAt
-}
-
-func (p *Payment) GetDisputes() []*PaymentDisputesItem {
-	if p == nil {
-		return nil
-	}
-	return p.Disputes
-}
-
-func (p *Payment) GetFailureMessage() *string {
-	if p == nil {
-		return nil
-	}
-	return p.FailureMessage
-}
-
-func (p *Payment) GetFinancingInstallmentsCount() *int {
-	if p == nil {
-		return nil
-	}
-	return p.FinancingInstallmentsCount
-}
-
-func (p *Payment) GetFinancingTransactions() []*PaymentFinancingTransactionsItem {
-	if p == nil {
-		return nil
-	}
-	return p.FinancingTransactions
-}
-
-func (p *Payment) GetID() string {
+func (p *PaymentFee) GetOrigin() PaymentFeeOrigin {
 	if p == nil {
 		return ""
 	}
-	return p.ID
+	return p.Origin
 }
 
-func (p *Payment) GetLastPaymentAttempt() *time.Time {
+func (p *PaymentFee) GetSettlementAmount() *Money {
 	if p == nil {
 		return nil
-	}
-	return p.LastPaymentAttempt
-}
-
-func (p *Payment) GetMember() *PaymentMember {
-	if p == nil {
-		return nil
-	}
-	return p.Member
-}
-
-func (p *Payment) GetMembership() *PaymentMembership {
-	if p == nil {
-		return nil
-	}
-	return p.Membership
-}
-
-func (p *Payment) GetMetadata() map[string]any {
-	if p == nil {
-		return nil
-	}
-	return p.Metadata
-}
-
-func (p *Payment) GetNeedsTracking() *bool {
-	if p == nil {
-		return nil
-	}
-	return p.NeedsTracking
-}
-
-func (p *Payment) GetNextPaymentAttempt() *time.Time {
-	if p == nil {
-		return nil
-	}
-	return p.NextPaymentAttempt
-}
-
-func (p *Payment) GetPaidAt() *time.Time {
-	if p == nil {
-		return nil
-	}
-	return p.PaidAt
-}
-
-func (p *Payment) GetPaymentInstrument() *PaymentPaymentInstrument {
-	if p == nil {
-		return nil
-	}
-	return p.PaymentInstrument
-}
-
-func (p *Payment) GetPaymentMethod() *PaymentPaymentMethod {
-	if p == nil {
-		return nil
-	}
-	return p.PaymentMethod
-}
-
-func (p *Payment) GetPaymentMethodType() *PaymentMethodTypes {
-	if p == nil {
-		return nil
-	}
-	return p.PaymentMethodType
-}
-
-func (p *Payment) GetPaymentsFailed() *int {
-	if p == nil {
-		return nil
-	}
-	return p.PaymentsFailed
-}
-
-func (p *Payment) GetPlan() *PaymentPlan {
-	if p == nil {
-		return nil
-	}
-	return p.Plan
-}
-
-func (p *Payment) GetProduct() *PaymentProduct {
-	if p == nil {
-		return nil
-	}
-	return p.Product
-}
-
-func (p *Payment) GetPromoCode() *PaymentPromoCode {
-	if p == nil {
-		return nil
-	}
-	return p.PromoCode
-}
-
-func (p *Payment) GetRefundable() bool {
-	if p == nil {
-		return false
-	}
-	return p.Refundable
-}
-
-func (p *Payment) GetRefundedAmount() *float64 {
-	if p == nil {
-		return nil
-	}
-	return p.RefundedAmount
-}
-
-func (p *Payment) GetRefundedAt() *time.Time {
-	if p == nil {
-		return nil
-	}
-	return p.RefundedAt
-}
-
-func (p *Payment) GetRefunds() []*PaymentRefundsItem {
-	if p == nil {
-		return nil
-	}
-	return p.Refunds
-}
-
-func (p *Payment) GetResolutions() []*PaymentResolutionsItem {
-	if p == nil {
-		return nil
-	}
-	return p.Resolutions
-}
-
-func (p *Payment) GetRetryable() bool {
-	if p == nil {
-		return false
-	}
-	return p.Retryable
-}
-
-func (p *Payment) GetRiskScore() *int {
-	if p == nil {
-		return nil
-	}
-	return p.RiskScore
-}
-
-func (p *Payment) GetRiskSignals() map[string]any {
-	if p == nil {
-		return nil
-	}
-	return p.RiskSignals
-}
-
-func (p *Payment) GetSettlementAmount() float64 {
-	if p == nil {
-		return 0
 	}
 	return p.SettlementAmount
 }
 
-func (p *Payment) GetSettlementCurrency() Currencies {
+func (p *PaymentFee) GetType() PaymentFeeType {
 	if p == nil {
 		return ""
 	}
-	return p.SettlementCurrency
+	return p.Type
 }
 
-func (p *Payment) GetSettlementExchangeRate() *float64 {
-	if p == nil {
-		return nil
-	}
-	return p.SettlementExchangeRate
-}
-
-func (p *Payment) GetSettlementTimeAt() *time.Time {
-	if p == nil {
-		return nil
-	}
-	return p.SettlementTimeAt
-}
-
-func (p *Payment) GetShipment() *PaymentShipment {
-	if p == nil {
-		return nil
-	}
-	return p.Shipment
-}
-
-func (p *Payment) GetShippingAddress() *PaymentShippingAddress {
-	if p == nil {
-		return nil
-	}
-	return p.ShippingAddress
-}
-
-func (p *Payment) GetStatus() *ReceiptStatus {
-	if p == nil {
-		return nil
-	}
-	return p.Status
-}
-
-func (p *Payment) GetSubstatus() FriendlyReceiptStatus {
-	if p == nil {
-		return ""
-	}
-	return p.Substatus
-}
-
-func (p *Payment) GetSubtotal() *float64 {
-	if p == nil {
-		return nil
-	}
-	return p.Subtotal
-}
-
-func (p *Payment) GetTaxAmount() *float64 {
-	if p == nil {
-		return nil
-	}
-	return p.TaxAmount
-}
-
-func (p *Payment) GetTaxBehavior() *ReceiptTaxBehaviors {
-	if p == nil {
-		return nil
-	}
-	return p.TaxBehavior
-}
-
-func (p *Payment) GetTaxRefundedAmount() *float64 {
-	if p == nil {
-		return nil
-	}
-	return p.TaxRefundedAmount
-}
-
-func (p *Payment) GetThreeDsVerified() bool {
-	if p == nil {
-		return false
-	}
-	return p.ThreeDsVerified
-}
-
-func (p *Payment) GetTotal() *float64 {
-	if p == nil {
-		return nil
-	}
-	return p.Total
-}
-
-func (p *Payment) GetUpdatedAt() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.UpdatedAt
-}
-
-func (p *Payment) GetUsdTotal() *float64 {
-	if p == nil {
-		return nil
-	}
-	return p.UsdTotal
-}
-
-func (p *Payment) GetUser() *PaymentUser {
-	if p == nil {
-		return nil
-	}
-	return p.User
-}
-
-func (p *Payment) GetVerificationChecks() *PaymentVerificationChecks {
-	if p == nil {
-		return nil
-	}
-	return p.VerificationChecks
-}
-
-func (p *Payment) GetVoidable() bool {
-	if p == nil {
-		return false
-	}
-	return p.Voidable
-}
-
-func (p *Payment) GetExtraProperties() map[string]interface{} {
+func (p *PaymentFee) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *Payment) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+func (p *PaymentFee) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
-// SetAmountAfterFees sets the AmountAfterFees field and marks it as non-optional;
+// SetAmount sets the Amount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetAmountAfterFees(amountAfterFees float64) {
-	p.AmountAfterFees = amountAfterFees
-	p.require(paymentFieldAmountAfterFees)
+func (p *PaymentFee) SetAmount(amount *Money) {
+	p.Amount = amount
+	p.require(paymentFeeFieldAmount)
 }
 
-// SetApplicationFee sets the ApplicationFee field and marks it as non-optional;
+// SetCollectedAt sets the CollectedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetApplicationFee(applicationFee *PaymentApplicationFee) {
-	p.ApplicationFee = applicationFee
-	p.require(paymentFieldApplicationFee)
+func (p *PaymentFee) SetCollectedAt(collectedAt *string) {
+	p.CollectedAt = collectedAt
+	p.require(paymentFeeFieldCollectedAt)
 }
 
-// SetAutoRefunded sets the AutoRefunded field and marks it as non-optional;
+// SetDescription sets the Description field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetAutoRefunded(autoRefunded bool) {
-	p.AutoRefunded = autoRefunded
-	p.require(paymentFieldAutoRefunded)
+func (p *PaymentFee) SetDescription(description *string) {
+	p.Description = description
+	p.require(paymentFeeFieldDescription)
 }
 
-// SetBillingAddress sets the BillingAddress field and marks it as non-optional;
+// SetLabel sets the Label field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetBillingAddress(billingAddress *PaymentBillingAddress) {
-	p.BillingAddress = billingAddress
-	p.require(paymentFieldBillingAddress)
+func (p *PaymentFee) SetLabel(label string) {
+	p.Label = label
+	p.require(paymentFeeFieldLabel)
 }
 
-// SetBillingReason sets the BillingReason field and marks it as non-optional;
+// SetOrigin sets the Origin field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetBillingReason(billingReason *BillingReasons) {
-	p.BillingReason = billingReason
-	p.require(paymentFieldBillingReason)
-}
-
-// SetCardBrand sets the CardBrand field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetCardBrand(cardBrand *CardBrands) {
-	p.CardBrand = cardBrand
-	p.require(paymentFieldCardBrand)
-}
-
-// SetCardExpMonth sets the CardExpMonth field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetCardExpMonth(cardExpMonth *int) {
-	p.CardExpMonth = cardExpMonth
-	p.require(paymentFieldCardExpMonth)
-}
-
-// SetCardExpYear sets the CardExpYear field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetCardExpYear(cardExpYear *int) {
-	p.CardExpYear = cardExpYear
-	p.require(paymentFieldCardExpYear)
-}
-
-// SetCardLast4 sets the CardLast4 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetCardLast4(cardLast4 *string) {
-	p.CardLast4 = cardLast4
-	p.require(paymentFieldCardLast4)
-}
-
-// SetCheckoutConfigurationID sets the CheckoutConfigurationID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetCheckoutConfigurationID(checkoutConfigurationID *string) {
-	p.CheckoutConfigurationID = checkoutConfigurationID
-	p.require(paymentFieldCheckoutConfigurationID)
-}
-
-// SetCompany sets the Company field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetCompany(company *PaymentCompany) {
-	p.Company = company
-	p.require(paymentFieldCompany)
-}
-
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetCreatedAt(createdAt time.Time) {
-	p.CreatedAt = createdAt
-	p.require(paymentFieldCreatedAt)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetCurrency(currency Currencies) {
-	p.Currency = currency
-	p.require(paymentFieldCurrency)
-}
-
-// SetCustomerPhone sets the CustomerPhone field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetCustomerPhone(customerPhone *string) {
-	p.CustomerPhone = customerPhone
-	p.require(paymentFieldCustomerPhone)
-}
-
-// SetDeclineCode sets the DeclineCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetDeclineCode(declineCode *PaymentDeclineCodes) {
-	p.DeclineCode = declineCode
-	p.require(paymentFieldDeclineCode)
-}
-
-// SetDisputeAlertedAt sets the DisputeAlertedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetDisputeAlertedAt(disputeAlertedAt *time.Time) {
-	p.DisputeAlertedAt = disputeAlertedAt
-	p.require(paymentFieldDisputeAlertedAt)
-}
-
-// SetDisputes sets the Disputes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetDisputes(disputes []*PaymentDisputesItem) {
-	p.Disputes = disputes
-	p.require(paymentFieldDisputes)
-}
-
-// SetFailureMessage sets the FailureMessage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetFailureMessage(failureMessage *string) {
-	p.FailureMessage = failureMessage
-	p.require(paymentFieldFailureMessage)
-}
-
-// SetFinancingInstallmentsCount sets the FinancingInstallmentsCount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetFinancingInstallmentsCount(financingInstallmentsCount *int) {
-	p.FinancingInstallmentsCount = financingInstallmentsCount
-	p.require(paymentFieldFinancingInstallmentsCount)
-}
-
-// SetFinancingTransactions sets the FinancingTransactions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetFinancingTransactions(financingTransactions []*PaymentFinancingTransactionsItem) {
-	p.FinancingTransactions = financingTransactions
-	p.require(paymentFieldFinancingTransactions)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetID(id string) {
-	p.ID = id
-	p.require(paymentFieldID)
-}
-
-// SetLastPaymentAttempt sets the LastPaymentAttempt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetLastPaymentAttempt(lastPaymentAttempt *time.Time) {
-	p.LastPaymentAttempt = lastPaymentAttempt
-	p.require(paymentFieldLastPaymentAttempt)
-}
-
-// SetMember sets the Member field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetMember(member *PaymentMember) {
-	p.Member = member
-	p.require(paymentFieldMember)
-}
-
-// SetMembership sets the Membership field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetMembership(membership *PaymentMembership) {
-	p.Membership = membership
-	p.require(paymentFieldMembership)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetMetadata(metadata map[string]any) {
-	p.Metadata = metadata
-	p.require(paymentFieldMetadata)
-}
-
-// SetNeedsTracking sets the NeedsTracking field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetNeedsTracking(needsTracking *bool) {
-	p.NeedsTracking = needsTracking
-	p.require(paymentFieldNeedsTracking)
-}
-
-// SetNextPaymentAttempt sets the NextPaymentAttempt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetNextPaymentAttempt(nextPaymentAttempt *time.Time) {
-	p.NextPaymentAttempt = nextPaymentAttempt
-	p.require(paymentFieldNextPaymentAttempt)
-}
-
-// SetPaidAt sets the PaidAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetPaidAt(paidAt *time.Time) {
-	p.PaidAt = paidAt
-	p.require(paymentFieldPaidAt)
-}
-
-// SetPaymentInstrument sets the PaymentInstrument field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetPaymentInstrument(paymentInstrument *PaymentPaymentInstrument) {
-	p.PaymentInstrument = paymentInstrument
-	p.require(paymentFieldPaymentInstrument)
-}
-
-// SetPaymentMethod sets the PaymentMethod field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetPaymentMethod(paymentMethod *PaymentPaymentMethod) {
-	p.PaymentMethod = paymentMethod
-	p.require(paymentFieldPaymentMethod)
-}
-
-// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetPaymentMethodType(paymentMethodType *PaymentMethodTypes) {
-	p.PaymentMethodType = paymentMethodType
-	p.require(paymentFieldPaymentMethodType)
-}
-
-// SetPaymentsFailed sets the PaymentsFailed field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetPaymentsFailed(paymentsFailed *int) {
-	p.PaymentsFailed = paymentsFailed
-	p.require(paymentFieldPaymentsFailed)
-}
-
-// SetPlan sets the Plan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetPlan(plan *PaymentPlan) {
-	p.Plan = plan
-	p.require(paymentFieldPlan)
-}
-
-// SetProduct sets the Product field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetProduct(product *PaymentProduct) {
-	p.Product = product
-	p.require(paymentFieldProduct)
-}
-
-// SetPromoCode sets the PromoCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetPromoCode(promoCode *PaymentPromoCode) {
-	p.PromoCode = promoCode
-	p.require(paymentFieldPromoCode)
-}
-
-// SetRefundable sets the Refundable field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetRefundable(refundable bool) {
-	p.Refundable = refundable
-	p.require(paymentFieldRefundable)
-}
-
-// SetRefundedAmount sets the RefundedAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetRefundedAmount(refundedAmount *float64) {
-	p.RefundedAmount = refundedAmount
-	p.require(paymentFieldRefundedAmount)
-}
-
-// SetRefundedAt sets the RefundedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetRefundedAt(refundedAt *time.Time) {
-	p.RefundedAt = refundedAt
-	p.require(paymentFieldRefundedAt)
-}
-
-// SetRefunds sets the Refunds field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetRefunds(refunds []*PaymentRefundsItem) {
-	p.Refunds = refunds
-	p.require(paymentFieldRefunds)
-}
-
-// SetResolutions sets the Resolutions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetResolutions(resolutions []*PaymentResolutionsItem) {
-	p.Resolutions = resolutions
-	p.require(paymentFieldResolutions)
-}
-
-// SetRetryable sets the Retryable field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetRetryable(retryable bool) {
-	p.Retryable = retryable
-	p.require(paymentFieldRetryable)
-}
-
-// SetRiskScore sets the RiskScore field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetRiskScore(riskScore *int) {
-	p.RiskScore = riskScore
-	p.require(paymentFieldRiskScore)
-}
-
-// SetRiskSignals sets the RiskSignals field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetRiskSignals(riskSignals map[string]any) {
-	p.RiskSignals = riskSignals
-	p.require(paymentFieldRiskSignals)
+func (p *PaymentFee) SetOrigin(origin PaymentFeeOrigin) {
+	p.Origin = origin
+	p.require(paymentFeeFieldOrigin)
 }
 
 // SetSettlementAmount sets the SettlementAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetSettlementAmount(settlementAmount float64) {
+func (p *PaymentFee) SetSettlementAmount(settlementAmount *Money) {
 	p.SettlementAmount = settlementAmount
-	p.require(paymentFieldSettlementAmount)
+	p.require(paymentFeeFieldSettlementAmount)
 }
 
-// SetSettlementCurrency sets the SettlementCurrency field and marks it as non-optional;
+// SetType sets the Type field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetSettlementCurrency(settlementCurrency Currencies) {
-	p.SettlementCurrency = settlementCurrency
-	p.require(paymentFieldSettlementCurrency)
+func (p *PaymentFee) SetType(type_ PaymentFeeType) {
+	p.Type = type_
+	p.require(paymentFeeFieldType)
 }
 
-// SetSettlementExchangeRate sets the SettlementExchangeRate field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetSettlementExchangeRate(settlementExchangeRate *float64) {
-	p.SettlementExchangeRate = settlementExchangeRate
-	p.require(paymentFieldSettlementExchangeRate)
-}
-
-// SetSettlementTimeAt sets the SettlementTimeAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetSettlementTimeAt(settlementTimeAt *time.Time) {
-	p.SettlementTimeAt = settlementTimeAt
-	p.require(paymentFieldSettlementTimeAt)
-}
-
-// SetShipment sets the Shipment field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetShipment(shipment *PaymentShipment) {
-	p.Shipment = shipment
-	p.require(paymentFieldShipment)
-}
-
-// SetShippingAddress sets the ShippingAddress field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetShippingAddress(shippingAddress *PaymentShippingAddress) {
-	p.ShippingAddress = shippingAddress
-	p.require(paymentFieldShippingAddress)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetStatus(status *ReceiptStatus) {
-	p.Status = status
-	p.require(paymentFieldStatus)
-}
-
-// SetSubstatus sets the Substatus field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetSubstatus(substatus FriendlyReceiptStatus) {
-	p.Substatus = substatus
-	p.require(paymentFieldSubstatus)
-}
-
-// SetSubtotal sets the Subtotal field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetSubtotal(subtotal *float64) {
-	p.Subtotal = subtotal
-	p.require(paymentFieldSubtotal)
-}
-
-// SetTaxAmount sets the TaxAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetTaxAmount(taxAmount *float64) {
-	p.TaxAmount = taxAmount
-	p.require(paymentFieldTaxAmount)
-}
-
-// SetTaxBehavior sets the TaxBehavior field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetTaxBehavior(taxBehavior *ReceiptTaxBehaviors) {
-	p.TaxBehavior = taxBehavior
-	p.require(paymentFieldTaxBehavior)
-}
-
-// SetTaxRefundedAmount sets the TaxRefundedAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetTaxRefundedAmount(taxRefundedAmount *float64) {
-	p.TaxRefundedAmount = taxRefundedAmount
-	p.require(paymentFieldTaxRefundedAmount)
-}
-
-// SetThreeDsVerified sets the ThreeDsVerified field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetThreeDsVerified(threeDsVerified bool) {
-	p.ThreeDsVerified = threeDsVerified
-	p.require(paymentFieldThreeDsVerified)
-}
-
-// SetTotal sets the Total field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetTotal(total *float64) {
-	p.Total = total
-	p.require(paymentFieldTotal)
-}
-
-// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetUpdatedAt(updatedAt time.Time) {
-	p.UpdatedAt = updatedAt
-	p.require(paymentFieldUpdatedAt)
-}
-
-// SetUsdTotal sets the UsdTotal field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetUsdTotal(usdTotal *float64) {
-	p.UsdTotal = usdTotal
-	p.require(paymentFieldUsdTotal)
-}
-
-// SetUser sets the User field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetUser(user *PaymentUser) {
-	p.User = user
-	p.require(paymentFieldUser)
-}
-
-// SetVerificationChecks sets the VerificationChecks field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetVerificationChecks(verificationChecks *PaymentVerificationChecks) {
-	p.VerificationChecks = verificationChecks
-	p.require(paymentFieldVerificationChecks)
-}
-
-// SetVoidable sets the Voidable field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *Payment) SetVoidable(voidable bool) {
-	p.Voidable = voidable
-	p.require(paymentFieldVoidable)
-}
-
-func (p *Payment) UnmarshalJSON(data []byte) error {
-	type embed Payment
-	var unmarshaler = struct {
-		embed
-		CreatedAt          *internal.DateTime `json:"created_at"`
-		DisputeAlertedAt   *internal.DateTime `json:"dispute_alerted_at,omitempty"`
-		LastPaymentAttempt *internal.DateTime `json:"last_payment_attempt,omitempty"`
-		NextPaymentAttempt *internal.DateTime `json:"next_payment_attempt,omitempty"`
-		PaidAt             *internal.DateTime `json:"paid_at,omitempty"`
-		RefundedAt         *internal.DateTime `json:"refunded_at,omitempty"`
-		SettlementTimeAt   *internal.DateTime `json:"settlement_time_at,omitempty"`
-		UpdatedAt          *internal.DateTime `json:"updated_at"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = Payment(unmarshaler.embed)
-	p.CreatedAt = unmarshaler.CreatedAt.Time()
-	p.DisputeAlertedAt = unmarshaler.DisputeAlertedAt.TimePtr()
-	p.LastPaymentAttempt = unmarshaler.LastPaymentAttempt.TimePtr()
-	p.NextPaymentAttempt = unmarshaler.NextPaymentAttempt.TimePtr()
-	p.PaidAt = unmarshaler.PaidAt.TimePtr()
-	p.RefundedAt = unmarshaler.RefundedAt.TimePtr()
-	p.SettlementTimeAt = unmarshaler.SettlementTimeAt.TimePtr()
-	p.UpdatedAt = unmarshaler.UpdatedAt.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *Payment) MarshalJSON() ([]byte, error) {
-	type embed Payment
-	var marshaler = struct {
-		embed
-		CreatedAt          *internal.DateTime `json:"created_at"`
-		DisputeAlertedAt   *internal.DateTime `json:"dispute_alerted_at,omitempty"`
-		LastPaymentAttempt *internal.DateTime `json:"last_payment_attempt,omitempty"`
-		NextPaymentAttempt *internal.DateTime `json:"next_payment_attempt,omitempty"`
-		PaidAt             *internal.DateTime `json:"paid_at,omitempty"`
-		RefundedAt         *internal.DateTime `json:"refunded_at,omitempty"`
-		SettlementTimeAt   *internal.DateTime `json:"settlement_time_at,omitempty"`
-		UpdatedAt          *internal.DateTime `json:"updated_at"`
-	}{
-		embed:              embed(*p),
-		CreatedAt:          internal.NewDateTime(p.CreatedAt),
-		DisputeAlertedAt:   internal.NewOptionalDateTime(p.DisputeAlertedAt),
-		LastPaymentAttempt: internal.NewOptionalDateTime(p.LastPaymentAttempt),
-		NextPaymentAttempt: internal.NewOptionalDateTime(p.NextPaymentAttempt),
-		PaidAt:             internal.NewOptionalDateTime(p.PaidAt),
-		RefundedAt:         internal.NewOptionalDateTime(p.RefundedAt),
-		SettlementTimeAt:   internal.NewOptionalDateTime(p.SettlementTimeAt),
-		UpdatedAt:          internal.NewDateTime(p.UpdatedAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *Payment) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The application fee charged on this payment.
-var (
-	paymentApplicationFeeFieldAmount         = big.NewInt(1 << 0)
-	paymentApplicationFeeFieldAmountCaptured = big.NewInt(1 << 1)
-	paymentApplicationFeeFieldAmountRefunded = big.NewInt(1 << 2)
-	paymentApplicationFeeFieldCreatedAt      = big.NewInt(1 << 3)
-	paymentApplicationFeeFieldCurrency       = big.NewInt(1 << 4)
-	paymentApplicationFeeFieldID             = big.NewInt(1 << 5)
-)
-
-type PaymentApplicationFee struct {
-	// The application fee amount.
-	Amount float64 `json:"amount" url:"amount"`
-	// The amount of the application fee that has been captured.
-	AmountCaptured float64 `json:"amount_captured" url:"amount_captured"`
-	// The amount of the application fee that has been refunded.
-	AmountRefunded float64 `json:"amount_refunded" url:"amount_refunded"`
-	// The datetime the application fee was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The currency of the application fee.
-	Currency Currencies `json:"currency" url:"currency"`
-	// The unique identifier for the application fee.
-	ID string `json:"id" url:"id"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentApplicationFee) GetAmount() float64 {
-	if p == nil {
-		return 0
-	}
-	return p.Amount
-}
-
-func (p *PaymentApplicationFee) GetAmountCaptured() float64 {
-	if p == nil {
-		return 0
-	}
-	return p.AmountCaptured
-}
-
-func (p *PaymentApplicationFee) GetAmountRefunded() float64 {
-	if p == nil {
-		return 0
-	}
-	return p.AmountRefunded
-}
-
-func (p *PaymentApplicationFee) GetCreatedAt() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.CreatedAt
-}
-
-func (p *PaymentApplicationFee) GetCurrency() Currencies {
-	if p == nil {
-		return ""
-	}
-	return p.Currency
-}
-
-func (p *PaymentApplicationFee) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentApplicationFee) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentApplicationFee) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetAmount sets the Amount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentApplicationFee) SetAmount(amount float64) {
-	p.Amount = amount
-	p.require(paymentApplicationFeeFieldAmount)
-}
-
-// SetAmountCaptured sets the AmountCaptured field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentApplicationFee) SetAmountCaptured(amountCaptured float64) {
-	p.AmountCaptured = amountCaptured
-	p.require(paymentApplicationFeeFieldAmountCaptured)
-}
-
-// SetAmountRefunded sets the AmountRefunded field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentApplicationFee) SetAmountRefunded(amountRefunded float64) {
-	p.AmountRefunded = amountRefunded
-	p.require(paymentApplicationFeeFieldAmountRefunded)
-}
-
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentApplicationFee) SetCreatedAt(createdAt time.Time) {
-	p.CreatedAt = createdAt
-	p.require(paymentApplicationFeeFieldCreatedAt)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentApplicationFee) SetCurrency(currency Currencies) {
-	p.Currency = currency
-	p.require(paymentApplicationFeeFieldCurrency)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentApplicationFee) SetID(id string) {
-	p.ID = id
-	p.require(paymentApplicationFeeFieldID)
-}
-
-func (p *PaymentApplicationFee) UnmarshalJSON(data []byte) error {
-	type embed PaymentApplicationFee
-	var unmarshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PaymentApplicationFee(unmarshaler.embed)
-	p.CreatedAt = unmarshaler.CreatedAt.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentApplicationFee) MarshalJSON() ([]byte, error) {
-	type embed PaymentApplicationFee
-	var marshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-	}{
-		embed:     embed(*p),
-		CreatedAt: internal.NewDateTime(p.CreatedAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentApplicationFee) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The address of the user who made the payment.
-var (
-	paymentBillingAddressFieldCity       = big.NewInt(1 << 0)
-	paymentBillingAddressFieldCountry    = big.NewInt(1 << 1)
-	paymentBillingAddressFieldLine1      = big.NewInt(1 << 2)
-	paymentBillingAddressFieldLine2      = big.NewInt(1 << 3)
-	paymentBillingAddressFieldName       = big.NewInt(1 << 4)
-	paymentBillingAddressFieldPostalCode = big.NewInt(1 << 5)
-	paymentBillingAddressFieldState      = big.NewInt(1 << 6)
-)
-
-type PaymentBillingAddress struct {
-	// The city of the address.
-	City *string `json:"city,omitempty" url:"city,omitempty"`
-	// The country of the address.
-	Country *string `json:"country,omitempty" url:"country,omitempty"`
-	// The line 1 of the address.
-	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
-	// The line 2 of the address.
-	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
-	// The name of the customer.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The postal code of the address.
-	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
-	// The state of the address.
-	State *string `json:"state,omitempty" url:"state,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentBillingAddress) GetCity() *string {
-	if p == nil {
-		return nil
-	}
-	return p.City
-}
-
-func (p *PaymentBillingAddress) GetCountry() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Country
-}
-
-func (p *PaymentBillingAddress) GetLine1() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Line1
-}
-
-func (p *PaymentBillingAddress) GetLine2() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Line2
-}
-
-func (p *PaymentBillingAddress) GetName() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Name
-}
-
-func (p *PaymentBillingAddress) GetPostalCode() *string {
-	if p == nil {
-		return nil
-	}
-	return p.PostalCode
-}
-
-func (p *PaymentBillingAddress) GetState() *string {
-	if p == nil {
-		return nil
-	}
-	return p.State
-}
-
-func (p *PaymentBillingAddress) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentBillingAddress) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetCity sets the City field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentBillingAddress) SetCity(city *string) {
-	p.City = city
-	p.require(paymentBillingAddressFieldCity)
-}
-
-// SetCountry sets the Country field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentBillingAddress) SetCountry(country *string) {
-	p.Country = country
-	p.require(paymentBillingAddressFieldCountry)
-}
-
-// SetLine1 sets the Line1 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentBillingAddress) SetLine1(line1 *string) {
-	p.Line1 = line1
-	p.require(paymentBillingAddressFieldLine1)
-}
-
-// SetLine2 sets the Line2 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentBillingAddress) SetLine2(line2 *string) {
-	p.Line2 = line2
-	p.require(paymentBillingAddressFieldLine2)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentBillingAddress) SetName(name *string) {
-	p.Name = name
-	p.require(paymentBillingAddressFieldName)
-}
-
-// SetPostalCode sets the PostalCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentBillingAddress) SetPostalCode(postalCode *string) {
-	p.PostalCode = postalCode
-	p.require(paymentBillingAddressFieldPostalCode)
-}
-
-// SetState sets the State field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentBillingAddress) SetState(state *string) {
-	p.State = state
-	p.require(paymentBillingAddressFieldState)
-}
-
-func (p *PaymentBillingAddress) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentBillingAddress
+func (p *PaymentFee) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentFee
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*p = PaymentBillingAddress(value)
+	*p = PaymentFee(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentFeeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (p *PaymentBillingAddress) MarshalJSON() ([]byte, error) {
-	type embed PaymentBillingAddress
+func (p *PaymentFee) MarshalJSON() ([]byte, error) {
+	type embed PaymentFee
 	var marshaler = struct {
 		embed
 	}{
@@ -2104,7 +1328,7 @@ func (p *PaymentBillingAddress) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PaymentBillingAddress) String() string {
+func (p *PaymentFee) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -2119,774 +1343,155 @@ func (p *PaymentBillingAddress) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The company for the payment.
-var (
-	paymentCompanyFieldID    = big.NewInt(1 << 0)
-	paymentCompanyFieldRoute = big.NewInt(1 << 1)
-	paymentCompanyFieldTitle = big.NewInt(1 << 2)
-)
-
-type PaymentCompany struct {
-	// The unique identifier for the company.
-	ID string `json:"id" url:"id"`
-	// The slug/route of the company on the Whop site.
-	Route string `json:"route" url:"route"`
-	// The written name of the company.
-	Title string `json:"title" url:"title"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentCompany) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentCompany) GetRoute() string {
-	if p == nil {
-		return ""
-	}
-	return p.Route
-}
-
-func (p *PaymentCompany) GetTitle() string {
-	if p == nil {
-		return ""
-	}
-	return p.Title
-}
-
-func (p *PaymentCompany) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentCompany) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentCompany) SetID(id string) {
-	p.ID = id
-	p.require(paymentCompanyFieldID)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentCompany) SetRoute(route string) {
-	p.Route = route
-	p.require(paymentCompanyFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentCompany) SetTitle(title string) {
-	p.Title = title
-	p.require(paymentCompanyFieldTitle)
-}
-
-func (p *PaymentCompany) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentCompany
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentCompany(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentCompany) MarshalJSON() ([]byte, error) {
-	type embed PaymentCompany
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentCompany) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The reason a payment was declined.
-type PaymentDeclineCodes string
+// The specific fee this line is, such as `payment_processing_percentage_fee` or `revshare_percentage_fee`.
+type PaymentFeeOrigin string
 
 const (
-	PaymentDeclineCodesInsufficientFunds                PaymentDeclineCodes = "insufficient_funds"
-	PaymentDeclineCodesLostCard                         PaymentDeclineCodes = "lost_card"
-	PaymentDeclineCodesStolenCard                       PaymentDeclineCodes = "stolen_card"
-	PaymentDeclineCodesExpiredCard                      PaymentDeclineCodes = "expired_card"
-	PaymentDeclineCodesSuspectedFraud                   PaymentDeclineCodes = "suspected_fraud"
-	PaymentDeclineCodesInvalidCardNumber                PaymentDeclineCodes = "invalid_card_number"
-	PaymentDeclineCodesInvalidCvc                       PaymentDeclineCodes = "invalid_cvc"
-	PaymentDeclineCodesInvalidCvcOrExpiration           PaymentDeclineCodes = "invalid_cvc_or_expiration"
-	PaymentDeclineCodesIncorrectPin                     PaymentDeclineCodes = "incorrect_pin"
-	PaymentDeclineCodesAuthenticationRequired           PaymentDeclineCodes = "authentication_required"
-	PaymentDeclineCodesCardNotSupported                 PaymentDeclineCodes = "card_not_supported"
-	PaymentDeclineCodesCurrencyNotSupported             PaymentDeclineCodes = "currency_not_supported"
-	PaymentDeclineCodesDuplicateTransaction             PaymentDeclineCodes = "duplicate_transaction"
-	PaymentDeclineCodesGenericDecline                   PaymentDeclineCodes = "generic_decline"
-	PaymentDeclineCodesInvalidAccount                   PaymentDeclineCodes = "invalid_account"
-	PaymentDeclineCodesInvalidAmount                    PaymentDeclineCodes = "invalid_amount"
-	PaymentDeclineCodesProcessingError                  PaymentDeclineCodes = "processing_error"
-	PaymentDeclineCodesRestrictedCard                   PaymentDeclineCodes = "restricted_card"
-	PaymentDeclineCodesCardVelocityExceeded             PaymentDeclineCodes = "card_velocity_exceeded"
-	PaymentDeclineCodesContactIssuer                    PaymentDeclineCodes = "contact_issuer"
-	PaymentDeclineCodesBankDeclined                     PaymentDeclineCodes = "bank_declined"
-	PaymentDeclineCodesRegulatoryBlocked                PaymentDeclineCodes = "regulatory_blocked"
-	PaymentDeclineCodesTransactionNotPermitted          PaymentDeclineCodes = "transaction_not_permitted"
-	PaymentDeclineCodesTransactionStopped               PaymentDeclineCodes = "transaction_stopped"
-	PaymentDeclineCodesCardTypeNotSupported             PaymentDeclineCodes = "card_type_not_supported"
-	PaymentDeclineCodesIssuerNotFound                   PaymentDeclineCodes = "issuer_not_found"
-	PaymentDeclineCodesClosedAccount                    PaymentDeclineCodes = "closed_account"
-	PaymentDeclineCodesIssuerUnavailable                PaymentDeclineCodes = "issuer_unavailable"
-	PaymentDeclineCodesInvalidZip                       PaymentDeclineCodes = "invalid_zip"
-	PaymentDeclineCodesInvalidExpiryMonth               PaymentDeclineCodes = "invalid_expiry_month"
-	PaymentDeclineCodesInvalidExpiryYear                PaymentDeclineCodes = "invalid_expiry_year"
-	PaymentDeclineCodesInvalidExpiry                    PaymentDeclineCodes = "invalid_expiry"
-	PaymentDeclineCodesInvalidTransaction               PaymentDeclineCodes = "invalid_transaction"
-	PaymentDeclineCodesCannotAuthorize                  PaymentDeclineCodes = "cannot_authorize"
-	PaymentDeclineCodesPinRequired                      PaymentDeclineCodes = "pin_required"
-	PaymentDeclineCodesPinTryExceeded                   PaymentDeclineCodes = "pin_try_exceeded"
-	PaymentDeclineCodesProviderDeclined                 PaymentDeclineCodes = "provider_declined"
-	PaymentDeclineCodesHighRisk                         PaymentDeclineCodes = "high_risk"
-	PaymentDeclineCodesTestModeDecline                  PaymentDeclineCodes = "test_mode_decline"
-	PaymentDeclineCodesMerchantBlacklist                PaymentDeclineCodes = "merchant_blacklist"
-	PaymentDeclineCodesReenterTransaction               PaymentDeclineCodes = "reenter_transaction"
-	PaymentDeclineCodesInvalidPin                       PaymentDeclineCodes = "invalid_pin"
-	PaymentDeclineCodesPinRequiredAs                    PaymentDeclineCodes = "pin_required_as"
-	PaymentDeclineCodesWithdrawalCountLimitExceeded     PaymentDeclineCodes = "withdrawal_count_limit_exceeded"
-	PaymentDeclineCodesInvalidCountry                   PaymentDeclineCodes = "invalid_country"
-	PaymentDeclineCodesIssuerError                      PaymentDeclineCodes = "issuer_error"
-	PaymentDeclineCodesInvalidCardHolderName            PaymentDeclineCodes = "invalid_card_holder_name"
-	PaymentDeclineCodesNoAccounts                       PaymentDeclineCodes = "no_accounts"
-	PaymentDeclineCodesTransactionCancelled             PaymentDeclineCodes = "transaction_cancelled"
-	PaymentDeclineCodesThreeDSecureSuccess              PaymentDeclineCodes = "three_d_secure_success"
-	PaymentDeclineCodesThreeDSecureCanceled             PaymentDeclineCodes = "three_d_secure_canceled"
-	PaymentDeclineCodesThreeDSecureInvalidCardNumber    PaymentDeclineCodes = "three_d_secure_invalid_card_number"
-	PaymentDeclineCodesThreeDSecureGenericError         PaymentDeclineCodes = "three_d_secure_generic_error"
-	PaymentDeclineCodesThreeDSecureTimeout              PaymentDeclineCodes = "three_d_secure_timeout"
-	PaymentDeclineCodesThreeDSecureFailed               PaymentDeclineCodes = "three_d_secure_failed"
-	PaymentDeclineCodesThreeDSecureCardNotEnrolled      PaymentDeclineCodes = "three_d_secure_card_not_enrolled"
-	PaymentDeclineCodesThreeDSecureFraud                PaymentDeclineCodes = "three_d_secure_fraud"
-	PaymentDeclineCodesThreeDSecureTooManyAttempts      PaymentDeclineCodes = "three_d_secure_too_many_attempts"
-	PaymentDeclineCodesThreeDSecureRejectedByBank       PaymentDeclineCodes = "three_d_secure_rejected_by_bank"
-	PaymentDeclineCodesThreeDSecureReportedLostOrStolen PaymentDeclineCodes = "three_d_secure_reported_lost_or_stolen"
-	PaymentDeclineCodesBlockedByCardholder              PaymentDeclineCodes = "blocked_by_cardholder"
-	PaymentDeclineCodesTestModeTestCard                 PaymentDeclineCodes = "test_mode_test_card"
-	PaymentDeclineCodesTryAgainLater                    PaymentDeclineCodes = "try_again_later"
-	PaymentDeclineCodesTransactionNotAllowed            PaymentDeclineCodes = "transaction_not_allowed"
-	PaymentDeclineCodesBankInsufficientFunds            PaymentDeclineCodes = "bank_insufficient_funds"
-	PaymentDeclineCodesBankAccountNotFound              PaymentDeclineCodes = "bank_account_not_found"
-	PaymentDeclineCodesBankAccountClosed                PaymentDeclineCodes = "bank_account_closed"
-	PaymentDeclineCodesBankAccountFrozen                PaymentDeclineCodes = "bank_account_frozen"
-	PaymentDeclineCodesBankInvalidRoutingNumber         PaymentDeclineCodes = "bank_invalid_routing_number"
-	PaymentDeclineCodesBankNonTransactionAccount        PaymentDeclineCodes = "bank_non_transaction_account"
-	PaymentDeclineCodesBankAuthorizationRevoked         PaymentDeclineCodes = "bank_authorization_revoked"
-	PaymentDeclineCodesBankPaymentStopped               PaymentDeclineCodes = "bank_payment_stopped"
-	PaymentDeclineCodesBankNotAuthorized                PaymentDeclineCodes = "bank_not_authorized"
-	PaymentDeclineCodesBankAccountHolderDeceased        PaymentDeclineCodes = "bank_account_holder_deceased"
-	PaymentDeclineCodesBankDuplicate                    PaymentDeclineCodes = "bank_duplicate"
-	PaymentDeclineCodesBankAmountError                  PaymentDeclineCodes = "bank_amount_error"
-	PaymentDeclineCodesBankRegulatoryBlocked            PaymentDeclineCodes = "bank_regulatory_blocked"
-	PaymentDeclineCodesBankDetailsInvalid               PaymentDeclineCodes = "bank_details_invalid"
-	PaymentDeclineCodesBankProcessingError              PaymentDeclineCodes = "bank_processing_error"
-	PaymentDeclineCodesBankGenericDecline               PaymentDeclineCodes = "bank_generic_decline"
-	PaymentDeclineCodesSepaInvalidIban                  PaymentDeclineCodes = "sepa_invalid_iban"
-	PaymentDeclineCodesSepaNoMandate                    PaymentDeclineCodes = "sepa_no_mandate"
-	PaymentDeclineCodesSepaMandateDataInvalid           PaymentDeclineCodes = "sepa_mandate_data_invalid"
-	PaymentDeclineCodesSepaDisputed                     PaymentDeclineCodes = "sepa_disputed"
-	PaymentDeclineCodesSepaRefusedByCustomer            PaymentDeclineCodes = "sepa_refused_by_customer"
-	PaymentDeclineCodesSepaGenericDecline               PaymentDeclineCodes = "sepa_generic_decline"
+	PaymentFeeOriginStripeDomesticProcessingFee       PaymentFeeOrigin = "stripe_domestic_processing_fee"
+	PaymentFeeOriginStripeInternationalProcessingFee  PaymentFeeOrigin = "stripe_international_processing_fee"
+	PaymentFeeOriginStripeFixedProcessingFee          PaymentFeeOrigin = "stripe_fixed_processing_fee"
+	PaymentFeeOriginStripeBillingFee                  PaymentFeeOrigin = "stripe_billing_fee"
+	PaymentFeeOriginStripeRadarFee                    PaymentFeeOrigin = "stripe_radar_fee"
+	PaymentFeeOriginSalesTaxRemittance                PaymentFeeOrigin = "sales_tax_remittance"
+	PaymentFeeOriginSalesTaxRemittanceReversal        PaymentFeeOrigin = "sales_tax_remittance_reversal"
+	PaymentFeeOriginStripeSalesTaxFee                 PaymentFeeOrigin = "stripe_sales_tax_fee"
+	PaymentFeeOriginWhopProcessingFee                 PaymentFeeOrigin = "whop_processing_fee"
+	PaymentFeeOriginMarketplaceAffiliateFee           PaymentFeeOrigin = "marketplace_affiliate_fee"
+	PaymentFeeOriginAffiliateFee                      PaymentFeeOrigin = "affiliate_fee"
+	PaymentFeeOriginCryptoFee                         PaymentFeeOrigin = "crypto_fee"
+	PaymentFeeOriginStripeStandardProcessingFee       PaymentFeeOrigin = "stripe_standard_processing_fee"
+	PaymentFeeOriginPaypalFee                         PaymentFeeOrigin = "paypal_fee"
+	PaymentFeeOriginStripePayoutFee                   PaymentFeeOrigin = "stripe_payout_fee"
+	PaymentFeeOriginDisputeFee                        PaymentFeeOrigin = "dispute_fee"
+	PaymentFeeOriginDisputeAlertFee                   PaymentFeeOrigin = "dispute_alert_fee"
+	PaymentFeeOriginDisputeRepresentmentFee           PaymentFeeOrigin = "dispute_representment_fee"
+	PaymentFeeOriginAppleProcessingFee                PaymentFeeOrigin = "apple_processing_fee"
+	PaymentFeeOriginBuyerFee                          PaymentFeeOrigin = "buyer_fee"
+	PaymentFeeOriginSezzleProcessingFee               PaymentFeeOrigin = "sezzle_processing_fee"
+	PaymentFeeOriginSplititProcessingFee              PaymentFeeOrigin = "splitit_processing_fee"
+	PaymentFeeOriginPlatformBalanceProcessingFee      PaymentFeeOrigin = "platform_balance_processing_fee"
+	PaymentFeeOriginPaymentProcessingPercentageFee    PaymentFeeOrigin = "payment_processing_percentage_fee"
+	PaymentFeeOriginPaymentProcessingFixedFee         PaymentFeeOrigin = "payment_processing_fixed_fee"
+	PaymentFeeOriginCrossBorderPercentageFee          PaymentFeeOrigin = "cross_border_percentage_fee"
+	PaymentFeeOriginFxPercentageFee                   PaymentFeeOrigin = "fx_percentage_fee"
+	PaymentFeeOriginOrchestrationPercentageFee        PaymentFeeOrigin = "orchestration_percentage_fee"
+	PaymentFeeOriginThreeDsFixedFee                   PaymentFeeOrigin = "three_ds_fixed_fee"
+	PaymentFeeOriginBillingPercentageFee              PaymentFeeOrigin = "billing_percentage_fee"
+	PaymentFeeOriginRevsharePercentageFee             PaymentFeeOrigin = "revshare_percentage_fee"
+	PaymentFeeOriginApplicationFee                    PaymentFeeOrigin = "application_fee"
+	PaymentFeeOriginHighRiskMerchantFee               PaymentFeeOrigin = "high_risk_merchant_fee"
+	PaymentFeeOriginEconomicIntelligencePercentageFee PaymentFeeOrigin = "economic_intelligence_percentage_fee"
+	PaymentFeeOriginPaymentReturnFee                  PaymentFeeOrigin = "payment_return_fee"
 )
 
-func NewPaymentDeclineCodesFromString(s string) (PaymentDeclineCodes, error) {
+func NewPaymentFeeOriginFromString(s string) (PaymentFeeOrigin, error) {
 	switch s {
-	case "insufficient_funds":
-		return PaymentDeclineCodesInsufficientFunds, nil
-	case "lost_card":
-		return PaymentDeclineCodesLostCard, nil
-	case "stolen_card":
-		return PaymentDeclineCodesStolenCard, nil
-	case "expired_card":
-		return PaymentDeclineCodesExpiredCard, nil
-	case "suspected_fraud":
-		return PaymentDeclineCodesSuspectedFraud, nil
-	case "invalid_card_number":
-		return PaymentDeclineCodesInvalidCardNumber, nil
-	case "invalid_cvc":
-		return PaymentDeclineCodesInvalidCvc, nil
-	case "invalid_cvc_or_expiration":
-		return PaymentDeclineCodesInvalidCvcOrExpiration, nil
-	case "incorrect_pin":
-		return PaymentDeclineCodesIncorrectPin, nil
-	case "authentication_required":
-		return PaymentDeclineCodesAuthenticationRequired, nil
-	case "card_not_supported":
-		return PaymentDeclineCodesCardNotSupported, nil
-	case "currency_not_supported":
-		return PaymentDeclineCodesCurrencyNotSupported, nil
-	case "duplicate_transaction":
-		return PaymentDeclineCodesDuplicateTransaction, nil
-	case "generic_decline":
-		return PaymentDeclineCodesGenericDecline, nil
-	case "invalid_account":
-		return PaymentDeclineCodesInvalidAccount, nil
-	case "invalid_amount":
-		return PaymentDeclineCodesInvalidAmount, nil
-	case "processing_error":
-		return PaymentDeclineCodesProcessingError, nil
-	case "restricted_card":
-		return PaymentDeclineCodesRestrictedCard, nil
-	case "card_velocity_exceeded":
-		return PaymentDeclineCodesCardVelocityExceeded, nil
-	case "contact_issuer":
-		return PaymentDeclineCodesContactIssuer, nil
-	case "bank_declined":
-		return PaymentDeclineCodesBankDeclined, nil
-	case "regulatory_blocked":
-		return PaymentDeclineCodesRegulatoryBlocked, nil
-	case "transaction_not_permitted":
-		return PaymentDeclineCodesTransactionNotPermitted, nil
-	case "transaction_stopped":
-		return PaymentDeclineCodesTransactionStopped, nil
-	case "card_type_not_supported":
-		return PaymentDeclineCodesCardTypeNotSupported, nil
-	case "issuer_not_found":
-		return PaymentDeclineCodesIssuerNotFound, nil
-	case "closed_account":
-		return PaymentDeclineCodesClosedAccount, nil
-	case "issuer_unavailable":
-		return PaymentDeclineCodesIssuerUnavailable, nil
-	case "invalid_zip":
-		return PaymentDeclineCodesInvalidZip, nil
-	case "invalid_expiry_month":
-		return PaymentDeclineCodesInvalidExpiryMonth, nil
-	case "invalid_expiry_year":
-		return PaymentDeclineCodesInvalidExpiryYear, nil
-	case "invalid_expiry":
-		return PaymentDeclineCodesInvalidExpiry, nil
-	case "invalid_transaction":
-		return PaymentDeclineCodesInvalidTransaction, nil
-	case "cannot_authorize":
-		return PaymentDeclineCodesCannotAuthorize, nil
-	case "pin_required":
-		return PaymentDeclineCodesPinRequired, nil
-	case "pin_try_exceeded":
-		return PaymentDeclineCodesPinTryExceeded, nil
-	case "provider_declined":
-		return PaymentDeclineCodesProviderDeclined, nil
-	case "high_risk":
-		return PaymentDeclineCodesHighRisk, nil
-	case "test_mode_decline":
-		return PaymentDeclineCodesTestModeDecline, nil
-	case "merchant_blacklist":
-		return PaymentDeclineCodesMerchantBlacklist, nil
-	case "reenter_transaction":
-		return PaymentDeclineCodesReenterTransaction, nil
-	case "invalid_pin":
-		return PaymentDeclineCodesInvalidPin, nil
-	case "pin_required_as":
-		return PaymentDeclineCodesPinRequiredAs, nil
-	case "withdrawal_count_limit_exceeded":
-		return PaymentDeclineCodesWithdrawalCountLimitExceeded, nil
-	case "invalid_country":
-		return PaymentDeclineCodesInvalidCountry, nil
-	case "issuer_error":
-		return PaymentDeclineCodesIssuerError, nil
-	case "invalid_card_holder_name":
-		return PaymentDeclineCodesInvalidCardHolderName, nil
-	case "no_accounts":
-		return PaymentDeclineCodesNoAccounts, nil
-	case "transaction_cancelled":
-		return PaymentDeclineCodesTransactionCancelled, nil
-	case "three_d_secure_success":
-		return PaymentDeclineCodesThreeDSecureSuccess, nil
-	case "three_d_secure_canceled":
-		return PaymentDeclineCodesThreeDSecureCanceled, nil
-	case "three_d_secure_invalid_card_number":
-		return PaymentDeclineCodesThreeDSecureInvalidCardNumber, nil
-	case "three_d_secure_generic_error":
-		return PaymentDeclineCodesThreeDSecureGenericError, nil
-	case "three_d_secure_timeout":
-		return PaymentDeclineCodesThreeDSecureTimeout, nil
-	case "three_d_secure_failed":
-		return PaymentDeclineCodesThreeDSecureFailed, nil
-	case "three_d_secure_card_not_enrolled":
-		return PaymentDeclineCodesThreeDSecureCardNotEnrolled, nil
-	case "three_d_secure_fraud":
-		return PaymentDeclineCodesThreeDSecureFraud, nil
-	case "three_d_secure_too_many_attempts":
-		return PaymentDeclineCodesThreeDSecureTooManyAttempts, nil
-	case "three_d_secure_rejected_by_bank":
-		return PaymentDeclineCodesThreeDSecureRejectedByBank, nil
-	case "three_d_secure_reported_lost_or_stolen":
-		return PaymentDeclineCodesThreeDSecureReportedLostOrStolen, nil
-	case "blocked_by_cardholder":
-		return PaymentDeclineCodesBlockedByCardholder, nil
-	case "test_mode_test_card":
-		return PaymentDeclineCodesTestModeTestCard, nil
-	case "try_again_later":
-		return PaymentDeclineCodesTryAgainLater, nil
-	case "transaction_not_allowed":
-		return PaymentDeclineCodesTransactionNotAllowed, nil
-	case "bank_insufficient_funds":
-		return PaymentDeclineCodesBankInsufficientFunds, nil
-	case "bank_account_not_found":
-		return PaymentDeclineCodesBankAccountNotFound, nil
-	case "bank_account_closed":
-		return PaymentDeclineCodesBankAccountClosed, nil
-	case "bank_account_frozen":
-		return PaymentDeclineCodesBankAccountFrozen, nil
-	case "bank_invalid_routing_number":
-		return PaymentDeclineCodesBankInvalidRoutingNumber, nil
-	case "bank_non_transaction_account":
-		return PaymentDeclineCodesBankNonTransactionAccount, nil
-	case "bank_authorization_revoked":
-		return PaymentDeclineCodesBankAuthorizationRevoked, nil
-	case "bank_payment_stopped":
-		return PaymentDeclineCodesBankPaymentStopped, nil
-	case "bank_not_authorized":
-		return PaymentDeclineCodesBankNotAuthorized, nil
-	case "bank_account_holder_deceased":
-		return PaymentDeclineCodesBankAccountHolderDeceased, nil
-	case "bank_duplicate":
-		return PaymentDeclineCodesBankDuplicate, nil
-	case "bank_amount_error":
-		return PaymentDeclineCodesBankAmountError, nil
-	case "bank_regulatory_blocked":
-		return PaymentDeclineCodesBankRegulatoryBlocked, nil
-	case "bank_details_invalid":
-		return PaymentDeclineCodesBankDetailsInvalid, nil
-	case "bank_processing_error":
-		return PaymentDeclineCodesBankProcessingError, nil
-	case "bank_generic_decline":
-		return PaymentDeclineCodesBankGenericDecline, nil
-	case "sepa_invalid_iban":
-		return PaymentDeclineCodesSepaInvalidIban, nil
-	case "sepa_no_mandate":
-		return PaymentDeclineCodesSepaNoMandate, nil
-	case "sepa_mandate_data_invalid":
-		return PaymentDeclineCodesSepaMandateDataInvalid, nil
-	case "sepa_disputed":
-		return PaymentDeclineCodesSepaDisputed, nil
-	case "sepa_refused_by_customer":
-		return PaymentDeclineCodesSepaRefusedByCustomer, nil
-	case "sepa_generic_decline":
-		return PaymentDeclineCodesSepaGenericDecline, nil
+	case "stripe_domestic_processing_fee":
+		return PaymentFeeOriginStripeDomesticProcessingFee, nil
+	case "stripe_international_processing_fee":
+		return PaymentFeeOriginStripeInternationalProcessingFee, nil
+	case "stripe_fixed_processing_fee":
+		return PaymentFeeOriginStripeFixedProcessingFee, nil
+	case "stripe_billing_fee":
+		return PaymentFeeOriginStripeBillingFee, nil
+	case "stripe_radar_fee":
+		return PaymentFeeOriginStripeRadarFee, nil
+	case "sales_tax_remittance":
+		return PaymentFeeOriginSalesTaxRemittance, nil
+	case "sales_tax_remittance_reversal":
+		return PaymentFeeOriginSalesTaxRemittanceReversal, nil
+	case "stripe_sales_tax_fee":
+		return PaymentFeeOriginStripeSalesTaxFee, nil
+	case "whop_processing_fee":
+		return PaymentFeeOriginWhopProcessingFee, nil
+	case "marketplace_affiliate_fee":
+		return PaymentFeeOriginMarketplaceAffiliateFee, nil
+	case "affiliate_fee":
+		return PaymentFeeOriginAffiliateFee, nil
+	case "crypto_fee":
+		return PaymentFeeOriginCryptoFee, nil
+	case "stripe_standard_processing_fee":
+		return PaymentFeeOriginStripeStandardProcessingFee, nil
+	case "paypal_fee":
+		return PaymentFeeOriginPaypalFee, nil
+	case "stripe_payout_fee":
+		return PaymentFeeOriginStripePayoutFee, nil
+	case "dispute_fee":
+		return PaymentFeeOriginDisputeFee, nil
+	case "dispute_alert_fee":
+		return PaymentFeeOriginDisputeAlertFee, nil
+	case "dispute_representment_fee":
+		return PaymentFeeOriginDisputeRepresentmentFee, nil
+	case "apple_processing_fee":
+		return PaymentFeeOriginAppleProcessingFee, nil
+	case "buyer_fee":
+		return PaymentFeeOriginBuyerFee, nil
+	case "sezzle_processing_fee":
+		return PaymentFeeOriginSezzleProcessingFee, nil
+	case "splitit_processing_fee":
+		return PaymentFeeOriginSplititProcessingFee, nil
+	case "platform_balance_processing_fee":
+		return PaymentFeeOriginPlatformBalanceProcessingFee, nil
+	case "payment_processing_percentage_fee":
+		return PaymentFeeOriginPaymentProcessingPercentageFee, nil
+	case "payment_processing_fixed_fee":
+		return PaymentFeeOriginPaymentProcessingFixedFee, nil
+	case "cross_border_percentage_fee":
+		return PaymentFeeOriginCrossBorderPercentageFee, nil
+	case "fx_percentage_fee":
+		return PaymentFeeOriginFxPercentageFee, nil
+	case "orchestration_percentage_fee":
+		return PaymentFeeOriginOrchestrationPercentageFee, nil
+	case "three_ds_fixed_fee":
+		return PaymentFeeOriginThreeDsFixedFee, nil
+	case "billing_percentage_fee":
+		return PaymentFeeOriginBillingPercentageFee, nil
+	case "revshare_percentage_fee":
+		return PaymentFeeOriginRevsharePercentageFee, nil
+	case "application_fee":
+		return PaymentFeeOriginApplicationFee, nil
+	case "high_risk_merchant_fee":
+		return PaymentFeeOriginHighRiskMerchantFee, nil
+	case "economic_intelligence_percentage_fee":
+		return PaymentFeeOriginEconomicIntelligencePercentageFee, nil
+	case "payment_return_fee":
+		return PaymentFeeOriginPaymentReturnFee, nil
 	}
-	var t PaymentDeclineCodes
+	var t PaymentFeeOrigin
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p PaymentDeclineCodes) Ptr() *PaymentDeclineCodes {
+func (p PaymentFeeOrigin) Ptr() *PaymentFeeOrigin {
 	return &p
 }
 
-// A dispute is a chargeback or payment challenge filed against a company, including evidence and response status.
-var (
-	paymentDisputesItemFieldAmount          = big.NewInt(1 << 0)
-	paymentDisputesItemFieldCurrency        = big.NewInt(1 << 1)
-	paymentDisputesItemFieldEditable        = big.NewInt(1 << 2)
-	paymentDisputesItemFieldID              = big.NewInt(1 << 3)
-	paymentDisputesItemFieldNeedsResponseBy = big.NewInt(1 << 4)
-	paymentDisputesItemFieldNotes           = big.NewInt(1 << 5)
-	paymentDisputesItemFieldReason          = big.NewInt(1 << 6)
-	paymentDisputesItemFieldStatus          = big.NewInt(1 << 7)
+// The family the fee belongs to: `whop_fee`, `processing_fee`, `affiliate_program_fee`, or `other_fee`.
+type PaymentFeeType string
+
+const (
+	PaymentFeeTypeWhopFee             PaymentFeeType = "whop_fee"
+	PaymentFeeTypeProcessingFee       PaymentFeeType = "processing_fee"
+	PaymentFeeTypeAffiliateProgramFee PaymentFeeType = "affiliate_program_fee"
+	PaymentFeeTypeOtherFee            PaymentFeeType = "other_fee"
 )
 
-type PaymentDisputesItem struct {
-	// The disputed amount in the specified currency, formatted as a decimal.
-	Amount float64 `json:"amount" url:"amount"`
-	// The three-letter ISO currency code for the disputed amount.
-	Currency Currencies `json:"currency" url:"currency"`
-	// Whether the dispute evidence can still be edited and submitted.
-	Editable *bool `json:"editable,omitempty" url:"editable,omitempty"`
-	// The unique identifier for the dispute.
-	ID string `json:"id" url:"id"`
-	// The deadline by which dispute evidence must be submitted. Null if no response deadline is set.
-	NeedsResponseBy *time.Time `json:"needs_response_by,omitempty" url:"needs_response_by,omitempty"`
-	// Additional freeform notes submitted by the company as part of the dispute evidence.
-	Notes *string `json:"notes,omitempty" url:"notes,omitempty"`
-	// A human-readable reason for the dispute.
-	Reason *string `json:"reason,omitempty" url:"reason,omitempty"`
-	// The current status of the dispute lifecycle, such as needs_response, under_review, won, or lost.
-	Status DisputeStatuses `json:"status" url:"status"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentDisputesItem) GetAmount() float64 {
-	if p == nil {
-		return 0
+func NewPaymentFeeTypeFromString(s string) (PaymentFeeType, error) {
+	switch s {
+	case "whop_fee":
+		return PaymentFeeTypeWhopFee, nil
+	case "processing_fee":
+		return PaymentFeeTypeProcessingFee, nil
+	case "affiliate_program_fee":
+		return PaymentFeeTypeAffiliateProgramFee, nil
+	case "other_fee":
+		return PaymentFeeTypeOtherFee, nil
 	}
-	return p.Amount
+	var t PaymentFeeType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (p *PaymentDisputesItem) GetCurrency() Currencies {
-	if p == nil {
-		return ""
-	}
-	return p.Currency
-}
-
-func (p *PaymentDisputesItem) GetEditable() *bool {
-	if p == nil {
-		return nil
-	}
-	return p.Editable
-}
-
-func (p *PaymentDisputesItem) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentDisputesItem) GetNeedsResponseBy() *time.Time {
-	if p == nil {
-		return nil
-	}
-	return p.NeedsResponseBy
-}
-
-func (p *PaymentDisputesItem) GetNotes() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Notes
-}
-
-func (p *PaymentDisputesItem) GetReason() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Reason
-}
-
-func (p *PaymentDisputesItem) GetStatus() DisputeStatuses {
-	if p == nil {
-		return ""
-	}
-	return p.Status
-}
-
-func (p *PaymentDisputesItem) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentDisputesItem) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetAmount sets the Amount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentDisputesItem) SetAmount(amount float64) {
-	p.Amount = amount
-	p.require(paymentDisputesItemFieldAmount)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentDisputesItem) SetCurrency(currency Currencies) {
-	p.Currency = currency
-	p.require(paymentDisputesItemFieldCurrency)
-}
-
-// SetEditable sets the Editable field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentDisputesItem) SetEditable(editable *bool) {
-	p.Editable = editable
-	p.require(paymentDisputesItemFieldEditable)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentDisputesItem) SetID(id string) {
-	p.ID = id
-	p.require(paymentDisputesItemFieldID)
-}
-
-// SetNeedsResponseBy sets the NeedsResponseBy field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentDisputesItem) SetNeedsResponseBy(needsResponseBy *time.Time) {
-	p.NeedsResponseBy = needsResponseBy
-	p.require(paymentDisputesItemFieldNeedsResponseBy)
-}
-
-// SetNotes sets the Notes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentDisputesItem) SetNotes(notes *string) {
-	p.Notes = notes
-	p.require(paymentDisputesItemFieldNotes)
-}
-
-// SetReason sets the Reason field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentDisputesItem) SetReason(reason *string) {
-	p.Reason = reason
-	p.require(paymentDisputesItemFieldReason)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentDisputesItem) SetStatus(status DisputeStatuses) {
-	p.Status = status
-	p.require(paymentDisputesItemFieldStatus)
-}
-
-func (p *PaymentDisputesItem) UnmarshalJSON(data []byte) error {
-	type embed PaymentDisputesItem
-	var unmarshaler = struct {
-		embed
-		NeedsResponseBy *internal.DateTime `json:"needs_response_by,omitempty"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PaymentDisputesItem(unmarshaler.embed)
-	p.NeedsResponseBy = unmarshaler.NeedsResponseBy.TimePtr()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentDisputesItem) MarshalJSON() ([]byte, error) {
-	type embed PaymentDisputesItem
-	var marshaler = struct {
-		embed
-		NeedsResponseBy *internal.DateTime `json:"needs_response_by,omitempty"`
-	}{
-		embed:           embed(*p),
-		NeedsResponseBy: internal.NewOptionalDateTime(p.NeedsResponseBy),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentDisputesItem) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// A payment transaction.
-var (
-	paymentFinancingTransactionsItemFieldAmount          = big.NewInt(1 << 0)
-	paymentFinancingTransactionsItemFieldCreatedAt       = big.NewInt(1 << 1)
-	paymentFinancingTransactionsItemFieldID              = big.NewInt(1 << 2)
-	paymentFinancingTransactionsItemFieldStatus          = big.NewInt(1 << 3)
-	paymentFinancingTransactionsItemFieldTransactionType = big.NewInt(1 << 4)
-)
-
-type PaymentFinancingTransactionsItem struct {
-	// The amount of the payment transaction.
-	Amount float64 `json:"amount" url:"amount"`
-	// The date and time the payment transaction was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The unique identifier for the payment transaction.
-	ID string `json:"id" url:"id"`
-	// The status of the payment transaction.
-	Status PaymentTransactionStatuses `json:"status" url:"status"`
-	// The type of the payment transaction.
-	TransactionType PaymentTransactionTypes `json:"transaction_type" url:"transaction_type"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentFinancingTransactionsItem) GetAmount() float64 {
-	if p == nil {
-		return 0
-	}
-	return p.Amount
-}
-
-func (p *PaymentFinancingTransactionsItem) GetCreatedAt() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.CreatedAt
-}
-
-func (p *PaymentFinancingTransactionsItem) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentFinancingTransactionsItem) GetStatus() PaymentTransactionStatuses {
-	if p == nil {
-		return ""
-	}
-	return p.Status
-}
-
-func (p *PaymentFinancingTransactionsItem) GetTransactionType() PaymentTransactionTypes {
-	if p == nil {
-		return ""
-	}
-	return p.TransactionType
-}
-
-func (p *PaymentFinancingTransactionsItem) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentFinancingTransactionsItem) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetAmount sets the Amount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentFinancingTransactionsItem) SetAmount(amount float64) {
-	p.Amount = amount
-	p.require(paymentFinancingTransactionsItemFieldAmount)
-}
-
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentFinancingTransactionsItem) SetCreatedAt(createdAt time.Time) {
-	p.CreatedAt = createdAt
-	p.require(paymentFinancingTransactionsItemFieldCreatedAt)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentFinancingTransactionsItem) SetID(id string) {
-	p.ID = id
-	p.require(paymentFinancingTransactionsItemFieldID)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentFinancingTransactionsItem) SetStatus(status PaymentTransactionStatuses) {
-	p.Status = status
-	p.require(paymentFinancingTransactionsItemFieldStatus)
-}
-
-// SetTransactionType sets the TransactionType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentFinancingTransactionsItem) SetTransactionType(transactionType PaymentTransactionTypes) {
-	p.TransactionType = transactionType
-	p.require(paymentFinancingTransactionsItemFieldTransactionType)
-}
-
-func (p *PaymentFinancingTransactionsItem) UnmarshalJSON(data []byte) error {
-	type embed PaymentFinancingTransactionsItem
-	var unmarshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PaymentFinancingTransactionsItem(unmarshaler.embed)
-	p.CreatedAt = unmarshaler.CreatedAt.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentFinancingTransactionsItem) MarshalJSON() ([]byte, error) {
-	type embed PaymentFinancingTransactionsItem
-	var marshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-	}{
-		embed:     embed(*p),
-		CreatedAt: internal.NewDateTime(p.CreatedAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentFinancingTransactionsItem) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
+func (p PaymentFeeType) Ptr() *PaymentFeeType {
+	return &p
 }
 
 var (
@@ -2894,6 +1499,13 @@ var (
 	paymentLastPaymentErrorFieldDeclineCode = big.NewInt(1 << 1)
 	paymentLastPaymentErrorFieldMessage     = big.NewInt(1 << 2)
 )
+
+// paymentLastPaymentErrorNullableFields maps the wire names of PaymentLastPaymentError's nullable fields (required or optional) to their field bits.
+var paymentLastPaymentErrorNullableFields = map[string]*big.Int{
+	"code":         paymentLastPaymentErrorFieldCode,
+	"decline_code": paymentLastPaymentErrorFieldDeclineCode,
+	"message":      paymentLastPaymentErrorFieldMessage,
+}
 
 type PaymentLastPaymentError struct {
 	// A machine-readable classification of the failure.
@@ -2939,10 +1551,12 @@ func (p *PaymentLastPaymentError) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PaymentLastPaymentError) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetCode sets the Code field and marks it as non-optional;
@@ -2978,6 +1592,13 @@ func (p *PaymentLastPaymentError) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentLastPaymentErrorNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -3032,6 +1653,7 @@ const (
 	PaymentLastPaymentErrorDeclineCodeRestrictedCard                   PaymentLastPaymentErrorDeclineCode = "restricted_card"
 	PaymentLastPaymentErrorDeclineCodeCardVelocityExceeded             PaymentLastPaymentErrorDeclineCode = "card_velocity_exceeded"
 	PaymentLastPaymentErrorDeclineCodeContactIssuer                    PaymentLastPaymentErrorDeclineCode = "contact_issuer"
+	PaymentLastPaymentErrorDeclineCodeCardDeclinedByIssuer             PaymentLastPaymentErrorDeclineCode = "card_declined_by_issuer"
 	PaymentLastPaymentErrorDeclineCodeBankDeclined                     PaymentLastPaymentErrorDeclineCode = "bank_declined"
 	PaymentLastPaymentErrorDeclineCodeRegulatoryBlocked                PaymentLastPaymentErrorDeclineCode = "regulatory_blocked"
 	PaymentLastPaymentErrorDeclineCodeTransactionNotPermitted          PaymentLastPaymentErrorDeclineCode = "transaction_not_permitted"
@@ -3142,6 +1764,8 @@ func NewPaymentLastPaymentErrorDeclineCodeFromString(s string) (PaymentLastPayme
 		return PaymentLastPaymentErrorDeclineCodeCardVelocityExceeded, nil
 	case "contact_issuer":
 		return PaymentLastPaymentErrorDeclineCodeContactIssuer, nil
+	case "card_declined_by_issuer":
+		return PaymentLastPaymentErrorDeclineCodeCardDeclinedByIssuer, nil
 	case "bank_declined":
 		return PaymentLastPaymentErrorDeclineCodeBankDeclined, nil
 	case "regulatory_blocked":
@@ -3283,152 +1907,16 @@ func (p PaymentLastPaymentErrorDeclineCode) Ptr() *PaymentLastPaymentErrorDeclin
 	return &p
 }
 
-// A payment represents a completed or attempted charge. Payments track the amount, status, currency, and payment method used.
 var (
-	paymentListItemFieldAmountAfterFees         = big.NewInt(1 << 0)
-	paymentListItemFieldApplicationFee          = big.NewInt(1 << 1)
-	paymentListItemFieldAutoRefunded            = big.NewInt(1 << 2)
-	paymentListItemFieldBillingAddress          = big.NewInt(1 << 3)
-	paymentListItemFieldBillingReason           = big.NewInt(1 << 4)
-	paymentListItemFieldCardBrand               = big.NewInt(1 << 5)
-	paymentListItemFieldCardLast4               = big.NewInt(1 << 6)
-	paymentListItemFieldCheckoutConfigurationID = big.NewInt(1 << 7)
-	paymentListItemFieldCompany                 = big.NewInt(1 << 8)
-	paymentListItemFieldCreatedAt               = big.NewInt(1 << 9)
-	paymentListItemFieldCurrency                = big.NewInt(1 << 10)
-	paymentListItemFieldCustomerPhone           = big.NewInt(1 << 11)
-	paymentListItemFieldDeclineCode             = big.NewInt(1 << 12)
-	paymentListItemFieldDisputeAlertedAt        = big.NewInt(1 << 13)
-	paymentListItemFieldFailureMessage          = big.NewInt(1 << 14)
-	paymentListItemFieldID                      = big.NewInt(1 << 15)
-	paymentListItemFieldLastPaymentAttempt      = big.NewInt(1 << 16)
-	paymentListItemFieldMember                  = big.NewInt(1 << 17)
-	paymentListItemFieldMembership              = big.NewInt(1 << 18)
-	paymentListItemFieldMetadata                = big.NewInt(1 << 19)
-	paymentListItemFieldNeedsTracking           = big.NewInt(1 << 20)
-	paymentListItemFieldNextPaymentAttempt      = big.NewInt(1 << 21)
-	paymentListItemFieldPaidAt                  = big.NewInt(1 << 22)
-	paymentListItemFieldPaymentInstrument       = big.NewInt(1 << 23)
-	paymentListItemFieldPaymentMethod           = big.NewInt(1 << 24)
-	paymentListItemFieldPaymentMethodType       = big.NewInt(1 << 25)
-	paymentListItemFieldPaymentsFailed          = big.NewInt(1 << 26)
-	paymentListItemFieldPlan                    = big.NewInt(1 << 27)
-	paymentListItemFieldProduct                 = big.NewInt(1 << 28)
-	paymentListItemFieldPromoCode               = big.NewInt(1 << 29)
-	paymentListItemFieldRefundable              = big.NewInt(1 << 30)
-	paymentListItemFieldRefundedAmount          = big.NewInt(1 << 31)
-	paymentListItemFieldRefundedAt              = big.NewInt(1 << 32)
-	paymentListItemFieldRetryable               = big.NewInt(1 << 33)
-	paymentListItemFieldSettlementCurrency      = big.NewInt(1 << 34)
-	paymentListItemFieldShipment                = big.NewInt(1 << 35)
-	paymentListItemFieldShippingAddress         = big.NewInt(1 << 36)
-	paymentListItemFieldStatus                  = big.NewInt(1 << 37)
-	paymentListItemFieldSubstatus               = big.NewInt(1 << 38)
-	paymentListItemFieldSubtotal                = big.NewInt(1 << 39)
-	paymentListItemFieldTaxAmount               = big.NewInt(1 << 40)
-	paymentListItemFieldTaxBehavior             = big.NewInt(1 << 41)
-	paymentListItemFieldTotal                   = big.NewInt(1 << 42)
-	paymentListItemFieldUpdatedAt               = big.NewInt(1 << 43)
-	paymentListItemFieldUsdTotal                = big.NewInt(1 << 44)
-	paymentListItemFieldUser                    = big.NewInt(1 << 45)
-	paymentListItemFieldVoidable                = big.NewInt(1 << 46)
+	paymentPdfFieldExpiresAt = big.NewInt(1 << 0)
+	paymentPdfFieldURL       = big.NewInt(1 << 1)
 )
 
-type PaymentListItem struct {
-	// How much the payment is for after fees
-	AmountAfterFees float64 `json:"amount_after_fees" url:"amount_after_fees"`
-	// The application fee charged on this payment.
-	ApplicationFee *PaymentListItemApplicationFee `json:"application_fee,omitempty" url:"application_fee,omitempty"`
-	// Whether this payment was auto refunded or not
-	AutoRefunded bool `json:"auto_refunded" url:"auto_refunded"`
-	// The address of the user who made the payment.
-	BillingAddress *PaymentListItemBillingAddress `json:"billing_address,omitempty" url:"billing_address,omitempty"`
-	// The machine-readable reason this charge was created, such as initial subscription purchase, renewal cycle, or one-time payment.
-	BillingReason *BillingReasons `json:"billing_reason,omitempty" url:"billing_reason,omitempty"`
-	// Card network reported by the processor (e.g., 'visa', 'mastercard', 'amex'). Present only when the payment method type is 'card'.
-	CardBrand *CardBrands `json:"card_brand,omitempty" url:"card_brand,omitempty"`
-	// The last four digits of the card used to make this payment. Null if the payment was not made with a card.
-	CardLast4 *string `json:"card_last4,omitempty" url:"card_last4,omitempty"`
-	// The ID of the checkout session/configuration that produced this payment, if any. Use this to map payments back to the checkout configuration that created them.
-	CheckoutConfigurationID *string `json:"checkout_configuration_id,omitempty" url:"checkout_configuration_id,omitempty"`
-	// The company for the payment.
-	Company *PaymentListItemCompany `json:"company,omitempty" url:"company,omitempty"`
-	// The datetime the payment was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The three-letter ISO currency code for this payment (e.g., 'usd', 'eur').
-	Currency Currencies `json:"currency" url:"currency"`
-	// Phone number the customer provided at checkout, or their verified phone number when your checkout requires phone verification. `null` when no phone number was collected.
-	CustomerPhone *string `json:"customer_phone,omitempty" url:"customer_phone,omitempty"`
-	// The reason the payment was declined. Null if the payment did not fail.
-	DeclineCode *PaymentDeclineCodes `json:"decline_code,omitempty" url:"decline_code,omitempty"`
-	// When an alert came in that this transaction will be disputed
-	DisputeAlertedAt *time.Time `json:"dispute_alerted_at,omitempty" url:"dispute_alerted_at,omitempty"`
-	// If the payment failed, the reason for the failure.
-	FailureMessage *string `json:"failure_message,omitempty" url:"failure_message,omitempty"`
-	// The unique identifier for the payment.
-	ID string `json:"id" url:"id"`
-	// The time of the last payment attempt.
-	LastPaymentAttempt *time.Time `json:"last_payment_attempt,omitempty" url:"last_payment_attempt,omitempty"`
-	// The member attached to this payment.
-	Member *PaymentListItemMember `json:"member,omitempty" url:"member,omitempty"`
-	// The membership attached to this payment.
-	Membership *PaymentListItemMembership `json:"membership,omitempty" url:"membership,omitempty"`
-	// The custom metadata stored on this payment. This will be copied over to the checkout configuration for which this payment was made
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// Whether this payment is holding funds until the order ships and has no tracking number yet.
-	NeedsTracking *bool `json:"needs_tracking,omitempty" url:"needs_tracking,omitempty"`
-	// The time of the next schedule payment retry.
-	NextPaymentAttempt *time.Time `json:"next_payment_attempt,omitempty" url:"next_payment_attempt,omitempty"`
-	// The time at which this payment was successfully collected. Null if the payment has not yet succeeded. As a Unix timestamp.
-	PaidAt *time.Time `json:"paid_at,omitempty" url:"paid_at,omitempty"`
-	// The instrument this payment was made with, shaped for display: the method type, a buyer-facing name, the standard icon set, and the card facts when it was a card. Null when the receipt names no payment method.
-	PaymentInstrument *PaymentListItemPaymentInstrument `json:"payment_instrument,omitempty" url:"payment_instrument,omitempty"`
-	// The tokenized payment method reference used for this payment. Null if no token was used.
-	PaymentMethod *PaymentListItemPaymentMethod `json:"payment_method,omitempty" url:"payment_method,omitempty"`
-	// The type of payment instrument used for this payment (e.g., card, Cash App, iDEAL, Klarna, crypto). Null when the processor does not supply a type.
-	PaymentMethodType *PaymentMethodTypes `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
-	// The number of failed payment attempts for the payment.
-	PaymentsFailed *int `json:"payments_failed,omitempty" url:"payments_failed,omitempty"`
-	// The plan attached to this payment.
-	Plan *PaymentListItemPlan `json:"plan,omitempty" url:"plan,omitempty"`
-	// The product this payment was made for
-	Product *PaymentListItemProduct `json:"product,omitempty" url:"product,omitempty"`
-	// The promo code used for this payment.
-	PromoCode *PaymentListItemPromoCode `json:"promo_code,omitempty" url:"promo_code,omitempty"`
-	// True only for payments that are `paid`, have not been fully refunded, and were processed by a payment processor that allows refunds.
-	Refundable bool `json:"refundable" url:"refundable"`
-	// The payment refund amount(if applicable).
-	RefundedAmount *float64 `json:"refunded_amount,omitempty" url:"refunded_amount,omitempty"`
-	// When the payment was refunded (if applicable).
-	RefundedAt *time.Time `json:"refunded_at,omitempty" url:"refunded_at,omitempty"`
-	// True when the payment status is `open` and its membership is in one of the retry-eligible states (`active`, `trialing`, `completed`, or `past_due`), or when it is a failed initial billing-engine payment on a `drafted` membership with an unlimited-stock plan; otherwise false. Used to decide if Whop can attempt the charge again.
-	Retryable bool `json:"retryable" url:"retryable"`
-	// The three-letter ISO currency code for this payment (e.g., 'usd', 'eur').
-	SettlementCurrency Currencies `json:"settlement_currency" url:"settlement_currency"`
-	// The shipment attached to this payment.
-	Shipment *PaymentListItemShipment `json:"shipment,omitempty" url:"shipment,omitempty"`
-	// The shipping address provided by the customer for physical goods. Null if no shipping address was collected.
-	ShippingAddress *PaymentListItemShippingAddress `json:"shipping_address,omitempty" url:"shipping_address,omitempty"`
-	// The current lifecycle state of this payment (e.g., 'draft', 'open', 'paid', 'void').
-	Status *ReceiptStatus `json:"status,omitempty" url:"status,omitempty"`
-	// The friendly status of the payment.
-	Substatus FriendlyReceiptStatus `json:"substatus" url:"substatus"`
-	// The subtotal to show to the creator (excluding buyer fees).
-	Subtotal *float64 `json:"subtotal,omitempty" url:"subtotal,omitempty"`
-	// The calculated amount of the sales/VAT tax (if applicable).
-	TaxAmount *float64 `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
-	// The type of tax inclusivity applied to the payment, for determining whether the tax is included in the final price, or paid on top.
-	TaxBehavior *ReceiptTaxBehaviors `json:"tax_behavior,omitempty" url:"tax_behavior,omitempty"`
-	// The total to show to the creator (excluding buyer fees).
-	Total *float64 `json:"total,omitempty" url:"total,omitempty"`
-	// The datetime the payment was last updated.
-	UpdatedAt time.Time `json:"updated_at" url:"updated_at"`
-	// The total in USD to show to the creator (excluding buyer fees).
-	UsdTotal *float64 `json:"usd_total,omitempty" url:"usd_total,omitempty"`
-	// The user that made this payment.
-	User *PaymentListItemUser `json:"user,omitempty" url:"user,omitempty"`
-	// True when the payment is tied to a membership in `past_due`, the payment status is `open`, and the processor allows voiding payments; otherwise false.
-	Voidable bool `json:"voidable" url:"voidable"`
+type PaymentPdf struct {
+	// When the link stops working, as an ISO 8601 timestamp. Generate a new PDF for a fresh link.
+	ExpiresAt string `json:"expires_at" url:"expires_at"`
+	// A short-lived link to download the payment's receipt as a PDF. Anyone holding the link can download the file until it expires.
+	URL string `json:"url" url:"url"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3437,1084 +1925,57 @@ type PaymentListItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PaymentListItem) GetAmountAfterFees() float64 {
-	if p == nil {
-		return 0
-	}
-	return p.AmountAfterFees
-}
-
-func (p *PaymentListItem) GetApplicationFee() *PaymentListItemApplicationFee {
-	if p == nil {
-		return nil
-	}
-	return p.ApplicationFee
-}
-
-func (p *PaymentListItem) GetAutoRefunded() bool {
-	if p == nil {
-		return false
-	}
-	return p.AutoRefunded
-}
-
-func (p *PaymentListItem) GetBillingAddress() *PaymentListItemBillingAddress {
-	if p == nil {
-		return nil
-	}
-	return p.BillingAddress
-}
-
-func (p *PaymentListItem) GetBillingReason() *BillingReasons {
-	if p == nil {
-		return nil
-	}
-	return p.BillingReason
-}
-
-func (p *PaymentListItem) GetCardBrand() *CardBrands {
-	if p == nil {
-		return nil
-	}
-	return p.CardBrand
-}
-
-func (p *PaymentListItem) GetCardLast4() *string {
-	if p == nil {
-		return nil
-	}
-	return p.CardLast4
-}
-
-func (p *PaymentListItem) GetCheckoutConfigurationID() *string {
-	if p == nil {
-		return nil
-	}
-	return p.CheckoutConfigurationID
-}
-
-func (p *PaymentListItem) GetCompany() *PaymentListItemCompany {
-	if p == nil {
-		return nil
-	}
-	return p.Company
-}
-
-func (p *PaymentListItem) GetCreatedAt() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.CreatedAt
-}
-
-func (p *PaymentListItem) GetCurrency() Currencies {
+func (p *PaymentPdf) GetExpiresAt() string {
 	if p == nil {
 		return ""
 	}
-	return p.Currency
+	return p.ExpiresAt
 }
 
-func (p *PaymentListItem) GetCustomerPhone() *string {
-	if p == nil {
-		return nil
-	}
-	return p.CustomerPhone
-}
-
-func (p *PaymentListItem) GetDeclineCode() *PaymentDeclineCodes {
-	if p == nil {
-		return nil
-	}
-	return p.DeclineCode
-}
-
-func (p *PaymentListItem) GetDisputeAlertedAt() *time.Time {
-	if p == nil {
-		return nil
-	}
-	return p.DisputeAlertedAt
-}
-
-func (p *PaymentListItem) GetFailureMessage() *string {
-	if p == nil {
-		return nil
-	}
-	return p.FailureMessage
-}
-
-func (p *PaymentListItem) GetID() string {
+func (p *PaymentPdf) GetURL() string {
 	if p == nil {
 		return ""
 	}
-	return p.ID
+	return p.URL
 }
 
-func (p *PaymentListItem) GetLastPaymentAttempt() *time.Time {
-	if p == nil {
-		return nil
-	}
-	return p.LastPaymentAttempt
-}
-
-func (p *PaymentListItem) GetMember() *PaymentListItemMember {
-	if p == nil {
-		return nil
-	}
-	return p.Member
-}
-
-func (p *PaymentListItem) GetMembership() *PaymentListItemMembership {
-	if p == nil {
-		return nil
-	}
-	return p.Membership
-}
-
-func (p *PaymentListItem) GetMetadata() map[string]any {
-	if p == nil {
-		return nil
-	}
-	return p.Metadata
-}
-
-func (p *PaymentListItem) GetNeedsTracking() *bool {
-	if p == nil {
-		return nil
-	}
-	return p.NeedsTracking
-}
-
-func (p *PaymentListItem) GetNextPaymentAttempt() *time.Time {
-	if p == nil {
-		return nil
-	}
-	return p.NextPaymentAttempt
-}
-
-func (p *PaymentListItem) GetPaidAt() *time.Time {
-	if p == nil {
-		return nil
-	}
-	return p.PaidAt
-}
-
-func (p *PaymentListItem) GetPaymentInstrument() *PaymentListItemPaymentInstrument {
-	if p == nil {
-		return nil
-	}
-	return p.PaymentInstrument
-}
-
-func (p *PaymentListItem) GetPaymentMethod() *PaymentListItemPaymentMethod {
-	if p == nil {
-		return nil
-	}
-	return p.PaymentMethod
-}
-
-func (p *PaymentListItem) GetPaymentMethodType() *PaymentMethodTypes {
-	if p == nil {
-		return nil
-	}
-	return p.PaymentMethodType
-}
-
-func (p *PaymentListItem) GetPaymentsFailed() *int {
-	if p == nil {
-		return nil
-	}
-	return p.PaymentsFailed
-}
-
-func (p *PaymentListItem) GetPlan() *PaymentListItemPlan {
-	if p == nil {
-		return nil
-	}
-	return p.Plan
-}
-
-func (p *PaymentListItem) GetProduct() *PaymentListItemProduct {
-	if p == nil {
-		return nil
-	}
-	return p.Product
-}
-
-func (p *PaymentListItem) GetPromoCode() *PaymentListItemPromoCode {
-	if p == nil {
-		return nil
-	}
-	return p.PromoCode
-}
-
-func (p *PaymentListItem) GetRefundable() bool {
-	if p == nil {
-		return false
-	}
-	return p.Refundable
-}
-
-func (p *PaymentListItem) GetRefundedAmount() *float64 {
-	if p == nil {
-		return nil
-	}
-	return p.RefundedAmount
-}
-
-func (p *PaymentListItem) GetRefundedAt() *time.Time {
-	if p == nil {
-		return nil
-	}
-	return p.RefundedAt
-}
-
-func (p *PaymentListItem) GetRetryable() bool {
-	if p == nil {
-		return false
-	}
-	return p.Retryable
-}
-
-func (p *PaymentListItem) GetSettlementCurrency() Currencies {
-	if p == nil {
-		return ""
-	}
-	return p.SettlementCurrency
-}
-
-func (p *PaymentListItem) GetShipment() *PaymentListItemShipment {
-	if p == nil {
-		return nil
-	}
-	return p.Shipment
-}
-
-func (p *PaymentListItem) GetShippingAddress() *PaymentListItemShippingAddress {
-	if p == nil {
-		return nil
-	}
-	return p.ShippingAddress
-}
-
-func (p *PaymentListItem) GetStatus() *ReceiptStatus {
-	if p == nil {
-		return nil
-	}
-	return p.Status
-}
-
-func (p *PaymentListItem) GetSubstatus() FriendlyReceiptStatus {
-	if p == nil {
-		return ""
-	}
-	return p.Substatus
-}
-
-func (p *PaymentListItem) GetSubtotal() *float64 {
-	if p == nil {
-		return nil
-	}
-	return p.Subtotal
-}
-
-func (p *PaymentListItem) GetTaxAmount() *float64 {
-	if p == nil {
-		return nil
-	}
-	return p.TaxAmount
-}
-
-func (p *PaymentListItem) GetTaxBehavior() *ReceiptTaxBehaviors {
-	if p == nil {
-		return nil
-	}
-	return p.TaxBehavior
-}
-
-func (p *PaymentListItem) GetTotal() *float64 {
-	if p == nil {
-		return nil
-	}
-	return p.Total
-}
-
-func (p *PaymentListItem) GetUpdatedAt() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.UpdatedAt
-}
-
-func (p *PaymentListItem) GetUsdTotal() *float64 {
-	if p == nil {
-		return nil
-	}
-	return p.UsdTotal
-}
-
-func (p *PaymentListItem) GetUser() *PaymentListItemUser {
-	if p == nil {
-		return nil
-	}
-	return p.User
-}
-
-func (p *PaymentListItem) GetVoidable() bool {
-	if p == nil {
-		return false
-	}
-	return p.Voidable
-}
-
-func (p *PaymentListItem) GetExtraProperties() map[string]interface{} {
+func (p *PaymentPdf) GetExtraProperties() map[string]interface{} {
 	if p == nil {
 		return nil
 	}
 	return p.extraProperties
 }
 
-func (p *PaymentListItem) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+func (p *PaymentPdf) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
-// SetAmountAfterFees sets the AmountAfterFees field and marks it as non-optional;
+// SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetAmountAfterFees(amountAfterFees float64) {
-	p.AmountAfterFees = amountAfterFees
-	p.require(paymentListItemFieldAmountAfterFees)
+func (p *PaymentPdf) SetExpiresAt(expiresAt string) {
+	p.ExpiresAt = expiresAt
+	p.require(paymentPdfFieldExpiresAt)
 }
 
-// SetApplicationFee sets the ApplicationFee field and marks it as non-optional;
+// SetURL sets the URL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetApplicationFee(applicationFee *PaymentListItemApplicationFee) {
-	p.ApplicationFee = applicationFee
-	p.require(paymentListItemFieldApplicationFee)
+func (p *PaymentPdf) SetURL(url string) {
+	p.URL = url
+	p.require(paymentPdfFieldURL)
 }
 
-// SetAutoRefunded sets the AutoRefunded field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetAutoRefunded(autoRefunded bool) {
-	p.AutoRefunded = autoRefunded
-	p.require(paymentListItemFieldAutoRefunded)
-}
-
-// SetBillingAddress sets the BillingAddress field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetBillingAddress(billingAddress *PaymentListItemBillingAddress) {
-	p.BillingAddress = billingAddress
-	p.require(paymentListItemFieldBillingAddress)
-}
-
-// SetBillingReason sets the BillingReason field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetBillingReason(billingReason *BillingReasons) {
-	p.BillingReason = billingReason
-	p.require(paymentListItemFieldBillingReason)
-}
-
-// SetCardBrand sets the CardBrand field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetCardBrand(cardBrand *CardBrands) {
-	p.CardBrand = cardBrand
-	p.require(paymentListItemFieldCardBrand)
-}
-
-// SetCardLast4 sets the CardLast4 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetCardLast4(cardLast4 *string) {
-	p.CardLast4 = cardLast4
-	p.require(paymentListItemFieldCardLast4)
-}
-
-// SetCheckoutConfigurationID sets the CheckoutConfigurationID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetCheckoutConfigurationID(checkoutConfigurationID *string) {
-	p.CheckoutConfigurationID = checkoutConfigurationID
-	p.require(paymentListItemFieldCheckoutConfigurationID)
-}
-
-// SetCompany sets the Company field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetCompany(company *PaymentListItemCompany) {
-	p.Company = company
-	p.require(paymentListItemFieldCompany)
-}
-
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetCreatedAt(createdAt time.Time) {
-	p.CreatedAt = createdAt
-	p.require(paymentListItemFieldCreatedAt)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetCurrency(currency Currencies) {
-	p.Currency = currency
-	p.require(paymentListItemFieldCurrency)
-}
-
-// SetCustomerPhone sets the CustomerPhone field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetCustomerPhone(customerPhone *string) {
-	p.CustomerPhone = customerPhone
-	p.require(paymentListItemFieldCustomerPhone)
-}
-
-// SetDeclineCode sets the DeclineCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetDeclineCode(declineCode *PaymentDeclineCodes) {
-	p.DeclineCode = declineCode
-	p.require(paymentListItemFieldDeclineCode)
-}
-
-// SetDisputeAlertedAt sets the DisputeAlertedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetDisputeAlertedAt(disputeAlertedAt *time.Time) {
-	p.DisputeAlertedAt = disputeAlertedAt
-	p.require(paymentListItemFieldDisputeAlertedAt)
-}
-
-// SetFailureMessage sets the FailureMessage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetFailureMessage(failureMessage *string) {
-	p.FailureMessage = failureMessage
-	p.require(paymentListItemFieldFailureMessage)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetID(id string) {
-	p.ID = id
-	p.require(paymentListItemFieldID)
-}
-
-// SetLastPaymentAttempt sets the LastPaymentAttempt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetLastPaymentAttempt(lastPaymentAttempt *time.Time) {
-	p.LastPaymentAttempt = lastPaymentAttempt
-	p.require(paymentListItemFieldLastPaymentAttempt)
-}
-
-// SetMember sets the Member field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetMember(member *PaymentListItemMember) {
-	p.Member = member
-	p.require(paymentListItemFieldMember)
-}
-
-// SetMembership sets the Membership field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetMembership(membership *PaymentListItemMembership) {
-	p.Membership = membership
-	p.require(paymentListItemFieldMembership)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetMetadata(metadata map[string]any) {
-	p.Metadata = metadata
-	p.require(paymentListItemFieldMetadata)
-}
-
-// SetNeedsTracking sets the NeedsTracking field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetNeedsTracking(needsTracking *bool) {
-	p.NeedsTracking = needsTracking
-	p.require(paymentListItemFieldNeedsTracking)
-}
-
-// SetNextPaymentAttempt sets the NextPaymentAttempt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetNextPaymentAttempt(nextPaymentAttempt *time.Time) {
-	p.NextPaymentAttempt = nextPaymentAttempt
-	p.require(paymentListItemFieldNextPaymentAttempt)
-}
-
-// SetPaidAt sets the PaidAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetPaidAt(paidAt *time.Time) {
-	p.PaidAt = paidAt
-	p.require(paymentListItemFieldPaidAt)
-}
-
-// SetPaymentInstrument sets the PaymentInstrument field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetPaymentInstrument(paymentInstrument *PaymentListItemPaymentInstrument) {
-	p.PaymentInstrument = paymentInstrument
-	p.require(paymentListItemFieldPaymentInstrument)
-}
-
-// SetPaymentMethod sets the PaymentMethod field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetPaymentMethod(paymentMethod *PaymentListItemPaymentMethod) {
-	p.PaymentMethod = paymentMethod
-	p.require(paymentListItemFieldPaymentMethod)
-}
-
-// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetPaymentMethodType(paymentMethodType *PaymentMethodTypes) {
-	p.PaymentMethodType = paymentMethodType
-	p.require(paymentListItemFieldPaymentMethodType)
-}
-
-// SetPaymentsFailed sets the PaymentsFailed field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetPaymentsFailed(paymentsFailed *int) {
-	p.PaymentsFailed = paymentsFailed
-	p.require(paymentListItemFieldPaymentsFailed)
-}
-
-// SetPlan sets the Plan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetPlan(plan *PaymentListItemPlan) {
-	p.Plan = plan
-	p.require(paymentListItemFieldPlan)
-}
-
-// SetProduct sets the Product field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetProduct(product *PaymentListItemProduct) {
-	p.Product = product
-	p.require(paymentListItemFieldProduct)
-}
-
-// SetPromoCode sets the PromoCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetPromoCode(promoCode *PaymentListItemPromoCode) {
-	p.PromoCode = promoCode
-	p.require(paymentListItemFieldPromoCode)
-}
-
-// SetRefundable sets the Refundable field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetRefundable(refundable bool) {
-	p.Refundable = refundable
-	p.require(paymentListItemFieldRefundable)
-}
-
-// SetRefundedAmount sets the RefundedAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetRefundedAmount(refundedAmount *float64) {
-	p.RefundedAmount = refundedAmount
-	p.require(paymentListItemFieldRefundedAmount)
-}
-
-// SetRefundedAt sets the RefundedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetRefundedAt(refundedAt *time.Time) {
-	p.RefundedAt = refundedAt
-	p.require(paymentListItemFieldRefundedAt)
-}
-
-// SetRetryable sets the Retryable field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetRetryable(retryable bool) {
-	p.Retryable = retryable
-	p.require(paymentListItemFieldRetryable)
-}
-
-// SetSettlementCurrency sets the SettlementCurrency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetSettlementCurrency(settlementCurrency Currencies) {
-	p.SettlementCurrency = settlementCurrency
-	p.require(paymentListItemFieldSettlementCurrency)
-}
-
-// SetShipment sets the Shipment field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetShipment(shipment *PaymentListItemShipment) {
-	p.Shipment = shipment
-	p.require(paymentListItemFieldShipment)
-}
-
-// SetShippingAddress sets the ShippingAddress field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetShippingAddress(shippingAddress *PaymentListItemShippingAddress) {
-	p.ShippingAddress = shippingAddress
-	p.require(paymentListItemFieldShippingAddress)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetStatus(status *ReceiptStatus) {
-	p.Status = status
-	p.require(paymentListItemFieldStatus)
-}
-
-// SetSubstatus sets the Substatus field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetSubstatus(substatus FriendlyReceiptStatus) {
-	p.Substatus = substatus
-	p.require(paymentListItemFieldSubstatus)
-}
-
-// SetSubtotal sets the Subtotal field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetSubtotal(subtotal *float64) {
-	p.Subtotal = subtotal
-	p.require(paymentListItemFieldSubtotal)
-}
-
-// SetTaxAmount sets the TaxAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetTaxAmount(taxAmount *float64) {
-	p.TaxAmount = taxAmount
-	p.require(paymentListItemFieldTaxAmount)
-}
-
-// SetTaxBehavior sets the TaxBehavior field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetTaxBehavior(taxBehavior *ReceiptTaxBehaviors) {
-	p.TaxBehavior = taxBehavior
-	p.require(paymentListItemFieldTaxBehavior)
-}
-
-// SetTotal sets the Total field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetTotal(total *float64) {
-	p.Total = total
-	p.require(paymentListItemFieldTotal)
-}
-
-// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetUpdatedAt(updatedAt time.Time) {
-	p.UpdatedAt = updatedAt
-	p.require(paymentListItemFieldUpdatedAt)
-}
-
-// SetUsdTotal sets the UsdTotal field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetUsdTotal(usdTotal *float64) {
-	p.UsdTotal = usdTotal
-	p.require(paymentListItemFieldUsdTotal)
-}
-
-// SetUser sets the User field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetUser(user *PaymentListItemUser) {
-	p.User = user
-	p.require(paymentListItemFieldUser)
-}
-
-// SetVoidable sets the Voidable field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItem) SetVoidable(voidable bool) {
-	p.Voidable = voidable
-	p.require(paymentListItemFieldVoidable)
-}
-
-func (p *PaymentListItem) UnmarshalJSON(data []byte) error {
-	type embed PaymentListItem
-	var unmarshaler = struct {
-		embed
-		CreatedAt          *internal.DateTime `json:"created_at"`
-		DisputeAlertedAt   *internal.DateTime `json:"dispute_alerted_at,omitempty"`
-		LastPaymentAttempt *internal.DateTime `json:"last_payment_attempt,omitempty"`
-		NextPaymentAttempt *internal.DateTime `json:"next_payment_attempt,omitempty"`
-		PaidAt             *internal.DateTime `json:"paid_at,omitempty"`
-		RefundedAt         *internal.DateTime `json:"refunded_at,omitempty"`
-		UpdatedAt          *internal.DateTime `json:"updated_at"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PaymentListItem(unmarshaler.embed)
-	p.CreatedAt = unmarshaler.CreatedAt.Time()
-	p.DisputeAlertedAt = unmarshaler.DisputeAlertedAt.TimePtr()
-	p.LastPaymentAttempt = unmarshaler.LastPaymentAttempt.TimePtr()
-	p.NextPaymentAttempt = unmarshaler.NextPaymentAttempt.TimePtr()
-	p.PaidAt = unmarshaler.PaidAt.TimePtr()
-	p.RefundedAt = unmarshaler.RefundedAt.TimePtr()
-	p.UpdatedAt = unmarshaler.UpdatedAt.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItem) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItem
-	var marshaler = struct {
-		embed
-		CreatedAt          *internal.DateTime `json:"created_at"`
-		DisputeAlertedAt   *internal.DateTime `json:"dispute_alerted_at,omitempty"`
-		LastPaymentAttempt *internal.DateTime `json:"last_payment_attempt,omitempty"`
-		NextPaymentAttempt *internal.DateTime `json:"next_payment_attempt,omitempty"`
-		PaidAt             *internal.DateTime `json:"paid_at,omitempty"`
-		RefundedAt         *internal.DateTime `json:"refunded_at,omitempty"`
-		UpdatedAt          *internal.DateTime `json:"updated_at"`
-	}{
-		embed:              embed(*p),
-		CreatedAt:          internal.NewDateTime(p.CreatedAt),
-		DisputeAlertedAt:   internal.NewOptionalDateTime(p.DisputeAlertedAt),
-		LastPaymentAttempt: internal.NewOptionalDateTime(p.LastPaymentAttempt),
-		NextPaymentAttempt: internal.NewOptionalDateTime(p.NextPaymentAttempt),
-		PaidAt:             internal.NewOptionalDateTime(p.PaidAt),
-		RefundedAt:         internal.NewOptionalDateTime(p.RefundedAt),
-		UpdatedAt:          internal.NewDateTime(p.UpdatedAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItem) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The application fee charged on this payment.
-var (
-	paymentListItemApplicationFeeFieldAmount         = big.NewInt(1 << 0)
-	paymentListItemApplicationFeeFieldAmountCaptured = big.NewInt(1 << 1)
-	paymentListItemApplicationFeeFieldAmountRefunded = big.NewInt(1 << 2)
-	paymentListItemApplicationFeeFieldCreatedAt      = big.NewInt(1 << 3)
-	paymentListItemApplicationFeeFieldCurrency       = big.NewInt(1 << 4)
-	paymentListItemApplicationFeeFieldID             = big.NewInt(1 << 5)
-)
-
-type PaymentListItemApplicationFee struct {
-	// The application fee amount.
-	Amount float64 `json:"amount" url:"amount"`
-	// The amount of the application fee that has been captured.
-	AmountCaptured float64 `json:"amount_captured" url:"amount_captured"`
-	// The amount of the application fee that has been refunded.
-	AmountRefunded float64 `json:"amount_refunded" url:"amount_refunded"`
-	// The datetime the application fee was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The currency of the application fee.
-	Currency Currencies `json:"currency" url:"currency"`
-	// The unique identifier for the application fee.
-	ID string `json:"id" url:"id"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemApplicationFee) GetAmount() float64 {
-	if p == nil {
-		return 0
-	}
-	return p.Amount
-}
-
-func (p *PaymentListItemApplicationFee) GetAmountCaptured() float64 {
-	if p == nil {
-		return 0
-	}
-	return p.AmountCaptured
-}
-
-func (p *PaymentListItemApplicationFee) GetAmountRefunded() float64 {
-	if p == nil {
-		return 0
-	}
-	return p.AmountRefunded
-}
-
-func (p *PaymentListItemApplicationFee) GetCreatedAt() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.CreatedAt
-}
-
-func (p *PaymentListItemApplicationFee) GetCurrency() Currencies {
-	if p == nil {
-		return ""
-	}
-	return p.Currency
-}
-
-func (p *PaymentListItemApplicationFee) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentListItemApplicationFee) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemApplicationFee) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetAmount sets the Amount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemApplicationFee) SetAmount(amount float64) {
-	p.Amount = amount
-	p.require(paymentListItemApplicationFeeFieldAmount)
-}
-
-// SetAmountCaptured sets the AmountCaptured field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemApplicationFee) SetAmountCaptured(amountCaptured float64) {
-	p.AmountCaptured = amountCaptured
-	p.require(paymentListItemApplicationFeeFieldAmountCaptured)
-}
-
-// SetAmountRefunded sets the AmountRefunded field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemApplicationFee) SetAmountRefunded(amountRefunded float64) {
-	p.AmountRefunded = amountRefunded
-	p.require(paymentListItemApplicationFeeFieldAmountRefunded)
-}
-
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemApplicationFee) SetCreatedAt(createdAt time.Time) {
-	p.CreatedAt = createdAt
-	p.require(paymentListItemApplicationFeeFieldCreatedAt)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemApplicationFee) SetCurrency(currency Currencies) {
-	p.Currency = currency
-	p.require(paymentListItemApplicationFeeFieldCurrency)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemApplicationFee) SetID(id string) {
-	p.ID = id
-	p.require(paymentListItemApplicationFeeFieldID)
-}
-
-func (p *PaymentListItemApplicationFee) UnmarshalJSON(data []byte) error {
-	type embed PaymentListItemApplicationFee
-	var unmarshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PaymentListItemApplicationFee(unmarshaler.embed)
-	p.CreatedAt = unmarshaler.CreatedAt.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemApplicationFee) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemApplicationFee
-	var marshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-	}{
-		embed:     embed(*p),
-		CreatedAt: internal.NewDateTime(p.CreatedAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemApplicationFee) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The address of the user who made the payment.
-var (
-	paymentListItemBillingAddressFieldCity       = big.NewInt(1 << 0)
-	paymentListItemBillingAddressFieldCountry    = big.NewInt(1 << 1)
-	paymentListItemBillingAddressFieldLine1      = big.NewInt(1 << 2)
-	paymentListItemBillingAddressFieldLine2      = big.NewInt(1 << 3)
-	paymentListItemBillingAddressFieldName       = big.NewInt(1 << 4)
-	paymentListItemBillingAddressFieldPostalCode = big.NewInt(1 << 5)
-	paymentListItemBillingAddressFieldState      = big.NewInt(1 << 6)
-)
-
-type PaymentListItemBillingAddress struct {
-	// The city of the address.
-	City *string `json:"city,omitempty" url:"city,omitempty"`
-	// The country of the address.
-	Country *string `json:"country,omitempty" url:"country,omitempty"`
-	// The line 1 of the address.
-	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
-	// The line 2 of the address.
-	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
-	// The name of the customer.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The postal code of the address.
-	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
-	// The state of the address.
-	State *string `json:"state,omitempty" url:"state,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemBillingAddress) GetCity() *string {
-	if p == nil {
-		return nil
-	}
-	return p.City
-}
-
-func (p *PaymentListItemBillingAddress) GetCountry() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Country
-}
-
-func (p *PaymentListItemBillingAddress) GetLine1() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Line1
-}
-
-func (p *PaymentListItemBillingAddress) GetLine2() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Line2
-}
-
-func (p *PaymentListItemBillingAddress) GetName() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Name
-}
-
-func (p *PaymentListItemBillingAddress) GetPostalCode() *string {
-	if p == nil {
-		return nil
-	}
-	return p.PostalCode
-}
-
-func (p *PaymentListItemBillingAddress) GetState() *string {
-	if p == nil {
-		return nil
-	}
-	return p.State
-}
-
-func (p *PaymentListItemBillingAddress) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemBillingAddress) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetCity sets the City field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemBillingAddress) SetCity(city *string) {
-	p.City = city
-	p.require(paymentListItemBillingAddressFieldCity)
-}
-
-// SetCountry sets the Country field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemBillingAddress) SetCountry(country *string) {
-	p.Country = country
-	p.require(paymentListItemBillingAddressFieldCountry)
-}
-
-// SetLine1 sets the Line1 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemBillingAddress) SetLine1(line1 *string) {
-	p.Line1 = line1
-	p.require(paymentListItemBillingAddressFieldLine1)
-}
-
-// SetLine2 sets the Line2 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemBillingAddress) SetLine2(line2 *string) {
-	p.Line2 = line2
-	p.require(paymentListItemBillingAddressFieldLine2)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemBillingAddress) SetName(name *string) {
-	p.Name = name
-	p.require(paymentListItemBillingAddressFieldName)
-}
-
-// SetPostalCode sets the PostalCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemBillingAddress) SetPostalCode(postalCode *string) {
-	p.PostalCode = postalCode
-	p.require(paymentListItemBillingAddressFieldPostalCode)
-}
-
-// SetState sets the State field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemBillingAddress) SetState(state *string) {
-	p.State = state
-	p.require(paymentListItemBillingAddressFieldState)
-}
-
-func (p *PaymentListItemBillingAddress) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemBillingAddress
+func (p *PaymentPdf) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentPdf
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*p = PaymentListItemBillingAddress(value)
+	*p = PaymentPdf(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *p)
 	if err != nil {
 		return err
@@ -4524,8 +1985,8 @@ func (p *PaymentListItemBillingAddress) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (p *PaymentListItemBillingAddress) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemBillingAddress
+func (p *PaymentPdf) MarshalJSON() ([]byte, error) {
+	type embed PaymentPdf
 	var marshaler = struct {
 		embed
 	}{
@@ -4535,4426 +1996,7 @@ func (p *PaymentListItemBillingAddress) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PaymentListItemBillingAddress) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The company for the payment.
-var (
-	paymentListItemCompanyFieldID    = big.NewInt(1 << 0)
-	paymentListItemCompanyFieldRoute = big.NewInt(1 << 1)
-	paymentListItemCompanyFieldTitle = big.NewInt(1 << 2)
-)
-
-type PaymentListItemCompany struct {
-	// The unique identifier for the company.
-	ID string `json:"id" url:"id"`
-	// The slug/route of the company on the Whop site.
-	Route string `json:"route" url:"route"`
-	// The written name of the company.
-	Title string `json:"title" url:"title"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemCompany) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentListItemCompany) GetRoute() string {
-	if p == nil {
-		return ""
-	}
-	return p.Route
-}
-
-func (p *PaymentListItemCompany) GetTitle() string {
-	if p == nil {
-		return ""
-	}
-	return p.Title
-}
-
-func (p *PaymentListItemCompany) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemCompany) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemCompany) SetID(id string) {
-	p.ID = id
-	p.require(paymentListItemCompanyFieldID)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemCompany) SetRoute(route string) {
-	p.Route = route
-	p.require(paymentListItemCompanyFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemCompany) SetTitle(title string) {
-	p.Title = title
-	p.require(paymentListItemCompanyFieldTitle)
-}
-
-func (p *PaymentListItemCompany) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemCompany
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemCompany(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemCompany) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemCompany
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemCompany) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The member attached to this payment.
-var (
-	paymentListItemMemberFieldID    = big.NewInt(1 << 0)
-	paymentListItemMemberFieldPhone = big.NewInt(1 << 1)
-)
-
-type PaymentListItemMember struct {
-	// The unique identifier for the company member.
-	ID string `json:"id" url:"id"`
-	// The phone number for the member, if available.
-	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemMember) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentListItemMember) GetPhone() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Phone
-}
-
-func (p *PaymentListItemMember) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemMember) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemMember) SetID(id string) {
-	p.ID = id
-	p.require(paymentListItemMemberFieldID)
-}
-
-// SetPhone sets the Phone field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemMember) SetPhone(phone *string) {
-	p.Phone = phone
-	p.require(paymentListItemMemberFieldPhone)
-}
-
-func (p *PaymentListItemMember) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemMember
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemMember(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemMember) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemMember
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemMember) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The membership attached to this payment.
-var (
-	paymentListItemMembershipFieldID          = big.NewInt(1 << 0)
-	paymentListItemMembershipFieldPhoneNumber = big.NewInt(1 << 1)
-	paymentListItemMembershipFieldStatus      = big.NewInt(1 << 2)
-)
-
-type PaymentListItemMembership struct {
-	// The unique identifier for the membership.
-	ID string `json:"id" url:"id"`
-	// The phone number associated with this membership.
-	PhoneNumber *string `json:"phone_number,omitempty" url:"phone_number,omitempty"`
-	// The state of the membership.
-	Status MembershipStatus `json:"status" url:"status"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemMembership) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentListItemMembership) GetPhoneNumber() *string {
-	if p == nil {
-		return nil
-	}
-	return p.PhoneNumber
-}
-
-func (p *PaymentListItemMembership) GetStatus() MembershipStatus {
-	if p == nil {
-		return ""
-	}
-	return p.Status
-}
-
-func (p *PaymentListItemMembership) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemMembership) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemMembership) SetID(id string) {
-	p.ID = id
-	p.require(paymentListItemMembershipFieldID)
-}
-
-// SetPhoneNumber sets the PhoneNumber field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemMembership) SetPhoneNumber(phoneNumber *string) {
-	p.PhoneNumber = phoneNumber
-	p.require(paymentListItemMembershipFieldPhoneNumber)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemMembership) SetStatus(status MembershipStatus) {
-	p.Status = status
-	p.require(paymentListItemMembershipFieldStatus)
-}
-
-func (p *PaymentListItemMembership) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemMembership
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemMembership(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemMembership) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemMembership
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemMembership) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The instrument this payment was made with, shaped for display: the method type, a buyer-facing name, the standard icon set, and the card facts when it was a card. Null when the receipt names no payment method.
-var (
-	paymentListItemPaymentInstrumentFieldCard              = big.NewInt(1 << 0)
-	paymentListItemPaymentInstrumentFieldDisplayName       = big.NewInt(1 << 1)
-	paymentListItemPaymentInstrumentFieldIcons             = big.NewInt(1 << 2)
-	paymentListItemPaymentInstrumentFieldInstallmentCount  = big.NewInt(1 << 3)
-	paymentListItemPaymentInstrumentFieldPaymentMethodType = big.NewInt(1 << 4)
-)
-
-type PaymentListItemPaymentInstrument struct {
-	// Card payments only: the card's network and last four.
-	Card *PaymentListItemPaymentInstrumentCard `json:"card,omitempty" url:"card,omitempty"`
-	// Buyer-facing instrument name — "Visa •••• 4242" when the card surfaced, else the method's own name ("Klarna").
-	DisplayName string `json:"display_name" url:"display_name"`
-	// The standard icon set: square and card shapes, each in light and dark colorways.
-	Icons *PaymentListItemPaymentInstrumentIcons `json:"icons" url:"icons"`
-	// Installment methods only: how many payments the charge splits into. Data, not copy — compose and translate the label client-side.
-	InstallmentCount *int `json:"installment_count,omitempty" url:"installment_count,omitempty"`
-	// The payment method type identifier, e.g. `card`, `klarna`, `apple_pay`.
-	PaymentMethodType string `json:"payment_method_type" url:"payment_method_type"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemPaymentInstrument) GetCard() *PaymentListItemPaymentInstrumentCard {
-	if p == nil {
-		return nil
-	}
-	return p.Card
-}
-
-func (p *PaymentListItemPaymentInstrument) GetDisplayName() string {
-	if p == nil {
-		return ""
-	}
-	return p.DisplayName
-}
-
-func (p *PaymentListItemPaymentInstrument) GetIcons() *PaymentListItemPaymentInstrumentIcons {
-	if p == nil {
-		return nil
-	}
-	return p.Icons
-}
-
-func (p *PaymentListItemPaymentInstrument) GetInstallmentCount() *int {
-	if p == nil {
-		return nil
-	}
-	return p.InstallmentCount
-}
-
-func (p *PaymentListItemPaymentInstrument) GetPaymentMethodType() string {
-	if p == nil {
-		return ""
-	}
-	return p.PaymentMethodType
-}
-
-func (p *PaymentListItemPaymentInstrument) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemPaymentInstrument) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetCard sets the Card field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrument) SetCard(card *PaymentListItemPaymentInstrumentCard) {
-	p.Card = card
-	p.require(paymentListItemPaymentInstrumentFieldCard)
-}
-
-// SetDisplayName sets the DisplayName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrument) SetDisplayName(displayName string) {
-	p.DisplayName = displayName
-	p.require(paymentListItemPaymentInstrumentFieldDisplayName)
-}
-
-// SetIcons sets the Icons field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrument) SetIcons(icons *PaymentListItemPaymentInstrumentIcons) {
-	p.Icons = icons
-	p.require(paymentListItemPaymentInstrumentFieldIcons)
-}
-
-// SetInstallmentCount sets the InstallmentCount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrument) SetInstallmentCount(installmentCount *int) {
-	p.InstallmentCount = installmentCount
-	p.require(paymentListItemPaymentInstrumentFieldInstallmentCount)
-}
-
-// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrument) SetPaymentMethodType(paymentMethodType string) {
-	p.PaymentMethodType = paymentMethodType
-	p.require(paymentListItemPaymentInstrumentFieldPaymentMethodType)
-}
-
-func (p *PaymentListItemPaymentInstrument) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemPaymentInstrument
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemPaymentInstrument(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemPaymentInstrument) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemPaymentInstrument
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemPaymentInstrument) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// Card payments only: the card's network and last four.
-var (
-	paymentListItemPaymentInstrumentCardFieldBrand = big.NewInt(1 << 0)
-	paymentListItemPaymentInstrumentCardFieldLast4 = big.NewInt(1 << 1)
-)
-
-type PaymentListItemPaymentInstrumentCard struct {
-	// The network identifier (`visa`, `amex`, …), matching `card.networks` entries and saved card payment methods.
-	Brand string `json:"brand" url:"brand"`
-	// The card's last four digits, when captured.
-	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemPaymentInstrumentCard) GetBrand() string {
-	if p == nil {
-		return ""
-	}
-	return p.Brand
-}
-
-func (p *PaymentListItemPaymentInstrumentCard) GetLast4() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Last4
-}
-
-func (p *PaymentListItemPaymentInstrumentCard) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemPaymentInstrumentCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetBrand sets the Brand field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentCard) SetBrand(brand string) {
-	p.Brand = brand
-	p.require(paymentListItemPaymentInstrumentCardFieldBrand)
-}
-
-// SetLast4 sets the Last4 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentCard) SetLast4(last4 *string) {
-	p.Last4 = last4
-	p.require(paymentListItemPaymentInstrumentCardFieldLast4)
-}
-
-func (p *PaymentListItemPaymentInstrumentCard) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemPaymentInstrumentCard
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemPaymentInstrumentCard(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemPaymentInstrumentCard) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemPaymentInstrumentCard
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemPaymentInstrumentCard) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The standard icon set: square and card shapes, each in light and dark colorways.
-var (
-	paymentListItemPaymentInstrumentIconsFieldCard   = big.NewInt(1 << 0)
-	paymentListItemPaymentInstrumentIconsFieldSquare = big.NewInt(1 << 1)
-)
-
-type PaymentListItemPaymentInstrumentIcons struct {
-	// The credit-card-proportioned tile (48x30).
-	Card *PaymentListItemPaymentInstrumentIconsCard `json:"card" url:"card"`
-	// The square tile (32x32).
-	Square *PaymentListItemPaymentInstrumentIconsSquare `json:"square" url:"square"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemPaymentInstrumentIcons) GetCard() *PaymentListItemPaymentInstrumentIconsCard {
-	if p == nil {
-		return nil
-	}
-	return p.Card
-}
-
-func (p *PaymentListItemPaymentInstrumentIcons) GetSquare() *PaymentListItemPaymentInstrumentIconsSquare {
-	if p == nil {
-		return nil
-	}
-	return p.Square
-}
-
-func (p *PaymentListItemPaymentInstrumentIcons) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemPaymentInstrumentIcons) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetCard sets the Card field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIcons) SetCard(card *PaymentListItemPaymentInstrumentIconsCard) {
-	p.Card = card
-	p.require(paymentListItemPaymentInstrumentIconsFieldCard)
-}
-
-// SetSquare sets the Square field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIcons) SetSquare(square *PaymentListItemPaymentInstrumentIconsSquare) {
-	p.Square = square
-	p.require(paymentListItemPaymentInstrumentIconsFieldSquare)
-}
-
-func (p *PaymentListItemPaymentInstrumentIcons) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemPaymentInstrumentIcons
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemPaymentInstrumentIcons(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemPaymentInstrumentIcons) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemPaymentInstrumentIcons
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemPaymentInstrumentIcons) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The credit-card-proportioned tile (48x30).
-var (
-	paymentListItemPaymentInstrumentIconsCardFieldDark  = big.NewInt(1 << 0)
-	paymentListItemPaymentInstrumentIconsCardFieldLight = big.NewInt(1 << 1)
-)
-
-type PaymentListItemPaymentInstrumentIconsCard struct {
-	// The colorway for dark surfaces.
-	Dark *PaymentListItemPaymentInstrumentIconsCardDark `json:"dark" url:"dark"`
-	// The colorway for light surfaces.
-	Light *PaymentListItemPaymentInstrumentIconsCardLight `json:"light" url:"light"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCard) GetDark() *PaymentListItemPaymentInstrumentIconsCardDark {
-	if p == nil {
-		return nil
-	}
-	return p.Dark
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCard) GetLight() *PaymentListItemPaymentInstrumentIconsCardLight {
-	if p == nil {
-		return nil
-	}
-	return p.Light
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCard) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetDark sets the Dark field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsCard) SetDark(dark *PaymentListItemPaymentInstrumentIconsCardDark) {
-	p.Dark = dark
-	p.require(paymentListItemPaymentInstrumentIconsCardFieldDark)
-}
-
-// SetLight sets the Light field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsCard) SetLight(light *PaymentListItemPaymentInstrumentIconsCardLight) {
-	p.Light = light
-	p.require(paymentListItemPaymentInstrumentIconsCardFieldLight)
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCard) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemPaymentInstrumentIconsCard
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemPaymentInstrumentIconsCard(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCard) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemPaymentInstrumentIconsCard
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCard) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The colorway for dark surfaces.
-var (
-	paymentListItemPaymentInstrumentIconsCardDarkFieldPng1X = big.NewInt(1 << 0)
-	paymentListItemPaymentInstrumentIconsCardDarkFieldPng2X = big.NewInt(1 << 1)
-	paymentListItemPaymentInstrumentIconsCardDarkFieldPng4X = big.NewInt(1 << 2)
-	paymentListItemPaymentInstrumentIconsCardDarkFieldSvg   = big.NewInt(1 << 3)
-)
-
-type PaymentListItemPaymentInstrumentIconsCardDark struct {
-	// Raster fallback at the shape's native size.
-	Png1X string `json:"png_1x" url:"png_1x"`
-	// Raster fallback at double density.
-	Png2X string `json:"png_2x" url:"png_2x"`
-	// Raster fallback at quadruple density.
-	Png4X string `json:"png_4x" url:"png_4x"`
-	// The vector file. Prefer this everywhere SVG renders.
-	Svg string `json:"svg" url:"svg"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardDark) GetPng1X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png1X
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardDark) GetPng2X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png2X
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardDark) GetPng4X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png4X
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardDark) GetSvg() string {
-	if p == nil {
-		return ""
-	}
-	return p.Svg
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardDark) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetPng1X sets the Png1X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsCardDark) SetPng1X(png1X string) {
-	p.Png1X = png1X
-	p.require(paymentListItemPaymentInstrumentIconsCardDarkFieldPng1X)
-}
-
-// SetPng2X sets the Png2X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsCardDark) SetPng2X(png2X string) {
-	p.Png2X = png2X
-	p.require(paymentListItemPaymentInstrumentIconsCardDarkFieldPng2X)
-}
-
-// SetPng4X sets the Png4X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsCardDark) SetPng4X(png4X string) {
-	p.Png4X = png4X
-	p.require(paymentListItemPaymentInstrumentIconsCardDarkFieldPng4X)
-}
-
-// SetSvg sets the Svg field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsCardDark) SetSvg(svg string) {
-	p.Svg = svg
-	p.require(paymentListItemPaymentInstrumentIconsCardDarkFieldSvg)
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardDark) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemPaymentInstrumentIconsCardDark
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemPaymentInstrumentIconsCardDark(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardDark) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemPaymentInstrumentIconsCardDark
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardDark) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The colorway for light surfaces.
-var (
-	paymentListItemPaymentInstrumentIconsCardLightFieldPng1X = big.NewInt(1 << 0)
-	paymentListItemPaymentInstrumentIconsCardLightFieldPng2X = big.NewInt(1 << 1)
-	paymentListItemPaymentInstrumentIconsCardLightFieldPng4X = big.NewInt(1 << 2)
-	paymentListItemPaymentInstrumentIconsCardLightFieldSvg   = big.NewInt(1 << 3)
-)
-
-type PaymentListItemPaymentInstrumentIconsCardLight struct {
-	// Raster fallback at the shape's native size.
-	Png1X string `json:"png_1x" url:"png_1x"`
-	// Raster fallback at double density.
-	Png2X string `json:"png_2x" url:"png_2x"`
-	// Raster fallback at quadruple density.
-	Png4X string `json:"png_4x" url:"png_4x"`
-	// The vector file. Prefer this everywhere SVG renders.
-	Svg string `json:"svg" url:"svg"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardLight) GetPng1X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png1X
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardLight) GetPng2X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png2X
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardLight) GetPng4X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png4X
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardLight) GetSvg() string {
-	if p == nil {
-		return ""
-	}
-	return p.Svg
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardLight) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetPng1X sets the Png1X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsCardLight) SetPng1X(png1X string) {
-	p.Png1X = png1X
-	p.require(paymentListItemPaymentInstrumentIconsCardLightFieldPng1X)
-}
-
-// SetPng2X sets the Png2X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsCardLight) SetPng2X(png2X string) {
-	p.Png2X = png2X
-	p.require(paymentListItemPaymentInstrumentIconsCardLightFieldPng2X)
-}
-
-// SetPng4X sets the Png4X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsCardLight) SetPng4X(png4X string) {
-	p.Png4X = png4X
-	p.require(paymentListItemPaymentInstrumentIconsCardLightFieldPng4X)
-}
-
-// SetSvg sets the Svg field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsCardLight) SetSvg(svg string) {
-	p.Svg = svg
-	p.require(paymentListItemPaymentInstrumentIconsCardLightFieldSvg)
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardLight) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemPaymentInstrumentIconsCardLight
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemPaymentInstrumentIconsCardLight(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardLight) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemPaymentInstrumentIconsCardLight
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsCardLight) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The square tile (32x32).
-var (
-	paymentListItemPaymentInstrumentIconsSquareFieldDark  = big.NewInt(1 << 0)
-	paymentListItemPaymentInstrumentIconsSquareFieldLight = big.NewInt(1 << 1)
-)
-
-type PaymentListItemPaymentInstrumentIconsSquare struct {
-	// The colorway for dark surfaces.
-	Dark *PaymentListItemPaymentInstrumentIconsSquareDark `json:"dark" url:"dark"`
-	// The colorway for light surfaces.
-	Light *PaymentListItemPaymentInstrumentIconsSquareLight `json:"light" url:"light"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquare) GetDark() *PaymentListItemPaymentInstrumentIconsSquareDark {
-	if p == nil {
-		return nil
-	}
-	return p.Dark
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquare) GetLight() *PaymentListItemPaymentInstrumentIconsSquareLight {
-	if p == nil {
-		return nil
-	}
-	return p.Light
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquare) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquare) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetDark sets the Dark field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsSquare) SetDark(dark *PaymentListItemPaymentInstrumentIconsSquareDark) {
-	p.Dark = dark
-	p.require(paymentListItemPaymentInstrumentIconsSquareFieldDark)
-}
-
-// SetLight sets the Light field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsSquare) SetLight(light *PaymentListItemPaymentInstrumentIconsSquareLight) {
-	p.Light = light
-	p.require(paymentListItemPaymentInstrumentIconsSquareFieldLight)
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquare) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemPaymentInstrumentIconsSquare
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemPaymentInstrumentIconsSquare(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquare) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemPaymentInstrumentIconsSquare
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquare) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The colorway for dark surfaces.
-var (
-	paymentListItemPaymentInstrumentIconsSquareDarkFieldPng1X = big.NewInt(1 << 0)
-	paymentListItemPaymentInstrumentIconsSquareDarkFieldPng2X = big.NewInt(1 << 1)
-	paymentListItemPaymentInstrumentIconsSquareDarkFieldPng4X = big.NewInt(1 << 2)
-	paymentListItemPaymentInstrumentIconsSquareDarkFieldSvg   = big.NewInt(1 << 3)
-)
-
-type PaymentListItemPaymentInstrumentIconsSquareDark struct {
-	// Raster fallback at the shape's native size.
-	Png1X string `json:"png_1x" url:"png_1x"`
-	// Raster fallback at double density.
-	Png2X string `json:"png_2x" url:"png_2x"`
-	// Raster fallback at quadruple density.
-	Png4X string `json:"png_4x" url:"png_4x"`
-	// The vector file. Prefer this everywhere SVG renders.
-	Svg string `json:"svg" url:"svg"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareDark) GetPng1X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png1X
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareDark) GetPng2X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png2X
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareDark) GetPng4X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png4X
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareDark) GetSvg() string {
-	if p == nil {
-		return ""
-	}
-	return p.Svg
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareDark) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetPng1X sets the Png1X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsSquareDark) SetPng1X(png1X string) {
-	p.Png1X = png1X
-	p.require(paymentListItemPaymentInstrumentIconsSquareDarkFieldPng1X)
-}
-
-// SetPng2X sets the Png2X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsSquareDark) SetPng2X(png2X string) {
-	p.Png2X = png2X
-	p.require(paymentListItemPaymentInstrumentIconsSquareDarkFieldPng2X)
-}
-
-// SetPng4X sets the Png4X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsSquareDark) SetPng4X(png4X string) {
-	p.Png4X = png4X
-	p.require(paymentListItemPaymentInstrumentIconsSquareDarkFieldPng4X)
-}
-
-// SetSvg sets the Svg field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsSquareDark) SetSvg(svg string) {
-	p.Svg = svg
-	p.require(paymentListItemPaymentInstrumentIconsSquareDarkFieldSvg)
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareDark) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemPaymentInstrumentIconsSquareDark
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemPaymentInstrumentIconsSquareDark(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareDark) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemPaymentInstrumentIconsSquareDark
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareDark) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The colorway for light surfaces.
-var (
-	paymentListItemPaymentInstrumentIconsSquareLightFieldPng1X = big.NewInt(1 << 0)
-	paymentListItemPaymentInstrumentIconsSquareLightFieldPng2X = big.NewInt(1 << 1)
-	paymentListItemPaymentInstrumentIconsSquareLightFieldPng4X = big.NewInt(1 << 2)
-	paymentListItemPaymentInstrumentIconsSquareLightFieldSvg   = big.NewInt(1 << 3)
-)
-
-type PaymentListItemPaymentInstrumentIconsSquareLight struct {
-	// Raster fallback at the shape's native size.
-	Png1X string `json:"png_1x" url:"png_1x"`
-	// Raster fallback at double density.
-	Png2X string `json:"png_2x" url:"png_2x"`
-	// Raster fallback at quadruple density.
-	Png4X string `json:"png_4x" url:"png_4x"`
-	// The vector file. Prefer this everywhere SVG renders.
-	Svg string `json:"svg" url:"svg"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareLight) GetPng1X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png1X
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareLight) GetPng2X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png2X
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareLight) GetPng4X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png4X
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareLight) GetSvg() string {
-	if p == nil {
-		return ""
-	}
-	return p.Svg
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareLight) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetPng1X sets the Png1X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsSquareLight) SetPng1X(png1X string) {
-	p.Png1X = png1X
-	p.require(paymentListItemPaymentInstrumentIconsSquareLightFieldPng1X)
-}
-
-// SetPng2X sets the Png2X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsSquareLight) SetPng2X(png2X string) {
-	p.Png2X = png2X
-	p.require(paymentListItemPaymentInstrumentIconsSquareLightFieldPng2X)
-}
-
-// SetPng4X sets the Png4X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsSquareLight) SetPng4X(png4X string) {
-	p.Png4X = png4X
-	p.require(paymentListItemPaymentInstrumentIconsSquareLightFieldPng4X)
-}
-
-// SetSvg sets the Svg field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentInstrumentIconsSquareLight) SetSvg(svg string) {
-	p.Svg = svg
-	p.require(paymentListItemPaymentInstrumentIconsSquareLightFieldSvg)
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareLight) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemPaymentInstrumentIconsSquareLight
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemPaymentInstrumentIconsSquareLight(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareLight) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemPaymentInstrumentIconsSquareLight
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemPaymentInstrumentIconsSquareLight) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The tokenized payment method reference used for this payment. Null if no token was used.
-var (
-	paymentListItemPaymentMethodFieldCard              = big.NewInt(1 << 0)
-	paymentListItemPaymentMethodFieldCreatedAt         = big.NewInt(1 << 1)
-	paymentListItemPaymentMethodFieldID                = big.NewInt(1 << 2)
-	paymentListItemPaymentMethodFieldPaymentMethodType = big.NewInt(1 << 3)
-)
-
-type PaymentListItemPaymentMethod struct {
-	// The card data associated with the payment method, if its a debit or credit card.
-	Card *PaymentListItemPaymentMethodCard `json:"card,omitempty" url:"card,omitempty"`
-	// The datetime the payment token was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The unique identifier for the payment token.
-	ID string `json:"id" url:"id"`
-	// The payment method type of the payment method
-	PaymentMethodType PaymentMethodTypes `json:"payment_method_type" url:"payment_method_type"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemPaymentMethod) GetCard() *PaymentListItemPaymentMethodCard {
-	if p == nil {
-		return nil
-	}
-	return p.Card
-}
-
-func (p *PaymentListItemPaymentMethod) GetCreatedAt() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.CreatedAt
-}
-
-func (p *PaymentListItemPaymentMethod) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentListItemPaymentMethod) GetPaymentMethodType() PaymentMethodTypes {
-	if p == nil {
-		return ""
-	}
-	return p.PaymentMethodType
-}
-
-func (p *PaymentListItemPaymentMethod) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemPaymentMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetCard sets the Card field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentMethod) SetCard(card *PaymentListItemPaymentMethodCard) {
-	p.Card = card
-	p.require(paymentListItemPaymentMethodFieldCard)
-}
-
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentMethod) SetCreatedAt(createdAt time.Time) {
-	p.CreatedAt = createdAt
-	p.require(paymentListItemPaymentMethodFieldCreatedAt)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentMethod) SetID(id string) {
-	p.ID = id
-	p.require(paymentListItemPaymentMethodFieldID)
-}
-
-// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentMethod) SetPaymentMethodType(paymentMethodType PaymentMethodTypes) {
-	p.PaymentMethodType = paymentMethodType
-	p.require(paymentListItemPaymentMethodFieldPaymentMethodType)
-}
-
-func (p *PaymentListItemPaymentMethod) UnmarshalJSON(data []byte) error {
-	type embed PaymentListItemPaymentMethod
-	var unmarshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PaymentListItemPaymentMethod(unmarshaler.embed)
-	p.CreatedAt = unmarshaler.CreatedAt.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemPaymentMethod) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemPaymentMethod
-	var marshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-	}{
-		embed:     embed(*p),
-		CreatedAt: internal.NewDateTime(p.CreatedAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemPaymentMethod) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The card data associated with the payment method, if its a debit or credit card.
-var (
-	paymentListItemPaymentMethodCardFieldBrand       = big.NewInt(1 << 0)
-	paymentListItemPaymentMethodCardFieldExpMonth    = big.NewInt(1 << 1)
-	paymentListItemPaymentMethodCardFieldExpYear     = big.NewInt(1 << 2)
-	paymentListItemPaymentMethodCardFieldFingerprint = big.NewInt(1 << 3)
-	paymentListItemPaymentMethodCardFieldLast4       = big.NewInt(1 << 4)
-)
-
-type PaymentListItemPaymentMethodCard struct {
-	// The card network (e.g., visa, mastercard, amex). Null if the brand could not be determined.
-	Brand *CardBrands `json:"brand,omitempty" url:"brand,omitempty"`
-	// The two-digit expiration month of the card (1-12). Null if not available.
-	ExpMonth *int `json:"exp_month,omitempty" url:"exp_month,omitempty"`
-	// The two-digit expiration year of the card (e.g., 27 for 2027). Null if not available.
-	ExpYear *int `json:"exp_year,omitempty" url:"exp_year,omitempty"`
-	// A stable identifier for the underlying card. Two payment methods with the same fingerprint are the same card. Null if not available.
-	Fingerprint *string `json:"fingerprint,omitempty" url:"fingerprint,omitempty"`
-	// The last four digits of the card number. Null if not available.
-	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemPaymentMethodCard) GetBrand() *CardBrands {
-	if p == nil {
-		return nil
-	}
-	return p.Brand
-}
-
-func (p *PaymentListItemPaymentMethodCard) GetExpMonth() *int {
-	if p == nil {
-		return nil
-	}
-	return p.ExpMonth
-}
-
-func (p *PaymentListItemPaymentMethodCard) GetExpYear() *int {
-	if p == nil {
-		return nil
-	}
-	return p.ExpYear
-}
-
-func (p *PaymentListItemPaymentMethodCard) GetFingerprint() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Fingerprint
-}
-
-func (p *PaymentListItemPaymentMethodCard) GetLast4() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Last4
-}
-
-func (p *PaymentListItemPaymentMethodCard) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemPaymentMethodCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetBrand sets the Brand field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentMethodCard) SetBrand(brand *CardBrands) {
-	p.Brand = brand
-	p.require(paymentListItemPaymentMethodCardFieldBrand)
-}
-
-// SetExpMonth sets the ExpMonth field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentMethodCard) SetExpMonth(expMonth *int) {
-	p.ExpMonth = expMonth
-	p.require(paymentListItemPaymentMethodCardFieldExpMonth)
-}
-
-// SetExpYear sets the ExpYear field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentMethodCard) SetExpYear(expYear *int) {
-	p.ExpYear = expYear
-	p.require(paymentListItemPaymentMethodCardFieldExpYear)
-}
-
-// SetFingerprint sets the Fingerprint field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentMethodCard) SetFingerprint(fingerprint *string) {
-	p.Fingerprint = fingerprint
-	p.require(paymentListItemPaymentMethodCardFieldFingerprint)
-}
-
-// SetLast4 sets the Last4 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPaymentMethodCard) SetLast4(last4 *string) {
-	p.Last4 = last4
-	p.require(paymentListItemPaymentMethodCardFieldLast4)
-}
-
-func (p *PaymentListItemPaymentMethodCard) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemPaymentMethodCard
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemPaymentMethodCard(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemPaymentMethodCard) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemPaymentMethodCard
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemPaymentMethodCard) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The plan attached to this payment.
-var (
-	paymentListItemPlanFieldID            = big.NewInt(1 << 0)
-	paymentListItemPlanFieldInternalNotes = big.NewInt(1 << 1)
-	paymentListItemPlanFieldMetadata      = big.NewInt(1 << 2)
-)
-
-type PaymentListItemPlan struct {
-	// The unique identifier for the plan.
-	ID string `json:"id" url:"id"`
-	// A personal description or notes section for the business.
-	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
-	// Custom key-value pairs stored on the plan. Included in webhook payloads for payment and membership events. Max 50 keys, 100 chars per key, 500 chars per string value. The reserved keys `custom_cta` and `custom_cta_url`, when set, override the product's checkout call to action for this plan.
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemPlan) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentListItemPlan) GetInternalNotes() *string {
-	if p == nil {
-		return nil
-	}
-	return p.InternalNotes
-}
-
-func (p *PaymentListItemPlan) GetMetadata() map[string]any {
-	if p == nil {
-		return nil
-	}
-	return p.Metadata
-}
-
-func (p *PaymentListItemPlan) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemPlan) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPlan) SetID(id string) {
-	p.ID = id
-	p.require(paymentListItemPlanFieldID)
-}
-
-// SetInternalNotes sets the InternalNotes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPlan) SetInternalNotes(internalNotes *string) {
-	p.InternalNotes = internalNotes
-	p.require(paymentListItemPlanFieldInternalNotes)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPlan) SetMetadata(metadata map[string]any) {
-	p.Metadata = metadata
-	p.require(paymentListItemPlanFieldMetadata)
-}
-
-func (p *PaymentListItemPlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemPlan
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemPlan(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemPlan) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemPlan
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemPlan) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The product this payment was made for
-var (
-	paymentListItemProductFieldID       = big.NewInt(1 << 0)
-	paymentListItemProductFieldMetadata = big.NewInt(1 << 1)
-	paymentListItemProductFieldRoute    = big.NewInt(1 << 2)
-	paymentListItemProductFieldTitle    = big.NewInt(1 << 3)
-)
-
-type PaymentListItemProduct struct {
-	// The unique identifier for the product.
-	ID string `json:"id" url:"id"`
-	// Custom key-value pairs stored on the product and included in payment and membership webhook payloads. Max 50 keys, 100 characters per key, 500 characters per string value.
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// URL slug in the product's public link, e.g. `pickaxe-analytics` in whop.com/company/pickaxe-analytics.
-	Route string `json:"route" url:"route"`
-	// The display name of the product shown to customers on the product page and in search results.
-	Title string `json:"title" url:"title"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemProduct) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentListItemProduct) GetMetadata() map[string]any {
-	if p == nil {
-		return nil
-	}
-	return p.Metadata
-}
-
-func (p *PaymentListItemProduct) GetRoute() string {
-	if p == nil {
-		return ""
-	}
-	return p.Route
-}
-
-func (p *PaymentListItemProduct) GetTitle() string {
-	if p == nil {
-		return ""
-	}
-	return p.Title
-}
-
-func (p *PaymentListItemProduct) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemProduct) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemProduct) SetID(id string) {
-	p.ID = id
-	p.require(paymentListItemProductFieldID)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemProduct) SetMetadata(metadata map[string]any) {
-	p.Metadata = metadata
-	p.require(paymentListItemProductFieldMetadata)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemProduct) SetRoute(route string) {
-	p.Route = route
-	p.require(paymentListItemProductFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemProduct) SetTitle(title string) {
-	p.Title = title
-	p.require(paymentListItemProductFieldTitle)
-}
-
-func (p *PaymentListItemProduct) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemProduct
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemProduct(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemProduct) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemProduct
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemProduct) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The promo code used for this payment.
-var (
-	paymentListItemPromoCodeFieldAmountOff         = big.NewInt(1 << 0)
-	paymentListItemPromoCodeFieldBaseCurrency      = big.NewInt(1 << 1)
-	paymentListItemPromoCodeFieldCode              = big.NewInt(1 << 2)
-	paymentListItemPromoCodeFieldID                = big.NewInt(1 << 3)
-	paymentListItemPromoCodeFieldNumberOfIntervals = big.NewInt(1 << 4)
-	paymentListItemPromoCodeFieldPromoType         = big.NewInt(1 << 5)
-)
-
-type PaymentListItemPromoCode struct {
-	// The discount amount. Interpretation depends on promo_type: if 'percentage', this is the percentage (e.g., 20 means 20% off); if 'flat_amount', this is dollars off (e.g., 10.00 means $10.00 off).
-	AmountOff float64 `json:"amount_off" url:"amount_off"`
-	// The monetary currency of the promo code.
-	BaseCurrency Currencies `json:"base_currency" url:"base_currency"`
-	// The specific code used to apply the promo at checkout.
-	Code *string `json:"code,omitempty" url:"code,omitempty"`
-	// The unique identifier for the promo code.
-	ID string `json:"id" url:"id"`
-	// The number of months the promo is applied for.
-	NumberOfIntervals *int `json:"number_of_intervals,omitempty" url:"number_of_intervals,omitempty"`
-	// The type (% or flat amount) of the promo.
-	PromoType PromoTypes `json:"promo_type" url:"promo_type"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemPromoCode) GetAmountOff() float64 {
-	if p == nil {
-		return 0
-	}
-	return p.AmountOff
-}
-
-func (p *PaymentListItemPromoCode) GetBaseCurrency() Currencies {
-	if p == nil {
-		return ""
-	}
-	return p.BaseCurrency
-}
-
-func (p *PaymentListItemPromoCode) GetCode() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Code
-}
-
-func (p *PaymentListItemPromoCode) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentListItemPromoCode) GetNumberOfIntervals() *int {
-	if p == nil {
-		return nil
-	}
-	return p.NumberOfIntervals
-}
-
-func (p *PaymentListItemPromoCode) GetPromoType() PromoTypes {
-	if p == nil {
-		return ""
-	}
-	return p.PromoType
-}
-
-func (p *PaymentListItemPromoCode) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemPromoCode) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetAmountOff sets the AmountOff field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPromoCode) SetAmountOff(amountOff float64) {
-	p.AmountOff = amountOff
-	p.require(paymentListItemPromoCodeFieldAmountOff)
-}
-
-// SetBaseCurrency sets the BaseCurrency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPromoCode) SetBaseCurrency(baseCurrency Currencies) {
-	p.BaseCurrency = baseCurrency
-	p.require(paymentListItemPromoCodeFieldBaseCurrency)
-}
-
-// SetCode sets the Code field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPromoCode) SetCode(code *string) {
-	p.Code = code
-	p.require(paymentListItemPromoCodeFieldCode)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPromoCode) SetID(id string) {
-	p.ID = id
-	p.require(paymentListItemPromoCodeFieldID)
-}
-
-// SetNumberOfIntervals sets the NumberOfIntervals field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPromoCode) SetNumberOfIntervals(numberOfIntervals *int) {
-	p.NumberOfIntervals = numberOfIntervals
-	p.require(paymentListItemPromoCodeFieldNumberOfIntervals)
-}
-
-// SetPromoType sets the PromoType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemPromoCode) SetPromoType(promoType PromoTypes) {
-	p.PromoType = promoType
-	p.require(paymentListItemPromoCodeFieldPromoType)
-}
-
-func (p *PaymentListItemPromoCode) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemPromoCode
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemPromoCode(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemPromoCode) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemPromoCode
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemPromoCode) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The shipment attached to this payment.
-var (
-	paymentListItemShipmentFieldCarrier        = big.NewInt(1 << 0)
-	paymentListItemShipmentFieldID             = big.NewInt(1 << 1)
-	paymentListItemShipmentFieldStatus         = big.NewInt(1 << 2)
-	paymentListItemShipmentFieldTrackingNumber = big.NewInt(1 << 3)
-	paymentListItemShipmentFieldTrackingURL    = big.NewInt(1 << 4)
-)
-
-type PaymentListItemShipment struct {
-	// The shipping carrier detected for this shipment. Null until a tracking update identifies it.
-	Carrier *string `json:"carrier,omitempty" url:"carrier,omitempty"`
-	// The unique identifier for the shipment.
-	ID string `json:"id" url:"id"`
-	// The current delivery status of this shipment.
-	Status ShipmentStatuses `json:"status" url:"status"`
-	// The carrier-assigned tracking number used to look up shipment progress.
-	TrackingNumber string `json:"tracking_number" url:"tracking_number"`
-	// A customer-facing URL to track this shipment's progress.
-	TrackingURL string `json:"tracking_url" url:"tracking_url"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemShipment) GetCarrier() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Carrier
-}
-
-func (p *PaymentListItemShipment) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentListItemShipment) GetStatus() ShipmentStatuses {
-	if p == nil {
-		return ""
-	}
-	return p.Status
-}
-
-func (p *PaymentListItemShipment) GetTrackingNumber() string {
-	if p == nil {
-		return ""
-	}
-	return p.TrackingNumber
-}
-
-func (p *PaymentListItemShipment) GetTrackingURL() string {
-	if p == nil {
-		return ""
-	}
-	return p.TrackingURL
-}
-
-func (p *PaymentListItemShipment) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemShipment) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetCarrier sets the Carrier field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemShipment) SetCarrier(carrier *string) {
-	p.Carrier = carrier
-	p.require(paymentListItemShipmentFieldCarrier)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemShipment) SetID(id string) {
-	p.ID = id
-	p.require(paymentListItemShipmentFieldID)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemShipment) SetStatus(status ShipmentStatuses) {
-	p.Status = status
-	p.require(paymentListItemShipmentFieldStatus)
-}
-
-// SetTrackingNumber sets the TrackingNumber field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemShipment) SetTrackingNumber(trackingNumber string) {
-	p.TrackingNumber = trackingNumber
-	p.require(paymentListItemShipmentFieldTrackingNumber)
-}
-
-// SetTrackingURL sets the TrackingURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemShipment) SetTrackingURL(trackingURL string) {
-	p.TrackingURL = trackingURL
-	p.require(paymentListItemShipmentFieldTrackingURL)
-}
-
-func (p *PaymentListItemShipment) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemShipment
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemShipment(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemShipment) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemShipment
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemShipment) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The shipping address provided by the customer for physical goods. Null if no shipping address was collected.
-var (
-	paymentListItemShippingAddressFieldCity       = big.NewInt(1 << 0)
-	paymentListItemShippingAddressFieldCountry    = big.NewInt(1 << 1)
-	paymentListItemShippingAddressFieldLine1      = big.NewInt(1 << 2)
-	paymentListItemShippingAddressFieldLine2      = big.NewInt(1 << 3)
-	paymentListItemShippingAddressFieldName       = big.NewInt(1 << 4)
-	paymentListItemShippingAddressFieldPostalCode = big.NewInt(1 << 5)
-	paymentListItemShippingAddressFieldState      = big.NewInt(1 << 6)
-)
-
-type PaymentListItemShippingAddress struct {
-	// The city of the address.
-	City *string `json:"city,omitempty" url:"city,omitempty"`
-	// The country of the address.
-	Country *string `json:"country,omitempty" url:"country,omitempty"`
-	// The line 1 of the address.
-	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
-	// The line 2 of the address.
-	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
-	// The name of the customer.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The postal code of the address.
-	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
-	// The state of the address.
-	State *string `json:"state,omitempty" url:"state,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemShippingAddress) GetCity() *string {
-	if p == nil {
-		return nil
-	}
-	return p.City
-}
-
-func (p *PaymentListItemShippingAddress) GetCountry() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Country
-}
-
-func (p *PaymentListItemShippingAddress) GetLine1() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Line1
-}
-
-func (p *PaymentListItemShippingAddress) GetLine2() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Line2
-}
-
-func (p *PaymentListItemShippingAddress) GetName() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Name
-}
-
-func (p *PaymentListItemShippingAddress) GetPostalCode() *string {
-	if p == nil {
-		return nil
-	}
-	return p.PostalCode
-}
-
-func (p *PaymentListItemShippingAddress) GetState() *string {
-	if p == nil {
-		return nil
-	}
-	return p.State
-}
-
-func (p *PaymentListItemShippingAddress) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemShippingAddress) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetCity sets the City field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemShippingAddress) SetCity(city *string) {
-	p.City = city
-	p.require(paymentListItemShippingAddressFieldCity)
-}
-
-// SetCountry sets the Country field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemShippingAddress) SetCountry(country *string) {
-	p.Country = country
-	p.require(paymentListItemShippingAddressFieldCountry)
-}
-
-// SetLine1 sets the Line1 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemShippingAddress) SetLine1(line1 *string) {
-	p.Line1 = line1
-	p.require(paymentListItemShippingAddressFieldLine1)
-}
-
-// SetLine2 sets the Line2 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemShippingAddress) SetLine2(line2 *string) {
-	p.Line2 = line2
-	p.require(paymentListItemShippingAddressFieldLine2)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemShippingAddress) SetName(name *string) {
-	p.Name = name
-	p.require(paymentListItemShippingAddressFieldName)
-}
-
-// SetPostalCode sets the PostalCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemShippingAddress) SetPostalCode(postalCode *string) {
-	p.PostalCode = postalCode
-	p.require(paymentListItemShippingAddressFieldPostalCode)
-}
-
-// SetState sets the State field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemShippingAddress) SetState(state *string) {
-	p.State = state
-	p.require(paymentListItemShippingAddressFieldState)
-}
-
-func (p *PaymentListItemShippingAddress) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemShippingAddress
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemShippingAddress(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemShippingAddress) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemShippingAddress
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemShippingAddress) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The user that made this payment.
-var (
-	paymentListItemUserFieldEmail    = big.NewInt(1 << 0)
-	paymentListItemUserFieldID       = big.NewInt(1 << 1)
-	paymentListItemUserFieldName     = big.NewInt(1 << 2)
-	paymentListItemUserFieldUsername = big.NewInt(1 << 3)
-)
-
-type PaymentListItemUser struct {
-	// The user's email address. Requires the member:email:read permission to access. Null if not authorized.
-	Email *string `json:"email,omitempty" url:"email,omitempty"`
-	// The unique identifier for the user.
-	ID string `json:"id" url:"id"`
-	// The user's display name shown on their public profile.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The user's unique username shown on their public profile.
-	Username string `json:"username" url:"username"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentListItemUser) GetEmail() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Email
-}
-
-func (p *PaymentListItemUser) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentListItemUser) GetName() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Name
-}
-
-func (p *PaymentListItemUser) GetUsername() string {
-	if p == nil {
-		return ""
-	}
-	return p.Username
-}
-
-func (p *PaymentListItemUser) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentListItemUser) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetEmail sets the Email field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemUser) SetEmail(email *string) {
-	p.Email = email
-	p.require(paymentListItemUserFieldEmail)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemUser) SetID(id string) {
-	p.ID = id
-	p.require(paymentListItemUserFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemUser) SetName(name *string) {
-	p.Name = name
-	p.require(paymentListItemUserFieldName)
-}
-
-// SetUsername sets the Username field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentListItemUser) SetUsername(username string) {
-	p.Username = username
-	p.require(paymentListItemUserFieldUsername)
-}
-
-func (p *PaymentListItemUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentListItemUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentListItemUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentListItemUser) MarshalJSON() ([]byte, error) {
-	type embed PaymentListItemUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentListItemUser) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The member attached to this payment.
-var (
-	paymentMemberFieldID    = big.NewInt(1 << 0)
-	paymentMemberFieldPhone = big.NewInt(1 << 1)
-)
-
-type PaymentMember struct {
-	// The unique identifier for the company member.
-	ID string `json:"id" url:"id"`
-	// The phone number for the member, if available.
-	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentMember) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentMember) GetPhone() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Phone
-}
-
-func (p *PaymentMember) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentMember) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMember) SetID(id string) {
-	p.ID = id
-	p.require(paymentMemberFieldID)
-}
-
-// SetPhone sets the Phone field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMember) SetPhone(phone *string) {
-	p.Phone = phone
-	p.require(paymentMemberFieldPhone)
-}
-
-func (p *PaymentMember) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentMember
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentMember(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentMember) MarshalJSON() ([]byte, error) {
-	type embed PaymentMember
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentMember) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The membership attached to this payment.
-var (
-	paymentMembershipFieldID          = big.NewInt(1 << 0)
-	paymentMembershipFieldPhoneNumber = big.NewInt(1 << 1)
-	paymentMembershipFieldStatus      = big.NewInt(1 << 2)
-)
-
-type PaymentMembership struct {
-	// The unique identifier for the membership.
-	ID string `json:"id" url:"id"`
-	// The phone number associated with this membership.
-	PhoneNumber *string `json:"phone_number,omitempty" url:"phone_number,omitempty"`
-	// The state of the membership.
-	Status MembershipStatus `json:"status" url:"status"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentMembership) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentMembership) GetPhoneNumber() *string {
-	if p == nil {
-		return nil
-	}
-	return p.PhoneNumber
-}
-
-func (p *PaymentMembership) GetStatus() MembershipStatus {
-	if p == nil {
-		return ""
-	}
-	return p.Status
-}
-
-func (p *PaymentMembership) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentMembership) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMembership) SetID(id string) {
-	p.ID = id
-	p.require(paymentMembershipFieldID)
-}
-
-// SetPhoneNumber sets the PhoneNumber field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMembership) SetPhoneNumber(phoneNumber *string) {
-	p.PhoneNumber = phoneNumber
-	p.require(paymentMembershipFieldPhoneNumber)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentMembership) SetStatus(status MembershipStatus) {
-	p.Status = status
-	p.require(paymentMembershipFieldStatus)
-}
-
-func (p *PaymentMembership) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentMembership
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentMembership(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentMembership) MarshalJSON() ([]byte, error) {
-	type embed PaymentMembership
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentMembership) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The instrument this payment was made with, shaped for display: the method type, a buyer-facing name, the standard icon set, and the card facts when it was a card. Null when the receipt names no payment method.
-var (
-	paymentPaymentInstrumentFieldCard              = big.NewInt(1 << 0)
-	paymentPaymentInstrumentFieldDisplayName       = big.NewInt(1 << 1)
-	paymentPaymentInstrumentFieldIcons             = big.NewInt(1 << 2)
-	paymentPaymentInstrumentFieldInstallmentCount  = big.NewInt(1 << 3)
-	paymentPaymentInstrumentFieldPaymentMethodType = big.NewInt(1 << 4)
-)
-
-type PaymentPaymentInstrument struct {
-	// Card payments only: the card's network and last four.
-	Card *PaymentPaymentInstrumentCard `json:"card,omitempty" url:"card,omitempty"`
-	// Buyer-facing instrument name — "Visa •••• 4242" when the card surfaced, else the method's own name ("Klarna").
-	DisplayName string `json:"display_name" url:"display_name"`
-	// The standard icon set: square and card shapes, each in light and dark colorways.
-	Icons *PaymentPaymentInstrumentIcons `json:"icons" url:"icons"`
-	// Installment methods only: how many payments the charge splits into. Data, not copy — compose and translate the label client-side.
-	InstallmentCount *int `json:"installment_count,omitempty" url:"installment_count,omitempty"`
-	// The payment method type identifier, e.g. `card`, `klarna`, `apple_pay`.
-	PaymentMethodType string `json:"payment_method_type" url:"payment_method_type"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentPaymentInstrument) GetCard() *PaymentPaymentInstrumentCard {
-	if p == nil {
-		return nil
-	}
-	return p.Card
-}
-
-func (p *PaymentPaymentInstrument) GetDisplayName() string {
-	if p == nil {
-		return ""
-	}
-	return p.DisplayName
-}
-
-func (p *PaymentPaymentInstrument) GetIcons() *PaymentPaymentInstrumentIcons {
-	if p == nil {
-		return nil
-	}
-	return p.Icons
-}
-
-func (p *PaymentPaymentInstrument) GetInstallmentCount() *int {
-	if p == nil {
-		return nil
-	}
-	return p.InstallmentCount
-}
-
-func (p *PaymentPaymentInstrument) GetPaymentMethodType() string {
-	if p == nil {
-		return ""
-	}
-	return p.PaymentMethodType
-}
-
-func (p *PaymentPaymentInstrument) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentPaymentInstrument) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetCard sets the Card field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrument) SetCard(card *PaymentPaymentInstrumentCard) {
-	p.Card = card
-	p.require(paymentPaymentInstrumentFieldCard)
-}
-
-// SetDisplayName sets the DisplayName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrument) SetDisplayName(displayName string) {
-	p.DisplayName = displayName
-	p.require(paymentPaymentInstrumentFieldDisplayName)
-}
-
-// SetIcons sets the Icons field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrument) SetIcons(icons *PaymentPaymentInstrumentIcons) {
-	p.Icons = icons
-	p.require(paymentPaymentInstrumentFieldIcons)
-}
-
-// SetInstallmentCount sets the InstallmentCount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrument) SetInstallmentCount(installmentCount *int) {
-	p.InstallmentCount = installmentCount
-	p.require(paymentPaymentInstrumentFieldInstallmentCount)
-}
-
-// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrument) SetPaymentMethodType(paymentMethodType string) {
-	p.PaymentMethodType = paymentMethodType
-	p.require(paymentPaymentInstrumentFieldPaymentMethodType)
-}
-
-func (p *PaymentPaymentInstrument) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentPaymentInstrument
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentPaymentInstrument(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentPaymentInstrument) MarshalJSON() ([]byte, error) {
-	type embed PaymentPaymentInstrument
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentPaymentInstrument) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// Card payments only: the card's network and last four.
-var (
-	paymentPaymentInstrumentCardFieldBrand = big.NewInt(1 << 0)
-	paymentPaymentInstrumentCardFieldLast4 = big.NewInt(1 << 1)
-)
-
-type PaymentPaymentInstrumentCard struct {
-	// The network identifier (`visa`, `amex`, …), matching `card.networks` entries and saved card payment methods.
-	Brand string `json:"brand" url:"brand"`
-	// The card's last four digits, when captured.
-	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentPaymentInstrumentCard) GetBrand() string {
-	if p == nil {
-		return ""
-	}
-	return p.Brand
-}
-
-func (p *PaymentPaymentInstrumentCard) GetLast4() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Last4
-}
-
-func (p *PaymentPaymentInstrumentCard) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentPaymentInstrumentCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetBrand sets the Brand field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentCard) SetBrand(brand string) {
-	p.Brand = brand
-	p.require(paymentPaymentInstrumentCardFieldBrand)
-}
-
-// SetLast4 sets the Last4 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentCard) SetLast4(last4 *string) {
-	p.Last4 = last4
-	p.require(paymentPaymentInstrumentCardFieldLast4)
-}
-
-func (p *PaymentPaymentInstrumentCard) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentPaymentInstrumentCard
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentPaymentInstrumentCard(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentPaymentInstrumentCard) MarshalJSON() ([]byte, error) {
-	type embed PaymentPaymentInstrumentCard
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentPaymentInstrumentCard) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The standard icon set: square and card shapes, each in light and dark colorways.
-var (
-	paymentPaymentInstrumentIconsFieldCard   = big.NewInt(1 << 0)
-	paymentPaymentInstrumentIconsFieldSquare = big.NewInt(1 << 1)
-)
-
-type PaymentPaymentInstrumentIcons struct {
-	// The credit-card-proportioned tile (48x30).
-	Card *PaymentPaymentInstrumentIconsCard `json:"card" url:"card"`
-	// The square tile (32x32).
-	Square *PaymentPaymentInstrumentIconsSquare `json:"square" url:"square"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentPaymentInstrumentIcons) GetCard() *PaymentPaymentInstrumentIconsCard {
-	if p == nil {
-		return nil
-	}
-	return p.Card
-}
-
-func (p *PaymentPaymentInstrumentIcons) GetSquare() *PaymentPaymentInstrumentIconsSquare {
-	if p == nil {
-		return nil
-	}
-	return p.Square
-}
-
-func (p *PaymentPaymentInstrumentIcons) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentPaymentInstrumentIcons) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetCard sets the Card field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIcons) SetCard(card *PaymentPaymentInstrumentIconsCard) {
-	p.Card = card
-	p.require(paymentPaymentInstrumentIconsFieldCard)
-}
-
-// SetSquare sets the Square field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIcons) SetSquare(square *PaymentPaymentInstrumentIconsSquare) {
-	p.Square = square
-	p.require(paymentPaymentInstrumentIconsFieldSquare)
-}
-
-func (p *PaymentPaymentInstrumentIcons) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentPaymentInstrumentIcons
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentPaymentInstrumentIcons(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentPaymentInstrumentIcons) MarshalJSON() ([]byte, error) {
-	type embed PaymentPaymentInstrumentIcons
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentPaymentInstrumentIcons) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The credit-card-proportioned tile (48x30).
-var (
-	paymentPaymentInstrumentIconsCardFieldDark  = big.NewInt(1 << 0)
-	paymentPaymentInstrumentIconsCardFieldLight = big.NewInt(1 << 1)
-)
-
-type PaymentPaymentInstrumentIconsCard struct {
-	// The colorway for dark surfaces.
-	Dark *PaymentPaymentInstrumentIconsCardDark `json:"dark" url:"dark"`
-	// The colorway for light surfaces.
-	Light *PaymentPaymentInstrumentIconsCardLight `json:"light" url:"light"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentPaymentInstrumentIconsCard) GetDark() *PaymentPaymentInstrumentIconsCardDark {
-	if p == nil {
-		return nil
-	}
-	return p.Dark
-}
-
-func (p *PaymentPaymentInstrumentIconsCard) GetLight() *PaymentPaymentInstrumentIconsCardLight {
-	if p == nil {
-		return nil
-	}
-	return p.Light
-}
-
-func (p *PaymentPaymentInstrumentIconsCard) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentPaymentInstrumentIconsCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetDark sets the Dark field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsCard) SetDark(dark *PaymentPaymentInstrumentIconsCardDark) {
-	p.Dark = dark
-	p.require(paymentPaymentInstrumentIconsCardFieldDark)
-}
-
-// SetLight sets the Light field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsCard) SetLight(light *PaymentPaymentInstrumentIconsCardLight) {
-	p.Light = light
-	p.require(paymentPaymentInstrumentIconsCardFieldLight)
-}
-
-func (p *PaymentPaymentInstrumentIconsCard) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentPaymentInstrumentIconsCard
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentPaymentInstrumentIconsCard(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentPaymentInstrumentIconsCard) MarshalJSON() ([]byte, error) {
-	type embed PaymentPaymentInstrumentIconsCard
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentPaymentInstrumentIconsCard) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The colorway for dark surfaces.
-var (
-	paymentPaymentInstrumentIconsCardDarkFieldPng1X = big.NewInt(1 << 0)
-	paymentPaymentInstrumentIconsCardDarkFieldPng2X = big.NewInt(1 << 1)
-	paymentPaymentInstrumentIconsCardDarkFieldPng4X = big.NewInt(1 << 2)
-	paymentPaymentInstrumentIconsCardDarkFieldSvg   = big.NewInt(1 << 3)
-)
-
-type PaymentPaymentInstrumentIconsCardDark struct {
-	// Raster fallback at the shape's native size.
-	Png1X string `json:"png_1x" url:"png_1x"`
-	// Raster fallback at double density.
-	Png2X string `json:"png_2x" url:"png_2x"`
-	// Raster fallback at quadruple density.
-	Png4X string `json:"png_4x" url:"png_4x"`
-	// The vector file. Prefer this everywhere SVG renders.
-	Svg string `json:"svg" url:"svg"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentPaymentInstrumentIconsCardDark) GetPng1X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png1X
-}
-
-func (p *PaymentPaymentInstrumentIconsCardDark) GetPng2X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png2X
-}
-
-func (p *PaymentPaymentInstrumentIconsCardDark) GetPng4X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png4X
-}
-
-func (p *PaymentPaymentInstrumentIconsCardDark) GetSvg() string {
-	if p == nil {
-		return ""
-	}
-	return p.Svg
-}
-
-func (p *PaymentPaymentInstrumentIconsCardDark) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentPaymentInstrumentIconsCardDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetPng1X sets the Png1X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsCardDark) SetPng1X(png1X string) {
-	p.Png1X = png1X
-	p.require(paymentPaymentInstrumentIconsCardDarkFieldPng1X)
-}
-
-// SetPng2X sets the Png2X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsCardDark) SetPng2X(png2X string) {
-	p.Png2X = png2X
-	p.require(paymentPaymentInstrumentIconsCardDarkFieldPng2X)
-}
-
-// SetPng4X sets the Png4X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsCardDark) SetPng4X(png4X string) {
-	p.Png4X = png4X
-	p.require(paymentPaymentInstrumentIconsCardDarkFieldPng4X)
-}
-
-// SetSvg sets the Svg field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsCardDark) SetSvg(svg string) {
-	p.Svg = svg
-	p.require(paymentPaymentInstrumentIconsCardDarkFieldSvg)
-}
-
-func (p *PaymentPaymentInstrumentIconsCardDark) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentPaymentInstrumentIconsCardDark
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentPaymentInstrumentIconsCardDark(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentPaymentInstrumentIconsCardDark) MarshalJSON() ([]byte, error) {
-	type embed PaymentPaymentInstrumentIconsCardDark
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentPaymentInstrumentIconsCardDark) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The colorway for light surfaces.
-var (
-	paymentPaymentInstrumentIconsCardLightFieldPng1X = big.NewInt(1 << 0)
-	paymentPaymentInstrumentIconsCardLightFieldPng2X = big.NewInt(1 << 1)
-	paymentPaymentInstrumentIconsCardLightFieldPng4X = big.NewInt(1 << 2)
-	paymentPaymentInstrumentIconsCardLightFieldSvg   = big.NewInt(1 << 3)
-)
-
-type PaymentPaymentInstrumentIconsCardLight struct {
-	// Raster fallback at the shape's native size.
-	Png1X string `json:"png_1x" url:"png_1x"`
-	// Raster fallback at double density.
-	Png2X string `json:"png_2x" url:"png_2x"`
-	// Raster fallback at quadruple density.
-	Png4X string `json:"png_4x" url:"png_4x"`
-	// The vector file. Prefer this everywhere SVG renders.
-	Svg string `json:"svg" url:"svg"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentPaymentInstrumentIconsCardLight) GetPng1X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png1X
-}
-
-func (p *PaymentPaymentInstrumentIconsCardLight) GetPng2X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png2X
-}
-
-func (p *PaymentPaymentInstrumentIconsCardLight) GetPng4X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png4X
-}
-
-func (p *PaymentPaymentInstrumentIconsCardLight) GetSvg() string {
-	if p == nil {
-		return ""
-	}
-	return p.Svg
-}
-
-func (p *PaymentPaymentInstrumentIconsCardLight) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentPaymentInstrumentIconsCardLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetPng1X sets the Png1X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsCardLight) SetPng1X(png1X string) {
-	p.Png1X = png1X
-	p.require(paymentPaymentInstrumentIconsCardLightFieldPng1X)
-}
-
-// SetPng2X sets the Png2X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsCardLight) SetPng2X(png2X string) {
-	p.Png2X = png2X
-	p.require(paymentPaymentInstrumentIconsCardLightFieldPng2X)
-}
-
-// SetPng4X sets the Png4X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsCardLight) SetPng4X(png4X string) {
-	p.Png4X = png4X
-	p.require(paymentPaymentInstrumentIconsCardLightFieldPng4X)
-}
-
-// SetSvg sets the Svg field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsCardLight) SetSvg(svg string) {
-	p.Svg = svg
-	p.require(paymentPaymentInstrumentIconsCardLightFieldSvg)
-}
-
-func (p *PaymentPaymentInstrumentIconsCardLight) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentPaymentInstrumentIconsCardLight
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentPaymentInstrumentIconsCardLight(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentPaymentInstrumentIconsCardLight) MarshalJSON() ([]byte, error) {
-	type embed PaymentPaymentInstrumentIconsCardLight
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentPaymentInstrumentIconsCardLight) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The square tile (32x32).
-var (
-	paymentPaymentInstrumentIconsSquareFieldDark  = big.NewInt(1 << 0)
-	paymentPaymentInstrumentIconsSquareFieldLight = big.NewInt(1 << 1)
-)
-
-type PaymentPaymentInstrumentIconsSquare struct {
-	// The colorway for dark surfaces.
-	Dark *PaymentPaymentInstrumentIconsSquareDark `json:"dark" url:"dark"`
-	// The colorway for light surfaces.
-	Light *PaymentPaymentInstrumentIconsSquareLight `json:"light" url:"light"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentPaymentInstrumentIconsSquare) GetDark() *PaymentPaymentInstrumentIconsSquareDark {
-	if p == nil {
-		return nil
-	}
-	return p.Dark
-}
-
-func (p *PaymentPaymentInstrumentIconsSquare) GetLight() *PaymentPaymentInstrumentIconsSquareLight {
-	if p == nil {
-		return nil
-	}
-	return p.Light
-}
-
-func (p *PaymentPaymentInstrumentIconsSquare) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentPaymentInstrumentIconsSquare) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetDark sets the Dark field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsSquare) SetDark(dark *PaymentPaymentInstrumentIconsSquareDark) {
-	p.Dark = dark
-	p.require(paymentPaymentInstrumentIconsSquareFieldDark)
-}
-
-// SetLight sets the Light field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsSquare) SetLight(light *PaymentPaymentInstrumentIconsSquareLight) {
-	p.Light = light
-	p.require(paymentPaymentInstrumentIconsSquareFieldLight)
-}
-
-func (p *PaymentPaymentInstrumentIconsSquare) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentPaymentInstrumentIconsSquare
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentPaymentInstrumentIconsSquare(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentPaymentInstrumentIconsSquare) MarshalJSON() ([]byte, error) {
-	type embed PaymentPaymentInstrumentIconsSquare
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentPaymentInstrumentIconsSquare) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The colorway for dark surfaces.
-var (
-	paymentPaymentInstrumentIconsSquareDarkFieldPng1X = big.NewInt(1 << 0)
-	paymentPaymentInstrumentIconsSquareDarkFieldPng2X = big.NewInt(1 << 1)
-	paymentPaymentInstrumentIconsSquareDarkFieldPng4X = big.NewInt(1 << 2)
-	paymentPaymentInstrumentIconsSquareDarkFieldSvg   = big.NewInt(1 << 3)
-)
-
-type PaymentPaymentInstrumentIconsSquareDark struct {
-	// Raster fallback at the shape's native size.
-	Png1X string `json:"png_1x" url:"png_1x"`
-	// Raster fallback at double density.
-	Png2X string `json:"png_2x" url:"png_2x"`
-	// Raster fallback at quadruple density.
-	Png4X string `json:"png_4x" url:"png_4x"`
-	// The vector file. Prefer this everywhere SVG renders.
-	Svg string `json:"svg" url:"svg"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareDark) GetPng1X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png1X
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareDark) GetPng2X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png2X
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareDark) GetPng4X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png4X
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareDark) GetSvg() string {
-	if p == nil {
-		return ""
-	}
-	return p.Svg
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareDark) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareDark) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetPng1X sets the Png1X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsSquareDark) SetPng1X(png1X string) {
-	p.Png1X = png1X
-	p.require(paymentPaymentInstrumentIconsSquareDarkFieldPng1X)
-}
-
-// SetPng2X sets the Png2X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsSquareDark) SetPng2X(png2X string) {
-	p.Png2X = png2X
-	p.require(paymentPaymentInstrumentIconsSquareDarkFieldPng2X)
-}
-
-// SetPng4X sets the Png4X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsSquareDark) SetPng4X(png4X string) {
-	p.Png4X = png4X
-	p.require(paymentPaymentInstrumentIconsSquareDarkFieldPng4X)
-}
-
-// SetSvg sets the Svg field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsSquareDark) SetSvg(svg string) {
-	p.Svg = svg
-	p.require(paymentPaymentInstrumentIconsSquareDarkFieldSvg)
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareDark) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentPaymentInstrumentIconsSquareDark
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentPaymentInstrumentIconsSquareDark(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareDark) MarshalJSON() ([]byte, error) {
-	type embed PaymentPaymentInstrumentIconsSquareDark
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareDark) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The colorway for light surfaces.
-var (
-	paymentPaymentInstrumentIconsSquareLightFieldPng1X = big.NewInt(1 << 0)
-	paymentPaymentInstrumentIconsSquareLightFieldPng2X = big.NewInt(1 << 1)
-	paymentPaymentInstrumentIconsSquareLightFieldPng4X = big.NewInt(1 << 2)
-	paymentPaymentInstrumentIconsSquareLightFieldSvg   = big.NewInt(1 << 3)
-)
-
-type PaymentPaymentInstrumentIconsSquareLight struct {
-	// Raster fallback at the shape's native size.
-	Png1X string `json:"png_1x" url:"png_1x"`
-	// Raster fallback at double density.
-	Png2X string `json:"png_2x" url:"png_2x"`
-	// Raster fallback at quadruple density.
-	Png4X string `json:"png_4x" url:"png_4x"`
-	// The vector file. Prefer this everywhere SVG renders.
-	Svg string `json:"svg" url:"svg"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareLight) GetPng1X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png1X
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareLight) GetPng2X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png2X
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareLight) GetPng4X() string {
-	if p == nil {
-		return ""
-	}
-	return p.Png4X
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareLight) GetSvg() string {
-	if p == nil {
-		return ""
-	}
-	return p.Svg
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareLight) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareLight) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetPng1X sets the Png1X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsSquareLight) SetPng1X(png1X string) {
-	p.Png1X = png1X
-	p.require(paymentPaymentInstrumentIconsSquareLightFieldPng1X)
-}
-
-// SetPng2X sets the Png2X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsSquareLight) SetPng2X(png2X string) {
-	p.Png2X = png2X
-	p.require(paymentPaymentInstrumentIconsSquareLightFieldPng2X)
-}
-
-// SetPng4X sets the Png4X field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsSquareLight) SetPng4X(png4X string) {
-	p.Png4X = png4X
-	p.require(paymentPaymentInstrumentIconsSquareLightFieldPng4X)
-}
-
-// SetSvg sets the Svg field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentInstrumentIconsSquareLight) SetSvg(svg string) {
-	p.Svg = svg
-	p.require(paymentPaymentInstrumentIconsSquareLightFieldSvg)
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareLight) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentPaymentInstrumentIconsSquareLight
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentPaymentInstrumentIconsSquareLight(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareLight) MarshalJSON() ([]byte, error) {
-	type embed PaymentPaymentInstrumentIconsSquareLight
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentPaymentInstrumentIconsSquareLight) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The tokenized payment method reference used for this payment. Null if no token was used.
-var (
-	paymentPaymentMethodFieldCard              = big.NewInt(1 << 0)
-	paymentPaymentMethodFieldCreatedAt         = big.NewInt(1 << 1)
-	paymentPaymentMethodFieldID                = big.NewInt(1 << 2)
-	paymentPaymentMethodFieldPaymentMethodType = big.NewInt(1 << 3)
-)
-
-type PaymentPaymentMethod struct {
-	// The card data associated with the payment method, if its a debit or credit card.
-	Card *PaymentPaymentMethodCard `json:"card,omitempty" url:"card,omitempty"`
-	// The datetime the payment token was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The unique identifier for the payment token.
-	ID string `json:"id" url:"id"`
-	// The payment method type of the payment method
-	PaymentMethodType PaymentMethodTypes `json:"payment_method_type" url:"payment_method_type"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentPaymentMethod) GetCard() *PaymentPaymentMethodCard {
-	if p == nil {
-		return nil
-	}
-	return p.Card
-}
-
-func (p *PaymentPaymentMethod) GetCreatedAt() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.CreatedAt
-}
-
-func (p *PaymentPaymentMethod) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentPaymentMethod) GetPaymentMethodType() PaymentMethodTypes {
-	if p == nil {
-		return ""
-	}
-	return p.PaymentMethodType
-}
-
-func (p *PaymentPaymentMethod) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentPaymentMethod) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetCard sets the Card field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentMethod) SetCard(card *PaymentPaymentMethodCard) {
-	p.Card = card
-	p.require(paymentPaymentMethodFieldCard)
-}
-
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentMethod) SetCreatedAt(createdAt time.Time) {
-	p.CreatedAt = createdAt
-	p.require(paymentPaymentMethodFieldCreatedAt)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentMethod) SetID(id string) {
-	p.ID = id
-	p.require(paymentPaymentMethodFieldID)
-}
-
-// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentMethod) SetPaymentMethodType(paymentMethodType PaymentMethodTypes) {
-	p.PaymentMethodType = paymentMethodType
-	p.require(paymentPaymentMethodFieldPaymentMethodType)
-}
-
-func (p *PaymentPaymentMethod) UnmarshalJSON(data []byte) error {
-	type embed PaymentPaymentMethod
-	var unmarshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PaymentPaymentMethod(unmarshaler.embed)
-	p.CreatedAt = unmarshaler.CreatedAt.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentPaymentMethod) MarshalJSON() ([]byte, error) {
-	type embed PaymentPaymentMethod
-	var marshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-	}{
-		embed:     embed(*p),
-		CreatedAt: internal.NewDateTime(p.CreatedAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentPaymentMethod) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The card data associated with the payment method, if its a debit or credit card.
-var (
-	paymentPaymentMethodCardFieldBrand       = big.NewInt(1 << 0)
-	paymentPaymentMethodCardFieldExpMonth    = big.NewInt(1 << 1)
-	paymentPaymentMethodCardFieldExpYear     = big.NewInt(1 << 2)
-	paymentPaymentMethodCardFieldFingerprint = big.NewInt(1 << 3)
-	paymentPaymentMethodCardFieldLast4       = big.NewInt(1 << 4)
-)
-
-type PaymentPaymentMethodCard struct {
-	// The card network (e.g., visa, mastercard, amex). Null if the brand could not be determined.
-	Brand *CardBrands `json:"brand,omitempty" url:"brand,omitempty"`
-	// The two-digit expiration month of the card (1-12). Null if not available.
-	ExpMonth *int `json:"exp_month,omitempty" url:"exp_month,omitempty"`
-	// The two-digit expiration year of the card (e.g., 27 for 2027). Null if not available.
-	ExpYear *int `json:"exp_year,omitempty" url:"exp_year,omitempty"`
-	// A stable identifier for the underlying card. Two payment methods with the same fingerprint are the same card. Null if not available.
-	Fingerprint *string `json:"fingerprint,omitempty" url:"fingerprint,omitempty"`
-	// The last four digits of the card number. Null if not available.
-	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentPaymentMethodCard) GetBrand() *CardBrands {
-	if p == nil {
-		return nil
-	}
-	return p.Brand
-}
-
-func (p *PaymentPaymentMethodCard) GetExpMonth() *int {
-	if p == nil {
-		return nil
-	}
-	return p.ExpMonth
-}
-
-func (p *PaymentPaymentMethodCard) GetExpYear() *int {
-	if p == nil {
-		return nil
-	}
-	return p.ExpYear
-}
-
-func (p *PaymentPaymentMethodCard) GetFingerprint() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Fingerprint
-}
-
-func (p *PaymentPaymentMethodCard) GetLast4() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Last4
-}
-
-func (p *PaymentPaymentMethodCard) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentPaymentMethodCard) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetBrand sets the Brand field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentMethodCard) SetBrand(brand *CardBrands) {
-	p.Brand = brand
-	p.require(paymentPaymentMethodCardFieldBrand)
-}
-
-// SetExpMonth sets the ExpMonth field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentMethodCard) SetExpMonth(expMonth *int) {
-	p.ExpMonth = expMonth
-	p.require(paymentPaymentMethodCardFieldExpMonth)
-}
-
-// SetExpYear sets the ExpYear field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentMethodCard) SetExpYear(expYear *int) {
-	p.ExpYear = expYear
-	p.require(paymentPaymentMethodCardFieldExpYear)
-}
-
-// SetFingerprint sets the Fingerprint field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentMethodCard) SetFingerprint(fingerprint *string) {
-	p.Fingerprint = fingerprint
-	p.require(paymentPaymentMethodCardFieldFingerprint)
-}
-
-// SetLast4 sets the Last4 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPaymentMethodCard) SetLast4(last4 *string) {
-	p.Last4 = last4
-	p.require(paymentPaymentMethodCardFieldLast4)
-}
-
-func (p *PaymentPaymentMethodCard) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentPaymentMethodCard
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentPaymentMethodCard(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentPaymentMethodCard) MarshalJSON() ([]byte, error) {
-	type embed PaymentPaymentMethodCard
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentPaymentMethodCard) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The plan attached to this payment.
-var (
-	paymentPlanFieldID            = big.NewInt(1 << 0)
-	paymentPlanFieldInternalNotes = big.NewInt(1 << 1)
-	paymentPlanFieldMetadata      = big.NewInt(1 << 2)
-)
-
-type PaymentPlan struct {
-	// The unique identifier for the plan.
-	ID string `json:"id" url:"id"`
-	// A personal description or notes section for the business.
-	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
-	// Custom key-value pairs stored on the plan. Included in webhook payloads for payment and membership events. Max 50 keys, 100 chars per key, 500 chars per string value. The reserved keys `custom_cta` and `custom_cta_url`, when set, override the product's checkout call to action for this plan.
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentPlan) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentPlan) GetInternalNotes() *string {
-	if p == nil {
-		return nil
-	}
-	return p.InternalNotes
-}
-
-func (p *PaymentPlan) GetMetadata() map[string]any {
-	if p == nil {
-		return nil
-	}
-	return p.Metadata
-}
-
-func (p *PaymentPlan) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentPlan) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPlan) SetID(id string) {
-	p.ID = id
-	p.require(paymentPlanFieldID)
-}
-
-// SetInternalNotes sets the InternalNotes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPlan) SetInternalNotes(internalNotes *string) {
-	p.InternalNotes = internalNotes
-	p.require(paymentPlanFieldInternalNotes)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPlan) SetMetadata(metadata map[string]any) {
-	p.Metadata = metadata
-	p.require(paymentPlanFieldMetadata)
-}
-
-func (p *PaymentPlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentPlan
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentPlan(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentPlan) MarshalJSON() ([]byte, error) {
-	type embed PaymentPlan
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentPlan) String() string {
+func (p *PaymentPdf) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -8972,6 +2014,11 @@ func (p *PaymentPlan) String() string {
 var (
 	paymentProcessingDetailsFieldExpectedBy = big.NewInt(1 << 0)
 )
+
+// paymentProcessingDetailsNullableFields maps the wire names of PaymentProcessingDetails's nullable fields (required or optional) to their field bits.
+var paymentProcessingDetailsNullableFields = map[string]*big.Int{
+	"expected_by": paymentProcessingDetailsFieldExpectedBy,
+}
 
 type PaymentProcessingDetails struct {
 	// When the payment is expected to settle, as an ISO 8601 timestamp.
@@ -8999,10 +2046,12 @@ func (p *PaymentProcessingDetails) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PaymentProcessingDetails) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetExpectedBy sets the ExpectedBy field and marks it as non-optional;
@@ -9024,6 +2073,13 @@ func (p *PaymentProcessingDetails) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentProcessingDetailsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -9054,1072 +2110,50 @@ func (p *PaymentProcessingDetails) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// The product this payment was made for
 var (
-	paymentProductFieldID       = big.NewInt(1 << 0)
-	paymentProductFieldMetadata = big.NewInt(1 << 1)
-	paymentProductFieldRoute    = big.NewInt(1 << 2)
-	paymentProductFieldTitle    = big.NewInt(1 << 3)
+	paymentStatusFieldAccount           = big.NewInt(1 << 0)
+	paymentStatusFieldAutoCaptureAt     = big.NewInt(1 << 1)
+	paymentStatusFieldCaptureExpiresAt  = big.NewInt(1 << 2)
+	paymentStatusFieldID                = big.NewInt(1 << 3)
+	paymentStatusFieldLastPaymentError  = big.NewInt(1 << 4)
+	paymentStatusFieldNextAction        = big.NewInt(1 << 5)
+	paymentStatusFieldObject            = big.NewInt(1 << 6)
+	paymentStatusFieldProcessingDetails = big.NewInt(1 << 7)
+	paymentStatusFieldReturnURL         = big.NewInt(1 << 8)
+	paymentStatusFieldStatus            = big.NewInt(1 << 9)
 )
 
-type PaymentProduct struct {
-	// The unique identifier for the product.
-	ID string `json:"id" url:"id"`
-	// Custom key-value pairs stored on the product and included in payment and membership webhook payloads. Max 50 keys, 100 characters per key, 500 characters per string value.
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// URL slug in the product's public link, e.g. `pickaxe-analytics` in whop.com/company/pickaxe-analytics.
-	Route string `json:"route" url:"route"`
-	// The display name of the product shown to customers on the product page and in search results.
-	Title string `json:"title" url:"title"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
+// paymentStatusNullableFields maps the wire names of PaymentStatus's nullable fields (required or optional) to their field bits.
+var paymentStatusNullableFields = map[string]*big.Int{
+	"account":            paymentStatusFieldAccount,
+	"auto_capture_at":    paymentStatusFieldAutoCaptureAt,
+	"capture_expires_at": paymentStatusFieldCaptureExpiresAt,
+	"last_payment_error": paymentStatusFieldLastPaymentError,
+	"next_action":        paymentStatusFieldNextAction,
+	"processing_details": paymentStatusFieldProcessingDetails,
+	"return_url":         paymentStatusFieldReturnURL,
 }
-
-func (p *PaymentProduct) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentProduct) GetMetadata() map[string]any {
-	if p == nil {
-		return nil
-	}
-	return p.Metadata
-}
-
-func (p *PaymentProduct) GetRoute() string {
-	if p == nil {
-		return ""
-	}
-	return p.Route
-}
-
-func (p *PaymentProduct) GetTitle() string {
-	if p == nil {
-		return ""
-	}
-	return p.Title
-}
-
-func (p *PaymentProduct) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentProduct) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentProduct) SetID(id string) {
-	p.ID = id
-	p.require(paymentProductFieldID)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentProduct) SetMetadata(metadata map[string]any) {
-	p.Metadata = metadata
-	p.require(paymentProductFieldMetadata)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentProduct) SetRoute(route string) {
-	p.Route = route
-	p.require(paymentProductFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentProduct) SetTitle(title string) {
-	p.Title = title
-	p.require(paymentProductFieldTitle)
-}
-
-func (p *PaymentProduct) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentProduct
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentProduct(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentProduct) MarshalJSON() ([]byte, error) {
-	type embed PaymentProduct
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentProduct) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The promo code used for this payment.
-var (
-	paymentPromoCodeFieldAmountOff         = big.NewInt(1 << 0)
-	paymentPromoCodeFieldBaseCurrency      = big.NewInt(1 << 1)
-	paymentPromoCodeFieldCode              = big.NewInt(1 << 2)
-	paymentPromoCodeFieldID                = big.NewInt(1 << 3)
-	paymentPromoCodeFieldNumberOfIntervals = big.NewInt(1 << 4)
-	paymentPromoCodeFieldPromoType         = big.NewInt(1 << 5)
-)
-
-type PaymentPromoCode struct {
-	// The discount amount. Interpretation depends on promo_type: if 'percentage', this is the percentage (e.g., 20 means 20% off); if 'flat_amount', this is dollars off (e.g., 10.00 means $10.00 off).
-	AmountOff float64 `json:"amount_off" url:"amount_off"`
-	// The monetary currency of the promo code.
-	BaseCurrency Currencies `json:"base_currency" url:"base_currency"`
-	// The specific code used to apply the promo at checkout.
-	Code *string `json:"code,omitempty" url:"code,omitempty"`
-	// The unique identifier for the promo code.
-	ID string `json:"id" url:"id"`
-	// The number of months the promo is applied for.
-	NumberOfIntervals *int `json:"number_of_intervals,omitempty" url:"number_of_intervals,omitempty"`
-	// The type (% or flat amount) of the promo.
-	PromoType PromoTypes `json:"promo_type" url:"promo_type"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentPromoCode) GetAmountOff() float64 {
-	if p == nil {
-		return 0
-	}
-	return p.AmountOff
-}
-
-func (p *PaymentPromoCode) GetBaseCurrency() Currencies {
-	if p == nil {
-		return ""
-	}
-	return p.BaseCurrency
-}
-
-func (p *PaymentPromoCode) GetCode() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Code
-}
-
-func (p *PaymentPromoCode) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentPromoCode) GetNumberOfIntervals() *int {
-	if p == nil {
-		return nil
-	}
-	return p.NumberOfIntervals
-}
-
-func (p *PaymentPromoCode) GetPromoType() PromoTypes {
-	if p == nil {
-		return ""
-	}
-	return p.PromoType
-}
-
-func (p *PaymentPromoCode) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentPromoCode) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetAmountOff sets the AmountOff field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPromoCode) SetAmountOff(amountOff float64) {
-	p.AmountOff = amountOff
-	p.require(paymentPromoCodeFieldAmountOff)
-}
-
-// SetBaseCurrency sets the BaseCurrency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPromoCode) SetBaseCurrency(baseCurrency Currencies) {
-	p.BaseCurrency = baseCurrency
-	p.require(paymentPromoCodeFieldBaseCurrency)
-}
-
-// SetCode sets the Code field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPromoCode) SetCode(code *string) {
-	p.Code = code
-	p.require(paymentPromoCodeFieldCode)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPromoCode) SetID(id string) {
-	p.ID = id
-	p.require(paymentPromoCodeFieldID)
-}
-
-// SetNumberOfIntervals sets the NumberOfIntervals field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPromoCode) SetNumberOfIntervals(numberOfIntervals *int) {
-	p.NumberOfIntervals = numberOfIntervals
-	p.require(paymentPromoCodeFieldNumberOfIntervals)
-}
-
-// SetPromoType sets the PromoType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentPromoCode) SetPromoType(promoType PromoTypes) {
-	p.PromoType = promoType
-	p.require(paymentPromoCodeFieldPromoType)
-}
-
-func (p *PaymentPromoCode) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentPromoCode
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentPromoCode(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentPromoCode) MarshalJSON() ([]byte, error) {
-	type embed PaymentPromoCode
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentPromoCode) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// A refund represents a full or partial reversal of a payment, including the amount, status, and payment provider.
-var (
-	paymentRefundsItemFieldAmount    = big.NewInt(1 << 0)
-	paymentRefundsItemFieldCreatedAt = big.NewInt(1 << 1)
-	paymentRefundsItemFieldCurrency  = big.NewInt(1 << 2)
-	paymentRefundsItemFieldID        = big.NewInt(1 << 3)
-	paymentRefundsItemFieldStatus    = big.NewInt(1 << 4)
-)
-
-type PaymentRefundsItem struct {
-	// The refunded amount as a decimal in the specified currency, such as 10.43 for $10.43 USD.
-	Amount float64 `json:"amount" url:"amount"`
-	// The datetime the refund was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The three-letter ISO currency code for the refunded amount.
-	Currency Currencies `json:"currency" url:"currency"`
-	// The unique identifier for the refund.
-	ID string `json:"id" url:"id"`
-	// The current processing status of the refund, such as pending, succeeded, or failed.
-	Status RefundStatuses `json:"status" url:"status"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentRefundsItem) GetAmount() float64 {
-	if p == nil {
-		return 0
-	}
-	return p.Amount
-}
-
-func (p *PaymentRefundsItem) GetCreatedAt() time.Time {
-	if p == nil {
-		return time.Time{}
-	}
-	return p.CreatedAt
-}
-
-func (p *PaymentRefundsItem) GetCurrency() Currencies {
-	if p == nil {
-		return ""
-	}
-	return p.Currency
-}
-
-func (p *PaymentRefundsItem) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentRefundsItem) GetStatus() RefundStatuses {
-	if p == nil {
-		return ""
-	}
-	return p.Status
-}
-
-func (p *PaymentRefundsItem) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentRefundsItem) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetAmount sets the Amount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentRefundsItem) SetAmount(amount float64) {
-	p.Amount = amount
-	p.require(paymentRefundsItemFieldAmount)
-}
-
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentRefundsItem) SetCreatedAt(createdAt time.Time) {
-	p.CreatedAt = createdAt
-	p.require(paymentRefundsItemFieldCreatedAt)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentRefundsItem) SetCurrency(currency Currencies) {
-	p.Currency = currency
-	p.require(paymentRefundsItemFieldCurrency)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentRefundsItem) SetID(id string) {
-	p.ID = id
-	p.require(paymentRefundsItemFieldID)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentRefundsItem) SetStatus(status RefundStatuses) {
-	p.Status = status
-	p.require(paymentRefundsItemFieldStatus)
-}
-
-func (p *PaymentRefundsItem) UnmarshalJSON(data []byte) error {
-	type embed PaymentRefundsItem
-	var unmarshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PaymentRefundsItem(unmarshaler.embed)
-	p.CreatedAt = unmarshaler.CreatedAt.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentRefundsItem) MarshalJSON() ([]byte, error) {
-	type embed PaymentRefundsItem
-	var marshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-	}{
-		embed:     embed(*p),
-		CreatedAt: internal.NewDateTime(p.CreatedAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentRefundsItem) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// A resolution center case is a dispute or support case between a user and a company, tracking the issue, status, and outcome.
-var (
-	paymentResolutionsItemFieldCustomerAppealed        = big.NewInt(1 << 0)
-	paymentResolutionsItemFieldCustomerResponseActions = big.NewInt(1 << 1)
-	paymentResolutionsItemFieldDueDate                 = big.NewInt(1 << 2)
-	paymentResolutionsItemFieldID                      = big.NewInt(1 << 3)
-	paymentResolutionsItemFieldIssue                   = big.NewInt(1 << 4)
-	paymentResolutionsItemFieldMerchantAppealed        = big.NewInt(1 << 5)
-	paymentResolutionsItemFieldMerchantResponseActions = big.NewInt(1 << 6)
-	paymentResolutionsItemFieldPlatformResponseActions = big.NewInt(1 << 7)
-	paymentResolutionsItemFieldStatus                  = big.NewInt(1 << 8)
-)
-
-type PaymentResolutionsItem struct {
-	// Whether the customer has filed an appeal after the initial resolution decision.
-	CustomerAppealed bool `json:"customer_appealed" url:"customer_appealed"`
-	// The list of actions currently available to the customer.
-	CustomerResponseActions []ResolutionCenterCaseCustomerResponses `json:"customer_response_actions" url:"customer_response_actions"`
-	// The deadline by which the next response is required. Null if no deadline is currently active. As a Unix timestamp.
-	DueDate *time.Time `json:"due_date,omitempty" url:"due_date,omitempty"`
-	// The unique identifier for the resolution.
-	ID string `json:"id" url:"id"`
-	// The category of the dispute.
-	Issue ResolutionCenterCaseIssueTypes `json:"issue" url:"issue"`
-	// Whether the merchant has filed an appeal after the initial resolution decision.
-	MerchantAppealed bool `json:"merchant_appealed" url:"merchant_appealed"`
-	// The list of actions currently available to the merchant.
-	MerchantResponseActions []ResolutionCenterCaseMerchantResponses `json:"merchant_response_actions" url:"merchant_response_actions"`
-	// The list of actions currently available to the Whop platform for moderating this resolution.
-	PlatformResponseActions []ResolutionCenterCasePlatformResponses `json:"platform_response_actions" url:"platform_response_actions"`
-	// The current status of the resolution case, indicating which party needs to respond or if the case is closed.
-	Status ResolutionCenterCaseStatuses `json:"status" url:"status"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentResolutionsItem) GetCustomerAppealed() bool {
-	if p == nil {
-		return false
-	}
-	return p.CustomerAppealed
-}
-
-func (p *PaymentResolutionsItem) GetCustomerResponseActions() []ResolutionCenterCaseCustomerResponses {
-	if p == nil {
-		return nil
-	}
-	return p.CustomerResponseActions
-}
-
-func (p *PaymentResolutionsItem) GetDueDate() *time.Time {
-	if p == nil {
-		return nil
-	}
-	return p.DueDate
-}
-
-func (p *PaymentResolutionsItem) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentResolutionsItem) GetIssue() ResolutionCenterCaseIssueTypes {
-	if p == nil {
-		return ""
-	}
-	return p.Issue
-}
-
-func (p *PaymentResolutionsItem) GetMerchantAppealed() bool {
-	if p == nil {
-		return false
-	}
-	return p.MerchantAppealed
-}
-
-func (p *PaymentResolutionsItem) GetMerchantResponseActions() []ResolutionCenterCaseMerchantResponses {
-	if p == nil {
-		return nil
-	}
-	return p.MerchantResponseActions
-}
-
-func (p *PaymentResolutionsItem) GetPlatformResponseActions() []ResolutionCenterCasePlatformResponses {
-	if p == nil {
-		return nil
-	}
-	return p.PlatformResponseActions
-}
-
-func (p *PaymentResolutionsItem) GetStatus() ResolutionCenterCaseStatuses {
-	if p == nil {
-		return ""
-	}
-	return p.Status
-}
-
-func (p *PaymentResolutionsItem) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentResolutionsItem) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetCustomerAppealed sets the CustomerAppealed field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentResolutionsItem) SetCustomerAppealed(customerAppealed bool) {
-	p.CustomerAppealed = customerAppealed
-	p.require(paymentResolutionsItemFieldCustomerAppealed)
-}
-
-// SetCustomerResponseActions sets the CustomerResponseActions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentResolutionsItem) SetCustomerResponseActions(customerResponseActions []ResolutionCenterCaseCustomerResponses) {
-	p.CustomerResponseActions = customerResponseActions
-	p.require(paymentResolutionsItemFieldCustomerResponseActions)
-}
-
-// SetDueDate sets the DueDate field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentResolutionsItem) SetDueDate(dueDate *time.Time) {
-	p.DueDate = dueDate
-	p.require(paymentResolutionsItemFieldDueDate)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentResolutionsItem) SetID(id string) {
-	p.ID = id
-	p.require(paymentResolutionsItemFieldID)
-}
-
-// SetIssue sets the Issue field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentResolutionsItem) SetIssue(issue ResolutionCenterCaseIssueTypes) {
-	p.Issue = issue
-	p.require(paymentResolutionsItemFieldIssue)
-}
-
-// SetMerchantAppealed sets the MerchantAppealed field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentResolutionsItem) SetMerchantAppealed(merchantAppealed bool) {
-	p.MerchantAppealed = merchantAppealed
-	p.require(paymentResolutionsItemFieldMerchantAppealed)
-}
-
-// SetMerchantResponseActions sets the MerchantResponseActions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentResolutionsItem) SetMerchantResponseActions(merchantResponseActions []ResolutionCenterCaseMerchantResponses) {
-	p.MerchantResponseActions = merchantResponseActions
-	p.require(paymentResolutionsItemFieldMerchantResponseActions)
-}
-
-// SetPlatformResponseActions sets the PlatformResponseActions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentResolutionsItem) SetPlatformResponseActions(platformResponseActions []ResolutionCenterCasePlatformResponses) {
-	p.PlatformResponseActions = platformResponseActions
-	p.require(paymentResolutionsItemFieldPlatformResponseActions)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentResolutionsItem) SetStatus(status ResolutionCenterCaseStatuses) {
-	p.Status = status
-	p.require(paymentResolutionsItemFieldStatus)
-}
-
-func (p *PaymentResolutionsItem) UnmarshalJSON(data []byte) error {
-	type embed PaymentResolutionsItem
-	var unmarshaler = struct {
-		embed
-		DueDate *internal.DateTime `json:"due_date,omitempty"`
-	}{
-		embed: embed(*p),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*p = PaymentResolutionsItem(unmarshaler.embed)
-	p.DueDate = unmarshaler.DueDate.TimePtr()
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentResolutionsItem) MarshalJSON() ([]byte, error) {
-	type embed PaymentResolutionsItem
-	var marshaler = struct {
-		embed
-		DueDate *internal.DateTime `json:"due_date,omitempty"`
-	}{
-		embed:   embed(*p),
-		DueDate: internal.NewOptionalDateTime(p.DueDate),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentResolutionsItem) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The shipment attached to this payment.
-var (
-	paymentShipmentFieldCarrier        = big.NewInt(1 << 0)
-	paymentShipmentFieldID             = big.NewInt(1 << 1)
-	paymentShipmentFieldStatus         = big.NewInt(1 << 2)
-	paymentShipmentFieldTrackingNumber = big.NewInt(1 << 3)
-	paymentShipmentFieldTrackingURL    = big.NewInt(1 << 4)
-)
-
-type PaymentShipment struct {
-	// The shipping carrier detected for this shipment. Null until a tracking update identifies it.
-	Carrier *string `json:"carrier,omitempty" url:"carrier,omitempty"`
-	// The unique identifier for the shipment.
-	ID string `json:"id" url:"id"`
-	// The current delivery status of this shipment.
-	Status ShipmentStatuses `json:"status" url:"status"`
-	// The carrier-assigned tracking number used to look up shipment progress.
-	TrackingNumber string `json:"tracking_number" url:"tracking_number"`
-	// A customer-facing URL to track this shipment's progress.
-	TrackingURL string `json:"tracking_url" url:"tracking_url"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentShipment) GetCarrier() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Carrier
-}
-
-func (p *PaymentShipment) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentShipment) GetStatus() ShipmentStatuses {
-	if p == nil {
-		return ""
-	}
-	return p.Status
-}
-
-func (p *PaymentShipment) GetTrackingNumber() string {
-	if p == nil {
-		return ""
-	}
-	return p.TrackingNumber
-}
-
-func (p *PaymentShipment) GetTrackingURL() string {
-	if p == nil {
-		return ""
-	}
-	return p.TrackingURL
-}
-
-func (p *PaymentShipment) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentShipment) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetCarrier sets the Carrier field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentShipment) SetCarrier(carrier *string) {
-	p.Carrier = carrier
-	p.require(paymentShipmentFieldCarrier)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentShipment) SetID(id string) {
-	p.ID = id
-	p.require(paymentShipmentFieldID)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentShipment) SetStatus(status ShipmentStatuses) {
-	p.Status = status
-	p.require(paymentShipmentFieldStatus)
-}
-
-// SetTrackingNumber sets the TrackingNumber field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentShipment) SetTrackingNumber(trackingNumber string) {
-	p.TrackingNumber = trackingNumber
-	p.require(paymentShipmentFieldTrackingNumber)
-}
-
-// SetTrackingURL sets the TrackingURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentShipment) SetTrackingURL(trackingURL string) {
-	p.TrackingURL = trackingURL
-	p.require(paymentShipmentFieldTrackingURL)
-}
-
-func (p *PaymentShipment) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentShipment
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentShipment(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentShipment) MarshalJSON() ([]byte, error) {
-	type embed PaymentShipment
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentShipment) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The shipping address provided by the customer for physical goods. Null if no shipping address was collected.
-var (
-	paymentShippingAddressFieldCity       = big.NewInt(1 << 0)
-	paymentShippingAddressFieldCountry    = big.NewInt(1 << 1)
-	paymentShippingAddressFieldLine1      = big.NewInt(1 << 2)
-	paymentShippingAddressFieldLine2      = big.NewInt(1 << 3)
-	paymentShippingAddressFieldName       = big.NewInt(1 << 4)
-	paymentShippingAddressFieldPostalCode = big.NewInt(1 << 5)
-	paymentShippingAddressFieldState      = big.NewInt(1 << 6)
-)
-
-type PaymentShippingAddress struct {
-	// The city of the address.
-	City *string `json:"city,omitempty" url:"city,omitempty"`
-	// The country of the address.
-	Country *string `json:"country,omitempty" url:"country,omitempty"`
-	// The line 1 of the address.
-	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
-	// The line 2 of the address.
-	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
-	// The name of the customer.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The postal code of the address.
-	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
-	// The state of the address.
-	State *string `json:"state,omitempty" url:"state,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentShippingAddress) GetCity() *string {
-	if p == nil {
-		return nil
-	}
-	return p.City
-}
-
-func (p *PaymentShippingAddress) GetCountry() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Country
-}
-
-func (p *PaymentShippingAddress) GetLine1() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Line1
-}
-
-func (p *PaymentShippingAddress) GetLine2() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Line2
-}
-
-func (p *PaymentShippingAddress) GetName() *string {
-	if p == nil {
-		return nil
-	}
-	return p.Name
-}
-
-func (p *PaymentShippingAddress) GetPostalCode() *string {
-	if p == nil {
-		return nil
-	}
-	return p.PostalCode
-}
-
-func (p *PaymentShippingAddress) GetState() *string {
-	if p == nil {
-		return nil
-	}
-	return p.State
-}
-
-func (p *PaymentShippingAddress) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentShippingAddress) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetCity sets the City field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentShippingAddress) SetCity(city *string) {
-	p.City = city
-	p.require(paymentShippingAddressFieldCity)
-}
-
-// SetCountry sets the Country field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentShippingAddress) SetCountry(country *string) {
-	p.Country = country
-	p.require(paymentShippingAddressFieldCountry)
-}
-
-// SetLine1 sets the Line1 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentShippingAddress) SetLine1(line1 *string) {
-	p.Line1 = line1
-	p.require(paymentShippingAddressFieldLine1)
-}
-
-// SetLine2 sets the Line2 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentShippingAddress) SetLine2(line2 *string) {
-	p.Line2 = line2
-	p.require(paymentShippingAddressFieldLine2)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentShippingAddress) SetName(name *string) {
-	p.Name = name
-	p.require(paymentShippingAddressFieldName)
-}
-
-// SetPostalCode sets the PostalCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentShippingAddress) SetPostalCode(postalCode *string) {
-	p.PostalCode = postalCode
-	p.require(paymentShippingAddressFieldPostalCode)
-}
-
-// SetState sets the State field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentShippingAddress) SetState(state *string) {
-	p.State = state
-	p.require(paymentShippingAddressFieldState)
-}
-
-func (p *PaymentShippingAddress) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentShippingAddress
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentShippingAddress(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
-	if err != nil {
-		return err
-	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentShippingAddress) MarshalJSON() ([]byte, error) {
-	type embed PaymentShippingAddress
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentShippingAddress) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-var (
-	paymentStatusFieldID                = big.NewInt(1 << 0)
-	paymentStatusFieldLastPaymentError  = big.NewInt(1 << 1)
-	paymentStatusFieldNextAction        = big.NewInt(1 << 2)
-	paymentStatusFieldObject            = big.NewInt(1 << 3)
-	paymentStatusFieldProcessingDetails = big.NewInt(1 << 4)
-	paymentStatusFieldReturnURL         = big.NewInt(1 << 5)
-	paymentStatusFieldStatus            = big.NewInt(1 << 6)
-)
 
 type PaymentStatus struct {
+	// The account receiving this payment, or `null` when the payment has no associated account.
+	Account *AccountSummary `json:"account,omitempty" url:"account,omitempty"`
+	// When Whop will capture this authorization automatically, as an ISO 8601 timestamp. `null` when no automatic capture was requested.
+	AutoCaptureAt *string `json:"auto_capture_at,omitempty" url:"auto_capture_at,omitempty"`
+	// When the card authorization must be captured, as an ISO 8601 timestamp. `null` when this payment was not authorized for later capture.
+	CaptureExpiresAt *string `json:"capture_expires_at,omitempty" url:"capture_expires_at,omitempty"`
 	// The payment this status describes, prefixed `pay_`.
 	ID string `json:"id" url:"id"`
 	// Details of the most recent failed attempt, or `null` when the payment has not failed.
 	LastPaymentError *PaymentLastPaymentError `json:"last_payment_error,omitempty" url:"last_payment_error,omitempty"`
-	// What the buyer must do next while `status` is `requires_action`, otherwise `null`. `type` picks the shape and each variant carries only its own `data`, so switching on `type` gives you exactly that step's payload.
+	// What the buyer must do next while `status` is `requires_action`, otherwise `null`. `type` picks the shape and each variant carries only its own `data`, so switching on `type` gives you exactly that step's payload. The `collect_card_present` step is served only to a credential holding `payment:charge` on the account; any other reader sees `null` while the tap is outstanding.
 	NextAction *PaymentNextAction `json:"next_action,omitempty" url:"next_action,omitempty"`
 	// Always `payment_status`.
 	Object string `json:"object" url:"object"`
-	// Present while `status` is `processing` on a settlement rail, otherwise `null`.
+	// Present while `status` is `processing` on a settlement rail, otherwise `null`. A `processing` status without it has not been decided yet — keep polling.
 	ProcessingDetails *PaymentProcessingDetails `json:"processing_details,omitempty" url:"processing_details,omitempty"`
 	// Where to send the buyer once the payment reaches a resting state, or `null` to leave them where they are. Editable until they return — see the return_url operation.
 	ReturnURL *string `json:"return_url,omitempty" url:"return_url,omitempty"`
-	// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `confirming` — the buyer has done their part and the processor is deciding. `processing` — the money is moving; see `processing_details`. `succeeded` — collected. `canceled` — voided or written off.
+	// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `requires_capture` — the card authorization is holding funds and must be captured. `confirming` — the buyer has done their part and the processor is deciding. `processing` — with `processing_details`, the money is moving; without them, the charge is still being decided and the status should be read again. `succeeded` — collected. `canceled` — voided or written off.
 	Status PaymentStatusStatus `json:"status" url:"status"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -10127,6 +2161,27 @@ type PaymentStatus struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (p *PaymentStatus) GetAccount() *AccountSummary {
+	if p == nil {
+		return nil
+	}
+	return p.Account
+}
+
+func (p *PaymentStatus) GetAutoCaptureAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AutoCaptureAt
+}
+
+func (p *PaymentStatus) GetCaptureExpiresAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.CaptureExpiresAt
 }
 
 func (p *PaymentStatus) GetID() string {
@@ -10186,10 +2241,33 @@ func (p *PaymentStatus) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PaymentStatus) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccount sets the Account field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentStatus) SetAccount(account *AccountSummary) {
+	p.Account = account
+	p.require(paymentStatusFieldAccount)
+}
+
+// SetAutoCaptureAt sets the AutoCaptureAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentStatus) SetAutoCaptureAt(autoCaptureAt *string) {
+	p.AutoCaptureAt = autoCaptureAt
+	p.require(paymentStatusFieldAutoCaptureAt)
+}
+
+// SetCaptureExpiresAt sets the CaptureExpiresAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentStatus) SetCaptureExpiresAt(captureExpiresAt *string) {
+	p.CaptureExpiresAt = captureExpiresAt
+	p.require(paymentStatusFieldCaptureExpiresAt)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -10253,6 +2331,13 @@ func (p *PaymentStatus) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentStatusNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -10283,12 +2368,13 @@ func (p *PaymentStatus) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `confirming` — the buyer has done their part and the processor is deciding. `processing` — the money is moving; see `processing_details`. `succeeded` — collected. `canceled` — voided or written off.
+// How far the payment has got. `requires_confirmation` — nothing attempted yet, or the last attempt failed and can be retried. `requires_action` — the buyer has a step outstanding; see `next_action`. `requires_capture` — the card authorization is holding funds and must be captured. `confirming` — the buyer has done their part and the processor is deciding. `processing` — with `processing_details`, the money is moving; without them, the charge is still being decided and the status should be read again. `succeeded` — collected. `canceled` — voided or written off.
 type PaymentStatusStatus string
 
 const (
 	PaymentStatusStatusRequiresConfirmation PaymentStatusStatus = "requires_confirmation"
 	PaymentStatusStatusRequiresAction       PaymentStatusStatus = "requires_action"
+	PaymentStatusStatusRequiresCapture      PaymentStatusStatus = "requires_capture"
 	PaymentStatusStatusConfirming           PaymentStatusStatus = "confirming"
 	PaymentStatusStatusProcessing           PaymentStatusStatus = "processing"
 	PaymentStatusStatusSucceeded            PaymentStatusStatus = "succeeded"
@@ -10301,6 +2387,8 @@ func NewPaymentStatusStatusFromString(s string) (PaymentStatusStatus, error) {
 		return PaymentStatusStatusRequiresConfirmation, nil
 	case "requires_action":
 		return PaymentStatusStatusRequiresAction, nil
+	case "requires_capture":
+		return PaymentStatusStatusRequiresCapture, nil
 	case "confirming":
 		return PaymentStatusStatusConfirming, nil
 	case "processing":
@@ -10318,126 +2406,43 @@ func (p PaymentStatusStatus) Ptr() *PaymentStatusStatus {
 	return &p
 }
 
-// The different statuses a payment transaction can be in.
-type PaymentTransactionStatuses string
-
-const (
-	PaymentTransactionStatusesSucceeded PaymentTransactionStatuses = "succeeded"
-	PaymentTransactionStatusesDeclined  PaymentTransactionStatuses = "declined"
-	PaymentTransactionStatusesError     PaymentTransactionStatuses = "error"
-	PaymentTransactionStatusesPending   PaymentTransactionStatuses = "pending"
-	PaymentTransactionStatusesCreated   PaymentTransactionStatuses = "created"
-	PaymentTransactionStatusesExpired   PaymentTransactionStatuses = "expired"
-	PaymentTransactionStatusesWon       PaymentTransactionStatuses = "won"
-	PaymentTransactionStatusesRejected  PaymentTransactionStatuses = "rejected"
-	PaymentTransactionStatusesLost      PaymentTransactionStatuses = "lost"
-	PaymentTransactionStatusesPrevented PaymentTransactionStatuses = "prevented"
-	PaymentTransactionStatusesCanceled  PaymentTransactionStatuses = "canceled"
-)
-
-func NewPaymentTransactionStatusesFromString(s string) (PaymentTransactionStatuses, error) {
-	switch s {
-	case "succeeded":
-		return PaymentTransactionStatusesSucceeded, nil
-	case "declined":
-		return PaymentTransactionStatusesDeclined, nil
-	case "error":
-		return PaymentTransactionStatusesError, nil
-	case "pending":
-		return PaymentTransactionStatusesPending, nil
-	case "created":
-		return PaymentTransactionStatusesCreated, nil
-	case "expired":
-		return PaymentTransactionStatusesExpired, nil
-	case "won":
-		return PaymentTransactionStatusesWon, nil
-	case "rejected":
-		return PaymentTransactionStatusesRejected, nil
-	case "lost":
-		return PaymentTransactionStatusesLost, nil
-	case "prevented":
-		return PaymentTransactionStatusesPrevented, nil
-	case "canceled":
-		return PaymentTransactionStatusesCanceled, nil
-	}
-	var t PaymentTransactionStatuses
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PaymentTransactionStatuses) Ptr() *PaymentTransactionStatuses {
-	return &p
-}
-
-// The different types of payment transactions.
-type PaymentTransactionTypes string
-
-const (
-	PaymentTransactionTypesPurchase       PaymentTransactionTypes = "purchase"
-	PaymentTransactionTypesAuthorize      PaymentTransactionTypes = "authorize"
-	PaymentTransactionTypesCapture        PaymentTransactionTypes = "capture"
-	PaymentTransactionTypesRefund         PaymentTransactionTypes = "refund"
-	PaymentTransactionTypesCanceled       PaymentTransactionTypes = "canceled"
-	PaymentTransactionTypesVerify         PaymentTransactionTypes = "verify"
-	PaymentTransactionTypesChargeback     PaymentTransactionTypes = "chargeback"
-	PaymentTransactionTypesPreChargeback  PaymentTransactionTypes = "pre_chargeback"
-	PaymentTransactionTypesThreeDSecure   PaymentTransactionTypes = "three_d_secure"
-	PaymentTransactionTypesFraudScreening PaymentTransactionTypes = "fraud_screening"
-	PaymentTransactionTypesAuthorization  PaymentTransactionTypes = "authorization"
-	PaymentTransactionTypesInstallment    PaymentTransactionTypes = "installment"
-)
-
-func NewPaymentTransactionTypesFromString(s string) (PaymentTransactionTypes, error) {
-	switch s {
-	case "purchase":
-		return PaymentTransactionTypesPurchase, nil
-	case "authorize":
-		return PaymentTransactionTypesAuthorize, nil
-	case "capture":
-		return PaymentTransactionTypesCapture, nil
-	case "refund":
-		return PaymentTransactionTypesRefund, nil
-	case "canceled":
-		return PaymentTransactionTypesCanceled, nil
-	case "verify":
-		return PaymentTransactionTypesVerify, nil
-	case "chargeback":
-		return PaymentTransactionTypesChargeback, nil
-	case "pre_chargeback":
-		return PaymentTransactionTypesPreChargeback, nil
-	case "three_d_secure":
-		return PaymentTransactionTypesThreeDSecure, nil
-	case "fraud_screening":
-		return PaymentTransactionTypesFraudScreening, nil
-	case "authorization":
-		return PaymentTransactionTypesAuthorization, nil
-	case "installment":
-		return PaymentTransactionTypesInstallment, nil
-	}
-	var t PaymentTransactionTypes
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PaymentTransactionTypes) Ptr() *PaymentTransactionTypes {
-	return &p
-}
-
-// The user that made this payment.
 var (
-	paymentUserFieldEmail    = big.NewInt(1 << 0)
-	paymentUserFieldID       = big.NewInt(1 << 1)
-	paymentUserFieldName     = big.NewInt(1 << 2)
-	paymentUserFieldUsername = big.NewInt(1 << 3)
+	createPaymentsRequestBillingAddressFieldCity       = big.NewInt(1 << 0)
+	createPaymentsRequestBillingAddressFieldCountry    = big.NewInt(1 << 1)
+	createPaymentsRequestBillingAddressFieldLine1      = big.NewInt(1 << 2)
+	createPaymentsRequestBillingAddressFieldLine2      = big.NewInt(1 << 3)
+	createPaymentsRequestBillingAddressFieldName       = big.NewInt(1 << 4)
+	createPaymentsRequestBillingAddressFieldPostalCode = big.NewInt(1 << 5)
+	createPaymentsRequestBillingAddressFieldState      = big.NewInt(1 << 6)
 )
 
-type PaymentUser struct {
-	// The user's email address. Requires the member:email:read permission to access. Null if not authorized.
-	Email *string `json:"email,omitempty" url:"email,omitempty"`
-	// The unique identifier for the user.
-	ID string `json:"id" url:"id"`
-	// The user's display name shown on their public profile.
+// createPaymentsRequestBillingAddressNullableFields maps the wire names of CreatePaymentsRequestBillingAddress's nullable fields (required or optional) to their field bits.
+var createPaymentsRequestBillingAddressNullableFields = map[string]*big.Int{
+	"city":        createPaymentsRequestBillingAddressFieldCity,
+	"country":     createPaymentsRequestBillingAddressFieldCountry,
+	"line1":       createPaymentsRequestBillingAddressFieldLine1,
+	"line2":       createPaymentsRequestBillingAddressFieldLine2,
+	"name":        createPaymentsRequestBillingAddressFieldName,
+	"postal_code": createPaymentsRequestBillingAddressFieldPostalCode,
+	"state":       createPaymentsRequestBillingAddressFieldState,
+}
+
+// The buyer's billing address, returned on the payment as `billing_address` and used to calculate tax when Whop calculates it for the account. Only with a `paypal` `payment_method`. Only the keys you supply are kept.
+type CreatePaymentsRequestBillingAddress struct {
+	// City name.
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// ISO 3166-1 alpha-2 country code, such as `US`.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// First line of the street address.
+	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
+	// Second line of the street address.
+	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
+	// The buyer's full name.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The user's unique username shown on their public profile.
-	Username string `json:"username" url:"username"`
+	// Postal or ZIP code.
+	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
+	// State, province, or region code, such as `CA`.
+	State *string `json:"state,omitempty" url:"state,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -10446,988 +2451,286 @@ type PaymentUser struct {
 	rawJSON         json.RawMessage
 }
 
-func (p *PaymentUser) GetEmail() *string {
-	if p == nil {
+func (c *CreatePaymentsRequestBillingAddress) GetCity() *string {
+	if c == nil {
 		return nil
 	}
-	return p.Email
+	return c.City
 }
 
-func (p *PaymentUser) GetID() string {
-	if p == nil {
-		return ""
-	}
-	return p.ID
-}
-
-func (p *PaymentUser) GetName() *string {
-	if p == nil {
+func (c *CreatePaymentsRequestBillingAddress) GetCountry() *string {
+	if c == nil {
 		return nil
 	}
-	return p.Name
+	return c.Country
 }
 
-func (p *PaymentUser) GetUsername() string {
-	if p == nil {
-		return ""
-	}
-	return p.Username
-}
-
-func (p *PaymentUser) GetExtraProperties() map[string]interface{} {
-	if p == nil {
+func (c *CreatePaymentsRequestBillingAddress) GetLine1() *string {
+	if c == nil {
 		return nil
 	}
-	return p.extraProperties
+	return c.Line1
 }
 
-func (p *PaymentUser) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+func (c *CreatePaymentsRequestBillingAddress) GetLine2() *string {
+	if c == nil {
+		return nil
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	return c.Line2
 }
 
-// SetEmail sets the Email field and marks it as non-optional;
+func (c *CreatePaymentsRequestBillingAddress) GetName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Name
+}
+
+func (c *CreatePaymentsRequestBillingAddress) GetPostalCode() *string {
+	if c == nil {
+		return nil
+	}
+	return c.PostalCode
+}
+
+func (c *CreatePaymentsRequestBillingAddress) GetState() *string {
+	if c == nil {
+		return nil
+	}
+	return c.State
+}
+
+func (c *CreatePaymentsRequestBillingAddress) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreatePaymentsRequestBillingAddress) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetCity sets the City field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentUser) SetEmail(email *string) {
-	p.Email = email
-	p.require(paymentUserFieldEmail)
+func (c *CreatePaymentsRequestBillingAddress) SetCity(city *string) {
+	c.City = city
+	c.require(createPaymentsRequestBillingAddressFieldCity)
 }
 
-// SetID sets the ID field and marks it as non-optional;
+// SetCountry sets the Country field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentUser) SetID(id string) {
-	p.ID = id
-	p.require(paymentUserFieldID)
+func (c *CreatePaymentsRequestBillingAddress) SetCountry(country *string) {
+	c.Country = country
+	c.require(createPaymentsRequestBillingAddressFieldCountry)
+}
+
+// SetLine1 sets the Line1 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestBillingAddress) SetLine1(line1 *string) {
+	c.Line1 = line1
+	c.require(createPaymentsRequestBillingAddressFieldLine1)
+}
+
+// SetLine2 sets the Line2 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestBillingAddress) SetLine2(line2 *string) {
+	c.Line2 = line2
+	c.require(createPaymentsRequestBillingAddressFieldLine2)
 }
 
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentUser) SetName(name *string) {
-	p.Name = name
-	p.require(paymentUserFieldName)
+func (c *CreatePaymentsRequestBillingAddress) SetName(name *string) {
+	c.Name = name
+	c.require(createPaymentsRequestBillingAddressFieldName)
 }
 
-// SetUsername sets the Username field and marks it as non-optional;
+// SetPostalCode sets the PostalCode field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentUser) SetUsername(username string) {
-	p.Username = username
-	p.require(paymentUserFieldUsername)
+func (c *CreatePaymentsRequestBillingAddress) SetPostalCode(postalCode *string) {
+	c.PostalCode = postalCode
+	c.require(createPaymentsRequestBillingAddressFieldPostalCode)
 }
 
-func (p *PaymentUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentUser
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestBillingAddress) SetState(state *string) {
+	c.State = state
+	c.require(createPaymentsRequestBillingAddressFieldState)
+}
+
+func (c *CreatePaymentsRequestBillingAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePaymentsRequestBillingAddress
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*p = PaymentUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	*c = CreatePaymentsRequestBillingAddress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
 	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (p *PaymentUser) MarshalJSON() ([]byte, error) {
-	type embed PaymentUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*p),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (p *PaymentUser) String() string {
-	if p == nil {
-		return "<nil>"
-	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(p); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", p)
-}
-
-// The issuer's address and card security code check results for this payment. Null when the processor returned none.
-var (
-	paymentVerificationChecksFieldAddressLine1     = big.NewInt(1 << 0)
-	paymentVerificationChecksFieldCardHolderName   = big.NewInt(1 << 1)
-	paymentVerificationChecksFieldCardSecurityCode = big.NewInt(1 << 2)
-	paymentVerificationChecksFieldZipCode          = big.NewInt(1 << 3)
-)
-
-type PaymentVerificationChecks struct {
-	// Whether the billing street address the customer entered matched the address the issuer has on file.
-	AddressLine1 *string `json:"address_line1,omitempty" url:"address_line1,omitempty"`
-	// Whether the cardholder name the customer entered matched the name the issuer has on file.
-	CardHolderName *string `json:"card_holder_name,omitempty" url:"card_holder_name,omitempty"`
-	// Whether the CVV / CVC the customer entered matched the card.
-	CardSecurityCode *string `json:"card_security_code,omitempty" url:"card_security_code,omitempty"`
-	// Whether the billing postal code the customer entered matched the postal code the issuer has on file.
-	ZipCode *string `json:"zip_code,omitempty" url:"zip_code,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (p *PaymentVerificationChecks) GetAddressLine1() *string {
-	if p == nil {
-		return nil
-	}
-	return p.AddressLine1
-}
-
-func (p *PaymentVerificationChecks) GetCardHolderName() *string {
-	if p == nil {
-		return nil
-	}
-	return p.CardHolderName
-}
-
-func (p *PaymentVerificationChecks) GetCardSecurityCode() *string {
-	if p == nil {
-		return nil
-	}
-	return p.CardSecurityCode
-}
-
-func (p *PaymentVerificationChecks) GetZipCode() *string {
-	if p == nil {
-		return nil
-	}
-	return p.ZipCode
-}
-
-func (p *PaymentVerificationChecks) GetExtraProperties() map[string]interface{} {
-	if p == nil {
-		return nil
-	}
-	return p.extraProperties
-}
-
-func (p *PaymentVerificationChecks) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
-	}
-	p.explicitFields.Or(p.explicitFields, field)
-}
-
-// SetAddressLine1 sets the AddressLine1 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentVerificationChecks) SetAddressLine1(addressLine1 *string) {
-	p.AddressLine1 = addressLine1
-	p.require(paymentVerificationChecksFieldAddressLine1)
-}
-
-// SetCardHolderName sets the CardHolderName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentVerificationChecks) SetCardHolderName(cardHolderName *string) {
-	p.CardHolderName = cardHolderName
-	p.require(paymentVerificationChecksFieldCardHolderName)
-}
-
-// SetCardSecurityCode sets the CardSecurityCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentVerificationChecks) SetCardSecurityCode(cardSecurityCode *string) {
-	p.CardSecurityCode = cardSecurityCode
-	p.require(paymentVerificationChecksFieldCardSecurityCode)
-}
-
-// SetZipCode sets the ZipCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PaymentVerificationChecks) SetZipCode(zipCode *string) {
-	p.ZipCode = zipCode
-	p.require(paymentVerificationChecksFieldZipCode)
-}
-
-func (p *PaymentVerificationChecks) UnmarshalJSON(data []byte) error {
-	type unmarshaler PaymentVerificationChecks
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*p = PaymentVerificationChecks(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPaymentsRequestBillingAddressNullableFields)
 	if err != nil {
 		return err
 	}
-	p.extraProperties = extraProperties
-	p.rawJSON = json.RawMessage(data)
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (p *PaymentVerificationChecks) MarshalJSON() ([]byte, error) {
-	type embed PaymentVerificationChecks
+func (c *CreatePaymentsRequestBillingAddress) MarshalJSON() ([]byte, error) {
+	type embed CreatePaymentsRequestBillingAddress
 	var marshaler = struct {
 		embed
 	}{
-		embed: embed(*p),
+		embed: embed(*c),
 	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
 	return json.Marshal(explicitMarshaler)
 }
 
-func (p *PaymentVerificationChecks) String() string {
-	if p == nil {
+func (c *CreatePaymentsRequestBillingAddress) String() string {
+	if c == nil {
 		return "<nil>"
 	}
-	if len(p.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := internal.StringifyJSON(p); err == nil {
+	if value, err := internal.StringifyJSON(c); err == nil {
 		return value
 	}
-	return fmt.Sprintf("%#v", p)
+	return fmt.Sprintf("%#v", c)
 }
 
-// The type of promo code used to discount a plan
-type PromoTypes string
-
-const (
-	PromoTypesPercentage PromoTypes = "percentage"
-	PromoTypesFlatAmount PromoTypes = "flat_amount"
-)
-
-func NewPromoTypesFromString(s string) (PromoTypes, error) {
-	switch s {
-	case "percentage":
-		return PromoTypesPercentage, nil
-	case "flat_amount":
-		return PromoTypesFlatAmount, nil
-	}
-	var t PromoTypes
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PromoTypes) Ptr() *PromoTypes {
-	return &p
-}
-
-// The order to sort the results by.
-type ReceiptV2Order string
-
-const (
-	ReceiptV2OrderFinalAmount ReceiptV2Order = "final_amount"
-	ReceiptV2OrderCreatedAt   ReceiptV2Order = "created_at"
-	ReceiptV2OrderPaidAt      ReceiptV2Order = "paid_at"
-)
-
-func NewReceiptV2OrderFromString(s string) (ReceiptV2Order, error) {
-	switch s {
-	case "final_amount":
-		return ReceiptV2OrderFinalAmount, nil
-	case "created_at":
-		return ReceiptV2OrderCreatedAt, nil
-	case "paid_at":
-		return ReceiptV2OrderPaidAt, nil
-	}
-	var t ReceiptV2Order
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (r ReceiptV2Order) Ptr() *ReceiptV2Order {
-	return &r
-}
-
-// The types of responses a customer can make to a resolution.
-type ResolutionCenterCaseCustomerResponses string
-
-const (
-	ResolutionCenterCaseCustomerResponsesRespond  ResolutionCenterCaseCustomerResponses = "respond"
-	ResolutionCenterCaseCustomerResponsesAppeal   ResolutionCenterCaseCustomerResponses = "appeal"
-	ResolutionCenterCaseCustomerResponsesWithdraw ResolutionCenterCaseCustomerResponses = "withdraw"
-)
-
-func NewResolutionCenterCaseCustomerResponsesFromString(s string) (ResolutionCenterCaseCustomerResponses, error) {
-	switch s {
-	case "respond":
-		return ResolutionCenterCaseCustomerResponsesRespond, nil
-	case "appeal":
-		return ResolutionCenterCaseCustomerResponsesAppeal, nil
-	case "withdraw":
-		return ResolutionCenterCaseCustomerResponsesWithdraw, nil
-	}
-	var t ResolutionCenterCaseCustomerResponses
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (r ResolutionCenterCaseCustomerResponses) Ptr() *ResolutionCenterCaseCustomerResponses {
-	return &r
-}
-
-// The different types of issues a resolution can be
-type ResolutionCenterCaseIssueTypes string
-
-const (
-	ResolutionCenterCaseIssueTypesForgotToCancel              ResolutionCenterCaseIssueTypes = "forgot_to_cancel"
-	ResolutionCenterCaseIssueTypesItemNotReceived             ResolutionCenterCaseIssueTypes = "item_not_received"
-	ResolutionCenterCaseIssueTypesSignificantlyNotAsDescribed ResolutionCenterCaseIssueTypes = "significantly_not_as_described"
-	ResolutionCenterCaseIssueTypesUnauthorizedTransaction     ResolutionCenterCaseIssueTypes = "unauthorized_transaction"
-	ResolutionCenterCaseIssueTypesProductUnacceptable         ResolutionCenterCaseIssueTypes = "product_unacceptable"
-)
-
-func NewResolutionCenterCaseIssueTypesFromString(s string) (ResolutionCenterCaseIssueTypes, error) {
-	switch s {
-	case "forgot_to_cancel":
-		return ResolutionCenterCaseIssueTypesForgotToCancel, nil
-	case "item_not_received":
-		return ResolutionCenterCaseIssueTypesItemNotReceived, nil
-	case "significantly_not_as_described":
-		return ResolutionCenterCaseIssueTypesSignificantlyNotAsDescribed, nil
-	case "unauthorized_transaction":
-		return ResolutionCenterCaseIssueTypesUnauthorizedTransaction, nil
-	case "product_unacceptable":
-		return ResolutionCenterCaseIssueTypesProductUnacceptable, nil
-	}
-	var t ResolutionCenterCaseIssueTypes
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (r ResolutionCenterCaseIssueTypes) Ptr() *ResolutionCenterCaseIssueTypes {
-	return &r
-}
-
-// The types of responses a merchant can make to a resolution.
-type ResolutionCenterCaseMerchantResponses string
-
-const (
-	ResolutionCenterCaseMerchantResponsesAccept          ResolutionCenterCaseMerchantResponses = "accept"
-	ResolutionCenterCaseMerchantResponsesDeny            ResolutionCenterCaseMerchantResponses = "deny"
-	ResolutionCenterCaseMerchantResponsesRequestMoreInfo ResolutionCenterCaseMerchantResponses = "request_more_info"
-	ResolutionCenterCaseMerchantResponsesAppeal          ResolutionCenterCaseMerchantResponses = "appeal"
-	ResolutionCenterCaseMerchantResponsesRespond         ResolutionCenterCaseMerchantResponses = "respond"
-)
-
-func NewResolutionCenterCaseMerchantResponsesFromString(s string) (ResolutionCenterCaseMerchantResponses, error) {
-	switch s {
-	case "accept":
-		return ResolutionCenterCaseMerchantResponsesAccept, nil
-	case "deny":
-		return ResolutionCenterCaseMerchantResponsesDeny, nil
-	case "request_more_info":
-		return ResolutionCenterCaseMerchantResponsesRequestMoreInfo, nil
-	case "appeal":
-		return ResolutionCenterCaseMerchantResponsesAppeal, nil
-	case "respond":
-		return ResolutionCenterCaseMerchantResponsesRespond, nil
-	}
-	var t ResolutionCenterCaseMerchantResponses
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (r ResolutionCenterCaseMerchantResponses) Ptr() *ResolutionCenterCaseMerchantResponses {
-	return &r
-}
-
-// The types of responses the platform can make to a resolution.
-type ResolutionCenterCasePlatformResponses string
-
-const (
-	ResolutionCenterCasePlatformResponsesRequestBuyerInfo    ResolutionCenterCasePlatformResponses = "request_buyer_info"
-	ResolutionCenterCasePlatformResponsesRequestMerchantInfo ResolutionCenterCasePlatformResponses = "request_merchant_info"
-	ResolutionCenterCasePlatformResponsesMerchantWins        ResolutionCenterCasePlatformResponses = "merchant_wins"
-	ResolutionCenterCasePlatformResponsesMerchantRefund      ResolutionCenterCasePlatformResponses = "merchant_refund"
-)
-
-func NewResolutionCenterCasePlatformResponsesFromString(s string) (ResolutionCenterCasePlatformResponses, error) {
-	switch s {
-	case "request_buyer_info":
-		return ResolutionCenterCasePlatformResponsesRequestBuyerInfo, nil
-	case "request_merchant_info":
-		return ResolutionCenterCasePlatformResponsesRequestMerchantInfo, nil
-	case "merchant_wins":
-		return ResolutionCenterCasePlatformResponsesMerchantWins, nil
-	case "merchant_refund":
-		return ResolutionCenterCasePlatformResponsesMerchantRefund, nil
-	}
-	var t ResolutionCenterCasePlatformResponses
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (r ResolutionCenterCasePlatformResponses) Ptr() *ResolutionCenterCasePlatformResponses {
-	return &r
-}
-
-// The statuses a resolution object can have
-type ResolutionCenterCaseStatuses string
-
-const (
-	ResolutionCenterCaseStatusesMerchantResponseNeeded ResolutionCenterCaseStatuses = "merchant_response_needed"
-	ResolutionCenterCaseStatusesCustomerResponseNeeded ResolutionCenterCaseStatuses = "customer_response_needed"
-	ResolutionCenterCaseStatusesMerchantInfoNeeded     ResolutionCenterCaseStatuses = "merchant_info_needed"
-	ResolutionCenterCaseStatusesCustomerInfoNeeded     ResolutionCenterCaseStatuses = "customer_info_needed"
-	ResolutionCenterCaseStatusesUnderPlatformReview    ResolutionCenterCaseStatuses = "under_platform_review"
-	ResolutionCenterCaseStatusesCustomerWon            ResolutionCenterCaseStatuses = "customer_won"
-	ResolutionCenterCaseStatusesMerchantWon            ResolutionCenterCaseStatuses = "merchant_won"
-	ResolutionCenterCaseStatusesCustomerWithdrew       ResolutionCenterCaseStatuses = "customer_withdrew"
-)
-
-func NewResolutionCenterCaseStatusesFromString(s string) (ResolutionCenterCaseStatuses, error) {
-	switch s {
-	case "merchant_response_needed":
-		return ResolutionCenterCaseStatusesMerchantResponseNeeded, nil
-	case "customer_response_needed":
-		return ResolutionCenterCaseStatusesCustomerResponseNeeded, nil
-	case "merchant_info_needed":
-		return ResolutionCenterCaseStatusesMerchantInfoNeeded, nil
-	case "customer_info_needed":
-		return ResolutionCenterCaseStatusesCustomerInfoNeeded, nil
-	case "under_platform_review":
-		return ResolutionCenterCaseStatusesUnderPlatformReview, nil
-	case "customer_won":
-		return ResolutionCenterCaseStatusesCustomerWon, nil
-	case "merchant_won":
-		return ResolutionCenterCaseStatusesMerchantWon, nil
-	case "customer_withdrew":
-		return ResolutionCenterCaseStatusesCustomerWithdrew, nil
-	}
-	var t ResolutionCenterCaseStatuses
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (r ResolutionCenterCaseStatuses) Ptr() *ResolutionCenterCaseStatuses {
-	return &r
-}
-
-// The status of a shipment
-type ShipmentStatuses string
-
-const (
-	ShipmentStatusesUnknown            ShipmentStatuses = "unknown"
-	ShipmentStatusesPreTransit         ShipmentStatuses = "pre_transit"
-	ShipmentStatusesInTransit          ShipmentStatuses = "in_transit"
-	ShipmentStatusesOutForDelivery     ShipmentStatuses = "out_for_delivery"
-	ShipmentStatusesDelivered          ShipmentStatuses = "delivered"
-	ShipmentStatusesAvailableForPickup ShipmentStatuses = "available_for_pickup"
-	ShipmentStatusesReturnToSender     ShipmentStatuses = "return_to_sender"
-	ShipmentStatusesFailure            ShipmentStatuses = "failure"
-	ShipmentStatusesCancelled          ShipmentStatuses = "cancelled"
-	ShipmentStatusesError              ShipmentStatuses = "error"
-)
-
-func NewShipmentStatusesFromString(s string) (ShipmentStatuses, error) {
-	switch s {
-	case "unknown":
-		return ShipmentStatusesUnknown, nil
-	case "pre_transit":
-		return ShipmentStatusesPreTransit, nil
-	case "in_transit":
-		return ShipmentStatusesInTransit, nil
-	case "out_for_delivery":
-		return ShipmentStatusesOutForDelivery, nil
-	case "delivered":
-		return ShipmentStatusesDelivered, nil
-	case "available_for_pickup":
-		return ShipmentStatusesAvailableForPickup, nil
-	case "return_to_sender":
-		return ShipmentStatusesReturnToSender, nil
-	case "failure":
-		return ShipmentStatusesFailure, nil
-	case "cancelled":
-		return ShipmentStatusesCancelled, nil
-	case "error":
-		return ShipmentStatusesError, nil
-	}
-	var t ShipmentStatuses
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (s ShipmentStatuses) Ptr() *ShipmentStatuses {
-	return &s
-}
-
-// The origin of the specific fee
-type SpecificFeeOrigins string
-
-const (
-	SpecificFeeOriginsStripeDomesticProcessingFee      SpecificFeeOrigins = "stripe_domestic_processing_fee"
-	SpecificFeeOriginsStripeInternationalProcessingFee SpecificFeeOrigins = "stripe_international_processing_fee"
-	SpecificFeeOriginsStripeFixedProcessingFee         SpecificFeeOrigins = "stripe_fixed_processing_fee"
-	SpecificFeeOriginsStripeBillingFee                 SpecificFeeOrigins = "stripe_billing_fee"
-	SpecificFeeOriginsStripeRadarFee                   SpecificFeeOrigins = "stripe_radar_fee"
-	SpecificFeeOriginsSalesTaxRemittance               SpecificFeeOrigins = "sales_tax_remittance"
-	SpecificFeeOriginsSalesTaxRemittanceReversal       SpecificFeeOrigins = "sales_tax_remittance_reversal"
-	SpecificFeeOriginsStripeSalesTaxFee                SpecificFeeOrigins = "stripe_sales_tax_fee"
-	SpecificFeeOriginsWhopProcessingFee                SpecificFeeOrigins = "whop_processing_fee"
-	SpecificFeeOriginsMarketplaceAffiliateFee          SpecificFeeOrigins = "marketplace_affiliate_fee"
-	SpecificFeeOriginsAffiliateFee                     SpecificFeeOrigins = "affiliate_fee"
-	SpecificFeeOriginsCryptoFee                        SpecificFeeOrigins = "crypto_fee"
-	SpecificFeeOriginsStripeStandardProcessingFee      SpecificFeeOrigins = "stripe_standard_processing_fee"
-	SpecificFeeOriginsPaypalFee                        SpecificFeeOrigins = "paypal_fee"
-	SpecificFeeOriginsStripePayoutFee                  SpecificFeeOrigins = "stripe_payout_fee"
-	SpecificFeeOriginsDisputeFee                       SpecificFeeOrigins = "dispute_fee"
-	SpecificFeeOriginsDisputeAlertFee                  SpecificFeeOrigins = "dispute_alert_fee"
-	SpecificFeeOriginsAppleProcessingFee               SpecificFeeOrigins = "apple_processing_fee"
-	SpecificFeeOriginsBuyerFee                         SpecificFeeOrigins = "buyer_fee"
-	SpecificFeeOriginsSezzleProcessingFee              SpecificFeeOrigins = "sezzle_processing_fee"
-	SpecificFeeOriginsSplititProcessingFee             SpecificFeeOrigins = "splitit_processing_fee"
-	SpecificFeeOriginsPlatformBalanceProcessingFee     SpecificFeeOrigins = "platform_balance_processing_fee"
-	SpecificFeeOriginsPaymentProcessingPercentageFee   SpecificFeeOrigins = "payment_processing_percentage_fee"
-	SpecificFeeOriginsPaymentProcessingFixedFee        SpecificFeeOrigins = "payment_processing_fixed_fee"
-	SpecificFeeOriginsCrossBorderPercentageFee         SpecificFeeOrigins = "cross_border_percentage_fee"
-	SpecificFeeOriginsFxPercentageFee                  SpecificFeeOrigins = "fx_percentage_fee"
-	SpecificFeeOriginsOrchestrationPercentageFee       SpecificFeeOrigins = "orchestration_percentage_fee"
-	SpecificFeeOriginsThreeDsFixedFee                  SpecificFeeOrigins = "three_ds_fixed_fee"
-	SpecificFeeOriginsBillingPercentageFee             SpecificFeeOrigins = "billing_percentage_fee"
-	SpecificFeeOriginsRevsharePercentageFee            SpecificFeeOrigins = "revshare_percentage_fee"
-	SpecificFeeOriginsApplicationFee                   SpecificFeeOrigins = "application_fee"
-	SpecificFeeOriginsHighRiskMerchantFee              SpecificFeeOrigins = "high_risk_merchant_fee"
-)
-
-func NewSpecificFeeOriginsFromString(s string) (SpecificFeeOrigins, error) {
-	switch s {
-	case "stripe_domestic_processing_fee":
-		return SpecificFeeOriginsStripeDomesticProcessingFee, nil
-	case "stripe_international_processing_fee":
-		return SpecificFeeOriginsStripeInternationalProcessingFee, nil
-	case "stripe_fixed_processing_fee":
-		return SpecificFeeOriginsStripeFixedProcessingFee, nil
-	case "stripe_billing_fee":
-		return SpecificFeeOriginsStripeBillingFee, nil
-	case "stripe_radar_fee":
-		return SpecificFeeOriginsStripeRadarFee, nil
-	case "sales_tax_remittance":
-		return SpecificFeeOriginsSalesTaxRemittance, nil
-	case "sales_tax_remittance_reversal":
-		return SpecificFeeOriginsSalesTaxRemittanceReversal, nil
-	case "stripe_sales_tax_fee":
-		return SpecificFeeOriginsStripeSalesTaxFee, nil
-	case "whop_processing_fee":
-		return SpecificFeeOriginsWhopProcessingFee, nil
-	case "marketplace_affiliate_fee":
-		return SpecificFeeOriginsMarketplaceAffiliateFee, nil
-	case "affiliate_fee":
-		return SpecificFeeOriginsAffiliateFee, nil
-	case "crypto_fee":
-		return SpecificFeeOriginsCryptoFee, nil
-	case "stripe_standard_processing_fee":
-		return SpecificFeeOriginsStripeStandardProcessingFee, nil
-	case "paypal_fee":
-		return SpecificFeeOriginsPaypalFee, nil
-	case "stripe_payout_fee":
-		return SpecificFeeOriginsStripePayoutFee, nil
-	case "dispute_fee":
-		return SpecificFeeOriginsDisputeFee, nil
-	case "dispute_alert_fee":
-		return SpecificFeeOriginsDisputeAlertFee, nil
-	case "apple_processing_fee":
-		return SpecificFeeOriginsAppleProcessingFee, nil
-	case "buyer_fee":
-		return SpecificFeeOriginsBuyerFee, nil
-	case "sezzle_processing_fee":
-		return SpecificFeeOriginsSezzleProcessingFee, nil
-	case "splitit_processing_fee":
-		return SpecificFeeOriginsSplititProcessingFee, nil
-	case "platform_balance_processing_fee":
-		return SpecificFeeOriginsPlatformBalanceProcessingFee, nil
-	case "payment_processing_percentage_fee":
-		return SpecificFeeOriginsPaymentProcessingPercentageFee, nil
-	case "payment_processing_fixed_fee":
-		return SpecificFeeOriginsPaymentProcessingFixedFee, nil
-	case "cross_border_percentage_fee":
-		return SpecificFeeOriginsCrossBorderPercentageFee, nil
-	case "fx_percentage_fee":
-		return SpecificFeeOriginsFxPercentageFee, nil
-	case "orchestration_percentage_fee":
-		return SpecificFeeOriginsOrchestrationPercentageFee, nil
-	case "three_ds_fixed_fee":
-		return SpecificFeeOriginsThreeDsFixedFee, nil
-	case "billing_percentage_fee":
-		return SpecificFeeOriginsBillingPercentageFee, nil
-	case "revshare_percentage_fee":
-		return SpecificFeeOriginsRevsharePercentageFee, nil
-	case "application_fee":
-		return SpecificFeeOriginsApplicationFee, nil
-	case "high_risk_merchant_fee":
-		return SpecificFeeOriginsHighRiskMerchantFee, nil
-	}
-	var t SpecificFeeOrigins
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (s SpecificFeeOrigins) Ptr() *SpecificFeeOrigins {
-	return &s
-}
-
-// Parameters for CreatePayment
-type CreatePaymentsRequest struct {
-	// Autogenerated input type of CreatePayment
-	CreatePaymentsRequestZero *CreatePaymentsRequestZero
-	// Autogenerated input type of CreatePayment
-	CreatePaymentsRequestOne *CreatePaymentsRequestOne
-	// Autogenerated input type of CreatePayment
-	CreatePaymentsRequestTwo *CreatePaymentsRequestTwo
-	// Autogenerated input type of CreatePayment
-	CreatePaymentsRequestThree *CreatePaymentsRequestThree
+type CreatePaymentsRequestLineItemsItem struct {
+	Unknown any
 
 	typ string
 }
 
-func (c *CreatePaymentsRequest) GetCreatePaymentsRequestZero() *CreatePaymentsRequestZero {
+func (c *CreatePaymentsRequestLineItemsItem) GetUnknown() any {
 	if c == nil {
 		return nil
 	}
-	return c.CreatePaymentsRequestZero
+	return c.Unknown
 }
 
-func (c *CreatePaymentsRequest) GetCreatePaymentsRequestOne() *CreatePaymentsRequestOne {
-	if c == nil {
-		return nil
-	}
-	return c.CreatePaymentsRequestOne
-}
-
-func (c *CreatePaymentsRequest) GetCreatePaymentsRequestTwo() *CreatePaymentsRequestTwo {
-	if c == nil {
-		return nil
-	}
-	return c.CreatePaymentsRequestTwo
-}
-
-func (c *CreatePaymentsRequest) GetCreatePaymentsRequestThree() *CreatePaymentsRequestThree {
-	if c == nil {
-		return nil
-	}
-	return c.CreatePaymentsRequestThree
-}
-
-func (c *CreatePaymentsRequest) UnmarshalJSON(data []byte) error {
-	valueCreatePaymentsRequestZero := new(CreatePaymentsRequestZero)
-	if err := json.Unmarshal(data, &valueCreatePaymentsRequestZero); err == nil {
-		c.typ = "CreatePaymentsRequestZero"
-		c.CreatePaymentsRequestZero = valueCreatePaymentsRequestZero
-		return nil
-	}
-	valueCreatePaymentsRequestOne := new(CreatePaymentsRequestOne)
-	if err := json.Unmarshal(data, &valueCreatePaymentsRequestOne); err == nil {
-		c.typ = "CreatePaymentsRequestOne"
-		c.CreatePaymentsRequestOne = valueCreatePaymentsRequestOne
-		return nil
-	}
-	valueCreatePaymentsRequestTwo := new(CreatePaymentsRequestTwo)
-	if err := json.Unmarshal(data, &valueCreatePaymentsRequestTwo); err == nil {
-		c.typ = "CreatePaymentsRequestTwo"
-		c.CreatePaymentsRequestTwo = valueCreatePaymentsRequestTwo
-		return nil
-	}
-	valueCreatePaymentsRequestThree := new(CreatePaymentsRequestThree)
-	if err := json.Unmarshal(data, &valueCreatePaymentsRequestThree); err == nil {
-		c.typ = "CreatePaymentsRequestThree"
-		c.CreatePaymentsRequestThree = valueCreatePaymentsRequestThree
+func (c *CreatePaymentsRequestLineItemsItem) UnmarshalJSON(data []byte) error {
+	var valueUnknown any
+	if err := json.Unmarshal(data, &valueUnknown); err == nil {
+		c.typ = "Unknown"
+		c.Unknown = valueUnknown
 		return nil
 	}
 	return fmt.Errorf("%s cannot be deserialized as a %T", data, c)
 }
 
-func (c CreatePaymentsRequest) MarshalJSON() ([]byte, error) {
-	if c.typ == "CreatePaymentsRequestZero" || c.CreatePaymentsRequestZero != nil {
-		return json.Marshal(c.CreatePaymentsRequestZero)
-	}
-	if c.typ == "CreatePaymentsRequestOne" || c.CreatePaymentsRequestOne != nil {
-		return json.Marshal(c.CreatePaymentsRequestOne)
-	}
-	if c.typ == "CreatePaymentsRequestTwo" || c.CreatePaymentsRequestTwo != nil {
-		return json.Marshal(c.CreatePaymentsRequestTwo)
-	}
-	if c.typ == "CreatePaymentsRequestThree" || c.CreatePaymentsRequestThree != nil {
-		return json.Marshal(c.CreatePaymentsRequestThree)
+func (c CreatePaymentsRequestLineItemsItem) MarshalJSON() ([]byte, error) {
+	if c.typ == "Unknown" || c.Unknown != nil {
+		return json.Marshal(c.Unknown)
 	}
 	return nil, fmt.Errorf("type %T does not include a non-empty union type", c)
 }
 
-type CreatePaymentsRequestVisitor interface {
-	VisitCreatePaymentsRequestZero(*CreatePaymentsRequestZero) error
-	VisitCreatePaymentsRequestOne(*CreatePaymentsRequestOne) error
-	VisitCreatePaymentsRequestTwo(*CreatePaymentsRequestTwo) error
-	VisitCreatePaymentsRequestThree(*CreatePaymentsRequestThree) error
+type CreatePaymentsRequestLineItemsItemVisitor interface {
+	VisitUnknown(any) error
 }
 
-func (c *CreatePaymentsRequest) Accept(visitor CreatePaymentsRequestVisitor) error {
-	if c.typ == "CreatePaymentsRequestZero" || c.CreatePaymentsRequestZero != nil {
-		return visitor.VisitCreatePaymentsRequestZero(c.CreatePaymentsRequestZero)
-	}
-	if c.typ == "CreatePaymentsRequestOne" || c.CreatePaymentsRequestOne != nil {
-		return visitor.VisitCreatePaymentsRequestOne(c.CreatePaymentsRequestOne)
-	}
-	if c.typ == "CreatePaymentsRequestTwo" || c.CreatePaymentsRequestTwo != nil {
-		return visitor.VisitCreatePaymentsRequestTwo(c.CreatePaymentsRequestTwo)
-	}
-	if c.typ == "CreatePaymentsRequestThree" || c.CreatePaymentsRequestThree != nil {
-		return visitor.VisitCreatePaymentsRequestThree(c.CreatePaymentsRequestThree)
+func (c *CreatePaymentsRequestLineItemsItem) Accept(visitor CreatePaymentsRequestLineItemsItemVisitor) error {
+	if c.typ == "Unknown" || c.Unknown != nil {
+		return visitor.VisitUnknown(c.Unknown)
 	}
 	return fmt.Errorf("type %T does not include a non-empty union type", c)
 }
 
-// Autogenerated input type of CreatePayment
 var (
-	createPaymentsRequestOneFieldCompanyID       = big.NewInt(1 << 0)
-	createPaymentsRequestOneFieldEmail           = big.NewInt(1 << 1)
-	createPaymentsRequestOneFieldMemberID        = big.NewInt(1 << 2)
-	createPaymentsRequestOneFieldMetadata        = big.NewInt(1 << 3)
-	createPaymentsRequestOneFieldPaymentMethodID = big.NewInt(1 << 4)
-	createPaymentsRequestOneFieldPlan            = big.NewInt(1 << 5)
-	createPaymentsRequestOneFieldPromoCodeID     = big.NewInt(1 << 6)
-	createPaymentsRequestOneFieldReturnURL       = big.NewInt(1 << 7)
+	createPaymentsRequestLineItemsItemVariantFieldAllowMultipleQuantity = big.NewInt(1 << 0)
+	createPaymentsRequestLineItemsItemVariantFieldApplicationFeeAmount  = big.NewInt(1 << 1)
+	createPaymentsRequestLineItemsItemVariantFieldBillingPeriod         = big.NewInt(1 << 2)
+	createPaymentsRequestLineItemsItemVariantFieldBillingType           = big.NewInt(1 << 3)
+	createPaymentsRequestLineItemsItemVariantFieldCurrency              = big.NewInt(1 << 4)
+	createPaymentsRequestLineItemsItemVariantFieldDescription           = big.NewInt(1 << 5)
+	createPaymentsRequestLineItemsItemVariantFieldExpirationDays        = big.NewInt(1 << 6)
+	createPaymentsRequestLineItemsItemVariantFieldForceCreateNewPlan    = big.NewInt(1 << 7)
+	createPaymentsRequestLineItemsItemVariantFieldInitialPrice          = big.NewInt(1 << 8)
+	createPaymentsRequestLineItemsItemVariantFieldInternalNotes         = big.NewInt(1 << 9)
+	createPaymentsRequestLineItemsItemVariantFieldOverrideTaxType       = big.NewInt(1 << 10)
+	createPaymentsRequestLineItemsItemVariantFieldProduct               = big.NewInt(1 << 11)
+	createPaymentsRequestLineItemsItemVariantFieldProductID             = big.NewInt(1 << 12)
+	createPaymentsRequestLineItemsItemVariantFieldRenewalPrice          = big.NewInt(1 << 13)
+	createPaymentsRequestLineItemsItemVariantFieldTitle                 = big.NewInt(1 << 14)
+	createPaymentsRequestLineItemsItemVariantFieldTrialPeriodDays       = big.NewInt(1 << 15)
+	createPaymentsRequestLineItemsItemVariantFieldVisibility            = big.NewInt(1 << 16)
 )
 
-type CreatePaymentsRequestOne struct {
-	// The ID of the company to create the payment for.
-	CompanyID string `json:"company_id" url:"company_id"`
-	// Overrides the buyer email carried on the confirmation token, resolving or creating the Whop user the payment belongs to. Ignored when the confirmation token was created by a signed-in buyer, and unless confirmation_token is provided.
-	Email *string `json:"email,omitempty" url:"email,omitempty"`
-	// The ID of the member to create the payment for. Required unless confirmation_token is provided.
-	MemberID string `json:"member_id" url:"member_id"`
-	// Custom metadata to attach to the payment.
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// The ID of the payment method to use for the payment. It must be connected to the Member being charged. Required unless confirmation_token is provided.
-	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
-	// Pass this object to create a new plan for this payment
-	Plan *CreatePaymentsRequestOnePlan `json:"plan" url:"plan"`
-	// The ID of an active promo code to apply to this payment. The promo code must belong to the company and be valid for the plan being purchased. The plan must be attached to a product — promo codes are not eligible for one-off purchases.
-	PromoCodeID *string `json:"promo_code_id,omitempty" url:"promo_code_id,omitempty"`
-	// Where the buyer continues after completing an off-site step. Must be an absolute https URL without credentials (http is allowed for localhost), at most 2,048 characters. Editable until they return — see the payment's update endpoint. Ignored unless confirmation_token is provided.
-	ReturnURL *string `json:"return_url,omitempty" url:"return_url,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
+// createPaymentsRequestLineItemsItemVariantNullableFields maps the wire names of CreatePaymentsRequestLineItemsItemVariant's nullable fields (required or optional) to their field bits.
+var createPaymentsRequestLineItemsItemVariantNullableFields = map[string]*big.Int{
+	"allow_multiple_quantity": createPaymentsRequestLineItemsItemVariantFieldAllowMultipleQuantity,
+	"application_fee_amount":  createPaymentsRequestLineItemsItemVariantFieldApplicationFeeAmount,
+	"billing_period":          createPaymentsRequestLineItemsItemVariantFieldBillingPeriod,
+	"billing_type":            createPaymentsRequestLineItemsItemVariantFieldBillingType,
+	"description":             createPaymentsRequestLineItemsItemVariantFieldDescription,
+	"expiration_days":         createPaymentsRequestLineItemsItemVariantFieldExpirationDays,
+	"force_create_new_plan":   createPaymentsRequestLineItemsItemVariantFieldForceCreateNewPlan,
+	"initial_price":           createPaymentsRequestLineItemsItemVariantFieldInitialPrice,
+	"internal_notes":          createPaymentsRequestLineItemsItemVariantFieldInternalNotes,
+	"override_tax_type":       createPaymentsRequestLineItemsItemVariantFieldOverrideTaxType,
+	"product":                 createPaymentsRequestLineItemsItemVariantFieldProduct,
+	"product_id":              createPaymentsRequestLineItemsItemVariantFieldProductID,
+	"renewal_price":           createPaymentsRequestLineItemsItemVariantFieldRenewalPrice,
+	"title":                   createPaymentsRequestLineItemsItemVariantFieldTitle,
+	"trial_period_days":       createPaymentsRequestLineItemsItemVariantFieldTrialPeriodDays,
+	"visibility":              createPaymentsRequestLineItemsItemVariantFieldVisibility,
 }
 
-func (c *CreatePaymentsRequestOne) GetCompanyID() string {
-	if c == nil {
-		return ""
-	}
-	return c.CompanyID
-}
-
-func (c *CreatePaymentsRequestOne) GetEmail() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Email
-}
-
-func (c *CreatePaymentsRequestOne) GetMemberID() string {
-	if c == nil {
-		return ""
-	}
-	return c.MemberID
-}
-
-func (c *CreatePaymentsRequestOne) GetMetadata() map[string]any {
-	if c == nil {
-		return nil
-	}
-	return c.Metadata
-}
-
-func (c *CreatePaymentsRequestOne) GetPaymentMethodID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.PaymentMethodID
-}
-
-func (c *CreatePaymentsRequestOne) GetPlan() *CreatePaymentsRequestOnePlan {
-	if c == nil {
-		return nil
-	}
-	return c.Plan
-}
-
-func (c *CreatePaymentsRequestOne) GetPromoCodeID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.PromoCodeID
-}
-
-func (c *CreatePaymentsRequestOne) GetReturnURL() *string {
-	if c == nil {
-		return nil
-	}
-	return c.ReturnURL
-}
-
-func (c *CreatePaymentsRequestOne) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreatePaymentsRequestOne) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOne) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createPaymentsRequestOneFieldCompanyID)
-}
-
-// SetEmail sets the Email field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOne) SetEmail(email *string) {
-	c.Email = email
-	c.require(createPaymentsRequestOneFieldEmail)
-}
-
-// SetMemberID sets the MemberID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOne) SetMemberID(memberID string) {
-	c.MemberID = memberID
-	c.require(createPaymentsRequestOneFieldMemberID)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOne) SetMetadata(metadata map[string]any) {
-	c.Metadata = metadata
-	c.require(createPaymentsRequestOneFieldMetadata)
-}
-
-// SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOne) SetPaymentMethodID(paymentMethodID *string) {
-	c.PaymentMethodID = paymentMethodID
-	c.require(createPaymentsRequestOneFieldPaymentMethodID)
-}
-
-// SetPlan sets the Plan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOne) SetPlan(plan *CreatePaymentsRequestOnePlan) {
-	c.Plan = plan
-	c.require(createPaymentsRequestOneFieldPlan)
-}
-
-// SetPromoCodeID sets the PromoCodeID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOne) SetPromoCodeID(promoCodeID *string) {
-	c.PromoCodeID = promoCodeID
-	c.require(createPaymentsRequestOneFieldPromoCodeID)
-}
-
-// SetReturnURL sets the ReturnURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOne) SetReturnURL(returnURL *string) {
-	c.ReturnURL = returnURL
-	c.require(createPaymentsRequestOneFieldReturnURL)
-}
-
-func (c *CreatePaymentsRequestOne) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreatePaymentsRequestOne
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreatePaymentsRequestOne(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreatePaymentsRequestOne) MarshalJSON() ([]byte, error) {
-	type embed CreatePaymentsRequestOne
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreatePaymentsRequestOne) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-// Pass this object to create a new plan for this payment
-var (
-	createPaymentsRequestOnePlanFieldApplicationFeeAmount = big.NewInt(1 << 0)
-	createPaymentsRequestOnePlanFieldBillingPeriod        = big.NewInt(1 << 1)
-	createPaymentsRequestOnePlanFieldCurrency             = big.NewInt(1 << 2)
-	createPaymentsRequestOnePlanFieldDescription          = big.NewInt(1 << 3)
-	createPaymentsRequestOnePlanFieldExpirationDays       = big.NewInt(1 << 4)
-	createPaymentsRequestOnePlanFieldForceCreateNewPlan   = big.NewInt(1 << 5)
-	createPaymentsRequestOnePlanFieldInitialPrice         = big.NewInt(1 << 6)
-	createPaymentsRequestOnePlanFieldInternalNotes        = big.NewInt(1 << 7)
-	createPaymentsRequestOnePlanFieldPlanType             = big.NewInt(1 << 8)
-	createPaymentsRequestOnePlanFieldProduct              = big.NewInt(1 << 9)
-	createPaymentsRequestOnePlanFieldProductID            = big.NewInt(1 << 10)
-	createPaymentsRequestOnePlanFieldRenewalPrice         = big.NewInt(1 << 11)
-	createPaymentsRequestOnePlanFieldTitle                = big.NewInt(1 << 12)
-	createPaymentsRequestOnePlanFieldTrialPeriodDays      = big.NewInt(1 << 13)
-	createPaymentsRequestOnePlanFieldVisibility           = big.NewInt(1 << 14)
-)
-
-type CreatePaymentsRequestOnePlan struct {
-	// The application fee amount collected by the platform from this connected account. Provided as a number in dollars (e.g., 5.00 for $5.00). Must be less than the total payment amount. Only valid for connected accounts with a parent company.
+// Find or create the variant for this entry by its attributes. Unknown properties return an error. Creating a variant requires `plan:create`, and creating or updating a product requires the matching product permission.
+type CreatePaymentsRequestLineItemsItemVariant struct {
+	// Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
+	AllowMultipleQuantity *bool `json:"allow_multiple_quantity,omitempty" url:"allow_multiple_quantity,omitempty"`
+	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for connected accounts with a parent account.
 	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
-	// The interval in days at which the plan charges (renewal plans). For example, 30 for monthly billing.
+	// Recurring billing interval in days.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// The respective currency identifier for the plan.
-	Currency Currencies `json:"currency" url:"currency"`
-	// The description of the plan.
+	// Billing model for the variant.
+	BillingType *CreatePaymentsRequestLineItemsItemVariantBillingType `json:"billing_type,omitempty" url:"billing_type,omitempty"`
+	// Currency code for the variant prices.
+	Currency CreatePaymentsRequestLineItemsItemVariantCurrency `json:"currency" url:"currency"`
+	// Variant description.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	// The number of days until the membership expires and revokes access (expiration plans). For example, 365 for one year.
+	// Days until access expires.
 	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Whether to force the creation of a new plan even if one with the same attributes already exists.
+	// Create a new variant instead of reusing a matching variant.
 	ForceCreateNewPlan *bool `json:"force_create_new_plan,omitempty" url:"force_create_new_plan,omitempty"`
-	// An additional amount charged upon first purchase. Provided as a number in the specified currency. Eg: 10.43 for $10.43 USD.
+	// Additional amount charged on the first purchase, in the variant currency. For recurring variants without a trial, the first charge includes this amount plus renewal_price.
 	InitialPrice *float64 `json:"initial_price,omitempty" url:"initial_price,omitempty"`
-	// A personal description or notes section for the business.
+	// Internal notes for the account.
 	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
-	// Indicates if the plan is a one time payment or recurring.
-	PlanType *PlanTypes `json:"plan_type,omitempty" url:"plan_type,omitempty"`
-	// Pass this object to create a new product for this plan. We will use the product external identifier to find or create an existing product.
-	Product *CreatePaymentsRequestOnePlanProduct `json:"product,omitempty" url:"product,omitempty"`
-	// The product the plan is related to. Either this or product is required.
+	// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
+	OverrideTaxType *CreatePaymentsRequestLineItemsItemVariantOverrideTaxType `json:"override_tax_type,omitempty" url:"override_tax_type,omitempty"`
+	// Find or create a product by external identifier. Mutually exclusive with product_id.
+	Product *CreatePaymentsRequestLineItemsItemVariantProduct `json:"product,omitempty" url:"product,omitempty"`
+	// Existing product ID belonging to the account, prefixed `prod_`. Mutually exclusive with `product`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
-	// The amount the customer is charged every billing period. Provided as a number in the specified currency. Eg: 10.43 for $10.43 USD.
+	// Recurring price in the variant currency.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
-	// The title of the plan. This will be visible on the product page to customers.
+	// Variant title.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
-	// The number of free trial days added before a renewal plan.
+	// Free trial days before renewal.
 	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// Shows or hides the plan from public/business view.
-	Visibility *Visibility `json:"visibility,omitempty" url:"visibility,omitempty"`
+	// Whether the variant is visible to customers.
+	Visibility *CreatePaymentsRequestLineItemsItemVariantVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -11436,248 +2739,285 @@ type CreatePaymentsRequestOnePlan struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreatePaymentsRequestOnePlan) GetApplicationFeeAmount() *float64 {
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetAllowMultipleQuantity() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.AllowMultipleQuantity
+}
+
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetApplicationFeeAmount() *float64 {
 	if c == nil {
 		return nil
 	}
 	return c.ApplicationFeeAmount
 }
 
-func (c *CreatePaymentsRequestOnePlan) GetBillingPeriod() *int {
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetBillingPeriod() *int {
 	if c == nil {
 		return nil
 	}
 	return c.BillingPeriod
 }
 
-func (c *CreatePaymentsRequestOnePlan) GetCurrency() Currencies {
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetBillingType() *CreatePaymentsRequestLineItemsItemVariantBillingType {
+	if c == nil {
+		return nil
+	}
+	return c.BillingType
+}
+
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetCurrency() CreatePaymentsRequestLineItemsItemVariantCurrency {
 	if c == nil {
 		return ""
 	}
 	return c.Currency
 }
 
-func (c *CreatePaymentsRequestOnePlan) GetDescription() *string {
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetDescription() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Description
 }
 
-func (c *CreatePaymentsRequestOnePlan) GetExpirationDays() *int {
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetExpirationDays() *int {
 	if c == nil {
 		return nil
 	}
 	return c.ExpirationDays
 }
 
-func (c *CreatePaymentsRequestOnePlan) GetForceCreateNewPlan() *bool {
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetForceCreateNewPlan() *bool {
 	if c == nil {
 		return nil
 	}
 	return c.ForceCreateNewPlan
 }
 
-func (c *CreatePaymentsRequestOnePlan) GetInitialPrice() *float64 {
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetInitialPrice() *float64 {
 	if c == nil {
 		return nil
 	}
 	return c.InitialPrice
 }
 
-func (c *CreatePaymentsRequestOnePlan) GetInternalNotes() *string {
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetInternalNotes() *string {
 	if c == nil {
 		return nil
 	}
 	return c.InternalNotes
 }
 
-func (c *CreatePaymentsRequestOnePlan) GetPlanType() *PlanTypes {
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetOverrideTaxType() *CreatePaymentsRequestLineItemsItemVariantOverrideTaxType {
 	if c == nil {
 		return nil
 	}
-	return c.PlanType
+	return c.OverrideTaxType
 }
 
-func (c *CreatePaymentsRequestOnePlan) GetProduct() *CreatePaymentsRequestOnePlanProduct {
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetProduct() *CreatePaymentsRequestLineItemsItemVariantProduct {
 	if c == nil {
 		return nil
 	}
 	return c.Product
 }
 
-func (c *CreatePaymentsRequestOnePlan) GetProductID() *string {
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetProductID() *string {
 	if c == nil {
 		return nil
 	}
 	return c.ProductID
 }
 
-func (c *CreatePaymentsRequestOnePlan) GetRenewalPrice() *float64 {
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetRenewalPrice() *float64 {
 	if c == nil {
 		return nil
 	}
 	return c.RenewalPrice
 }
 
-func (c *CreatePaymentsRequestOnePlan) GetTitle() *string {
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetTitle() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Title
 }
 
-func (c *CreatePaymentsRequestOnePlan) GetTrialPeriodDays() *int {
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetTrialPeriodDays() *int {
 	if c == nil {
 		return nil
 	}
 	return c.TrialPeriodDays
 }
 
-func (c *CreatePaymentsRequestOnePlan) GetVisibility() *Visibility {
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetVisibility() *CreatePaymentsRequestLineItemsItemVariantVisibility {
 	if c == nil {
 		return nil
 	}
 	return c.Visibility
 }
 
-func (c *CreatePaymentsRequestOnePlan) GetExtraProperties() map[string]interface{} {
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreatePaymentsRequestOnePlan) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+func (c *CreatePaymentsRequestLineItemsItemVariant) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAllowMultipleQuantity sets the AllowMultipleQuantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetAllowMultipleQuantity(allowMultipleQuantity *bool) {
+	c.AllowMultipleQuantity = allowMultipleQuantity
+	c.require(createPaymentsRequestLineItemsItemVariantFieldAllowMultipleQuantity)
 }
 
 // SetApplicationFeeAmount sets the ApplicationFeeAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlan) SetApplicationFeeAmount(applicationFeeAmount *float64) {
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetApplicationFeeAmount(applicationFeeAmount *float64) {
 	c.ApplicationFeeAmount = applicationFeeAmount
-	c.require(createPaymentsRequestOnePlanFieldApplicationFeeAmount)
+	c.require(createPaymentsRequestLineItemsItemVariantFieldApplicationFeeAmount)
 }
 
 // SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlan) SetBillingPeriod(billingPeriod *int) {
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetBillingPeriod(billingPeriod *int) {
 	c.BillingPeriod = billingPeriod
-	c.require(createPaymentsRequestOnePlanFieldBillingPeriod)
+	c.require(createPaymentsRequestLineItemsItemVariantFieldBillingPeriod)
+}
+
+// SetBillingType sets the BillingType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetBillingType(billingType *CreatePaymentsRequestLineItemsItemVariantBillingType) {
+	c.BillingType = billingType
+	c.require(createPaymentsRequestLineItemsItemVariantFieldBillingType)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlan) SetCurrency(currency Currencies) {
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetCurrency(currency CreatePaymentsRequestLineItemsItemVariantCurrency) {
 	c.Currency = currency
-	c.require(createPaymentsRequestOnePlanFieldCurrency)
+	c.require(createPaymentsRequestLineItemsItemVariantFieldCurrency)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlan) SetDescription(description *string) {
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetDescription(description *string) {
 	c.Description = description
-	c.require(createPaymentsRequestOnePlanFieldDescription)
+	c.require(createPaymentsRequestLineItemsItemVariantFieldDescription)
 }
 
 // SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlan) SetExpirationDays(expirationDays *int) {
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetExpirationDays(expirationDays *int) {
 	c.ExpirationDays = expirationDays
-	c.require(createPaymentsRequestOnePlanFieldExpirationDays)
+	c.require(createPaymentsRequestLineItemsItemVariantFieldExpirationDays)
 }
 
 // SetForceCreateNewPlan sets the ForceCreateNewPlan field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlan) SetForceCreateNewPlan(forceCreateNewPlan *bool) {
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetForceCreateNewPlan(forceCreateNewPlan *bool) {
 	c.ForceCreateNewPlan = forceCreateNewPlan
-	c.require(createPaymentsRequestOnePlanFieldForceCreateNewPlan)
+	c.require(createPaymentsRequestLineItemsItemVariantFieldForceCreateNewPlan)
 }
 
 // SetInitialPrice sets the InitialPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlan) SetInitialPrice(initialPrice *float64) {
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetInitialPrice(initialPrice *float64) {
 	c.InitialPrice = initialPrice
-	c.require(createPaymentsRequestOnePlanFieldInitialPrice)
+	c.require(createPaymentsRequestLineItemsItemVariantFieldInitialPrice)
 }
 
 // SetInternalNotes sets the InternalNotes field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlan) SetInternalNotes(internalNotes *string) {
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetInternalNotes(internalNotes *string) {
 	c.InternalNotes = internalNotes
-	c.require(createPaymentsRequestOnePlanFieldInternalNotes)
+	c.require(createPaymentsRequestLineItemsItemVariantFieldInternalNotes)
 }
 
-// SetPlanType sets the PlanType field and marks it as non-optional;
+// SetOverrideTaxType sets the OverrideTaxType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlan) SetPlanType(planType *PlanTypes) {
-	c.PlanType = planType
-	c.require(createPaymentsRequestOnePlanFieldPlanType)
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetOverrideTaxType(overrideTaxType *CreatePaymentsRequestLineItemsItemVariantOverrideTaxType) {
+	c.OverrideTaxType = overrideTaxType
+	c.require(createPaymentsRequestLineItemsItemVariantFieldOverrideTaxType)
 }
 
 // SetProduct sets the Product field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlan) SetProduct(product *CreatePaymentsRequestOnePlanProduct) {
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetProduct(product *CreatePaymentsRequestLineItemsItemVariantProduct) {
 	c.Product = product
-	c.require(createPaymentsRequestOnePlanFieldProduct)
+	c.require(createPaymentsRequestLineItemsItemVariantFieldProduct)
 }
 
 // SetProductID sets the ProductID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlan) SetProductID(productID *string) {
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetProductID(productID *string) {
 	c.ProductID = productID
-	c.require(createPaymentsRequestOnePlanFieldProductID)
+	c.require(createPaymentsRequestLineItemsItemVariantFieldProductID)
 }
 
 // SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlan) SetRenewalPrice(renewalPrice *float64) {
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetRenewalPrice(renewalPrice *float64) {
 	c.RenewalPrice = renewalPrice
-	c.require(createPaymentsRequestOnePlanFieldRenewalPrice)
+	c.require(createPaymentsRequestLineItemsItemVariantFieldRenewalPrice)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlan) SetTitle(title *string) {
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetTitle(title *string) {
 	c.Title = title
-	c.require(createPaymentsRequestOnePlanFieldTitle)
+	c.require(createPaymentsRequestLineItemsItemVariantFieldTitle)
 }
 
 // SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlan) SetTrialPeriodDays(trialPeriodDays *int) {
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetTrialPeriodDays(trialPeriodDays *int) {
 	c.TrialPeriodDays = trialPeriodDays
-	c.require(createPaymentsRequestOnePlanFieldTrialPeriodDays)
+	c.require(createPaymentsRequestLineItemsItemVariantFieldTrialPeriodDays)
 }
 
 // SetVisibility sets the Visibility field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlan) SetVisibility(visibility *Visibility) {
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetVisibility(visibility *CreatePaymentsRequestLineItemsItemVariantVisibility) {
 	c.Visibility = visibility
-	c.require(createPaymentsRequestOnePlanFieldVisibility)
+	c.require(createPaymentsRequestLineItemsItemVariantFieldVisibility)
 }
 
-func (c *CreatePaymentsRequestOnePlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreatePaymentsRequestOnePlan
+func (c *CreatePaymentsRequestLineItemsItemVariant) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePaymentsRequestLineItemsItemVariant
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreatePaymentsRequestOnePlan(value)
+	*c = CreatePaymentsRequestLineItemsItemVariant(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPaymentsRequestLineItemsItemVariantNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (c *CreatePaymentsRequestOnePlan) MarshalJSON() ([]byte, error) {
-	type embed CreatePaymentsRequestOnePlan
+func (c *CreatePaymentsRequestLineItemsItemVariant) MarshalJSON() ([]byte, error) {
+	type embed CreatePaymentsRequestLineItemsItemVariant
 	var marshaler = struct {
 		embed
 	}{
@@ -11687,7 +3027,7 @@ func (c *CreatePaymentsRequestOnePlan) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreatePaymentsRequestOnePlan) String() string {
+func (c *CreatePaymentsRequestLineItemsItemVariant) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -11702,47 +3042,396 @@ func (c *CreatePaymentsRequestOnePlan) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Pass this object to create a new product for this plan. We will use the product external identifier to find or create an existing product.
-var (
-	createPaymentsRequestOnePlanProductFieldCollectShippingAddress    = big.NewInt(1 << 0)
-	createPaymentsRequestOnePlanProductFieldCustomStatementDescriptor = big.NewInt(1 << 1)
-	createPaymentsRequestOnePlanProductFieldDescription               = big.NewInt(1 << 2)
-	createPaymentsRequestOnePlanProductFieldExternalIdentifier        = big.NewInt(1 << 3)
-	createPaymentsRequestOnePlanProductFieldGlobalAffiliatePercentage = big.NewInt(1 << 4)
-	createPaymentsRequestOnePlanProductFieldGlobalAffiliateStatus     = big.NewInt(1 << 5)
-	createPaymentsRequestOnePlanProductFieldHeadline                  = big.NewInt(1 << 6)
-	createPaymentsRequestOnePlanProductFieldProductTaxCodeID          = big.NewInt(1 << 7)
-	createPaymentsRequestOnePlanProductFieldRedirectPurchaseURL       = big.NewInt(1 << 8)
-	createPaymentsRequestOnePlanProductFieldRoute                     = big.NewInt(1 << 9)
-	createPaymentsRequestOnePlanProductFieldTitle                     = big.NewInt(1 << 10)
-	createPaymentsRequestOnePlanProductFieldVisibility                = big.NewInt(1 << 11)
+// Billing model for the variant.
+type CreatePaymentsRequestLineItemsItemVariantBillingType string
+
+const (
+	CreatePaymentsRequestLineItemsItemVariantBillingTypeRenewal CreatePaymentsRequestLineItemsItemVariantBillingType = "renewal"
+	CreatePaymentsRequestLineItemsItemVariantBillingTypeOneTime CreatePaymentsRequestLineItemsItemVariantBillingType = "one_time"
 )
 
-type CreatePaymentsRequestOnePlanProduct struct {
-	// Whether or not to collect shipping information at checkout from the customer.
+func NewCreatePaymentsRequestLineItemsItemVariantBillingTypeFromString(s string) (CreatePaymentsRequestLineItemsItemVariantBillingType, error) {
+	switch s {
+	case "renewal":
+		return CreatePaymentsRequestLineItemsItemVariantBillingTypeRenewal, nil
+	case "one_time":
+		return CreatePaymentsRequestLineItemsItemVariantBillingTypeOneTime, nil
+	}
+	var t CreatePaymentsRequestLineItemsItemVariantBillingType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePaymentsRequestLineItemsItemVariantBillingType) Ptr() *CreatePaymentsRequestLineItemsItemVariantBillingType {
+	return &c
+}
+
+// Currency code for the variant prices.
+type CreatePaymentsRequestLineItemsItemVariantCurrency string
+
+const (
+	CreatePaymentsRequestLineItemsItemVariantCurrencyUsd     CreatePaymentsRequestLineItemsItemVariantCurrency = "usd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencySgd     CreatePaymentsRequestLineItemsItemVariantCurrency = "sgd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyInr     CreatePaymentsRequestLineItemsItemVariantCurrency = "inr"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyAud     CreatePaymentsRequestLineItemsItemVariantCurrency = "aud"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyBrl     CreatePaymentsRequestLineItemsItemVariantCurrency = "brl"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyCad     CreatePaymentsRequestLineItemsItemVariantCurrency = "cad"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyDkk     CreatePaymentsRequestLineItemsItemVariantCurrency = "dkk"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyEur     CreatePaymentsRequestLineItemsItemVariantCurrency = "eur"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyNok     CreatePaymentsRequestLineItemsItemVariantCurrency = "nok"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyGbp     CreatePaymentsRequestLineItemsItemVariantCurrency = "gbp"
+	CreatePaymentsRequestLineItemsItemVariantCurrencySek     CreatePaymentsRequestLineItemsItemVariantCurrency = "sek"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyChf     CreatePaymentsRequestLineItemsItemVariantCurrency = "chf"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyHkd     CreatePaymentsRequestLineItemsItemVariantCurrency = "hkd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyHuf     CreatePaymentsRequestLineItemsItemVariantCurrency = "huf"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyJpy     CreatePaymentsRequestLineItemsItemVariantCurrency = "jpy"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyMxn     CreatePaymentsRequestLineItemsItemVariantCurrency = "mxn"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyMyr     CreatePaymentsRequestLineItemsItemVariantCurrency = "myr"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyPln     CreatePaymentsRequestLineItemsItemVariantCurrency = "pln"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyCzk     CreatePaymentsRequestLineItemsItemVariantCurrency = "czk"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyNzd     CreatePaymentsRequestLineItemsItemVariantCurrency = "nzd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyAed     CreatePaymentsRequestLineItemsItemVariantCurrency = "aed"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyEth     CreatePaymentsRequestLineItemsItemVariantCurrency = "eth"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyApe     CreatePaymentsRequestLineItemsItemVariantCurrency = "ape"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyCop     CreatePaymentsRequestLineItemsItemVariantCurrency = "cop"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyRon     CreatePaymentsRequestLineItemsItemVariantCurrency = "ron"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyThb     CreatePaymentsRequestLineItemsItemVariantCurrency = "thb"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyBgn     CreatePaymentsRequestLineItemsItemVariantCurrency = "bgn"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyIdr     CreatePaymentsRequestLineItemsItemVariantCurrency = "idr"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyDop     CreatePaymentsRequestLineItemsItemVariantCurrency = "dop"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyPhp     CreatePaymentsRequestLineItemsItemVariantCurrency = "php"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyTry     CreatePaymentsRequestLineItemsItemVariantCurrency = "try"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyKrw     CreatePaymentsRequestLineItemsItemVariantCurrency = "krw"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyTwd     CreatePaymentsRequestLineItemsItemVariantCurrency = "twd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyVnd     CreatePaymentsRequestLineItemsItemVariantCurrency = "vnd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyPkr     CreatePaymentsRequestLineItemsItemVariantCurrency = "pkr"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyClp     CreatePaymentsRequestLineItemsItemVariantCurrency = "clp"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyUyu     CreatePaymentsRequestLineItemsItemVariantCurrency = "uyu"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyArs     CreatePaymentsRequestLineItemsItemVariantCurrency = "ars"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyZar     CreatePaymentsRequestLineItemsItemVariantCurrency = "zar"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyDzd     CreatePaymentsRequestLineItemsItemVariantCurrency = "dzd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyTnd     CreatePaymentsRequestLineItemsItemVariantCurrency = "tnd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyMad     CreatePaymentsRequestLineItemsItemVariantCurrency = "mad"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyKes     CreatePaymentsRequestLineItemsItemVariantCurrency = "kes"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyKwd     CreatePaymentsRequestLineItemsItemVariantCurrency = "kwd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyJod     CreatePaymentsRequestLineItemsItemVariantCurrency = "jod"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyAll     CreatePaymentsRequestLineItemsItemVariantCurrency = "all"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyXcd     CreatePaymentsRequestLineItemsItemVariantCurrency = "xcd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyAmd     CreatePaymentsRequestLineItemsItemVariantCurrency = "amd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyBsd     CreatePaymentsRequestLineItemsItemVariantCurrency = "bsd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyBhd     CreatePaymentsRequestLineItemsItemVariantCurrency = "bhd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyBob     CreatePaymentsRequestLineItemsItemVariantCurrency = "bob"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyBam     CreatePaymentsRequestLineItemsItemVariantCurrency = "bam"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyKhr     CreatePaymentsRequestLineItemsItemVariantCurrency = "khr"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyCrc     CreatePaymentsRequestLineItemsItemVariantCurrency = "crc"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyXof     CreatePaymentsRequestLineItemsItemVariantCurrency = "xof"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyEgp     CreatePaymentsRequestLineItemsItemVariantCurrency = "egp"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyEtb     CreatePaymentsRequestLineItemsItemVariantCurrency = "etb"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyGmd     CreatePaymentsRequestLineItemsItemVariantCurrency = "gmd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyGhs     CreatePaymentsRequestLineItemsItemVariantCurrency = "ghs"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyGtq     CreatePaymentsRequestLineItemsItemVariantCurrency = "gtq"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyGyd     CreatePaymentsRequestLineItemsItemVariantCurrency = "gyd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyIls     CreatePaymentsRequestLineItemsItemVariantCurrency = "ils"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyJmd     CreatePaymentsRequestLineItemsItemVariantCurrency = "jmd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyMop     CreatePaymentsRequestLineItemsItemVariantCurrency = "mop"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyMga     CreatePaymentsRequestLineItemsItemVariantCurrency = "mga"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyMur     CreatePaymentsRequestLineItemsItemVariantCurrency = "mur"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyMdl     CreatePaymentsRequestLineItemsItemVariantCurrency = "mdl"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyMnt     CreatePaymentsRequestLineItemsItemVariantCurrency = "mnt"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyNad     CreatePaymentsRequestLineItemsItemVariantCurrency = "nad"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyNgn     CreatePaymentsRequestLineItemsItemVariantCurrency = "ngn"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyMkd     CreatePaymentsRequestLineItemsItemVariantCurrency = "mkd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyOmr     CreatePaymentsRequestLineItemsItemVariantCurrency = "omr"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyPyg     CreatePaymentsRequestLineItemsItemVariantCurrency = "pyg"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyPen     CreatePaymentsRequestLineItemsItemVariantCurrency = "pen"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyQar     CreatePaymentsRequestLineItemsItemVariantCurrency = "qar"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyRwf     CreatePaymentsRequestLineItemsItemVariantCurrency = "rwf"
+	CreatePaymentsRequestLineItemsItemVariantCurrencySar     CreatePaymentsRequestLineItemsItemVariantCurrency = "sar"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyRsd     CreatePaymentsRequestLineItemsItemVariantCurrency = "rsd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyLkr     CreatePaymentsRequestLineItemsItemVariantCurrency = "lkr"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyTzs     CreatePaymentsRequestLineItemsItemVariantCurrency = "tzs"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyTtd     CreatePaymentsRequestLineItemsItemVariantCurrency = "ttd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyUzs     CreatePaymentsRequestLineItemsItemVariantCurrency = "uzs"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyRub     CreatePaymentsRequestLineItemsItemVariantCurrency = "rub"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyBtc     CreatePaymentsRequestLineItemsItemVariantCurrency = "btc"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyCny     CreatePaymentsRequestLineItemsItemVariantCurrency = "cny"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyUsdt    CreatePaymentsRequestLineItemsItemVariantCurrency = "usdt"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyKzt     CreatePaymentsRequestLineItemsItemVariantCurrency = "kzt"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyAwg     CreatePaymentsRequestLineItemsItemVariantCurrency = "awg"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyWhopUsd CreatePaymentsRequestLineItemsItemVariantCurrency = "whop_usd"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyXau     CreatePaymentsRequestLineItemsItemVariantCurrency = "xau"
+)
+
+func NewCreatePaymentsRequestLineItemsItemVariantCurrencyFromString(s string) (CreatePaymentsRequestLineItemsItemVariantCurrency, error) {
+	switch s {
+	case "usd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyUsd, nil
+	case "sgd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencySgd, nil
+	case "inr":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyInr, nil
+	case "aud":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyAud, nil
+	case "brl":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyBrl, nil
+	case "cad":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyCad, nil
+	case "dkk":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyDkk, nil
+	case "eur":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyEur, nil
+	case "nok":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyNok, nil
+	case "gbp":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyGbp, nil
+	case "sek":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencySek, nil
+	case "chf":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyChf, nil
+	case "hkd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyHkd, nil
+	case "huf":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyHuf, nil
+	case "jpy":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyJpy, nil
+	case "mxn":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyMxn, nil
+	case "myr":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyMyr, nil
+	case "pln":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyPln, nil
+	case "czk":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyCzk, nil
+	case "nzd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyNzd, nil
+	case "aed":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyAed, nil
+	case "eth":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyEth, nil
+	case "ape":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyApe, nil
+	case "cop":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyCop, nil
+	case "ron":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyRon, nil
+	case "thb":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyThb, nil
+	case "bgn":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyBgn, nil
+	case "idr":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyIdr, nil
+	case "dop":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyDop, nil
+	case "php":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyPhp, nil
+	case "try":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyTry, nil
+	case "krw":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyKrw, nil
+	case "twd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyTwd, nil
+	case "vnd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyVnd, nil
+	case "pkr":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyPkr, nil
+	case "clp":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyClp, nil
+	case "uyu":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyUyu, nil
+	case "ars":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyArs, nil
+	case "zar":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyZar, nil
+	case "dzd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyDzd, nil
+	case "tnd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyTnd, nil
+	case "mad":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyMad, nil
+	case "kes":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyKes, nil
+	case "kwd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyKwd, nil
+	case "jod":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyJod, nil
+	case "all":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyAll, nil
+	case "xcd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyXcd, nil
+	case "amd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyAmd, nil
+	case "bsd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyBsd, nil
+	case "bhd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyBhd, nil
+	case "bob":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyBob, nil
+	case "bam":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyBam, nil
+	case "khr":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyKhr, nil
+	case "crc":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyCrc, nil
+	case "xof":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyXof, nil
+	case "egp":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyEgp, nil
+	case "etb":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyEtb, nil
+	case "gmd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyGmd, nil
+	case "ghs":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyGhs, nil
+	case "gtq":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyGtq, nil
+	case "gyd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyGyd, nil
+	case "ils":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyIls, nil
+	case "jmd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyJmd, nil
+	case "mop":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyMop, nil
+	case "mga":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyMga, nil
+	case "mur":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyMur, nil
+	case "mdl":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyMdl, nil
+	case "mnt":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyMnt, nil
+	case "nad":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyNad, nil
+	case "ngn":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyNgn, nil
+	case "mkd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyMkd, nil
+	case "omr":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyOmr, nil
+	case "pyg":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyPyg, nil
+	case "pen":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyPen, nil
+	case "qar":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyQar, nil
+	case "rwf":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyRwf, nil
+	case "sar":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencySar, nil
+	case "rsd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyRsd, nil
+	case "lkr":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyLkr, nil
+	case "tzs":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyTzs, nil
+	case "ttd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyTtd, nil
+	case "uzs":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyUzs, nil
+	case "rub":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyRub, nil
+	case "btc":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyBtc, nil
+	case "cny":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyCny, nil
+	case "usdt":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyUsdt, nil
+	case "kzt":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyKzt, nil
+	case "awg":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyAwg, nil
+	case "whop_usd":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyWhopUsd, nil
+	case "xau":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyXau, nil
+	}
+	var t CreatePaymentsRequestLineItemsItemVariantCurrency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePaymentsRequestLineItemsItemVariantCurrency) Ptr() *CreatePaymentsRequestLineItemsItemVariantCurrency {
+	return &c
+}
+
+// Whether the variant's price includes tax: `inclusive` (tax is included in the price), `exclusive` (tax is added on top), or `unspecified`. Omit it or pass `null` to use the account's tax setting. On an account enrolled in the Whop tax service, `inclusive` or `exclusive` replaces the account's setting and `unspecified` keeps it. Otherwise it applies only where the account is the merchant of record: `inclusive` or `exclusive` replaces the account's setting when the account collects tax, and `unspecified` means the variant collects no tax. Where Whop is the merchant of record, the account's setting applies. Variants that differ only in this value are different variants.
+type CreatePaymentsRequestLineItemsItemVariantOverrideTaxType string
+
+const (
+	CreatePaymentsRequestLineItemsItemVariantOverrideTaxTypeExclusive   CreatePaymentsRequestLineItemsItemVariantOverrideTaxType = "exclusive"
+	CreatePaymentsRequestLineItemsItemVariantOverrideTaxTypeInclusive   CreatePaymentsRequestLineItemsItemVariantOverrideTaxType = "inclusive"
+	CreatePaymentsRequestLineItemsItemVariantOverrideTaxTypeUnspecified CreatePaymentsRequestLineItemsItemVariantOverrideTaxType = "unspecified"
+)
+
+func NewCreatePaymentsRequestLineItemsItemVariantOverrideTaxTypeFromString(s string) (CreatePaymentsRequestLineItemsItemVariantOverrideTaxType, error) {
+	switch s {
+	case "exclusive":
+		return CreatePaymentsRequestLineItemsItemVariantOverrideTaxTypeExclusive, nil
+	case "inclusive":
+		return CreatePaymentsRequestLineItemsItemVariantOverrideTaxTypeInclusive, nil
+	case "unspecified":
+		return CreatePaymentsRequestLineItemsItemVariantOverrideTaxTypeUnspecified, nil
+	}
+	var t CreatePaymentsRequestLineItemsItemVariantOverrideTaxType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePaymentsRequestLineItemsItemVariantOverrideTaxType) Ptr() *CreatePaymentsRequestLineItemsItemVariantOverrideTaxType {
+	return &c
+}
+
+var (
+	createPaymentsRequestLineItemsItemVariantProductFieldCollectShippingAddress    = big.NewInt(1 << 0)
+	createPaymentsRequestLineItemsItemVariantProductFieldCustomStatementDescriptor = big.NewInt(1 << 1)
+	createPaymentsRequestLineItemsItemVariantProductFieldDescription               = big.NewInt(1 << 2)
+	createPaymentsRequestLineItemsItemVariantProductFieldExternalIdentifier        = big.NewInt(1 << 3)
+	createPaymentsRequestLineItemsItemVariantProductFieldGlobalAffiliatePercentage = big.NewInt(1 << 4)
+	createPaymentsRequestLineItemsItemVariantProductFieldGlobalAffiliateStatus     = big.NewInt(1 << 5)
+	createPaymentsRequestLineItemsItemVariantProductFieldHeadline                  = big.NewInt(1 << 6)
+	createPaymentsRequestLineItemsItemVariantProductFieldProductTaxCodeID          = big.NewInt(1 << 7)
+	createPaymentsRequestLineItemsItemVariantProductFieldRedirectPurchaseURL       = big.NewInt(1 << 8)
+	createPaymentsRequestLineItemsItemVariantProductFieldRoute                     = big.NewInt(1 << 9)
+	createPaymentsRequestLineItemsItemVariantProductFieldTitle                     = big.NewInt(1 << 10)
+	createPaymentsRequestLineItemsItemVariantProductFieldVisibility                = big.NewInt(1 << 11)
+)
+
+// createPaymentsRequestLineItemsItemVariantProductNullableFields maps the wire names of CreatePaymentsRequestLineItemsItemVariantProduct's nullable fields (required or optional) to their field bits.
+var createPaymentsRequestLineItemsItemVariantProductNullableFields = map[string]*big.Int{
+	"collect_shipping_address":    createPaymentsRequestLineItemsItemVariantProductFieldCollectShippingAddress,
+	"custom_statement_descriptor": createPaymentsRequestLineItemsItemVariantProductFieldCustomStatementDescriptor,
+	"description":                 createPaymentsRequestLineItemsItemVariantProductFieldDescription,
+	"global_affiliate_percentage": createPaymentsRequestLineItemsItemVariantProductFieldGlobalAffiliatePercentage,
+	"global_affiliate_status":     createPaymentsRequestLineItemsItemVariantProductFieldGlobalAffiliateStatus,
+	"headline":                    createPaymentsRequestLineItemsItemVariantProductFieldHeadline,
+	"product_tax_code_id":         createPaymentsRequestLineItemsItemVariantProductFieldProductTaxCodeID,
+	"redirect_purchase_url":       createPaymentsRequestLineItemsItemVariantProductFieldRedirectPurchaseURL,
+	"route":                       createPaymentsRequestLineItemsItemVariantProductFieldRoute,
+}
+
+// Find or create a product by external identifier. Mutually exclusive with product_id.
+type CreatePaymentsRequestLineItemsItemVariantProduct struct {
+	// Whether to collect a shipping address at checkout.
 	CollectShippingAddress *bool `json:"collect_shipping_address,omitempty" url:"collect_shipping_address,omitempty"`
-	// The custom statement descriptor for the product i.e. WHOP*SPORTS, must be between 5 and 22 characters, contain at least one letter, and not contain any of the following characters: <, >, \, ', "
+	// Custom card statement descriptor for the product, starting with WHOP*.
 	CustomStatementDescriptor *string `json:"custom_statement_descriptor,omitempty" url:"custom_statement_descriptor,omitempty"`
-	// A written description of the product.
+	// Product description.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	// A unique ID used to find or create a product. When provided during creation, we will look for an existing product with this external identifier — if found, it will be updated; otherwise, a new product will be created.
+	// Your unique identifier for the product.
 	ExternalIdentifier string `json:"external_identifier" url:"external_identifier"`
-	// The percentage of the revenue that goes to the global affiliate program.
+	// Percentage of revenue paid to global affiliates.
 	GlobalAffiliatePercentage *float64 `json:"global_affiliate_percentage,omitempty" url:"global_affiliate_percentage,omitempty"`
-	// The status of the global affiliate program for this product.
-	GlobalAffiliateStatus *GlobalAffiliateStatuses `json:"global_affiliate_status,omitempty" url:"global_affiliate_status,omitempty"`
-	// The headline of the product.
+	// Global affiliate program status.
+	GlobalAffiliateStatus *CreatePaymentsRequestLineItemsItemVariantProductGlobalAffiliateStatus `json:"global_affiliate_status,omitempty" url:"global_affiliate_status,omitempty"`
+	// Product headline.
 	Headline *string `json:"headline,omitempty" url:"headline,omitempty"`
-	// The ID of the product tax code to apply to this product.
+	// Product tax code identifier.
 	ProductTaxCodeID *string `json:"product_tax_code_id,omitempty" url:"product_tax_code_id,omitempty"`
-	// The URL to redirect the customer to after a purchase.
+	// Where to redirect the buyer after purchase.
 	RedirectPurchaseURL *string `json:"redirect_purchase_url,omitempty" url:"redirect_purchase_url,omitempty"`
-	// The route of the product.
+	// Product route.
 	Route *string `json:"route,omitempty" url:"route,omitempty"`
-	// The title of the product.
+	// Product title.
 	Title string `json:"title" url:"title"`
-	// This product will/will not be displayed publicly - default hidden.
-	Visibility *Visibility `json:"visibility,omitempty" url:"visibility,omitempty"`
+	// Product visibility. Defaults to hidden.
+	Visibility *CreatePaymentsRequestLineItemsItemVariantProductVisibility `json:"visibility,omitempty" url:"visibility,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -11751,206 +3440,215 @@ type CreatePaymentsRequestOnePlanProduct struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreatePaymentsRequestOnePlanProduct) GetCollectShippingAddress() *bool {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) GetCollectShippingAddress() *bool {
 	if c == nil {
 		return nil
 	}
 	return c.CollectShippingAddress
 }
 
-func (c *CreatePaymentsRequestOnePlanProduct) GetCustomStatementDescriptor() *string {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) GetCustomStatementDescriptor() *string {
 	if c == nil {
 		return nil
 	}
 	return c.CustomStatementDescriptor
 }
 
-func (c *CreatePaymentsRequestOnePlanProduct) GetDescription() *string {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) GetDescription() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Description
 }
 
-func (c *CreatePaymentsRequestOnePlanProduct) GetExternalIdentifier() string {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) GetExternalIdentifier() string {
 	if c == nil {
 		return ""
 	}
 	return c.ExternalIdentifier
 }
 
-func (c *CreatePaymentsRequestOnePlanProduct) GetGlobalAffiliatePercentage() *float64 {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) GetGlobalAffiliatePercentage() *float64 {
 	if c == nil {
 		return nil
 	}
 	return c.GlobalAffiliatePercentage
 }
 
-func (c *CreatePaymentsRequestOnePlanProduct) GetGlobalAffiliateStatus() *GlobalAffiliateStatuses {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) GetGlobalAffiliateStatus() *CreatePaymentsRequestLineItemsItemVariantProductGlobalAffiliateStatus {
 	if c == nil {
 		return nil
 	}
 	return c.GlobalAffiliateStatus
 }
 
-func (c *CreatePaymentsRequestOnePlanProduct) GetHeadline() *string {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) GetHeadline() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Headline
 }
 
-func (c *CreatePaymentsRequestOnePlanProduct) GetProductTaxCodeID() *string {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) GetProductTaxCodeID() *string {
 	if c == nil {
 		return nil
 	}
 	return c.ProductTaxCodeID
 }
 
-func (c *CreatePaymentsRequestOnePlanProduct) GetRedirectPurchaseURL() *string {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) GetRedirectPurchaseURL() *string {
 	if c == nil {
 		return nil
 	}
 	return c.RedirectPurchaseURL
 }
 
-func (c *CreatePaymentsRequestOnePlanProduct) GetRoute() *string {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) GetRoute() *string {
 	if c == nil {
 		return nil
 	}
 	return c.Route
 }
 
-func (c *CreatePaymentsRequestOnePlanProduct) GetTitle() string {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) GetTitle() string {
 	if c == nil {
 		return ""
 	}
 	return c.Title
 }
 
-func (c *CreatePaymentsRequestOnePlanProduct) GetVisibility() *Visibility {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) GetVisibility() *CreatePaymentsRequestLineItemsItemVariantProductVisibility {
 	if c == nil {
 		return nil
 	}
 	return c.Visibility
 }
 
-func (c *CreatePaymentsRequestOnePlanProduct) GetExtraProperties() map[string]interface{} {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreatePaymentsRequestOnePlanProduct) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
 // SetCollectShippingAddress sets the CollectShippingAddress field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlanProduct) SetCollectShippingAddress(collectShippingAddress *bool) {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) SetCollectShippingAddress(collectShippingAddress *bool) {
 	c.CollectShippingAddress = collectShippingAddress
-	c.require(createPaymentsRequestOnePlanProductFieldCollectShippingAddress)
+	c.require(createPaymentsRequestLineItemsItemVariantProductFieldCollectShippingAddress)
 }
 
 // SetCustomStatementDescriptor sets the CustomStatementDescriptor field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlanProduct) SetCustomStatementDescriptor(customStatementDescriptor *string) {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) SetCustomStatementDescriptor(customStatementDescriptor *string) {
 	c.CustomStatementDescriptor = customStatementDescriptor
-	c.require(createPaymentsRequestOnePlanProductFieldCustomStatementDescriptor)
+	c.require(createPaymentsRequestLineItemsItemVariantProductFieldCustomStatementDescriptor)
 }
 
 // SetDescription sets the Description field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlanProduct) SetDescription(description *string) {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) SetDescription(description *string) {
 	c.Description = description
-	c.require(createPaymentsRequestOnePlanProductFieldDescription)
+	c.require(createPaymentsRequestLineItemsItemVariantProductFieldDescription)
 }
 
 // SetExternalIdentifier sets the ExternalIdentifier field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlanProduct) SetExternalIdentifier(externalIdentifier string) {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) SetExternalIdentifier(externalIdentifier string) {
 	c.ExternalIdentifier = externalIdentifier
-	c.require(createPaymentsRequestOnePlanProductFieldExternalIdentifier)
+	c.require(createPaymentsRequestLineItemsItemVariantProductFieldExternalIdentifier)
 }
 
 // SetGlobalAffiliatePercentage sets the GlobalAffiliatePercentage field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlanProduct) SetGlobalAffiliatePercentage(globalAffiliatePercentage *float64) {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) SetGlobalAffiliatePercentage(globalAffiliatePercentage *float64) {
 	c.GlobalAffiliatePercentage = globalAffiliatePercentage
-	c.require(createPaymentsRequestOnePlanProductFieldGlobalAffiliatePercentage)
+	c.require(createPaymentsRequestLineItemsItemVariantProductFieldGlobalAffiliatePercentage)
 }
 
 // SetGlobalAffiliateStatus sets the GlobalAffiliateStatus field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlanProduct) SetGlobalAffiliateStatus(globalAffiliateStatus *GlobalAffiliateStatuses) {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) SetGlobalAffiliateStatus(globalAffiliateStatus *CreatePaymentsRequestLineItemsItemVariantProductGlobalAffiliateStatus) {
 	c.GlobalAffiliateStatus = globalAffiliateStatus
-	c.require(createPaymentsRequestOnePlanProductFieldGlobalAffiliateStatus)
+	c.require(createPaymentsRequestLineItemsItemVariantProductFieldGlobalAffiliateStatus)
 }
 
 // SetHeadline sets the Headline field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlanProduct) SetHeadline(headline *string) {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) SetHeadline(headline *string) {
 	c.Headline = headline
-	c.require(createPaymentsRequestOnePlanProductFieldHeadline)
+	c.require(createPaymentsRequestLineItemsItemVariantProductFieldHeadline)
 }
 
 // SetProductTaxCodeID sets the ProductTaxCodeID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlanProduct) SetProductTaxCodeID(productTaxCodeID *string) {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) SetProductTaxCodeID(productTaxCodeID *string) {
 	c.ProductTaxCodeID = productTaxCodeID
-	c.require(createPaymentsRequestOnePlanProductFieldProductTaxCodeID)
+	c.require(createPaymentsRequestLineItemsItemVariantProductFieldProductTaxCodeID)
 }
 
 // SetRedirectPurchaseURL sets the RedirectPurchaseURL field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlanProduct) SetRedirectPurchaseURL(redirectPurchaseURL *string) {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) SetRedirectPurchaseURL(redirectPurchaseURL *string) {
 	c.RedirectPurchaseURL = redirectPurchaseURL
-	c.require(createPaymentsRequestOnePlanProductFieldRedirectPurchaseURL)
+	c.require(createPaymentsRequestLineItemsItemVariantProductFieldRedirectPurchaseURL)
 }
 
 // SetRoute sets the Route field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlanProduct) SetRoute(route *string) {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) SetRoute(route *string) {
 	c.Route = route
-	c.require(createPaymentsRequestOnePlanProductFieldRoute)
+	c.require(createPaymentsRequestLineItemsItemVariantProductFieldRoute)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlanProduct) SetTitle(title string) {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) SetTitle(title string) {
 	c.Title = title
-	c.require(createPaymentsRequestOnePlanProductFieldTitle)
+	c.require(createPaymentsRequestLineItemsItemVariantProductFieldTitle)
 }
 
 // SetVisibility sets the Visibility field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestOnePlanProduct) SetVisibility(visibility *Visibility) {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) SetVisibility(visibility *CreatePaymentsRequestLineItemsItemVariantProductVisibility) {
 	c.Visibility = visibility
-	c.require(createPaymentsRequestOnePlanProductFieldVisibility)
+	c.require(createPaymentsRequestLineItemsItemVariantProductFieldVisibility)
 }
 
-func (c *CreatePaymentsRequestOnePlanProduct) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreatePaymentsRequestOnePlanProduct
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePaymentsRequestLineItemsItemVariantProduct
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreatePaymentsRequestOnePlanProduct(value)
+	*c = CreatePaymentsRequestLineItemsItemVariantProduct(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
 	}
 	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPaymentsRequestLineItemsItemVariantProductNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
 	c.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (c *CreatePaymentsRequestOnePlanProduct) MarshalJSON() ([]byte, error) {
-	type embed CreatePaymentsRequestOnePlanProduct
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) MarshalJSON() ([]byte, error) {
+	type embed CreatePaymentsRequestLineItemsItemVariantProduct
 	var marshaler = struct {
 		embed
 	}{
@@ -11960,7 +3658,7 @@ func (c *CreatePaymentsRequestOnePlanProduct) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreatePaymentsRequestOnePlanProduct) String() string {
+func (c *CreatePaymentsRequestLineItemsItemVariantProduct) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -11975,35 +3673,101 @@ func (c *CreatePaymentsRequestOnePlanProduct) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Autogenerated input type of CreatePayment
-var (
-	createPaymentsRequestThreeFieldCompanyID       = big.NewInt(1 << 0)
-	createPaymentsRequestThreeFieldEmail           = big.NewInt(1 << 1)
-	createPaymentsRequestThreeFieldMemberID        = big.NewInt(1 << 2)
-	createPaymentsRequestThreeFieldMetadata        = big.NewInt(1 << 3)
-	createPaymentsRequestThreeFieldPaymentMethodID = big.NewInt(1 << 4)
-	createPaymentsRequestThreeFieldPlanID          = big.NewInt(1 << 5)
-	createPaymentsRequestThreeFieldPromoCodeID     = big.NewInt(1 << 6)
-	createPaymentsRequestThreeFieldReturnURL       = big.NewInt(1 << 7)
+// Global affiliate program status.
+type CreatePaymentsRequestLineItemsItemVariantProductGlobalAffiliateStatus string
+
+const (
+	CreatePaymentsRequestLineItemsItemVariantProductGlobalAffiliateStatusEnabled  CreatePaymentsRequestLineItemsItemVariantProductGlobalAffiliateStatus = "enabled"
+	CreatePaymentsRequestLineItemsItemVariantProductGlobalAffiliateStatusDisabled CreatePaymentsRequestLineItemsItemVariantProductGlobalAffiliateStatus = "disabled"
 )
 
-type CreatePaymentsRequestThree struct {
-	// The ID of the company to create the payment for.
-	CompanyID string `json:"company_id" url:"company_id"`
-	// Overrides the buyer email carried on the confirmation token, resolving or creating the Whop user the payment belongs to. Ignored when the confirmation token was created by a signed-in buyer, and unless confirmation_token is provided.
-	Email *string `json:"email,omitempty" url:"email,omitempty"`
-	// The ID of the member to create the payment for. Required unless confirmation_token is provided.
-	MemberID string `json:"member_id" url:"member_id"`
-	// Custom metadata to attach to the payment.
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// The ID of the payment method to use for the payment. It must be connected to the Member being charged. Required unless confirmation_token is provided.
-	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
-	// An ID of an existing plan to use for the payment.
-	PlanID string `json:"plan_id" url:"plan_id"`
-	// The ID of an active promo code to apply to this payment. The promo code must belong to the company and be valid for the plan being purchased. The plan must be attached to a product — promo codes are not eligible for one-off purchases.
-	PromoCodeID *string `json:"promo_code_id,omitempty" url:"promo_code_id,omitempty"`
-	// Where the buyer continues after completing an off-site step. Must be an absolute https URL without credentials (http is allowed for localhost), at most 2,048 characters. Editable until they return — see the payment's update endpoint. Ignored unless confirmation_token is provided.
-	ReturnURL *string `json:"return_url,omitempty" url:"return_url,omitempty"`
+func NewCreatePaymentsRequestLineItemsItemVariantProductGlobalAffiliateStatusFromString(s string) (CreatePaymentsRequestLineItemsItemVariantProductGlobalAffiliateStatus, error) {
+	switch s {
+	case "enabled":
+		return CreatePaymentsRequestLineItemsItemVariantProductGlobalAffiliateStatusEnabled, nil
+	case "disabled":
+		return CreatePaymentsRequestLineItemsItemVariantProductGlobalAffiliateStatusDisabled, nil
+	}
+	var t CreatePaymentsRequestLineItemsItemVariantProductGlobalAffiliateStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePaymentsRequestLineItemsItemVariantProductGlobalAffiliateStatus) Ptr() *CreatePaymentsRequestLineItemsItemVariantProductGlobalAffiliateStatus {
+	return &c
+}
+
+// Product visibility. Defaults to hidden.
+type CreatePaymentsRequestLineItemsItemVariantProductVisibility string
+
+const (
+	CreatePaymentsRequestLineItemsItemVariantProductVisibilityVisible   CreatePaymentsRequestLineItemsItemVariantProductVisibility = "visible"
+	CreatePaymentsRequestLineItemsItemVariantProductVisibilityHidden    CreatePaymentsRequestLineItemsItemVariantProductVisibility = "hidden"
+	CreatePaymentsRequestLineItemsItemVariantProductVisibilityArchived  CreatePaymentsRequestLineItemsItemVariantProductVisibility = "archived"
+	CreatePaymentsRequestLineItemsItemVariantProductVisibilityQuickLink CreatePaymentsRequestLineItemsItemVariantProductVisibility = "quick_link"
+)
+
+func NewCreatePaymentsRequestLineItemsItemVariantProductVisibilityFromString(s string) (CreatePaymentsRequestLineItemsItemVariantProductVisibility, error) {
+	switch s {
+	case "visible":
+		return CreatePaymentsRequestLineItemsItemVariantProductVisibilityVisible, nil
+	case "hidden":
+		return CreatePaymentsRequestLineItemsItemVariantProductVisibilityHidden, nil
+	case "archived":
+		return CreatePaymentsRequestLineItemsItemVariantProductVisibilityArchived, nil
+	case "quick_link":
+		return CreatePaymentsRequestLineItemsItemVariantProductVisibilityQuickLink, nil
+	}
+	var t CreatePaymentsRequestLineItemsItemVariantProductVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePaymentsRequestLineItemsItemVariantProductVisibility) Ptr() *CreatePaymentsRequestLineItemsItemVariantProductVisibility {
+	return &c
+}
+
+// Whether the variant is visible to customers.
+type CreatePaymentsRequestLineItemsItemVariantVisibility string
+
+const (
+	CreatePaymentsRequestLineItemsItemVariantVisibilityVisible   CreatePaymentsRequestLineItemsItemVariantVisibility = "visible"
+	CreatePaymentsRequestLineItemsItemVariantVisibilityHidden    CreatePaymentsRequestLineItemsItemVariantVisibility = "hidden"
+	CreatePaymentsRequestLineItemsItemVariantVisibilityArchived  CreatePaymentsRequestLineItemsItemVariantVisibility = "archived"
+	CreatePaymentsRequestLineItemsItemVariantVisibilityQuickLink CreatePaymentsRequestLineItemsItemVariantVisibility = "quick_link"
+)
+
+func NewCreatePaymentsRequestLineItemsItemVariantVisibilityFromString(s string) (CreatePaymentsRequestLineItemsItemVariantVisibility, error) {
+	switch s {
+	case "visible":
+		return CreatePaymentsRequestLineItemsItemVariantVisibilityVisible, nil
+	case "hidden":
+		return CreatePaymentsRequestLineItemsItemVariantVisibilityHidden, nil
+	case "archived":
+		return CreatePaymentsRequestLineItemsItemVariantVisibilityArchived, nil
+	case "quick_link":
+		return CreatePaymentsRequestLineItemsItemVariantVisibilityQuickLink, nil
+	}
+	var t CreatePaymentsRequestLineItemsItemVariantVisibility
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePaymentsRequestLineItemsItemVariantVisibility) Ptr() *CreatePaymentsRequestLineItemsItemVariantVisibility {
+	return &c
+}
+
+var (
+	createPaymentsRequestPaymentMethodFieldCardPresent = big.NewInt(1 << 0)
+	createPaymentsRequestPaymentMethodFieldPaypal      = big.NewInt(1 << 1)
+	createPaymentsRequestPaymentMethodFieldType        = big.NewInt(1 << 2)
+)
+
+// A payment method named on this call rather than described by a confirmation token. `type` names it and the member named after it carries its details. Nothing is collected on this call: the payment is created first and the buyer or device then acts on the `next_action` the status endpoint serves. `card_present` (Tap to Pay): the reader collects against the payment with the client secret in `next_action`. `paypal`: the buyer approves on PayPal's page, reached through a `redirect` `next_action`, then returns to `return_url`; `member_id` or `email` names the buyer. Mutually exclusive with `confirmation_token` and `payment_method_id`, and with `member_id` except for `paypal`.
+type CreatePaymentsRequestPaymentMethod struct {
+	// Required when `type` is `card_present`.
+	CardPresent *CreatePaymentsRequestPaymentMethodCardPresent `json:"card_present,omitempty" url:"card_present,omitempty"`
+	// Options for a `paypal` payment method.
+	Paypal *CreatePaymentsRequestPaymentMethodPaypal `json:"paypal,omitempty" url:"paypal,omitempty"`
+	// The kind of payment method; the member named after it carries its details.
+	Type CreatePaymentsRequestPaymentMethodType `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -12012,139 +3776,71 @@ type CreatePaymentsRequestThree struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreatePaymentsRequestThree) GetCompanyID() string {
+func (c *CreatePaymentsRequestPaymentMethod) GetCardPresent() *CreatePaymentsRequestPaymentMethodCardPresent {
+	if c == nil {
+		return nil
+	}
+	return c.CardPresent
+}
+
+func (c *CreatePaymentsRequestPaymentMethod) GetPaypal() *CreatePaymentsRequestPaymentMethodPaypal {
+	if c == nil {
+		return nil
+	}
+	return c.Paypal
+}
+
+func (c *CreatePaymentsRequestPaymentMethod) GetType() CreatePaymentsRequestPaymentMethodType {
 	if c == nil {
 		return ""
 	}
-	return c.CompanyID
+	return c.Type
 }
 
-func (c *CreatePaymentsRequestThree) GetEmail() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Email
-}
-
-func (c *CreatePaymentsRequestThree) GetMemberID() string {
-	if c == nil {
-		return ""
-	}
-	return c.MemberID
-}
-
-func (c *CreatePaymentsRequestThree) GetMetadata() map[string]any {
-	if c == nil {
-		return nil
-	}
-	return c.Metadata
-}
-
-func (c *CreatePaymentsRequestThree) GetPaymentMethodID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.PaymentMethodID
-}
-
-func (c *CreatePaymentsRequestThree) GetPlanID() string {
-	if c == nil {
-		return ""
-	}
-	return c.PlanID
-}
-
-func (c *CreatePaymentsRequestThree) GetPromoCodeID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.PromoCodeID
-}
-
-func (c *CreatePaymentsRequestThree) GetReturnURL() *string {
-	if c == nil {
-		return nil
-	}
-	return c.ReturnURL
-}
-
-func (c *CreatePaymentsRequestThree) GetExtraProperties() map[string]interface{} {
+func (c *CreatePaymentsRequestPaymentMethod) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreatePaymentsRequestThree) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+func (c *CreatePaymentsRequestPaymentMethod) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
+// SetCardPresent sets the CardPresent field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestThree) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createPaymentsRequestThreeFieldCompanyID)
+func (c *CreatePaymentsRequestPaymentMethod) SetCardPresent(cardPresent *CreatePaymentsRequestPaymentMethodCardPresent) {
+	c.CardPresent = cardPresent
+	c.require(createPaymentsRequestPaymentMethodFieldCardPresent)
 }
 
-// SetEmail sets the Email field and marks it as non-optional;
+// SetPaypal sets the Paypal field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestThree) SetEmail(email *string) {
-	c.Email = email
-	c.require(createPaymentsRequestThreeFieldEmail)
+func (c *CreatePaymentsRequestPaymentMethod) SetPaypal(paypal *CreatePaymentsRequestPaymentMethodPaypal) {
+	c.Paypal = paypal
+	c.require(createPaymentsRequestPaymentMethodFieldPaypal)
 }
 
-// SetMemberID sets the MemberID field and marks it as non-optional;
+// SetType sets the Type field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestThree) SetMemberID(memberID string) {
-	c.MemberID = memberID
-	c.require(createPaymentsRequestThreeFieldMemberID)
+func (c *CreatePaymentsRequestPaymentMethod) SetType(type_ CreatePaymentsRequestPaymentMethodType) {
+	c.Type = type_
+	c.require(createPaymentsRequestPaymentMethodFieldType)
 }
 
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestThree) SetMetadata(metadata map[string]any) {
-	c.Metadata = metadata
-	c.require(createPaymentsRequestThreeFieldMetadata)
-}
-
-// SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestThree) SetPaymentMethodID(paymentMethodID *string) {
-	c.PaymentMethodID = paymentMethodID
-	c.require(createPaymentsRequestThreeFieldPaymentMethodID)
-}
-
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestThree) SetPlanID(planID string) {
-	c.PlanID = planID
-	c.require(createPaymentsRequestThreeFieldPlanID)
-}
-
-// SetPromoCodeID sets the PromoCodeID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestThree) SetPromoCodeID(promoCodeID *string) {
-	c.PromoCodeID = promoCodeID
-	c.require(createPaymentsRequestThreeFieldPromoCodeID)
-}
-
-// SetReturnURL sets the ReturnURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestThree) SetReturnURL(returnURL *string) {
-	c.ReturnURL = returnURL
-	c.require(createPaymentsRequestThreeFieldReturnURL)
-}
-
-func (c *CreatePaymentsRequestThree) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreatePaymentsRequestThree
+func (c *CreatePaymentsRequestPaymentMethod) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePaymentsRequestPaymentMethod
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreatePaymentsRequestThree(value)
+	*c = CreatePaymentsRequestPaymentMethod(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
@@ -12154,8 +3850,8 @@ func (c *CreatePaymentsRequestThree) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c *CreatePaymentsRequestThree) MarshalJSON() ([]byte, error) {
-	type embed CreatePaymentsRequestThree
+func (c *CreatePaymentsRequestPaymentMethod) MarshalJSON() ([]byte, error) {
+	type embed CreatePaymentsRequestPaymentMethod
 	var marshaler = struct {
 		embed
 	}{
@@ -12165,1014 +3861,7 @@ func (c *CreatePaymentsRequestThree) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreatePaymentsRequestThree) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-// Autogenerated input type of CreatePayment
-var (
-	createPaymentsRequestTwoFieldCompanyID         = big.NewInt(1 << 0)
-	createPaymentsRequestTwoFieldConfirmationToken = big.NewInt(1 << 1)
-	createPaymentsRequestTwoFieldEmail             = big.NewInt(1 << 2)
-	createPaymentsRequestTwoFieldMetadata          = big.NewInt(1 << 3)
-	createPaymentsRequestTwoFieldPaymentMethodID   = big.NewInt(1 << 4)
-	createPaymentsRequestTwoFieldPlanID            = big.NewInt(1 << 5)
-	createPaymentsRequestTwoFieldPromoCodeID       = big.NewInt(1 << 6)
-	createPaymentsRequestTwoFieldReturnURL         = big.NewInt(1 << 7)
-)
-
-type CreatePaymentsRequestTwo struct {
-	// The ID of the company to create the payment for.
-	CompanyID string `json:"company_id" url:"company_id"`
-	// A confirmation token ID (ctok_) describing a payment method the buyer just supplied. Provide this INSTEAD of member_id and payment_method_id to charge a method that is not yet on file — the buyer is resolved from the token's billing email, or from `email`. The buyer may still have a step to complete (3DS, a redirect, linking a bank); poll the payment's status endpoint for what to do next.
-	ConfirmationToken string `json:"confirmation_token" url:"confirmation_token"`
-	// Overrides the buyer email carried on the confirmation token, resolving or creating the Whop user the payment belongs to. Ignored when the confirmation token was created by a signed-in buyer, and unless confirmation_token is provided.
-	Email *string `json:"email,omitempty" url:"email,omitempty"`
-	// Custom metadata to attach to the payment.
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// The ID of the payment method to use for the payment. It must be connected to the Member being charged. Required unless confirmation_token is provided.
-	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
-	// An ID of an existing plan to use for the payment.
-	PlanID string `json:"plan_id" url:"plan_id"`
-	// The ID of an active promo code to apply to this payment. The promo code must belong to the company and be valid for the plan being purchased. The plan must be attached to a product — promo codes are not eligible for one-off purchases.
-	PromoCodeID *string `json:"promo_code_id,omitempty" url:"promo_code_id,omitempty"`
-	// Where the buyer continues after completing an off-site step. Must be an absolute https URL without credentials (http is allowed for localhost), at most 2,048 characters. Editable until they return — see the payment's update endpoint. Ignored unless confirmation_token is provided.
-	ReturnURL *string `json:"return_url,omitempty" url:"return_url,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreatePaymentsRequestTwo) GetCompanyID() string {
-	if c == nil {
-		return ""
-	}
-	return c.CompanyID
-}
-
-func (c *CreatePaymentsRequestTwo) GetConfirmationToken() string {
-	if c == nil {
-		return ""
-	}
-	return c.ConfirmationToken
-}
-
-func (c *CreatePaymentsRequestTwo) GetEmail() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Email
-}
-
-func (c *CreatePaymentsRequestTwo) GetMetadata() map[string]any {
-	if c == nil {
-		return nil
-	}
-	return c.Metadata
-}
-
-func (c *CreatePaymentsRequestTwo) GetPaymentMethodID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.PaymentMethodID
-}
-
-func (c *CreatePaymentsRequestTwo) GetPlanID() string {
-	if c == nil {
-		return ""
-	}
-	return c.PlanID
-}
-
-func (c *CreatePaymentsRequestTwo) GetPromoCodeID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.PromoCodeID
-}
-
-func (c *CreatePaymentsRequestTwo) GetReturnURL() *string {
-	if c == nil {
-		return nil
-	}
-	return c.ReturnURL
-}
-
-func (c *CreatePaymentsRequestTwo) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreatePaymentsRequestTwo) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestTwo) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createPaymentsRequestTwoFieldCompanyID)
-}
-
-// SetConfirmationToken sets the ConfirmationToken field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestTwo) SetConfirmationToken(confirmationToken string) {
-	c.ConfirmationToken = confirmationToken
-	c.require(createPaymentsRequestTwoFieldConfirmationToken)
-}
-
-// SetEmail sets the Email field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestTwo) SetEmail(email *string) {
-	c.Email = email
-	c.require(createPaymentsRequestTwoFieldEmail)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestTwo) SetMetadata(metadata map[string]any) {
-	c.Metadata = metadata
-	c.require(createPaymentsRequestTwoFieldMetadata)
-}
-
-// SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestTwo) SetPaymentMethodID(paymentMethodID *string) {
-	c.PaymentMethodID = paymentMethodID
-	c.require(createPaymentsRequestTwoFieldPaymentMethodID)
-}
-
-// SetPlanID sets the PlanID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestTwo) SetPlanID(planID string) {
-	c.PlanID = planID
-	c.require(createPaymentsRequestTwoFieldPlanID)
-}
-
-// SetPromoCodeID sets the PromoCodeID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestTwo) SetPromoCodeID(promoCodeID *string) {
-	c.PromoCodeID = promoCodeID
-	c.require(createPaymentsRequestTwoFieldPromoCodeID)
-}
-
-// SetReturnURL sets the ReturnURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestTwo) SetReturnURL(returnURL *string) {
-	c.ReturnURL = returnURL
-	c.require(createPaymentsRequestTwoFieldReturnURL)
-}
-
-func (c *CreatePaymentsRequestTwo) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreatePaymentsRequestTwo
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreatePaymentsRequestTwo(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreatePaymentsRequestTwo) MarshalJSON() ([]byte, error) {
-	type embed CreatePaymentsRequestTwo
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreatePaymentsRequestTwo) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-// Autogenerated input type of CreatePayment
-var (
-	createPaymentsRequestZeroFieldCompanyID         = big.NewInt(1 << 0)
-	createPaymentsRequestZeroFieldConfirmationToken = big.NewInt(1 << 1)
-	createPaymentsRequestZeroFieldEmail             = big.NewInt(1 << 2)
-	createPaymentsRequestZeroFieldMetadata          = big.NewInt(1 << 3)
-	createPaymentsRequestZeroFieldPaymentMethodID   = big.NewInt(1 << 4)
-	createPaymentsRequestZeroFieldPlan              = big.NewInt(1 << 5)
-	createPaymentsRequestZeroFieldPromoCodeID       = big.NewInt(1 << 6)
-	createPaymentsRequestZeroFieldReturnURL         = big.NewInt(1 << 7)
-)
-
-type CreatePaymentsRequestZero struct {
-	// The ID of the company to create the payment for.
-	CompanyID string `json:"company_id" url:"company_id"`
-	// A confirmation token ID (ctok_) describing a payment method the buyer just supplied. Provide this INSTEAD of member_id and payment_method_id to charge a method that is not yet on file — the buyer is resolved from the token's billing email, or from `email`. The buyer may still have a step to complete (3DS, a redirect, linking a bank); poll the payment's status endpoint for what to do next.
-	ConfirmationToken string `json:"confirmation_token" url:"confirmation_token"`
-	// Overrides the buyer email carried on the confirmation token, resolving or creating the Whop user the payment belongs to. Ignored when the confirmation token was created by a signed-in buyer, and unless confirmation_token is provided.
-	Email *string `json:"email,omitempty" url:"email,omitempty"`
-	// Custom metadata to attach to the payment.
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// The ID of the payment method to use for the payment. It must be connected to the Member being charged. Required unless confirmation_token is provided.
-	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
-	// Pass this object to create a new plan for this payment
-	Plan *CreatePaymentsRequestZeroPlan `json:"plan" url:"plan"`
-	// The ID of an active promo code to apply to this payment. The promo code must belong to the company and be valid for the plan being purchased. The plan must be attached to a product — promo codes are not eligible for one-off purchases.
-	PromoCodeID *string `json:"promo_code_id,omitempty" url:"promo_code_id,omitempty"`
-	// Where the buyer continues after completing an off-site step. Must be an absolute https URL without credentials (http is allowed for localhost), at most 2,048 characters. Editable until they return — see the payment's update endpoint. Ignored unless confirmation_token is provided.
-	ReturnURL *string `json:"return_url,omitempty" url:"return_url,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreatePaymentsRequestZero) GetCompanyID() string {
-	if c == nil {
-		return ""
-	}
-	return c.CompanyID
-}
-
-func (c *CreatePaymentsRequestZero) GetConfirmationToken() string {
-	if c == nil {
-		return ""
-	}
-	return c.ConfirmationToken
-}
-
-func (c *CreatePaymentsRequestZero) GetEmail() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Email
-}
-
-func (c *CreatePaymentsRequestZero) GetMetadata() map[string]any {
-	if c == nil {
-		return nil
-	}
-	return c.Metadata
-}
-
-func (c *CreatePaymentsRequestZero) GetPaymentMethodID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.PaymentMethodID
-}
-
-func (c *CreatePaymentsRequestZero) GetPlan() *CreatePaymentsRequestZeroPlan {
-	if c == nil {
-		return nil
-	}
-	return c.Plan
-}
-
-func (c *CreatePaymentsRequestZero) GetPromoCodeID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.PromoCodeID
-}
-
-func (c *CreatePaymentsRequestZero) GetReturnURL() *string {
-	if c == nil {
-		return nil
-	}
-	return c.ReturnURL
-}
-
-func (c *CreatePaymentsRequestZero) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreatePaymentsRequestZero) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetCompanyID sets the CompanyID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZero) SetCompanyID(companyID string) {
-	c.CompanyID = companyID
-	c.require(createPaymentsRequestZeroFieldCompanyID)
-}
-
-// SetConfirmationToken sets the ConfirmationToken field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZero) SetConfirmationToken(confirmationToken string) {
-	c.ConfirmationToken = confirmationToken
-	c.require(createPaymentsRequestZeroFieldConfirmationToken)
-}
-
-// SetEmail sets the Email field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZero) SetEmail(email *string) {
-	c.Email = email
-	c.require(createPaymentsRequestZeroFieldEmail)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZero) SetMetadata(metadata map[string]any) {
-	c.Metadata = metadata
-	c.require(createPaymentsRequestZeroFieldMetadata)
-}
-
-// SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZero) SetPaymentMethodID(paymentMethodID *string) {
-	c.PaymentMethodID = paymentMethodID
-	c.require(createPaymentsRequestZeroFieldPaymentMethodID)
-}
-
-// SetPlan sets the Plan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZero) SetPlan(plan *CreatePaymentsRequestZeroPlan) {
-	c.Plan = plan
-	c.require(createPaymentsRequestZeroFieldPlan)
-}
-
-// SetPromoCodeID sets the PromoCodeID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZero) SetPromoCodeID(promoCodeID *string) {
-	c.PromoCodeID = promoCodeID
-	c.require(createPaymentsRequestZeroFieldPromoCodeID)
-}
-
-// SetReturnURL sets the ReturnURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZero) SetReturnURL(returnURL *string) {
-	c.ReturnURL = returnURL
-	c.require(createPaymentsRequestZeroFieldReturnURL)
-}
-
-func (c *CreatePaymentsRequestZero) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreatePaymentsRequestZero
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreatePaymentsRequestZero(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreatePaymentsRequestZero) MarshalJSON() ([]byte, error) {
-	type embed CreatePaymentsRequestZero
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreatePaymentsRequestZero) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-// Pass this object to create a new plan for this payment
-var (
-	createPaymentsRequestZeroPlanFieldApplicationFeeAmount = big.NewInt(1 << 0)
-	createPaymentsRequestZeroPlanFieldBillingPeriod        = big.NewInt(1 << 1)
-	createPaymentsRequestZeroPlanFieldCurrency             = big.NewInt(1 << 2)
-	createPaymentsRequestZeroPlanFieldDescription          = big.NewInt(1 << 3)
-	createPaymentsRequestZeroPlanFieldExpirationDays       = big.NewInt(1 << 4)
-	createPaymentsRequestZeroPlanFieldForceCreateNewPlan   = big.NewInt(1 << 5)
-	createPaymentsRequestZeroPlanFieldInitialPrice         = big.NewInt(1 << 6)
-	createPaymentsRequestZeroPlanFieldInternalNotes        = big.NewInt(1 << 7)
-	createPaymentsRequestZeroPlanFieldPlanType             = big.NewInt(1 << 8)
-	createPaymentsRequestZeroPlanFieldProduct              = big.NewInt(1 << 9)
-	createPaymentsRequestZeroPlanFieldProductID            = big.NewInt(1 << 10)
-	createPaymentsRequestZeroPlanFieldRenewalPrice         = big.NewInt(1 << 11)
-	createPaymentsRequestZeroPlanFieldTitle                = big.NewInt(1 << 12)
-	createPaymentsRequestZeroPlanFieldTrialPeriodDays      = big.NewInt(1 << 13)
-	createPaymentsRequestZeroPlanFieldVisibility           = big.NewInt(1 << 14)
-)
-
-type CreatePaymentsRequestZeroPlan struct {
-	// The application fee amount collected by the platform from this connected account. Provided as a number in dollars (e.g., 5.00 for $5.00). Must be less than the total payment amount. Only valid for connected accounts with a parent company.
-	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
-	// The interval in days at which the plan charges (renewal plans). For example, 30 for monthly billing.
-	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
-	// The respective currency identifier for the plan.
-	Currency Currencies `json:"currency" url:"currency"`
-	// The description of the plan.
-	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	// The number of days until the membership expires and revokes access (expiration plans). For example, 365 for one year.
-	ExpirationDays *int `json:"expiration_days,omitempty" url:"expiration_days,omitempty"`
-	// Whether to force the creation of a new plan even if one with the same attributes already exists.
-	ForceCreateNewPlan *bool `json:"force_create_new_plan,omitempty" url:"force_create_new_plan,omitempty"`
-	// An additional amount charged upon first purchase. Provided as a number in the specified currency. Eg: 10.43 for $10.43 USD.
-	InitialPrice *float64 `json:"initial_price,omitempty" url:"initial_price,omitempty"`
-	// A personal description or notes section for the business.
-	InternalNotes *string `json:"internal_notes,omitempty" url:"internal_notes,omitempty"`
-	// Indicates if the plan is a one time payment or recurring.
-	PlanType *PlanTypes `json:"plan_type,omitempty" url:"plan_type,omitempty"`
-	// Pass this object to create a new product for this plan. We will use the product external identifier to find or create an existing product.
-	Product *CreatePaymentsRequestZeroPlanProduct `json:"product,omitempty" url:"product,omitempty"`
-	// The product the plan is related to. Either this or product is required.
-	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
-	// The amount the customer is charged every billing period. Provided as a number in the specified currency. Eg: 10.43 for $10.43 USD.
-	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
-	// The title of the plan. This will be visible on the product page to customers.
-	Title *string `json:"title,omitempty" url:"title,omitempty"`
-	// The number of free trial days added before a renewal plan.
-	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
-	// Shows or hides the plan from public/business view.
-	Visibility *Visibility `json:"visibility,omitempty" url:"visibility,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreatePaymentsRequestZeroPlan) GetApplicationFeeAmount() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.ApplicationFeeAmount
-}
-
-func (c *CreatePaymentsRequestZeroPlan) GetBillingPeriod() *int {
-	if c == nil {
-		return nil
-	}
-	return c.BillingPeriod
-}
-
-func (c *CreatePaymentsRequestZeroPlan) GetCurrency() Currencies {
-	if c == nil {
-		return ""
-	}
-	return c.Currency
-}
-
-func (c *CreatePaymentsRequestZeroPlan) GetDescription() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Description
-}
-
-func (c *CreatePaymentsRequestZeroPlan) GetExpirationDays() *int {
-	if c == nil {
-		return nil
-	}
-	return c.ExpirationDays
-}
-
-func (c *CreatePaymentsRequestZeroPlan) GetForceCreateNewPlan() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.ForceCreateNewPlan
-}
-
-func (c *CreatePaymentsRequestZeroPlan) GetInitialPrice() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.InitialPrice
-}
-
-func (c *CreatePaymentsRequestZeroPlan) GetInternalNotes() *string {
-	if c == nil {
-		return nil
-	}
-	return c.InternalNotes
-}
-
-func (c *CreatePaymentsRequestZeroPlan) GetPlanType() *PlanTypes {
-	if c == nil {
-		return nil
-	}
-	return c.PlanType
-}
-
-func (c *CreatePaymentsRequestZeroPlan) GetProduct() *CreatePaymentsRequestZeroPlanProduct {
-	if c == nil {
-		return nil
-	}
-	return c.Product
-}
-
-func (c *CreatePaymentsRequestZeroPlan) GetProductID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.ProductID
-}
-
-func (c *CreatePaymentsRequestZeroPlan) GetRenewalPrice() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.RenewalPrice
-}
-
-func (c *CreatePaymentsRequestZeroPlan) GetTitle() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Title
-}
-
-func (c *CreatePaymentsRequestZeroPlan) GetTrialPeriodDays() *int {
-	if c == nil {
-		return nil
-	}
-	return c.TrialPeriodDays
-}
-
-func (c *CreatePaymentsRequestZeroPlan) GetVisibility() *Visibility {
-	if c == nil {
-		return nil
-	}
-	return c.Visibility
-}
-
-func (c *CreatePaymentsRequestZeroPlan) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreatePaymentsRequestZeroPlan) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetApplicationFeeAmount sets the ApplicationFeeAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlan) SetApplicationFeeAmount(applicationFeeAmount *float64) {
-	c.ApplicationFeeAmount = applicationFeeAmount
-	c.require(createPaymentsRequestZeroPlanFieldApplicationFeeAmount)
-}
-
-// SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlan) SetBillingPeriod(billingPeriod *int) {
-	c.BillingPeriod = billingPeriod
-	c.require(createPaymentsRequestZeroPlanFieldBillingPeriod)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlan) SetCurrency(currency Currencies) {
-	c.Currency = currency
-	c.require(createPaymentsRequestZeroPlanFieldCurrency)
-}
-
-// SetDescription sets the Description field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlan) SetDescription(description *string) {
-	c.Description = description
-	c.require(createPaymentsRequestZeroPlanFieldDescription)
-}
-
-// SetExpirationDays sets the ExpirationDays field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlan) SetExpirationDays(expirationDays *int) {
-	c.ExpirationDays = expirationDays
-	c.require(createPaymentsRequestZeroPlanFieldExpirationDays)
-}
-
-// SetForceCreateNewPlan sets the ForceCreateNewPlan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlan) SetForceCreateNewPlan(forceCreateNewPlan *bool) {
-	c.ForceCreateNewPlan = forceCreateNewPlan
-	c.require(createPaymentsRequestZeroPlanFieldForceCreateNewPlan)
-}
-
-// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlan) SetInitialPrice(initialPrice *float64) {
-	c.InitialPrice = initialPrice
-	c.require(createPaymentsRequestZeroPlanFieldInitialPrice)
-}
-
-// SetInternalNotes sets the InternalNotes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlan) SetInternalNotes(internalNotes *string) {
-	c.InternalNotes = internalNotes
-	c.require(createPaymentsRequestZeroPlanFieldInternalNotes)
-}
-
-// SetPlanType sets the PlanType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlan) SetPlanType(planType *PlanTypes) {
-	c.PlanType = planType
-	c.require(createPaymentsRequestZeroPlanFieldPlanType)
-}
-
-// SetProduct sets the Product field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlan) SetProduct(product *CreatePaymentsRequestZeroPlanProduct) {
-	c.Product = product
-	c.require(createPaymentsRequestZeroPlanFieldProduct)
-}
-
-// SetProductID sets the ProductID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlan) SetProductID(productID *string) {
-	c.ProductID = productID
-	c.require(createPaymentsRequestZeroPlanFieldProductID)
-}
-
-// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlan) SetRenewalPrice(renewalPrice *float64) {
-	c.RenewalPrice = renewalPrice
-	c.require(createPaymentsRequestZeroPlanFieldRenewalPrice)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlan) SetTitle(title *string) {
-	c.Title = title
-	c.require(createPaymentsRequestZeroPlanFieldTitle)
-}
-
-// SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlan) SetTrialPeriodDays(trialPeriodDays *int) {
-	c.TrialPeriodDays = trialPeriodDays
-	c.require(createPaymentsRequestZeroPlanFieldTrialPeriodDays)
-}
-
-// SetVisibility sets the Visibility field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlan) SetVisibility(visibility *Visibility) {
-	c.Visibility = visibility
-	c.require(createPaymentsRequestZeroPlanFieldVisibility)
-}
-
-func (c *CreatePaymentsRequestZeroPlan) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreatePaymentsRequestZeroPlan
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreatePaymentsRequestZeroPlan(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreatePaymentsRequestZeroPlan) MarshalJSON() ([]byte, error) {
-	type embed CreatePaymentsRequestZeroPlan
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreatePaymentsRequestZeroPlan) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-// Pass this object to create a new product for this plan. We will use the product external identifier to find or create an existing product.
-var (
-	createPaymentsRequestZeroPlanProductFieldCollectShippingAddress    = big.NewInt(1 << 0)
-	createPaymentsRequestZeroPlanProductFieldCustomStatementDescriptor = big.NewInt(1 << 1)
-	createPaymentsRequestZeroPlanProductFieldDescription               = big.NewInt(1 << 2)
-	createPaymentsRequestZeroPlanProductFieldExternalIdentifier        = big.NewInt(1 << 3)
-	createPaymentsRequestZeroPlanProductFieldGlobalAffiliatePercentage = big.NewInt(1 << 4)
-	createPaymentsRequestZeroPlanProductFieldGlobalAffiliateStatus     = big.NewInt(1 << 5)
-	createPaymentsRequestZeroPlanProductFieldHeadline                  = big.NewInt(1 << 6)
-	createPaymentsRequestZeroPlanProductFieldProductTaxCodeID          = big.NewInt(1 << 7)
-	createPaymentsRequestZeroPlanProductFieldRedirectPurchaseURL       = big.NewInt(1 << 8)
-	createPaymentsRequestZeroPlanProductFieldRoute                     = big.NewInt(1 << 9)
-	createPaymentsRequestZeroPlanProductFieldTitle                     = big.NewInt(1 << 10)
-	createPaymentsRequestZeroPlanProductFieldVisibility                = big.NewInt(1 << 11)
-)
-
-type CreatePaymentsRequestZeroPlanProduct struct {
-	// Whether or not to collect shipping information at checkout from the customer.
-	CollectShippingAddress *bool `json:"collect_shipping_address,omitempty" url:"collect_shipping_address,omitempty"`
-	// The custom statement descriptor for the product i.e. WHOP*SPORTS, must be between 5 and 22 characters, contain at least one letter, and not contain any of the following characters: <, >, \, ', "
-	CustomStatementDescriptor *string `json:"custom_statement_descriptor,omitempty" url:"custom_statement_descriptor,omitempty"`
-	// A written description of the product.
-	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	// A unique ID used to find or create a product. When provided during creation, we will look for an existing product with this external identifier — if found, it will be updated; otherwise, a new product will be created.
-	ExternalIdentifier string `json:"external_identifier" url:"external_identifier"`
-	// The percentage of the revenue that goes to the global affiliate program.
-	GlobalAffiliatePercentage *float64 `json:"global_affiliate_percentage,omitempty" url:"global_affiliate_percentage,omitempty"`
-	// The status of the global affiliate program for this product.
-	GlobalAffiliateStatus *GlobalAffiliateStatuses `json:"global_affiliate_status,omitempty" url:"global_affiliate_status,omitempty"`
-	// The headline of the product.
-	Headline *string `json:"headline,omitempty" url:"headline,omitempty"`
-	// The ID of the product tax code to apply to this product.
-	ProductTaxCodeID *string `json:"product_tax_code_id,omitempty" url:"product_tax_code_id,omitempty"`
-	// The URL to redirect the customer to after a purchase.
-	RedirectPurchaseURL *string `json:"redirect_purchase_url,omitempty" url:"redirect_purchase_url,omitempty"`
-	// The route of the product.
-	Route *string `json:"route,omitempty" url:"route,omitempty"`
-	// The title of the product.
-	Title string `json:"title" url:"title"`
-	// This product will/will not be displayed publicly - default hidden.
-	Visibility *Visibility `json:"visibility,omitempty" url:"visibility,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreatePaymentsRequestZeroPlanProduct) GetCollectShippingAddress() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.CollectShippingAddress
-}
-
-func (c *CreatePaymentsRequestZeroPlanProduct) GetCustomStatementDescriptor() *string {
-	if c == nil {
-		return nil
-	}
-	return c.CustomStatementDescriptor
-}
-
-func (c *CreatePaymentsRequestZeroPlanProduct) GetDescription() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Description
-}
-
-func (c *CreatePaymentsRequestZeroPlanProduct) GetExternalIdentifier() string {
-	if c == nil {
-		return ""
-	}
-	return c.ExternalIdentifier
-}
-
-func (c *CreatePaymentsRequestZeroPlanProduct) GetGlobalAffiliatePercentage() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.GlobalAffiliatePercentage
-}
-
-func (c *CreatePaymentsRequestZeroPlanProduct) GetGlobalAffiliateStatus() *GlobalAffiliateStatuses {
-	if c == nil {
-		return nil
-	}
-	return c.GlobalAffiliateStatus
-}
-
-func (c *CreatePaymentsRequestZeroPlanProduct) GetHeadline() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Headline
-}
-
-func (c *CreatePaymentsRequestZeroPlanProduct) GetProductTaxCodeID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.ProductTaxCodeID
-}
-
-func (c *CreatePaymentsRequestZeroPlanProduct) GetRedirectPurchaseURL() *string {
-	if c == nil {
-		return nil
-	}
-	return c.RedirectPurchaseURL
-}
-
-func (c *CreatePaymentsRequestZeroPlanProduct) GetRoute() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Route
-}
-
-func (c *CreatePaymentsRequestZeroPlanProduct) GetTitle() string {
-	if c == nil {
-		return ""
-	}
-	return c.Title
-}
-
-func (c *CreatePaymentsRequestZeroPlanProduct) GetVisibility() *Visibility {
-	if c == nil {
-		return nil
-	}
-	return c.Visibility
-}
-
-func (c *CreatePaymentsRequestZeroPlanProduct) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreatePaymentsRequestZeroPlanProduct) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
-	}
-	c.explicitFields.Or(c.explicitFields, field)
-}
-
-// SetCollectShippingAddress sets the CollectShippingAddress field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlanProduct) SetCollectShippingAddress(collectShippingAddress *bool) {
-	c.CollectShippingAddress = collectShippingAddress
-	c.require(createPaymentsRequestZeroPlanProductFieldCollectShippingAddress)
-}
-
-// SetCustomStatementDescriptor sets the CustomStatementDescriptor field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlanProduct) SetCustomStatementDescriptor(customStatementDescriptor *string) {
-	c.CustomStatementDescriptor = customStatementDescriptor
-	c.require(createPaymentsRequestZeroPlanProductFieldCustomStatementDescriptor)
-}
-
-// SetDescription sets the Description field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlanProduct) SetDescription(description *string) {
-	c.Description = description
-	c.require(createPaymentsRequestZeroPlanProductFieldDescription)
-}
-
-// SetExternalIdentifier sets the ExternalIdentifier field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlanProduct) SetExternalIdentifier(externalIdentifier string) {
-	c.ExternalIdentifier = externalIdentifier
-	c.require(createPaymentsRequestZeroPlanProductFieldExternalIdentifier)
-}
-
-// SetGlobalAffiliatePercentage sets the GlobalAffiliatePercentage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlanProduct) SetGlobalAffiliatePercentage(globalAffiliatePercentage *float64) {
-	c.GlobalAffiliatePercentage = globalAffiliatePercentage
-	c.require(createPaymentsRequestZeroPlanProductFieldGlobalAffiliatePercentage)
-}
-
-// SetGlobalAffiliateStatus sets the GlobalAffiliateStatus field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlanProduct) SetGlobalAffiliateStatus(globalAffiliateStatus *GlobalAffiliateStatuses) {
-	c.GlobalAffiliateStatus = globalAffiliateStatus
-	c.require(createPaymentsRequestZeroPlanProductFieldGlobalAffiliateStatus)
-}
-
-// SetHeadline sets the Headline field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlanProduct) SetHeadline(headline *string) {
-	c.Headline = headline
-	c.require(createPaymentsRequestZeroPlanProductFieldHeadline)
-}
-
-// SetProductTaxCodeID sets the ProductTaxCodeID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlanProduct) SetProductTaxCodeID(productTaxCodeID *string) {
-	c.ProductTaxCodeID = productTaxCodeID
-	c.require(createPaymentsRequestZeroPlanProductFieldProductTaxCodeID)
-}
-
-// SetRedirectPurchaseURL sets the RedirectPurchaseURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlanProduct) SetRedirectPurchaseURL(redirectPurchaseURL *string) {
-	c.RedirectPurchaseURL = redirectPurchaseURL
-	c.require(createPaymentsRequestZeroPlanProductFieldRedirectPurchaseURL)
-}
-
-// SetRoute sets the Route field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlanProduct) SetRoute(route *string) {
-	c.Route = route
-	c.require(createPaymentsRequestZeroPlanProductFieldRoute)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlanProduct) SetTitle(title string) {
-	c.Title = title
-	c.require(createPaymentsRequestZeroPlanProductFieldTitle)
-}
-
-// SetVisibility sets the Visibility field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsRequestZeroPlanProduct) SetVisibility(visibility *Visibility) {
-	c.Visibility = visibility
-	c.require(createPaymentsRequestZeroPlanProductFieldVisibility)
-}
-
-func (c *CreatePaymentsRequestZeroPlanProduct) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreatePaymentsRequestZeroPlanProduct
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreatePaymentsRequestZeroPlanProduct(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreatePaymentsRequestZeroPlanProduct) MarshalJSON() ([]byte, error) {
-	type embed CreatePaymentsRequestZeroPlanProduct
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreatePaymentsRequestZeroPlanProduct) String() string {
+func (c *CreatePaymentsRequestPaymentMethod) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -13188,198 +3877,13 @@ func (c *CreatePaymentsRequestZeroPlanProduct) String() string {
 }
 
 var (
-	createPaymentsResponseFieldAmountAfterFees            = big.NewInt(1 << 0)
-	createPaymentsResponseFieldApplicationFee             = big.NewInt(1 << 1)
-	createPaymentsResponseFieldAutoRefunded               = big.NewInt(1 << 2)
-	createPaymentsResponseFieldBillingAddress             = big.NewInt(1 << 3)
-	createPaymentsResponseFieldBillingReason              = big.NewInt(1 << 4)
-	createPaymentsResponseFieldCardBrand                  = big.NewInt(1 << 5)
-	createPaymentsResponseFieldCardExpMonth               = big.NewInt(1 << 6)
-	createPaymentsResponseFieldCardExpYear                = big.NewInt(1 << 7)
-	createPaymentsResponseFieldCardLast4                  = big.NewInt(1 << 8)
-	createPaymentsResponseFieldCheckoutConfigurationID    = big.NewInt(1 << 9)
-	createPaymentsResponseFieldCompany                    = big.NewInt(1 << 10)
-	createPaymentsResponseFieldCreatedAt                  = big.NewInt(1 << 11)
-	createPaymentsResponseFieldCurrency                   = big.NewInt(1 << 12)
-	createPaymentsResponseFieldCustomerPhone              = big.NewInt(1 << 13)
-	createPaymentsResponseFieldDeclineCode                = big.NewInt(1 << 14)
-	createPaymentsResponseFieldDisputeAlertedAt           = big.NewInt(1 << 15)
-	createPaymentsResponseFieldDisputes                   = big.NewInt(1 << 16)
-	createPaymentsResponseFieldFailureMessage             = big.NewInt(1 << 17)
-	createPaymentsResponseFieldFinancingInstallmentsCount = big.NewInt(1 << 18)
-	createPaymentsResponseFieldFinancingTransactions      = big.NewInt(1 << 19)
-	createPaymentsResponseFieldID                         = big.NewInt(1 << 20)
-	createPaymentsResponseFieldLastPaymentAttempt         = big.NewInt(1 << 21)
-	createPaymentsResponseFieldMember                     = big.NewInt(1 << 22)
-	createPaymentsResponseFieldMembership                 = big.NewInt(1 << 23)
-	createPaymentsResponseFieldMetadata                   = big.NewInt(1 << 24)
-	createPaymentsResponseFieldNeedsTracking              = big.NewInt(1 << 25)
-	createPaymentsResponseFieldNextPaymentAttempt         = big.NewInt(1 << 26)
-	createPaymentsResponseFieldPaidAt                     = big.NewInt(1 << 27)
-	createPaymentsResponseFieldPaymentInstrument          = big.NewInt(1 << 28)
-	createPaymentsResponseFieldPaymentMethod              = big.NewInt(1 << 29)
-	createPaymentsResponseFieldPaymentMethodType          = big.NewInt(1 << 30)
-	createPaymentsResponseFieldPaymentsFailed             = big.NewInt(1 << 31)
-	createPaymentsResponseFieldPlan                       = big.NewInt(1 << 32)
-	createPaymentsResponseFieldProduct                    = big.NewInt(1 << 33)
-	createPaymentsResponseFieldPromoCode                  = big.NewInt(1 << 34)
-	createPaymentsResponseFieldRefundable                 = big.NewInt(1 << 35)
-	createPaymentsResponseFieldRefundedAmount             = big.NewInt(1 << 36)
-	createPaymentsResponseFieldRefundedAt                 = big.NewInt(1 << 37)
-	createPaymentsResponseFieldRefunds                    = big.NewInt(1 << 38)
-	createPaymentsResponseFieldResolutions                = big.NewInt(1 << 39)
-	createPaymentsResponseFieldRetryable                  = big.NewInt(1 << 40)
-	createPaymentsResponseFieldRiskScore                  = big.NewInt(1 << 41)
-	createPaymentsResponseFieldRiskSignals                = big.NewInt(1 << 42)
-	createPaymentsResponseFieldSettlementAmount           = big.NewInt(1 << 43)
-	createPaymentsResponseFieldSettlementCurrency         = big.NewInt(1 << 44)
-	createPaymentsResponseFieldSettlementExchangeRate     = big.NewInt(1 << 45)
-	createPaymentsResponseFieldSettlementTimeAt           = big.NewInt(1 << 46)
-	createPaymentsResponseFieldShipment                   = big.NewInt(1 << 47)
-	createPaymentsResponseFieldShippingAddress            = big.NewInt(1 << 48)
-	createPaymentsResponseFieldStatus                     = big.NewInt(1 << 49)
-	createPaymentsResponseFieldSubstatus                  = big.NewInt(1 << 50)
-	createPaymentsResponseFieldSubtotal                   = big.NewInt(1 << 51)
-	createPaymentsResponseFieldTaxAmount                  = big.NewInt(1 << 52)
-	createPaymentsResponseFieldTaxBehavior                = big.NewInt(1 << 53)
-	createPaymentsResponseFieldTaxRefundedAmount          = big.NewInt(1 << 54)
-	createPaymentsResponseFieldThreeDsVerified            = big.NewInt(1 << 55)
-	createPaymentsResponseFieldTotal                      = big.NewInt(1 << 56)
-	createPaymentsResponseFieldUpdatedAt                  = big.NewInt(1 << 57)
-	createPaymentsResponseFieldUsdTotal                   = big.NewInt(1 << 58)
-	createPaymentsResponseFieldUser                       = big.NewInt(1 << 59)
-	createPaymentsResponseFieldVerificationChecks         = big.NewInt(1 << 60)
-	createPaymentsResponseFieldVoidable                   = big.NewInt(1 << 61)
-	createPaymentsResponseFieldClientSecret               = big.NewInt(1 << 62)
+	createPaymentsRequestPaymentMethodCardPresentFieldPlatform = big.NewInt(1 << 0)
 )
 
-type CreatePaymentsResponse struct {
-	// How much the payment is for after fees
-	AmountAfterFees float64 `json:"amount_after_fees" url:"amount_after_fees"`
-	// The application fee charged on this payment.
-	ApplicationFee *PaymentApplicationFee `json:"application_fee,omitempty" url:"application_fee,omitempty"`
-	// Whether this payment was auto refunded or not
-	AutoRefunded bool `json:"auto_refunded" url:"auto_refunded"`
-	// The address of the user who made the payment.
-	BillingAddress *PaymentBillingAddress `json:"billing_address,omitempty" url:"billing_address,omitempty"`
-	// The machine-readable reason this charge was created, such as initial subscription purchase, renewal cycle, or one-time payment.
-	BillingReason *BillingReasons `json:"billing_reason,omitempty" url:"billing_reason,omitempty"`
-	// Card network reported by the processor (e.g., 'visa', 'mastercard', 'amex'). Present only when the payment method type is 'card'.
-	CardBrand *CardBrands `json:"card_brand,omitempty" url:"card_brand,omitempty"`
-	// The expiration month (1-12) of the card used for this payment. Falls back to the declined card on failed payments with no saved card. Null when the payment was not made with a card or the expiry is unavailable.
-	CardExpMonth *int `json:"card_exp_month,omitempty" url:"card_exp_month,omitempty"`
-	// The four-digit expiration year of the card used for this payment. Falls back to the declined card on failed payments with no saved card. Null when the payment was not made with a card or the expiry is unavailable.
-	CardExpYear *int `json:"card_exp_year,omitempty" url:"card_exp_year,omitempty"`
-	// The last four digits of the card used to make this payment. Null if the payment was not made with a card.
-	CardLast4 *string `json:"card_last4,omitempty" url:"card_last4,omitempty"`
-	// The ID of the checkout session/configuration that produced this payment, if any. Use this to map payments back to the checkout configuration that created them.
-	CheckoutConfigurationID *string `json:"checkout_configuration_id,omitempty" url:"checkout_configuration_id,omitempty"`
-	// The company for the payment.
-	Company *PaymentCompany `json:"company,omitempty" url:"company,omitempty"`
-	// The datetime the payment was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The three-letter ISO currency code for this payment (e.g., 'usd', 'eur').
-	Currency Currencies `json:"currency" url:"currency"`
-	// Phone number the customer provided at checkout, or their verified phone number when your checkout requires phone verification. `null` when no phone number was collected.
-	CustomerPhone *string `json:"customer_phone,omitempty" url:"customer_phone,omitempty"`
-	// The reason the payment was declined. Null if the payment did not fail.
-	DeclineCode *PaymentDeclineCodes `json:"decline_code,omitempty" url:"decline_code,omitempty"`
-	// When an alert came in that this transaction will be disputed
-	DisputeAlertedAt *time.Time `json:"dispute_alerted_at,omitempty" url:"dispute_alerted_at,omitempty"`
-	// The disputes attached to this payment. Null if the actor in context does not have the payment:dispute:read permission.
-	Disputes []*PaymentDisputesItem `json:"disputes,omitempty" url:"disputes,omitempty"`
-	// If the payment failed, the reason for the failure.
-	FailureMessage *string `json:"failure_message,omitempty" url:"failure_message,omitempty"`
-	// The number of financing installments for the payment. Present if the payment is a financing payment (e.g. Splitit, Klarna, etc.).
-	FinancingInstallmentsCount *int `json:"financing_installments_count,omitempty" url:"financing_installments_count,omitempty"`
-	// The financing transactions attached to this payment. Present if the payment is a financing payment (e.g. Splitit, Klarna, etc.).
-	FinancingTransactions []*PaymentFinancingTransactionsItem `json:"financing_transactions" url:"financing_transactions"`
-	// The unique identifier for the payment.
-	ID string `json:"id" url:"id"`
-	// The time of the last payment attempt.
-	LastPaymentAttempt *time.Time `json:"last_payment_attempt,omitempty" url:"last_payment_attempt,omitempty"`
-	// The member attached to this payment.
-	Member *PaymentMember `json:"member,omitempty" url:"member,omitempty"`
-	// The membership attached to this payment.
-	Membership *PaymentMembership `json:"membership,omitempty" url:"membership,omitempty"`
-	// The custom metadata stored on this payment. This will be copied over to the checkout configuration for which this payment was made
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// Whether this payment is holding funds until the order ships and has no tracking number yet.
-	NeedsTracking *bool `json:"needs_tracking,omitempty" url:"needs_tracking,omitempty"`
-	// The time of the next schedule payment retry.
-	NextPaymentAttempt *time.Time `json:"next_payment_attempt,omitempty" url:"next_payment_attempt,omitempty"`
-	// The time at which this payment was successfully collected. Null if the payment has not yet succeeded. As a Unix timestamp.
-	PaidAt *time.Time `json:"paid_at,omitempty" url:"paid_at,omitempty"`
-	// The instrument this payment was made with, shaped for display: the method type, a buyer-facing name, the standard icon set, and the card facts when it was a card. Null when the receipt names no payment method.
-	PaymentInstrument *PaymentPaymentInstrument `json:"payment_instrument,omitempty" url:"payment_instrument,omitempty"`
-	// The tokenized payment method reference used for this payment. Null if no token was used.
-	PaymentMethod *PaymentPaymentMethod `json:"payment_method,omitempty" url:"payment_method,omitempty"`
-	// The type of payment instrument used for this payment (e.g., card, Cash App, iDEAL, Klarna, crypto). Null when the processor does not supply a type.
-	PaymentMethodType *PaymentMethodTypes `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
-	// The number of failed payment attempts for the payment.
-	PaymentsFailed *int `json:"payments_failed,omitempty" url:"payments_failed,omitempty"`
-	// The plan attached to this payment.
-	Plan *PaymentPlan `json:"plan,omitempty" url:"plan,omitempty"`
-	// The product this payment was made for
-	Product *PaymentProduct `json:"product,omitempty" url:"product,omitempty"`
-	// The promo code used for this payment.
-	PromoCode *PaymentPromoCode `json:"promo_code,omitempty" url:"promo_code,omitempty"`
-	// True only for payments that are `paid`, have not been fully refunded, and were processed by a payment processor that allows refunds.
-	Refundable bool `json:"refundable" url:"refundable"`
-	// The payment refund amount(if applicable).
-	RefundedAmount *float64 `json:"refunded_amount,omitempty" url:"refunded_amount,omitempty"`
-	// When the payment was refunded (if applicable).
-	RefundedAt *time.Time `json:"refunded_at,omitempty" url:"refunded_at,omitempty"`
-	// The refunds issued against this payment, newest first, including failed and canceled refund attempts. Limited to the 100 most recent.
-	Refunds []*PaymentRefundsItem `json:"refunds" url:"refunds"`
-	// The resolution center cases opened by the customer on this payment. Null if the actor in context does not have the payment:resolution_center_case:read permission.
-	Resolutions []*PaymentResolutionsItem `json:"resolutions,omitempty" url:"resolutions,omitempty"`
-	// True when the payment status is `open` and its membership is in one of the retry-eligible states (`active`, `trialing`, `completed`, or `past_due`), or when it is a failed initial billing-engine payment on a `drafted` membership with an unlimited-stock plan; otherwise false. Used to decide if Whop can attempt the charge again.
-	Retryable bool `json:"retryable" url:"retryable"`
-	// Whop's in-house fraud risk score for this payment, from 0 (lowest risk) to 100 (highest risk). Null when the payment has not been scored or scoring has not yet completed.
-	RiskScore *int `json:"risk_score,omitempty" url:"risk_score,omitempty"`
-	// A curated set of factors behind the risk score, grouped by category (business transaction history, buyer, device). Each entry has a key, human-readable label, category, and value. Null when there is no risk assessment for this payment.
-	RiskSignals map[string]any `json:"risk_signals,omitempty" url:"risk_signals,omitempty"`
-	// The total amount charged to the customer for this payment, including taxes and after any discounts. In the currency specified by the currency field.
-	SettlementAmount float64 `json:"settlement_amount" url:"settlement_amount"`
-	// The three-letter ISO currency code for this payment (e.g., 'usd', 'eur').
-	SettlementCurrency Currencies `json:"settlement_currency" url:"settlement_currency"`
-	// Deprecated. Always returns null.
-	SettlementExchangeRate *float64 `json:"settlement_exchange_rate,omitempty" url:"settlement_exchange_rate,omitempty"`
-	// When this payment's funds post to the company's available balance, at midnight UTC. Known at payment time and never changes. The `ledger_account.funds_available` webhook carries the same `settlement_time_at` when that batch posts — match them to know these funds are now withdrawable.
-	SettlementTimeAt *time.Time `json:"settlement_time_at,omitempty" url:"settlement_time_at,omitempty"`
-	// The shipment attached to this payment.
-	Shipment *PaymentShipment `json:"shipment,omitempty" url:"shipment,omitempty"`
-	// The shipping address provided by the customer for physical goods. Null if no shipping address was collected.
-	ShippingAddress *PaymentShippingAddress `json:"shipping_address,omitempty" url:"shipping_address,omitempty"`
-	// The current lifecycle state of this payment (e.g., 'draft', 'open', 'paid', 'void').
-	Status *ReceiptStatus `json:"status,omitempty" url:"status,omitempty"`
-	// The friendly status of the payment.
-	Substatus FriendlyReceiptStatus `json:"substatus" url:"substatus"`
-	// The subtotal to show to the creator (excluding buyer fees).
-	Subtotal *float64 `json:"subtotal,omitempty" url:"subtotal,omitempty"`
-	// The calculated amount of the sales/VAT tax (if applicable).
-	TaxAmount *float64 `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
-	// The type of tax inclusivity applied to the payment, for determining whether the tax is included in the final price, or paid on top.
-	TaxBehavior *ReceiptTaxBehaviors `json:"tax_behavior,omitempty" url:"tax_behavior,omitempty"`
-	// The amount of tax that has been refunded (if applicable).
-	TaxRefundedAmount *float64 `json:"tax_refunded_amount,omitempty" url:"tax_refunded_amount,omitempty"`
-	// Whether 3D Secure authentication was completed for this payment.
-	ThreeDsVerified bool `json:"three_ds_verified" url:"three_ds_verified"`
-	// The total to show to the creator (excluding buyer fees).
-	Total *float64 `json:"total,omitempty" url:"total,omitempty"`
-	// The datetime the payment was last updated.
-	UpdatedAt time.Time `json:"updated_at" url:"updated_at"`
-	// The total in USD to show to the creator (excluding buyer fees).
-	UsdTotal *float64 `json:"usd_total,omitempty" url:"usd_total,omitempty"`
-	// The user that made this payment.
-	User *PaymentUser `json:"user,omitempty" url:"user,omitempty"`
-	// The issuer's address and card security code check results for this payment. Null when the processor returned none.
-	VerificationChecks *PaymentVerificationChecks `json:"verification_checks,omitempty" url:"verification_checks,omitempty"`
-	// True when the payment is tied to a membership in `past_due`, the payment status is `open`, and the processor allows voiding payments; otherwise false.
-	Voidable bool `json:"voidable" url:"voidable"`
-	// The credential the buyer's surface presents to poll this payment and set its return URL. Returned when a payment created from a confirmation token is created or retrieved by a caller with the payment:charge permission. Null for payments created from a stored payment method or callers without payment:charge. It unlocks this payment and nothing else; treat it like a password for that one attempt.
-	ClientSecret *string `json:"client_secret,omitempty" url:"client_secret,omitempty"`
+// Required when `type` is `card_present`.
+type CreatePaymentsRequestPaymentMethodCardPresent struct {
+	// Which Tap to Pay SDK collects the payment. Stripe offers Tap to Pay in different countries per platform, so eligibility is checked for the named one, as it is for the connection-token session.
+	Platform CreatePaymentsRequestPaymentMethodCardPresentPlatform `json:"platform" url:"platform"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -13388,929 +3892,43 @@ type CreatePaymentsResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CreatePaymentsResponse) GetAmountAfterFees() float64 {
-	if c == nil {
-		return 0
-	}
-	return c.AmountAfterFees
-}
-
-func (c *CreatePaymentsResponse) GetApplicationFee() *PaymentApplicationFee {
-	if c == nil {
-		return nil
-	}
-	return c.ApplicationFee
-}
-
-func (c *CreatePaymentsResponse) GetAutoRefunded() bool {
-	if c == nil {
-		return false
-	}
-	return c.AutoRefunded
-}
-
-func (c *CreatePaymentsResponse) GetBillingAddress() *PaymentBillingAddress {
-	if c == nil {
-		return nil
-	}
-	return c.BillingAddress
-}
-
-func (c *CreatePaymentsResponse) GetBillingReason() *BillingReasons {
-	if c == nil {
-		return nil
-	}
-	return c.BillingReason
-}
-
-func (c *CreatePaymentsResponse) GetCardBrand() *CardBrands {
-	if c == nil {
-		return nil
-	}
-	return c.CardBrand
-}
-
-func (c *CreatePaymentsResponse) GetCardExpMonth() *int {
-	if c == nil {
-		return nil
-	}
-	return c.CardExpMonth
-}
-
-func (c *CreatePaymentsResponse) GetCardExpYear() *int {
-	if c == nil {
-		return nil
-	}
-	return c.CardExpYear
-}
-
-func (c *CreatePaymentsResponse) GetCardLast4() *string {
-	if c == nil {
-		return nil
-	}
-	return c.CardLast4
-}
-
-func (c *CreatePaymentsResponse) GetCheckoutConfigurationID() *string {
-	if c == nil {
-		return nil
-	}
-	return c.CheckoutConfigurationID
-}
-
-func (c *CreatePaymentsResponse) GetCompany() *PaymentCompany {
-	if c == nil {
-		return nil
-	}
-	return c.Company
-}
-
-func (c *CreatePaymentsResponse) GetCreatedAt() time.Time {
-	if c == nil {
-		return time.Time{}
-	}
-	return c.CreatedAt
-}
-
-func (c *CreatePaymentsResponse) GetCurrency() Currencies {
+func (c *CreatePaymentsRequestPaymentMethodCardPresent) GetPlatform() CreatePaymentsRequestPaymentMethodCardPresentPlatform {
 	if c == nil {
 		return ""
 	}
-	return c.Currency
+	return c.Platform
 }
 
-func (c *CreatePaymentsResponse) GetCustomerPhone() *string {
-	if c == nil {
-		return nil
-	}
-	return c.CustomerPhone
-}
-
-func (c *CreatePaymentsResponse) GetDeclineCode() *PaymentDeclineCodes {
-	if c == nil {
-		return nil
-	}
-	return c.DeclineCode
-}
-
-func (c *CreatePaymentsResponse) GetDisputeAlertedAt() *time.Time {
-	if c == nil {
-		return nil
-	}
-	return c.DisputeAlertedAt
-}
-
-func (c *CreatePaymentsResponse) GetDisputes() []*PaymentDisputesItem {
-	if c == nil {
-		return nil
-	}
-	return c.Disputes
-}
-
-func (c *CreatePaymentsResponse) GetFailureMessage() *string {
-	if c == nil {
-		return nil
-	}
-	return c.FailureMessage
-}
-
-func (c *CreatePaymentsResponse) GetFinancingInstallmentsCount() *int {
-	if c == nil {
-		return nil
-	}
-	return c.FinancingInstallmentsCount
-}
-
-func (c *CreatePaymentsResponse) GetFinancingTransactions() []*PaymentFinancingTransactionsItem {
-	if c == nil {
-		return nil
-	}
-	return c.FinancingTransactions
-}
-
-func (c *CreatePaymentsResponse) GetID() string {
-	if c == nil {
-		return ""
-	}
-	return c.ID
-}
-
-func (c *CreatePaymentsResponse) GetLastPaymentAttempt() *time.Time {
-	if c == nil {
-		return nil
-	}
-	return c.LastPaymentAttempt
-}
-
-func (c *CreatePaymentsResponse) GetMember() *PaymentMember {
-	if c == nil {
-		return nil
-	}
-	return c.Member
-}
-
-func (c *CreatePaymentsResponse) GetMembership() *PaymentMembership {
-	if c == nil {
-		return nil
-	}
-	return c.Membership
-}
-
-func (c *CreatePaymentsResponse) GetMetadata() map[string]any {
-	if c == nil {
-		return nil
-	}
-	return c.Metadata
-}
-
-func (c *CreatePaymentsResponse) GetNeedsTracking() *bool {
-	if c == nil {
-		return nil
-	}
-	return c.NeedsTracking
-}
-
-func (c *CreatePaymentsResponse) GetNextPaymentAttempt() *time.Time {
-	if c == nil {
-		return nil
-	}
-	return c.NextPaymentAttempt
-}
-
-func (c *CreatePaymentsResponse) GetPaidAt() *time.Time {
-	if c == nil {
-		return nil
-	}
-	return c.PaidAt
-}
-
-func (c *CreatePaymentsResponse) GetPaymentInstrument() *PaymentPaymentInstrument {
-	if c == nil {
-		return nil
-	}
-	return c.PaymentInstrument
-}
-
-func (c *CreatePaymentsResponse) GetPaymentMethod() *PaymentPaymentMethod {
-	if c == nil {
-		return nil
-	}
-	return c.PaymentMethod
-}
-
-func (c *CreatePaymentsResponse) GetPaymentMethodType() *PaymentMethodTypes {
-	if c == nil {
-		return nil
-	}
-	return c.PaymentMethodType
-}
-
-func (c *CreatePaymentsResponse) GetPaymentsFailed() *int {
-	if c == nil {
-		return nil
-	}
-	return c.PaymentsFailed
-}
-
-func (c *CreatePaymentsResponse) GetPlan() *PaymentPlan {
-	if c == nil {
-		return nil
-	}
-	return c.Plan
-}
-
-func (c *CreatePaymentsResponse) GetProduct() *PaymentProduct {
-	if c == nil {
-		return nil
-	}
-	return c.Product
-}
-
-func (c *CreatePaymentsResponse) GetPromoCode() *PaymentPromoCode {
-	if c == nil {
-		return nil
-	}
-	return c.PromoCode
-}
-
-func (c *CreatePaymentsResponse) GetRefundable() bool {
-	if c == nil {
-		return false
-	}
-	return c.Refundable
-}
-
-func (c *CreatePaymentsResponse) GetRefundedAmount() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.RefundedAmount
-}
-
-func (c *CreatePaymentsResponse) GetRefundedAt() *time.Time {
-	if c == nil {
-		return nil
-	}
-	return c.RefundedAt
-}
-
-func (c *CreatePaymentsResponse) GetRefunds() []*PaymentRefundsItem {
-	if c == nil {
-		return nil
-	}
-	return c.Refunds
-}
-
-func (c *CreatePaymentsResponse) GetResolutions() []*PaymentResolutionsItem {
-	if c == nil {
-		return nil
-	}
-	return c.Resolutions
-}
-
-func (c *CreatePaymentsResponse) GetRetryable() bool {
-	if c == nil {
-		return false
-	}
-	return c.Retryable
-}
-
-func (c *CreatePaymentsResponse) GetRiskScore() *int {
-	if c == nil {
-		return nil
-	}
-	return c.RiskScore
-}
-
-func (c *CreatePaymentsResponse) GetRiskSignals() map[string]any {
-	if c == nil {
-		return nil
-	}
-	return c.RiskSignals
-}
-
-func (c *CreatePaymentsResponse) GetSettlementAmount() float64 {
-	if c == nil {
-		return 0
-	}
-	return c.SettlementAmount
-}
-
-func (c *CreatePaymentsResponse) GetSettlementCurrency() Currencies {
-	if c == nil {
-		return ""
-	}
-	return c.SettlementCurrency
-}
-
-func (c *CreatePaymentsResponse) GetSettlementExchangeRate() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.SettlementExchangeRate
-}
-
-func (c *CreatePaymentsResponse) GetSettlementTimeAt() *time.Time {
-	if c == nil {
-		return nil
-	}
-	return c.SettlementTimeAt
-}
-
-func (c *CreatePaymentsResponse) GetShipment() *PaymentShipment {
-	if c == nil {
-		return nil
-	}
-	return c.Shipment
-}
-
-func (c *CreatePaymentsResponse) GetShippingAddress() *PaymentShippingAddress {
-	if c == nil {
-		return nil
-	}
-	return c.ShippingAddress
-}
-
-func (c *CreatePaymentsResponse) GetStatus() *ReceiptStatus {
-	if c == nil {
-		return nil
-	}
-	return c.Status
-}
-
-func (c *CreatePaymentsResponse) GetSubstatus() FriendlyReceiptStatus {
-	if c == nil {
-		return ""
-	}
-	return c.Substatus
-}
-
-func (c *CreatePaymentsResponse) GetSubtotal() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.Subtotal
-}
-
-func (c *CreatePaymentsResponse) GetTaxAmount() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.TaxAmount
-}
-
-func (c *CreatePaymentsResponse) GetTaxBehavior() *ReceiptTaxBehaviors {
-	if c == nil {
-		return nil
-	}
-	return c.TaxBehavior
-}
-
-func (c *CreatePaymentsResponse) GetTaxRefundedAmount() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.TaxRefundedAmount
-}
-
-func (c *CreatePaymentsResponse) GetThreeDsVerified() bool {
-	if c == nil {
-		return false
-	}
-	return c.ThreeDsVerified
-}
-
-func (c *CreatePaymentsResponse) GetTotal() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.Total
-}
-
-func (c *CreatePaymentsResponse) GetUpdatedAt() time.Time {
-	if c == nil {
-		return time.Time{}
-	}
-	return c.UpdatedAt
-}
-
-func (c *CreatePaymentsResponse) GetUsdTotal() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.UsdTotal
-}
-
-func (c *CreatePaymentsResponse) GetUser() *PaymentUser {
-	if c == nil {
-		return nil
-	}
-	return c.User
-}
-
-func (c *CreatePaymentsResponse) GetVerificationChecks() *PaymentVerificationChecks {
-	if c == nil {
-		return nil
-	}
-	return c.VerificationChecks
-}
-
-func (c *CreatePaymentsResponse) GetVoidable() bool {
-	if c == nil {
-		return false
-	}
-	return c.Voidable
-}
-
-func (c *CreatePaymentsResponse) GetClientSecret() *string {
-	if c == nil {
-		return nil
-	}
-	return c.ClientSecret
-}
-
-func (c *CreatePaymentsResponse) GetExtraProperties() map[string]interface{} {
+func (c *CreatePaymentsRequestPaymentMethodCardPresent) GetExtraProperties() map[string]interface{} {
 	if c == nil {
 		return nil
 	}
 	return c.extraProperties
 }
 
-func (c *CreatePaymentsResponse) require(field *big.Int) {
-	if c.explicitFields == nil {
-		c.explicitFields = big.NewInt(0)
+func (c *CreatePaymentsRequestPaymentMethodCardPresent) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
-	c.explicitFields.Or(c.explicitFields, field)
+	next.Or(next, field)
+	c.explicitFields = next
 }
 
-// SetAmountAfterFees sets the AmountAfterFees field and marks it as non-optional;
+// SetPlatform sets the Platform field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetAmountAfterFees(amountAfterFees float64) {
-	c.AmountAfterFees = amountAfterFees
-	c.require(createPaymentsResponseFieldAmountAfterFees)
+func (c *CreatePaymentsRequestPaymentMethodCardPresent) SetPlatform(platform CreatePaymentsRequestPaymentMethodCardPresentPlatform) {
+	c.Platform = platform
+	c.require(createPaymentsRequestPaymentMethodCardPresentFieldPlatform)
 }
 
-// SetApplicationFee sets the ApplicationFee field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetApplicationFee(applicationFee *PaymentApplicationFee) {
-	c.ApplicationFee = applicationFee
-	c.require(createPaymentsResponseFieldApplicationFee)
-}
-
-// SetAutoRefunded sets the AutoRefunded field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetAutoRefunded(autoRefunded bool) {
-	c.AutoRefunded = autoRefunded
-	c.require(createPaymentsResponseFieldAutoRefunded)
-}
-
-// SetBillingAddress sets the BillingAddress field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetBillingAddress(billingAddress *PaymentBillingAddress) {
-	c.BillingAddress = billingAddress
-	c.require(createPaymentsResponseFieldBillingAddress)
-}
-
-// SetBillingReason sets the BillingReason field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetBillingReason(billingReason *BillingReasons) {
-	c.BillingReason = billingReason
-	c.require(createPaymentsResponseFieldBillingReason)
-}
-
-// SetCardBrand sets the CardBrand field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetCardBrand(cardBrand *CardBrands) {
-	c.CardBrand = cardBrand
-	c.require(createPaymentsResponseFieldCardBrand)
-}
-
-// SetCardExpMonth sets the CardExpMonth field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetCardExpMonth(cardExpMonth *int) {
-	c.CardExpMonth = cardExpMonth
-	c.require(createPaymentsResponseFieldCardExpMonth)
-}
-
-// SetCardExpYear sets the CardExpYear field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetCardExpYear(cardExpYear *int) {
-	c.CardExpYear = cardExpYear
-	c.require(createPaymentsResponseFieldCardExpYear)
-}
-
-// SetCardLast4 sets the CardLast4 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetCardLast4(cardLast4 *string) {
-	c.CardLast4 = cardLast4
-	c.require(createPaymentsResponseFieldCardLast4)
-}
-
-// SetCheckoutConfigurationID sets the CheckoutConfigurationID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetCheckoutConfigurationID(checkoutConfigurationID *string) {
-	c.CheckoutConfigurationID = checkoutConfigurationID
-	c.require(createPaymentsResponseFieldCheckoutConfigurationID)
-}
-
-// SetCompany sets the Company field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetCompany(company *PaymentCompany) {
-	c.Company = company
-	c.require(createPaymentsResponseFieldCompany)
-}
-
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetCreatedAt(createdAt time.Time) {
-	c.CreatedAt = createdAt
-	c.require(createPaymentsResponseFieldCreatedAt)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetCurrency(currency Currencies) {
-	c.Currency = currency
-	c.require(createPaymentsResponseFieldCurrency)
-}
-
-// SetCustomerPhone sets the CustomerPhone field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetCustomerPhone(customerPhone *string) {
-	c.CustomerPhone = customerPhone
-	c.require(createPaymentsResponseFieldCustomerPhone)
-}
-
-// SetDeclineCode sets the DeclineCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetDeclineCode(declineCode *PaymentDeclineCodes) {
-	c.DeclineCode = declineCode
-	c.require(createPaymentsResponseFieldDeclineCode)
-}
-
-// SetDisputeAlertedAt sets the DisputeAlertedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetDisputeAlertedAt(disputeAlertedAt *time.Time) {
-	c.DisputeAlertedAt = disputeAlertedAt
-	c.require(createPaymentsResponseFieldDisputeAlertedAt)
-}
-
-// SetDisputes sets the Disputes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetDisputes(disputes []*PaymentDisputesItem) {
-	c.Disputes = disputes
-	c.require(createPaymentsResponseFieldDisputes)
-}
-
-// SetFailureMessage sets the FailureMessage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetFailureMessage(failureMessage *string) {
-	c.FailureMessage = failureMessage
-	c.require(createPaymentsResponseFieldFailureMessage)
-}
-
-// SetFinancingInstallmentsCount sets the FinancingInstallmentsCount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetFinancingInstallmentsCount(financingInstallmentsCount *int) {
-	c.FinancingInstallmentsCount = financingInstallmentsCount
-	c.require(createPaymentsResponseFieldFinancingInstallmentsCount)
-}
-
-// SetFinancingTransactions sets the FinancingTransactions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetFinancingTransactions(financingTransactions []*PaymentFinancingTransactionsItem) {
-	c.FinancingTransactions = financingTransactions
-	c.require(createPaymentsResponseFieldFinancingTransactions)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetID(id string) {
-	c.ID = id
-	c.require(createPaymentsResponseFieldID)
-}
-
-// SetLastPaymentAttempt sets the LastPaymentAttempt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetLastPaymentAttempt(lastPaymentAttempt *time.Time) {
-	c.LastPaymentAttempt = lastPaymentAttempt
-	c.require(createPaymentsResponseFieldLastPaymentAttempt)
-}
-
-// SetMember sets the Member field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetMember(member *PaymentMember) {
-	c.Member = member
-	c.require(createPaymentsResponseFieldMember)
-}
-
-// SetMembership sets the Membership field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetMembership(membership *PaymentMembership) {
-	c.Membership = membership
-	c.require(createPaymentsResponseFieldMembership)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetMetadata(metadata map[string]any) {
-	c.Metadata = metadata
-	c.require(createPaymentsResponseFieldMetadata)
-}
-
-// SetNeedsTracking sets the NeedsTracking field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetNeedsTracking(needsTracking *bool) {
-	c.NeedsTracking = needsTracking
-	c.require(createPaymentsResponseFieldNeedsTracking)
-}
-
-// SetNextPaymentAttempt sets the NextPaymentAttempt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetNextPaymentAttempt(nextPaymentAttempt *time.Time) {
-	c.NextPaymentAttempt = nextPaymentAttempt
-	c.require(createPaymentsResponseFieldNextPaymentAttempt)
-}
-
-// SetPaidAt sets the PaidAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetPaidAt(paidAt *time.Time) {
-	c.PaidAt = paidAt
-	c.require(createPaymentsResponseFieldPaidAt)
-}
-
-// SetPaymentInstrument sets the PaymentInstrument field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetPaymentInstrument(paymentInstrument *PaymentPaymentInstrument) {
-	c.PaymentInstrument = paymentInstrument
-	c.require(createPaymentsResponseFieldPaymentInstrument)
-}
-
-// SetPaymentMethod sets the PaymentMethod field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetPaymentMethod(paymentMethod *PaymentPaymentMethod) {
-	c.PaymentMethod = paymentMethod
-	c.require(createPaymentsResponseFieldPaymentMethod)
-}
-
-// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetPaymentMethodType(paymentMethodType *PaymentMethodTypes) {
-	c.PaymentMethodType = paymentMethodType
-	c.require(createPaymentsResponseFieldPaymentMethodType)
-}
-
-// SetPaymentsFailed sets the PaymentsFailed field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetPaymentsFailed(paymentsFailed *int) {
-	c.PaymentsFailed = paymentsFailed
-	c.require(createPaymentsResponseFieldPaymentsFailed)
-}
-
-// SetPlan sets the Plan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetPlan(plan *PaymentPlan) {
-	c.Plan = plan
-	c.require(createPaymentsResponseFieldPlan)
-}
-
-// SetProduct sets the Product field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetProduct(product *PaymentProduct) {
-	c.Product = product
-	c.require(createPaymentsResponseFieldProduct)
-}
-
-// SetPromoCode sets the PromoCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetPromoCode(promoCode *PaymentPromoCode) {
-	c.PromoCode = promoCode
-	c.require(createPaymentsResponseFieldPromoCode)
-}
-
-// SetRefundable sets the Refundable field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetRefundable(refundable bool) {
-	c.Refundable = refundable
-	c.require(createPaymentsResponseFieldRefundable)
-}
-
-// SetRefundedAmount sets the RefundedAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetRefundedAmount(refundedAmount *float64) {
-	c.RefundedAmount = refundedAmount
-	c.require(createPaymentsResponseFieldRefundedAmount)
-}
-
-// SetRefundedAt sets the RefundedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetRefundedAt(refundedAt *time.Time) {
-	c.RefundedAt = refundedAt
-	c.require(createPaymentsResponseFieldRefundedAt)
-}
-
-// SetRefunds sets the Refunds field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetRefunds(refunds []*PaymentRefundsItem) {
-	c.Refunds = refunds
-	c.require(createPaymentsResponseFieldRefunds)
-}
-
-// SetResolutions sets the Resolutions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetResolutions(resolutions []*PaymentResolutionsItem) {
-	c.Resolutions = resolutions
-	c.require(createPaymentsResponseFieldResolutions)
-}
-
-// SetRetryable sets the Retryable field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetRetryable(retryable bool) {
-	c.Retryable = retryable
-	c.require(createPaymentsResponseFieldRetryable)
-}
-
-// SetRiskScore sets the RiskScore field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetRiskScore(riskScore *int) {
-	c.RiskScore = riskScore
-	c.require(createPaymentsResponseFieldRiskScore)
-}
-
-// SetRiskSignals sets the RiskSignals field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetRiskSignals(riskSignals map[string]any) {
-	c.RiskSignals = riskSignals
-	c.require(createPaymentsResponseFieldRiskSignals)
-}
-
-// SetSettlementAmount sets the SettlementAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetSettlementAmount(settlementAmount float64) {
-	c.SettlementAmount = settlementAmount
-	c.require(createPaymentsResponseFieldSettlementAmount)
-}
-
-// SetSettlementCurrency sets the SettlementCurrency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetSettlementCurrency(settlementCurrency Currencies) {
-	c.SettlementCurrency = settlementCurrency
-	c.require(createPaymentsResponseFieldSettlementCurrency)
-}
-
-// SetSettlementExchangeRate sets the SettlementExchangeRate field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetSettlementExchangeRate(settlementExchangeRate *float64) {
-	c.SettlementExchangeRate = settlementExchangeRate
-	c.require(createPaymentsResponseFieldSettlementExchangeRate)
-}
-
-// SetSettlementTimeAt sets the SettlementTimeAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetSettlementTimeAt(settlementTimeAt *time.Time) {
-	c.SettlementTimeAt = settlementTimeAt
-	c.require(createPaymentsResponseFieldSettlementTimeAt)
-}
-
-// SetShipment sets the Shipment field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetShipment(shipment *PaymentShipment) {
-	c.Shipment = shipment
-	c.require(createPaymentsResponseFieldShipment)
-}
-
-// SetShippingAddress sets the ShippingAddress field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetShippingAddress(shippingAddress *PaymentShippingAddress) {
-	c.ShippingAddress = shippingAddress
-	c.require(createPaymentsResponseFieldShippingAddress)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetStatus(status *ReceiptStatus) {
-	c.Status = status
-	c.require(createPaymentsResponseFieldStatus)
-}
-
-// SetSubstatus sets the Substatus field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetSubstatus(substatus FriendlyReceiptStatus) {
-	c.Substatus = substatus
-	c.require(createPaymentsResponseFieldSubstatus)
-}
-
-// SetSubtotal sets the Subtotal field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetSubtotal(subtotal *float64) {
-	c.Subtotal = subtotal
-	c.require(createPaymentsResponseFieldSubtotal)
-}
-
-// SetTaxAmount sets the TaxAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetTaxAmount(taxAmount *float64) {
-	c.TaxAmount = taxAmount
-	c.require(createPaymentsResponseFieldTaxAmount)
-}
-
-// SetTaxBehavior sets the TaxBehavior field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetTaxBehavior(taxBehavior *ReceiptTaxBehaviors) {
-	c.TaxBehavior = taxBehavior
-	c.require(createPaymentsResponseFieldTaxBehavior)
-}
-
-// SetTaxRefundedAmount sets the TaxRefundedAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetTaxRefundedAmount(taxRefundedAmount *float64) {
-	c.TaxRefundedAmount = taxRefundedAmount
-	c.require(createPaymentsResponseFieldTaxRefundedAmount)
-}
-
-// SetThreeDsVerified sets the ThreeDsVerified field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetThreeDsVerified(threeDsVerified bool) {
-	c.ThreeDsVerified = threeDsVerified
-	c.require(createPaymentsResponseFieldThreeDsVerified)
-}
-
-// SetTotal sets the Total field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetTotal(total *float64) {
-	c.Total = total
-	c.require(createPaymentsResponseFieldTotal)
-}
-
-// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetUpdatedAt(updatedAt time.Time) {
-	c.UpdatedAt = updatedAt
-	c.require(createPaymentsResponseFieldUpdatedAt)
-}
-
-// SetUsdTotal sets the UsdTotal field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetUsdTotal(usdTotal *float64) {
-	c.UsdTotal = usdTotal
-	c.require(createPaymentsResponseFieldUsdTotal)
-}
-
-// SetUser sets the User field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetUser(user *PaymentUser) {
-	c.User = user
-	c.require(createPaymentsResponseFieldUser)
-}
-
-// SetVerificationChecks sets the VerificationChecks field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetVerificationChecks(verificationChecks *PaymentVerificationChecks) {
-	c.VerificationChecks = verificationChecks
-	c.require(createPaymentsResponseFieldVerificationChecks)
-}
-
-// SetVoidable sets the Voidable field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetVoidable(voidable bool) {
-	c.Voidable = voidable
-	c.require(createPaymentsResponseFieldVoidable)
-}
-
-// SetClientSecret sets the ClientSecret field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePaymentsResponse) SetClientSecret(clientSecret *string) {
-	c.ClientSecret = clientSecret
-	c.require(createPaymentsResponseFieldClientSecret)
-}
-
-func (c *CreatePaymentsResponse) UnmarshalJSON(data []byte) error {
-	type embed CreatePaymentsResponse
-	var unmarshaler = struct {
-		embed
-		CreatedAt          *internal.DateTime `json:"created_at"`
-		DisputeAlertedAt   *internal.DateTime `json:"dispute_alerted_at,omitempty"`
-		LastPaymentAttempt *internal.DateTime `json:"last_payment_attempt,omitempty"`
-		NextPaymentAttempt *internal.DateTime `json:"next_payment_attempt,omitempty"`
-		PaidAt             *internal.DateTime `json:"paid_at,omitempty"`
-		RefundedAt         *internal.DateTime `json:"refunded_at,omitempty"`
-		SettlementTimeAt   *internal.DateTime `json:"settlement_time_at,omitempty"`
-		UpdatedAt          *internal.DateTime `json:"updated_at"`
-	}{
-		embed: embed(*c),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+func (c *CreatePaymentsRequestPaymentMethodCardPresent) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePaymentsRequestPaymentMethodCardPresent
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*c = CreatePaymentsResponse(unmarshaler.embed)
-	c.CreatedAt = unmarshaler.CreatedAt.Time()
-	c.DisputeAlertedAt = unmarshaler.DisputeAlertedAt.TimePtr()
-	c.LastPaymentAttempt = unmarshaler.LastPaymentAttempt.TimePtr()
-	c.NextPaymentAttempt = unmarshaler.NextPaymentAttempt.TimePtr()
-	c.PaidAt = unmarshaler.PaidAt.TimePtr()
-	c.RefundedAt = unmarshaler.RefundedAt.TimePtr()
-	c.SettlementTimeAt = unmarshaler.SettlementTimeAt.TimePtr()
-	c.UpdatedAt = unmarshaler.UpdatedAt.Time()
+	*c = CreatePaymentsRequestPaymentMethodCardPresent(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
@@ -14320,34 +3938,18 @@ func (c *CreatePaymentsResponse) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (c *CreatePaymentsResponse) MarshalJSON() ([]byte, error) {
-	type embed CreatePaymentsResponse
+func (c *CreatePaymentsRequestPaymentMethodCardPresent) MarshalJSON() ([]byte, error) {
+	type embed CreatePaymentsRequestPaymentMethodCardPresent
 	var marshaler = struct {
 		embed
-		CreatedAt          *internal.DateTime `json:"created_at"`
-		DisputeAlertedAt   *internal.DateTime `json:"dispute_alerted_at,omitempty"`
-		LastPaymentAttempt *internal.DateTime `json:"last_payment_attempt,omitempty"`
-		NextPaymentAttempt *internal.DateTime `json:"next_payment_attempt,omitempty"`
-		PaidAt             *internal.DateTime `json:"paid_at,omitempty"`
-		RefundedAt         *internal.DateTime `json:"refunded_at,omitempty"`
-		SettlementTimeAt   *internal.DateTime `json:"settlement_time_at,omitempty"`
-		UpdatedAt          *internal.DateTime `json:"updated_at"`
 	}{
-		embed:              embed(*c),
-		CreatedAt:          internal.NewDateTime(c.CreatedAt),
-		DisputeAlertedAt:   internal.NewOptionalDateTime(c.DisputeAlertedAt),
-		LastPaymentAttempt: internal.NewOptionalDateTime(c.LastPaymentAttempt),
-		NextPaymentAttempt: internal.NewOptionalDateTime(c.NextPaymentAttempt),
-		PaidAt:             internal.NewOptionalDateTime(c.PaidAt),
-		RefundedAt:         internal.NewOptionalDateTime(c.RefundedAt),
-		SettlementTimeAt:   internal.NewOptionalDateTime(c.SettlementTimeAt),
-		UpdatedAt:          internal.NewDateTime(c.UpdatedAt),
+		embed: embed(*c),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
 	return json.Marshal(explicitMarshaler)
 }
 
-func (c *CreatePaymentsResponse) String() string {
+func (c *CreatePaymentsRequestPaymentMethodCardPresent) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -14362,17 +3964,376 @@ func (c *CreatePaymentsResponse) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// The connection type for Fee.
+// Which Tap to Pay SDK collects the payment. Stripe offers Tap to Pay in different countries per platform, so eligibility is checked for the named one, as it is for the connection-token session.
+type CreatePaymentsRequestPaymentMethodCardPresentPlatform string
+
+const (
+	CreatePaymentsRequestPaymentMethodCardPresentPlatformIos     CreatePaymentsRequestPaymentMethodCardPresentPlatform = "ios"
+	CreatePaymentsRequestPaymentMethodCardPresentPlatformAndroid CreatePaymentsRequestPaymentMethodCardPresentPlatform = "android"
+)
+
+func NewCreatePaymentsRequestPaymentMethodCardPresentPlatformFromString(s string) (CreatePaymentsRequestPaymentMethodCardPresentPlatform, error) {
+	switch s {
+	case "ios":
+		return CreatePaymentsRequestPaymentMethodCardPresentPlatformIos, nil
+	case "android":
+		return CreatePaymentsRequestPaymentMethodCardPresentPlatformAndroid, nil
+	}
+	var t CreatePaymentsRequestPaymentMethodCardPresentPlatform
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePaymentsRequestPaymentMethodCardPresentPlatform) Ptr() *CreatePaymentsRequestPaymentMethodCardPresentPlatform {
+	return &c
+}
+
+var (
+	createPaymentsRequestPaymentMethodPaypalFieldRequestShipping = big.NewInt(1 << 0)
+)
+
+// Options for a `paypal` payment method.
+type CreatePaymentsRequestPaymentMethodPaypal struct {
+	// Has PayPal ask the buyer for a shipping address. Tax is recalculated for each address the buyer picks before they approve, so the total they approve is the total charged, and the address they confirm is returned on the payment as `shipping_address`. Cannot be combined with `shipping_address`. Defaults to false.
+	RequestShipping *bool `json:"request_shipping,omitempty" url:"request_shipping,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreatePaymentsRequestPaymentMethodPaypal) GetRequestShipping() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.RequestShipping
+}
+
+func (c *CreatePaymentsRequestPaymentMethodPaypal) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreatePaymentsRequestPaymentMethodPaypal) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetRequestShipping sets the RequestShipping field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestPaymentMethodPaypal) SetRequestShipping(requestShipping *bool) {
+	c.RequestShipping = requestShipping
+	c.require(createPaymentsRequestPaymentMethodPaypalFieldRequestShipping)
+}
+
+func (c *CreatePaymentsRequestPaymentMethodPaypal) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePaymentsRequestPaymentMethodPaypal
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreatePaymentsRequestPaymentMethodPaypal(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreatePaymentsRequestPaymentMethodPaypal) MarshalJSON() ([]byte, error) {
+	type embed CreatePaymentsRequestPaymentMethodPaypal
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreatePaymentsRequestPaymentMethodPaypal) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// The kind of payment method; the member named after it carries its details.
+type CreatePaymentsRequestPaymentMethodType string
+
+const (
+	CreatePaymentsRequestPaymentMethodTypeCardPresent CreatePaymentsRequestPaymentMethodType = "card_present"
+	CreatePaymentsRequestPaymentMethodTypePaypal      CreatePaymentsRequestPaymentMethodType = "paypal"
+)
+
+func NewCreatePaymentsRequestPaymentMethodTypeFromString(s string) (CreatePaymentsRequestPaymentMethodType, error) {
+	switch s {
+	case "card_present":
+		return CreatePaymentsRequestPaymentMethodTypeCardPresent, nil
+	case "paypal":
+		return CreatePaymentsRequestPaymentMethodTypePaypal, nil
+	}
+	var t CreatePaymentsRequestPaymentMethodType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePaymentsRequestPaymentMethodType) Ptr() *CreatePaymentsRequestPaymentMethodType {
+	return &c
+}
+
+// Attests that the buyer was told the payment method will be saved for later charges, and saves it once they approve, so it can be charged with `member_id` and `payment_method_id`. PayPal shows the buyer the agreement to future charges on its approval page. Omit it for a one-time payment that saves nothing. Ignored unless a `paypal` `payment_method` is provided.
+type CreatePaymentsRequestSetupFutureUsage string
+
+const (
+	CreatePaymentsRequestSetupFutureUsageOffSession CreatePaymentsRequestSetupFutureUsage = "off_session"
+)
+
+func NewCreatePaymentsRequestSetupFutureUsageFromString(s string) (CreatePaymentsRequestSetupFutureUsage, error) {
+	switch s {
+	case "off_session":
+		return CreatePaymentsRequestSetupFutureUsageOffSession, nil
+	}
+	var t CreatePaymentsRequestSetupFutureUsage
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePaymentsRequestSetupFutureUsage) Ptr() *CreatePaymentsRequestSetupFutureUsage {
+	return &c
+}
+
+var (
+	createPaymentsRequestShippingAddressFieldCity       = big.NewInt(1 << 0)
+	createPaymentsRequestShippingAddressFieldCountry    = big.NewInt(1 << 1)
+	createPaymentsRequestShippingAddressFieldLine1      = big.NewInt(1 << 2)
+	createPaymentsRequestShippingAddressFieldLine2      = big.NewInt(1 << 3)
+	createPaymentsRequestShippingAddressFieldName       = big.NewInt(1 << 4)
+	createPaymentsRequestShippingAddressFieldPostalCode = big.NewInt(1 << 5)
+	createPaymentsRequestShippingAddressFieldState      = big.NewInt(1 << 6)
+)
+
+// createPaymentsRequestShippingAddressNullableFields maps the wire names of CreatePaymentsRequestShippingAddress's nullable fields (required or optional) to their field bits.
+var createPaymentsRequestShippingAddressNullableFields = map[string]*big.Int{
+	"city":        createPaymentsRequestShippingAddressFieldCity,
+	"country":     createPaymentsRequestShippingAddressFieldCountry,
+	"line1":       createPaymentsRequestShippingAddressFieldLine1,
+	"line2":       createPaymentsRequestShippingAddressFieldLine2,
+	"name":        createPaymentsRequestShippingAddressFieldName,
+	"postal_code": createPaymentsRequestShippingAddressFieldPostalCode,
+	"state":       createPaymentsRequestShippingAddressFieldState,
+}
+
+// Where physical goods ship, returned on the payment as `shipping_address`. Only the keys you supply are kept; omit it for digital goods.
+type CreatePaymentsRequestShippingAddress struct {
+	// City name.
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// ISO 3166-1 alpha-2 country code, such as `US`.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// First line of the street address.
+	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
+	// Second line of the street address.
+	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
+	// The recipient's full name, as it should appear on the shipping label.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// Postal or ZIP code.
+	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
+	// State, province, or region code, such as `CA`.
+	State *string `json:"state,omitempty" url:"state,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreatePaymentsRequestShippingAddress) GetCity() *string {
+	if c == nil {
+		return nil
+	}
+	return c.City
+}
+
+func (c *CreatePaymentsRequestShippingAddress) GetCountry() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Country
+}
+
+func (c *CreatePaymentsRequestShippingAddress) GetLine1() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Line1
+}
+
+func (c *CreatePaymentsRequestShippingAddress) GetLine2() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Line2
+}
+
+func (c *CreatePaymentsRequestShippingAddress) GetName() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Name
+}
+
+func (c *CreatePaymentsRequestShippingAddress) GetPostalCode() *string {
+	if c == nil {
+		return nil
+	}
+	return c.PostalCode
+}
+
+func (c *CreatePaymentsRequestShippingAddress) GetState() *string {
+	if c == nil {
+		return nil
+	}
+	return c.State
+}
+
+func (c *CreatePaymentsRequestShippingAddress) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreatePaymentsRequestShippingAddress) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestShippingAddress) SetCity(city *string) {
+	c.City = city
+	c.require(createPaymentsRequestShippingAddressFieldCity)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestShippingAddress) SetCountry(country *string) {
+	c.Country = country
+	c.require(createPaymentsRequestShippingAddressFieldCountry)
+}
+
+// SetLine1 sets the Line1 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestShippingAddress) SetLine1(line1 *string) {
+	c.Line1 = line1
+	c.require(createPaymentsRequestShippingAddressFieldLine1)
+}
+
+// SetLine2 sets the Line2 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestShippingAddress) SetLine2(line2 *string) {
+	c.Line2 = line2
+	c.require(createPaymentsRequestShippingAddressFieldLine2)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestShippingAddress) SetName(name *string) {
+	c.Name = name
+	c.require(createPaymentsRequestShippingAddressFieldName)
+}
+
+// SetPostalCode sets the PostalCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestShippingAddress) SetPostalCode(postalCode *string) {
+	c.PostalCode = postalCode
+	c.require(createPaymentsRequestShippingAddressFieldPostalCode)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestShippingAddress) SetState(state *string) {
+	c.State = state
+	c.require(createPaymentsRequestShippingAddressFieldState)
+}
+
+func (c *CreatePaymentsRequestShippingAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePaymentsRequestShippingAddress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreatePaymentsRequestShippingAddress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createPaymentsRequestShippingAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreatePaymentsRequestShippingAddress) MarshalJSON() ([]byte, error) {
+	type embed CreatePaymentsRequestShippingAddress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreatePaymentsRequestShippingAddress) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 var (
 	listFeesPaymentsResponseFieldData     = big.NewInt(1 << 0)
 	listFeesPaymentsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
 type ListFeesPaymentsResponse struct {
-	// A list of nodes.
-	Data []*ListFeesPaymentsResponseDataItem `json:"data" url:"data"`
-	// Information to aid in pagination.
-	PageInfo *PageInfo `json:"page_info" url:"page_info"`
+	Data     []*PaymentFee                     `json:"data" url:"data"`
+	PageInfo *ListFeesPaymentsResponsePageInfo `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -14381,14 +4342,14 @@ type ListFeesPaymentsResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListFeesPaymentsResponse) GetData() []*ListFeesPaymentsResponseDataItem {
+func (l *ListFeesPaymentsResponse) GetData() []*PaymentFee {
 	if l == nil {
 		return nil
 	}
 	return l.Data
 }
 
-func (l *ListFeesPaymentsResponse) GetPageInfo() *PageInfo {
+func (l *ListFeesPaymentsResponse) GetPageInfo() *ListFeesPaymentsResponsePageInfo {
 	if l == nil {
 		return nil
 	}
@@ -14403,22 +4364,24 @@ func (l *ListFeesPaymentsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListFeesPaymentsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListFeesPaymentsResponse) SetData(data []*ListFeesPaymentsResponseDataItem) {
+func (l *ListFeesPaymentsResponse) SetData(data []*PaymentFee) {
 	l.Data = data
 	l.require(listFeesPaymentsResponseFieldData)
 }
 
 // SetPageInfo sets the PageInfo field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListFeesPaymentsResponse) SetPageInfo(pageInfo *PageInfo) {
+func (l *ListFeesPaymentsResponse) SetPageInfo(pageInfo *ListFeesPaymentsResponsePageInfo) {
 	l.PageInfo = pageInfo
 	l.require(listFeesPaymentsResponseFieldPageInfo)
 }
@@ -14465,23 +4428,24 @@ func (l *ListFeesPaymentsResponse) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Represents a fee related to a payment
 var (
-	listFeesPaymentsResponseDataItemFieldAmount   = big.NewInt(1 << 0)
-	listFeesPaymentsResponseDataItemFieldCurrency = big.NewInt(1 << 1)
-	listFeesPaymentsResponseDataItemFieldName     = big.NewInt(1 << 2)
-	listFeesPaymentsResponseDataItemFieldType     = big.NewInt(1 << 3)
+	listFeesPaymentsResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
+	listFeesPaymentsResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
+	listFeesPaymentsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
+	listFeesPaymentsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
 )
 
-type ListFeesPaymentsResponseDataItem struct {
-	// The value or amount to display for the fee.
-	Amount float64 `json:"amount" url:"amount"`
-	// The currency of the fee.
-	Currency Currencies `json:"currency" url:"currency"`
-	// The label to display for the fee.
-	Name string `json:"name" url:"name"`
-	// The specific origin of the fee, if applicable.
-	Type SpecificFeeOrigins `json:"type" url:"type"`
+// listFeesPaymentsResponsePageInfoNullableFields maps the wire names of ListFeesPaymentsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listFeesPaymentsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listFeesPaymentsResponsePageInfoFieldEndCursor,
+	"start_cursor": listFeesPaymentsResponsePageInfoFieldStartCursor,
+}
+
+type ListFeesPaymentsResponsePageInfo struct {
+	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
+	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
+	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
+	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -14490,94 +4454,103 @@ type ListFeesPaymentsResponseDataItem struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListFeesPaymentsResponseDataItem) GetAmount() float64 {
+func (l *ListFeesPaymentsResponsePageInfo) GetEndCursor() *string {
 	if l == nil {
-		return 0
+		return nil
 	}
-	return l.Amount
+	return l.EndCursor
 }
 
-func (l *ListFeesPaymentsResponseDataItem) GetCurrency() Currencies {
+func (l *ListFeesPaymentsResponsePageInfo) GetHasNextPage() bool {
 	if l == nil {
-		return ""
+		return false
 	}
-	return l.Currency
+	return l.HasNextPage
 }
 
-func (l *ListFeesPaymentsResponseDataItem) GetName() string {
+func (l *ListFeesPaymentsResponsePageInfo) GetHasPreviousPage() bool {
 	if l == nil {
-		return ""
+		return false
 	}
-	return l.Name
+	return l.HasPreviousPage
 }
 
-func (l *ListFeesPaymentsResponseDataItem) GetType() SpecificFeeOrigins {
+func (l *ListFeesPaymentsResponsePageInfo) GetStartCursor() *string {
 	if l == nil {
-		return ""
+		return nil
 	}
-	return l.Type
+	return l.StartCursor
 }
 
-func (l *ListFeesPaymentsResponseDataItem) GetExtraProperties() map[string]interface{} {
+func (l *ListFeesPaymentsResponsePageInfo) GetExtraProperties() map[string]interface{} {
 	if l == nil {
 		return nil
 	}
 	return l.extraProperties
 }
 
-func (l *ListFeesPaymentsResponseDataItem) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+func (l *ListFeesPaymentsResponsePageInfo) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
-// SetAmount sets the Amount field and marks it as non-optional;
+// SetEndCursor sets the EndCursor field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListFeesPaymentsResponseDataItem) SetAmount(amount float64) {
-	l.Amount = amount
-	l.require(listFeesPaymentsResponseDataItemFieldAmount)
+func (l *ListFeesPaymentsResponsePageInfo) SetEndCursor(endCursor *string) {
+	l.EndCursor = endCursor
+	l.require(listFeesPaymentsResponsePageInfoFieldEndCursor)
 }
 
-// SetCurrency sets the Currency field and marks it as non-optional;
+// SetHasNextPage sets the HasNextPage field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListFeesPaymentsResponseDataItem) SetCurrency(currency Currencies) {
-	l.Currency = currency
-	l.require(listFeesPaymentsResponseDataItemFieldCurrency)
+func (l *ListFeesPaymentsResponsePageInfo) SetHasNextPage(hasNextPage bool) {
+	l.HasNextPage = hasNextPage
+	l.require(listFeesPaymentsResponsePageInfoFieldHasNextPage)
 }
 
-// SetName sets the Name field and marks it as non-optional;
+// SetHasPreviousPage sets the HasPreviousPage field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListFeesPaymentsResponseDataItem) SetName(name string) {
-	l.Name = name
-	l.require(listFeesPaymentsResponseDataItemFieldName)
+func (l *ListFeesPaymentsResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
+	l.HasPreviousPage = hasPreviousPage
+	l.require(listFeesPaymentsResponsePageInfoFieldHasPreviousPage)
 }
 
-// SetType sets the Type field and marks it as non-optional;
+// SetStartCursor sets the StartCursor field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListFeesPaymentsResponseDataItem) SetType(type_ SpecificFeeOrigins) {
-	l.Type = type_
-	l.require(listFeesPaymentsResponseDataItemFieldType)
+func (l *ListFeesPaymentsResponsePageInfo) SetStartCursor(startCursor *string) {
+	l.StartCursor = startCursor
+	l.require(listFeesPaymentsResponsePageInfoFieldStartCursor)
 }
 
-func (l *ListFeesPaymentsResponseDataItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler ListFeesPaymentsResponseDataItem
+func (l *ListFeesPaymentsResponsePageInfo) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListFeesPaymentsResponsePageInfo
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*l = ListFeesPaymentsResponseDataItem(value)
+	*l = ListFeesPaymentsResponsePageInfo(value)
 	extraProperties, err := internal.ExtractExtraProperties(data, *l)
 	if err != nil {
 		return err
 	}
 	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listFeesPaymentsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
 	l.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (l *ListFeesPaymentsResponseDataItem) MarshalJSON() ([]byte, error) {
-	type embed ListFeesPaymentsResponseDataItem
+func (l *ListFeesPaymentsResponsePageInfo) MarshalJSON() ([]byte, error) {
+	type embed ListFeesPaymentsResponsePageInfo
 	var marshaler = struct {
 		embed
 	}{
@@ -14587,7 +4560,7 @@ func (l *ListFeesPaymentsResponseDataItem) MarshalJSON() ([]byte, error) {
 	return json.Marshal(explicitMarshaler)
 }
 
-func (l *ListFeesPaymentsResponseDataItem) String() string {
+func (l *ListFeesPaymentsResponsePageInfo) String() string {
 	if l == nil {
 		return "<nil>"
 	}
@@ -14602,17 +4575,1000 @@ func (l *ListFeesPaymentsResponseDataItem) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The connection type for Receipt.
+type ListPaymentsRequestBillingReason string
+
+const (
+	ListPaymentsRequestBillingReasonSubscriptionCreate ListPaymentsRequestBillingReason = "subscription_create"
+	ListPaymentsRequestBillingReasonSubscriptionCycle  ListPaymentsRequestBillingReason = "subscription_cycle"
+	ListPaymentsRequestBillingReasonSubscriptionUpdate ListPaymentsRequestBillingReason = "subscription_update"
+	ListPaymentsRequestBillingReasonOneTime            ListPaymentsRequestBillingReason = "one_time"
+	ListPaymentsRequestBillingReasonManual             ListPaymentsRequestBillingReason = "manual"
+	ListPaymentsRequestBillingReasonSubscription       ListPaymentsRequestBillingReason = "subscription"
+)
+
+func NewListPaymentsRequestBillingReasonFromString(s string) (ListPaymentsRequestBillingReason, error) {
+	switch s {
+	case "subscription_create":
+		return ListPaymentsRequestBillingReasonSubscriptionCreate, nil
+	case "subscription_cycle":
+		return ListPaymentsRequestBillingReasonSubscriptionCycle, nil
+	case "subscription_update":
+		return ListPaymentsRequestBillingReasonSubscriptionUpdate, nil
+	case "one_time":
+		return ListPaymentsRequestBillingReasonOneTime, nil
+	case "manual":
+		return ListPaymentsRequestBillingReasonManual, nil
+	case "subscription":
+		return ListPaymentsRequestBillingReasonSubscription, nil
+	}
+	var t ListPaymentsRequestBillingReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestBillingReason) Ptr() *ListPaymentsRequestBillingReason {
+	return &l
+}
+
+type ListPaymentsRequestBillingReasonsItem string
+
+const (
+	ListPaymentsRequestBillingReasonsItemSubscriptionCreate ListPaymentsRequestBillingReasonsItem = "subscription_create"
+	ListPaymentsRequestBillingReasonsItemSubscriptionCycle  ListPaymentsRequestBillingReasonsItem = "subscription_cycle"
+	ListPaymentsRequestBillingReasonsItemSubscriptionUpdate ListPaymentsRequestBillingReasonsItem = "subscription_update"
+	ListPaymentsRequestBillingReasonsItemOneTime            ListPaymentsRequestBillingReasonsItem = "one_time"
+	ListPaymentsRequestBillingReasonsItemManual             ListPaymentsRequestBillingReasonsItem = "manual"
+	ListPaymentsRequestBillingReasonsItemSubscription       ListPaymentsRequestBillingReasonsItem = "subscription"
+)
+
+func NewListPaymentsRequestBillingReasonsItemFromString(s string) (ListPaymentsRequestBillingReasonsItem, error) {
+	switch s {
+	case "subscription_create":
+		return ListPaymentsRequestBillingReasonsItemSubscriptionCreate, nil
+	case "subscription_cycle":
+		return ListPaymentsRequestBillingReasonsItemSubscriptionCycle, nil
+	case "subscription_update":
+		return ListPaymentsRequestBillingReasonsItemSubscriptionUpdate, nil
+	case "one_time":
+		return ListPaymentsRequestBillingReasonsItemOneTime, nil
+	case "manual":
+		return ListPaymentsRequestBillingReasonsItemManual, nil
+	case "subscription":
+		return ListPaymentsRequestBillingReasonsItemSubscription, nil
+	}
+	var t ListPaymentsRequestBillingReasonsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestBillingReasonsItem) Ptr() *ListPaymentsRequestBillingReasonsItem {
+	return &l
+}
+
+type ListPaymentsRequestDirection string
+
+const (
+	ListPaymentsRequestDirectionAsc  ListPaymentsRequestDirection = "asc"
+	ListPaymentsRequestDirectionDesc ListPaymentsRequestDirection = "desc"
+)
+
+func NewListPaymentsRequestDirectionFromString(s string) (ListPaymentsRequestDirection, error) {
+	switch s {
+	case "asc":
+		return ListPaymentsRequestDirectionAsc, nil
+	case "desc":
+		return ListPaymentsRequestDirectionDesc, nil
+	}
+	var t ListPaymentsRequestDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestDirection) Ptr() *ListPaymentsRequestDirection {
+	return &l
+}
+
+type ListPaymentsRequestMode string
+
+const (
+	ListPaymentsRequestModeAccountSales ListPaymentsRequestMode = "account_sales"
+	ListPaymentsRequestModeUserSales    ListPaymentsRequestMode = "user_sales"
+)
+
+func NewListPaymentsRequestModeFromString(s string) (ListPaymentsRequestMode, error) {
+	switch s {
+	case "account_sales":
+		return ListPaymentsRequestModeAccountSales, nil
+	case "user_sales":
+		return ListPaymentsRequestModeUserSales, nil
+	}
+	var t ListPaymentsRequestMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestMode) Ptr() *ListPaymentsRequestMode {
+	return &l
+}
+
+type ListPaymentsRequestOrder string
+
+const (
+	ListPaymentsRequestOrderCreatedAt ListPaymentsRequestOrder = "created_at"
+	ListPaymentsRequestOrderPaidAt    ListPaymentsRequestOrder = "paid_at"
+	ListPaymentsRequestOrderAmount    ListPaymentsRequestOrder = "amount"
+)
+
+func NewListPaymentsRequestOrderFromString(s string) (ListPaymentsRequestOrder, error) {
+	switch s {
+	case "created_at":
+		return ListPaymentsRequestOrderCreatedAt, nil
+	case "paid_at":
+		return ListPaymentsRequestOrderPaidAt, nil
+	case "amount":
+		return ListPaymentsRequestOrderAmount, nil
+	}
+	var t ListPaymentsRequestOrder
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestOrder) Ptr() *ListPaymentsRequestOrder {
+	return &l
+}
+
+type ListPaymentsRequestPaymentMethodsItem string
+
+const (
+	ListPaymentsRequestPaymentMethodsItemMastercard             ListPaymentsRequestPaymentMethodsItem = "mastercard"
+	ListPaymentsRequestPaymentMethodsItemVisa                   ListPaymentsRequestPaymentMethodsItem = "visa"
+	ListPaymentsRequestPaymentMethodsItemAmex                   ListPaymentsRequestPaymentMethodsItem = "amex"
+	ListPaymentsRequestPaymentMethodsItemDiscover               ListPaymentsRequestPaymentMethodsItem = "discover"
+	ListPaymentsRequestPaymentMethodsItemUnionpay               ListPaymentsRequestPaymentMethodsItem = "unionpay"
+	ListPaymentsRequestPaymentMethodsItemJcb                    ListPaymentsRequestPaymentMethodsItem = "jcb"
+	ListPaymentsRequestPaymentMethodsItemDiners                 ListPaymentsRequestPaymentMethodsItem = "diners"
+	ListPaymentsRequestPaymentMethodsItemLink                   ListPaymentsRequestPaymentMethodsItem = "link"
+	ListPaymentsRequestPaymentMethodsItemTroy                   ListPaymentsRequestPaymentMethodsItem = "troy"
+	ListPaymentsRequestPaymentMethodsItemVisadankort            ListPaymentsRequestPaymentMethodsItem = "visadankort"
+	ListPaymentsRequestPaymentMethodsItemVisabancontact         ListPaymentsRequestPaymentMethodsItem = "visabancontact"
+	ListPaymentsRequestPaymentMethodsItemChinaUnionPay          ListPaymentsRequestPaymentMethodsItem = "china_union_pay"
+	ListPaymentsRequestPaymentMethodsItemRupay                  ListPaymentsRequestPaymentMethodsItem = "rupay"
+	ListPaymentsRequestPaymentMethodsItemJcbrupay               ListPaymentsRequestPaymentMethodsItem = "jcbrupay"
+	ListPaymentsRequestPaymentMethodsItemElo                    ListPaymentsRequestPaymentMethodsItem = "elo"
+	ListPaymentsRequestPaymentMethodsItemMaestro                ListPaymentsRequestPaymentMethodsItem = "maestro"
+	ListPaymentsRequestPaymentMethodsItemTarjetaNaranja         ListPaymentsRequestPaymentMethodsItem = "tarjeta_naranja"
+	ListPaymentsRequestPaymentMethodsItemCirrus                 ListPaymentsRequestPaymentMethodsItem = "cirrus"
+	ListPaymentsRequestPaymentMethodsItemNspkMir                ListPaymentsRequestPaymentMethodsItem = "nspk_mir"
+	ListPaymentsRequestPaymentMethodsItemVerve                  ListPaymentsRequestPaymentMethodsItem = "verve"
+	ListPaymentsRequestPaymentMethodsItemEbt                    ListPaymentsRequestPaymentMethodsItem = "ebt"
+	ListPaymentsRequestPaymentMethodsItemPrivateLabel           ListPaymentsRequestPaymentMethodsItem = "private_label"
+	ListPaymentsRequestPaymentMethodsItemLocalBrand             ListPaymentsRequestPaymentMethodsItem = "local_brand"
+	ListPaymentsRequestPaymentMethodsItemUatp                   ListPaymentsRequestPaymentMethodsItem = "uatp"
+	ListPaymentsRequestPaymentMethodsItemWexcard                ListPaymentsRequestPaymentMethodsItem = "wexcard"
+	ListPaymentsRequestPaymentMethodsItemUzcard                 ListPaymentsRequestPaymentMethodsItem = "uzcard"
+	ListPaymentsRequestPaymentMethodsItemMeeza                  ListPaymentsRequestPaymentMethodsItem = "meeza"
+	ListPaymentsRequestPaymentMethodsItemHrgStoreCard           ListPaymentsRequestPaymentMethodsItem = "hrg_store_card"
+	ListPaymentsRequestPaymentMethodsItemGirocard               ListPaymentsRequestPaymentMethodsItem = "girocard"
+	ListPaymentsRequestPaymentMethodsItemFuelCard               ListPaymentsRequestPaymentMethodsItem = "fuel_card"
+	ListPaymentsRequestPaymentMethodsItemDankort                ListPaymentsRequestPaymentMethodsItem = "dankort"
+	ListPaymentsRequestPaymentMethodsItemCarnet                 ListPaymentsRequestPaymentMethodsItem = "carnet"
+	ListPaymentsRequestPaymentMethodsItemAtmCard                ListPaymentsRequestPaymentMethodsItem = "atm_card"
+	ListPaymentsRequestPaymentMethodsItemChinaUnionPayuzcard    ListPaymentsRequestPaymentMethodsItem = "china_union_payuzcard"
+	ListPaymentsRequestPaymentMethodsItemCodensa                ListPaymentsRequestPaymentMethodsItem = "codensa"
+	ListPaymentsRequestPaymentMethodsItemCabal                  ListPaymentsRequestPaymentMethodsItem = "cabal"
+	ListPaymentsRequestPaymentMethodsItemHipercard              ListPaymentsRequestPaymentMethodsItem = "hipercard"
+	ListPaymentsRequestPaymentMethodsItemJcblankapay            ListPaymentsRequestPaymentMethodsItem = "jcblankapay"
+	ListPaymentsRequestPaymentMethodsItemCmi                    ListPaymentsRequestPaymentMethodsItem = "cmi"
+	ListPaymentsRequestPaymentMethodsItemAura                   ListPaymentsRequestPaymentMethodsItem = "aura"
+	ListPaymentsRequestPaymentMethodsItemAccel                  ListPaymentsRequestPaymentMethodsItem = "accel"
+	ListPaymentsRequestPaymentMethodsItemCuliance               ListPaymentsRequestPaymentMethodsItem = "culiance"
+	ListPaymentsRequestPaymentMethodsItemNyce                   ListPaymentsRequestPaymentMethodsItem = "nyce"
+	ListPaymentsRequestPaymentMethodsItemPulse                  ListPaymentsRequestPaymentMethodsItem = "pulse"
+	ListPaymentsRequestPaymentMethodsItemStar                   ListPaymentsRequestPaymentMethodsItem = "star"
+	ListPaymentsRequestPaymentMethodsItemEftpos                 ListPaymentsRequestPaymentMethodsItem = "eftpos"
+	ListPaymentsRequestPaymentMethodsItemAlelo                  ListPaymentsRequestPaymentMethodsItem = "alelo"
+	ListPaymentsRequestPaymentMethodsItemEdenred                ListPaymentsRequestPaymentMethodsItem = "edenred"
+	ListPaymentsRequestPaymentMethodsItemSodexo                 ListPaymentsRequestPaymentMethodsItem = "sodexo"
+	ListPaymentsRequestPaymentMethodsItemUnknown                ListPaymentsRequestPaymentMethodsItem = "unknown"
+	ListPaymentsRequestPaymentMethodsItemAcssDebit              ListPaymentsRequestPaymentMethodsItem = "acss_debit"
+	ListPaymentsRequestPaymentMethodsItemAddi                   ListPaymentsRequestPaymentMethodsItem = "addi"
+	ListPaymentsRequestPaymentMethodsItemAffirm                 ListPaymentsRequestPaymentMethodsItem = "affirm"
+	ListPaymentsRequestPaymentMethodsItemAfterpayClearpay       ListPaymentsRequestPaymentMethodsItem = "afterpay_clearpay"
+	ListPaymentsRequestPaymentMethodsItemAlipay                 ListPaymentsRequestPaymentMethodsItem = "alipay"
+	ListPaymentsRequestPaymentMethodsItemAlipayhk               ListPaymentsRequestPaymentMethodsItem = "alipayhk"
+	ListPaymentsRequestPaymentMethodsItemAlma                   ListPaymentsRequestPaymentMethodsItem = "alma"
+	ListPaymentsRequestPaymentMethodsItemAmazonPay              ListPaymentsRequestPaymentMethodsItem = "amazon_pay"
+	ListPaymentsRequestPaymentMethodsItemApple                  ListPaymentsRequestPaymentMethodsItem = "apple"
+	ListPaymentsRequestPaymentMethodsItemApplePay               ListPaymentsRequestPaymentMethodsItem = "apple_pay"
+	ListPaymentsRequestPaymentMethodsItemAuBankTransfer         ListPaymentsRequestPaymentMethodsItem = "au_bank_transfer"
+	ListPaymentsRequestPaymentMethodsItemAuBecsDebit            ListPaymentsRequestPaymentMethodsItem = "au_becs_debit"
+	ListPaymentsRequestPaymentMethodsItemBacsDebit              ListPaymentsRequestPaymentMethodsItem = "bacs_debit"
+	ListPaymentsRequestPaymentMethodsItemBancolombia            ListPaymentsRequestPaymentMethodsItem = "bancolombia"
+	ListPaymentsRequestPaymentMethodsItemBancontact             ListPaymentsRequestPaymentMethodsItem = "bancontact"
+	ListPaymentsRequestPaymentMethodsItemBankWire               ListPaymentsRequestPaymentMethodsItem = "bank_wire"
+	ListPaymentsRequestPaymentMethodsItemBillie                 ListPaymentsRequestPaymentMethodsItem = "billie"
+	ListPaymentsRequestPaymentMethodsItemBlik                   ListPaymentsRequestPaymentMethodsItem = "blik"
+	ListPaymentsRequestPaymentMethodsItemBoleto                 ListPaymentsRequestPaymentMethodsItem = "boleto"
+	ListPaymentsRequestPaymentMethodsItemBreB                   ListPaymentsRequestPaymentMethodsItem = "bre_b"
+	ListPaymentsRequestPaymentMethodsItemCaBankTransfer         ListPaymentsRequestPaymentMethodsItem = "ca_bank_transfer"
+	ListPaymentsRequestPaymentMethodsItemCapchasePay            ListPaymentsRequestPaymentMethodsItem = "capchase_pay"
+	ListPaymentsRequestPaymentMethodsItemCard                   ListPaymentsRequestPaymentMethodsItem = "card"
+	ListPaymentsRequestPaymentMethodsItemCardPresent            ListPaymentsRequestPaymentMethodsItem = "card_present"
+	ListPaymentsRequestPaymentMethodsItemCardInstallmentsThree  ListPaymentsRequestPaymentMethodsItem = "card_installments_three"
+	ListPaymentsRequestPaymentMethodsItemCardInstallmentsSix    ListPaymentsRequestPaymentMethodsItem = "card_installments_six"
+	ListPaymentsRequestPaymentMethodsItemCardInstallmentsTwelve ListPaymentsRequestPaymentMethodsItem = "card_installments_twelve"
+	ListPaymentsRequestPaymentMethodsItemCashapp                ListPaymentsRequestPaymentMethodsItem = "cashapp"
+	ListPaymentsRequestPaymentMethodsItemClaritypay             ListPaymentsRequestPaymentMethodsItem = "claritypay"
+	ListPaymentsRequestPaymentMethodsItemCoinbase               ListPaymentsRequestPaymentMethodsItem = "coinbase"
+	ListPaymentsRequestPaymentMethodsItemCrypto                 ListPaymentsRequestPaymentMethodsItem = "crypto"
+	ListPaymentsRequestPaymentMethodsItemCustom                 ListPaymentsRequestPaymentMethodsItem = "custom"
+	ListPaymentsRequestPaymentMethodsItemCustomerBalance        ListPaymentsRequestPaymentMethodsItem = "customer_balance"
+	ListPaymentsRequestPaymentMethodsItemDemoPay                ListPaymentsRequestPaymentMethodsItem = "demo_pay"
+	ListPaymentsRequestPaymentMethodsItemDuitnowQr              ListPaymentsRequestPaymentMethodsItem = "duitnow_qr"
+	ListPaymentsRequestPaymentMethodsItemEfecty                 ListPaymentsRequestPaymentMethodsItem = "efecty"
+	ListPaymentsRequestPaymentMethodsItemEps                    ListPaymentsRequestPaymentMethodsItem = "eps"
+	ListPaymentsRequestPaymentMethodsItemEuBankTransfer         ListPaymentsRequestPaymentMethodsItem = "eu_bank_transfer"
+	ListPaymentsRequestPaymentMethodsItemFpx                    ListPaymentsRequestPaymentMethodsItem = "fpx"
+	ListPaymentsRequestPaymentMethodsItemFlexPay                ListPaymentsRequestPaymentMethodsItem = "flex_pay"
+	ListPaymentsRequestPaymentMethodsItemGbBankTransfer         ListPaymentsRequestPaymentMethodsItem = "gb_bank_transfer"
+	ListPaymentsRequestPaymentMethodsItemGcash                  ListPaymentsRequestPaymentMethodsItem = "gcash"
+	ListPaymentsRequestPaymentMethodsItemGiropay                ListPaymentsRequestPaymentMethodsItem = "giropay"
+	ListPaymentsRequestPaymentMethodsItemGooglePay              ListPaymentsRequestPaymentMethodsItem = "google_pay"
+	ListPaymentsRequestPaymentMethodsItemGopay                  ListPaymentsRequestPaymentMethodsItem = "gopay"
+	ListPaymentsRequestPaymentMethodsItemGrabpay                ListPaymentsRequestPaymentMethodsItem = "grabpay"
+	ListPaymentsRequestPaymentMethodsItemIDBankTransfer         ListPaymentsRequestPaymentMethodsItem = "id_bank_transfer"
+	ListPaymentsRequestPaymentMethodsItemIdeal                  ListPaymentsRequestPaymentMethodsItem = "ideal"
+	ListPaymentsRequestPaymentMethodsItemInterac                ListPaymentsRequestPaymentMethodsItem = "interac"
+	ListPaymentsRequestPaymentMethodsItemInternationalBankWire  ListPaymentsRequestPaymentMethodsItem = "international_bank_wire"
+	ListPaymentsRequestPaymentMethodsItemKakaoPay               ListPaymentsRequestPaymentMethodsItem = "kakao_pay"
+	ListPaymentsRequestPaymentMethodsItemKlarna                 ListPaymentsRequestPaymentMethodsItem = "klarna"
+	ListPaymentsRequestPaymentMethodsItemKlarnaPayNow           ListPaymentsRequestPaymentMethodsItem = "klarna_pay_now"
+	ListPaymentsRequestPaymentMethodsItemKonbini                ListPaymentsRequestPaymentMethodsItem = "konbini"
+	ListPaymentsRequestPaymentMethodsItemKrCard                 ListPaymentsRequestPaymentMethodsItem = "kr_card"
+	ListPaymentsRequestPaymentMethodsItemKrMarket               ListPaymentsRequestPaymentMethodsItem = "kr_market"
+	ListPaymentsRequestPaymentMethodsItemKriya                  ListPaymentsRequestPaymentMethodsItem = "kriya"
+	ListPaymentsRequestPaymentMethodsItemKueski                 ListPaymentsRequestPaymentMethodsItem = "kueski"
+	ListPaymentsRequestPaymentMethodsItemMbWay                  ListPaymentsRequestPaymentMethodsItem = "mb_way"
+	ListPaymentsRequestPaymentMethodsItemMPesa                  ListPaymentsRequestPaymentMethodsItem = "m_pesa"
+	ListPaymentsRequestPaymentMethodsItemMercadoPago            ListPaymentsRequestPaymentMethodsItem = "mercado_pago"
+	ListPaymentsRequestPaymentMethodsItemMercadoPagoAr          ListPaymentsRequestPaymentMethodsItem = "mercado_pago_ar"
+	ListPaymentsRequestPaymentMethodsItemMercadoPagoMx          ListPaymentsRequestPaymentMethodsItem = "mercado_pago_mx"
+	ListPaymentsRequestPaymentMethodsItemMobilepay              ListPaymentsRequestPaymentMethodsItem = "mobilepay"
+	ListPaymentsRequestPaymentMethodsItemModo                   ListPaymentsRequestPaymentMethodsItem = "modo"
+	ListPaymentsRequestPaymentMethodsItemMondu                  ListPaymentsRequestPaymentMethodsItem = "mondu"
+	ListPaymentsRequestPaymentMethodsItemMultibanco             ListPaymentsRequestPaymentMethodsItem = "multibanco"
+	ListPaymentsRequestPaymentMethodsItemNaverPay               ListPaymentsRequestPaymentMethodsItem = "naver_pay"
+	ListPaymentsRequestPaymentMethodsItemNequi                  ListPaymentsRequestPaymentMethodsItem = "nequi"
+	ListPaymentsRequestPaymentMethodsItemNetbanking             ListPaymentsRequestPaymentMethodsItem = "netbanking"
+	ListPaymentsRequestPaymentMethodsItemNgBank                 ListPaymentsRequestPaymentMethodsItem = "ng_bank"
+	ListPaymentsRequestPaymentMethodsItemNgBankTransfer         ListPaymentsRequestPaymentMethodsItem = "ng_bank_transfer"
+	ListPaymentsRequestPaymentMethodsItemNgCard                 ListPaymentsRequestPaymentMethodsItem = "ng_card"
+	ListPaymentsRequestPaymentMethodsItemNgMarket               ListPaymentsRequestPaymentMethodsItem = "ng_market"
+	ListPaymentsRequestPaymentMethodsItemNgUssd                 ListPaymentsRequestPaymentMethodsItem = "ng_ussd"
+	ListPaymentsRequestPaymentMethodsItemNgWallet               ListPaymentsRequestPaymentMethodsItem = "ng_wallet"
+	ListPaymentsRequestPaymentMethodsItemNupay                  ListPaymentsRequestPaymentMethodsItem = "nupay"
+	ListPaymentsRequestPaymentMethodsItemNzBankAccount          ListPaymentsRequestPaymentMethodsItem = "nz_bank_account"
+	ListPaymentsRequestPaymentMethodsItemOney                   ListPaymentsRequestPaymentMethodsItem = "oney"
+	ListPaymentsRequestPaymentMethodsItemOney3X                 ListPaymentsRequestPaymentMethodsItem = "oney_3x"
+	ListPaymentsRequestPaymentMethodsItemOney4X                 ListPaymentsRequestPaymentMethodsItem = "oney_4x"
+	ListPaymentsRequestPaymentMethodsItemOpay                   ListPaymentsRequestPaymentMethodsItem = "opay"
+	ListPaymentsRequestPaymentMethodsItemOxxo                   ListPaymentsRequestPaymentMethodsItem = "oxxo"
+	ListPaymentsRequestPaymentMethodsItemP24                    ListPaymentsRequestPaymentMethodsItem = "p24"
+	ListPaymentsRequestPaymentMethodsItemPagoEfectivo           ListPaymentsRequestPaymentMethodsItem = "pago_efectivo"
+	ListPaymentsRequestPaymentMethodsItemPse                    ListPaymentsRequestPaymentMethodsItem = "pse"
+	ListPaymentsRequestPaymentMethodsItemPayByBank              ListPaymentsRequestPaymentMethodsItem = "pay_by_bank"
+	ListPaymentsRequestPaymentMethodsItemPayco                  ListPaymentsRequestPaymentMethodsItem = "payco"
+	ListPaymentsRequestPaymentMethodsItemPaynow                 ListPaymentsRequestPaymentMethodsItem = "paynow"
+	ListPaymentsRequestPaymentMethodsItemPaypal                 ListPaymentsRequestPaymentMethodsItem = "paypal"
+	ListPaymentsRequestPaymentMethodsItemPaypalExpress          ListPaymentsRequestPaymentMethodsItem = "paypal_express"
+	ListPaymentsRequestPaymentMethodsItemPaypay                 ListPaymentsRequestPaymentMethodsItem = "paypay"
+	ListPaymentsRequestPaymentMethodsItemPayto                  ListPaymentsRequestPaymentMethodsItem = "payto"
+	ListPaymentsRequestPaymentMethodsItemPaytoEmail             ListPaymentsRequestPaymentMethodsItem = "payto_email"
+	ListPaymentsRequestPaymentMethodsItemPaytoPhone             ListPaymentsRequestPaymentMethodsItem = "payto_phone"
+	ListPaymentsRequestPaymentMethodsItemPaytoBankAccount       ListPaymentsRequestPaymentMethodsItem = "payto_bank_account"
+	ListPaymentsRequestPaymentMethodsItemPix                    ListPaymentsRequestPaymentMethodsItem = "pix"
+	ListPaymentsRequestPaymentMethodsItemPlatformBalance        ListPaymentsRequestPaymentMethodsItem = "platform_balance"
+	ListPaymentsRequestPaymentMethodsItemPromptpay              ListPaymentsRequestPaymentMethodsItem = "promptpay"
+	ListPaymentsRequestPaymentMethodsItemQris                   ListPaymentsRequestPaymentMethodsItem = "qris"
+	ListPaymentsRequestPaymentMethodsItemRapipago               ListPaymentsRequestPaymentMethodsItem = "rapipago"
+	ListPaymentsRequestPaymentMethodsItemRechnung               ListPaymentsRequestPaymentMethodsItem = "rechnung"
+	ListPaymentsRequestPaymentMethodsItemRevolutPay             ListPaymentsRequestPaymentMethodsItem = "revolut_pay"
+	ListPaymentsRequestPaymentMethodsItemSamsungPay             ListPaymentsRequestPaymentMethodsItem = "samsung_pay"
+	ListPaymentsRequestPaymentMethodsItemSatispay               ListPaymentsRequestPaymentMethodsItem = "satispay"
+	ListPaymentsRequestPaymentMethodsItemScalapay               ListPaymentsRequestPaymentMethodsItem = "scalapay"
+	ListPaymentsRequestPaymentMethodsItemSencillito             ListPaymentsRequestPaymentMethodsItem = "sencillito"
+	ListPaymentsRequestPaymentMethodsItemSepaDebit              ListPaymentsRequestPaymentMethodsItem = "sepa_debit"
+	ListPaymentsRequestPaymentMethodsItemSequra                 ListPaymentsRequestPaymentMethodsItem = "sequra"
+	ListPaymentsRequestPaymentMethodsItemServipag               ListPaymentsRequestPaymentMethodsItem = "servipag"
+	ListPaymentsRequestPaymentMethodsItemSezzle                 ListPaymentsRequestPaymentMethodsItem = "sezzle"
+	ListPaymentsRequestPaymentMethodsItemShopPay                ListPaymentsRequestPaymentMethodsItem = "shop_pay"
+	ListPaymentsRequestPaymentMethodsItemShopeepay              ListPaymentsRequestPaymentMethodsItem = "shopeepay"
+	ListPaymentsRequestPaymentMethodsItemSofort                 ListPaymentsRequestPaymentMethodsItem = "sofort"
+	ListPaymentsRequestPaymentMethodsItemSouthKoreaMarket       ListPaymentsRequestPaymentMethodsItem = "south_korea_market"
+	ListPaymentsRequestPaymentMethodsItemSpei                   ListPaymentsRequestPaymentMethodsItem = "spei"
+	ListPaymentsRequestPaymentMethodsItemSplitit                ListPaymentsRequestPaymentMethodsItem = "splitit"
+	ListPaymentsRequestPaymentMethodsItemSunbit                 ListPaymentsRequestPaymentMethodsItem = "sunbit"
+	ListPaymentsRequestPaymentMethodsItemSwish                  ListPaymentsRequestPaymentMethodsItem = "swish"
+	ListPaymentsRequestPaymentMethodsItemTabby                  ListPaymentsRequestPaymentMethodsItem = "tabby"
+	ListPaymentsRequestPaymentMethodsItemTamara                 ListPaymentsRequestPaymentMethodsItem = "tamara"
+	ListPaymentsRequestPaymentMethodsItemTouchNGo               ListPaymentsRequestPaymentMethodsItem = "touch_n_go"
+	ListPaymentsRequestPaymentMethodsItemTwint                  ListPaymentsRequestPaymentMethodsItem = "twint"
+	ListPaymentsRequestPaymentMethodsItemUpi                    ListPaymentsRequestPaymentMethodsItem = "upi"
+	ListPaymentsRequestPaymentMethodsItemUsBankAccount          ListPaymentsRequestPaymentMethodsItem = "us_bank_account"
+	ListPaymentsRequestPaymentMethodsItemUsBankTransfer         ListPaymentsRequestPaymentMethodsItem = "us_bank_transfer"
+	ListPaymentsRequestPaymentMethodsItemVenmo                  ListPaymentsRequestPaymentMethodsItem = "venmo"
+	ListPaymentsRequestPaymentMethodsItemVipps                  ListPaymentsRequestPaymentMethodsItem = "vipps"
+	ListPaymentsRequestPaymentMethodsItemWebpay                 ListPaymentsRequestPaymentMethodsItem = "webpay"
+	ListPaymentsRequestPaymentMethodsItemWechatPay              ListPaymentsRequestPaymentMethodsItem = "wechat_pay"
+	ListPaymentsRequestPaymentMethodsItemWhopPay                ListPaymentsRequestPaymentMethodsItem = "whop_pay"
+	ListPaymentsRequestPaymentMethodsItemYape                   ListPaymentsRequestPaymentMethodsItem = "yape"
+	ListPaymentsRequestPaymentMethodsItemZip                    ListPaymentsRequestPaymentMethodsItem = "zip"
+	ListPaymentsRequestPaymentMethodsItemCoinflow               ListPaymentsRequestPaymentMethodsItem = "coinflow"
+	ListPaymentsRequestPaymentMethodsItemTapToPay               ListPaymentsRequestPaymentMethodsItem = "tap_to_pay"
+)
+
+func NewListPaymentsRequestPaymentMethodsItemFromString(s string) (ListPaymentsRequestPaymentMethodsItem, error) {
+	switch s {
+	case "mastercard":
+		return ListPaymentsRequestPaymentMethodsItemMastercard, nil
+	case "visa":
+		return ListPaymentsRequestPaymentMethodsItemVisa, nil
+	case "amex":
+		return ListPaymentsRequestPaymentMethodsItemAmex, nil
+	case "discover":
+		return ListPaymentsRequestPaymentMethodsItemDiscover, nil
+	case "unionpay":
+		return ListPaymentsRequestPaymentMethodsItemUnionpay, nil
+	case "jcb":
+		return ListPaymentsRequestPaymentMethodsItemJcb, nil
+	case "diners":
+		return ListPaymentsRequestPaymentMethodsItemDiners, nil
+	case "link":
+		return ListPaymentsRequestPaymentMethodsItemLink, nil
+	case "troy":
+		return ListPaymentsRequestPaymentMethodsItemTroy, nil
+	case "visadankort":
+		return ListPaymentsRequestPaymentMethodsItemVisadankort, nil
+	case "visabancontact":
+		return ListPaymentsRequestPaymentMethodsItemVisabancontact, nil
+	case "china_union_pay":
+		return ListPaymentsRequestPaymentMethodsItemChinaUnionPay, nil
+	case "rupay":
+		return ListPaymentsRequestPaymentMethodsItemRupay, nil
+	case "jcbrupay":
+		return ListPaymentsRequestPaymentMethodsItemJcbrupay, nil
+	case "elo":
+		return ListPaymentsRequestPaymentMethodsItemElo, nil
+	case "maestro":
+		return ListPaymentsRequestPaymentMethodsItemMaestro, nil
+	case "tarjeta_naranja":
+		return ListPaymentsRequestPaymentMethodsItemTarjetaNaranja, nil
+	case "cirrus":
+		return ListPaymentsRequestPaymentMethodsItemCirrus, nil
+	case "nspk_mir":
+		return ListPaymentsRequestPaymentMethodsItemNspkMir, nil
+	case "verve":
+		return ListPaymentsRequestPaymentMethodsItemVerve, nil
+	case "ebt":
+		return ListPaymentsRequestPaymentMethodsItemEbt, nil
+	case "private_label":
+		return ListPaymentsRequestPaymentMethodsItemPrivateLabel, nil
+	case "local_brand":
+		return ListPaymentsRequestPaymentMethodsItemLocalBrand, nil
+	case "uatp":
+		return ListPaymentsRequestPaymentMethodsItemUatp, nil
+	case "wexcard":
+		return ListPaymentsRequestPaymentMethodsItemWexcard, nil
+	case "uzcard":
+		return ListPaymentsRequestPaymentMethodsItemUzcard, nil
+	case "meeza":
+		return ListPaymentsRequestPaymentMethodsItemMeeza, nil
+	case "hrg_store_card":
+		return ListPaymentsRequestPaymentMethodsItemHrgStoreCard, nil
+	case "girocard":
+		return ListPaymentsRequestPaymentMethodsItemGirocard, nil
+	case "fuel_card":
+		return ListPaymentsRequestPaymentMethodsItemFuelCard, nil
+	case "dankort":
+		return ListPaymentsRequestPaymentMethodsItemDankort, nil
+	case "carnet":
+		return ListPaymentsRequestPaymentMethodsItemCarnet, nil
+	case "atm_card":
+		return ListPaymentsRequestPaymentMethodsItemAtmCard, nil
+	case "china_union_payuzcard":
+		return ListPaymentsRequestPaymentMethodsItemChinaUnionPayuzcard, nil
+	case "codensa":
+		return ListPaymentsRequestPaymentMethodsItemCodensa, nil
+	case "cabal":
+		return ListPaymentsRequestPaymentMethodsItemCabal, nil
+	case "hipercard":
+		return ListPaymentsRequestPaymentMethodsItemHipercard, nil
+	case "jcblankapay":
+		return ListPaymentsRequestPaymentMethodsItemJcblankapay, nil
+	case "cmi":
+		return ListPaymentsRequestPaymentMethodsItemCmi, nil
+	case "aura":
+		return ListPaymentsRequestPaymentMethodsItemAura, nil
+	case "accel":
+		return ListPaymentsRequestPaymentMethodsItemAccel, nil
+	case "culiance":
+		return ListPaymentsRequestPaymentMethodsItemCuliance, nil
+	case "nyce":
+		return ListPaymentsRequestPaymentMethodsItemNyce, nil
+	case "pulse":
+		return ListPaymentsRequestPaymentMethodsItemPulse, nil
+	case "star":
+		return ListPaymentsRequestPaymentMethodsItemStar, nil
+	case "eftpos":
+		return ListPaymentsRequestPaymentMethodsItemEftpos, nil
+	case "alelo":
+		return ListPaymentsRequestPaymentMethodsItemAlelo, nil
+	case "edenred":
+		return ListPaymentsRequestPaymentMethodsItemEdenred, nil
+	case "sodexo":
+		return ListPaymentsRequestPaymentMethodsItemSodexo, nil
+	case "unknown":
+		return ListPaymentsRequestPaymentMethodsItemUnknown, nil
+	case "acss_debit":
+		return ListPaymentsRequestPaymentMethodsItemAcssDebit, nil
+	case "addi":
+		return ListPaymentsRequestPaymentMethodsItemAddi, nil
+	case "affirm":
+		return ListPaymentsRequestPaymentMethodsItemAffirm, nil
+	case "afterpay_clearpay":
+		return ListPaymentsRequestPaymentMethodsItemAfterpayClearpay, nil
+	case "alipay":
+		return ListPaymentsRequestPaymentMethodsItemAlipay, nil
+	case "alipayhk":
+		return ListPaymentsRequestPaymentMethodsItemAlipayhk, nil
+	case "alma":
+		return ListPaymentsRequestPaymentMethodsItemAlma, nil
+	case "amazon_pay":
+		return ListPaymentsRequestPaymentMethodsItemAmazonPay, nil
+	case "apple":
+		return ListPaymentsRequestPaymentMethodsItemApple, nil
+	case "apple_pay":
+		return ListPaymentsRequestPaymentMethodsItemApplePay, nil
+	case "au_bank_transfer":
+		return ListPaymentsRequestPaymentMethodsItemAuBankTransfer, nil
+	case "au_becs_debit":
+		return ListPaymentsRequestPaymentMethodsItemAuBecsDebit, nil
+	case "bacs_debit":
+		return ListPaymentsRequestPaymentMethodsItemBacsDebit, nil
+	case "bancolombia":
+		return ListPaymentsRequestPaymentMethodsItemBancolombia, nil
+	case "bancontact":
+		return ListPaymentsRequestPaymentMethodsItemBancontact, nil
+	case "bank_wire":
+		return ListPaymentsRequestPaymentMethodsItemBankWire, nil
+	case "billie":
+		return ListPaymentsRequestPaymentMethodsItemBillie, nil
+	case "blik":
+		return ListPaymentsRequestPaymentMethodsItemBlik, nil
+	case "boleto":
+		return ListPaymentsRequestPaymentMethodsItemBoleto, nil
+	case "bre_b":
+		return ListPaymentsRequestPaymentMethodsItemBreB, nil
+	case "ca_bank_transfer":
+		return ListPaymentsRequestPaymentMethodsItemCaBankTransfer, nil
+	case "capchase_pay":
+		return ListPaymentsRequestPaymentMethodsItemCapchasePay, nil
+	case "card":
+		return ListPaymentsRequestPaymentMethodsItemCard, nil
+	case "card_present":
+		return ListPaymentsRequestPaymentMethodsItemCardPresent, nil
+	case "card_installments_three":
+		return ListPaymentsRequestPaymentMethodsItemCardInstallmentsThree, nil
+	case "card_installments_six":
+		return ListPaymentsRequestPaymentMethodsItemCardInstallmentsSix, nil
+	case "card_installments_twelve":
+		return ListPaymentsRequestPaymentMethodsItemCardInstallmentsTwelve, nil
+	case "cashapp":
+		return ListPaymentsRequestPaymentMethodsItemCashapp, nil
+	case "claritypay":
+		return ListPaymentsRequestPaymentMethodsItemClaritypay, nil
+	case "coinbase":
+		return ListPaymentsRequestPaymentMethodsItemCoinbase, nil
+	case "crypto":
+		return ListPaymentsRequestPaymentMethodsItemCrypto, nil
+	case "custom":
+		return ListPaymentsRequestPaymentMethodsItemCustom, nil
+	case "customer_balance":
+		return ListPaymentsRequestPaymentMethodsItemCustomerBalance, nil
+	case "demo_pay":
+		return ListPaymentsRequestPaymentMethodsItemDemoPay, nil
+	case "duitnow_qr":
+		return ListPaymentsRequestPaymentMethodsItemDuitnowQr, nil
+	case "efecty":
+		return ListPaymentsRequestPaymentMethodsItemEfecty, nil
+	case "eps":
+		return ListPaymentsRequestPaymentMethodsItemEps, nil
+	case "eu_bank_transfer":
+		return ListPaymentsRequestPaymentMethodsItemEuBankTransfer, nil
+	case "fpx":
+		return ListPaymentsRequestPaymentMethodsItemFpx, nil
+	case "flex_pay":
+		return ListPaymentsRequestPaymentMethodsItemFlexPay, nil
+	case "gb_bank_transfer":
+		return ListPaymentsRequestPaymentMethodsItemGbBankTransfer, nil
+	case "gcash":
+		return ListPaymentsRequestPaymentMethodsItemGcash, nil
+	case "giropay":
+		return ListPaymentsRequestPaymentMethodsItemGiropay, nil
+	case "google_pay":
+		return ListPaymentsRequestPaymentMethodsItemGooglePay, nil
+	case "gopay":
+		return ListPaymentsRequestPaymentMethodsItemGopay, nil
+	case "grabpay":
+		return ListPaymentsRequestPaymentMethodsItemGrabpay, nil
+	case "id_bank_transfer":
+		return ListPaymentsRequestPaymentMethodsItemIDBankTransfer, nil
+	case "ideal":
+		return ListPaymentsRequestPaymentMethodsItemIdeal, nil
+	case "interac":
+		return ListPaymentsRequestPaymentMethodsItemInterac, nil
+	case "international_bank_wire":
+		return ListPaymentsRequestPaymentMethodsItemInternationalBankWire, nil
+	case "kakao_pay":
+		return ListPaymentsRequestPaymentMethodsItemKakaoPay, nil
+	case "klarna":
+		return ListPaymentsRequestPaymentMethodsItemKlarna, nil
+	case "klarna_pay_now":
+		return ListPaymentsRequestPaymentMethodsItemKlarnaPayNow, nil
+	case "konbini":
+		return ListPaymentsRequestPaymentMethodsItemKonbini, nil
+	case "kr_card":
+		return ListPaymentsRequestPaymentMethodsItemKrCard, nil
+	case "kr_market":
+		return ListPaymentsRequestPaymentMethodsItemKrMarket, nil
+	case "kriya":
+		return ListPaymentsRequestPaymentMethodsItemKriya, nil
+	case "kueski":
+		return ListPaymentsRequestPaymentMethodsItemKueski, nil
+	case "mb_way":
+		return ListPaymentsRequestPaymentMethodsItemMbWay, nil
+	case "m_pesa":
+		return ListPaymentsRequestPaymentMethodsItemMPesa, nil
+	case "mercado_pago":
+		return ListPaymentsRequestPaymentMethodsItemMercadoPago, nil
+	case "mercado_pago_ar":
+		return ListPaymentsRequestPaymentMethodsItemMercadoPagoAr, nil
+	case "mercado_pago_mx":
+		return ListPaymentsRequestPaymentMethodsItemMercadoPagoMx, nil
+	case "mobilepay":
+		return ListPaymentsRequestPaymentMethodsItemMobilepay, nil
+	case "modo":
+		return ListPaymentsRequestPaymentMethodsItemModo, nil
+	case "mondu":
+		return ListPaymentsRequestPaymentMethodsItemMondu, nil
+	case "multibanco":
+		return ListPaymentsRequestPaymentMethodsItemMultibanco, nil
+	case "naver_pay":
+		return ListPaymentsRequestPaymentMethodsItemNaverPay, nil
+	case "nequi":
+		return ListPaymentsRequestPaymentMethodsItemNequi, nil
+	case "netbanking":
+		return ListPaymentsRequestPaymentMethodsItemNetbanking, nil
+	case "ng_bank":
+		return ListPaymentsRequestPaymentMethodsItemNgBank, nil
+	case "ng_bank_transfer":
+		return ListPaymentsRequestPaymentMethodsItemNgBankTransfer, nil
+	case "ng_card":
+		return ListPaymentsRequestPaymentMethodsItemNgCard, nil
+	case "ng_market":
+		return ListPaymentsRequestPaymentMethodsItemNgMarket, nil
+	case "ng_ussd":
+		return ListPaymentsRequestPaymentMethodsItemNgUssd, nil
+	case "ng_wallet":
+		return ListPaymentsRequestPaymentMethodsItemNgWallet, nil
+	case "nupay":
+		return ListPaymentsRequestPaymentMethodsItemNupay, nil
+	case "nz_bank_account":
+		return ListPaymentsRequestPaymentMethodsItemNzBankAccount, nil
+	case "oney":
+		return ListPaymentsRequestPaymentMethodsItemOney, nil
+	case "oney_3x":
+		return ListPaymentsRequestPaymentMethodsItemOney3X, nil
+	case "oney_4x":
+		return ListPaymentsRequestPaymentMethodsItemOney4X, nil
+	case "opay":
+		return ListPaymentsRequestPaymentMethodsItemOpay, nil
+	case "oxxo":
+		return ListPaymentsRequestPaymentMethodsItemOxxo, nil
+	case "p24":
+		return ListPaymentsRequestPaymentMethodsItemP24, nil
+	case "pago_efectivo":
+		return ListPaymentsRequestPaymentMethodsItemPagoEfectivo, nil
+	case "pse":
+		return ListPaymentsRequestPaymentMethodsItemPse, nil
+	case "pay_by_bank":
+		return ListPaymentsRequestPaymentMethodsItemPayByBank, nil
+	case "payco":
+		return ListPaymentsRequestPaymentMethodsItemPayco, nil
+	case "paynow":
+		return ListPaymentsRequestPaymentMethodsItemPaynow, nil
+	case "paypal":
+		return ListPaymentsRequestPaymentMethodsItemPaypal, nil
+	case "paypal_express":
+		return ListPaymentsRequestPaymentMethodsItemPaypalExpress, nil
+	case "paypay":
+		return ListPaymentsRequestPaymentMethodsItemPaypay, nil
+	case "payto":
+		return ListPaymentsRequestPaymentMethodsItemPayto, nil
+	case "payto_email":
+		return ListPaymentsRequestPaymentMethodsItemPaytoEmail, nil
+	case "payto_phone":
+		return ListPaymentsRequestPaymentMethodsItemPaytoPhone, nil
+	case "payto_bank_account":
+		return ListPaymentsRequestPaymentMethodsItemPaytoBankAccount, nil
+	case "pix":
+		return ListPaymentsRequestPaymentMethodsItemPix, nil
+	case "platform_balance":
+		return ListPaymentsRequestPaymentMethodsItemPlatformBalance, nil
+	case "promptpay":
+		return ListPaymentsRequestPaymentMethodsItemPromptpay, nil
+	case "qris":
+		return ListPaymentsRequestPaymentMethodsItemQris, nil
+	case "rapipago":
+		return ListPaymentsRequestPaymentMethodsItemRapipago, nil
+	case "rechnung":
+		return ListPaymentsRequestPaymentMethodsItemRechnung, nil
+	case "revolut_pay":
+		return ListPaymentsRequestPaymentMethodsItemRevolutPay, nil
+	case "samsung_pay":
+		return ListPaymentsRequestPaymentMethodsItemSamsungPay, nil
+	case "satispay":
+		return ListPaymentsRequestPaymentMethodsItemSatispay, nil
+	case "scalapay":
+		return ListPaymentsRequestPaymentMethodsItemScalapay, nil
+	case "sencillito":
+		return ListPaymentsRequestPaymentMethodsItemSencillito, nil
+	case "sepa_debit":
+		return ListPaymentsRequestPaymentMethodsItemSepaDebit, nil
+	case "sequra":
+		return ListPaymentsRequestPaymentMethodsItemSequra, nil
+	case "servipag":
+		return ListPaymentsRequestPaymentMethodsItemServipag, nil
+	case "sezzle":
+		return ListPaymentsRequestPaymentMethodsItemSezzle, nil
+	case "shop_pay":
+		return ListPaymentsRequestPaymentMethodsItemShopPay, nil
+	case "shopeepay":
+		return ListPaymentsRequestPaymentMethodsItemShopeepay, nil
+	case "sofort":
+		return ListPaymentsRequestPaymentMethodsItemSofort, nil
+	case "south_korea_market":
+		return ListPaymentsRequestPaymentMethodsItemSouthKoreaMarket, nil
+	case "spei":
+		return ListPaymentsRequestPaymentMethodsItemSpei, nil
+	case "splitit":
+		return ListPaymentsRequestPaymentMethodsItemSplitit, nil
+	case "sunbit":
+		return ListPaymentsRequestPaymentMethodsItemSunbit, nil
+	case "swish":
+		return ListPaymentsRequestPaymentMethodsItemSwish, nil
+	case "tabby":
+		return ListPaymentsRequestPaymentMethodsItemTabby, nil
+	case "tamara":
+		return ListPaymentsRequestPaymentMethodsItemTamara, nil
+	case "touch_n_go":
+		return ListPaymentsRequestPaymentMethodsItemTouchNGo, nil
+	case "twint":
+		return ListPaymentsRequestPaymentMethodsItemTwint, nil
+	case "upi":
+		return ListPaymentsRequestPaymentMethodsItemUpi, nil
+	case "us_bank_account":
+		return ListPaymentsRequestPaymentMethodsItemUsBankAccount, nil
+	case "us_bank_transfer":
+		return ListPaymentsRequestPaymentMethodsItemUsBankTransfer, nil
+	case "venmo":
+		return ListPaymentsRequestPaymentMethodsItemVenmo, nil
+	case "vipps":
+		return ListPaymentsRequestPaymentMethodsItemVipps, nil
+	case "webpay":
+		return ListPaymentsRequestPaymentMethodsItemWebpay, nil
+	case "wechat_pay":
+		return ListPaymentsRequestPaymentMethodsItemWechatPay, nil
+	case "whop_pay":
+		return ListPaymentsRequestPaymentMethodsItemWhopPay, nil
+	case "yape":
+		return ListPaymentsRequestPaymentMethodsItemYape, nil
+	case "zip":
+		return ListPaymentsRequestPaymentMethodsItemZip, nil
+	case "coinflow":
+		return ListPaymentsRequestPaymentMethodsItemCoinflow, nil
+	case "tap_to_pay":
+		return ListPaymentsRequestPaymentMethodsItemTapToPay, nil
+	}
+	var t ListPaymentsRequestPaymentMethodsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestPaymentMethodsItem) Ptr() *ListPaymentsRequestPaymentMethodsItem {
+	return &l
+}
+
+type ListPaymentsRequestStatus string
+
+const (
+	ListPaymentsRequestStatusOpen          ListPaymentsRequestStatus = "open"
+	ListPaymentsRequestStatusAuthorized    ListPaymentsRequestStatus = "authorized"
+	ListPaymentsRequestStatusPaid          ListPaymentsRequestStatus = "paid"
+	ListPaymentsRequestStatusPending       ListPaymentsRequestStatus = "pending"
+	ListPaymentsRequestStatusUncollectible ListPaymentsRequestStatus = "uncollectible"
+	ListPaymentsRequestStatusUnresolved    ListPaymentsRequestStatus = "unresolved"
+	ListPaymentsRequestStatusVoid          ListPaymentsRequestStatus = "void"
+)
+
+func NewListPaymentsRequestStatusFromString(s string) (ListPaymentsRequestStatus, error) {
+	switch s {
+	case "open":
+		return ListPaymentsRequestStatusOpen, nil
+	case "authorized":
+		return ListPaymentsRequestStatusAuthorized, nil
+	case "paid":
+		return ListPaymentsRequestStatusPaid, nil
+	case "pending":
+		return ListPaymentsRequestStatusPending, nil
+	case "uncollectible":
+		return ListPaymentsRequestStatusUncollectible, nil
+	case "unresolved":
+		return ListPaymentsRequestStatusUnresolved, nil
+	case "void":
+		return ListPaymentsRequestStatusVoid, nil
+	}
+	var t ListPaymentsRequestStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestStatus) Ptr() *ListPaymentsRequestStatus {
+	return &l
+}
+
+type ListPaymentsRequestStatusesItem string
+
+const (
+	ListPaymentsRequestStatusesItemOpen          ListPaymentsRequestStatusesItem = "open"
+	ListPaymentsRequestStatusesItemAuthorized    ListPaymentsRequestStatusesItem = "authorized"
+	ListPaymentsRequestStatusesItemPaid          ListPaymentsRequestStatusesItem = "paid"
+	ListPaymentsRequestStatusesItemPending       ListPaymentsRequestStatusesItem = "pending"
+	ListPaymentsRequestStatusesItemUncollectible ListPaymentsRequestStatusesItem = "uncollectible"
+	ListPaymentsRequestStatusesItemUnresolved    ListPaymentsRequestStatusesItem = "unresolved"
+	ListPaymentsRequestStatusesItemVoid          ListPaymentsRequestStatusesItem = "void"
+)
+
+func NewListPaymentsRequestStatusesItemFromString(s string) (ListPaymentsRequestStatusesItem, error) {
+	switch s {
+	case "open":
+		return ListPaymentsRequestStatusesItemOpen, nil
+	case "authorized":
+		return ListPaymentsRequestStatusesItemAuthorized, nil
+	case "paid":
+		return ListPaymentsRequestStatusesItemPaid, nil
+	case "pending":
+		return ListPaymentsRequestStatusesItemPending, nil
+	case "uncollectible":
+		return ListPaymentsRequestStatusesItemUncollectible, nil
+	case "unresolved":
+		return ListPaymentsRequestStatusesItemUnresolved, nil
+	case "void":
+		return ListPaymentsRequestStatusesItemVoid, nil
+	}
+	var t ListPaymentsRequestStatusesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestStatusesItem) Ptr() *ListPaymentsRequestStatusesItem {
+	return &l
+}
+
+type ListPaymentsRequestSubstatusesItem string
+
+const (
+	ListPaymentsRequestSubstatusesItemSucceeded                   ListPaymentsRequestSubstatusesItem = "succeeded"
+	ListPaymentsRequestSubstatusesItemRequiresCapture             ListPaymentsRequestSubstatusesItem = "requires_capture"
+	ListPaymentsRequestSubstatusesItemPending                     ListPaymentsRequestSubstatusesItem = "pending"
+	ListPaymentsRequestSubstatusesItemFailed                      ListPaymentsRequestSubstatusesItem = "failed"
+	ListPaymentsRequestSubstatusesItemBlocked                     ListPaymentsRequestSubstatusesItem = "blocked"
+	ListPaymentsRequestSubstatusesItemPastDue                     ListPaymentsRequestSubstatusesItem = "past_due"
+	ListPaymentsRequestSubstatusesItemCanceled                    ListPaymentsRequestSubstatusesItem = "canceled"
+	ListPaymentsRequestSubstatusesItemPriceTooLow                 ListPaymentsRequestSubstatusesItem = "price_too_low"
+	ListPaymentsRequestSubstatusesItemUncollectible               ListPaymentsRequestSubstatusesItem = "uncollectible"
+	ListPaymentsRequestSubstatusesItemRefunded                    ListPaymentsRequestSubstatusesItem = "refunded"
+	ListPaymentsRequestSubstatusesItemAutoRefunded                ListPaymentsRequestSubstatusesItem = "auto_refunded"
+	ListPaymentsRequestSubstatusesItemPartiallyRefunded           ListPaymentsRequestSubstatusesItem = "partially_refunded"
+	ListPaymentsRequestSubstatusesItemDisputeWarning              ListPaymentsRequestSubstatusesItem = "dispute_warning"
+	ListPaymentsRequestSubstatusesItemDisputeNeedsResponse        ListPaymentsRequestSubstatusesItem = "dispute_needs_response"
+	ListPaymentsRequestSubstatusesItemDisputeWarningNeedsResponse ListPaymentsRequestSubstatusesItem = "dispute_warning_needs_response"
+	ListPaymentsRequestSubstatusesItemResolutionNeedsResponse     ListPaymentsRequestSubstatusesItem = "resolution_needs_response"
+	ListPaymentsRequestSubstatusesItemDisputeUnderReview          ListPaymentsRequestSubstatusesItem = "dispute_under_review"
+	ListPaymentsRequestSubstatusesItemDisputeWarningUnderReview   ListPaymentsRequestSubstatusesItem = "dispute_warning_under_review"
+	ListPaymentsRequestSubstatusesItemResolutionUnderReview       ListPaymentsRequestSubstatusesItem = "resolution_under_review"
+	ListPaymentsRequestSubstatusesItemDisputeWon                  ListPaymentsRequestSubstatusesItem = "dispute_won"
+	ListPaymentsRequestSubstatusesItemDisputeWarningClosed        ListPaymentsRequestSubstatusesItem = "dispute_warning_closed"
+	ListPaymentsRequestSubstatusesItemResolutionWon               ListPaymentsRequestSubstatusesItem = "resolution_won"
+	ListPaymentsRequestSubstatusesItemDisputeLost                 ListPaymentsRequestSubstatusesItem = "dispute_lost"
+	ListPaymentsRequestSubstatusesItemDisputeClosed               ListPaymentsRequestSubstatusesItem = "dispute_closed"
+	ListPaymentsRequestSubstatusesItemResolutionLost              ListPaymentsRequestSubstatusesItem = "resolution_lost"
+	ListPaymentsRequestSubstatusesItemDrafted                     ListPaymentsRequestSubstatusesItem = "drafted"
+	ListPaymentsRequestSubstatusesItemIncomplete                  ListPaymentsRequestSubstatusesItem = "incomplete"
+	ListPaymentsRequestSubstatusesItemUnresolved                  ListPaymentsRequestSubstatusesItem = "unresolved"
+)
+
+func NewListPaymentsRequestSubstatusesItemFromString(s string) (ListPaymentsRequestSubstatusesItem, error) {
+	switch s {
+	case "succeeded":
+		return ListPaymentsRequestSubstatusesItemSucceeded, nil
+	case "requires_capture":
+		return ListPaymentsRequestSubstatusesItemRequiresCapture, nil
+	case "pending":
+		return ListPaymentsRequestSubstatusesItemPending, nil
+	case "failed":
+		return ListPaymentsRequestSubstatusesItemFailed, nil
+	case "blocked":
+		return ListPaymentsRequestSubstatusesItemBlocked, nil
+	case "past_due":
+		return ListPaymentsRequestSubstatusesItemPastDue, nil
+	case "canceled":
+		return ListPaymentsRequestSubstatusesItemCanceled, nil
+	case "price_too_low":
+		return ListPaymentsRequestSubstatusesItemPriceTooLow, nil
+	case "uncollectible":
+		return ListPaymentsRequestSubstatusesItemUncollectible, nil
+	case "refunded":
+		return ListPaymentsRequestSubstatusesItemRefunded, nil
+	case "auto_refunded":
+		return ListPaymentsRequestSubstatusesItemAutoRefunded, nil
+	case "partially_refunded":
+		return ListPaymentsRequestSubstatusesItemPartiallyRefunded, nil
+	case "dispute_warning":
+		return ListPaymentsRequestSubstatusesItemDisputeWarning, nil
+	case "dispute_needs_response":
+		return ListPaymentsRequestSubstatusesItemDisputeNeedsResponse, nil
+	case "dispute_warning_needs_response":
+		return ListPaymentsRequestSubstatusesItemDisputeWarningNeedsResponse, nil
+	case "resolution_needs_response":
+		return ListPaymentsRequestSubstatusesItemResolutionNeedsResponse, nil
+	case "dispute_under_review":
+		return ListPaymentsRequestSubstatusesItemDisputeUnderReview, nil
+	case "dispute_warning_under_review":
+		return ListPaymentsRequestSubstatusesItemDisputeWarningUnderReview, nil
+	case "resolution_under_review":
+		return ListPaymentsRequestSubstatusesItemResolutionUnderReview, nil
+	case "dispute_won":
+		return ListPaymentsRequestSubstatusesItemDisputeWon, nil
+	case "dispute_warning_closed":
+		return ListPaymentsRequestSubstatusesItemDisputeWarningClosed, nil
+	case "resolution_won":
+		return ListPaymentsRequestSubstatusesItemResolutionWon, nil
+	case "dispute_lost":
+		return ListPaymentsRequestSubstatusesItemDisputeLost, nil
+	case "dispute_closed":
+		return ListPaymentsRequestSubstatusesItemDisputeClosed, nil
+	case "resolution_lost":
+		return ListPaymentsRequestSubstatusesItemResolutionLost, nil
+	case "drafted":
+		return ListPaymentsRequestSubstatusesItemDrafted, nil
+	case "incomplete":
+		return ListPaymentsRequestSubstatusesItemIncomplete, nil
+	case "unresolved":
+		return ListPaymentsRequestSubstatusesItemUnresolved, nil
+	}
+	var t ListPaymentsRequestSubstatusesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestSubstatusesItem) Ptr() *ListPaymentsRequestSubstatusesItem {
+	return &l
+}
+
+type ListPaymentsRequestTrackingStatesItem string
+
+const (
+	ListPaymentsRequestTrackingStatesItemUnknown            ListPaymentsRequestTrackingStatesItem = "unknown"
+	ListPaymentsRequestTrackingStatesItemPreTransit         ListPaymentsRequestTrackingStatesItem = "pre_transit"
+	ListPaymentsRequestTrackingStatesItemInTransit          ListPaymentsRequestTrackingStatesItem = "in_transit"
+	ListPaymentsRequestTrackingStatesItemOutForDelivery     ListPaymentsRequestTrackingStatesItem = "out_for_delivery"
+	ListPaymentsRequestTrackingStatesItemDelivered          ListPaymentsRequestTrackingStatesItem = "delivered"
+	ListPaymentsRequestTrackingStatesItemAvailableForPickup ListPaymentsRequestTrackingStatesItem = "available_for_pickup"
+	ListPaymentsRequestTrackingStatesItemReturnToSender     ListPaymentsRequestTrackingStatesItem = "return_to_sender"
+	ListPaymentsRequestTrackingStatesItemFailure            ListPaymentsRequestTrackingStatesItem = "failure"
+	ListPaymentsRequestTrackingStatesItemCancelled          ListPaymentsRequestTrackingStatesItem = "cancelled"
+	ListPaymentsRequestTrackingStatesItemError              ListPaymentsRequestTrackingStatesItem = "error"
+	ListPaymentsRequestTrackingStatesItemNeedsTracking      ListPaymentsRequestTrackingStatesItem = "needs_tracking"
+	ListPaymentsRequestTrackingStatesItemMissingTracking    ListPaymentsRequestTrackingStatesItem = "missing_tracking"
+)
+
+func NewListPaymentsRequestTrackingStatesItemFromString(s string) (ListPaymentsRequestTrackingStatesItem, error) {
+	switch s {
+	case "unknown":
+		return ListPaymentsRequestTrackingStatesItemUnknown, nil
+	case "pre_transit":
+		return ListPaymentsRequestTrackingStatesItemPreTransit, nil
+	case "in_transit":
+		return ListPaymentsRequestTrackingStatesItemInTransit, nil
+	case "out_for_delivery":
+		return ListPaymentsRequestTrackingStatesItemOutForDelivery, nil
+	case "delivered":
+		return ListPaymentsRequestTrackingStatesItemDelivered, nil
+	case "available_for_pickup":
+		return ListPaymentsRequestTrackingStatesItemAvailableForPickup, nil
+	case "return_to_sender":
+		return ListPaymentsRequestTrackingStatesItemReturnToSender, nil
+	case "failure":
+		return ListPaymentsRequestTrackingStatesItemFailure, nil
+	case "cancelled":
+		return ListPaymentsRequestTrackingStatesItemCancelled, nil
+	case "error":
+		return ListPaymentsRequestTrackingStatesItemError, nil
+	case "needs_tracking":
+		return ListPaymentsRequestTrackingStatesItemNeedsTracking, nil
+	case "missing_tracking":
+		return ListPaymentsRequestTrackingStatesItemMissingTracking, nil
+	}
+	var t ListPaymentsRequestTrackingStatesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestTrackingStatesItem) Ptr() *ListPaymentsRequestTrackingStatesItem {
+	return &l
+}
+
+type ListPaymentsRequestTrackingStatus string
+
+const (
+	ListPaymentsRequestTrackingStatusUnknown            ListPaymentsRequestTrackingStatus = "unknown"
+	ListPaymentsRequestTrackingStatusPreTransit         ListPaymentsRequestTrackingStatus = "pre_transit"
+	ListPaymentsRequestTrackingStatusInTransit          ListPaymentsRequestTrackingStatus = "in_transit"
+	ListPaymentsRequestTrackingStatusOutForDelivery     ListPaymentsRequestTrackingStatus = "out_for_delivery"
+	ListPaymentsRequestTrackingStatusDelivered          ListPaymentsRequestTrackingStatus = "delivered"
+	ListPaymentsRequestTrackingStatusAvailableForPickup ListPaymentsRequestTrackingStatus = "available_for_pickup"
+	ListPaymentsRequestTrackingStatusReturnToSender     ListPaymentsRequestTrackingStatus = "return_to_sender"
+	ListPaymentsRequestTrackingStatusFailure            ListPaymentsRequestTrackingStatus = "failure"
+	ListPaymentsRequestTrackingStatusCancelled          ListPaymentsRequestTrackingStatus = "cancelled"
+	ListPaymentsRequestTrackingStatusError              ListPaymentsRequestTrackingStatus = "error"
+	ListPaymentsRequestTrackingStatusNeedsTracking      ListPaymentsRequestTrackingStatus = "needs_tracking"
+	ListPaymentsRequestTrackingStatusMissingTracking    ListPaymentsRequestTrackingStatus = "missing_tracking"
+)
+
+func NewListPaymentsRequestTrackingStatusFromString(s string) (ListPaymentsRequestTrackingStatus, error) {
+	switch s {
+	case "unknown":
+		return ListPaymentsRequestTrackingStatusUnknown, nil
+	case "pre_transit":
+		return ListPaymentsRequestTrackingStatusPreTransit, nil
+	case "in_transit":
+		return ListPaymentsRequestTrackingStatusInTransit, nil
+	case "out_for_delivery":
+		return ListPaymentsRequestTrackingStatusOutForDelivery, nil
+	case "delivered":
+		return ListPaymentsRequestTrackingStatusDelivered, nil
+	case "available_for_pickup":
+		return ListPaymentsRequestTrackingStatusAvailableForPickup, nil
+	case "return_to_sender":
+		return ListPaymentsRequestTrackingStatusReturnToSender, nil
+	case "failure":
+		return ListPaymentsRequestTrackingStatusFailure, nil
+	case "cancelled":
+		return ListPaymentsRequestTrackingStatusCancelled, nil
+	case "error":
+		return ListPaymentsRequestTrackingStatusError, nil
+	case "needs_tracking":
+		return ListPaymentsRequestTrackingStatusNeedsTracking, nil
+	case "missing_tracking":
+		return ListPaymentsRequestTrackingStatusMissingTracking, nil
+	}
+	var t ListPaymentsRequestTrackingStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPaymentsRequestTrackingStatus) Ptr() *ListPaymentsRequestTrackingStatus {
+	return &l
+}
+
 var (
 	listPaymentsResponseFieldData     = big.NewInt(1 << 0)
 	listPaymentsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
 type ListPaymentsResponse struct {
-	// A list of nodes.
-	Data []*PaymentListItem `json:"data" url:"data"`
-	// Information to aid in pagination.
-	PageInfo *PageInfo `json:"page_info" url:"page_info"`
+	Data     []*Payment                    `json:"data" url:"data"`
+	PageInfo *ListPaymentsResponsePageInfo `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -14621,14 +5577,14 @@ type ListPaymentsResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListPaymentsResponse) GetData() []*PaymentListItem {
+func (l *ListPaymentsResponse) GetData() []*Payment {
 	if l == nil {
 		return nil
 	}
 	return l.Data
 }
 
-func (l *ListPaymentsResponse) GetPageInfo() *PageInfo {
+func (l *ListPaymentsResponse) GetPageInfo() *ListPaymentsResponsePageInfo {
 	if l == nil {
 		return nil
 	}
@@ -14643,22 +5599,24 @@ func (l *ListPaymentsResponse) GetExtraProperties() map[string]interface{} {
 }
 
 func (l *ListPaymentsResponse) require(field *big.Int) {
-	if l.explicitFields == nil {
-		l.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
 	}
-	l.explicitFields.Or(l.explicitFields, field)
+	next.Or(next, field)
+	l.explicitFields = next
 }
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsResponse) SetData(data []*PaymentListItem) {
+func (l *ListPaymentsResponse) SetData(data []*Payment) {
 	l.Data = data
 	l.require(listPaymentsResponseFieldData)
 }
 
 // SetPageInfo sets the PageInfo field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsResponse) SetPageInfo(pageInfo *PageInfo) {
+func (l *ListPaymentsResponse) SetPageInfo(pageInfo *ListPaymentsResponsePageInfo) {
 	l.PageInfo = pageInfo
 	l.require(listPaymentsResponseFieldPageInfo)
 }
@@ -14706,6 +5664,685 @@ func (l *ListPaymentsResponse) String() string {
 }
 
 var (
+	listPaymentsResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
+	listPaymentsResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
+	listPaymentsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
+	listPaymentsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+)
+
+// listPaymentsResponsePageInfoNullableFields maps the wire names of ListPaymentsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listPaymentsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listPaymentsResponsePageInfoFieldEndCursor,
+	"start_cursor": listPaymentsResponsePageInfoFieldStartCursor,
+}
+
+type ListPaymentsResponsePageInfo struct {
+	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
+	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
+	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
+	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListPaymentsResponsePageInfo) GetEndCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.EndCursor
+}
+
+func (l *ListPaymentsResponsePageInfo) GetHasNextPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasNextPage
+}
+
+func (l *ListPaymentsResponsePageInfo) GetHasPreviousPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasPreviousPage
+}
+
+func (l *ListPaymentsResponsePageInfo) GetStartCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.StartCursor
+}
+
+func (l *ListPaymentsResponsePageInfo) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListPaymentsResponsePageInfo) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetEndCursor sets the EndCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsResponsePageInfo) SetEndCursor(endCursor *string) {
+	l.EndCursor = endCursor
+	l.require(listPaymentsResponsePageInfoFieldEndCursor)
+}
+
+// SetHasNextPage sets the HasNextPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsResponsePageInfo) SetHasNextPage(hasNextPage bool) {
+	l.HasNextPage = hasNextPage
+	l.require(listPaymentsResponsePageInfoFieldHasNextPage)
+}
+
+// SetHasPreviousPage sets the HasPreviousPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
+	l.HasPreviousPage = hasPreviousPage
+	l.require(listPaymentsResponsePageInfoFieldHasPreviousPage)
+}
+
+// SetStartCursor sets the StartCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsResponsePageInfo) SetStartCursor(startCursor *string) {
+	l.StartCursor = startCursor
+	l.require(listPaymentsResponsePageInfoFieldStartCursor)
+}
+
+func (l *ListPaymentsResponsePageInfo) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListPaymentsResponsePageInfo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListPaymentsResponsePageInfo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listPaymentsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListPaymentsResponsePageInfo) MarshalJSON() ([]byte, error) {
+	type embed ListPaymentsResponsePageInfo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListPaymentsResponsePageInfo) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	postPaymentAuthorizedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postPaymentAuthorizedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postPaymentAuthorizedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postPaymentAuthorizedPayloadFieldData               = big.NewInt(1 << 3)
+	postPaymentAuthorizedPayloadFieldID                 = big.NewInt(1 << 4)
+	postPaymentAuthorizedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postPaymentAuthorizedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postPaymentAuthorizedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+// postPaymentAuthorizedPayloadNullableFields maps the wire names of PostPaymentAuthorizedPayload's nullable fields (required or optional) to their field bits.
+var postPaymentAuthorizedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postPaymentAuthorizedPayloadFieldAccountID,
+	"api_version_date": postPaymentAuthorizedPayloadFieldAPIVersionDate,
+}
+
+type PostPaymentAuthorizedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostPaymentAuthorizedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string  `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Payment `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostPaymentAuthorizedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostPaymentAuthorizedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostPaymentAuthorizedPayload) GetAPIVersion() PostPaymentAuthorizedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostPaymentAuthorizedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostPaymentAuthorizedPayload) GetData() *Payment {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostPaymentAuthorizedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostPaymentAuthorizedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostPaymentAuthorizedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostPaymentAuthorizedPayload) GetType() PostPaymentAuthorizedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostPaymentAuthorizedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostPaymentAuthorizedPayload) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentAuthorizedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postPaymentAuthorizedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentAuthorizedPayload) SetAPIVersion(apiVersion PostPaymentAuthorizedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postPaymentAuthorizedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentAuthorizedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postPaymentAuthorizedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentAuthorizedPayload) SetData(data *Payment) {
+	p.Data = data
+	p.require(postPaymentAuthorizedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentAuthorizedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postPaymentAuthorizedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentAuthorizedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postPaymentAuthorizedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentAuthorizedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postPaymentAuthorizedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentAuthorizedPayload) SetType(type_ PostPaymentAuthorizedPayloadType) {
+	p.Type = type_
+	p.require(postPaymentAuthorizedPayloadFieldType)
+}
+
+func (p *PostPaymentAuthorizedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostPaymentAuthorizedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostPaymentAuthorizedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPaymentAuthorizedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostPaymentAuthorizedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostPaymentAuthorizedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostPaymentAuthorizedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostPaymentAuthorizedPayloadAPIVersion string
+
+const (
+	PostPaymentAuthorizedPayloadAPIVersionV1 PostPaymentAuthorizedPayloadAPIVersion = "v1"
+)
+
+func NewPostPaymentAuthorizedPayloadAPIVersionFromString(s string) (PostPaymentAuthorizedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostPaymentAuthorizedPayloadAPIVersionV1, nil
+	}
+	var t PostPaymentAuthorizedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPaymentAuthorizedPayloadAPIVersion) Ptr() *PostPaymentAuthorizedPayloadAPIVersion {
+	return &p
+}
+
+// The webhook event type
+type PostPaymentAuthorizedPayloadType string
+
+const (
+	PostPaymentAuthorizedPayloadTypePaymentAuthorized PostPaymentAuthorizedPayloadType = "payment.authorized"
+)
+
+func NewPostPaymentAuthorizedPayloadTypeFromString(s string) (PostPaymentAuthorizedPayloadType, error) {
+	switch s {
+	case "payment.authorized":
+		return PostPaymentAuthorizedPayloadTypePaymentAuthorized, nil
+	}
+	var t PostPaymentAuthorizedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPaymentAuthorizedPayloadType) Ptr() *PostPaymentAuthorizedPayloadType {
+	return &p
+}
+
+var (
+	postPaymentCanceledPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postPaymentCanceledPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postPaymentCanceledPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postPaymentCanceledPayloadFieldData               = big.NewInt(1 << 3)
+	postPaymentCanceledPayloadFieldID                 = big.NewInt(1 << 4)
+	postPaymentCanceledPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postPaymentCanceledPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postPaymentCanceledPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+// postPaymentCanceledPayloadNullableFields maps the wire names of PostPaymentCanceledPayload's nullable fields (required or optional) to their field bits.
+var postPaymentCanceledPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postPaymentCanceledPayloadFieldAccountID,
+	"api_version_date": postPaymentCanceledPayloadFieldAPIVersionDate,
+}
+
+type PostPaymentCanceledPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostPaymentCanceledPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string  `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Payment `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostPaymentCanceledPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostPaymentCanceledPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostPaymentCanceledPayload) GetAPIVersion() PostPaymentCanceledPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostPaymentCanceledPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostPaymentCanceledPayload) GetData() *Payment {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostPaymentCanceledPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostPaymentCanceledPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostPaymentCanceledPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostPaymentCanceledPayload) GetType() PostPaymentCanceledPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostPaymentCanceledPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostPaymentCanceledPayload) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentCanceledPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postPaymentCanceledPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentCanceledPayload) SetAPIVersion(apiVersion PostPaymentCanceledPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postPaymentCanceledPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentCanceledPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postPaymentCanceledPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentCanceledPayload) SetData(data *Payment) {
+	p.Data = data
+	p.require(postPaymentCanceledPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentCanceledPayload) SetID(id string) {
+	p.ID = id
+	p.require(postPaymentCanceledPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentCanceledPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postPaymentCanceledPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentCanceledPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postPaymentCanceledPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentCanceledPayload) SetType(type_ PostPaymentCanceledPayloadType) {
+	p.Type = type_
+	p.require(postPaymentCanceledPayloadFieldType)
+}
+
+func (p *PostPaymentCanceledPayload) UnmarshalJSON(data []byte) error {
+	type embed PostPaymentCanceledPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostPaymentCanceledPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPaymentCanceledPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostPaymentCanceledPayload) MarshalJSON() ([]byte, error) {
+	type embed PostPaymentCanceledPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostPaymentCanceledPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostPaymentCanceledPayloadAPIVersion string
+
+const (
+	PostPaymentCanceledPayloadAPIVersionV1 PostPaymentCanceledPayloadAPIVersion = "v1"
+)
+
+func NewPostPaymentCanceledPayloadAPIVersionFromString(s string) (PostPaymentCanceledPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostPaymentCanceledPayloadAPIVersionV1, nil
+	}
+	var t PostPaymentCanceledPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPaymentCanceledPayloadAPIVersion) Ptr() *PostPaymentCanceledPayloadAPIVersion {
+	return &p
+}
+
+// The webhook event type
+type PostPaymentCanceledPayloadType string
+
+const (
+	PostPaymentCanceledPayloadTypePaymentCanceled PostPaymentCanceledPayloadType = "payment.canceled"
+)
+
+func NewPostPaymentCanceledPayloadTypeFromString(s string) (PostPaymentCanceledPayloadType, error) {
+	switch s {
+	case "payment.canceled":
+		return PostPaymentCanceledPayloadTypePaymentCanceled, nil
+	}
+	var t PostPaymentCanceledPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPaymentCanceledPayloadType) Ptr() *PostPaymentCanceledPayloadType {
+	return &p
+}
+
+var (
 	postPaymentCreatedPayloadFieldAccountID          = big.NewInt(1 << 0)
 	postPaymentCreatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
 	postPaymentCreatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
@@ -14715,6 +6352,12 @@ var (
 	postPaymentCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postPaymentCreatedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postPaymentCreatedPayloadNullableFields maps the wire names of PostPaymentCreatedPayload's nullable fields (required or optional) to their field bits.
+var postPaymentCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postPaymentCreatedPayloadFieldAccountID,
+	"api_version_date": postPaymentCreatedPayloadFieldAPIVersionDate,
+}
 
 type PostPaymentCreatedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -14804,10 +6447,12 @@ func (p *PostPaymentCreatedPayload) GetExtraProperties() map[string]interface{} 
 }
 
 func (p *PostPaymentCreatedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -14884,6 +6529,13 @@ func (p *PostPaymentCreatedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPaymentCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -14966,6 +6618,12 @@ var (
 	postPaymentFailedPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postPaymentFailedPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postPaymentFailedPayloadNullableFields maps the wire names of PostPaymentFailedPayload's nullable fields (required or optional) to their field bits.
+var postPaymentFailedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postPaymentFailedPayloadFieldAccountID,
+	"api_version_date": postPaymentFailedPayloadFieldAPIVersionDate,
+}
 
 type PostPaymentFailedPayload struct {
 	// The account ID that this webhook event is associated with
@@ -15055,10 +6713,12 @@ func (p *PostPaymentFailedPayload) GetExtraProperties() map[string]interface{} {
 }
 
 func (p *PostPaymentFailedPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -15135,6 +6795,13 @@ func (p *PostPaymentFailedPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPaymentFailedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -15217,6 +6884,12 @@ var (
 	postPaymentPendingPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postPaymentPendingPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postPaymentPendingPayloadNullableFields maps the wire names of PostPaymentPendingPayload's nullable fields (required or optional) to their field bits.
+var postPaymentPendingPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postPaymentPendingPayloadFieldAccountID,
+	"api_version_date": postPaymentPendingPayloadFieldAPIVersionDate,
+}
 
 type PostPaymentPendingPayload struct {
 	// The account ID that this webhook event is associated with
@@ -15306,10 +6979,12 @@ func (p *PostPaymentPendingPayload) GetExtraProperties() map[string]interface{} 
 }
 
 func (p *PostPaymentPendingPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -15386,6 +7061,13 @@ func (p *PostPaymentPendingPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPaymentPendingPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -15459,6 +7141,272 @@ func (p PostPaymentPendingPayloadType) Ptr() *PostPaymentPendingPayloadType {
 }
 
 var (
+	postPaymentRequiresActionPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postPaymentRequiresActionPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postPaymentRequiresActionPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postPaymentRequiresActionPayloadFieldData               = big.NewInt(1 << 3)
+	postPaymentRequiresActionPayloadFieldID                 = big.NewInt(1 << 4)
+	postPaymentRequiresActionPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postPaymentRequiresActionPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postPaymentRequiresActionPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+// postPaymentRequiresActionPayloadNullableFields maps the wire names of PostPaymentRequiresActionPayload's nullable fields (required or optional) to their field bits.
+var postPaymentRequiresActionPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postPaymentRequiresActionPayloadFieldAccountID,
+	"api_version_date": postPaymentRequiresActionPayloadFieldAPIVersionDate,
+}
+
+type PostPaymentRequiresActionPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostPaymentRequiresActionPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string  `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *Payment `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostPaymentRequiresActionPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostPaymentRequiresActionPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostPaymentRequiresActionPayload) GetAPIVersion() PostPaymentRequiresActionPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostPaymentRequiresActionPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostPaymentRequiresActionPayload) GetData() *Payment {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostPaymentRequiresActionPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostPaymentRequiresActionPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostPaymentRequiresActionPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostPaymentRequiresActionPayload) GetType() PostPaymentRequiresActionPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostPaymentRequiresActionPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostPaymentRequiresActionPayload) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentRequiresActionPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postPaymentRequiresActionPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentRequiresActionPayload) SetAPIVersion(apiVersion PostPaymentRequiresActionPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postPaymentRequiresActionPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentRequiresActionPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postPaymentRequiresActionPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentRequiresActionPayload) SetData(data *Payment) {
+	p.Data = data
+	p.require(postPaymentRequiresActionPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentRequiresActionPayload) SetID(id string) {
+	p.ID = id
+	p.require(postPaymentRequiresActionPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentRequiresActionPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postPaymentRequiresActionPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentRequiresActionPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postPaymentRequiresActionPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPaymentRequiresActionPayload) SetType(type_ PostPaymentRequiresActionPayloadType) {
+	p.Type = type_
+	p.require(postPaymentRequiresActionPayloadFieldType)
+}
+
+func (p *PostPaymentRequiresActionPayload) UnmarshalJSON(data []byte) error {
+	type embed PostPaymentRequiresActionPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostPaymentRequiresActionPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPaymentRequiresActionPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostPaymentRequiresActionPayload) MarshalJSON() ([]byte, error) {
+	type embed PostPaymentRequiresActionPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostPaymentRequiresActionPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostPaymentRequiresActionPayloadAPIVersion string
+
+const (
+	PostPaymentRequiresActionPayloadAPIVersionV1 PostPaymentRequiresActionPayloadAPIVersion = "v1"
+)
+
+func NewPostPaymentRequiresActionPayloadAPIVersionFromString(s string) (PostPaymentRequiresActionPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostPaymentRequiresActionPayloadAPIVersionV1, nil
+	}
+	var t PostPaymentRequiresActionPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPaymentRequiresActionPayloadAPIVersion) Ptr() *PostPaymentRequiresActionPayloadAPIVersion {
+	return &p
+}
+
+// The webhook event type
+type PostPaymentRequiresActionPayloadType string
+
+const (
+	PostPaymentRequiresActionPayloadTypePaymentRequiresAction PostPaymentRequiresActionPayloadType = "payment.requires_action"
+)
+
+func NewPostPaymentRequiresActionPayloadTypeFromString(s string) (PostPaymentRequiresActionPayloadType, error) {
+	switch s {
+	case "payment.requires_action":
+		return PostPaymentRequiresActionPayloadTypePaymentRequiresAction, nil
+	}
+	var t PostPaymentRequiresActionPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPaymentRequiresActionPayloadType) Ptr() *PostPaymentRequiresActionPayloadType {
+	return &p
+}
+
+var (
 	postPaymentSucceededPayloadFieldAccountID          = big.NewInt(1 << 0)
 	postPaymentSucceededPayloadFieldAPIVersion         = big.NewInt(1 << 1)
 	postPaymentSucceededPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
@@ -15468,6 +7416,12 @@ var (
 	postPaymentSucceededPayloadFieldTimestamp          = big.NewInt(1 << 6)
 	postPaymentSucceededPayloadFieldType               = big.NewInt(1 << 7)
 )
+
+// postPaymentSucceededPayloadNullableFields maps the wire names of PostPaymentSucceededPayload's nullable fields (required or optional) to their field bits.
+var postPaymentSucceededPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postPaymentSucceededPayloadFieldAccountID,
+	"api_version_date": postPaymentSucceededPayloadFieldAPIVersionDate,
+}
 
 type PostPaymentSucceededPayload struct {
 	// The account ID that this webhook event is associated with
@@ -15557,10 +7511,12 @@ func (p *PostPaymentSucceededPayload) GetExtraProperties() map[string]interface{
 }
 
 func (p *PostPaymentSucceededPayload) require(field *big.Int) {
-	if p.explicitFields == nil {
-		p.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
 	}
-	p.explicitFields.Or(p.explicitFields, field)
+	next.Or(next, field)
+	p.explicitFields = next
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
@@ -15637,6 +7593,13 @@ func (p *PostPaymentSucceededPayload) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postPaymentSucceededPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
 	p.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -15709,199 +7672,832 @@ func (p PostPaymentSucceededPayloadType) Ptr() *PostPaymentSucceededPayloadType 
 	return &p
 }
 
-var (
-	retrievePaymentsResponseFieldAmountAfterFees            = big.NewInt(1 << 0)
-	retrievePaymentsResponseFieldApplicationFee             = big.NewInt(1 << 1)
-	retrievePaymentsResponseFieldAutoRefunded               = big.NewInt(1 << 2)
-	retrievePaymentsResponseFieldBillingAddress             = big.NewInt(1 << 3)
-	retrievePaymentsResponseFieldBillingReason              = big.NewInt(1 << 4)
-	retrievePaymentsResponseFieldCardBrand                  = big.NewInt(1 << 5)
-	retrievePaymentsResponseFieldCardExpMonth               = big.NewInt(1 << 6)
-	retrievePaymentsResponseFieldCardExpYear                = big.NewInt(1 << 7)
-	retrievePaymentsResponseFieldCardLast4                  = big.NewInt(1 << 8)
-	retrievePaymentsResponseFieldCheckoutConfigurationID    = big.NewInt(1 << 9)
-	retrievePaymentsResponseFieldCompany                    = big.NewInt(1 << 10)
-	retrievePaymentsResponseFieldCreatedAt                  = big.NewInt(1 << 11)
-	retrievePaymentsResponseFieldCurrency                   = big.NewInt(1 << 12)
-	retrievePaymentsResponseFieldCustomerPhone              = big.NewInt(1 << 13)
-	retrievePaymentsResponseFieldDeclineCode                = big.NewInt(1 << 14)
-	retrievePaymentsResponseFieldDisputeAlertedAt           = big.NewInt(1 << 15)
-	retrievePaymentsResponseFieldDisputes                   = big.NewInt(1 << 16)
-	retrievePaymentsResponseFieldFailureMessage             = big.NewInt(1 << 17)
-	retrievePaymentsResponseFieldFinancingInstallmentsCount = big.NewInt(1 << 18)
-	retrievePaymentsResponseFieldFinancingTransactions      = big.NewInt(1 << 19)
-	retrievePaymentsResponseFieldID                         = big.NewInt(1 << 20)
-	retrievePaymentsResponseFieldLastPaymentAttempt         = big.NewInt(1 << 21)
-	retrievePaymentsResponseFieldMember                     = big.NewInt(1 << 22)
-	retrievePaymentsResponseFieldMembership                 = big.NewInt(1 << 23)
-	retrievePaymentsResponseFieldMetadata                   = big.NewInt(1 << 24)
-	retrievePaymentsResponseFieldNeedsTracking              = big.NewInt(1 << 25)
-	retrievePaymentsResponseFieldNextPaymentAttempt         = big.NewInt(1 << 26)
-	retrievePaymentsResponseFieldPaidAt                     = big.NewInt(1 << 27)
-	retrievePaymentsResponseFieldPaymentInstrument          = big.NewInt(1 << 28)
-	retrievePaymentsResponseFieldPaymentMethod              = big.NewInt(1 << 29)
-	retrievePaymentsResponseFieldPaymentMethodType          = big.NewInt(1 << 30)
-	retrievePaymentsResponseFieldPaymentsFailed             = big.NewInt(1 << 31)
-	retrievePaymentsResponseFieldPlan                       = big.NewInt(1 << 32)
-	retrievePaymentsResponseFieldProduct                    = big.NewInt(1 << 33)
-	retrievePaymentsResponseFieldPromoCode                  = big.NewInt(1 << 34)
-	retrievePaymentsResponseFieldRefundable                 = big.NewInt(1 << 35)
-	retrievePaymentsResponseFieldRefundedAmount             = big.NewInt(1 << 36)
-	retrievePaymentsResponseFieldRefundedAt                 = big.NewInt(1 << 37)
-	retrievePaymentsResponseFieldRefunds                    = big.NewInt(1 << 38)
-	retrievePaymentsResponseFieldResolutions                = big.NewInt(1 << 39)
-	retrievePaymentsResponseFieldRetryable                  = big.NewInt(1 << 40)
-	retrievePaymentsResponseFieldRiskScore                  = big.NewInt(1 << 41)
-	retrievePaymentsResponseFieldRiskSignals                = big.NewInt(1 << 42)
-	retrievePaymentsResponseFieldSettlementAmount           = big.NewInt(1 << 43)
-	retrievePaymentsResponseFieldSettlementCurrency         = big.NewInt(1 << 44)
-	retrievePaymentsResponseFieldSettlementExchangeRate     = big.NewInt(1 << 45)
-	retrievePaymentsResponseFieldSettlementTimeAt           = big.NewInt(1 << 46)
-	retrievePaymentsResponseFieldShipment                   = big.NewInt(1 << 47)
-	retrievePaymentsResponseFieldShippingAddress            = big.NewInt(1 << 48)
-	retrievePaymentsResponseFieldStatus                     = big.NewInt(1 << 49)
-	retrievePaymentsResponseFieldSubstatus                  = big.NewInt(1 << 50)
-	retrievePaymentsResponseFieldSubtotal                   = big.NewInt(1 << 51)
-	retrievePaymentsResponseFieldTaxAmount                  = big.NewInt(1 << 52)
-	retrievePaymentsResponseFieldTaxBehavior                = big.NewInt(1 << 53)
-	retrievePaymentsResponseFieldTaxRefundedAmount          = big.NewInt(1 << 54)
-	retrievePaymentsResponseFieldThreeDsVerified            = big.NewInt(1 << 55)
-	retrievePaymentsResponseFieldTotal                      = big.NewInt(1 << 56)
-	retrievePaymentsResponseFieldUpdatedAt                  = big.NewInt(1 << 57)
-	retrievePaymentsResponseFieldUsdTotal                   = big.NewInt(1 << 58)
-	retrievePaymentsResponseFieldUser                       = big.NewInt(1 << 59)
-	retrievePaymentsResponseFieldVerificationChecks         = big.NewInt(1 << 60)
-	retrievePaymentsResponseFieldVoidable                   = big.NewInt(1 << 61)
-	retrievePaymentsResponseFieldClientSecret               = big.NewInt(1 << 62)
+type SummaryPaymentsRequestBillingReasonsItem string
+
+const (
+	SummaryPaymentsRequestBillingReasonsItemSubscriptionCreate SummaryPaymentsRequestBillingReasonsItem = "subscription_create"
+	SummaryPaymentsRequestBillingReasonsItemSubscriptionCycle  SummaryPaymentsRequestBillingReasonsItem = "subscription_cycle"
+	SummaryPaymentsRequestBillingReasonsItemSubscriptionUpdate SummaryPaymentsRequestBillingReasonsItem = "subscription_update"
+	SummaryPaymentsRequestBillingReasonsItemOneTime            SummaryPaymentsRequestBillingReasonsItem = "one_time"
+	SummaryPaymentsRequestBillingReasonsItemManual             SummaryPaymentsRequestBillingReasonsItem = "manual"
+	SummaryPaymentsRequestBillingReasonsItemSubscription       SummaryPaymentsRequestBillingReasonsItem = "subscription"
 )
 
-type RetrievePaymentsResponse struct {
-	// How much the payment is for after fees
-	AmountAfterFees float64 `json:"amount_after_fees" url:"amount_after_fees"`
-	// The application fee charged on this payment.
-	ApplicationFee *PaymentApplicationFee `json:"application_fee,omitempty" url:"application_fee,omitempty"`
-	// Whether this payment was auto refunded or not
-	AutoRefunded bool `json:"auto_refunded" url:"auto_refunded"`
-	// The address of the user who made the payment.
-	BillingAddress *PaymentBillingAddress `json:"billing_address,omitempty" url:"billing_address,omitempty"`
-	// The machine-readable reason this charge was created, such as initial subscription purchase, renewal cycle, or one-time payment.
-	BillingReason *BillingReasons `json:"billing_reason,omitempty" url:"billing_reason,omitempty"`
-	// Card network reported by the processor (e.g., 'visa', 'mastercard', 'amex'). Present only when the payment method type is 'card'.
-	CardBrand *CardBrands `json:"card_brand,omitempty" url:"card_brand,omitempty"`
-	// The expiration month (1-12) of the card used for this payment. Falls back to the declined card on failed payments with no saved card. Null when the payment was not made with a card or the expiry is unavailable.
-	CardExpMonth *int `json:"card_exp_month,omitempty" url:"card_exp_month,omitempty"`
-	// The four-digit expiration year of the card used for this payment. Falls back to the declined card on failed payments with no saved card. Null when the payment was not made with a card or the expiry is unavailable.
-	CardExpYear *int `json:"card_exp_year,omitempty" url:"card_exp_year,omitempty"`
-	// The last four digits of the card used to make this payment. Null if the payment was not made with a card.
-	CardLast4 *string `json:"card_last4,omitempty" url:"card_last4,omitempty"`
-	// The ID of the checkout session/configuration that produced this payment, if any. Use this to map payments back to the checkout configuration that created them.
-	CheckoutConfigurationID *string `json:"checkout_configuration_id,omitempty" url:"checkout_configuration_id,omitempty"`
-	// The company for the payment.
-	Company *PaymentCompany `json:"company,omitempty" url:"company,omitempty"`
-	// The datetime the payment was created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// The three-letter ISO currency code for this payment (e.g., 'usd', 'eur').
-	Currency Currencies `json:"currency" url:"currency"`
-	// Phone number the customer provided at checkout, or their verified phone number when your checkout requires phone verification. `null` when no phone number was collected.
-	CustomerPhone *string `json:"customer_phone,omitempty" url:"customer_phone,omitempty"`
-	// The reason the payment was declined. Null if the payment did not fail.
-	DeclineCode *PaymentDeclineCodes `json:"decline_code,omitempty" url:"decline_code,omitempty"`
-	// When an alert came in that this transaction will be disputed
-	DisputeAlertedAt *time.Time `json:"dispute_alerted_at,omitempty" url:"dispute_alerted_at,omitempty"`
-	// The disputes attached to this payment. Null if the actor in context does not have the payment:dispute:read permission.
-	Disputes []*PaymentDisputesItem `json:"disputes,omitempty" url:"disputes,omitempty"`
-	// If the payment failed, the reason for the failure.
-	FailureMessage *string `json:"failure_message,omitempty" url:"failure_message,omitempty"`
-	// The number of financing installments for the payment. Present if the payment is a financing payment (e.g. Splitit, Klarna, etc.).
-	FinancingInstallmentsCount *int `json:"financing_installments_count,omitempty" url:"financing_installments_count,omitempty"`
-	// The financing transactions attached to this payment. Present if the payment is a financing payment (e.g. Splitit, Klarna, etc.).
-	FinancingTransactions []*PaymentFinancingTransactionsItem `json:"financing_transactions" url:"financing_transactions"`
-	// The unique identifier for the payment.
-	ID string `json:"id" url:"id"`
-	// The time of the last payment attempt.
-	LastPaymentAttempt *time.Time `json:"last_payment_attempt,omitempty" url:"last_payment_attempt,omitempty"`
-	// The member attached to this payment.
-	Member *PaymentMember `json:"member,omitempty" url:"member,omitempty"`
-	// The membership attached to this payment.
-	Membership *PaymentMembership `json:"membership,omitempty" url:"membership,omitempty"`
-	// The custom metadata stored on this payment. This will be copied over to the checkout configuration for which this payment was made
-	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// Whether this payment is holding funds until the order ships and has no tracking number yet.
-	NeedsTracking *bool `json:"needs_tracking,omitempty" url:"needs_tracking,omitempty"`
-	// The time of the next schedule payment retry.
-	NextPaymentAttempt *time.Time `json:"next_payment_attempt,omitempty" url:"next_payment_attempt,omitempty"`
-	// The time at which this payment was successfully collected. Null if the payment has not yet succeeded. As a Unix timestamp.
-	PaidAt *time.Time `json:"paid_at,omitempty" url:"paid_at,omitempty"`
-	// The instrument this payment was made with, shaped for display: the method type, a buyer-facing name, the standard icon set, and the card facts when it was a card. Null when the receipt names no payment method.
-	PaymentInstrument *PaymentPaymentInstrument `json:"payment_instrument,omitempty" url:"payment_instrument,omitempty"`
-	// The tokenized payment method reference used for this payment. Null if no token was used.
-	PaymentMethod *PaymentPaymentMethod `json:"payment_method,omitempty" url:"payment_method,omitempty"`
-	// The type of payment instrument used for this payment (e.g., card, Cash App, iDEAL, Klarna, crypto). Null when the processor does not supply a type.
-	PaymentMethodType *PaymentMethodTypes `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
-	// The number of failed payment attempts for the payment.
-	PaymentsFailed *int `json:"payments_failed,omitempty" url:"payments_failed,omitempty"`
-	// The plan attached to this payment.
-	Plan *PaymentPlan `json:"plan,omitempty" url:"plan,omitempty"`
-	// The product this payment was made for
-	Product *PaymentProduct `json:"product,omitempty" url:"product,omitempty"`
-	// The promo code used for this payment.
-	PromoCode *PaymentPromoCode `json:"promo_code,omitempty" url:"promo_code,omitempty"`
-	// True only for payments that are `paid`, have not been fully refunded, and were processed by a payment processor that allows refunds.
-	Refundable bool `json:"refundable" url:"refundable"`
-	// The payment refund amount(if applicable).
-	RefundedAmount *float64 `json:"refunded_amount,omitempty" url:"refunded_amount,omitempty"`
-	// When the payment was refunded (if applicable).
-	RefundedAt *time.Time `json:"refunded_at,omitempty" url:"refunded_at,omitempty"`
-	// The refunds issued against this payment, newest first, including failed and canceled refund attempts. Limited to the 100 most recent.
-	Refunds []*PaymentRefundsItem `json:"refunds" url:"refunds"`
-	// The resolution center cases opened by the customer on this payment. Null if the actor in context does not have the payment:resolution_center_case:read permission.
-	Resolutions []*PaymentResolutionsItem `json:"resolutions,omitempty" url:"resolutions,omitempty"`
-	// True when the payment status is `open` and its membership is in one of the retry-eligible states (`active`, `trialing`, `completed`, or `past_due`), or when it is a failed initial billing-engine payment on a `drafted` membership with an unlimited-stock plan; otherwise false. Used to decide if Whop can attempt the charge again.
-	Retryable bool `json:"retryable" url:"retryable"`
-	// Whop's in-house fraud risk score for this payment, from 0 (lowest risk) to 100 (highest risk). Null when the payment has not been scored or scoring has not yet completed.
-	RiskScore *int `json:"risk_score,omitempty" url:"risk_score,omitempty"`
-	// A curated set of factors behind the risk score, grouped by category (business transaction history, buyer, device). Each entry has a key, human-readable label, category, and value. Null when there is no risk assessment for this payment.
-	RiskSignals map[string]any `json:"risk_signals,omitempty" url:"risk_signals,omitempty"`
-	// The total amount charged to the customer for this payment, including taxes and after any discounts. In the currency specified by the currency field.
-	SettlementAmount float64 `json:"settlement_amount" url:"settlement_amount"`
-	// The three-letter ISO currency code for this payment (e.g., 'usd', 'eur').
-	SettlementCurrency Currencies `json:"settlement_currency" url:"settlement_currency"`
-	// Deprecated. Always returns null.
-	SettlementExchangeRate *float64 `json:"settlement_exchange_rate,omitempty" url:"settlement_exchange_rate,omitempty"`
-	// When this payment's funds post to the company's available balance, at midnight UTC. Known at payment time and never changes. The `ledger_account.funds_available` webhook carries the same `settlement_time_at` when that batch posts — match them to know these funds are now withdrawable.
-	SettlementTimeAt *time.Time `json:"settlement_time_at,omitempty" url:"settlement_time_at,omitempty"`
-	// The shipment attached to this payment.
-	Shipment *PaymentShipment `json:"shipment,omitempty" url:"shipment,omitempty"`
-	// The shipping address provided by the customer for physical goods. Null if no shipping address was collected.
-	ShippingAddress *PaymentShippingAddress `json:"shipping_address,omitempty" url:"shipping_address,omitempty"`
-	// The current lifecycle state of this payment (e.g., 'draft', 'open', 'paid', 'void').
-	Status *ReceiptStatus `json:"status,omitempty" url:"status,omitempty"`
-	// The friendly status of the payment.
-	Substatus FriendlyReceiptStatus `json:"substatus" url:"substatus"`
-	// The subtotal to show to the creator (excluding buyer fees).
-	Subtotal *float64 `json:"subtotal,omitempty" url:"subtotal,omitempty"`
-	// The calculated amount of the sales/VAT tax (if applicable).
-	TaxAmount *float64 `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
-	// The type of tax inclusivity applied to the payment, for determining whether the tax is included in the final price, or paid on top.
-	TaxBehavior *ReceiptTaxBehaviors `json:"tax_behavior,omitempty" url:"tax_behavior,omitempty"`
-	// The amount of tax that has been refunded (if applicable).
-	TaxRefundedAmount *float64 `json:"tax_refunded_amount,omitempty" url:"tax_refunded_amount,omitempty"`
-	// Whether 3D Secure authentication was completed for this payment.
-	ThreeDsVerified bool `json:"three_ds_verified" url:"three_ds_verified"`
-	// The total to show to the creator (excluding buyer fees).
-	Total *float64 `json:"total,omitempty" url:"total,omitempty"`
-	// The datetime the payment was last updated.
-	UpdatedAt time.Time `json:"updated_at" url:"updated_at"`
-	// The total in USD to show to the creator (excluding buyer fees).
-	UsdTotal *float64 `json:"usd_total,omitempty" url:"usd_total,omitempty"`
-	// The user that made this payment.
-	User *PaymentUser `json:"user,omitempty" url:"user,omitempty"`
-	// The issuer's address and card security code check results for this payment. Null when the processor returned none.
-	VerificationChecks *PaymentVerificationChecks `json:"verification_checks,omitempty" url:"verification_checks,omitempty"`
-	// True when the payment is tied to a membership in `past_due`, the payment status is `open`, and the processor allows voiding payments; otherwise false.
-	Voidable bool `json:"voidable" url:"voidable"`
-	// The credential the buyer's surface presents to poll this payment and set its return URL. Returned when a payment created from a confirmation token is created or retrieved by a caller with the payment:charge permission. Null for payments created from a stored payment method or callers without payment:charge. It unlocks this payment and nothing else; treat it like a password for that one attempt.
-	ClientSecret *string `json:"client_secret,omitempty" url:"client_secret,omitempty"`
+func NewSummaryPaymentsRequestBillingReasonsItemFromString(s string) (SummaryPaymentsRequestBillingReasonsItem, error) {
+	switch s {
+	case "subscription_create":
+		return SummaryPaymentsRequestBillingReasonsItemSubscriptionCreate, nil
+	case "subscription_cycle":
+		return SummaryPaymentsRequestBillingReasonsItemSubscriptionCycle, nil
+	case "subscription_update":
+		return SummaryPaymentsRequestBillingReasonsItemSubscriptionUpdate, nil
+	case "one_time":
+		return SummaryPaymentsRequestBillingReasonsItemOneTime, nil
+	case "manual":
+		return SummaryPaymentsRequestBillingReasonsItemManual, nil
+	case "subscription":
+		return SummaryPaymentsRequestBillingReasonsItemSubscription, nil
+	}
+	var t SummaryPaymentsRequestBillingReasonsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SummaryPaymentsRequestBillingReasonsItem) Ptr() *SummaryPaymentsRequestBillingReasonsItem {
+	return &s
+}
+
+type SummaryPaymentsRequestGroupsItem string
+
+const (
+	SummaryPaymentsRequestGroupsItemSubstatus SummaryPaymentsRequestGroupsItem = "substatus"
+	SummaryPaymentsRequestGroupsItemCurrency  SummaryPaymentsRequestGroupsItem = "currency"
+)
+
+func NewSummaryPaymentsRequestGroupsItemFromString(s string) (SummaryPaymentsRequestGroupsItem, error) {
+	switch s {
+	case "substatus":
+		return SummaryPaymentsRequestGroupsItemSubstatus, nil
+	case "currency":
+		return SummaryPaymentsRequestGroupsItemCurrency, nil
+	}
+	var t SummaryPaymentsRequestGroupsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SummaryPaymentsRequestGroupsItem) Ptr() *SummaryPaymentsRequestGroupsItem {
+	return &s
+}
+
+type SummaryPaymentsRequestPaymentMethodsItem string
+
+const (
+	SummaryPaymentsRequestPaymentMethodsItemMastercard             SummaryPaymentsRequestPaymentMethodsItem = "mastercard"
+	SummaryPaymentsRequestPaymentMethodsItemVisa                   SummaryPaymentsRequestPaymentMethodsItem = "visa"
+	SummaryPaymentsRequestPaymentMethodsItemAmex                   SummaryPaymentsRequestPaymentMethodsItem = "amex"
+	SummaryPaymentsRequestPaymentMethodsItemDiscover               SummaryPaymentsRequestPaymentMethodsItem = "discover"
+	SummaryPaymentsRequestPaymentMethodsItemUnionpay               SummaryPaymentsRequestPaymentMethodsItem = "unionpay"
+	SummaryPaymentsRequestPaymentMethodsItemJcb                    SummaryPaymentsRequestPaymentMethodsItem = "jcb"
+	SummaryPaymentsRequestPaymentMethodsItemDiners                 SummaryPaymentsRequestPaymentMethodsItem = "diners"
+	SummaryPaymentsRequestPaymentMethodsItemLink                   SummaryPaymentsRequestPaymentMethodsItem = "link"
+	SummaryPaymentsRequestPaymentMethodsItemTroy                   SummaryPaymentsRequestPaymentMethodsItem = "troy"
+	SummaryPaymentsRequestPaymentMethodsItemVisadankort            SummaryPaymentsRequestPaymentMethodsItem = "visadankort"
+	SummaryPaymentsRequestPaymentMethodsItemVisabancontact         SummaryPaymentsRequestPaymentMethodsItem = "visabancontact"
+	SummaryPaymentsRequestPaymentMethodsItemChinaUnionPay          SummaryPaymentsRequestPaymentMethodsItem = "china_union_pay"
+	SummaryPaymentsRequestPaymentMethodsItemRupay                  SummaryPaymentsRequestPaymentMethodsItem = "rupay"
+	SummaryPaymentsRequestPaymentMethodsItemJcbrupay               SummaryPaymentsRequestPaymentMethodsItem = "jcbrupay"
+	SummaryPaymentsRequestPaymentMethodsItemElo                    SummaryPaymentsRequestPaymentMethodsItem = "elo"
+	SummaryPaymentsRequestPaymentMethodsItemMaestro                SummaryPaymentsRequestPaymentMethodsItem = "maestro"
+	SummaryPaymentsRequestPaymentMethodsItemTarjetaNaranja         SummaryPaymentsRequestPaymentMethodsItem = "tarjeta_naranja"
+	SummaryPaymentsRequestPaymentMethodsItemCirrus                 SummaryPaymentsRequestPaymentMethodsItem = "cirrus"
+	SummaryPaymentsRequestPaymentMethodsItemNspkMir                SummaryPaymentsRequestPaymentMethodsItem = "nspk_mir"
+	SummaryPaymentsRequestPaymentMethodsItemVerve                  SummaryPaymentsRequestPaymentMethodsItem = "verve"
+	SummaryPaymentsRequestPaymentMethodsItemEbt                    SummaryPaymentsRequestPaymentMethodsItem = "ebt"
+	SummaryPaymentsRequestPaymentMethodsItemPrivateLabel           SummaryPaymentsRequestPaymentMethodsItem = "private_label"
+	SummaryPaymentsRequestPaymentMethodsItemLocalBrand             SummaryPaymentsRequestPaymentMethodsItem = "local_brand"
+	SummaryPaymentsRequestPaymentMethodsItemUatp                   SummaryPaymentsRequestPaymentMethodsItem = "uatp"
+	SummaryPaymentsRequestPaymentMethodsItemWexcard                SummaryPaymentsRequestPaymentMethodsItem = "wexcard"
+	SummaryPaymentsRequestPaymentMethodsItemUzcard                 SummaryPaymentsRequestPaymentMethodsItem = "uzcard"
+	SummaryPaymentsRequestPaymentMethodsItemMeeza                  SummaryPaymentsRequestPaymentMethodsItem = "meeza"
+	SummaryPaymentsRequestPaymentMethodsItemHrgStoreCard           SummaryPaymentsRequestPaymentMethodsItem = "hrg_store_card"
+	SummaryPaymentsRequestPaymentMethodsItemGirocard               SummaryPaymentsRequestPaymentMethodsItem = "girocard"
+	SummaryPaymentsRequestPaymentMethodsItemFuelCard               SummaryPaymentsRequestPaymentMethodsItem = "fuel_card"
+	SummaryPaymentsRequestPaymentMethodsItemDankort                SummaryPaymentsRequestPaymentMethodsItem = "dankort"
+	SummaryPaymentsRequestPaymentMethodsItemCarnet                 SummaryPaymentsRequestPaymentMethodsItem = "carnet"
+	SummaryPaymentsRequestPaymentMethodsItemAtmCard                SummaryPaymentsRequestPaymentMethodsItem = "atm_card"
+	SummaryPaymentsRequestPaymentMethodsItemChinaUnionPayuzcard    SummaryPaymentsRequestPaymentMethodsItem = "china_union_payuzcard"
+	SummaryPaymentsRequestPaymentMethodsItemCodensa                SummaryPaymentsRequestPaymentMethodsItem = "codensa"
+	SummaryPaymentsRequestPaymentMethodsItemCabal                  SummaryPaymentsRequestPaymentMethodsItem = "cabal"
+	SummaryPaymentsRequestPaymentMethodsItemHipercard              SummaryPaymentsRequestPaymentMethodsItem = "hipercard"
+	SummaryPaymentsRequestPaymentMethodsItemJcblankapay            SummaryPaymentsRequestPaymentMethodsItem = "jcblankapay"
+	SummaryPaymentsRequestPaymentMethodsItemCmi                    SummaryPaymentsRequestPaymentMethodsItem = "cmi"
+	SummaryPaymentsRequestPaymentMethodsItemAura                   SummaryPaymentsRequestPaymentMethodsItem = "aura"
+	SummaryPaymentsRequestPaymentMethodsItemAccel                  SummaryPaymentsRequestPaymentMethodsItem = "accel"
+	SummaryPaymentsRequestPaymentMethodsItemCuliance               SummaryPaymentsRequestPaymentMethodsItem = "culiance"
+	SummaryPaymentsRequestPaymentMethodsItemNyce                   SummaryPaymentsRequestPaymentMethodsItem = "nyce"
+	SummaryPaymentsRequestPaymentMethodsItemPulse                  SummaryPaymentsRequestPaymentMethodsItem = "pulse"
+	SummaryPaymentsRequestPaymentMethodsItemStar                   SummaryPaymentsRequestPaymentMethodsItem = "star"
+	SummaryPaymentsRequestPaymentMethodsItemEftpos                 SummaryPaymentsRequestPaymentMethodsItem = "eftpos"
+	SummaryPaymentsRequestPaymentMethodsItemAlelo                  SummaryPaymentsRequestPaymentMethodsItem = "alelo"
+	SummaryPaymentsRequestPaymentMethodsItemEdenred                SummaryPaymentsRequestPaymentMethodsItem = "edenred"
+	SummaryPaymentsRequestPaymentMethodsItemSodexo                 SummaryPaymentsRequestPaymentMethodsItem = "sodexo"
+	SummaryPaymentsRequestPaymentMethodsItemUnknown                SummaryPaymentsRequestPaymentMethodsItem = "unknown"
+	SummaryPaymentsRequestPaymentMethodsItemAcssDebit              SummaryPaymentsRequestPaymentMethodsItem = "acss_debit"
+	SummaryPaymentsRequestPaymentMethodsItemAddi                   SummaryPaymentsRequestPaymentMethodsItem = "addi"
+	SummaryPaymentsRequestPaymentMethodsItemAffirm                 SummaryPaymentsRequestPaymentMethodsItem = "affirm"
+	SummaryPaymentsRequestPaymentMethodsItemAfterpayClearpay       SummaryPaymentsRequestPaymentMethodsItem = "afterpay_clearpay"
+	SummaryPaymentsRequestPaymentMethodsItemAlipay                 SummaryPaymentsRequestPaymentMethodsItem = "alipay"
+	SummaryPaymentsRequestPaymentMethodsItemAlipayhk               SummaryPaymentsRequestPaymentMethodsItem = "alipayhk"
+	SummaryPaymentsRequestPaymentMethodsItemAlma                   SummaryPaymentsRequestPaymentMethodsItem = "alma"
+	SummaryPaymentsRequestPaymentMethodsItemAmazonPay              SummaryPaymentsRequestPaymentMethodsItem = "amazon_pay"
+	SummaryPaymentsRequestPaymentMethodsItemApple                  SummaryPaymentsRequestPaymentMethodsItem = "apple"
+	SummaryPaymentsRequestPaymentMethodsItemApplePay               SummaryPaymentsRequestPaymentMethodsItem = "apple_pay"
+	SummaryPaymentsRequestPaymentMethodsItemAuBankTransfer         SummaryPaymentsRequestPaymentMethodsItem = "au_bank_transfer"
+	SummaryPaymentsRequestPaymentMethodsItemAuBecsDebit            SummaryPaymentsRequestPaymentMethodsItem = "au_becs_debit"
+	SummaryPaymentsRequestPaymentMethodsItemBacsDebit              SummaryPaymentsRequestPaymentMethodsItem = "bacs_debit"
+	SummaryPaymentsRequestPaymentMethodsItemBancolombia            SummaryPaymentsRequestPaymentMethodsItem = "bancolombia"
+	SummaryPaymentsRequestPaymentMethodsItemBancontact             SummaryPaymentsRequestPaymentMethodsItem = "bancontact"
+	SummaryPaymentsRequestPaymentMethodsItemBankWire               SummaryPaymentsRequestPaymentMethodsItem = "bank_wire"
+	SummaryPaymentsRequestPaymentMethodsItemBillie                 SummaryPaymentsRequestPaymentMethodsItem = "billie"
+	SummaryPaymentsRequestPaymentMethodsItemBlik                   SummaryPaymentsRequestPaymentMethodsItem = "blik"
+	SummaryPaymentsRequestPaymentMethodsItemBoleto                 SummaryPaymentsRequestPaymentMethodsItem = "boleto"
+	SummaryPaymentsRequestPaymentMethodsItemBreB                   SummaryPaymentsRequestPaymentMethodsItem = "bre_b"
+	SummaryPaymentsRequestPaymentMethodsItemCaBankTransfer         SummaryPaymentsRequestPaymentMethodsItem = "ca_bank_transfer"
+	SummaryPaymentsRequestPaymentMethodsItemCapchasePay            SummaryPaymentsRequestPaymentMethodsItem = "capchase_pay"
+	SummaryPaymentsRequestPaymentMethodsItemCard                   SummaryPaymentsRequestPaymentMethodsItem = "card"
+	SummaryPaymentsRequestPaymentMethodsItemCardPresent            SummaryPaymentsRequestPaymentMethodsItem = "card_present"
+	SummaryPaymentsRequestPaymentMethodsItemCardInstallmentsThree  SummaryPaymentsRequestPaymentMethodsItem = "card_installments_three"
+	SummaryPaymentsRequestPaymentMethodsItemCardInstallmentsSix    SummaryPaymentsRequestPaymentMethodsItem = "card_installments_six"
+	SummaryPaymentsRequestPaymentMethodsItemCardInstallmentsTwelve SummaryPaymentsRequestPaymentMethodsItem = "card_installments_twelve"
+	SummaryPaymentsRequestPaymentMethodsItemCashapp                SummaryPaymentsRequestPaymentMethodsItem = "cashapp"
+	SummaryPaymentsRequestPaymentMethodsItemClaritypay             SummaryPaymentsRequestPaymentMethodsItem = "claritypay"
+	SummaryPaymentsRequestPaymentMethodsItemCoinbase               SummaryPaymentsRequestPaymentMethodsItem = "coinbase"
+	SummaryPaymentsRequestPaymentMethodsItemCrypto                 SummaryPaymentsRequestPaymentMethodsItem = "crypto"
+	SummaryPaymentsRequestPaymentMethodsItemCustom                 SummaryPaymentsRequestPaymentMethodsItem = "custom"
+	SummaryPaymentsRequestPaymentMethodsItemCustomerBalance        SummaryPaymentsRequestPaymentMethodsItem = "customer_balance"
+	SummaryPaymentsRequestPaymentMethodsItemDemoPay                SummaryPaymentsRequestPaymentMethodsItem = "demo_pay"
+	SummaryPaymentsRequestPaymentMethodsItemDuitnowQr              SummaryPaymentsRequestPaymentMethodsItem = "duitnow_qr"
+	SummaryPaymentsRequestPaymentMethodsItemEfecty                 SummaryPaymentsRequestPaymentMethodsItem = "efecty"
+	SummaryPaymentsRequestPaymentMethodsItemEps                    SummaryPaymentsRequestPaymentMethodsItem = "eps"
+	SummaryPaymentsRequestPaymentMethodsItemEuBankTransfer         SummaryPaymentsRequestPaymentMethodsItem = "eu_bank_transfer"
+	SummaryPaymentsRequestPaymentMethodsItemFpx                    SummaryPaymentsRequestPaymentMethodsItem = "fpx"
+	SummaryPaymentsRequestPaymentMethodsItemFlexPay                SummaryPaymentsRequestPaymentMethodsItem = "flex_pay"
+	SummaryPaymentsRequestPaymentMethodsItemGbBankTransfer         SummaryPaymentsRequestPaymentMethodsItem = "gb_bank_transfer"
+	SummaryPaymentsRequestPaymentMethodsItemGcash                  SummaryPaymentsRequestPaymentMethodsItem = "gcash"
+	SummaryPaymentsRequestPaymentMethodsItemGiropay                SummaryPaymentsRequestPaymentMethodsItem = "giropay"
+	SummaryPaymentsRequestPaymentMethodsItemGooglePay              SummaryPaymentsRequestPaymentMethodsItem = "google_pay"
+	SummaryPaymentsRequestPaymentMethodsItemGopay                  SummaryPaymentsRequestPaymentMethodsItem = "gopay"
+	SummaryPaymentsRequestPaymentMethodsItemGrabpay                SummaryPaymentsRequestPaymentMethodsItem = "grabpay"
+	SummaryPaymentsRequestPaymentMethodsItemIDBankTransfer         SummaryPaymentsRequestPaymentMethodsItem = "id_bank_transfer"
+	SummaryPaymentsRequestPaymentMethodsItemIdeal                  SummaryPaymentsRequestPaymentMethodsItem = "ideal"
+	SummaryPaymentsRequestPaymentMethodsItemInterac                SummaryPaymentsRequestPaymentMethodsItem = "interac"
+	SummaryPaymentsRequestPaymentMethodsItemInternationalBankWire  SummaryPaymentsRequestPaymentMethodsItem = "international_bank_wire"
+	SummaryPaymentsRequestPaymentMethodsItemKakaoPay               SummaryPaymentsRequestPaymentMethodsItem = "kakao_pay"
+	SummaryPaymentsRequestPaymentMethodsItemKlarna                 SummaryPaymentsRequestPaymentMethodsItem = "klarna"
+	SummaryPaymentsRequestPaymentMethodsItemKlarnaPayNow           SummaryPaymentsRequestPaymentMethodsItem = "klarna_pay_now"
+	SummaryPaymentsRequestPaymentMethodsItemKonbini                SummaryPaymentsRequestPaymentMethodsItem = "konbini"
+	SummaryPaymentsRequestPaymentMethodsItemKrCard                 SummaryPaymentsRequestPaymentMethodsItem = "kr_card"
+	SummaryPaymentsRequestPaymentMethodsItemKrMarket               SummaryPaymentsRequestPaymentMethodsItem = "kr_market"
+	SummaryPaymentsRequestPaymentMethodsItemKriya                  SummaryPaymentsRequestPaymentMethodsItem = "kriya"
+	SummaryPaymentsRequestPaymentMethodsItemKueski                 SummaryPaymentsRequestPaymentMethodsItem = "kueski"
+	SummaryPaymentsRequestPaymentMethodsItemMbWay                  SummaryPaymentsRequestPaymentMethodsItem = "mb_way"
+	SummaryPaymentsRequestPaymentMethodsItemMPesa                  SummaryPaymentsRequestPaymentMethodsItem = "m_pesa"
+	SummaryPaymentsRequestPaymentMethodsItemMercadoPago            SummaryPaymentsRequestPaymentMethodsItem = "mercado_pago"
+	SummaryPaymentsRequestPaymentMethodsItemMercadoPagoAr          SummaryPaymentsRequestPaymentMethodsItem = "mercado_pago_ar"
+	SummaryPaymentsRequestPaymentMethodsItemMercadoPagoMx          SummaryPaymentsRequestPaymentMethodsItem = "mercado_pago_mx"
+	SummaryPaymentsRequestPaymentMethodsItemMobilepay              SummaryPaymentsRequestPaymentMethodsItem = "mobilepay"
+	SummaryPaymentsRequestPaymentMethodsItemModo                   SummaryPaymentsRequestPaymentMethodsItem = "modo"
+	SummaryPaymentsRequestPaymentMethodsItemMondu                  SummaryPaymentsRequestPaymentMethodsItem = "mondu"
+	SummaryPaymentsRequestPaymentMethodsItemMultibanco             SummaryPaymentsRequestPaymentMethodsItem = "multibanco"
+	SummaryPaymentsRequestPaymentMethodsItemNaverPay               SummaryPaymentsRequestPaymentMethodsItem = "naver_pay"
+	SummaryPaymentsRequestPaymentMethodsItemNequi                  SummaryPaymentsRequestPaymentMethodsItem = "nequi"
+	SummaryPaymentsRequestPaymentMethodsItemNetbanking             SummaryPaymentsRequestPaymentMethodsItem = "netbanking"
+	SummaryPaymentsRequestPaymentMethodsItemNgBank                 SummaryPaymentsRequestPaymentMethodsItem = "ng_bank"
+	SummaryPaymentsRequestPaymentMethodsItemNgBankTransfer         SummaryPaymentsRequestPaymentMethodsItem = "ng_bank_transfer"
+	SummaryPaymentsRequestPaymentMethodsItemNgCard                 SummaryPaymentsRequestPaymentMethodsItem = "ng_card"
+	SummaryPaymentsRequestPaymentMethodsItemNgMarket               SummaryPaymentsRequestPaymentMethodsItem = "ng_market"
+	SummaryPaymentsRequestPaymentMethodsItemNgUssd                 SummaryPaymentsRequestPaymentMethodsItem = "ng_ussd"
+	SummaryPaymentsRequestPaymentMethodsItemNgWallet               SummaryPaymentsRequestPaymentMethodsItem = "ng_wallet"
+	SummaryPaymentsRequestPaymentMethodsItemNupay                  SummaryPaymentsRequestPaymentMethodsItem = "nupay"
+	SummaryPaymentsRequestPaymentMethodsItemNzBankAccount          SummaryPaymentsRequestPaymentMethodsItem = "nz_bank_account"
+	SummaryPaymentsRequestPaymentMethodsItemOney                   SummaryPaymentsRequestPaymentMethodsItem = "oney"
+	SummaryPaymentsRequestPaymentMethodsItemOney3X                 SummaryPaymentsRequestPaymentMethodsItem = "oney_3x"
+	SummaryPaymentsRequestPaymentMethodsItemOney4X                 SummaryPaymentsRequestPaymentMethodsItem = "oney_4x"
+	SummaryPaymentsRequestPaymentMethodsItemOpay                   SummaryPaymentsRequestPaymentMethodsItem = "opay"
+	SummaryPaymentsRequestPaymentMethodsItemOxxo                   SummaryPaymentsRequestPaymentMethodsItem = "oxxo"
+	SummaryPaymentsRequestPaymentMethodsItemP24                    SummaryPaymentsRequestPaymentMethodsItem = "p24"
+	SummaryPaymentsRequestPaymentMethodsItemPagoEfectivo           SummaryPaymentsRequestPaymentMethodsItem = "pago_efectivo"
+	SummaryPaymentsRequestPaymentMethodsItemPse                    SummaryPaymentsRequestPaymentMethodsItem = "pse"
+	SummaryPaymentsRequestPaymentMethodsItemPayByBank              SummaryPaymentsRequestPaymentMethodsItem = "pay_by_bank"
+	SummaryPaymentsRequestPaymentMethodsItemPayco                  SummaryPaymentsRequestPaymentMethodsItem = "payco"
+	SummaryPaymentsRequestPaymentMethodsItemPaynow                 SummaryPaymentsRequestPaymentMethodsItem = "paynow"
+	SummaryPaymentsRequestPaymentMethodsItemPaypal                 SummaryPaymentsRequestPaymentMethodsItem = "paypal"
+	SummaryPaymentsRequestPaymentMethodsItemPaypalExpress          SummaryPaymentsRequestPaymentMethodsItem = "paypal_express"
+	SummaryPaymentsRequestPaymentMethodsItemPaypay                 SummaryPaymentsRequestPaymentMethodsItem = "paypay"
+	SummaryPaymentsRequestPaymentMethodsItemPayto                  SummaryPaymentsRequestPaymentMethodsItem = "payto"
+	SummaryPaymentsRequestPaymentMethodsItemPaytoEmail             SummaryPaymentsRequestPaymentMethodsItem = "payto_email"
+	SummaryPaymentsRequestPaymentMethodsItemPaytoPhone             SummaryPaymentsRequestPaymentMethodsItem = "payto_phone"
+	SummaryPaymentsRequestPaymentMethodsItemPaytoBankAccount       SummaryPaymentsRequestPaymentMethodsItem = "payto_bank_account"
+	SummaryPaymentsRequestPaymentMethodsItemPix                    SummaryPaymentsRequestPaymentMethodsItem = "pix"
+	SummaryPaymentsRequestPaymentMethodsItemPlatformBalance        SummaryPaymentsRequestPaymentMethodsItem = "platform_balance"
+	SummaryPaymentsRequestPaymentMethodsItemPromptpay              SummaryPaymentsRequestPaymentMethodsItem = "promptpay"
+	SummaryPaymentsRequestPaymentMethodsItemQris                   SummaryPaymentsRequestPaymentMethodsItem = "qris"
+	SummaryPaymentsRequestPaymentMethodsItemRapipago               SummaryPaymentsRequestPaymentMethodsItem = "rapipago"
+	SummaryPaymentsRequestPaymentMethodsItemRechnung               SummaryPaymentsRequestPaymentMethodsItem = "rechnung"
+	SummaryPaymentsRequestPaymentMethodsItemRevolutPay             SummaryPaymentsRequestPaymentMethodsItem = "revolut_pay"
+	SummaryPaymentsRequestPaymentMethodsItemSamsungPay             SummaryPaymentsRequestPaymentMethodsItem = "samsung_pay"
+	SummaryPaymentsRequestPaymentMethodsItemSatispay               SummaryPaymentsRequestPaymentMethodsItem = "satispay"
+	SummaryPaymentsRequestPaymentMethodsItemScalapay               SummaryPaymentsRequestPaymentMethodsItem = "scalapay"
+	SummaryPaymentsRequestPaymentMethodsItemSencillito             SummaryPaymentsRequestPaymentMethodsItem = "sencillito"
+	SummaryPaymentsRequestPaymentMethodsItemSepaDebit              SummaryPaymentsRequestPaymentMethodsItem = "sepa_debit"
+	SummaryPaymentsRequestPaymentMethodsItemSequra                 SummaryPaymentsRequestPaymentMethodsItem = "sequra"
+	SummaryPaymentsRequestPaymentMethodsItemServipag               SummaryPaymentsRequestPaymentMethodsItem = "servipag"
+	SummaryPaymentsRequestPaymentMethodsItemSezzle                 SummaryPaymentsRequestPaymentMethodsItem = "sezzle"
+	SummaryPaymentsRequestPaymentMethodsItemShopPay                SummaryPaymentsRequestPaymentMethodsItem = "shop_pay"
+	SummaryPaymentsRequestPaymentMethodsItemShopeepay              SummaryPaymentsRequestPaymentMethodsItem = "shopeepay"
+	SummaryPaymentsRequestPaymentMethodsItemSofort                 SummaryPaymentsRequestPaymentMethodsItem = "sofort"
+	SummaryPaymentsRequestPaymentMethodsItemSouthKoreaMarket       SummaryPaymentsRequestPaymentMethodsItem = "south_korea_market"
+	SummaryPaymentsRequestPaymentMethodsItemSpei                   SummaryPaymentsRequestPaymentMethodsItem = "spei"
+	SummaryPaymentsRequestPaymentMethodsItemSplitit                SummaryPaymentsRequestPaymentMethodsItem = "splitit"
+	SummaryPaymentsRequestPaymentMethodsItemSunbit                 SummaryPaymentsRequestPaymentMethodsItem = "sunbit"
+	SummaryPaymentsRequestPaymentMethodsItemSwish                  SummaryPaymentsRequestPaymentMethodsItem = "swish"
+	SummaryPaymentsRequestPaymentMethodsItemTabby                  SummaryPaymentsRequestPaymentMethodsItem = "tabby"
+	SummaryPaymentsRequestPaymentMethodsItemTamara                 SummaryPaymentsRequestPaymentMethodsItem = "tamara"
+	SummaryPaymentsRequestPaymentMethodsItemTouchNGo               SummaryPaymentsRequestPaymentMethodsItem = "touch_n_go"
+	SummaryPaymentsRequestPaymentMethodsItemTwint                  SummaryPaymentsRequestPaymentMethodsItem = "twint"
+	SummaryPaymentsRequestPaymentMethodsItemUpi                    SummaryPaymentsRequestPaymentMethodsItem = "upi"
+	SummaryPaymentsRequestPaymentMethodsItemUsBankAccount          SummaryPaymentsRequestPaymentMethodsItem = "us_bank_account"
+	SummaryPaymentsRequestPaymentMethodsItemUsBankTransfer         SummaryPaymentsRequestPaymentMethodsItem = "us_bank_transfer"
+	SummaryPaymentsRequestPaymentMethodsItemVenmo                  SummaryPaymentsRequestPaymentMethodsItem = "venmo"
+	SummaryPaymentsRequestPaymentMethodsItemVipps                  SummaryPaymentsRequestPaymentMethodsItem = "vipps"
+	SummaryPaymentsRequestPaymentMethodsItemWebpay                 SummaryPaymentsRequestPaymentMethodsItem = "webpay"
+	SummaryPaymentsRequestPaymentMethodsItemWechatPay              SummaryPaymentsRequestPaymentMethodsItem = "wechat_pay"
+	SummaryPaymentsRequestPaymentMethodsItemWhopPay                SummaryPaymentsRequestPaymentMethodsItem = "whop_pay"
+	SummaryPaymentsRequestPaymentMethodsItemYape                   SummaryPaymentsRequestPaymentMethodsItem = "yape"
+	SummaryPaymentsRequestPaymentMethodsItemZip                    SummaryPaymentsRequestPaymentMethodsItem = "zip"
+	SummaryPaymentsRequestPaymentMethodsItemCoinflow               SummaryPaymentsRequestPaymentMethodsItem = "coinflow"
+	SummaryPaymentsRequestPaymentMethodsItemTapToPay               SummaryPaymentsRequestPaymentMethodsItem = "tap_to_pay"
+)
+
+func NewSummaryPaymentsRequestPaymentMethodsItemFromString(s string) (SummaryPaymentsRequestPaymentMethodsItem, error) {
+	switch s {
+	case "mastercard":
+		return SummaryPaymentsRequestPaymentMethodsItemMastercard, nil
+	case "visa":
+		return SummaryPaymentsRequestPaymentMethodsItemVisa, nil
+	case "amex":
+		return SummaryPaymentsRequestPaymentMethodsItemAmex, nil
+	case "discover":
+		return SummaryPaymentsRequestPaymentMethodsItemDiscover, nil
+	case "unionpay":
+		return SummaryPaymentsRequestPaymentMethodsItemUnionpay, nil
+	case "jcb":
+		return SummaryPaymentsRequestPaymentMethodsItemJcb, nil
+	case "diners":
+		return SummaryPaymentsRequestPaymentMethodsItemDiners, nil
+	case "link":
+		return SummaryPaymentsRequestPaymentMethodsItemLink, nil
+	case "troy":
+		return SummaryPaymentsRequestPaymentMethodsItemTroy, nil
+	case "visadankort":
+		return SummaryPaymentsRequestPaymentMethodsItemVisadankort, nil
+	case "visabancontact":
+		return SummaryPaymentsRequestPaymentMethodsItemVisabancontact, nil
+	case "china_union_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemChinaUnionPay, nil
+	case "rupay":
+		return SummaryPaymentsRequestPaymentMethodsItemRupay, nil
+	case "jcbrupay":
+		return SummaryPaymentsRequestPaymentMethodsItemJcbrupay, nil
+	case "elo":
+		return SummaryPaymentsRequestPaymentMethodsItemElo, nil
+	case "maestro":
+		return SummaryPaymentsRequestPaymentMethodsItemMaestro, nil
+	case "tarjeta_naranja":
+		return SummaryPaymentsRequestPaymentMethodsItemTarjetaNaranja, nil
+	case "cirrus":
+		return SummaryPaymentsRequestPaymentMethodsItemCirrus, nil
+	case "nspk_mir":
+		return SummaryPaymentsRequestPaymentMethodsItemNspkMir, nil
+	case "verve":
+		return SummaryPaymentsRequestPaymentMethodsItemVerve, nil
+	case "ebt":
+		return SummaryPaymentsRequestPaymentMethodsItemEbt, nil
+	case "private_label":
+		return SummaryPaymentsRequestPaymentMethodsItemPrivateLabel, nil
+	case "local_brand":
+		return SummaryPaymentsRequestPaymentMethodsItemLocalBrand, nil
+	case "uatp":
+		return SummaryPaymentsRequestPaymentMethodsItemUatp, nil
+	case "wexcard":
+		return SummaryPaymentsRequestPaymentMethodsItemWexcard, nil
+	case "uzcard":
+		return SummaryPaymentsRequestPaymentMethodsItemUzcard, nil
+	case "meeza":
+		return SummaryPaymentsRequestPaymentMethodsItemMeeza, nil
+	case "hrg_store_card":
+		return SummaryPaymentsRequestPaymentMethodsItemHrgStoreCard, nil
+	case "girocard":
+		return SummaryPaymentsRequestPaymentMethodsItemGirocard, nil
+	case "fuel_card":
+		return SummaryPaymentsRequestPaymentMethodsItemFuelCard, nil
+	case "dankort":
+		return SummaryPaymentsRequestPaymentMethodsItemDankort, nil
+	case "carnet":
+		return SummaryPaymentsRequestPaymentMethodsItemCarnet, nil
+	case "atm_card":
+		return SummaryPaymentsRequestPaymentMethodsItemAtmCard, nil
+	case "china_union_payuzcard":
+		return SummaryPaymentsRequestPaymentMethodsItemChinaUnionPayuzcard, nil
+	case "codensa":
+		return SummaryPaymentsRequestPaymentMethodsItemCodensa, nil
+	case "cabal":
+		return SummaryPaymentsRequestPaymentMethodsItemCabal, nil
+	case "hipercard":
+		return SummaryPaymentsRequestPaymentMethodsItemHipercard, nil
+	case "jcblankapay":
+		return SummaryPaymentsRequestPaymentMethodsItemJcblankapay, nil
+	case "cmi":
+		return SummaryPaymentsRequestPaymentMethodsItemCmi, nil
+	case "aura":
+		return SummaryPaymentsRequestPaymentMethodsItemAura, nil
+	case "accel":
+		return SummaryPaymentsRequestPaymentMethodsItemAccel, nil
+	case "culiance":
+		return SummaryPaymentsRequestPaymentMethodsItemCuliance, nil
+	case "nyce":
+		return SummaryPaymentsRequestPaymentMethodsItemNyce, nil
+	case "pulse":
+		return SummaryPaymentsRequestPaymentMethodsItemPulse, nil
+	case "star":
+		return SummaryPaymentsRequestPaymentMethodsItemStar, nil
+	case "eftpos":
+		return SummaryPaymentsRequestPaymentMethodsItemEftpos, nil
+	case "alelo":
+		return SummaryPaymentsRequestPaymentMethodsItemAlelo, nil
+	case "edenred":
+		return SummaryPaymentsRequestPaymentMethodsItemEdenred, nil
+	case "sodexo":
+		return SummaryPaymentsRequestPaymentMethodsItemSodexo, nil
+	case "unknown":
+		return SummaryPaymentsRequestPaymentMethodsItemUnknown, nil
+	case "acss_debit":
+		return SummaryPaymentsRequestPaymentMethodsItemAcssDebit, nil
+	case "addi":
+		return SummaryPaymentsRequestPaymentMethodsItemAddi, nil
+	case "affirm":
+		return SummaryPaymentsRequestPaymentMethodsItemAffirm, nil
+	case "afterpay_clearpay":
+		return SummaryPaymentsRequestPaymentMethodsItemAfterpayClearpay, nil
+	case "alipay":
+		return SummaryPaymentsRequestPaymentMethodsItemAlipay, nil
+	case "alipayhk":
+		return SummaryPaymentsRequestPaymentMethodsItemAlipayhk, nil
+	case "alma":
+		return SummaryPaymentsRequestPaymentMethodsItemAlma, nil
+	case "amazon_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemAmazonPay, nil
+	case "apple":
+		return SummaryPaymentsRequestPaymentMethodsItemApple, nil
+	case "apple_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemApplePay, nil
+	case "au_bank_transfer":
+		return SummaryPaymentsRequestPaymentMethodsItemAuBankTransfer, nil
+	case "au_becs_debit":
+		return SummaryPaymentsRequestPaymentMethodsItemAuBecsDebit, nil
+	case "bacs_debit":
+		return SummaryPaymentsRequestPaymentMethodsItemBacsDebit, nil
+	case "bancolombia":
+		return SummaryPaymentsRequestPaymentMethodsItemBancolombia, nil
+	case "bancontact":
+		return SummaryPaymentsRequestPaymentMethodsItemBancontact, nil
+	case "bank_wire":
+		return SummaryPaymentsRequestPaymentMethodsItemBankWire, nil
+	case "billie":
+		return SummaryPaymentsRequestPaymentMethodsItemBillie, nil
+	case "blik":
+		return SummaryPaymentsRequestPaymentMethodsItemBlik, nil
+	case "boleto":
+		return SummaryPaymentsRequestPaymentMethodsItemBoleto, nil
+	case "bre_b":
+		return SummaryPaymentsRequestPaymentMethodsItemBreB, nil
+	case "ca_bank_transfer":
+		return SummaryPaymentsRequestPaymentMethodsItemCaBankTransfer, nil
+	case "capchase_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemCapchasePay, nil
+	case "card":
+		return SummaryPaymentsRequestPaymentMethodsItemCard, nil
+	case "card_present":
+		return SummaryPaymentsRequestPaymentMethodsItemCardPresent, nil
+	case "card_installments_three":
+		return SummaryPaymentsRequestPaymentMethodsItemCardInstallmentsThree, nil
+	case "card_installments_six":
+		return SummaryPaymentsRequestPaymentMethodsItemCardInstallmentsSix, nil
+	case "card_installments_twelve":
+		return SummaryPaymentsRequestPaymentMethodsItemCardInstallmentsTwelve, nil
+	case "cashapp":
+		return SummaryPaymentsRequestPaymentMethodsItemCashapp, nil
+	case "claritypay":
+		return SummaryPaymentsRequestPaymentMethodsItemClaritypay, nil
+	case "coinbase":
+		return SummaryPaymentsRequestPaymentMethodsItemCoinbase, nil
+	case "crypto":
+		return SummaryPaymentsRequestPaymentMethodsItemCrypto, nil
+	case "custom":
+		return SummaryPaymentsRequestPaymentMethodsItemCustom, nil
+	case "customer_balance":
+		return SummaryPaymentsRequestPaymentMethodsItemCustomerBalance, nil
+	case "demo_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemDemoPay, nil
+	case "duitnow_qr":
+		return SummaryPaymentsRequestPaymentMethodsItemDuitnowQr, nil
+	case "efecty":
+		return SummaryPaymentsRequestPaymentMethodsItemEfecty, nil
+	case "eps":
+		return SummaryPaymentsRequestPaymentMethodsItemEps, nil
+	case "eu_bank_transfer":
+		return SummaryPaymentsRequestPaymentMethodsItemEuBankTransfer, nil
+	case "fpx":
+		return SummaryPaymentsRequestPaymentMethodsItemFpx, nil
+	case "flex_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemFlexPay, nil
+	case "gb_bank_transfer":
+		return SummaryPaymentsRequestPaymentMethodsItemGbBankTransfer, nil
+	case "gcash":
+		return SummaryPaymentsRequestPaymentMethodsItemGcash, nil
+	case "giropay":
+		return SummaryPaymentsRequestPaymentMethodsItemGiropay, nil
+	case "google_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemGooglePay, nil
+	case "gopay":
+		return SummaryPaymentsRequestPaymentMethodsItemGopay, nil
+	case "grabpay":
+		return SummaryPaymentsRequestPaymentMethodsItemGrabpay, nil
+	case "id_bank_transfer":
+		return SummaryPaymentsRequestPaymentMethodsItemIDBankTransfer, nil
+	case "ideal":
+		return SummaryPaymentsRequestPaymentMethodsItemIdeal, nil
+	case "interac":
+		return SummaryPaymentsRequestPaymentMethodsItemInterac, nil
+	case "international_bank_wire":
+		return SummaryPaymentsRequestPaymentMethodsItemInternationalBankWire, nil
+	case "kakao_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemKakaoPay, nil
+	case "klarna":
+		return SummaryPaymentsRequestPaymentMethodsItemKlarna, nil
+	case "klarna_pay_now":
+		return SummaryPaymentsRequestPaymentMethodsItemKlarnaPayNow, nil
+	case "konbini":
+		return SummaryPaymentsRequestPaymentMethodsItemKonbini, nil
+	case "kr_card":
+		return SummaryPaymentsRequestPaymentMethodsItemKrCard, nil
+	case "kr_market":
+		return SummaryPaymentsRequestPaymentMethodsItemKrMarket, nil
+	case "kriya":
+		return SummaryPaymentsRequestPaymentMethodsItemKriya, nil
+	case "kueski":
+		return SummaryPaymentsRequestPaymentMethodsItemKueski, nil
+	case "mb_way":
+		return SummaryPaymentsRequestPaymentMethodsItemMbWay, nil
+	case "m_pesa":
+		return SummaryPaymentsRequestPaymentMethodsItemMPesa, nil
+	case "mercado_pago":
+		return SummaryPaymentsRequestPaymentMethodsItemMercadoPago, nil
+	case "mercado_pago_ar":
+		return SummaryPaymentsRequestPaymentMethodsItemMercadoPagoAr, nil
+	case "mercado_pago_mx":
+		return SummaryPaymentsRequestPaymentMethodsItemMercadoPagoMx, nil
+	case "mobilepay":
+		return SummaryPaymentsRequestPaymentMethodsItemMobilepay, nil
+	case "modo":
+		return SummaryPaymentsRequestPaymentMethodsItemModo, nil
+	case "mondu":
+		return SummaryPaymentsRequestPaymentMethodsItemMondu, nil
+	case "multibanco":
+		return SummaryPaymentsRequestPaymentMethodsItemMultibanco, nil
+	case "naver_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemNaverPay, nil
+	case "nequi":
+		return SummaryPaymentsRequestPaymentMethodsItemNequi, nil
+	case "netbanking":
+		return SummaryPaymentsRequestPaymentMethodsItemNetbanking, nil
+	case "ng_bank":
+		return SummaryPaymentsRequestPaymentMethodsItemNgBank, nil
+	case "ng_bank_transfer":
+		return SummaryPaymentsRequestPaymentMethodsItemNgBankTransfer, nil
+	case "ng_card":
+		return SummaryPaymentsRequestPaymentMethodsItemNgCard, nil
+	case "ng_market":
+		return SummaryPaymentsRequestPaymentMethodsItemNgMarket, nil
+	case "ng_ussd":
+		return SummaryPaymentsRequestPaymentMethodsItemNgUssd, nil
+	case "ng_wallet":
+		return SummaryPaymentsRequestPaymentMethodsItemNgWallet, nil
+	case "nupay":
+		return SummaryPaymentsRequestPaymentMethodsItemNupay, nil
+	case "nz_bank_account":
+		return SummaryPaymentsRequestPaymentMethodsItemNzBankAccount, nil
+	case "oney":
+		return SummaryPaymentsRequestPaymentMethodsItemOney, nil
+	case "oney_3x":
+		return SummaryPaymentsRequestPaymentMethodsItemOney3X, nil
+	case "oney_4x":
+		return SummaryPaymentsRequestPaymentMethodsItemOney4X, nil
+	case "opay":
+		return SummaryPaymentsRequestPaymentMethodsItemOpay, nil
+	case "oxxo":
+		return SummaryPaymentsRequestPaymentMethodsItemOxxo, nil
+	case "p24":
+		return SummaryPaymentsRequestPaymentMethodsItemP24, nil
+	case "pago_efectivo":
+		return SummaryPaymentsRequestPaymentMethodsItemPagoEfectivo, nil
+	case "pse":
+		return SummaryPaymentsRequestPaymentMethodsItemPse, nil
+	case "pay_by_bank":
+		return SummaryPaymentsRequestPaymentMethodsItemPayByBank, nil
+	case "payco":
+		return SummaryPaymentsRequestPaymentMethodsItemPayco, nil
+	case "paynow":
+		return SummaryPaymentsRequestPaymentMethodsItemPaynow, nil
+	case "paypal":
+		return SummaryPaymentsRequestPaymentMethodsItemPaypal, nil
+	case "paypal_express":
+		return SummaryPaymentsRequestPaymentMethodsItemPaypalExpress, nil
+	case "paypay":
+		return SummaryPaymentsRequestPaymentMethodsItemPaypay, nil
+	case "payto":
+		return SummaryPaymentsRequestPaymentMethodsItemPayto, nil
+	case "payto_email":
+		return SummaryPaymentsRequestPaymentMethodsItemPaytoEmail, nil
+	case "payto_phone":
+		return SummaryPaymentsRequestPaymentMethodsItemPaytoPhone, nil
+	case "payto_bank_account":
+		return SummaryPaymentsRequestPaymentMethodsItemPaytoBankAccount, nil
+	case "pix":
+		return SummaryPaymentsRequestPaymentMethodsItemPix, nil
+	case "platform_balance":
+		return SummaryPaymentsRequestPaymentMethodsItemPlatformBalance, nil
+	case "promptpay":
+		return SummaryPaymentsRequestPaymentMethodsItemPromptpay, nil
+	case "qris":
+		return SummaryPaymentsRequestPaymentMethodsItemQris, nil
+	case "rapipago":
+		return SummaryPaymentsRequestPaymentMethodsItemRapipago, nil
+	case "rechnung":
+		return SummaryPaymentsRequestPaymentMethodsItemRechnung, nil
+	case "revolut_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemRevolutPay, nil
+	case "samsung_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemSamsungPay, nil
+	case "satispay":
+		return SummaryPaymentsRequestPaymentMethodsItemSatispay, nil
+	case "scalapay":
+		return SummaryPaymentsRequestPaymentMethodsItemScalapay, nil
+	case "sencillito":
+		return SummaryPaymentsRequestPaymentMethodsItemSencillito, nil
+	case "sepa_debit":
+		return SummaryPaymentsRequestPaymentMethodsItemSepaDebit, nil
+	case "sequra":
+		return SummaryPaymentsRequestPaymentMethodsItemSequra, nil
+	case "servipag":
+		return SummaryPaymentsRequestPaymentMethodsItemServipag, nil
+	case "sezzle":
+		return SummaryPaymentsRequestPaymentMethodsItemSezzle, nil
+	case "shop_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemShopPay, nil
+	case "shopeepay":
+		return SummaryPaymentsRequestPaymentMethodsItemShopeepay, nil
+	case "sofort":
+		return SummaryPaymentsRequestPaymentMethodsItemSofort, nil
+	case "south_korea_market":
+		return SummaryPaymentsRequestPaymentMethodsItemSouthKoreaMarket, nil
+	case "spei":
+		return SummaryPaymentsRequestPaymentMethodsItemSpei, nil
+	case "splitit":
+		return SummaryPaymentsRequestPaymentMethodsItemSplitit, nil
+	case "sunbit":
+		return SummaryPaymentsRequestPaymentMethodsItemSunbit, nil
+	case "swish":
+		return SummaryPaymentsRequestPaymentMethodsItemSwish, nil
+	case "tabby":
+		return SummaryPaymentsRequestPaymentMethodsItemTabby, nil
+	case "tamara":
+		return SummaryPaymentsRequestPaymentMethodsItemTamara, nil
+	case "touch_n_go":
+		return SummaryPaymentsRequestPaymentMethodsItemTouchNGo, nil
+	case "twint":
+		return SummaryPaymentsRequestPaymentMethodsItemTwint, nil
+	case "upi":
+		return SummaryPaymentsRequestPaymentMethodsItemUpi, nil
+	case "us_bank_account":
+		return SummaryPaymentsRequestPaymentMethodsItemUsBankAccount, nil
+	case "us_bank_transfer":
+		return SummaryPaymentsRequestPaymentMethodsItemUsBankTransfer, nil
+	case "venmo":
+		return SummaryPaymentsRequestPaymentMethodsItemVenmo, nil
+	case "vipps":
+		return SummaryPaymentsRequestPaymentMethodsItemVipps, nil
+	case "webpay":
+		return SummaryPaymentsRequestPaymentMethodsItemWebpay, nil
+	case "wechat_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemWechatPay, nil
+	case "whop_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemWhopPay, nil
+	case "yape":
+		return SummaryPaymentsRequestPaymentMethodsItemYape, nil
+	case "zip":
+		return SummaryPaymentsRequestPaymentMethodsItemZip, nil
+	case "coinflow":
+		return SummaryPaymentsRequestPaymentMethodsItemCoinflow, nil
+	case "tap_to_pay":
+		return SummaryPaymentsRequestPaymentMethodsItemTapToPay, nil
+	}
+	var t SummaryPaymentsRequestPaymentMethodsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SummaryPaymentsRequestPaymentMethodsItem) Ptr() *SummaryPaymentsRequestPaymentMethodsItem {
+	return &s
+}
+
+type SummaryPaymentsRequestStatusesItem string
+
+const (
+	SummaryPaymentsRequestStatusesItemOpen          SummaryPaymentsRequestStatusesItem = "open"
+	SummaryPaymentsRequestStatusesItemAuthorized    SummaryPaymentsRequestStatusesItem = "authorized"
+	SummaryPaymentsRequestStatusesItemPaid          SummaryPaymentsRequestStatusesItem = "paid"
+	SummaryPaymentsRequestStatusesItemPending       SummaryPaymentsRequestStatusesItem = "pending"
+	SummaryPaymentsRequestStatusesItemUncollectible SummaryPaymentsRequestStatusesItem = "uncollectible"
+	SummaryPaymentsRequestStatusesItemUnresolved    SummaryPaymentsRequestStatusesItem = "unresolved"
+	SummaryPaymentsRequestStatusesItemVoid          SummaryPaymentsRequestStatusesItem = "void"
+)
+
+func NewSummaryPaymentsRequestStatusesItemFromString(s string) (SummaryPaymentsRequestStatusesItem, error) {
+	switch s {
+	case "open":
+		return SummaryPaymentsRequestStatusesItemOpen, nil
+	case "authorized":
+		return SummaryPaymentsRequestStatusesItemAuthorized, nil
+	case "paid":
+		return SummaryPaymentsRequestStatusesItemPaid, nil
+	case "pending":
+		return SummaryPaymentsRequestStatusesItemPending, nil
+	case "uncollectible":
+		return SummaryPaymentsRequestStatusesItemUncollectible, nil
+	case "unresolved":
+		return SummaryPaymentsRequestStatusesItemUnresolved, nil
+	case "void":
+		return SummaryPaymentsRequestStatusesItemVoid, nil
+	}
+	var t SummaryPaymentsRequestStatusesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SummaryPaymentsRequestStatusesItem) Ptr() *SummaryPaymentsRequestStatusesItem {
+	return &s
+}
+
+type SummaryPaymentsRequestSubstatusesItem string
+
+const (
+	SummaryPaymentsRequestSubstatusesItemSucceeded                   SummaryPaymentsRequestSubstatusesItem = "succeeded"
+	SummaryPaymentsRequestSubstatusesItemRequiresCapture             SummaryPaymentsRequestSubstatusesItem = "requires_capture"
+	SummaryPaymentsRequestSubstatusesItemPending                     SummaryPaymentsRequestSubstatusesItem = "pending"
+	SummaryPaymentsRequestSubstatusesItemFailed                      SummaryPaymentsRequestSubstatusesItem = "failed"
+	SummaryPaymentsRequestSubstatusesItemBlocked                     SummaryPaymentsRequestSubstatusesItem = "blocked"
+	SummaryPaymentsRequestSubstatusesItemPastDue                     SummaryPaymentsRequestSubstatusesItem = "past_due"
+	SummaryPaymentsRequestSubstatusesItemCanceled                    SummaryPaymentsRequestSubstatusesItem = "canceled"
+	SummaryPaymentsRequestSubstatusesItemPriceTooLow                 SummaryPaymentsRequestSubstatusesItem = "price_too_low"
+	SummaryPaymentsRequestSubstatusesItemUncollectible               SummaryPaymentsRequestSubstatusesItem = "uncollectible"
+	SummaryPaymentsRequestSubstatusesItemRefunded                    SummaryPaymentsRequestSubstatusesItem = "refunded"
+	SummaryPaymentsRequestSubstatusesItemAutoRefunded                SummaryPaymentsRequestSubstatusesItem = "auto_refunded"
+	SummaryPaymentsRequestSubstatusesItemPartiallyRefunded           SummaryPaymentsRequestSubstatusesItem = "partially_refunded"
+	SummaryPaymentsRequestSubstatusesItemDisputeWarning              SummaryPaymentsRequestSubstatusesItem = "dispute_warning"
+	SummaryPaymentsRequestSubstatusesItemDisputeNeedsResponse        SummaryPaymentsRequestSubstatusesItem = "dispute_needs_response"
+	SummaryPaymentsRequestSubstatusesItemDisputeWarningNeedsResponse SummaryPaymentsRequestSubstatusesItem = "dispute_warning_needs_response"
+	SummaryPaymentsRequestSubstatusesItemResolutionNeedsResponse     SummaryPaymentsRequestSubstatusesItem = "resolution_needs_response"
+	SummaryPaymentsRequestSubstatusesItemDisputeUnderReview          SummaryPaymentsRequestSubstatusesItem = "dispute_under_review"
+	SummaryPaymentsRequestSubstatusesItemDisputeWarningUnderReview   SummaryPaymentsRequestSubstatusesItem = "dispute_warning_under_review"
+	SummaryPaymentsRequestSubstatusesItemResolutionUnderReview       SummaryPaymentsRequestSubstatusesItem = "resolution_under_review"
+	SummaryPaymentsRequestSubstatusesItemDisputeWon                  SummaryPaymentsRequestSubstatusesItem = "dispute_won"
+	SummaryPaymentsRequestSubstatusesItemDisputeWarningClosed        SummaryPaymentsRequestSubstatusesItem = "dispute_warning_closed"
+	SummaryPaymentsRequestSubstatusesItemResolutionWon               SummaryPaymentsRequestSubstatusesItem = "resolution_won"
+	SummaryPaymentsRequestSubstatusesItemDisputeLost                 SummaryPaymentsRequestSubstatusesItem = "dispute_lost"
+	SummaryPaymentsRequestSubstatusesItemDisputeClosed               SummaryPaymentsRequestSubstatusesItem = "dispute_closed"
+	SummaryPaymentsRequestSubstatusesItemResolutionLost              SummaryPaymentsRequestSubstatusesItem = "resolution_lost"
+	SummaryPaymentsRequestSubstatusesItemDrafted                     SummaryPaymentsRequestSubstatusesItem = "drafted"
+	SummaryPaymentsRequestSubstatusesItemIncomplete                  SummaryPaymentsRequestSubstatusesItem = "incomplete"
+	SummaryPaymentsRequestSubstatusesItemUnresolved                  SummaryPaymentsRequestSubstatusesItem = "unresolved"
+)
+
+func NewSummaryPaymentsRequestSubstatusesItemFromString(s string) (SummaryPaymentsRequestSubstatusesItem, error) {
+	switch s {
+	case "succeeded":
+		return SummaryPaymentsRequestSubstatusesItemSucceeded, nil
+	case "requires_capture":
+		return SummaryPaymentsRequestSubstatusesItemRequiresCapture, nil
+	case "pending":
+		return SummaryPaymentsRequestSubstatusesItemPending, nil
+	case "failed":
+		return SummaryPaymentsRequestSubstatusesItemFailed, nil
+	case "blocked":
+		return SummaryPaymentsRequestSubstatusesItemBlocked, nil
+	case "past_due":
+		return SummaryPaymentsRequestSubstatusesItemPastDue, nil
+	case "canceled":
+		return SummaryPaymentsRequestSubstatusesItemCanceled, nil
+	case "price_too_low":
+		return SummaryPaymentsRequestSubstatusesItemPriceTooLow, nil
+	case "uncollectible":
+		return SummaryPaymentsRequestSubstatusesItemUncollectible, nil
+	case "refunded":
+		return SummaryPaymentsRequestSubstatusesItemRefunded, nil
+	case "auto_refunded":
+		return SummaryPaymentsRequestSubstatusesItemAutoRefunded, nil
+	case "partially_refunded":
+		return SummaryPaymentsRequestSubstatusesItemPartiallyRefunded, nil
+	case "dispute_warning":
+		return SummaryPaymentsRequestSubstatusesItemDisputeWarning, nil
+	case "dispute_needs_response":
+		return SummaryPaymentsRequestSubstatusesItemDisputeNeedsResponse, nil
+	case "dispute_warning_needs_response":
+		return SummaryPaymentsRequestSubstatusesItemDisputeWarningNeedsResponse, nil
+	case "resolution_needs_response":
+		return SummaryPaymentsRequestSubstatusesItemResolutionNeedsResponse, nil
+	case "dispute_under_review":
+		return SummaryPaymentsRequestSubstatusesItemDisputeUnderReview, nil
+	case "dispute_warning_under_review":
+		return SummaryPaymentsRequestSubstatusesItemDisputeWarningUnderReview, nil
+	case "resolution_under_review":
+		return SummaryPaymentsRequestSubstatusesItemResolutionUnderReview, nil
+	case "dispute_won":
+		return SummaryPaymentsRequestSubstatusesItemDisputeWon, nil
+	case "dispute_warning_closed":
+		return SummaryPaymentsRequestSubstatusesItemDisputeWarningClosed, nil
+	case "resolution_won":
+		return SummaryPaymentsRequestSubstatusesItemResolutionWon, nil
+	case "dispute_lost":
+		return SummaryPaymentsRequestSubstatusesItemDisputeLost, nil
+	case "dispute_closed":
+		return SummaryPaymentsRequestSubstatusesItemDisputeClosed, nil
+	case "resolution_lost":
+		return SummaryPaymentsRequestSubstatusesItemResolutionLost, nil
+	case "drafted":
+		return SummaryPaymentsRequestSubstatusesItemDrafted, nil
+	case "incomplete":
+		return SummaryPaymentsRequestSubstatusesItemIncomplete, nil
+	case "unresolved":
+		return SummaryPaymentsRequestSubstatusesItemUnresolved, nil
+	}
+	var t SummaryPaymentsRequestSubstatusesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SummaryPaymentsRequestSubstatusesItem) Ptr() *SummaryPaymentsRequestSubstatusesItem {
+	return &s
+}
+
+type SummaryPaymentsRequestTrackingStatesItem string
+
+const (
+	SummaryPaymentsRequestTrackingStatesItemUnknown            SummaryPaymentsRequestTrackingStatesItem = "unknown"
+	SummaryPaymentsRequestTrackingStatesItemPreTransit         SummaryPaymentsRequestTrackingStatesItem = "pre_transit"
+	SummaryPaymentsRequestTrackingStatesItemInTransit          SummaryPaymentsRequestTrackingStatesItem = "in_transit"
+	SummaryPaymentsRequestTrackingStatesItemOutForDelivery     SummaryPaymentsRequestTrackingStatesItem = "out_for_delivery"
+	SummaryPaymentsRequestTrackingStatesItemDelivered          SummaryPaymentsRequestTrackingStatesItem = "delivered"
+	SummaryPaymentsRequestTrackingStatesItemAvailableForPickup SummaryPaymentsRequestTrackingStatesItem = "available_for_pickup"
+	SummaryPaymentsRequestTrackingStatesItemReturnToSender     SummaryPaymentsRequestTrackingStatesItem = "return_to_sender"
+	SummaryPaymentsRequestTrackingStatesItemFailure            SummaryPaymentsRequestTrackingStatesItem = "failure"
+	SummaryPaymentsRequestTrackingStatesItemCancelled          SummaryPaymentsRequestTrackingStatesItem = "cancelled"
+	SummaryPaymentsRequestTrackingStatesItemError              SummaryPaymentsRequestTrackingStatesItem = "error"
+	SummaryPaymentsRequestTrackingStatesItemNeedsTracking      SummaryPaymentsRequestTrackingStatesItem = "needs_tracking"
+	SummaryPaymentsRequestTrackingStatesItemMissingTracking    SummaryPaymentsRequestTrackingStatesItem = "missing_tracking"
+)
+
+func NewSummaryPaymentsRequestTrackingStatesItemFromString(s string) (SummaryPaymentsRequestTrackingStatesItem, error) {
+	switch s {
+	case "unknown":
+		return SummaryPaymentsRequestTrackingStatesItemUnknown, nil
+	case "pre_transit":
+		return SummaryPaymentsRequestTrackingStatesItemPreTransit, nil
+	case "in_transit":
+		return SummaryPaymentsRequestTrackingStatesItemInTransit, nil
+	case "out_for_delivery":
+		return SummaryPaymentsRequestTrackingStatesItemOutForDelivery, nil
+	case "delivered":
+		return SummaryPaymentsRequestTrackingStatesItemDelivered, nil
+	case "available_for_pickup":
+		return SummaryPaymentsRequestTrackingStatesItemAvailableForPickup, nil
+	case "return_to_sender":
+		return SummaryPaymentsRequestTrackingStatesItemReturnToSender, nil
+	case "failure":
+		return SummaryPaymentsRequestTrackingStatesItemFailure, nil
+	case "cancelled":
+		return SummaryPaymentsRequestTrackingStatesItemCancelled, nil
+	case "error":
+		return SummaryPaymentsRequestTrackingStatesItemError, nil
+	case "needs_tracking":
+		return SummaryPaymentsRequestTrackingStatesItemNeedsTracking, nil
+	case "missing_tracking":
+		return SummaryPaymentsRequestTrackingStatesItemMissingTracking, nil
+	}
+	var t SummaryPaymentsRequestTrackingStatesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SummaryPaymentsRequestTrackingStatesItem) Ptr() *SummaryPaymentsRequestTrackingStatesItem {
+	return &s
+}
+
+var (
+	summaryPaymentsResponseFieldGroups = big.NewInt(1 << 0)
+	summaryPaymentsResponseFieldTotal  = big.NewInt(1 << 1)
+)
+
+type SummaryPaymentsResponse struct {
+	// One entry per requested breakdown, keyed by the field it groups on. A field you did not ask for is absent.
+	Groups *SummaryPaymentsResponseGroups `json:"groups" url:"groups"`
+	// How many payments match the filters.
+	Total int `json:"total" url:"total"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -15910,988 +8506,1004 @@ type RetrievePaymentsResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (r *RetrievePaymentsResponse) GetAmountAfterFees() float64 {
-	if r == nil {
+func (s *SummaryPaymentsResponse) GetGroups() *SummaryPaymentsResponseGroups {
+	if s == nil {
+		return nil
+	}
+	return s.Groups
+}
+
+func (s *SummaryPaymentsResponse) GetTotal() int {
+	if s == nil {
 		return 0
 	}
-	return r.AmountAfterFees
+	return s.Total
 }
 
-func (r *RetrievePaymentsResponse) GetApplicationFee() *PaymentApplicationFee {
-	if r == nil {
+func (s *SummaryPaymentsResponse) GetExtraProperties() map[string]interface{} {
+	if s == nil {
 		return nil
 	}
-	return r.ApplicationFee
+	return s.extraProperties
 }
 
-func (r *RetrievePaymentsResponse) GetAutoRefunded() bool {
-	if r == nil {
-		return false
+func (s *SummaryPaymentsResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
 	}
-	return r.AutoRefunded
+	next.Or(next, field)
+	s.explicitFields = next
 }
 
-func (r *RetrievePaymentsResponse) GetBillingAddress() *PaymentBillingAddress {
-	if r == nil {
-		return nil
-	}
-	return r.BillingAddress
-}
-
-func (r *RetrievePaymentsResponse) GetBillingReason() *BillingReasons {
-	if r == nil {
-		return nil
-	}
-	return r.BillingReason
-}
-
-func (r *RetrievePaymentsResponse) GetCardBrand() *CardBrands {
-	if r == nil {
-		return nil
-	}
-	return r.CardBrand
-}
-
-func (r *RetrievePaymentsResponse) GetCardExpMonth() *int {
-	if r == nil {
-		return nil
-	}
-	return r.CardExpMonth
-}
-
-func (r *RetrievePaymentsResponse) GetCardExpYear() *int {
-	if r == nil {
-		return nil
-	}
-	return r.CardExpYear
-}
-
-func (r *RetrievePaymentsResponse) GetCardLast4() *string {
-	if r == nil {
-		return nil
-	}
-	return r.CardLast4
-}
-
-func (r *RetrievePaymentsResponse) GetCheckoutConfigurationID() *string {
-	if r == nil {
-		return nil
-	}
-	return r.CheckoutConfigurationID
-}
-
-func (r *RetrievePaymentsResponse) GetCompany() *PaymentCompany {
-	if r == nil {
-		return nil
-	}
-	return r.Company
-}
-
-func (r *RetrievePaymentsResponse) GetCreatedAt() time.Time {
-	if r == nil {
-		return time.Time{}
-	}
-	return r.CreatedAt
-}
-
-func (r *RetrievePaymentsResponse) GetCurrency() Currencies {
-	if r == nil {
-		return ""
-	}
-	return r.Currency
-}
-
-func (r *RetrievePaymentsResponse) GetCustomerPhone() *string {
-	if r == nil {
-		return nil
-	}
-	return r.CustomerPhone
-}
-
-func (r *RetrievePaymentsResponse) GetDeclineCode() *PaymentDeclineCodes {
-	if r == nil {
-		return nil
-	}
-	return r.DeclineCode
-}
-
-func (r *RetrievePaymentsResponse) GetDisputeAlertedAt() *time.Time {
-	if r == nil {
-		return nil
-	}
-	return r.DisputeAlertedAt
-}
-
-func (r *RetrievePaymentsResponse) GetDisputes() []*PaymentDisputesItem {
-	if r == nil {
-		return nil
-	}
-	return r.Disputes
-}
-
-func (r *RetrievePaymentsResponse) GetFailureMessage() *string {
-	if r == nil {
-		return nil
-	}
-	return r.FailureMessage
-}
-
-func (r *RetrievePaymentsResponse) GetFinancingInstallmentsCount() *int {
-	if r == nil {
-		return nil
-	}
-	return r.FinancingInstallmentsCount
-}
-
-func (r *RetrievePaymentsResponse) GetFinancingTransactions() []*PaymentFinancingTransactionsItem {
-	if r == nil {
-		return nil
-	}
-	return r.FinancingTransactions
-}
-
-func (r *RetrievePaymentsResponse) GetID() string {
-	if r == nil {
-		return ""
-	}
-	return r.ID
-}
-
-func (r *RetrievePaymentsResponse) GetLastPaymentAttempt() *time.Time {
-	if r == nil {
-		return nil
-	}
-	return r.LastPaymentAttempt
-}
-
-func (r *RetrievePaymentsResponse) GetMember() *PaymentMember {
-	if r == nil {
-		return nil
-	}
-	return r.Member
-}
-
-func (r *RetrievePaymentsResponse) GetMembership() *PaymentMembership {
-	if r == nil {
-		return nil
-	}
-	return r.Membership
-}
-
-func (r *RetrievePaymentsResponse) GetMetadata() map[string]any {
-	if r == nil {
-		return nil
-	}
-	return r.Metadata
-}
-
-func (r *RetrievePaymentsResponse) GetNeedsTracking() *bool {
-	if r == nil {
-		return nil
-	}
-	return r.NeedsTracking
-}
-
-func (r *RetrievePaymentsResponse) GetNextPaymentAttempt() *time.Time {
-	if r == nil {
-		return nil
-	}
-	return r.NextPaymentAttempt
-}
-
-func (r *RetrievePaymentsResponse) GetPaidAt() *time.Time {
-	if r == nil {
-		return nil
-	}
-	return r.PaidAt
-}
-
-func (r *RetrievePaymentsResponse) GetPaymentInstrument() *PaymentPaymentInstrument {
-	if r == nil {
-		return nil
-	}
-	return r.PaymentInstrument
-}
-
-func (r *RetrievePaymentsResponse) GetPaymentMethod() *PaymentPaymentMethod {
-	if r == nil {
-		return nil
-	}
-	return r.PaymentMethod
-}
-
-func (r *RetrievePaymentsResponse) GetPaymentMethodType() *PaymentMethodTypes {
-	if r == nil {
-		return nil
-	}
-	return r.PaymentMethodType
-}
-
-func (r *RetrievePaymentsResponse) GetPaymentsFailed() *int {
-	if r == nil {
-		return nil
-	}
-	return r.PaymentsFailed
-}
-
-func (r *RetrievePaymentsResponse) GetPlan() *PaymentPlan {
-	if r == nil {
-		return nil
-	}
-	return r.Plan
-}
-
-func (r *RetrievePaymentsResponse) GetProduct() *PaymentProduct {
-	if r == nil {
-		return nil
-	}
-	return r.Product
-}
-
-func (r *RetrievePaymentsResponse) GetPromoCode() *PaymentPromoCode {
-	if r == nil {
-		return nil
-	}
-	return r.PromoCode
-}
-
-func (r *RetrievePaymentsResponse) GetRefundable() bool {
-	if r == nil {
-		return false
-	}
-	return r.Refundable
-}
-
-func (r *RetrievePaymentsResponse) GetRefundedAmount() *float64 {
-	if r == nil {
-		return nil
-	}
-	return r.RefundedAmount
-}
-
-func (r *RetrievePaymentsResponse) GetRefundedAt() *time.Time {
-	if r == nil {
-		return nil
-	}
-	return r.RefundedAt
-}
-
-func (r *RetrievePaymentsResponse) GetRefunds() []*PaymentRefundsItem {
-	if r == nil {
-		return nil
-	}
-	return r.Refunds
-}
-
-func (r *RetrievePaymentsResponse) GetResolutions() []*PaymentResolutionsItem {
-	if r == nil {
-		return nil
-	}
-	return r.Resolutions
-}
-
-func (r *RetrievePaymentsResponse) GetRetryable() bool {
-	if r == nil {
-		return false
-	}
-	return r.Retryable
-}
-
-func (r *RetrievePaymentsResponse) GetRiskScore() *int {
-	if r == nil {
-		return nil
-	}
-	return r.RiskScore
-}
-
-func (r *RetrievePaymentsResponse) GetRiskSignals() map[string]any {
-	if r == nil {
-		return nil
-	}
-	return r.RiskSignals
-}
-
-func (r *RetrievePaymentsResponse) GetSettlementAmount() float64 {
-	if r == nil {
-		return 0
-	}
-	return r.SettlementAmount
-}
-
-func (r *RetrievePaymentsResponse) GetSettlementCurrency() Currencies {
-	if r == nil {
-		return ""
-	}
-	return r.SettlementCurrency
-}
-
-func (r *RetrievePaymentsResponse) GetSettlementExchangeRate() *float64 {
-	if r == nil {
-		return nil
-	}
-	return r.SettlementExchangeRate
-}
-
-func (r *RetrievePaymentsResponse) GetSettlementTimeAt() *time.Time {
-	if r == nil {
-		return nil
-	}
-	return r.SettlementTimeAt
-}
-
-func (r *RetrievePaymentsResponse) GetShipment() *PaymentShipment {
-	if r == nil {
-		return nil
-	}
-	return r.Shipment
-}
-
-func (r *RetrievePaymentsResponse) GetShippingAddress() *PaymentShippingAddress {
-	if r == nil {
-		return nil
-	}
-	return r.ShippingAddress
-}
-
-func (r *RetrievePaymentsResponse) GetStatus() *ReceiptStatus {
-	if r == nil {
-		return nil
-	}
-	return r.Status
-}
-
-func (r *RetrievePaymentsResponse) GetSubstatus() FriendlyReceiptStatus {
-	if r == nil {
-		return ""
-	}
-	return r.Substatus
-}
-
-func (r *RetrievePaymentsResponse) GetSubtotal() *float64 {
-	if r == nil {
-		return nil
-	}
-	return r.Subtotal
-}
-
-func (r *RetrievePaymentsResponse) GetTaxAmount() *float64 {
-	if r == nil {
-		return nil
-	}
-	return r.TaxAmount
-}
-
-func (r *RetrievePaymentsResponse) GetTaxBehavior() *ReceiptTaxBehaviors {
-	if r == nil {
-		return nil
-	}
-	return r.TaxBehavior
-}
-
-func (r *RetrievePaymentsResponse) GetTaxRefundedAmount() *float64 {
-	if r == nil {
-		return nil
-	}
-	return r.TaxRefundedAmount
-}
-
-func (r *RetrievePaymentsResponse) GetThreeDsVerified() bool {
-	if r == nil {
-		return false
-	}
-	return r.ThreeDsVerified
-}
-
-func (r *RetrievePaymentsResponse) GetTotal() *float64 {
-	if r == nil {
-		return nil
-	}
-	return r.Total
-}
-
-func (r *RetrievePaymentsResponse) GetUpdatedAt() time.Time {
-	if r == nil {
-		return time.Time{}
-	}
-	return r.UpdatedAt
-}
-
-func (r *RetrievePaymentsResponse) GetUsdTotal() *float64 {
-	if r == nil {
-		return nil
-	}
-	return r.UsdTotal
-}
-
-func (r *RetrievePaymentsResponse) GetUser() *PaymentUser {
-	if r == nil {
-		return nil
-	}
-	return r.User
-}
-
-func (r *RetrievePaymentsResponse) GetVerificationChecks() *PaymentVerificationChecks {
-	if r == nil {
-		return nil
-	}
-	return r.VerificationChecks
-}
-
-func (r *RetrievePaymentsResponse) GetVoidable() bool {
-	if r == nil {
-		return false
-	}
-	return r.Voidable
-}
-
-func (r *RetrievePaymentsResponse) GetClientSecret() *string {
-	if r == nil {
-		return nil
-	}
-	return r.ClientSecret
-}
-
-func (r *RetrievePaymentsResponse) GetExtraProperties() map[string]interface{} {
-	if r == nil {
-		return nil
-	}
-	return r.extraProperties
-}
-
-func (r *RetrievePaymentsResponse) require(field *big.Int) {
-	if r.explicitFields == nil {
-		r.explicitFields = big.NewInt(0)
-	}
-	r.explicitFields.Or(r.explicitFields, field)
-}
-
-// SetAmountAfterFees sets the AmountAfterFees field and marks it as non-optional;
+// SetGroups sets the Groups field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetAmountAfterFees(amountAfterFees float64) {
-	r.AmountAfterFees = amountAfterFees
-	r.require(retrievePaymentsResponseFieldAmountAfterFees)
-}
-
-// SetApplicationFee sets the ApplicationFee field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetApplicationFee(applicationFee *PaymentApplicationFee) {
-	r.ApplicationFee = applicationFee
-	r.require(retrievePaymentsResponseFieldApplicationFee)
-}
-
-// SetAutoRefunded sets the AutoRefunded field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetAutoRefunded(autoRefunded bool) {
-	r.AutoRefunded = autoRefunded
-	r.require(retrievePaymentsResponseFieldAutoRefunded)
-}
-
-// SetBillingAddress sets the BillingAddress field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetBillingAddress(billingAddress *PaymentBillingAddress) {
-	r.BillingAddress = billingAddress
-	r.require(retrievePaymentsResponseFieldBillingAddress)
-}
-
-// SetBillingReason sets the BillingReason field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetBillingReason(billingReason *BillingReasons) {
-	r.BillingReason = billingReason
-	r.require(retrievePaymentsResponseFieldBillingReason)
-}
-
-// SetCardBrand sets the CardBrand field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetCardBrand(cardBrand *CardBrands) {
-	r.CardBrand = cardBrand
-	r.require(retrievePaymentsResponseFieldCardBrand)
-}
-
-// SetCardExpMonth sets the CardExpMonth field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetCardExpMonth(cardExpMonth *int) {
-	r.CardExpMonth = cardExpMonth
-	r.require(retrievePaymentsResponseFieldCardExpMonth)
-}
-
-// SetCardExpYear sets the CardExpYear field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetCardExpYear(cardExpYear *int) {
-	r.CardExpYear = cardExpYear
-	r.require(retrievePaymentsResponseFieldCardExpYear)
-}
-
-// SetCardLast4 sets the CardLast4 field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetCardLast4(cardLast4 *string) {
-	r.CardLast4 = cardLast4
-	r.require(retrievePaymentsResponseFieldCardLast4)
-}
-
-// SetCheckoutConfigurationID sets the CheckoutConfigurationID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetCheckoutConfigurationID(checkoutConfigurationID *string) {
-	r.CheckoutConfigurationID = checkoutConfigurationID
-	r.require(retrievePaymentsResponseFieldCheckoutConfigurationID)
-}
-
-// SetCompany sets the Company field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetCompany(company *PaymentCompany) {
-	r.Company = company
-	r.require(retrievePaymentsResponseFieldCompany)
-}
-
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetCreatedAt(createdAt time.Time) {
-	r.CreatedAt = createdAt
-	r.require(retrievePaymentsResponseFieldCreatedAt)
-}
-
-// SetCurrency sets the Currency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetCurrency(currency Currencies) {
-	r.Currency = currency
-	r.require(retrievePaymentsResponseFieldCurrency)
-}
-
-// SetCustomerPhone sets the CustomerPhone field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetCustomerPhone(customerPhone *string) {
-	r.CustomerPhone = customerPhone
-	r.require(retrievePaymentsResponseFieldCustomerPhone)
-}
-
-// SetDeclineCode sets the DeclineCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetDeclineCode(declineCode *PaymentDeclineCodes) {
-	r.DeclineCode = declineCode
-	r.require(retrievePaymentsResponseFieldDeclineCode)
-}
-
-// SetDisputeAlertedAt sets the DisputeAlertedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetDisputeAlertedAt(disputeAlertedAt *time.Time) {
-	r.DisputeAlertedAt = disputeAlertedAt
-	r.require(retrievePaymentsResponseFieldDisputeAlertedAt)
-}
-
-// SetDisputes sets the Disputes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetDisputes(disputes []*PaymentDisputesItem) {
-	r.Disputes = disputes
-	r.require(retrievePaymentsResponseFieldDisputes)
-}
-
-// SetFailureMessage sets the FailureMessage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetFailureMessage(failureMessage *string) {
-	r.FailureMessage = failureMessage
-	r.require(retrievePaymentsResponseFieldFailureMessage)
-}
-
-// SetFinancingInstallmentsCount sets the FinancingInstallmentsCount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetFinancingInstallmentsCount(financingInstallmentsCount *int) {
-	r.FinancingInstallmentsCount = financingInstallmentsCount
-	r.require(retrievePaymentsResponseFieldFinancingInstallmentsCount)
-}
-
-// SetFinancingTransactions sets the FinancingTransactions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetFinancingTransactions(financingTransactions []*PaymentFinancingTransactionsItem) {
-	r.FinancingTransactions = financingTransactions
-	r.require(retrievePaymentsResponseFieldFinancingTransactions)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetID(id string) {
-	r.ID = id
-	r.require(retrievePaymentsResponseFieldID)
-}
-
-// SetLastPaymentAttempt sets the LastPaymentAttempt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetLastPaymentAttempt(lastPaymentAttempt *time.Time) {
-	r.LastPaymentAttempt = lastPaymentAttempt
-	r.require(retrievePaymentsResponseFieldLastPaymentAttempt)
-}
-
-// SetMember sets the Member field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetMember(member *PaymentMember) {
-	r.Member = member
-	r.require(retrievePaymentsResponseFieldMember)
-}
-
-// SetMembership sets the Membership field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetMembership(membership *PaymentMembership) {
-	r.Membership = membership
-	r.require(retrievePaymentsResponseFieldMembership)
-}
-
-// SetMetadata sets the Metadata field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetMetadata(metadata map[string]any) {
-	r.Metadata = metadata
-	r.require(retrievePaymentsResponseFieldMetadata)
-}
-
-// SetNeedsTracking sets the NeedsTracking field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetNeedsTracking(needsTracking *bool) {
-	r.NeedsTracking = needsTracking
-	r.require(retrievePaymentsResponseFieldNeedsTracking)
-}
-
-// SetNextPaymentAttempt sets the NextPaymentAttempt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetNextPaymentAttempt(nextPaymentAttempt *time.Time) {
-	r.NextPaymentAttempt = nextPaymentAttempt
-	r.require(retrievePaymentsResponseFieldNextPaymentAttempt)
-}
-
-// SetPaidAt sets the PaidAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetPaidAt(paidAt *time.Time) {
-	r.PaidAt = paidAt
-	r.require(retrievePaymentsResponseFieldPaidAt)
-}
-
-// SetPaymentInstrument sets the PaymentInstrument field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetPaymentInstrument(paymentInstrument *PaymentPaymentInstrument) {
-	r.PaymentInstrument = paymentInstrument
-	r.require(retrievePaymentsResponseFieldPaymentInstrument)
-}
-
-// SetPaymentMethod sets the PaymentMethod field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetPaymentMethod(paymentMethod *PaymentPaymentMethod) {
-	r.PaymentMethod = paymentMethod
-	r.require(retrievePaymentsResponseFieldPaymentMethod)
-}
-
-// SetPaymentMethodType sets the PaymentMethodType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetPaymentMethodType(paymentMethodType *PaymentMethodTypes) {
-	r.PaymentMethodType = paymentMethodType
-	r.require(retrievePaymentsResponseFieldPaymentMethodType)
-}
-
-// SetPaymentsFailed sets the PaymentsFailed field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetPaymentsFailed(paymentsFailed *int) {
-	r.PaymentsFailed = paymentsFailed
-	r.require(retrievePaymentsResponseFieldPaymentsFailed)
-}
-
-// SetPlan sets the Plan field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetPlan(plan *PaymentPlan) {
-	r.Plan = plan
-	r.require(retrievePaymentsResponseFieldPlan)
-}
-
-// SetProduct sets the Product field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetProduct(product *PaymentProduct) {
-	r.Product = product
-	r.require(retrievePaymentsResponseFieldProduct)
-}
-
-// SetPromoCode sets the PromoCode field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetPromoCode(promoCode *PaymentPromoCode) {
-	r.PromoCode = promoCode
-	r.require(retrievePaymentsResponseFieldPromoCode)
-}
-
-// SetRefundable sets the Refundable field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetRefundable(refundable bool) {
-	r.Refundable = refundable
-	r.require(retrievePaymentsResponseFieldRefundable)
-}
-
-// SetRefundedAmount sets the RefundedAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetRefundedAmount(refundedAmount *float64) {
-	r.RefundedAmount = refundedAmount
-	r.require(retrievePaymentsResponseFieldRefundedAmount)
-}
-
-// SetRefundedAt sets the RefundedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetRefundedAt(refundedAt *time.Time) {
-	r.RefundedAt = refundedAt
-	r.require(retrievePaymentsResponseFieldRefundedAt)
-}
-
-// SetRefunds sets the Refunds field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetRefunds(refunds []*PaymentRefundsItem) {
-	r.Refunds = refunds
-	r.require(retrievePaymentsResponseFieldRefunds)
-}
-
-// SetResolutions sets the Resolutions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetResolutions(resolutions []*PaymentResolutionsItem) {
-	r.Resolutions = resolutions
-	r.require(retrievePaymentsResponseFieldResolutions)
-}
-
-// SetRetryable sets the Retryable field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetRetryable(retryable bool) {
-	r.Retryable = retryable
-	r.require(retrievePaymentsResponseFieldRetryable)
-}
-
-// SetRiskScore sets the RiskScore field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetRiskScore(riskScore *int) {
-	r.RiskScore = riskScore
-	r.require(retrievePaymentsResponseFieldRiskScore)
-}
-
-// SetRiskSignals sets the RiskSignals field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetRiskSignals(riskSignals map[string]any) {
-	r.RiskSignals = riskSignals
-	r.require(retrievePaymentsResponseFieldRiskSignals)
-}
-
-// SetSettlementAmount sets the SettlementAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetSettlementAmount(settlementAmount float64) {
-	r.SettlementAmount = settlementAmount
-	r.require(retrievePaymentsResponseFieldSettlementAmount)
-}
-
-// SetSettlementCurrency sets the SettlementCurrency field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetSettlementCurrency(settlementCurrency Currencies) {
-	r.SettlementCurrency = settlementCurrency
-	r.require(retrievePaymentsResponseFieldSettlementCurrency)
-}
-
-// SetSettlementExchangeRate sets the SettlementExchangeRate field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetSettlementExchangeRate(settlementExchangeRate *float64) {
-	r.SettlementExchangeRate = settlementExchangeRate
-	r.require(retrievePaymentsResponseFieldSettlementExchangeRate)
-}
-
-// SetSettlementTimeAt sets the SettlementTimeAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetSettlementTimeAt(settlementTimeAt *time.Time) {
-	r.SettlementTimeAt = settlementTimeAt
-	r.require(retrievePaymentsResponseFieldSettlementTimeAt)
-}
-
-// SetShipment sets the Shipment field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetShipment(shipment *PaymentShipment) {
-	r.Shipment = shipment
-	r.require(retrievePaymentsResponseFieldShipment)
-}
-
-// SetShippingAddress sets the ShippingAddress field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetShippingAddress(shippingAddress *PaymentShippingAddress) {
-	r.ShippingAddress = shippingAddress
-	r.require(retrievePaymentsResponseFieldShippingAddress)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetStatus(status *ReceiptStatus) {
-	r.Status = status
-	r.require(retrievePaymentsResponseFieldStatus)
-}
-
-// SetSubstatus sets the Substatus field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetSubstatus(substatus FriendlyReceiptStatus) {
-	r.Substatus = substatus
-	r.require(retrievePaymentsResponseFieldSubstatus)
-}
-
-// SetSubtotal sets the Subtotal field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetSubtotal(subtotal *float64) {
-	r.Subtotal = subtotal
-	r.require(retrievePaymentsResponseFieldSubtotal)
-}
-
-// SetTaxAmount sets the TaxAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetTaxAmount(taxAmount *float64) {
-	r.TaxAmount = taxAmount
-	r.require(retrievePaymentsResponseFieldTaxAmount)
-}
-
-// SetTaxBehavior sets the TaxBehavior field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetTaxBehavior(taxBehavior *ReceiptTaxBehaviors) {
-	r.TaxBehavior = taxBehavior
-	r.require(retrievePaymentsResponseFieldTaxBehavior)
-}
-
-// SetTaxRefundedAmount sets the TaxRefundedAmount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetTaxRefundedAmount(taxRefundedAmount *float64) {
-	r.TaxRefundedAmount = taxRefundedAmount
-	r.require(retrievePaymentsResponseFieldTaxRefundedAmount)
-}
-
-// SetThreeDsVerified sets the ThreeDsVerified field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetThreeDsVerified(threeDsVerified bool) {
-	r.ThreeDsVerified = threeDsVerified
-	r.require(retrievePaymentsResponseFieldThreeDsVerified)
+func (s *SummaryPaymentsResponse) SetGroups(groups *SummaryPaymentsResponseGroups) {
+	s.Groups = groups
+	s.require(summaryPaymentsResponseFieldGroups)
 }
 
 // SetTotal sets the Total field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetTotal(total *float64) {
-	r.Total = total
-	r.require(retrievePaymentsResponseFieldTotal)
+func (s *SummaryPaymentsResponse) SetTotal(total int) {
+	s.Total = total
+	s.require(summaryPaymentsResponseFieldTotal)
 }
 
-// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetUpdatedAt(updatedAt time.Time) {
-	r.UpdatedAt = updatedAt
-	r.require(retrievePaymentsResponseFieldUpdatedAt)
-}
-
-// SetUsdTotal sets the UsdTotal field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetUsdTotal(usdTotal *float64) {
-	r.UsdTotal = usdTotal
-	r.require(retrievePaymentsResponseFieldUsdTotal)
-}
-
-// SetUser sets the User field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetUser(user *PaymentUser) {
-	r.User = user
-	r.require(retrievePaymentsResponseFieldUser)
-}
-
-// SetVerificationChecks sets the VerificationChecks field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetVerificationChecks(verificationChecks *PaymentVerificationChecks) {
-	r.VerificationChecks = verificationChecks
-	r.require(retrievePaymentsResponseFieldVerificationChecks)
-}
-
-// SetVoidable sets the Voidable field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetVoidable(voidable bool) {
-	r.Voidable = voidable
-	r.require(retrievePaymentsResponseFieldVoidable)
-}
-
-// SetClientSecret sets the ClientSecret field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePaymentsResponse) SetClientSecret(clientSecret *string) {
-	r.ClientSecret = clientSecret
-	r.require(retrievePaymentsResponseFieldClientSecret)
-}
-
-func (r *RetrievePaymentsResponse) UnmarshalJSON(data []byte) error {
-	type embed RetrievePaymentsResponse
-	var unmarshaler = struct {
-		embed
-		CreatedAt          *internal.DateTime `json:"created_at"`
-		DisputeAlertedAt   *internal.DateTime `json:"dispute_alerted_at,omitempty"`
-		LastPaymentAttempt *internal.DateTime `json:"last_payment_attempt,omitempty"`
-		NextPaymentAttempt *internal.DateTime `json:"next_payment_attempt,omitempty"`
-		PaidAt             *internal.DateTime `json:"paid_at,omitempty"`
-		RefundedAt         *internal.DateTime `json:"refunded_at,omitempty"`
-		SettlementTimeAt   *internal.DateTime `json:"settlement_time_at,omitempty"`
-		UpdatedAt          *internal.DateTime `json:"updated_at"`
-	}{
-		embed: embed(*r),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+func (s *SummaryPaymentsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler SummaryPaymentsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*r = RetrievePaymentsResponse(unmarshaler.embed)
-	r.CreatedAt = unmarshaler.CreatedAt.Time()
-	r.DisputeAlertedAt = unmarshaler.DisputeAlertedAt.TimePtr()
-	r.LastPaymentAttempt = unmarshaler.LastPaymentAttempt.TimePtr()
-	r.NextPaymentAttempt = unmarshaler.NextPaymentAttempt.TimePtr()
-	r.PaidAt = unmarshaler.PaidAt.TimePtr()
-	r.RefundedAt = unmarshaler.RefundedAt.TimePtr()
-	r.SettlementTimeAt = unmarshaler.SettlementTimeAt.TimePtr()
-	r.UpdatedAt = unmarshaler.UpdatedAt.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	*s = SummaryPaymentsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
 	if err != nil {
 		return err
 	}
-	r.extraProperties = extraProperties
-	r.rawJSON = json.RawMessage(data)
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (r *RetrievePaymentsResponse) MarshalJSON() ([]byte, error) {
-	type embed RetrievePaymentsResponse
+func (s *SummaryPaymentsResponse) MarshalJSON() ([]byte, error) {
+	type embed SummaryPaymentsResponse
 	var marshaler = struct {
 		embed
-		CreatedAt          *internal.DateTime `json:"created_at"`
-		DisputeAlertedAt   *internal.DateTime `json:"dispute_alerted_at,omitempty"`
-		LastPaymentAttempt *internal.DateTime `json:"last_payment_attempt,omitempty"`
-		NextPaymentAttempt *internal.DateTime `json:"next_payment_attempt,omitempty"`
-		PaidAt             *internal.DateTime `json:"paid_at,omitempty"`
-		RefundedAt         *internal.DateTime `json:"refunded_at,omitempty"`
-		SettlementTimeAt   *internal.DateTime `json:"settlement_time_at,omitempty"`
-		UpdatedAt          *internal.DateTime `json:"updated_at"`
 	}{
-		embed:              embed(*r),
-		CreatedAt:          internal.NewDateTime(r.CreatedAt),
-		DisputeAlertedAt:   internal.NewOptionalDateTime(r.DisputeAlertedAt),
-		LastPaymentAttempt: internal.NewOptionalDateTime(r.LastPaymentAttempt),
-		NextPaymentAttempt: internal.NewOptionalDateTime(r.NextPaymentAttempt),
-		PaidAt:             internal.NewOptionalDateTime(r.PaidAt),
-		RefundedAt:         internal.NewOptionalDateTime(r.RefundedAt),
-		SettlementTimeAt:   internal.NewOptionalDateTime(r.SettlementTimeAt),
-		UpdatedAt:          internal.NewDateTime(r.UpdatedAt),
+		embed: embed(*s),
 	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
 	return json.Marshal(explicitMarshaler)
 }
 
-func (r *RetrievePaymentsResponse) String() string {
-	if r == nil {
+func (s *SummaryPaymentsResponse) String() string {
+	if s == nil {
 		return "<nil>"
 	}
-	if len(r.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := internal.StringifyJSON(r); err == nil {
+	if value, err := internal.StringifyJSON(s); err == nil {
 		return value
 	}
-	return fmt.Sprintf("%#v", r)
+	return fmt.Sprintf("%#v", s)
 }
 
 var (
-	updateReturnURLPaymentsRequestFieldPaymentID = big.NewInt(1 << 0)
-	updateReturnURLPaymentsRequestFieldReturnURL = big.NewInt(1 << 1)
+	summaryPaymentsResponseGroupsFieldCurrency  = big.NewInt(1 << 0)
+	summaryPaymentsResponseGroupsFieldSubstatus = big.NewInt(1 << 1)
+)
+
+// One entry per requested breakdown, keyed by the field it groups on. A field you did not ask for is absent.
+type SummaryPaymentsResponseGroups struct {
+	// How many of the matching payments are in each currency, keyed by three-letter code. Only currencies with at least one payment are present.
+	Currency map[string]int `json:"currency,omitempty" url:"currency,omitempty"`
+	// How many of the matching payments are in each substatus. Every substatus is present, including those with a count of zero.
+	Substatus *SummaryPaymentsResponseGroupsSubstatus `json:"substatus,omitempty" url:"substatus,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SummaryPaymentsResponseGroups) GetCurrency() map[string]int {
+	if s == nil {
+		return nil
+	}
+	return s.Currency
+}
+
+func (s *SummaryPaymentsResponseGroups) GetSubstatus() *SummaryPaymentsResponseGroupsSubstatus {
+	if s == nil {
+		return nil
+	}
+	return s.Substatus
+}
+
+func (s *SummaryPaymentsResponseGroups) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SummaryPaymentsResponseGroups) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroups) SetCurrency(currency map[string]int) {
+	s.Currency = currency
+	s.require(summaryPaymentsResponseGroupsFieldCurrency)
+}
+
+// SetSubstatus sets the Substatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroups) SetSubstatus(substatus *SummaryPaymentsResponseGroupsSubstatus) {
+	s.Substatus = substatus
+	s.require(summaryPaymentsResponseGroupsFieldSubstatus)
+}
+
+func (s *SummaryPaymentsResponseGroups) UnmarshalJSON(data []byte) error {
+	type unmarshaler SummaryPaymentsResponseGroups
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SummaryPaymentsResponseGroups(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SummaryPaymentsResponseGroups) MarshalJSON() ([]byte, error) {
+	type embed SummaryPaymentsResponseGroups
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SummaryPaymentsResponseGroups) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	summaryPaymentsResponseGroupsSubstatusFieldAutoRefunded                = big.NewInt(1 << 0)
+	summaryPaymentsResponseGroupsSubstatusFieldBlocked                     = big.NewInt(1 << 1)
+	summaryPaymentsResponseGroupsSubstatusFieldCanceled                    = big.NewInt(1 << 2)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeClosed               = big.NewInt(1 << 3)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeLost                 = big.NewInt(1 << 4)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeNeedsResponse        = big.NewInt(1 << 5)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeUnderReview          = big.NewInt(1 << 6)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeWarning              = big.NewInt(1 << 7)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeWarningClosed        = big.NewInt(1 << 8)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeWarningNeedsResponse = big.NewInt(1 << 9)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeWarningUnderReview   = big.NewInt(1 << 10)
+	summaryPaymentsResponseGroupsSubstatusFieldDisputeWon                  = big.NewInt(1 << 11)
+	summaryPaymentsResponseGroupsSubstatusFieldDrafted                     = big.NewInt(1 << 12)
+	summaryPaymentsResponseGroupsSubstatusFieldFailed                      = big.NewInt(1 << 13)
+	summaryPaymentsResponseGroupsSubstatusFieldIncomplete                  = big.NewInt(1 << 14)
+	summaryPaymentsResponseGroupsSubstatusFieldPartiallyRefunded           = big.NewInt(1 << 15)
+	summaryPaymentsResponseGroupsSubstatusFieldPastDue                     = big.NewInt(1 << 16)
+	summaryPaymentsResponseGroupsSubstatusFieldPending                     = big.NewInt(1 << 17)
+	summaryPaymentsResponseGroupsSubstatusFieldPriceTooLow                 = big.NewInt(1 << 18)
+	summaryPaymentsResponseGroupsSubstatusFieldRefunded                    = big.NewInt(1 << 19)
+	summaryPaymentsResponseGroupsSubstatusFieldRequiresCapture             = big.NewInt(1 << 20)
+	summaryPaymentsResponseGroupsSubstatusFieldResolutionLost              = big.NewInt(1 << 21)
+	summaryPaymentsResponseGroupsSubstatusFieldResolutionNeedsResponse     = big.NewInt(1 << 22)
+	summaryPaymentsResponseGroupsSubstatusFieldResolutionUnderReview       = big.NewInt(1 << 23)
+	summaryPaymentsResponseGroupsSubstatusFieldResolutionWon               = big.NewInt(1 << 24)
+	summaryPaymentsResponseGroupsSubstatusFieldSucceeded                   = big.NewInt(1 << 25)
+	summaryPaymentsResponseGroupsSubstatusFieldUncollectible               = big.NewInt(1 << 26)
+	summaryPaymentsResponseGroupsSubstatusFieldUnresolved                  = big.NewInt(1 << 27)
+)
+
+// How many of the matching payments are in each substatus. Every substatus is present, including those with a count of zero.
+type SummaryPaymentsResponseGroupsSubstatus struct {
+	AutoRefunded                int `json:"auto_refunded" url:"auto_refunded"`
+	Blocked                     int `json:"blocked" url:"blocked"`
+	Canceled                    int `json:"canceled" url:"canceled"`
+	DisputeClosed               int `json:"dispute_closed" url:"dispute_closed"`
+	DisputeLost                 int `json:"dispute_lost" url:"dispute_lost"`
+	DisputeNeedsResponse        int `json:"dispute_needs_response" url:"dispute_needs_response"`
+	DisputeUnderReview          int `json:"dispute_under_review" url:"dispute_under_review"`
+	DisputeWarning              int `json:"dispute_warning" url:"dispute_warning"`
+	DisputeWarningClosed        int `json:"dispute_warning_closed" url:"dispute_warning_closed"`
+	DisputeWarningNeedsResponse int `json:"dispute_warning_needs_response" url:"dispute_warning_needs_response"`
+	DisputeWarningUnderReview   int `json:"dispute_warning_under_review" url:"dispute_warning_under_review"`
+	DisputeWon                  int `json:"dispute_won" url:"dispute_won"`
+	Drafted                     int `json:"drafted" url:"drafted"`
+	Failed                      int `json:"failed" url:"failed"`
+	Incomplete                  int `json:"incomplete" url:"incomplete"`
+	PartiallyRefunded           int `json:"partially_refunded" url:"partially_refunded"`
+	PastDue                     int `json:"past_due" url:"past_due"`
+	Pending                     int `json:"pending" url:"pending"`
+	PriceTooLow                 int `json:"price_too_low" url:"price_too_low"`
+	Refunded                    int `json:"refunded" url:"refunded"`
+	RequiresCapture             int `json:"requires_capture" url:"requires_capture"`
+	ResolutionLost              int `json:"resolution_lost" url:"resolution_lost"`
+	ResolutionNeedsResponse     int `json:"resolution_needs_response" url:"resolution_needs_response"`
+	ResolutionUnderReview       int `json:"resolution_under_review" url:"resolution_under_review"`
+	ResolutionWon               int `json:"resolution_won" url:"resolution_won"`
+	Succeeded                   int `json:"succeeded" url:"succeeded"`
+	Uncollectible               int `json:"uncollectible" url:"uncollectible"`
+	Unresolved                  int `json:"unresolved" url:"unresolved"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetAutoRefunded() int {
+	if s == nil {
+		return 0
+	}
+	return s.AutoRefunded
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetBlocked() int {
+	if s == nil {
+		return 0
+	}
+	return s.Blocked
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetCanceled() int {
+	if s == nil {
+		return 0
+	}
+	return s.Canceled
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeClosed() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeClosed
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeLost() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeLost
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeNeedsResponse() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeNeedsResponse
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeUnderReview() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeUnderReview
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeWarning() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeWarning
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeWarningClosed() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeWarningClosed
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeWarningNeedsResponse() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeWarningNeedsResponse
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeWarningUnderReview() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeWarningUnderReview
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDisputeWon() int {
+	if s == nil {
+		return 0
+	}
+	return s.DisputeWon
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetDrafted() int {
+	if s == nil {
+		return 0
+	}
+	return s.Drafted
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetFailed() int {
+	if s == nil {
+		return 0
+	}
+	return s.Failed
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetIncomplete() int {
+	if s == nil {
+		return 0
+	}
+	return s.Incomplete
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetPartiallyRefunded() int {
+	if s == nil {
+		return 0
+	}
+	return s.PartiallyRefunded
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetPastDue() int {
+	if s == nil {
+		return 0
+	}
+	return s.PastDue
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetPending() int {
+	if s == nil {
+		return 0
+	}
+	return s.Pending
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetPriceTooLow() int {
+	if s == nil {
+		return 0
+	}
+	return s.PriceTooLow
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetRefunded() int {
+	if s == nil {
+		return 0
+	}
+	return s.Refunded
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetRequiresCapture() int {
+	if s == nil {
+		return 0
+	}
+	return s.RequiresCapture
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetResolutionLost() int {
+	if s == nil {
+		return 0
+	}
+	return s.ResolutionLost
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetResolutionNeedsResponse() int {
+	if s == nil {
+		return 0
+	}
+	return s.ResolutionNeedsResponse
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetResolutionUnderReview() int {
+	if s == nil {
+		return 0
+	}
+	return s.ResolutionUnderReview
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetResolutionWon() int {
+	if s == nil {
+		return 0
+	}
+	return s.ResolutionWon
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetSucceeded() int {
+	if s == nil {
+		return 0
+	}
+	return s.Succeeded
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetUncollectible() int {
+	if s == nil {
+		return 0
+	}
+	return s.Uncollectible
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetUnresolved() int {
+	if s == nil {
+		return 0
+	}
+	return s.Unresolved
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetAutoRefunded sets the AutoRefunded field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetAutoRefunded(autoRefunded int) {
+	s.AutoRefunded = autoRefunded
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldAutoRefunded)
+}
+
+// SetBlocked sets the Blocked field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetBlocked(blocked int) {
+	s.Blocked = blocked
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldBlocked)
+}
+
+// SetCanceled sets the Canceled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetCanceled(canceled int) {
+	s.Canceled = canceled
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldCanceled)
+}
+
+// SetDisputeClosed sets the DisputeClosed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeClosed(disputeClosed int) {
+	s.DisputeClosed = disputeClosed
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeClosed)
+}
+
+// SetDisputeLost sets the DisputeLost field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeLost(disputeLost int) {
+	s.DisputeLost = disputeLost
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeLost)
+}
+
+// SetDisputeNeedsResponse sets the DisputeNeedsResponse field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeNeedsResponse(disputeNeedsResponse int) {
+	s.DisputeNeedsResponse = disputeNeedsResponse
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeNeedsResponse)
+}
+
+// SetDisputeUnderReview sets the DisputeUnderReview field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeUnderReview(disputeUnderReview int) {
+	s.DisputeUnderReview = disputeUnderReview
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeUnderReview)
+}
+
+// SetDisputeWarning sets the DisputeWarning field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeWarning(disputeWarning int) {
+	s.DisputeWarning = disputeWarning
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeWarning)
+}
+
+// SetDisputeWarningClosed sets the DisputeWarningClosed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeWarningClosed(disputeWarningClosed int) {
+	s.DisputeWarningClosed = disputeWarningClosed
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeWarningClosed)
+}
+
+// SetDisputeWarningNeedsResponse sets the DisputeWarningNeedsResponse field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeWarningNeedsResponse(disputeWarningNeedsResponse int) {
+	s.DisputeWarningNeedsResponse = disputeWarningNeedsResponse
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeWarningNeedsResponse)
+}
+
+// SetDisputeWarningUnderReview sets the DisputeWarningUnderReview field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeWarningUnderReview(disputeWarningUnderReview int) {
+	s.DisputeWarningUnderReview = disputeWarningUnderReview
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeWarningUnderReview)
+}
+
+// SetDisputeWon sets the DisputeWon field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDisputeWon(disputeWon int) {
+	s.DisputeWon = disputeWon
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDisputeWon)
+}
+
+// SetDrafted sets the Drafted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetDrafted(drafted int) {
+	s.Drafted = drafted
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldDrafted)
+}
+
+// SetFailed sets the Failed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetFailed(failed int) {
+	s.Failed = failed
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldFailed)
+}
+
+// SetIncomplete sets the Incomplete field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetIncomplete(incomplete int) {
+	s.Incomplete = incomplete
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldIncomplete)
+}
+
+// SetPartiallyRefunded sets the PartiallyRefunded field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetPartiallyRefunded(partiallyRefunded int) {
+	s.PartiallyRefunded = partiallyRefunded
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldPartiallyRefunded)
+}
+
+// SetPastDue sets the PastDue field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetPastDue(pastDue int) {
+	s.PastDue = pastDue
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldPastDue)
+}
+
+// SetPending sets the Pending field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetPending(pending int) {
+	s.Pending = pending
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldPending)
+}
+
+// SetPriceTooLow sets the PriceTooLow field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetPriceTooLow(priceTooLow int) {
+	s.PriceTooLow = priceTooLow
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldPriceTooLow)
+}
+
+// SetRefunded sets the Refunded field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetRefunded(refunded int) {
+	s.Refunded = refunded
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldRefunded)
+}
+
+// SetRequiresCapture sets the RequiresCapture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetRequiresCapture(requiresCapture int) {
+	s.RequiresCapture = requiresCapture
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldRequiresCapture)
+}
+
+// SetResolutionLost sets the ResolutionLost field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetResolutionLost(resolutionLost int) {
+	s.ResolutionLost = resolutionLost
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldResolutionLost)
+}
+
+// SetResolutionNeedsResponse sets the ResolutionNeedsResponse field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetResolutionNeedsResponse(resolutionNeedsResponse int) {
+	s.ResolutionNeedsResponse = resolutionNeedsResponse
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldResolutionNeedsResponse)
+}
+
+// SetResolutionUnderReview sets the ResolutionUnderReview field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetResolutionUnderReview(resolutionUnderReview int) {
+	s.ResolutionUnderReview = resolutionUnderReview
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldResolutionUnderReview)
+}
+
+// SetResolutionWon sets the ResolutionWon field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetResolutionWon(resolutionWon int) {
+	s.ResolutionWon = resolutionWon
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldResolutionWon)
+}
+
+// SetSucceeded sets the Succeeded field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetSucceeded(succeeded int) {
+	s.Succeeded = succeeded
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldSucceeded)
+}
+
+// SetUncollectible sets the Uncollectible field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetUncollectible(uncollectible int) {
+	s.Uncollectible = uncollectible
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldUncollectible)
+}
+
+// SetUnresolved sets the Unresolved field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsResponseGroupsSubstatus) SetUnresolved(unresolved int) {
+	s.Unresolved = unresolved
+	s.require(summaryPaymentsResponseGroupsSubstatusFieldUnresolved)
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) UnmarshalJSON(data []byte) error {
+	type unmarshaler SummaryPaymentsResponseGroupsSubstatus
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = SummaryPaymentsResponseGroupsSubstatus(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) MarshalJSON() ([]byte, error) {
+	type embed SummaryPaymentsResponseGroupsSubstatus
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *SummaryPaymentsResponseGroupsSubstatus) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	updatePaymentsRequestShippingAddressFieldCity       = big.NewInt(1 << 0)
+	updatePaymentsRequestShippingAddressFieldCountry    = big.NewInt(1 << 1)
+	updatePaymentsRequestShippingAddressFieldLine1      = big.NewInt(1 << 2)
+	updatePaymentsRequestShippingAddressFieldLine2      = big.NewInt(1 << 3)
+	updatePaymentsRequestShippingAddressFieldName       = big.NewInt(1 << 4)
+	updatePaymentsRequestShippingAddressFieldPostalCode = big.NewInt(1 << 5)
+	updatePaymentsRequestShippingAddressFieldState      = big.NewInt(1 << 6)
+)
+
+// updatePaymentsRequestShippingAddressNullableFields maps the wire names of UpdatePaymentsRequestShippingAddress's nullable fields (required or optional) to their field bits.
+var updatePaymentsRequestShippingAddressNullableFields = map[string]*big.Int{
+	"city":        updatePaymentsRequestShippingAddressFieldCity,
+	"country":     updatePaymentsRequestShippingAddressFieldCountry,
+	"line1":       updatePaymentsRequestShippingAddressFieldLine1,
+	"line2":       updatePaymentsRequestShippingAddressFieldLine2,
+	"name":        updatePaymentsRequestShippingAddressFieldName,
+	"postal_code": updatePaymentsRequestShippingAddressFieldPostalCode,
+	"state":       updatePaymentsRequestShippingAddressFieldState,
+}
+
+// The complete new shipping address. It replaces the current address as a whole and is never merged with it, so send every field the address should have, including the ones that are not changing. Any field you leave out is cleared: sending only `city` leaves an address with nothing but a city. Pass null to remove the address, or omit `shipping_address` to leave it unchanged. It cannot change once a shipment exists for the payment.
+type UpdatePaymentsRequestShippingAddress struct {
+	// City name.
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// ISO 3166-1 alpha-2 country code, such as `US`.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// First line of the street address.
+	Line1 *string `json:"line1,omitempty" url:"line1,omitempty"`
+	// Second line of the street address.
+	Line2 *string `json:"line2,omitempty" url:"line2,omitempty"`
+	// The recipient's full name, as it should appear on the shipping label.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// Postal or ZIP code.
+	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
+	// State, province, or region code, such as `CA`.
+	State *string `json:"state,omitempty" url:"state,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) GetCity() *string {
+	if u == nil {
+		return nil
+	}
+	return u.City
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) GetCountry() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Country
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) GetLine1() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Line1
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) GetLine2() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Line2
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) GetName() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Name
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) GetPostalCode() *string {
+	if u == nil {
+		return nil
+	}
+	return u.PostalCode
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) GetState() *string {
+	if u == nil {
+		return nil
+	}
+	return u.State
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestShippingAddress) SetCity(city *string) {
+	u.City = city
+	u.require(updatePaymentsRequestShippingAddressFieldCity)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestShippingAddress) SetCountry(country *string) {
+	u.Country = country
+	u.require(updatePaymentsRequestShippingAddressFieldCountry)
+}
+
+// SetLine1 sets the Line1 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestShippingAddress) SetLine1(line1 *string) {
+	u.Line1 = line1
+	u.require(updatePaymentsRequestShippingAddressFieldLine1)
+}
+
+// SetLine2 sets the Line2 field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestShippingAddress) SetLine2(line2 *string) {
+	u.Line2 = line2
+	u.require(updatePaymentsRequestShippingAddressFieldLine2)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestShippingAddress) SetName(name *string) {
+	u.Name = name
+	u.require(updatePaymentsRequestShippingAddressFieldName)
+}
+
+// SetPostalCode sets the PostalCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestShippingAddress) SetPostalCode(postalCode *string) {
+	u.PostalCode = postalCode
+	u.require(updatePaymentsRequestShippingAddressFieldPostalCode)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestShippingAddress) SetState(state *string) {
+	u.State = state
+	u.require(updatePaymentsRequestShippingAddressFieldState)
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePaymentsRequestShippingAddress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePaymentsRequestShippingAddress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePaymentsRequestShippingAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) MarshalJSON() ([]byte, error) {
+	type embed UpdatePaymentsRequestShippingAddress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePaymentsRequestShippingAddress) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updatePaymentsRequestFieldID              = big.NewInt(1 << 0)
+	updatePaymentsRequestFieldReturnURL       = big.NewInt(1 << 1)
+	updatePaymentsRequestFieldShippingAddress = big.NewInt(1 << 2)
+)
+
+type UpdatePaymentsRequest struct {
+	// The payment, prefixed `pay_`.
+	ID string `json:"-" url:"-"`
+	// Where the buyer continues after completing an off-site step. An absolute https URL without credentials, at most 2,048 characters. Only for payments created with a `confirmation_token`, and only until the buyer has returned. Omit it to leave it unchanged.
+	ReturnURL *string `json:"return_url,omitempty" url:"-"`
+	// The complete new shipping address. It replaces the current address as a whole and is never merged with it, so send every field the address should have, including the ones that are not changing. Any field you leave out is cleared: sending only `city` leaves an address with nothing but a city. Pass null to remove the address, or omit `shipping_address` to leave it unchanged. It cannot change once a shipment exists for the payment.
+	ShippingAddress *UpdatePaymentsRequestShippingAddress `json:"shipping_address,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UpdatePaymentsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequest) SetID(id string) {
+	u.ID = id
+	u.require(updatePaymentsRequestFieldID)
+}
+
+// SetReturnURL sets the ReturnURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequest) SetReturnURL(returnURL *string) {
+	u.ReturnURL = returnURL
+	u.require(updatePaymentsRequestFieldReturnURL)
+}
+
+// SetShippingAddress sets the ShippingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequest) SetShippingAddress(shippingAddress *UpdatePaymentsRequestShippingAddress) {
+	u.ShippingAddress = shippingAddress
+	u.require(updatePaymentsRequestFieldShippingAddress)
+}
+
+func (u *UpdatePaymentsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePaymentsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*u = UpdatePaymentsRequest(body)
+	return nil
+}
+
+func (u *UpdatePaymentsRequest) MarshalJSON() ([]byte, error) {
+	type embed UpdatePaymentsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	updateReturnURLPaymentsRequestFieldPaymentID    = big.NewInt(1 << 0)
+	updateReturnURLPaymentsRequestFieldClientSecret = big.NewInt(1 << 1)
+	updateReturnURLPaymentsRequestFieldReturnURL    = big.NewInt(1 << 2)
 )
 
 type UpdateReturnURLPaymentsRequest struct {
 	// The unique identifier of the payment.
 	PaymentID string `json:"-" url:"-"`
+	// The payment's own `client_secret`, for a caller without a secret key.
+	ClientSecret *string `json:"client_secret,omitempty" url:"-"`
 	// Where the buyer continues after completing an off-site step. Must be an absolute https URL without credentials (http is allowed for localhost), at most 2,048 characters.
 	ReturnURL string `json:"return_url" url:"-"`
 
@@ -16900,10 +9512,12 @@ type UpdateReturnURLPaymentsRequest struct {
 }
 
 func (u *UpdateReturnURLPaymentsRequest) require(field *big.Int) {
-	if u.explicitFields == nil {
-		u.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
 	}
-	u.explicitFields.Or(u.explicitFields, field)
+	next.Or(next, field)
+	u.explicitFields = next
 }
 
 // SetPaymentID sets the PaymentID field and marks it as non-optional;
@@ -16911,6 +9525,13 @@ func (u *UpdateReturnURLPaymentsRequest) require(field *big.Int) {
 func (u *UpdateReturnURLPaymentsRequest) SetPaymentID(paymentID string) {
 	u.PaymentID = paymentID
 	u.require(updateReturnURLPaymentsRequestFieldPaymentID)
+}
+
+// SetClientSecret sets the ClientSecret field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateReturnURLPaymentsRequest) SetClientSecret(clientSecret *string) {
+	u.ClientSecret = clientSecret
+	u.require(updateReturnURLPaymentsRequestFieldClientSecret)
 }
 
 // SetReturnURL sets the ReturnURL field and marks it as non-optional;
@@ -16946,7 +9567,7 @@ var (
 )
 
 type VoidPaymentsRequest struct {
-	// The unique identifier of the payment to void.
+	// The payment to void, prefixed `pay_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -16954,10 +9575,12 @@ type VoidPaymentsRequest struct {
 }
 
 func (v *VoidPaymentsRequest) require(field *big.Int) {
-	if v.explicitFields == nil {
-		v.explicitFields = big.NewInt(0)
+	next := new(big.Int)
+	if v.explicitFields != nil {
+		next.Set(v.explicitFields)
 	}
-	v.explicitFields.Or(v.explicitFields, field)
+	next.Or(next, field)
+	v.explicitFields = next
 }
 
 // SetID sets the ID field and marks it as non-optional;

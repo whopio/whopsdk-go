@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/whopio/whopsdk-go/core"
+	"github.com/whopio/whopsdk-go/v2/core"
 )
 
 type TestPageResponse struct {

@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -75,6 +75,38 @@ func VerifyRequestCount(
 	}
 	json.NewDecoder(resp.Body).Decode(&result)
 	require.Equal(t, expected, len(result.Requests))
+}
+
+func TestAdsReportStatsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.ReportStatsAdsRequest{
+		AdID: "ad_xxxxxxxxxxxxxx",
+		HourStartedAt: whopsdk.MustParseDateTime(
+			"2026-01-01T12:00:00Z",
+		),
+		Spend: &whopsdk.ReportStatsAdsRequestSpend{
+			Double: 1.1,
+		},
+	}
+	_, invocationErr := client.Ads.ReportStats(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAdsReportStatsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAdsReportStatsWithWireMock", "POST", "/ad_stats", nil, 1)
 }
 
 func TestAdsListWithWireMock(

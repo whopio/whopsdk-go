@@ -11,9 +11,9 @@ import (
 	testing "testing"
 
 	require "github.com/stretchr/testify/require"
-	whopsdk "github.com/whopio/whopsdk-go"
-	client "github.com/whopio/whopsdk-go/client"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	client "github.com/whopio/whopsdk-go/v2/client"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 func VerifyRequestCount(
@@ -88,7 +88,28 @@ func TestMembersListWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ListMembersRequest{}
+	request := &whopsdk.ListMembersRequest{
+		UserIDs: []*string{
+			whopsdk.String(
+				"user_xxxxxxxxxxxxxx",
+			),
+		},
+		ProductIDs: []*string{
+			whopsdk.String(
+				"prod_xxxxxxxxxxxxx",
+			),
+		},
+		VariantIDs: []*string{
+			whopsdk.String(
+				"plan_xxxxxxxxxxxxx",
+			),
+		},
+		PromoCodeIDs: []*string{
+			whopsdk.String(
+				"promo_xxxxxxxxxxxx",
+			),
+		},
+	}
 	_, invocationErr := client.Members.List(
 		context.TODO(),
 		request,
@@ -98,7 +119,7 @@ func TestMembersListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestMembersListWithWireMock", "GET", "/members", nil, 1)
+	VerifyRequestCount(t, "TestMembersListWithWireMock", "GET", "/members", map[string]interface{}{"user_ids": "user_xxxxxxxxxxxxxx", "product_ids": "prod_xxxxxxxxxxxxx", "variant_ids": "plan_xxxxxxxxxxxxx", "promo_code_ids": "promo_xxxxxxxxxxxx"}, 1)
 }
 
 func TestMembersRetrieveWithWireMock(
@@ -125,4 +146,30 @@ func TestMembersRetrieveWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestMembersRetrieveWithWireMock", "GET", "/members/id", nil, 1)
+}
+
+func TestMembersUpdateWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.UpdateMembersRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Members.Update(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestMembersUpdateWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestMembersUpdateWithWireMock", "PATCH", "/members/id", nil, 1)
 }

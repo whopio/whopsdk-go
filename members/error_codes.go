@@ -3,9 +3,9 @@
 package members
 
 import (
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
 )
 
 var ErrorCodes internal.ErrorCodes = internal.ErrorCodes{
@@ -16,6 +16,21 @@ var ErrorCodes internal.ErrorCodes = internal.ErrorCodes{
 	},
 	404: func(apiError *core.APIError) error {
 		return &whopsdk.NotFoundError{
+			APIError: apiError,
+		}
+	},
+	401: func(apiError *core.APIError) error {
+		return &whopsdk.UnauthorizedError{
+			APIError: apiError,
+		}
+	},
+	400: func(apiError *core.APIError) error {
+		return &whopsdk.BadRequestError{
+			APIError: apiError,
+		}
+	},
+	409: func(apiError *core.APIError) error {
+		return &whopsdk.ConflictError{
 			APIError: apiError,
 		}
 	},

@@ -6,10 +6,10 @@ import (
 	context "context"
 	http "net/http"
 
-	whopsdk "github.com/whopio/whopsdk-go"
-	core "github.com/whopio/whopsdk-go/core"
-	internal "github.com/whopio/whopsdk-go/internal"
-	option "github.com/whopio/whopsdk-go/option"
+	whopsdk "github.com/whopio/whopsdk-go/v2"
+	core "github.com/whopio/whopsdk-go/v2/core"
+	internal "github.com/whopio/whopsdk-go/v2/internal"
+	option "github.com/whopio/whopsdk-go/v2/option"
 )
 
 type Client struct {
@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-08-21"
+		apiVersionDateDefault := "2026-10-29-8"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -43,9 +43,7 @@ func NewClient(options *core.RequestOptions) *Client {
 //
 // Example:
 //
-//	request := &whopsdk.ListWebhooksRequest{
-//	    AccountID: "account_id",
-//	}
+//	request := &whopsdk.ListWebhooksRequest{}
 //	client.Webhooks.List(
 //	    context.TODO(),
 //	    request,
@@ -58,7 +56,15 @@ func (c *Client) List(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := baseURL + "/webhooks"
@@ -167,7 +173,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Permanently deletes a webhook endpoint. Returns `true` on success, matching the legacy proxy response.
+// Permanently deletes a webhook endpoint. To stop deliveries without deleting it, set `enabled` to `false` with `PATCH /webhooks/:id`.
 //
 // Example:
 //
@@ -221,12 +227,15 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Returns a paginated list of delivery attempts for a webhook, ordered by most recent first. Includes the request payload, response body, response code, and timing for each attempt.
+// Returns a paginated list of delivery attempts for a webhook, ordered by most recent first. Includes the request payload, response body, response code, and timing for each attempt. Filtered queries use a bounded read budget, so a page may be partial or empty. Continue with `page_info.end_cursor` while `page_info.has_next_page` is `true`.
 //
 // Example:
 //
 //	request := &whopsdk.ListDeliveriesWebhooksRequest{
 //	    ID: "id",
+//	    ResourceID: whopsdk.String(
+//	        "pay_xxxxxxxxxxxxx",
+//	    ),
 //	}
 //	client.Webhooks.ListDeliveries(
 //	    context.TODO(),
@@ -240,7 +249,15 @@ func (c *Client) ListDeliveries(
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
 		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
 		"https://api.whop.com/api/v1",
 	)
 	endpointURL := internal.EncodeURL(
@@ -298,7 +315,7 @@ func (c *Client) ListDeliveries(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Re-sends the exact payload of a past delivery to the webhook's current URL and returns the delivery result. By default the replay keeps the original `webhook-id`, so consumers that deduplicate on it can drop events they already processed. Pass `regenerate_id` to re-send under a freshly generated `webhook-id` instead, so a deduplicating consumer processes the replay as a new message. Only available for enabled webhooks on API version v1; deliveries are retained for 30 days.
+// Re-sends the exact payload of a past delivery to the webhook's current URL and returns the delivery result. The replay keeps the original `webhook-id` unless you pass `regenerate_id`, so consumers that deduplicate on it can drop events they already processed. Only available for enabled webhooks on API version `v1`; deliveries are retained for 30 days.
 //
 // Example:
 //
@@ -326,7 +343,7 @@ func (c *Client) ReplayDelivery(
 	return response.Body, nil
 }
 
-// Re-sends the webhook's past deliveries within a time window, optionally limited to specific events or to messages whose most recent delivery attempt failed. Fire and forget: nothing about the replay is stored, and each re-send appears as a new entry in the webhook's delivery log. Each matching message is re-sent once, by default with its original `webhook-id`, so consumers that deduplicate are unaffected; pass `regenerate_ids` to re-send under freshly generated ids instead. Only available for enabled webhooks on API version v1; deliveries are retained for 30 days.
+// Re-sends the webhook's past deliveries within a time window, optionally limited to specific events or to failed deliveries. Use it to recover events your endpoint missed. The replay runs asynchronously and nothing about it is stored: each re-send appears as a new entry in the webhook's delivery log. Each matching message is re-sent once, with its original `webhook-id` unless you pass `regenerate_ids`. Only available for enabled webhooks on API version `v1`; deliveries are retained for 30 days.
 //
 // Example:
 //
@@ -380,90 +397,4 @@ func (c *Client) Test(
 		return nil, err
 	}
 	return response.Body, nil
-}
-
-// Returns a paginated list of delivery attempts for a webhook, ordered by most recent first. Includes the request payload, response body, response code, and timing for each attempt.
-//
-// Required permissions:
-//   - `developer:manage_webhook`
-//
-// Example:
-//
-//	request := &whopsdk.DeliveriesWebhookRequest{
-//	    WebhookID: "webhook_id",
-//	    First: whopsdk.Int(
-//	        42,
-//	    ),
-//	    Last: whopsdk.Int(
-//	        42,
-//	    ),
-//	}
-//	client.Webhooks.DeliveriesWebhook(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) DeliveriesWebhook(
-	ctx context.Context,
-	request *whopsdk.DeliveriesWebhookRequest,
-	opts ...option.RequestOption,
-) (*core.Page[*string, *whopsdk.DeliveriesWebhookResponseDataItem, *whopsdk.DeliveriesWebhookResponse], error) {
-	options := core.NewRequestOptions(opts...)
-	baseURL := internal.ResolveBaseURL(
-		options.BaseURL,
-		c.baseURL,
-		"https://api.whop.com/api/v1",
-	)
-	endpointURL := internal.EncodeURL(
-		baseURL+"/webhooks/%v/deliveries",
-		request.WebhookID,
-	)
-	queryParams, err := internal.QueryValues(request)
-	if err != nil {
-		return nil, err
-	}
-	headers := internal.MergeHeaders(
-		c.options.ToHeader(),
-		options.ToHeader(),
-	)
-	prepareCall := func(pageRequest *core.PageRequest[*string]) *internal.CallParams {
-		if pageRequest.Cursor != nil {
-			queryParams.Set("after", *pageRequest.Cursor)
-		}
-		nextURL := endpointURL
-		if len(queryParams) > 0 {
-			nextURL += "?" + queryParams.Encode()
-		}
-		return &internal.CallParams{
-			URL:             nextURL,
-			Method:          http.MethodGet,
-			Headers:         headers,
-			MaxAttempts:     options.MaxAttempts,
-			DisableRetries:  options.DisableRetries,
-			BodyProperties:  options.BodyProperties,
-			QueryParameters: options.QueryParameters,
-			Client:          options.HTTPClient,
-			Response:        pageRequest.Response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
-		}
-	}
-	readPageResponse := func(response *whopsdk.DeliveriesWebhookResponse) *core.PageResponse[*string, *whopsdk.DeliveriesWebhookResponseDataItem, *whopsdk.DeliveriesWebhookResponse] {
-		var zeroValue *string
-		var next *string
-		if response.PageInfo != nil {
-			next = response.PageInfo.EndCursor
-		}
-		results := response.GetData()
-		return &core.PageResponse[*string, *whopsdk.DeliveriesWebhookResponseDataItem, *whopsdk.DeliveriesWebhookResponse]{
-			Results:  results,
-			Response: response,
-			Next:     next,
-			Done:     next == zeroValue || *next == "",
-		}
-	}
-	pager := internal.NewCursorPager(
-		c.caller,
-		prepareCall,
-		readPageResponse,
-	)
-	return pager.GetPage(ctx, request.After)
 }
