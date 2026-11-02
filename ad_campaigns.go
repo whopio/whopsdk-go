@@ -12,25 +12,22 @@ import (
 
 var (
 	createAdCampaignsRequestFieldAccountID            = big.NewInt(1 << 0)
-	createAdCampaignsRequestFieldBidType              = big.NewInt(1 << 1)
-	createAdCampaignsRequestFieldBudgetAmount         = big.NewInt(1 << 2)
-	createAdCampaignsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 3)
-	createAdCampaignsRequestFieldBudgetOptimization   = big.NewInt(1 << 4)
-	createAdCampaignsRequestFieldBudgetType           = big.NewInt(1 << 5)
-	createAdCampaignsRequestFieldCampaignType         = big.NewInt(1 << 6)
-	createAdCampaignsRequestFieldDesiredCostPerResult = big.NewInt(1 << 7)
-	createAdCampaignsRequestFieldEndsAt               = big.NewInt(1 << 8)
-	createAdCampaignsRequestFieldObjective            = big.NewInt(1 << 9)
-	createAdCampaignsRequestFieldSpecialAdCategories  = big.NewInt(1 << 10)
-	createAdCampaignsRequestFieldStartsAt             = big.NewInt(1 << 11)
-	createAdCampaignsRequestFieldTitle                = big.NewInt(1 << 12)
+	createAdCampaignsRequestFieldBudgetAmount         = big.NewInt(1 << 1)
+	createAdCampaignsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 2)
+	createAdCampaignsRequestFieldBudgetOptimization   = big.NewInt(1 << 3)
+	createAdCampaignsRequestFieldBudgetType           = big.NewInt(1 << 4)
+	createAdCampaignsRequestFieldCampaignType         = big.NewInt(1 << 5)
+	createAdCampaignsRequestFieldDesiredCostPerResult = big.NewInt(1 << 6)
+	createAdCampaignsRequestFieldEndsAt               = big.NewInt(1 << 7)
+	createAdCampaignsRequestFieldObjective            = big.NewInt(1 << 8)
+	createAdCampaignsRequestFieldSpecialAdCategories  = big.NewInt(1 << 9)
+	createAdCampaignsRequestFieldStartsAt             = big.NewInt(1 << 10)
+	createAdCampaignsRequestFieldTitle                = big.NewInt(1 << 11)
 )
 
 type CreateAdCampaignsRequest struct {
 	// The account to create the campaign under. Defaults to the account-scoped key's own account.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, `maximum_target` never bids above a cap. Only for campaigns that own the budget.
-	BidType *CreateAdCampaignsRequestBidType `json:"bid_type,omitempty" url:"-"`
 	// The campaign's budget in USD, which is what it is stored and billed in. Required when budget_optimization is `ad_campaign` (or send budget_amount_local instead); omit when each ad group sets its own budget.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"-"`
 	// The campaign's budget stated in the account's ads reporting currency (`budget_currency` on the response) instead of USD. Converted to USD at the current exchange rate and stored as budget_amount. Provide this or budget_amount, not both.
@@ -72,13 +69,6 @@ func (c *CreateAdCampaignsRequest) require(field *big.Int) {
 func (c *CreateAdCampaignsRequest) SetAccountID(accountID *string) {
 	c.AccountID = accountID
 	c.require(createAdCampaignsRequestFieldAccountID)
-}
-
-// SetBidType sets the BidType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAdCampaignsRequest) SetBidType(bidType *CreateAdCampaignsRequestBidType) {
-	c.BidType = bidType
-	c.require(createAdCampaignsRequestFieldBidType)
 }
 
 // SetBudgetAmount sets the BudgetAmount field and marks it as non-optional;
@@ -543,73 +533,71 @@ func (r *RetrieveAdCampaignsRequest) SetAttributionModel(attributionModel *Retri
 var (
 	adCampaignFieldAddedToCartValue             = big.NewInt(1 << 0)
 	adCampaignFieldAddedToCarts                 = big.NewInt(1 << 1)
-	adCampaignFieldBidType                      = big.NewInt(1 << 2)
-	adCampaignFieldBudgetAmount                 = big.NewInt(1 << 3)
-	adCampaignFieldBudgetAmountLocal            = big.NewInt(1 << 4)
-	adCampaignFieldBudgetCurrency               = big.NewInt(1 << 5)
-	adCampaignFieldBudgetOptimization           = big.NewInt(1 << 6)
-	adCampaignFieldBudgetType                   = big.NewInt(1 << 7)
-	adCampaignFieldCampaignType                 = big.NewInt(1 << 8)
-	adCampaignFieldClickThroughRate             = big.NewInt(1 << 9)
-	adCampaignFieldClicks                       = big.NewInt(1 << 10)
-	adCampaignFieldCompletedRegistrationValue   = big.NewInt(1 << 11)
-	adCampaignFieldCompletedRegistrations       = big.NewInt(1 << 12)
-	adCampaignFieldContactValue                 = big.NewInt(1 << 13)
-	adCampaignFieldContacts                     = big.NewInt(1 << 14)
-	adCampaignFieldCostPerAddedToCart           = big.NewInt(1 << 15)
-	adCampaignFieldCostPerClick                 = big.NewInt(1 << 16)
-	adCampaignFieldCostPerCompletedRegistration = big.NewInt(1 << 17)
-	adCampaignFieldCostPerContact               = big.NewInt(1 << 18)
-	adCampaignFieldCostPerLead                  = big.NewInt(1 << 19)
-	adCampaignFieldCostPerMille                 = big.NewInt(1 << 20)
-	adCampaignFieldCostPerPurchase              = big.NewInt(1 << 21)
-	adCampaignFieldCostPerResult                = big.NewInt(1 << 22)
-	adCampaignFieldCostPerSchedule              = big.NewInt(1 << 23)
-	adCampaignFieldCostPerSubmittedApplication  = big.NewInt(1 << 24)
-	adCampaignFieldCostPerUniqueClick           = big.NewInt(1 << 25)
-	adCampaignFieldCostPerViewedContent         = big.NewInt(1 << 26)
-	adCampaignFieldCreatedAt                    = big.NewInt(1 << 27)
-	adCampaignFieldCustomConversions            = big.NewInt(1 << 28)
-	adCampaignFieldCustomEventCounts            = big.NewInt(1 << 29)
-	adCampaignFieldCustomEventValues            = big.NewInt(1 << 30)
-	adCampaignFieldDeliveryStatus               = big.NewInt(1 << 31)
-	adCampaignFieldDesiredCostPerResult         = big.NewInt(1 << 32)
-	adCampaignFieldEndsAt                       = big.NewInt(1 << 33)
-	adCampaignFieldFrequency                    = big.NewInt(1 << 34)
-	adCampaignFieldID                           = big.NewInt(1 << 35)
-	adCampaignFieldImpressions                  = big.NewInt(1 << 36)
-	adCampaignFieldIssues                       = big.NewInt(1 << 37)
-	adCampaignFieldLeadValue                    = big.NewInt(1 << 38)
-	adCampaignFieldLeads                        = big.NewInt(1 << 39)
-	adCampaignFieldLinkClicks                   = big.NewInt(1 << 40)
-	adCampaignFieldObjective                    = big.NewInt(1 << 41)
-	adCampaignFieldPurchaseValue                = big.NewInt(1 << 42)
-	adCampaignFieldPurchases                    = big.NewInt(1 << 43)
-	adCampaignFieldReach                        = big.NewInt(1 << 44)
-	adCampaignFieldResultEvent                  = big.NewInt(1 << 45)
-	adCampaignFieldResultEventName              = big.NewInt(1 << 46)
-	adCampaignFieldResults                      = big.NewInt(1 << 47)
-	adCampaignFieldReturnOnAdSpend              = big.NewInt(1 << 48)
-	adCampaignFieldScheduleValue                = big.NewInt(1 << 49)
-	adCampaignFieldSchedules                    = big.NewInt(1 << 50)
-	adCampaignFieldSpecialAdCategories          = big.NewInt(1 << 51)
-	adCampaignFieldSpend                        = big.NewInt(1 << 52)
-	adCampaignFieldSpendCurrency                = big.NewInt(1 << 53)
-	adCampaignFieldStartsAt                     = big.NewInt(1 << 54)
-	adCampaignFieldStatus                       = big.NewInt(1 << 55)
-	adCampaignFieldSubmittedApplicationValue    = big.NewInt(1 << 56)
-	adCampaignFieldSubmittedApplications        = big.NewInt(1 << 57)
-	adCampaignFieldTitle                        = big.NewInt(1 << 58)
-	adCampaignFieldUniqueClickThroughRate       = big.NewInt(1 << 59)
-	adCampaignFieldUniqueClicks                 = big.NewInt(1 << 60)
-	adCampaignFieldUpdatedAt                    = big.NewInt(1 << 61)
-	adCampaignFieldViewedContentValue           = big.NewInt(1 << 62)
-	adCampaignFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adCampaignFieldBudgetAmount                 = big.NewInt(1 << 2)
+	adCampaignFieldBudgetAmountLocal            = big.NewInt(1 << 3)
+	adCampaignFieldBudgetCurrency               = big.NewInt(1 << 4)
+	adCampaignFieldBudgetOptimization           = big.NewInt(1 << 5)
+	adCampaignFieldBudgetType                   = big.NewInt(1 << 6)
+	adCampaignFieldCampaignType                 = big.NewInt(1 << 7)
+	adCampaignFieldClickThroughRate             = big.NewInt(1 << 8)
+	adCampaignFieldClicks                       = big.NewInt(1 << 9)
+	adCampaignFieldCompletedRegistrationValue   = big.NewInt(1 << 10)
+	adCampaignFieldCompletedRegistrations       = big.NewInt(1 << 11)
+	adCampaignFieldContactValue                 = big.NewInt(1 << 12)
+	adCampaignFieldContacts                     = big.NewInt(1 << 13)
+	adCampaignFieldCostPerAddedToCart           = big.NewInt(1 << 14)
+	adCampaignFieldCostPerClick                 = big.NewInt(1 << 15)
+	adCampaignFieldCostPerCompletedRegistration = big.NewInt(1 << 16)
+	adCampaignFieldCostPerContact               = big.NewInt(1 << 17)
+	adCampaignFieldCostPerLead                  = big.NewInt(1 << 18)
+	adCampaignFieldCostPerMille                 = big.NewInt(1 << 19)
+	adCampaignFieldCostPerPurchase              = big.NewInt(1 << 20)
+	adCampaignFieldCostPerResult                = big.NewInt(1 << 21)
+	adCampaignFieldCostPerSchedule              = big.NewInt(1 << 22)
+	adCampaignFieldCostPerSubmittedApplication  = big.NewInt(1 << 23)
+	adCampaignFieldCostPerUniqueClick           = big.NewInt(1 << 24)
+	adCampaignFieldCostPerViewedContent         = big.NewInt(1 << 25)
+	adCampaignFieldCreatedAt                    = big.NewInt(1 << 26)
+	adCampaignFieldCustomConversions            = big.NewInt(1 << 27)
+	adCampaignFieldCustomEventCounts            = big.NewInt(1 << 28)
+	adCampaignFieldCustomEventValues            = big.NewInt(1 << 29)
+	adCampaignFieldDeliveryStatus               = big.NewInt(1 << 30)
+	adCampaignFieldDesiredCostPerResult         = big.NewInt(1 << 31)
+	adCampaignFieldEndsAt                       = big.NewInt(1 << 32)
+	adCampaignFieldFrequency                    = big.NewInt(1 << 33)
+	adCampaignFieldID                           = big.NewInt(1 << 34)
+	adCampaignFieldImpressions                  = big.NewInt(1 << 35)
+	adCampaignFieldIssues                       = big.NewInt(1 << 36)
+	adCampaignFieldLeadValue                    = big.NewInt(1 << 37)
+	adCampaignFieldLeads                        = big.NewInt(1 << 38)
+	adCampaignFieldLinkClicks                   = big.NewInt(1 << 39)
+	adCampaignFieldObjective                    = big.NewInt(1 << 40)
+	adCampaignFieldPurchaseValue                = big.NewInt(1 << 41)
+	adCampaignFieldPurchases                    = big.NewInt(1 << 42)
+	adCampaignFieldReach                        = big.NewInt(1 << 43)
+	adCampaignFieldResultEvent                  = big.NewInt(1 << 44)
+	adCampaignFieldResultEventName              = big.NewInt(1 << 45)
+	adCampaignFieldResults                      = big.NewInt(1 << 46)
+	adCampaignFieldReturnOnAdSpend              = big.NewInt(1 << 47)
+	adCampaignFieldScheduleValue                = big.NewInt(1 << 48)
+	adCampaignFieldSchedules                    = big.NewInt(1 << 49)
+	adCampaignFieldSpecialAdCategories          = big.NewInt(1 << 50)
+	adCampaignFieldSpend                        = big.NewInt(1 << 51)
+	adCampaignFieldSpendCurrency                = big.NewInt(1 << 52)
+	adCampaignFieldStartsAt                     = big.NewInt(1 << 53)
+	adCampaignFieldStatus                       = big.NewInt(1 << 54)
+	adCampaignFieldSubmittedApplicationValue    = big.NewInt(1 << 55)
+	adCampaignFieldSubmittedApplications        = big.NewInt(1 << 56)
+	adCampaignFieldTitle                        = big.NewInt(1 << 57)
+	adCampaignFieldUniqueClickThroughRate       = big.NewInt(1 << 58)
+	adCampaignFieldUniqueClicks                 = big.NewInt(1 << 59)
+	adCampaignFieldUpdatedAt                    = big.NewInt(1 << 60)
+	adCampaignFieldViewedContentValue           = big.NewInt(1 << 61)
+	adCampaignFieldViewedContents               = big.NewInt(1 << 62)
 )
 
 // adCampaignNullableFields maps the wire names of AdCampaign's nullable fields (required or optional) to their field bits.
 var adCampaignNullableFields = map[string]*big.Int{
-	"bid_type":                        adCampaignFieldBidType,
 	"budget_amount":                   adCampaignFieldBudgetAmount,
 	"budget_amount_local":             adCampaignFieldBudgetAmountLocal,
 	"budget_optimization":             adCampaignFieldBudgetOptimization,
@@ -641,8 +629,6 @@ type AdCampaign struct {
 	AddedToCartValue float64 `json:"added_to_cart_value" url:"added_to_cart_value"`
 	// Whop pixel-attributed add-to-cart events, last-click.
 	AddedToCarts float64 `json:"added_to_carts" url:"added_to_carts"`
-	// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, and `maximum_target` never bids above a cap.
-	BidType *AdCampaignBidType `json:"bid_type,omitempty" url:"bid_type,omitempty"`
 	// The campaign's budget in USD, which is what it is stored and billed in. `null` when each ad group sets its own budget instead.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"budget_amount,omitempty"`
 	// The same budget stated in `budget_currency` at today's exchange rate, for display in the account's ads reporting currency. `null` when `budget_amount` is.
@@ -783,13 +769,6 @@ func (a *AdCampaign) GetAddedToCarts() float64 {
 		return 0
 	}
 	return a.AddedToCarts
-}
-
-func (a *AdCampaign) GetBidType() *AdCampaignBidType {
-	if a == nil {
-		return nil
-	}
-	return a.BidType
 }
 
 func (a *AdCampaign) GetBudgetAmount() *float64 {
@@ -1247,13 +1226,6 @@ func (a *AdCampaign) SetAddedToCartValue(addedToCartValue float64) {
 func (a *AdCampaign) SetAddedToCarts(addedToCarts float64) {
 	a.AddedToCarts = addedToCarts
 	a.require(adCampaignFieldAddedToCarts)
-}
-
-// SetBidType sets the BidType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdCampaign) SetBidType(bidType *AdCampaignBidType) {
-	a.BidType = bidType
-	a.require(adCampaignFieldBidType)
 }
 
 // SetBudgetAmount sets the BudgetAmount field and marks it as non-optional;
@@ -1732,32 +1704,6 @@ func (a *AdCampaign) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, and `maximum_target` never bids above a cap.
-type AdCampaignBidType string
-
-const (
-	AdCampaignBidTypeMinimumCost   AdCampaignBidType = "minimum_cost"
-	AdCampaignBidTypeAverageTarget AdCampaignBidType = "average_target"
-	AdCampaignBidTypeMaximumTarget AdCampaignBidType = "maximum_target"
-)
-
-func NewAdCampaignBidTypeFromString(s string) (AdCampaignBidType, error) {
-	switch s {
-	case "minimum_cost":
-		return AdCampaignBidTypeMinimumCost, nil
-	case "average_target":
-		return AdCampaignBidTypeAverageTarget, nil
-	case "maximum_target":
-		return AdCampaignBidTypeMaximumTarget, nil
-	}
-	var t AdCampaignBidType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdCampaignBidType) Ptr() *AdCampaignBidType {
-	return &a
-}
-
 // Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`).
 type AdCampaignBudgetOptimization string
 
@@ -2051,32 +1997,6 @@ func NewAdCampaignStatusFromString(s string) (AdCampaignStatus, error) {
 
 func (a AdCampaignStatus) Ptr() *AdCampaignStatus {
 	return &a
-}
-
-// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, `maximum_target` never bids above a cap. Only for campaigns that own the budget.
-type CreateAdCampaignsRequestBidType string
-
-const (
-	CreateAdCampaignsRequestBidTypeMinimumCost   CreateAdCampaignsRequestBidType = "minimum_cost"
-	CreateAdCampaignsRequestBidTypeAverageTarget CreateAdCampaignsRequestBidType = "average_target"
-	CreateAdCampaignsRequestBidTypeMaximumTarget CreateAdCampaignsRequestBidType = "maximum_target"
-)
-
-func NewCreateAdCampaignsRequestBidTypeFromString(s string) (CreateAdCampaignsRequestBidType, error) {
-	switch s {
-	case "minimum_cost":
-		return CreateAdCampaignsRequestBidTypeMinimumCost, nil
-	case "average_target":
-		return CreateAdCampaignsRequestBidTypeAverageTarget, nil
-	case "maximum_target":
-		return CreateAdCampaignsRequestBidTypeMaximumTarget, nil
-	}
-	var t CreateAdCampaignsRequestBidType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateAdCampaignsRequestBidType) Ptr() *CreateAdCampaignsRequestBidType {
-	return &c
 }
 
 // Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`). Defaults to `ad_group`.
@@ -3046,30 +2966,28 @@ func (p PostAdCampaignPaymentFailedPayloadAPIVersion) Ptr() *PostAdCampaignPayme
 }
 
 var (
-	postAdCampaignPaymentFailedPayloadDataFieldBidType              = big.NewInt(1 << 0)
-	postAdCampaignPaymentFailedPayloadDataFieldBudgetAmount         = big.NewInt(1 << 1)
-	postAdCampaignPaymentFailedPayloadDataFieldBudgetAmountLocal    = big.NewInt(1 << 2)
-	postAdCampaignPaymentFailedPayloadDataFieldBudgetCurrency       = big.NewInt(1 << 3)
-	postAdCampaignPaymentFailedPayloadDataFieldBudgetOptimization   = big.NewInt(1 << 4)
-	postAdCampaignPaymentFailedPayloadDataFieldBudgetType           = big.NewInt(1 << 5)
-	postAdCampaignPaymentFailedPayloadDataFieldCampaignType         = big.NewInt(1 << 6)
-	postAdCampaignPaymentFailedPayloadDataFieldCreatedAt            = big.NewInt(1 << 7)
-	postAdCampaignPaymentFailedPayloadDataFieldDeliveryStatus       = big.NewInt(1 << 8)
-	postAdCampaignPaymentFailedPayloadDataFieldDesiredCostPerResult = big.NewInt(1 << 9)
-	postAdCampaignPaymentFailedPayloadDataFieldEndsAt               = big.NewInt(1 << 10)
-	postAdCampaignPaymentFailedPayloadDataFieldID                   = big.NewInt(1 << 11)
-	postAdCampaignPaymentFailedPayloadDataFieldIssues               = big.NewInt(1 << 12)
-	postAdCampaignPaymentFailedPayloadDataFieldObjective            = big.NewInt(1 << 13)
-	postAdCampaignPaymentFailedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 14)
-	postAdCampaignPaymentFailedPayloadDataFieldStartsAt             = big.NewInt(1 << 15)
-	postAdCampaignPaymentFailedPayloadDataFieldStatus               = big.NewInt(1 << 16)
-	postAdCampaignPaymentFailedPayloadDataFieldTitle                = big.NewInt(1 << 17)
-	postAdCampaignPaymentFailedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 18)
+	postAdCampaignPaymentFailedPayloadDataFieldBudgetAmount         = big.NewInt(1 << 0)
+	postAdCampaignPaymentFailedPayloadDataFieldBudgetAmountLocal    = big.NewInt(1 << 1)
+	postAdCampaignPaymentFailedPayloadDataFieldBudgetCurrency       = big.NewInt(1 << 2)
+	postAdCampaignPaymentFailedPayloadDataFieldBudgetOptimization   = big.NewInt(1 << 3)
+	postAdCampaignPaymentFailedPayloadDataFieldBudgetType           = big.NewInt(1 << 4)
+	postAdCampaignPaymentFailedPayloadDataFieldCampaignType         = big.NewInt(1 << 5)
+	postAdCampaignPaymentFailedPayloadDataFieldCreatedAt            = big.NewInt(1 << 6)
+	postAdCampaignPaymentFailedPayloadDataFieldDeliveryStatus       = big.NewInt(1 << 7)
+	postAdCampaignPaymentFailedPayloadDataFieldDesiredCostPerResult = big.NewInt(1 << 8)
+	postAdCampaignPaymentFailedPayloadDataFieldEndsAt               = big.NewInt(1 << 9)
+	postAdCampaignPaymentFailedPayloadDataFieldID                   = big.NewInt(1 << 10)
+	postAdCampaignPaymentFailedPayloadDataFieldIssues               = big.NewInt(1 << 11)
+	postAdCampaignPaymentFailedPayloadDataFieldObjective            = big.NewInt(1 << 12)
+	postAdCampaignPaymentFailedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 13)
+	postAdCampaignPaymentFailedPayloadDataFieldStartsAt             = big.NewInt(1 << 14)
+	postAdCampaignPaymentFailedPayloadDataFieldStatus               = big.NewInt(1 << 15)
+	postAdCampaignPaymentFailedPayloadDataFieldTitle                = big.NewInt(1 << 16)
+	postAdCampaignPaymentFailedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 17)
 )
 
 // postAdCampaignPaymentFailedPayloadDataNullableFields maps the wire names of PostAdCampaignPaymentFailedPayloadData's nullable fields (required or optional) to their field bits.
 var postAdCampaignPaymentFailedPayloadDataNullableFields = map[string]*big.Int{
-	"bid_type":                postAdCampaignPaymentFailedPayloadDataFieldBidType,
 	"budget_amount":           postAdCampaignPaymentFailedPayloadDataFieldBudgetAmount,
 	"budget_amount_local":     postAdCampaignPaymentFailedPayloadDataFieldBudgetAmountLocal,
 	"budget_optimization":     postAdCampaignPaymentFailedPayloadDataFieldBudgetOptimization,
@@ -3081,8 +2999,6 @@ var postAdCampaignPaymentFailedPayloadDataNullableFields = map[string]*big.Int{
 }
 
 type PostAdCampaignPaymentFailedPayloadData struct {
-	// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, and `maximum_target` never bids above a cap.
-	BidType *PostAdCampaignPaymentFailedPayloadDataBidType `json:"bid_type,omitempty" url:"bid_type,omitempty"`
 	// The campaign's budget in USD, which is what it is stored and billed in. `null` when each ad group sets its own budget instead.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"budget_amount,omitempty"`
 	// The same budget stated in `budget_currency` at today's exchange rate, for display in the account's ads reporting currency. `null` when `budget_amount` is.
@@ -3123,13 +3039,6 @@ type PostAdCampaignPaymentFailedPayloadData struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
-}
-
-func (p *PostAdCampaignPaymentFailedPayloadData) GetBidType() *PostAdCampaignPaymentFailedPayloadDataBidType {
-	if p == nil {
-		return nil
-	}
-	return p.BidType
 }
 
 func (p *PostAdCampaignPaymentFailedPayloadData) GetBudgetAmount() *float64 {
@@ -3272,13 +3181,6 @@ func (p *PostAdCampaignPaymentFailedPayloadData) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	p.explicitFields = next
-}
-
-// SetBidType sets the BidType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostAdCampaignPaymentFailedPayloadData) SetBidType(bidType *PostAdCampaignPaymentFailedPayloadDataBidType) {
-	p.BidType = bidType
-	p.require(postAdCampaignPaymentFailedPayloadDataFieldBidType)
 }
 
 // SetBudgetAmount sets the BudgetAmount field and marks it as non-optional;
@@ -3454,32 +3356,6 @@ func (p *PostAdCampaignPaymentFailedPayloadData) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
-}
-
-// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, and `maximum_target` never bids above a cap.
-type PostAdCampaignPaymentFailedPayloadDataBidType string
-
-const (
-	PostAdCampaignPaymentFailedPayloadDataBidTypeMinimumCost   PostAdCampaignPaymentFailedPayloadDataBidType = "minimum_cost"
-	PostAdCampaignPaymentFailedPayloadDataBidTypeAverageTarget PostAdCampaignPaymentFailedPayloadDataBidType = "average_target"
-	PostAdCampaignPaymentFailedPayloadDataBidTypeMaximumTarget PostAdCampaignPaymentFailedPayloadDataBidType = "maximum_target"
-)
-
-func NewPostAdCampaignPaymentFailedPayloadDataBidTypeFromString(s string) (PostAdCampaignPaymentFailedPayloadDataBidType, error) {
-	switch s {
-	case "minimum_cost":
-		return PostAdCampaignPaymentFailedPayloadDataBidTypeMinimumCost, nil
-	case "average_target":
-		return PostAdCampaignPaymentFailedPayloadDataBidTypeAverageTarget, nil
-	case "maximum_target":
-		return PostAdCampaignPaymentFailedPayloadDataBidTypeMaximumTarget, nil
-	}
-	var t PostAdCampaignPaymentFailedPayloadDataBidType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostAdCampaignPaymentFailedPayloadDataBidType) Ptr() *PostAdCampaignPaymentFailedPayloadDataBidType {
-	return &p
 }
 
 // Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`).
@@ -3997,30 +3873,28 @@ func (p PostAdCampaignUpdatedPayloadAPIVersion) Ptr() *PostAdCampaignUpdatedPayl
 }
 
 var (
-	postAdCampaignUpdatedPayloadDataFieldBidType              = big.NewInt(1 << 0)
-	postAdCampaignUpdatedPayloadDataFieldBudgetAmount         = big.NewInt(1 << 1)
-	postAdCampaignUpdatedPayloadDataFieldBudgetAmountLocal    = big.NewInt(1 << 2)
-	postAdCampaignUpdatedPayloadDataFieldBudgetCurrency       = big.NewInt(1 << 3)
-	postAdCampaignUpdatedPayloadDataFieldBudgetOptimization   = big.NewInt(1 << 4)
-	postAdCampaignUpdatedPayloadDataFieldBudgetType           = big.NewInt(1 << 5)
-	postAdCampaignUpdatedPayloadDataFieldCampaignType         = big.NewInt(1 << 6)
-	postAdCampaignUpdatedPayloadDataFieldCreatedAt            = big.NewInt(1 << 7)
-	postAdCampaignUpdatedPayloadDataFieldDeliveryStatus       = big.NewInt(1 << 8)
-	postAdCampaignUpdatedPayloadDataFieldDesiredCostPerResult = big.NewInt(1 << 9)
-	postAdCampaignUpdatedPayloadDataFieldEndsAt               = big.NewInt(1 << 10)
-	postAdCampaignUpdatedPayloadDataFieldID                   = big.NewInt(1 << 11)
-	postAdCampaignUpdatedPayloadDataFieldIssues               = big.NewInt(1 << 12)
-	postAdCampaignUpdatedPayloadDataFieldObjective            = big.NewInt(1 << 13)
-	postAdCampaignUpdatedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 14)
-	postAdCampaignUpdatedPayloadDataFieldStartsAt             = big.NewInt(1 << 15)
-	postAdCampaignUpdatedPayloadDataFieldStatus               = big.NewInt(1 << 16)
-	postAdCampaignUpdatedPayloadDataFieldTitle                = big.NewInt(1 << 17)
-	postAdCampaignUpdatedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 18)
+	postAdCampaignUpdatedPayloadDataFieldBudgetAmount         = big.NewInt(1 << 0)
+	postAdCampaignUpdatedPayloadDataFieldBudgetAmountLocal    = big.NewInt(1 << 1)
+	postAdCampaignUpdatedPayloadDataFieldBudgetCurrency       = big.NewInt(1 << 2)
+	postAdCampaignUpdatedPayloadDataFieldBudgetOptimization   = big.NewInt(1 << 3)
+	postAdCampaignUpdatedPayloadDataFieldBudgetType           = big.NewInt(1 << 4)
+	postAdCampaignUpdatedPayloadDataFieldCampaignType         = big.NewInt(1 << 5)
+	postAdCampaignUpdatedPayloadDataFieldCreatedAt            = big.NewInt(1 << 6)
+	postAdCampaignUpdatedPayloadDataFieldDeliveryStatus       = big.NewInt(1 << 7)
+	postAdCampaignUpdatedPayloadDataFieldDesiredCostPerResult = big.NewInt(1 << 8)
+	postAdCampaignUpdatedPayloadDataFieldEndsAt               = big.NewInt(1 << 9)
+	postAdCampaignUpdatedPayloadDataFieldID                   = big.NewInt(1 << 10)
+	postAdCampaignUpdatedPayloadDataFieldIssues               = big.NewInt(1 << 11)
+	postAdCampaignUpdatedPayloadDataFieldObjective            = big.NewInt(1 << 12)
+	postAdCampaignUpdatedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 13)
+	postAdCampaignUpdatedPayloadDataFieldStartsAt             = big.NewInt(1 << 14)
+	postAdCampaignUpdatedPayloadDataFieldStatus               = big.NewInt(1 << 15)
+	postAdCampaignUpdatedPayloadDataFieldTitle                = big.NewInt(1 << 16)
+	postAdCampaignUpdatedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 17)
 )
 
 // postAdCampaignUpdatedPayloadDataNullableFields maps the wire names of PostAdCampaignUpdatedPayloadData's nullable fields (required or optional) to their field bits.
 var postAdCampaignUpdatedPayloadDataNullableFields = map[string]*big.Int{
-	"bid_type":                postAdCampaignUpdatedPayloadDataFieldBidType,
 	"budget_amount":           postAdCampaignUpdatedPayloadDataFieldBudgetAmount,
 	"budget_amount_local":     postAdCampaignUpdatedPayloadDataFieldBudgetAmountLocal,
 	"budget_optimization":     postAdCampaignUpdatedPayloadDataFieldBudgetOptimization,
@@ -4032,8 +3906,6 @@ var postAdCampaignUpdatedPayloadDataNullableFields = map[string]*big.Int{
 }
 
 type PostAdCampaignUpdatedPayloadData struct {
-	// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, and `maximum_target` never bids above a cap.
-	BidType *PostAdCampaignUpdatedPayloadDataBidType `json:"bid_type,omitempty" url:"bid_type,omitempty"`
 	// The campaign's budget in USD, which is what it is stored and billed in. `null` when each ad group sets its own budget instead.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"budget_amount,omitempty"`
 	// The same budget stated in `budget_currency` at today's exchange rate, for display in the account's ads reporting currency. `null` when `budget_amount` is.
@@ -4074,13 +3946,6 @@ type PostAdCampaignUpdatedPayloadData struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
-}
-
-func (p *PostAdCampaignUpdatedPayloadData) GetBidType() *PostAdCampaignUpdatedPayloadDataBidType {
-	if p == nil {
-		return nil
-	}
-	return p.BidType
 }
 
 func (p *PostAdCampaignUpdatedPayloadData) GetBudgetAmount() *float64 {
@@ -4223,13 +4088,6 @@ func (p *PostAdCampaignUpdatedPayloadData) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	p.explicitFields = next
-}
-
-// SetBidType sets the BidType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (p *PostAdCampaignUpdatedPayloadData) SetBidType(bidType *PostAdCampaignUpdatedPayloadDataBidType) {
-	p.BidType = bidType
-	p.require(postAdCampaignUpdatedPayloadDataFieldBidType)
 }
 
 // SetBudgetAmount sets the BudgetAmount field and marks it as non-optional;
@@ -4405,32 +4263,6 @@ func (p *PostAdCampaignUpdatedPayloadData) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
-}
-
-// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, and `maximum_target` never bids above a cap.
-type PostAdCampaignUpdatedPayloadDataBidType string
-
-const (
-	PostAdCampaignUpdatedPayloadDataBidTypeMinimumCost   PostAdCampaignUpdatedPayloadDataBidType = "minimum_cost"
-	PostAdCampaignUpdatedPayloadDataBidTypeAverageTarget PostAdCampaignUpdatedPayloadDataBidType = "average_target"
-	PostAdCampaignUpdatedPayloadDataBidTypeMaximumTarget PostAdCampaignUpdatedPayloadDataBidType = "maximum_target"
-)
-
-func NewPostAdCampaignUpdatedPayloadDataBidTypeFromString(s string) (PostAdCampaignUpdatedPayloadDataBidType, error) {
-	switch s {
-	case "minimum_cost":
-		return PostAdCampaignUpdatedPayloadDataBidTypeMinimumCost, nil
-	case "average_target":
-		return PostAdCampaignUpdatedPayloadDataBidTypeAverageTarget, nil
-	case "maximum_target":
-		return PostAdCampaignUpdatedPayloadDataBidTypeMaximumTarget, nil
-	}
-	var t PostAdCampaignUpdatedPayloadDataBidType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (p PostAdCampaignUpdatedPayloadDataBidType) Ptr() *PostAdCampaignUpdatedPayloadDataBidType {
-	return &p
 }
 
 // Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`).
@@ -4723,32 +4555,6 @@ func (r RetrieveAdCampaignsRequestAttributionModel) Ptr() *RetrieveAdCampaignsRe
 	return &r
 }
 
-// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, `maximum_target` never bids above a cap. Switching to `minimum_cost` clears the cap amounts stored on the campaign's ad groups. Only for campaigns that own the budget.
-type UpdateAdCampaignsRequestBidType string
-
-const (
-	UpdateAdCampaignsRequestBidTypeMinimumCost   UpdateAdCampaignsRequestBidType = "minimum_cost"
-	UpdateAdCampaignsRequestBidTypeAverageTarget UpdateAdCampaignsRequestBidType = "average_target"
-	UpdateAdCampaignsRequestBidTypeMaximumTarget UpdateAdCampaignsRequestBidType = "maximum_target"
-)
-
-func NewUpdateAdCampaignsRequestBidTypeFromString(s string) (UpdateAdCampaignsRequestBidType, error) {
-	switch s {
-	case "minimum_cost":
-		return UpdateAdCampaignsRequestBidTypeMinimumCost, nil
-	case "average_target":
-		return UpdateAdCampaignsRequestBidTypeAverageTarget, nil
-	case "maximum_target":
-		return UpdateAdCampaignsRequestBidTypeMaximumTarget, nil
-	}
-	var t UpdateAdCampaignsRequestBidType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateAdCampaignsRequestBidType) Ptr() *UpdateAdCampaignsRequestBidType {
-	return &u
-}
-
 // Which level owns the budget: the whole campaign (`ad_campaign`) or each ad group individually (`ad_group`). Only changeable before the campaign launches; switching to `ad_campaign` requires budget_amount in the same request, and switching to `ad_group` clears the campaign budget.
 type UpdateAdCampaignsRequestBudgetOptimization string
 
@@ -4896,25 +4702,22 @@ func (u *UnpauseAdCampaignsRequest) SetID(id string) {
 
 var (
 	updateAdCampaignsRequestFieldID                   = big.NewInt(1 << 0)
-	updateAdCampaignsRequestFieldBidType              = big.NewInt(1 << 1)
-	updateAdCampaignsRequestFieldBudgetAmount         = big.NewInt(1 << 2)
-	updateAdCampaignsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 3)
-	updateAdCampaignsRequestFieldBudgetOptimization   = big.NewInt(1 << 4)
-	updateAdCampaignsRequestFieldBudgetType           = big.NewInt(1 << 5)
-	updateAdCampaignsRequestFieldCampaignType         = big.NewInt(1 << 6)
-	updateAdCampaignsRequestFieldDesiredCostPerResult = big.NewInt(1 << 7)
-	updateAdCampaignsRequestFieldEndsAt               = big.NewInt(1 << 8)
-	updateAdCampaignsRequestFieldSpecialAdCategories  = big.NewInt(1 << 9)
-	updateAdCampaignsRequestFieldStartsAt             = big.NewInt(1 << 10)
-	updateAdCampaignsRequestFieldStatus               = big.NewInt(1 << 11)
-	updateAdCampaignsRequestFieldTitle                = big.NewInt(1 << 12)
+	updateAdCampaignsRequestFieldBudgetAmount         = big.NewInt(1 << 1)
+	updateAdCampaignsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 2)
+	updateAdCampaignsRequestFieldBudgetOptimization   = big.NewInt(1 << 3)
+	updateAdCampaignsRequestFieldBudgetType           = big.NewInt(1 << 4)
+	updateAdCampaignsRequestFieldCampaignType         = big.NewInt(1 << 5)
+	updateAdCampaignsRequestFieldDesiredCostPerResult = big.NewInt(1 << 6)
+	updateAdCampaignsRequestFieldEndsAt               = big.NewInt(1 << 7)
+	updateAdCampaignsRequestFieldSpecialAdCategories  = big.NewInt(1 << 8)
+	updateAdCampaignsRequestFieldStartsAt             = big.NewInt(1 << 9)
+	updateAdCampaignsRequestFieldStatus               = big.NewInt(1 << 10)
+	updateAdCampaignsRequestFieldTitle                = big.NewInt(1 << 11)
 )
 
 type UpdateAdCampaignsRequest struct {
 	// The ad campaign ID.
 	ID string `json:"-" url:"-"`
-	// How delivery bids in the ad auction: `minimum_cost` gets the most results for the budget, `average_target` holds an average cost per result, `maximum_target` never bids above a cap. Switching to `minimum_cost` clears the cap amounts stored on the campaign's ad groups. Only for campaigns that own the budget.
-	BidType *UpdateAdCampaignsRequestBidType `json:"bid_type,omitempty" url:"-"`
 	// The campaign budget in USD, which is what it is stored and billed in. Interpreted as daily or lifetime per the campaign's budget type, including a budget_type sent in the same request.
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"-"`
 	// The campaign budget stated in the account's ads reporting currency (`budget_currency` on the response) instead of USD. Converted to USD at the current exchange rate and stored as budget_amount; an amount equal to the current budget_amount_local keeps the stored USD budget as is. Provide this or budget_amount, not both.
@@ -4956,13 +4759,6 @@ func (u *UpdateAdCampaignsRequest) require(field *big.Int) {
 func (u *UpdateAdCampaignsRequest) SetID(id string) {
 	u.ID = id
 	u.require(updateAdCampaignsRequestFieldID)
-}
-
-// SetBidType sets the BidType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateAdCampaignsRequest) SetBidType(bidType *UpdateAdCampaignsRequestBidType) {
-	u.BidType = bidType
-	u.require(updateAdCampaignsRequestFieldBidType)
 }
 
 // SetBudgetAmount sets the BudgetAmount field and marks it as non-optional;
