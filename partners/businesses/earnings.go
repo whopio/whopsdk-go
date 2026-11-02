@@ -369,19 +369,20 @@ var (
 	listEarningsResponseDataItemFieldAccount                      = big.NewInt(1 << 0)
 	listEarningsResponseDataItemFieldCancelationReason            = big.NewInt(1 << 1)
 	listEarningsResponseDataItemFieldCommissionAmountUsd          = big.NewInt(1 << 2)
-	listEarningsResponseDataItemFieldCreatedAt                    = big.NewInt(1 << 3)
-	listEarningsResponseDataItemFieldFinancialActivity            = big.NewInt(1 << 4)
-	listEarningsResponseDataItemFieldID                           = big.NewInt(1 << 5)
-	listEarningsResponseDataItemFieldIncomeSource                 = big.NewInt(1 << 6)
-	listEarningsResponseDataItemFieldObject                       = big.NewInt(1 << 7)
-	listEarningsResponseDataItemFieldPayoutAt                     = big.NewInt(1 << 8)
-	listEarningsResponseDataItemFieldPayoutPercentage             = big.NewInt(1 << 9)
-	listEarningsResponseDataItemFieldProduct                      = big.NewInt(1 << 10)
-	listEarningsResponseDataItemFieldProjectedCommissionAmountUsd = big.NewInt(1 << 11)
-	listEarningsResponseDataItemFieldResource                     = big.NewInt(1 << 12)
-	listEarningsResponseDataItemFieldSecondTier                   = big.NewInt(1 << 13)
-	listEarningsResponseDataItemFieldStatus                       = big.NewInt(1 << 14)
-	listEarningsResponseDataItemFieldTransactionAmountUsd         = big.NewInt(1 << 15)
+	listEarningsResponseDataItemFieldCoveredByCommissionAdvance   = big.NewInt(1 << 3)
+	listEarningsResponseDataItemFieldCreatedAt                    = big.NewInt(1 << 4)
+	listEarningsResponseDataItemFieldFinancialActivity            = big.NewInt(1 << 5)
+	listEarningsResponseDataItemFieldID                           = big.NewInt(1 << 6)
+	listEarningsResponseDataItemFieldIncomeSource                 = big.NewInt(1 << 7)
+	listEarningsResponseDataItemFieldObject                       = big.NewInt(1 << 8)
+	listEarningsResponseDataItemFieldPayoutAt                     = big.NewInt(1 << 9)
+	listEarningsResponseDataItemFieldPayoutPercentage             = big.NewInt(1 << 10)
+	listEarningsResponseDataItemFieldProduct                      = big.NewInt(1 << 11)
+	listEarningsResponseDataItemFieldProjectedCommissionAmountUsd = big.NewInt(1 << 12)
+	listEarningsResponseDataItemFieldResource                     = big.NewInt(1 << 13)
+	listEarningsResponseDataItemFieldSecondTier                   = big.NewInt(1 << 14)
+	listEarningsResponseDataItemFieldStatus                       = big.NewInt(1 << 15)
+	listEarningsResponseDataItemFieldTransactionAmountUsd         = big.NewInt(1 << 16)
 )
 
 // listEarningsResponseDataItemNullableFields maps the wire names of ListEarningsResponseDataItem's nullable fields (required or optional) to their field bits.
@@ -404,8 +405,10 @@ type ListEarningsResponseDataItem struct {
 	// Why the earning was canceled or reversed, if applicable.
 	CancelationReason *string `json:"cancelation_reason,omitempty" url:"cancelation_reason,omitempty"`
 	// What the referrer earns, in USD. Null until the earning settles.
-	CommissionAmountUsd *string   `json:"commission_amount_usd,omitempty" url:"commission_amount_usd,omitempty"`
-	CreatedAt           time.Time `json:"created_at" url:"created_at"`
+	CommissionAmountUsd *string `json:"commission_amount_usd,omitempty" url:"commission_amount_usd,omitempty"`
+	// Whether an upfront commission advance replaces this commission, including covered earnings that are still awaiting settlement.
+	CoveredByCommissionAdvance bool      `json:"covered_by_commission_advance" url:"covered_by_commission_advance"`
+	CreatedAt                  time.Time `json:"created_at" url:"created_at"`
 	// Income and cost lines behind this earning's commission. Null for earnings settled before this data was recorded.
 	FinancialActivity []*ListEarningsResponseDataItemFinancialActivityItem `json:"financial_activity,omitempty" url:"financial_activity,omitempty"`
 	ID                *string                                              `json:"id,omitempty" url:"id,omitempty"`
@@ -416,7 +419,7 @@ type ListEarningsResponseDataItem struct {
 	// The referrer's share of Whop's gross profit, as a fraction (0.3 = 30%). Null until the earning settles.
 	PayoutPercentage *float64                             `json:"payout_percentage,omitempty" url:"payout_percentage,omitempty"`
 	Product          *ListEarningsResponseDataItemProduct `json:"product,omitempty" url:"product,omitempty"`
-	// Estimated commission while awaiting settlement. Null when no estimate is available or the earning has settled.
+	// Estimated commission while awaiting settlement. Zero when a funded commission advance covers the earning. Null when no estimate is available or the earning has settled.
 	ProjectedCommissionAmountUsd *v2.Money `json:"projected_commission_amount_usd,omitempty" url:"projected_commission_amount_usd,omitempty"`
 	// The resource that generated the earning: the customer payment receipt for sales and ad spend earnings, the balance transfer for transfer earnings, the withdrawal for withdrawal earnings, the card transaction for card interchange earnings, or the qualifying reward for fixed reward earnings.
 	Resource *ListEarningsResponseDataItemResource `json:"resource,omitempty" url:"resource,omitempty"`
@@ -453,6 +456,13 @@ func (l *ListEarningsResponseDataItem) GetCommissionAmountUsd() *string {
 		return nil
 	}
 	return l.CommissionAmountUsd
+}
+
+func (l *ListEarningsResponseDataItem) GetCoveredByCommissionAdvance() bool {
+	if l == nil {
+		return false
+	}
+	return l.CoveredByCommissionAdvance
 }
 
 func (l *ListEarningsResponseDataItem) GetCreatedAt() time.Time {
@@ -581,6 +591,13 @@ func (l *ListEarningsResponseDataItem) SetCancelationReason(cancelationReason *s
 func (l *ListEarningsResponseDataItem) SetCommissionAmountUsd(commissionAmountUsd *string) {
 	l.CommissionAmountUsd = commissionAmountUsd
 	l.require(listEarningsResponseDataItemFieldCommissionAmountUsd)
+}
+
+// SetCoveredByCommissionAdvance sets the CoveredByCommissionAdvance field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEarningsResponseDataItem) SetCoveredByCommissionAdvance(coveredByCommissionAdvance bool) {
+	l.CoveredByCommissionAdvance = coveredByCommissionAdvance
+	l.require(listEarningsResponseDataItemFieldCoveredByCommissionAdvance)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
