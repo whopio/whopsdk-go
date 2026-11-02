@@ -19405,7 +19405,7 @@ Starts an OAuth connection flow and returns an `authorize_url` to send the user 
 ```go
 request := &whopsdk.ConnectExternalAccountsRequest{
     Platform: whopsdk.ConnectExternalAccountsRequestPlatformTiktok,
-    RedirectURL: "https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/ads/settings",
+    RedirectURL: "https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/settings",
 }
 client.ExternalAccounts.Connect(
     context.TODO(),
@@ -19433,7 +19433,7 @@ client.ExternalAccounts.Connect(
 <dl>
 <dd>
 
-**platform:** `whopsdk.ConnectExternalAccountsRequestPlatform` — The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `snapchat` for Snapchat Public Profiles. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, omit `scopes`, and the user picks the company in QuickBooks.
+**platform:** `whopsdk.ConnectExternalAccountsRequestPlatform` — The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, and the user picks the company in QuickBooks.
     
 </dd>
 </dl>
@@ -19442,14 +19442,6 @@ client.ExternalAccounts.Connect(
 <dd>
 
 **redirectURL:** `string` — Where to send the user once they finish connecting their accounts. Must be an `https` URL on whop.com; any other host is rejected. On success, the user is redirected with an `external_account_connected` query param naming the platform; if the connection fails, with an `external_account_error` query param instead. The same values also arrive as `social_account_connected` / `social_account_error`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**scopes:** `[]whopsdk.ConnectExternalAccountsRequestScopesItem` — The connection purpose. For `snapchat`, `advertise` is required and connects company advertising assets. For `linkedin`, `tiktok`, `youtube`, and `x`, omit scopes to connect the authenticated user’s profile. For `quickbooks`, omit scopes; the connection belongs to the account in `account_id`. Profile connections still request the platform permissions needed to read the profile.
     
 </dd>
 </dl>
@@ -36966,7 +36958,7 @@ Deprecated compatibility endpoint. Connect external accounts with `POST /externa
 ```go
 request := &whopsdk.ConnectSocialAccountsRequest{
     Platform: whopsdk.ConnectSocialAccountsRequestPlatformTiktok,
-    RedirectURL: "https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/ads/settings",
+    RedirectURL: "https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/settings",
 }
 client.SocialAccounts.Connect(
     context.TODO(),
@@ -36994,7 +36986,7 @@ client.SocialAccounts.Connect(
 <dl>
 <dd>
 
-**platform:** `whopsdk.ConnectSocialAccountsRequestPlatform` — The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `snapchat` for Snapchat Public Profiles. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, omit `scopes`, and the user picks the company in QuickBooks.
+**platform:** `whopsdk.ConnectSocialAccountsRequestPlatform` — The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, and the user picks the company in QuickBooks.
     
 </dd>
 </dl>
@@ -37003,14 +36995,6 @@ client.SocialAccounts.Connect(
 <dd>
 
 **redirectURL:** `string` — Where to send the user once they finish connecting their accounts. Must be an `https` URL on whop.com; any other host is rejected. On success, the user is redirected with an `external_account_connected` query param naming the platform; if the connection fails, with an `external_account_error` query param instead. The same values also arrive as `social_account_connected` / `social_account_error`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**scopes:** `[]whopsdk.ConnectSocialAccountsRequestScopesItem` — The connection purpose. For `snapchat`, `advertise` is required and connects company advertising assets. For `linkedin`, `tiktok`, `youtube`, and `x`, omit scopes to connect the authenticated user’s profile. For `quickbooks`, omit scopes; the connection belongs to the account in `account_id`. Profile connections still request the platform permissions needed to read the profile.
     
 </dd>
 </dl>

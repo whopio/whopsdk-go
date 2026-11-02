@@ -13,18 +13,15 @@ var (
 	connectExternalAccountsRequestFieldAccountID   = big.NewInt(1 << 0)
 	connectExternalAccountsRequestFieldPlatform    = big.NewInt(1 << 1)
 	connectExternalAccountsRequestFieldRedirectURL = big.NewInt(1 << 2)
-	connectExternalAccountsRequestFieldScopes      = big.NewInt(1 << 3)
 )
 
 type ConnectExternalAccountsRequest struct {
 	// The Account (biz_ identifier) to connect the external account for. An account-scoped API key may omit this to default to its own account. Omit for user profile connections.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `snapchat` for Snapchat Public Profiles. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, omit `scopes`, and the user picks the company in QuickBooks.
+	// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, and the user picks the company in QuickBooks.
 	Platform ConnectExternalAccountsRequestPlatform `json:"platform" url:"-"`
 	// Where to send the user once they finish connecting their accounts. Must be an `https` URL on whop.com; any other host is rejected. On success, the user is redirected with an `external_account_connected` query param naming the platform; if the connection fails, with an `external_account_error` query param instead. The same values also arrive as `social_account_connected` / `social_account_error`.
 	RedirectURL string `json:"redirect_url" url:"-"`
-	// The connection purpose. For `snapchat`, `advertise` is required and connects company advertising assets. For `linkedin`, `tiktok`, `youtube`, and `x`, omit scopes to connect the authenticated user’s profile. For `quickbooks`, omit scopes; the connection belongs to the account in `account_id`. Profile connections still request the platform permissions needed to read the profile.
-	Scopes []ConnectExternalAccountsRequestScopesItem `json:"scopes,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -58,13 +55,6 @@ func (c *ConnectExternalAccountsRequest) SetPlatform(platform ConnectExternalAcc
 func (c *ConnectExternalAccountsRequest) SetRedirectURL(redirectURL string) {
 	c.RedirectURL = redirectURL
 	c.require(connectExternalAccountsRequestFieldRedirectURL)
-}
-
-// SetScopes sets the Scopes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *ConnectExternalAccountsRequest) SetScopes(scopes []ConnectExternalAccountsRequestScopesItem) {
-	c.Scopes = scopes
-	c.require(connectExternalAccountsRequestFieldScopes)
 }
 
 func (c *ConnectExternalAccountsRequest) UnmarshalJSON(data []byte) error {
@@ -923,7 +913,7 @@ func (e ExternalAccountPlatform) Ptr() *ExternalAccountPlatform {
 	return &e
 }
 
-// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `snapchat` for Snapchat Public Profiles. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, omit `scopes`, and the user picks the company in QuickBooks.
+// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, and the user picks the company in QuickBooks.
 type ConnectExternalAccountsRequestPlatform string
 
 const (
@@ -931,7 +921,6 @@ const (
 	ConnectExternalAccountsRequestPlatformLinkedin   ConnectExternalAccountsRequestPlatform = "linkedin"
 	ConnectExternalAccountsRequestPlatformYoutube    ConnectExternalAccountsRequestPlatform = "youtube"
 	ConnectExternalAccountsRequestPlatformX          ConnectExternalAccountsRequestPlatform = "x"
-	ConnectExternalAccountsRequestPlatformSnapchat   ConnectExternalAccountsRequestPlatform = "snapchat"
 	ConnectExternalAccountsRequestPlatformQuickbooks ConnectExternalAccountsRequestPlatform = "quickbooks"
 )
 
@@ -945,8 +934,6 @@ func NewConnectExternalAccountsRequestPlatformFromString(s string) (ConnectExter
 		return ConnectExternalAccountsRequestPlatformYoutube, nil
 	case "x":
 		return ConnectExternalAccountsRequestPlatformX, nil
-	case "snapchat":
-		return ConnectExternalAccountsRequestPlatformSnapchat, nil
 	case "quickbooks":
 		return ConnectExternalAccountsRequestPlatformQuickbooks, nil
 	}
@@ -955,25 +942,6 @@ func NewConnectExternalAccountsRequestPlatformFromString(s string) (ConnectExter
 }
 
 func (c ConnectExternalAccountsRequestPlatform) Ptr() *ConnectExternalAccountsRequestPlatform {
-	return &c
-}
-
-type ConnectExternalAccountsRequestScopesItem string
-
-const (
-	ConnectExternalAccountsRequestScopesItemAdvertise ConnectExternalAccountsRequestScopesItem = "advertise"
-)
-
-func NewConnectExternalAccountsRequestScopesItemFromString(s string) (ConnectExternalAccountsRequestScopesItem, error) {
-	switch s {
-	case "advertise":
-		return ConnectExternalAccountsRequestScopesItemAdvertise, nil
-	}
-	var t ConnectExternalAccountsRequestScopesItem
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c ConnectExternalAccountsRequestScopesItem) Ptr() *ConnectExternalAccountsRequestScopesItem {
 	return &c
 }
 

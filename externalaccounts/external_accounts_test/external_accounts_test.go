@@ -140,7 +140,7 @@ func TestExternalAccountsConnectWithWireMock(
 	)
 	request := &whopsdk.ConnectExternalAccountsRequest{
 		Platform:    whopsdk.ConnectExternalAccountsRequestPlatformTiktok,
-		RedirectURL: "https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/ads/settings",
+		RedirectURL: "https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/settings",
 	}
 	_, invocationErr := client.ExternalAccounts.Connect(
 		context.TODO(),

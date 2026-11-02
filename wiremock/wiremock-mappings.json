@@ -7159,7 +7159,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"authorize_url\": \"https://accounts.snapchat.com/login/oauth2/authorize\"\n}",
+        "body": "{\n  \"authorize_url\": \"https://appcenter.intuit.com/connect/oauth2\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -13819,7 +13819,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"authorize_url\": \"https://accounts.snapchat.com/login/oauth2/authorize\"\n}",
+        "body": "{\n  \"authorize_url\": \"https://appcenter.intuit.com/connect/oauth2\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
