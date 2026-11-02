@@ -822,7 +822,7 @@ type ListBusinessesResponseDataItem struct {
 	Object        ListBusinessesResponseDataItemObject        `json:"object" url:"object"`
 	// The owner of the referred business.
 	Owner *ListBusinessesResponseDataItemOwner `json:"owner,omitempty" url:"owner,omitempty"`
-	// The referrer's commission rate for each income source, expressed as a fraction (0.3 = 30%).
+	// The commission rate this referral pays for each income source, as a fraction (0.3 = 30%). A solo partner earns it directly; the team of a referring partner business splits it by their shares.
 	PayoutPercentages *ListBusinessesResponseDataItemPayoutPercentages `json:"payout_percentages" url:"payout_percentages"`
 	// When the referral expires.
 	ReferralExpiresAt *time.Time `json:"referral_expires_at,omitempty" url:"referral_expires_at,omitempty"`
@@ -2258,7 +2258,7 @@ var listBusinessesResponseDataItemPayoutPercentagesNullableFields = map[string]*
 	"withdrawal":       listBusinessesResponseDataItemPayoutPercentagesFieldWithdrawal,
 }
 
-// The referrer's commission rate for each income source, expressed as a fraction (0.3 = 30%).
+// The commission rate this referral pays for each income source, as a fraction (0.3 = 30%). A solo partner earns it directly; the team of a referring partner business splits it by their shares.
 type ListBusinessesResponseDataItemPayoutPercentages struct {
 	// Share of the referred business's Whop Ads spend.
 	AdSpend *float64 `json:"ad_spend,omitempty" url:"ad_spend,omitempty"`
@@ -3122,30 +3122,32 @@ var (
 	resendInviteBusinessesResponseFieldFirstTierPartner                    = big.NewInt(1 << 7)
 	resendInviteBusinessesResponseFieldID                                  = big.NewInt(1 << 8)
 	resendInviteBusinessesResponseFieldMyPartnerTier                       = big.NewInt(1 << 9)
-	resendInviteBusinessesResponseFieldObject                              = big.NewInt(1 << 10)
-	resendInviteBusinessesResponseFieldOwner                               = big.NewInt(1 << 11)
-	resendInviteBusinessesResponseFieldPayoutPercentages                   = big.NewInt(1 << 12)
-	resendInviteBusinessesResponseFieldPendingOwnerInvites                 = big.NewInt(1 << 13)
-	resendInviteBusinessesResponseFieldReferralExpiresAt                   = big.NewInt(1 << 14)
-	resendInviteBusinessesResponseFieldReferralStartedAt                   = big.NewInt(1 << 15)
-	resendInviteBusinessesResponseFieldReferringBusiness                   = big.NewInt(1 << 16)
-	resendInviteBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 17)
-	resendInviteBusinessesResponseFieldStatus                              = big.NewInt(1 << 18)
-	resendInviteBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 19)
+	resendInviteBusinessesResponseFieldMyPayoutPercentages                 = big.NewInt(1 << 10)
+	resendInviteBusinessesResponseFieldObject                              = big.NewInt(1 << 11)
+	resendInviteBusinessesResponseFieldOwner                               = big.NewInt(1 << 12)
+	resendInviteBusinessesResponseFieldPayoutPercentages                   = big.NewInt(1 << 13)
+	resendInviteBusinessesResponseFieldPendingOwnerInvites                 = big.NewInt(1 << 14)
+	resendInviteBusinessesResponseFieldReferralExpiresAt                   = big.NewInt(1 << 15)
+	resendInviteBusinessesResponseFieldReferralStartedAt                   = big.NewInt(1 << 16)
+	resendInviteBusinessesResponseFieldReferringBusiness                   = big.NewInt(1 << 17)
+	resendInviteBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 18)
+	resendInviteBusinessesResponseFieldStatus                              = big.NewInt(1 << 19)
+	resendInviteBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 20)
 )
 
 // resendInviteBusinessesResponseNullableFields maps the wire names of ResendInviteBusinessesResponse's nullable fields (required or optional) to their field bits.
 var resendInviteBusinessesResponseNullableFields = map[string]*big.Int{
-	"account":             resendInviteBusinessesResponseFieldAccount,
-	"blueprint_partner":   resendInviteBusinessesResponseFieldBlueprintPartner,
-	"commission_advance":  resendInviteBusinessesResponseFieldCommissionAdvance,
-	"deal_closed_reason":  resendInviteBusinessesResponseFieldDealClosedReason,
-	"first_tier_partner":  resendInviteBusinessesResponseFieldFirstTierPartner,
-	"owner":               resendInviteBusinessesResponseFieldOwner,
-	"referral_expires_at": resendInviteBusinessesResponseFieldReferralExpiresAt,
-	"referral_started_at": resendInviteBusinessesResponseFieldReferralStartedAt,
-	"referring_business":  resendInviteBusinessesResponseFieldReferringBusiness,
-	"second_tier_partner": resendInviteBusinessesResponseFieldSecondTierPartner,
+	"account":               resendInviteBusinessesResponseFieldAccount,
+	"blueprint_partner":     resendInviteBusinessesResponseFieldBlueprintPartner,
+	"commission_advance":    resendInviteBusinessesResponseFieldCommissionAdvance,
+	"deal_closed_reason":    resendInviteBusinessesResponseFieldDealClosedReason,
+	"first_tier_partner":    resendInviteBusinessesResponseFieldFirstTierPartner,
+	"my_payout_percentages": resendInviteBusinessesResponseFieldMyPayoutPercentages,
+	"owner":                 resendInviteBusinessesResponseFieldOwner,
+	"referral_expires_at":   resendInviteBusinessesResponseFieldReferralExpiresAt,
+	"referral_started_at":   resendInviteBusinessesResponseFieldReferralStartedAt,
+	"referring_business":    resendInviteBusinessesResponseFieldReferringBusiness,
+	"second_tier_partner":   resendInviteBusinessesResponseFieldSecondTierPartner,
 }
 
 type ResendInviteBusinessesResponse struct {
@@ -3168,10 +3170,12 @@ type ResendInviteBusinessesResponse struct {
 	ID string `json:"id" url:"id"`
 	// Which tier the caller earns on for this business: `first` (they referred the owner), `second` (they referred the first-tier partner), or `blueprint` (the business deployed a site from their blueprint).
 	MyPartnerTier ResendInviteBusinessesResponseMyPartnerTier `json:"my_partner_tier" url:"my_partner_tier"`
-	Object        ResendInviteBusinessesResponseObject        `json:"object" url:"object"`
+	// The caller's own cut of each income source on this business, as a fraction of the same base as `payout_percentages` (0.12 = 12%). A solo partner's cut is the whole rate. On a referring partner business's deal it is the caller's team share of the rate: a closer earns their share, a manager earns their share minus the share of the person below them, and a deal participant earns their cut. Null when the caller earns nothing on this business, as with an account API key.
+	MyPayoutPercentages *ResendInviteBusinessesResponseMyPayoutPercentages `json:"my_payout_percentages,omitempty" url:"my_payout_percentages,omitempty"`
+	Object              ResendInviteBusinessesResponseObject               `json:"object" url:"object"`
 	// The owner of the referred business.
 	Owner *ResendInviteBusinessesResponseOwner `json:"owner,omitempty" url:"owner,omitempty"`
-	// The referrer's commission rate for each income source, expressed as a fraction (0.3 = 30%).
+	// The commission rate this referral pays for each income source, as a fraction (0.3 = 30%). A solo partner earns it directly; the team of a referring partner business splits it by their shares.
 	PayoutPercentages *ResendInviteBusinessesResponsePayoutPercentages `json:"payout_percentages" url:"payout_percentages"`
 	// Outstanding invites to claim ownership of this business. Present only to the first-tier partner's whop.com session, or the Whop CLI or MCP with the `partner:handoff` scope, and empty once every invite has been accepted.
 	PendingOwnerInvites []*ResendInviteBusinessesResponsePendingOwnerInvitesItem `json:"pending_owner_invites,omitempty" url:"pending_owner_invites,omitempty"`
@@ -3262,6 +3266,13 @@ func (r *ResendInviteBusinessesResponse) GetMyPartnerTier() ResendInviteBusiness
 		return ""
 	}
 	return r.MyPartnerTier
+}
+
+func (r *ResendInviteBusinessesResponse) GetMyPayoutPercentages() *ResendInviteBusinessesResponseMyPayoutPercentages {
+	if r == nil {
+		return nil
+	}
+	return r.MyPayoutPercentages
 }
 
 func (r *ResendInviteBusinessesResponse) GetObject() ResendInviteBusinessesResponseObject {
@@ -3418,6 +3429,13 @@ func (r *ResendInviteBusinessesResponse) SetID(id string) {
 func (r *ResendInviteBusinessesResponse) SetMyPartnerTier(myPartnerTier ResendInviteBusinessesResponseMyPartnerTier) {
 	r.MyPartnerTier = myPartnerTier
 	r.require(resendInviteBusinessesResponseFieldMyPartnerTier)
+}
+
+// SetMyPayoutPercentages sets the MyPayoutPercentages field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponse) SetMyPayoutPercentages(myPayoutPercentages *ResendInviteBusinessesResponseMyPayoutPercentages) {
+	r.MyPayoutPercentages = myPayoutPercentages
+	r.require(resendInviteBusinessesResponseFieldMyPayoutPercentages)
 }
 
 // SetObject sets the Object field and marks it as non-optional;
@@ -4383,6 +4401,178 @@ func (r ResendInviteBusinessesResponseMyPartnerTier) Ptr() *ResendInviteBusiness
 	return &r
 }
 
+var (
+	resendInviteBusinessesResponseMyPayoutPercentagesFieldAdSpend         = big.NewInt(1 << 0)
+	resendInviteBusinessesResponseMyPayoutPercentagesFieldCardInterchange = big.NewInt(1 << 1)
+	resendInviteBusinessesResponseMyPayoutPercentagesFieldSales           = big.NewInt(1 << 2)
+	resendInviteBusinessesResponseMyPayoutPercentagesFieldTransfer        = big.NewInt(1 << 3)
+	resendInviteBusinessesResponseMyPayoutPercentagesFieldWithdrawal      = big.NewInt(1 << 4)
+)
+
+// resendInviteBusinessesResponseMyPayoutPercentagesNullableFields maps the wire names of ResendInviteBusinessesResponseMyPayoutPercentages's nullable fields (required or optional) to their field bits.
+var resendInviteBusinessesResponseMyPayoutPercentagesNullableFields = map[string]*big.Int{
+	"ad_spend":         resendInviteBusinessesResponseMyPayoutPercentagesFieldAdSpend,
+	"card_interchange": resendInviteBusinessesResponseMyPayoutPercentagesFieldCardInterchange,
+	"sales":            resendInviteBusinessesResponseMyPayoutPercentagesFieldSales,
+	"transfer":         resendInviteBusinessesResponseMyPayoutPercentagesFieldTransfer,
+	"withdrawal":       resendInviteBusinessesResponseMyPayoutPercentagesFieldWithdrawal,
+}
+
+// The caller's own cut of each income source on this business, as a fraction of the same base as `payout_percentages` (0.12 = 12%). A solo partner's cut is the whole rate. On a referring partner business's deal it is the caller's team share of the rate: a closer earns their share, a manager earns their share minus the share of the person below them, and a deal participant earns their cut. Null when the caller earns nothing on this business, as with an account API key.
+type ResendInviteBusinessesResponseMyPayoutPercentages struct {
+	// The caller's share of the referred business's Whop Ads spend.
+	AdSpend *float64 `json:"ad_spend,omitempty" url:"ad_spend,omitempty"`
+	// The caller's share of Whop's profit from card interchange.
+	CardInterchange *float64 `json:"card_interchange,omitempty" url:"card_interchange,omitempty"`
+	// The caller's share of Whop's profit from product sales.
+	Sales *float64 `json:"sales,omitempty" url:"sales,omitempty"`
+	// The caller's share of Whop's profit from platform balance transfers.
+	Transfer *float64 `json:"transfer,omitempty" url:"transfer,omitempty"`
+	// The caller's share of Whop's profit from withdrawals.
+	Withdrawal *float64 `json:"withdrawal,omitempty" url:"withdrawal,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResendInviteBusinessesResponseMyPayoutPercentages) GetAdSpend() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.AdSpend
+}
+
+func (r *ResendInviteBusinessesResponseMyPayoutPercentages) GetCardInterchange() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.CardInterchange
+}
+
+func (r *ResendInviteBusinessesResponseMyPayoutPercentages) GetSales() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.Sales
+}
+
+func (r *ResendInviteBusinessesResponseMyPayoutPercentages) GetTransfer() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.Transfer
+}
+
+func (r *ResendInviteBusinessesResponseMyPayoutPercentages) GetWithdrawal() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.Withdrawal
+}
+
+func (r *ResendInviteBusinessesResponseMyPayoutPercentages) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResendInviteBusinessesResponseMyPayoutPercentages) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetAdSpend sets the AdSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseMyPayoutPercentages) SetAdSpend(adSpend *float64) {
+	r.AdSpend = adSpend
+	r.require(resendInviteBusinessesResponseMyPayoutPercentagesFieldAdSpend)
+}
+
+// SetCardInterchange sets the CardInterchange field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseMyPayoutPercentages) SetCardInterchange(cardInterchange *float64) {
+	r.CardInterchange = cardInterchange
+	r.require(resendInviteBusinessesResponseMyPayoutPercentagesFieldCardInterchange)
+}
+
+// SetSales sets the Sales field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseMyPayoutPercentages) SetSales(sales *float64) {
+	r.Sales = sales
+	r.require(resendInviteBusinessesResponseMyPayoutPercentagesFieldSales)
+}
+
+// SetTransfer sets the Transfer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseMyPayoutPercentages) SetTransfer(transfer *float64) {
+	r.Transfer = transfer
+	r.require(resendInviteBusinessesResponseMyPayoutPercentagesFieldTransfer)
+}
+
+// SetWithdrawal sets the Withdrawal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResendInviteBusinessesResponseMyPayoutPercentages) SetWithdrawal(withdrawal *float64) {
+	r.Withdrawal = withdrawal
+	r.require(resendInviteBusinessesResponseMyPayoutPercentagesFieldWithdrawal)
+}
+
+func (r *ResendInviteBusinessesResponseMyPayoutPercentages) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResendInviteBusinessesResponseMyPayoutPercentages
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResendInviteBusinessesResponseMyPayoutPercentages(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, resendInviteBusinessesResponseMyPayoutPercentagesNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResendInviteBusinessesResponseMyPayoutPercentages) MarshalJSON() ([]byte, error) {
+	type embed ResendInviteBusinessesResponseMyPayoutPercentages
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResendInviteBusinessesResponseMyPayoutPercentages) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
 type ResendInviteBusinessesResponseObject string
 
 const (
@@ -4675,7 +4865,7 @@ var resendInviteBusinessesResponsePayoutPercentagesNullableFields = map[string]*
 	"withdrawal":       resendInviteBusinessesResponsePayoutPercentagesFieldWithdrawal,
 }
 
-// The referrer's commission rate for each income source, expressed as a fraction (0.3 = 30%).
+// The commission rate this referral pays for each income source, as a fraction (0.3 = 30%). A solo partner earns it directly; the team of a referring partner business splits it by their shares.
 type ResendInviteBusinessesResponsePayoutPercentages struct {
 	// Share of the referred business's Whop Ads spend.
 	AdSpend *float64 `json:"ad_spend,omitempty" url:"ad_spend,omitempty"`
@@ -5498,16 +5688,17 @@ var (
 	retrieveBusinessesResponseFieldFirstTierPartner                    = big.NewInt(1 << 9)
 	retrieveBusinessesResponseFieldID                                  = big.NewInt(1 << 10)
 	retrieveBusinessesResponseFieldMyPartnerTier                       = big.NewInt(1 << 11)
-	retrieveBusinessesResponseFieldObject                              = big.NewInt(1 << 12)
-	retrieveBusinessesResponseFieldOwner                               = big.NewInt(1 << 13)
-	retrieveBusinessesResponseFieldPayoutPercentages                   = big.NewInt(1 << 14)
-	retrieveBusinessesResponseFieldPendingOwnerInvites                 = big.NewInt(1 << 15)
-	retrieveBusinessesResponseFieldReferralExpiresAt                   = big.NewInt(1 << 16)
-	retrieveBusinessesResponseFieldReferralStartedAt                   = big.NewInt(1 << 17)
-	retrieveBusinessesResponseFieldReferringBusiness                   = big.NewInt(1 << 18)
-	retrieveBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 19)
-	retrieveBusinessesResponseFieldStatus                              = big.NewInt(1 << 20)
-	retrieveBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 21)
+	retrieveBusinessesResponseFieldMyPayoutPercentages                 = big.NewInt(1 << 12)
+	retrieveBusinessesResponseFieldObject                              = big.NewInt(1 << 13)
+	retrieveBusinessesResponseFieldOwner                               = big.NewInt(1 << 14)
+	retrieveBusinessesResponseFieldPayoutPercentages                   = big.NewInt(1 << 15)
+	retrieveBusinessesResponseFieldPendingOwnerInvites                 = big.NewInt(1 << 16)
+	retrieveBusinessesResponseFieldReferralExpiresAt                   = big.NewInt(1 << 17)
+	retrieveBusinessesResponseFieldReferralStartedAt                   = big.NewInt(1 << 18)
+	retrieveBusinessesResponseFieldReferringBusiness                   = big.NewInt(1 << 19)
+	retrieveBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 20)
+	retrieveBusinessesResponseFieldStatus                              = big.NewInt(1 << 21)
+	retrieveBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 22)
 )
 
 // retrieveBusinessesResponseNullableFields maps the wire names of RetrieveBusinessesResponse's nullable fields (required or optional) to their field bits.
@@ -5518,6 +5709,7 @@ var retrieveBusinessesResponseNullableFields = map[string]*big.Int{
 	"commission_advance_rate": retrieveBusinessesResponseFieldCommissionAdvanceRate,
 	"deal_closed_reason":      retrieveBusinessesResponseFieldDealClosedReason,
 	"first_tier_partner":      retrieveBusinessesResponseFieldFirstTierPartner,
+	"my_payout_percentages":   retrieveBusinessesResponseFieldMyPayoutPercentages,
 	"owner":                   retrieveBusinessesResponseFieldOwner,
 	"referral_expires_at":     retrieveBusinessesResponseFieldReferralExpiresAt,
 	"referral_started_at":     retrieveBusinessesResponseFieldReferralStartedAt,
@@ -5549,10 +5741,12 @@ type RetrieveBusinessesResponse struct {
 	ID string `json:"id" url:"id"`
 	// Which tier the caller earns on for this business: `first` (they referred the owner), `second` (they referred the first-tier partner), or `blueprint` (the business deployed a site from their blueprint).
 	MyPartnerTier RetrieveBusinessesResponseMyPartnerTier `json:"my_partner_tier" url:"my_partner_tier"`
-	Object        RetrieveBusinessesResponseObject        `json:"object" url:"object"`
+	// The caller's own cut of each income source on this business, as a fraction of the same base as `payout_percentages` (0.12 = 12%). A solo partner's cut is the whole rate. On a referring partner business's deal it is the caller's team share of the rate: a closer earns their share, a manager earns their share minus the share of the person below them, and a deal participant earns their cut. Null when the caller earns nothing on this business, as with an account API key.
+	MyPayoutPercentages *RetrieveBusinessesResponseMyPayoutPercentages `json:"my_payout_percentages,omitempty" url:"my_payout_percentages,omitempty"`
+	Object              RetrieveBusinessesResponseObject               `json:"object" url:"object"`
 	// The owner of the referred business.
 	Owner *RetrieveBusinessesResponseOwner `json:"owner,omitempty" url:"owner,omitempty"`
-	// The referrer's commission rate for each income source, expressed as a fraction (0.3 = 30%).
+	// The commission rate this referral pays for each income source, as a fraction (0.3 = 30%). A solo partner earns it directly; the team of a referring partner business splits it by their shares.
 	PayoutPercentages *RetrieveBusinessesResponsePayoutPercentages `json:"payout_percentages" url:"payout_percentages"`
 	// Outstanding invites to claim ownership of this business. Present only to the first-tier partner's whop.com session, or the Whop CLI or MCP with the `partner:handoff` scope, and empty once every invite has been accepted.
 	PendingOwnerInvites []*RetrieveBusinessesResponsePendingOwnerInvitesItem `json:"pending_owner_invites,omitempty" url:"pending_owner_invites,omitempty"`
@@ -5657,6 +5851,13 @@ func (r *RetrieveBusinessesResponse) GetMyPartnerTier() RetrieveBusinessesRespon
 		return ""
 	}
 	return r.MyPartnerTier
+}
+
+func (r *RetrieveBusinessesResponse) GetMyPayoutPercentages() *RetrieveBusinessesResponseMyPayoutPercentages {
+	if r == nil {
+		return nil
+	}
+	return r.MyPayoutPercentages
 }
 
 func (r *RetrieveBusinessesResponse) GetObject() RetrieveBusinessesResponseObject {
@@ -5827,6 +6028,13 @@ func (r *RetrieveBusinessesResponse) SetID(id string) {
 func (r *RetrieveBusinessesResponse) SetMyPartnerTier(myPartnerTier RetrieveBusinessesResponseMyPartnerTier) {
 	r.MyPartnerTier = myPartnerTier
 	r.require(retrieveBusinessesResponseFieldMyPartnerTier)
+}
+
+// SetMyPayoutPercentages sets the MyPayoutPercentages field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponse) SetMyPayoutPercentages(myPayoutPercentages *RetrieveBusinessesResponseMyPayoutPercentages) {
+	r.MyPayoutPercentages = myPayoutPercentages
+	r.require(retrieveBusinessesResponseFieldMyPayoutPercentages)
 }
 
 // SetObject sets the Object field and marks it as non-optional;
@@ -6792,6 +7000,178 @@ func (r RetrieveBusinessesResponseMyPartnerTier) Ptr() *RetrieveBusinessesRespon
 	return &r
 }
 
+var (
+	retrieveBusinessesResponseMyPayoutPercentagesFieldAdSpend         = big.NewInt(1 << 0)
+	retrieveBusinessesResponseMyPayoutPercentagesFieldCardInterchange = big.NewInt(1 << 1)
+	retrieveBusinessesResponseMyPayoutPercentagesFieldSales           = big.NewInt(1 << 2)
+	retrieveBusinessesResponseMyPayoutPercentagesFieldTransfer        = big.NewInt(1 << 3)
+	retrieveBusinessesResponseMyPayoutPercentagesFieldWithdrawal      = big.NewInt(1 << 4)
+)
+
+// retrieveBusinessesResponseMyPayoutPercentagesNullableFields maps the wire names of RetrieveBusinessesResponseMyPayoutPercentages's nullable fields (required or optional) to their field bits.
+var retrieveBusinessesResponseMyPayoutPercentagesNullableFields = map[string]*big.Int{
+	"ad_spend":         retrieveBusinessesResponseMyPayoutPercentagesFieldAdSpend,
+	"card_interchange": retrieveBusinessesResponseMyPayoutPercentagesFieldCardInterchange,
+	"sales":            retrieveBusinessesResponseMyPayoutPercentagesFieldSales,
+	"transfer":         retrieveBusinessesResponseMyPayoutPercentagesFieldTransfer,
+	"withdrawal":       retrieveBusinessesResponseMyPayoutPercentagesFieldWithdrawal,
+}
+
+// The caller's own cut of each income source on this business, as a fraction of the same base as `payout_percentages` (0.12 = 12%). A solo partner's cut is the whole rate. On a referring partner business's deal it is the caller's team share of the rate: a closer earns their share, a manager earns their share minus the share of the person below them, and a deal participant earns their cut. Null when the caller earns nothing on this business, as with an account API key.
+type RetrieveBusinessesResponseMyPayoutPercentages struct {
+	// The caller's share of the referred business's Whop Ads spend.
+	AdSpend *float64 `json:"ad_spend,omitempty" url:"ad_spend,omitempty"`
+	// The caller's share of Whop's profit from card interchange.
+	CardInterchange *float64 `json:"card_interchange,omitempty" url:"card_interchange,omitempty"`
+	// The caller's share of Whop's profit from product sales.
+	Sales *float64 `json:"sales,omitempty" url:"sales,omitempty"`
+	// The caller's share of Whop's profit from platform balance transfers.
+	Transfer *float64 `json:"transfer,omitempty" url:"transfer,omitempty"`
+	// The caller's share of Whop's profit from withdrawals.
+	Withdrawal *float64 `json:"withdrawal,omitempty" url:"withdrawal,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveBusinessesResponseMyPayoutPercentages) GetAdSpend() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.AdSpend
+}
+
+func (r *RetrieveBusinessesResponseMyPayoutPercentages) GetCardInterchange() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.CardInterchange
+}
+
+func (r *RetrieveBusinessesResponseMyPayoutPercentages) GetSales() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.Sales
+}
+
+func (r *RetrieveBusinessesResponseMyPayoutPercentages) GetTransfer() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.Transfer
+}
+
+func (r *RetrieveBusinessesResponseMyPayoutPercentages) GetWithdrawal() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.Withdrawal
+}
+
+func (r *RetrieveBusinessesResponseMyPayoutPercentages) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrieveBusinessesResponseMyPayoutPercentages) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetAdSpend sets the AdSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponseMyPayoutPercentages) SetAdSpend(adSpend *float64) {
+	r.AdSpend = adSpend
+	r.require(retrieveBusinessesResponseMyPayoutPercentagesFieldAdSpend)
+}
+
+// SetCardInterchange sets the CardInterchange field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponseMyPayoutPercentages) SetCardInterchange(cardInterchange *float64) {
+	r.CardInterchange = cardInterchange
+	r.require(retrieveBusinessesResponseMyPayoutPercentagesFieldCardInterchange)
+}
+
+// SetSales sets the Sales field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponseMyPayoutPercentages) SetSales(sales *float64) {
+	r.Sales = sales
+	r.require(retrieveBusinessesResponseMyPayoutPercentagesFieldSales)
+}
+
+// SetTransfer sets the Transfer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponseMyPayoutPercentages) SetTransfer(transfer *float64) {
+	r.Transfer = transfer
+	r.require(retrieveBusinessesResponseMyPayoutPercentagesFieldTransfer)
+}
+
+// SetWithdrawal sets the Withdrawal field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponseMyPayoutPercentages) SetWithdrawal(withdrawal *float64) {
+	r.Withdrawal = withdrawal
+	r.require(retrieveBusinessesResponseMyPayoutPercentagesFieldWithdrawal)
+}
+
+func (r *RetrieveBusinessesResponseMyPayoutPercentages) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrieveBusinessesResponseMyPayoutPercentages
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrieveBusinessesResponseMyPayoutPercentages(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveBusinessesResponseMyPayoutPercentagesNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrieveBusinessesResponseMyPayoutPercentages) MarshalJSON() ([]byte, error) {
+	type embed RetrieveBusinessesResponseMyPayoutPercentages
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrieveBusinessesResponseMyPayoutPercentages) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
 type RetrieveBusinessesResponseObject string
 
 const (
@@ -7084,7 +7464,7 @@ var retrieveBusinessesResponsePayoutPercentagesNullableFields = map[string]*big.
 	"withdrawal":       retrieveBusinessesResponsePayoutPercentagesFieldWithdrawal,
 }
 
-// The referrer's commission rate for each income source, expressed as a fraction (0.3 = 30%).
+// The commission rate this referral pays for each income source, as a fraction (0.3 = 30%). A solo partner earns it directly; the team of a referring partner business splits it by their shares.
 type RetrieveBusinessesResponsePayoutPercentages struct {
 	// Share of the referred business's Whop Ads spend.
 	AdSpend *float64 `json:"ad_spend,omitempty" url:"ad_spend,omitempty"`
