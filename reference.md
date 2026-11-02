@@ -39203,7 +39203,7 @@ client.Trades.Create(
 <dl>
 <dd>
 
-**instrumentType:** `*whopsdk.CreateTradesRequestInstrumentType` — `perpetual` or `spot`. Required for an order. A spot order first switches the trading account to Hyperliquid's unified account mode, where spot and perpetuals share one USDC balance.
+**instrumentType:** `*whopsdk.CreateTradesRequestInstrumentType` — `perpetual` or `spot`. Required for an order. A spot order is a market order that swaps in the wallet and does not use the trading balance.
     
 </dd>
 </dl>
@@ -39219,7 +39219,7 @@ client.Trades.Create(
 <dl>
 <dd>
 
-**market:** `*string` — The market: a perpetual such as `BTC`, or for spot a pair priced in USDC such as `HYPE/USDC`. Required for an order or close, and a close takes only a perpetual; not accepted for a deposit or withdraw.
+**market:** `*string` — The market: a perpetual such as `BTC`, or for spot an asset the wallet can swap into, such as `BTC` or `XAUT`. Required for an order or close, and a close takes only a perpetual; not accepted for a deposit or withdraw.
     
 </dd>
 </dl>
@@ -39235,7 +39235,7 @@ client.Trades.Create(
 <dl>
 <dd>
 
-**notional:** `*string` — Only for an order. The order value in USD, as a decimal string; the size is rounded down to the market's decimals. Send exactly one of `size` or `notional`.
+**notional:** `*string` — Only for an order. The order value in USD, as a decimal string; the size is rounded down to the market's decimals. Send exactly one of `size` or `notional`; a spot buy takes `notional`, the USDT0 to spend.
     
 </dd>
 </dl>
@@ -39275,7 +39275,7 @@ client.Trades.Create(
 <dl>
 <dd>
 
-**size:** `*string` — Only for an order. The size in units of the market, as a decimal string, with at most the market's size decimals. Send exactly one of `size` or `notional`. The order must be worth at least 10 USD, unless reduce-only.
+**size:** `*string` — Only for an order. The size in units of the market, as a decimal string, with at most the market's size decimals. Send exactly one of `size` or `notional`; a spot sell takes `size`. A perpetual order must be worth at least 10 USD, unless reduce-only.
     
 </dd>
 </dl>
@@ -39283,7 +39283,7 @@ client.Trades.Create(
 <dl>
 <dd>
 
-**slippageBps:** `*int` — Only for a market order or a close. The worst price as basis points from the mid price, from 1 to 1000; defaults to 100.
+**slippageBps:** `*int` — Only for a market order or a close. The worst price as basis points from the mid price, from 1 to 1000; defaults to 100 for a perpetual, and to the swap route's own default for spot.
     
 </dd>
 </dl>
@@ -39291,7 +39291,7 @@ client.Trades.Create(
 <dl>
 <dd>
 
-**type_:** `whopsdk.CreateTradesRequestType` — `order` places one order from the trading balance, setting cross `leverage` first on a perpetual; when the balance is short, it bridges the USDT0 it needs from the wallet first. `deposit` bridges `amount` USDT0 from the wallet to the trading balance. `withdraw` sends `amount` USDC (or `all`) from the trading balance back to the wallet. `close` closes the whole position in `market` with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
+**type_:** `whopsdk.CreateTradesRequestType` — `order` places one order. A perpetual order trades from the trading balance, setting cross `leverage` first; when the balance is short, it bridges the USDT0 it needs from the wallet first. A spot order swaps between USDT0 and the asset in the wallet. `deposit` bridges `amount` USDT0 from the wallet to the trading balance. `withdraw` sends `amount` USDC (or `all`) from the trading balance back to the wallet. `close` closes the whole position in `market` with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
     
 </dd>
 </dl>
@@ -47623,7 +47623,7 @@ client.Stats.TimeSeries.Retrieve(
 
 Returns every market you can trade on Whop.
 
-- **Spot:** listed by symbol: `BTC`, `ETH`, `SOL` and `XAUT` (gold).
+- **Spot:** listed by symbol: `BTC`, `SOL` and `XAUT` (gold).
 - **Perpetuals:** such as `BTC`. Send the `id` as `market` when you create a trade.
 
 The same symbol can appear twice, once as a perpetual and once as spot, so use `id` together with `instrument_type` to tell them apart. Results are sorted by `id`, then `instrument_type`.

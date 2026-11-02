@@ -34,15 +34,15 @@ type CreateTradesRequest struct {
 	Amount *string `json:"amount,omitempty" url:"-"`
 	// Only for an order. Your own ID for the trade, 1 to 128 characters, unique for the account. Sending it again with the same order returns the same trade; with a different order it answers `409`.
 	ClientOrderID *string `json:"client_order_id,omitempty" url:"-"`
-	// `perpetual` or `spot`. Required for an order. A spot order first switches the trading account to Hyperliquid's unified account mode, where spot and perpetuals share one USDC balance.
+	// `perpetual` or `spot`. Required for an order. A spot order is a market order that swaps in the wallet and does not use the trading balance.
 	InstrumentType *CreateTradesRequestInstrumentType `json:"instrument_type,omitempty" url:"-"`
 	// Only for a perpetual order. The cross leverage, from 1 to the market's maximum. Required unless `reduce_only`; not accepted on a reduce-only order.
 	Leverage *int `json:"leverage,omitempty" url:"-"`
-	// The market: a perpetual such as `BTC`, or for spot a pair priced in USDC such as `HYPE/USDC`. Required for an order or close, and a close takes only a perpetual; not accepted for a deposit or withdraw.
+	// The market: a perpetual such as `BTC`, or for spot an asset the wallet can swap into, such as `BTC` or `XAUT`. Required for an order or close, and a close takes only a perpetual; not accepted for a deposit or withdraw.
 	Market *string `json:"market,omitempty" url:"-"`
 	// Only for an order. Free-form string-to-string annotations: up to 50 keys of at most 40 characters, values up to 500 characters.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
-	// Only for an order. The order value in USD, as a decimal string; the size is rounded down to the market's decimals. Send exactly one of `size` or `notional`.
+	// Only for an order. The order value in USD, as a decimal string; the size is rounded down to the market's decimals. Send exactly one of `size` or `notional`; a spot buy takes `notional`, the USDT0 to spend.
 	Notional *string `json:"notional,omitempty" url:"-"`
 	// `market` fills now within `slippage_bps` of the mid price; `limit` fills now at `price` or better. Anything unfilled is canceled. Required for an order.
 	OrderType *CreateTradesRequestOrderType `json:"order_type,omitempty" url:"-"`
@@ -52,11 +52,11 @@ type CreateTradesRequest struct {
 	ReduceOnly *bool `json:"reduce_only,omitempty" url:"-"`
 	// `buy` or `sell`. Required for an order.
 	Side *CreateTradesRequestSide `json:"side,omitempty" url:"-"`
-	// Only for an order. The size in units of the market, as a decimal string, with at most the market's size decimals. Send exactly one of `size` or `notional`. The order must be worth at least 10 USD, unless reduce-only.
+	// Only for an order. The size in units of the market, as a decimal string, with at most the market's size decimals. Send exactly one of `size` or `notional`; a spot sell takes `size`. A perpetual order must be worth at least 10 USD, unless reduce-only.
 	Size *string `json:"size,omitempty" url:"-"`
-	// Only for a market order or a close. The worst price as basis points from the mid price, from 1 to 1000; defaults to 100.
+	// Only for a market order or a close. The worst price as basis points from the mid price, from 1 to 1000; defaults to 100 for a perpetual, and to the swap route's own default for spot.
 	SlippageBps *int `json:"slippage_bps,omitempty" url:"-"`
-	// `order` places one order from the trading balance, setting cross `leverage` first on a perpetual; when the balance is short, it bridges the USDT0 it needs from the wallet first. `deposit` bridges `amount` USDT0 from the wallet to the trading balance. `withdraw` sends `amount` USDC (or `all`) from the trading balance back to the wallet. `close` closes the whole position in `market` with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
+	// `order` places one order. A perpetual order trades from the trading balance, setting cross `leverage` first; when the balance is short, it bridges the USDT0 it needs from the wallet first. A spot order swaps between USDT0 and the asset in the wallet. `deposit` bridges `amount` USDT0 from the wallet to the trading balance. `withdraw` sends `amount` USDC (or `all`) from the trading balance back to the wallet. `close` closes the whole position in `market` with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
 	Type CreateTradesRequestType `json:"type" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -389,9 +389,9 @@ var tradeNullableFields = map[string]*big.Int{
 type Trade struct {
 	// The account that owns the trading wallet, prefixed `biz_`. `null` when a user owns it.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// The USDT0 that a deposit, or an order short of trading balance, sends from the wallet, or the USDC that a withdraw sends back, in native units, as a decimal string. A withdraw of `all` shows what it sent once it finishes. `null` otherwise.
+	// The USDT0 that a deposit, a spot buy, or a perpetual order short of trading balance, sends from the wallet, or the USDC that a withdraw sends back, in native units, as a decimal string. A withdraw of `all` shows what it sent once it finishes. `null` otherwise.
 	Amount *string `json:"amount,omitempty" url:"amount,omitempty"`
-	// The average fill price of the order, in USD, as a decimal string. `null` when it is not known.
+	// The average fill price of the order, in USD, as a decimal string. For spot, the price the swap was quoted at. `null` when it is not known.
 	AveragePrice *string `json:"average_price,omitempty" url:"average_price,omitempty"`
 	// The caller's own ID for the trade, unique for the account. `null` when none was sent.
 	ClientOrderID *string `json:"client_order_id,omitempty" url:"client_order_id,omitempty"`
@@ -403,7 +403,7 @@ type Trade struct {
 	ExternalOrderID *string `json:"external_order_id,omitempty" url:"external_order_id,omitempty"`
 	// Why the trade failed, or `null`.
 	FailureCode *TradeFailureCode `json:"failure_code,omitempty" url:"failure_code,omitempty"`
-	// The size the order filled, in units of the market, as a decimal string. `null` until it fills.
+	// The size the order filled, in units of the market, as a decimal string. For a spot buy, the amount the swap was quoted to deliver. `null` until it fills.
 	FilledSize *string `json:"filled_size,omitempty" url:"filled_size,omitempty"`
 	// Where the money is when the trade did not complete as asked: `wallet`, `trading_account`, or `unknown` while a person checks it. `null` otherwise.
 	FundsLocation *TradeFundsLocation `json:"funds_location,omitempty" url:"funds_location,omitempty"`
@@ -413,7 +413,7 @@ type Trade struct {
 	InstrumentType *TradeInstrumentType `json:"instrument_type,omitempty" url:"instrument_type,omitempty"`
 	// The cross leverage set before an opening perpetual order. `null` for a spot order, close, deposit, withdraw or reduce-only order.
 	Leverage *int `json:"leverage,omitempty" url:"leverage,omitempty"`
-	// The market, for example `BTC` for a perpetual or `HYPE/USDC` for spot. `null` for a deposit or withdraw.
+	// The market, for example `BTC` for a perpetual or `XAUT` for spot. `null` for a deposit or withdraw.
 	Market *string `json:"market,omitempty" url:"market,omitempty"`
 	// Free-form string-to-string annotations stored on the trade.
 	Metadata map[string]any `json:"metadata" url:"metadata"`
@@ -432,7 +432,7 @@ type Trade struct {
 	Status TradeStatus `json:"status" url:"status"`
 	// `partial_fill` when the order filled only part of its size. `null` otherwise.
 	StatusDetail *TradeStatusDetail `json:"status_detail,omitempty" url:"status_detail,omitempty"`
-	// `order` places one order from the trading balance. `deposit` bridges USDT0 from the wallet to the trading balance. `withdraw` sends USDC from the trading balance back to the wallet. `close` closes the whole position in one market with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
+	// `order` places one order: a perpetual order trades from the trading balance, a spot order swaps between USDT0 and the asset in the wallet. `deposit` bridges USDT0 from the wallet to the trading balance. `withdraw` sends USDC from the trading balance back to the wallet. `close` closes the whole position in one market with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
 	Type TradeType `json:"type" url:"type"`
 	// When the trade last changed, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
@@ -1100,7 +1100,7 @@ func (t TradeStatusDetail) Ptr() *TradeStatusDetail {
 	return &t
 }
 
-// `order` places one order from the trading balance. `deposit` bridges USDT0 from the wallet to the trading balance. `withdraw` sends USDC from the trading balance back to the wallet. `close` closes the whole position in one market with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
+// `order` places one order: a perpetual order trades from the trading balance, a spot order swaps between USDT0 and the asset in the wallet. `deposit` bridges USDT0 from the wallet to the trading balance. `withdraw` sends USDC from the trading balance back to the wallet. `close` closes the whole position in one market with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
 type TradeType string
 
 const (
@@ -1129,7 +1129,7 @@ func (t TradeType) Ptr() *TradeType {
 	return &t
 }
 
-// `perpetual` or `spot`. Required for an order. A spot order first switches the trading account to Hyperliquid's unified account mode, where spot and perpetuals share one USDC balance.
+// `perpetual` or `spot`. Required for an order. A spot order is a market order that swaps in the wallet and does not use the trading balance.
 type CreateTradesRequestInstrumentType string
 
 const (
@@ -1198,7 +1198,7 @@ func (c CreateTradesRequestSide) Ptr() *CreateTradesRequestSide {
 	return &c
 }
 
-// `order` places one order from the trading balance, setting cross `leverage` first on a perpetual; when the balance is short, it bridges the USDT0 it needs from the wallet first. `deposit` bridges `amount` USDT0 from the wallet to the trading balance. `withdraw` sends `amount` USDC (or `all`) from the trading balance back to the wallet. `close` closes the whole position in `market` with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
+// `order` places one order. A perpetual order trades from the trading balance, setting cross `leverage` first; when the balance is short, it bridges the USDT0 it needs from the wallet first. A spot order swaps between USDT0 and the asset in the wallet. `deposit` bridges `amount` USDT0 from the wallet to the trading balance. `withdraw` sends `amount` USDC (or `all`) from the trading balance back to the wallet. `close` closes the whole position in `market` with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
 type CreateTradesRequestType string
 
 const (
