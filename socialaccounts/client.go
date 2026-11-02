@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-10-30"
+		apiVersionDateDefault := "2026-11-02"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -151,7 +151,7 @@ func (c *Client) Create(
 //
 //	request := &whopsdk.ConnectSocialAccountsRequest{
 //	    Platform: whopsdk.ConnectSocialAccountsRequestPlatformTiktok,
-//	    RedirectURL: "https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/ads/settings",
+//	    RedirectURL: "https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/settings",
 //	}
 //	client.SocialAccounts.Connect(
 //	    context.TODO(),

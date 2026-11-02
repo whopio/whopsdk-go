@@ -140,7 +140,7 @@ func TestSocialAccountsConnectWithWireMock(
 	)
 	request := &whopsdk.ConnectSocialAccountsRequest{
 		Platform:    whopsdk.ConnectSocialAccountsRequestPlatformTiktok,
-		RedirectURL: "https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/ads/settings",
+		RedirectURL: "https://whop.com/dashboard/biz_xxxxxxxxxxxxxx/settings",
 	}
 	_, invocationErr := client.SocialAccounts.Connect(
 		context.TODO(),

@@ -34,14 +34,6 @@ func TestSettersConnectSocialAccountsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetScopes", func(t *testing.T) {
-		obj := &ConnectSocialAccountsRequest{}
-		var fernTestValueScopes []ConnectSocialAccountsRequestScopesItem
-		obj.SetScopes(fernTestValueScopes)
-		assert.Equal(t, fernTestValueScopes, obj.Scopes)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 }
 
 func TestSettersMarkExplicitConnectSocialAccountsRequest(t *testing.T) {
@@ -115,37 +107,6 @@ func TestSettersMarkExplicitConnectSocialAccountsRequest(t *testing.T) {
 
 		// Act
 		obj.SetRedirectURL(fernTestValueRedirectURL)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetScopes_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ConnectSocialAccountsRequest{}
-		var fernTestValueScopes []ConnectSocialAccountsRequestScopesItem
-
-		// Act
-		obj.SetScopes(fernTestValueScopes)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4077,13 +4038,6 @@ func TestEnumConnectSocialAccountsRequestPlatform(t *testing.T) {
 		assert.Equal(t, ConnectSocialAccountsRequestPlatform("x"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_snapchat", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewConnectSocialAccountsRequestPlatformFromString("snapchat")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ConnectSocialAccountsRequestPlatform("snapchat"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_quickbooks", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewConnectSocialAccountsRequestPlatformFromString("quickbooks")
@@ -4098,28 +4052,6 @@ func TestEnumConnectSocialAccountsRequestPlatform(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewConnectSocialAccountsRequestPlatformFromString("tiktok")
-		assert.NoError(t, err)
-		ptr := val.Ptr()
-		assert.NotNil(t, ptr)
-		assert.Equal(t, val, *ptr)
-	})
-}
-
-func TestEnumConnectSocialAccountsRequestScopesItem(t *testing.T) {
-	t.Run("NewFromString_advertise", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewConnectSocialAccountsRequestScopesItemFromString("advertise")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ConnectSocialAccountsRequestScopesItem("advertise"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewConnectSocialAccountsRequestScopesItemFromString("invalid_value_that_does_not_exist")
-		assert.Error(t, err)
-	})
-
-	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewConnectSocialAccountsRequestScopesItemFromString("advertise")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
