@@ -22414,7 +22414,15 @@ client.Invoices.Create(
 <dl>
 <dd>
 
-**metadata:** `map[string]string` — Up to 50 caller-owned string key/value pairs.
+**memo:** `*string` — A note to the customer, shown on the invoice email, PDF, and checkout page with its line breaks kept. Trimmed; `null` or blank clears it. Can be updated on draft, open, or uncollectible invoices.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]string` — Up to 50 caller-owned string key/value pairs. The `invoice_memo` key is reserved and ignored; set `memo` instead.
     
 </dd>
 </dl>
@@ -22514,7 +22522,7 @@ client.Invoices.Retrieve(
 <dl>
 <dd>
 
-Updates draft invoice items and billing fields. Recipient-only updates are also allowed on unpaid invoices. Edit customer contact details through the member API. A draft with no saved payment method and no scheduled send needs `invoice:update`, `invoice:create`, or `payment:charge`; every other update, and setting `payment_method_id`, needs `payment:charge`.
+Updates draft invoice items and billing fields. Updates of only `recipient_emails` and `memo` are also allowed on unpaid invoices. Edit customer contact details through the member API. A draft with no saved payment method and no scheduled send needs `invoice:update`, `invoice:create`, or `payment:charge`; every other update, and setting `payment_method_id`, needs `payment:charge`.
 </dd>
 </dl>
 </dd>
@@ -22606,7 +22614,15 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**metadata:** `map[string]string` — Up to 50 caller-owned string key/value pairs.
+**memo:** `*string` — A note to the customer, shown on the invoice email, PDF, and checkout page with its line breaks kept. Trimmed; `null` or blank clears it. Can be updated on draft, open, or uncollectible invoices.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]string` — Up to 50 caller-owned string key/value pairs. The `invoice_memo` key is reserved and ignored; set `memo` instead.
     
 </dd>
 </dl>
