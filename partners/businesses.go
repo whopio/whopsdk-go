@@ -123,7 +123,7 @@ var (
 type ListBusinessesRequest struct {
 	// List the referrals this business's team members made, past members included, instead of the authenticated user's own. Requires company:basic:read on that business, which every team member holds, and cannot be combined with user_id. The owner role reads every referral; anyone else reads only the referrals made by themselves and by the people under them in the org chart.
 	ReferringAccountID *string `json:"-" url:"referring_account_id,omitempty"`
-	// Filter the authenticated partner's CPA offers by status. Use offered for every state after qualification.
+	// Filter the authenticated partner's CPA offers by status, or with referring_account_id, the CPA terms of the reps the caller manages. Use offered for every state after qualification.
 	AdvanceStatus *ListBusinessesRequestAdvanceStatus `json:"-" url:"advance_status,omitempty"`
 	// Filter by referral status.
 	Status *ListBusinessesRequestStatus `json:"-" url:"status,omitempty"`
@@ -804,7 +804,7 @@ type ListBusinessesResponseDataItem struct {
 	Account *ListBusinessesResponseDataItemAccount `json:"account,omitempty" url:"account,omitempty"`
 	// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
 	BlueprintPartner *ListBusinessesResponseDataItemBlueprintPartner `json:"blueprint_partner,omitempty" url:"blueprint_partner,omitempty"`
-	// CPA terms for the referring partner. Omitted for other callers. An offer token requires partner:commission_advance:accept permission.
+	// CPA terms for the referring partner. Read with referring_account_id, the business's owner sees every rep's terms and a manager sees those of the reps below them, read-only. Omitted for other callers. An offer token is only for the referring partner and requires partner:commission_advance:accept permission.
 	CommissionAdvance *v2.PartnerAdvance `json:"commission_advance,omitempty" url:"commission_advance,omitempty"`
 	// Whether this referral meets the partner and ownership requirements for saving commission advance projections. Returned only to the referring partner; existing advance terms and update permissions still apply.
 	CommissionAdvanceProjectionsAllowed *bool `json:"commission_advance_projections_allowed,omitempty" url:"commission_advance_projections_allowed,omitempty"`
@@ -3153,7 +3153,7 @@ type ResendInviteBusinessesResponse struct {
 	Account *ResendInviteBusinessesResponseAccount `json:"account,omitempty" url:"account,omitempty"`
 	// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
 	BlueprintPartner *ResendInviteBusinessesResponseBlueprintPartner `json:"blueprint_partner,omitempty" url:"blueprint_partner,omitempty"`
-	// CPA terms for the referring partner. Omitted for other callers. An offer token requires partner:commission_advance:accept permission.
+	// CPA terms for the referring partner. Read with referring_account_id, the business's owner sees every rep's terms and a manager sees those of the reps below them, read-only. Omitted for other callers. An offer token is only for the referring partner and requires partner:commission_advance:accept permission.
 	CommissionAdvance *v2.PartnerAdvance `json:"commission_advance,omitempty" url:"commission_advance,omitempty"`
 	// Whether this referral meets the partner and ownership requirements for saving commission advance projections. Returned only to the referring partner; existing advance terms and update permissions still apply.
 	CommissionAdvanceProjectionsAllowed *bool `json:"commission_advance_projections_allowed,omitempty" url:"commission_advance_projections_allowed,omitempty"`
@@ -5530,7 +5530,7 @@ type RetrieveBusinessesResponse struct {
 	Account *RetrieveBusinessesResponseAccount `json:"account,omitempty" url:"account,omitempty"`
 	// The partner whose blueprint the business deployed. Null unless this is a blueprint referral.
 	BlueprintPartner *RetrieveBusinessesResponseBlueprintPartner `json:"blueprint_partner,omitempty" url:"blueprint_partner,omitempty"`
-	// CPA terms for the referring partner. Omitted for other callers. An offer token requires partner:commission_advance:accept permission.
+	// CPA terms for the referring partner. Read with referring_account_id, the business's owner sees every rep's terms and a manager sees those of the reps below them, read-only. Omitted for other callers. An offer token is only for the referring partner and requires partner:commission_advance:accept permission.
 	CommissionAdvance *v2.PartnerAdvance `json:"commission_advance,omitempty" url:"commission_advance,omitempty"`
 	// The most the referring organization advances per business, in USD. Returned only with commission_advance_rate.
 	CommissionAdvanceCap *v2.Money `json:"commission_advance_cap,omitempty" url:"commission_advance_cap,omitempty"`
