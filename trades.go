@@ -10,6 +10,34 @@ import (
 )
 
 var (
+	cancelTradesRequestFieldID = big.NewInt(1 << 0)
+)
+
+type CancelTradesRequest struct {
+	// Trade ID, prefixed `tint_`.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CancelTradesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelTradesRequest) SetID(id string) {
+	c.ID = id
+	c.require(cancelTradesRequestFieldID)
+}
+
+var (
 	createTradesRequestFieldAccountID      = big.NewInt(1 << 0)
 	createTradesRequestFieldAmount         = big.NewInt(1 << 1)
 	createTradesRequestFieldClientOrderID  = big.NewInt(1 << 2)
