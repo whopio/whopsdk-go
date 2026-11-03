@@ -68564,13 +68564,21 @@ func (t *TradingCumulativeFunding) String() string {
 
 var (
 	tradingHyperliquidAccountFieldAddress                = big.NewInt(1 << 0)
-	tradingHyperliquidAccountFieldWebsocketSubscriptions = big.NewInt(1 << 1)
-	tradingHyperliquidAccountFieldWebsocketURL           = big.NewInt(1 << 2)
+	tradingHyperliquidAccountFieldDepositable            = big.NewInt(1 << 1)
+	tradingHyperliquidAccountFieldWebsocketSubscriptions = big.NewInt(1 << 2)
+	tradingHyperliquidAccountFieldWebsocketURL           = big.NewInt(1 << 3)
 )
+
+// tradingHyperliquidAccountNullableFields maps the wire names of TradingHyperliquidAccount's nullable fields (required or optional) to their field bits.
+var tradingHyperliquidAccountNullableFields = map[string]*big.Int{
+	"depositable": tradingHyperliquidAccountFieldDepositable,
+}
 
 type TradingHyperliquidAccount struct {
 	// Lowercase wallet address that holds the Hyperliquid account.
-	Address                string                          `json:"address" url:"address"`
+	Address string `json:"address" url:"address"`
+	// USDT0 in the Whop wallet on Plasma that a `deposit` trade can move into this account, as a decimal string. `null` when the chain could not be read.
+	Depositable            *string                         `json:"depositable,omitempty" url:"depositable,omitempty"`
 	WebsocketSubscriptions []*TradingWebsocketSubscription `json:"websocket_subscriptions" url:"websocket_subscriptions"`
 	// Hyperliquid WebSocket URL to connect to directly for live updates.
 	WebsocketURL string `json:"websocket_url" url:"websocket_url"`
@@ -68587,6 +68595,13 @@ func (t *TradingHyperliquidAccount) GetAddress() string {
 		return ""
 	}
 	return t.Address
+}
+
+func (t *TradingHyperliquidAccount) GetDepositable() *string {
+	if t == nil {
+		return nil
+	}
+	return t.Depositable
 }
 
 func (t *TradingHyperliquidAccount) GetWebsocketSubscriptions() []*TradingWebsocketSubscription {
@@ -68626,6 +68641,13 @@ func (t *TradingHyperliquidAccount) SetAddress(address string) {
 	t.require(tradingHyperliquidAccountFieldAddress)
 }
 
+// SetDepositable sets the Depositable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingHyperliquidAccount) SetDepositable(depositable *string) {
+	t.Depositable = depositable
+	t.require(tradingHyperliquidAccountFieldDepositable)
+}
+
 // SetWebsocketSubscriptions sets the WebsocketSubscriptions field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (t *TradingHyperliquidAccount) SetWebsocketSubscriptions(websocketSubscriptions []*TradingWebsocketSubscription) {
@@ -68652,6 +68674,13 @@ func (t *TradingHyperliquidAccount) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	t.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, tradingHyperliquidAccountNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		t.require(presentFields)
+	}
 	t.rawJSON = json.RawMessage(data)
 	return nil
 }
