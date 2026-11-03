@@ -112,6 +112,14 @@ func TestSettersCreateDomainsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSubdomain", func(t *testing.T) {
+		obj := &CreateDomainsRequest{}
+		var fernTestValueSubdomain *CreateDomainsRequestSubdomain
+		obj.SetSubdomain(fernTestValueSubdomain)
+		assert.Equal(t, fernTestValueSubdomain, obj.Subdomain)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetTransfer", func(t *testing.T) {
 		obj := &CreateDomainsRequest{}
 		var fernTestValueTransfer *CreateDomainsRequestTransfer
@@ -333,6 +341,37 @@ func TestSettersMarkExplicitCreateDomainsRequest(t *testing.T) {
 
 		// Act
 		obj.SetRegistration(fernTestValueRegistration)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubdomain_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateDomainsRequest{}
+		var fernTestValueSubdomain *CreateDomainsRequestSubdomain
+
+		// Act
+		obj.SetSubdomain(fernTestValueSubdomain)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -614,6 +653,14 @@ func TestSettersListDomainsRequest(t *testing.T) {
 		var fernTestValuePlatform *ListDomainsRequestPlatform
 		obj.SetPlatform(fernTestValuePlatform)
 		assert.Equal(t, fernTestValuePlatform, obj.Platform)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSubdomain", func(t *testing.T) {
+		obj := &ListDomainsRequest{}
+		var fernTestValueSubdomain *ListDomainsRequestSubdomain
+		obj.SetSubdomain(fernTestValueSubdomain)
+		assert.Equal(t, fernTestValueSubdomain, obj.Subdomain)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1125,6 +1172,37 @@ func TestSettersMarkExplicitListDomainsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetSubdomain_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListDomainsRequest{}
+		var fernTestValueSubdomain *ListDomainsRequestSubdomain
+
+		// Act
+		obj.SetSubdomain(fernTestValueSubdomain)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetWebsite_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1453,6 +1531,14 @@ func TestSettersDomain(t *testing.T) {
 		var fernTestValueStatus *DomainStatus
 		obj.SetStatus(fernTestValueStatus)
 		assert.Equal(t, fernTestValueStatus, obj.Status)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSubdomain", func(t *testing.T) {
+		obj := &Domain{}
+		var fernTestValueSubdomain *DomainSubdomain
+		obj.SetSubdomain(fernTestValueSubdomain)
+		assert.Equal(t, fernTestValueSubdomain, obj.Subdomain)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -2007,6 +2093,39 @@ func TestGettersDomain(t *testing.T) {
 			}
 		}()
 		_ = obj.GetStatus() // Should return zero value
+	})
+
+	t.Run("GetSubdomain", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Domain{}
+		var expected *DomainSubdomain
+		obj.Subdomain = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSubdomain(), "getter should return the property value")
+	})
+
+	t.Run("GetSubdomain_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Domain{}
+		obj.Subdomain = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSubdomain(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSubdomain_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Domain
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSubdomain() // Should return zero value
 	})
 
 	t.Run("GetTransfer", func(t *testing.T) {
@@ -2617,6 +2736,37 @@ func TestSettersMarkExplicitDomain(t *testing.T) {
 
 		// Act
 		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubdomain_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Domain{}
+		var fernTestValueSubdomain *DomainSubdomain
+
+		// Act
+		obj.SetSubdomain(fernTestValueSubdomain)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3974,6 +4124,14 @@ func TestSettersDomainListItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSubdomain", func(t *testing.T) {
+		obj := &DomainListItem{}
+		var fernTestValueSubdomain *DomainSubdomain
+		obj.SetSubdomain(fernTestValueSubdomain)
+		assert.Equal(t, fernTestValueSubdomain, obj.Subdomain)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetTransfer", func(t *testing.T) {
 		obj := &DomainListItem{}
 		var fernTestValueTransfer *DomainTransfer
@@ -4492,6 +4650,39 @@ func TestGettersDomainListItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetStatus() // Should return zero value
+	})
+
+	t.Run("GetSubdomain", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainListItem{}
+		var expected *DomainSubdomain
+		obj.Subdomain = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSubdomain(), "getter should return the property value")
+	})
+
+	t.Run("GetSubdomain_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainListItem{}
+		obj.Subdomain = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSubdomain(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSubdomain_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DomainListItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSubdomain() // Should return zero value
 	})
 
 	t.Run("GetTransfer", func(t *testing.T) {
@@ -5071,6 +5262,37 @@ func TestSettersMarkExplicitDomainListItem(t *testing.T) {
 
 		// Act
 		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubdomain_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainListItem{}
+		var fernTestValueSubdomain *DomainSubdomain
+
+		// Act
+		obj.SetSubdomain(fernTestValueSubdomain)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7605,6 +7827,77 @@ func TestSettersMarkExplicitDomainStats(t *testing.T) {
 
 		// Act
 		obj.SetUniqueVisitorsLast7Days(fernTestValueUniqueVisitorsLast7Days)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersDomainSubdomain(t *testing.T) {
+	t.Run("SetState", func(t *testing.T) {
+		obj := &DomainSubdomain{}
+		var fernTestValueState DomainSubdomainState
+		obj.SetState(fernTestValueState)
+		assert.Equal(t, fernTestValueState, obj.State)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersDomainSubdomain(t *testing.T) {
+	t.Run("GetState", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainSubdomain{}
+		var expected DomainSubdomainState
+		obj.State = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetState(), "getter should return the property value")
+	})
+
+	t.Run("GetState_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DomainSubdomain
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetState() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitDomainSubdomain(t *testing.T) {
+	t.Run("SetState_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainSubdomain{}
+		var fernTestValueState DomainSubdomainState
+
+		// Act
+		obj.SetState(fernTestValueState)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -11152,6 +11445,14 @@ func TestSettersUpdateDomainsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSubdomain", func(t *testing.T) {
+		obj := &UpdateDomainsRequest{}
+		var fernTestValueSubdomain *UpdateDomainsRequestSubdomain
+		obj.SetSubdomain(fernTestValueSubdomain)
+		assert.Equal(t, fernTestValueSubdomain, obj.Subdomain)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetTransfer", func(t *testing.T) {
 		obj := &UpdateDomainsRequest{}
 		var fernTestValueTransfer *UpdateDomainsRequestTransfer
@@ -11342,6 +11643,37 @@ func TestSettersMarkExplicitUpdateDomainsRequest(t *testing.T) {
 
 		// Act
 		obj.SetRegistration(fernTestValueRegistration)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubdomain_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDomainsRequest{}
+		var fernTestValueSubdomain *UpdateDomainsRequestSubdomain
+
+		// Act
+		obj.SetSubdomain(fernTestValueSubdomain)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -11587,6 +11919,39 @@ func TestJSONMarshalingCreateDomainsRequestRegistration(t *testing.T) {
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
 		var obj CreateDomainsRequestRegistration
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingCreateDomainsRequestSubdomain(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateDomainsRequestSubdomain{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreateDomainsRequestSubdomain
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateDomainsRequestSubdomain
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateDomainsRequestSubdomain
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -12186,6 +12551,39 @@ func TestJSONMarshalingDomainStats(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingDomainSubdomain(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &DomainSubdomain{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled DomainSubdomain
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj DomainSubdomain
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj DomainSubdomain
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingDomainTransfer(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -12615,6 +13013,39 @@ func TestJSONMarshalingUpdateDomainsRequestRegistration(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingUpdateDomainsRequestSubdomain(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateDomainsRequestSubdomain{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled UpdateDomainsRequestSubdomain
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateDomainsRequestSubdomain
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateDomainsRequestSubdomain
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingUpdateDomainsRequestTransfer(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -12729,6 +13160,7 @@ func TestRequiredNullableRoundTripDomain(t *testing.T) {
 		"registration",
 		"stats",
 		"status",
+		"subdomain",
 		"transfer",
 		"updated_at",
 		"verification",
@@ -12745,7 +13177,7 @@ func TestRequiredNullableRoundTripDomain(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Domain
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"apple_pay":null,"availability":null,"created_at":null,"email":null,"id":null,"owned_by":null,"pixel":null,"platform":null,"public_record":null,"registration":null,"stats":null,"status":null,"transfer":null,"updated_at":null,"verification":null,"website":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"apple_pay":null,"availability":null,"created_at":null,"email":null,"id":null,"owned_by":null,"pixel":null,"platform":null,"public_record":null,"registration":null,"stats":null,"status":null,"subdomain":null,"transfer":null,"updated_at":null,"verification":null,"website":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -12875,6 +13307,7 @@ func TestRequiredNullableRoundTripDomainListItem(t *testing.T) {
 		"registration",
 		"stats",
 		"status",
+		"subdomain",
 		"transfer",
 		"updated_at",
 		"verification",
@@ -12891,7 +13324,7 @@ func TestRequiredNullableRoundTripDomainListItem(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj DomainListItem
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"apple_pay":null,"availability":null,"created_at":null,"email":null,"id":null,"owned_by":null,"pixel":null,"platform":null,"registration":null,"stats":null,"status":null,"transfer":null,"updated_at":null,"verification":null,"website":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"apple_pay":null,"availability":null,"created_at":null,"email":null,"id":null,"owned_by":null,"pixel":null,"platform":null,"registration":null,"stats":null,"status":null,"subdomain":null,"transfer":null,"updated_at":null,"verification":null,"website":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -13860,6 +14293,22 @@ func TestStringCreateDomainsRequestRegistration(t *testing.T) {
 	})
 }
 
+func TestStringCreateDomainsRequestSubdomain(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateDomainsRequestSubdomain{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateDomainsRequestSubdomain
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringCreateDomainsRequestTransfer(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -14148,6 +14597,22 @@ func TestStringDomainStats(t *testing.T) {
 	})
 }
 
+func TestStringDomainSubdomain(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &DomainSubdomain{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DomainSubdomain
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringDomainTransfer(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -14351,6 +14816,22 @@ func TestStringUpdateDomainsRequestRegistration(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *UpdateDomainsRequestRegistration
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringUpdateDomainsRequestSubdomain(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateDomainsRequestSubdomain{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateDomainsRequestSubdomain
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -14575,6 +15056,13 @@ func TestEnumDomainIssueCapability(t *testing.T) {
 		val, err := NewDomainIssueCapabilityFromString("platform")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, DomainIssueCapability("platform"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_subdomain", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainIssueCapabilityFromString("subdomain")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainIssueCapability("subdomain"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_website", func(t *testing.T) {
@@ -14863,6 +15351,27 @@ func TestEnumDomainIssueCode(t *testing.T) {
 		val, err := NewDomainIssueCodeFromString("email_verification_failed")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, DomainIssueCode("email_verification_failed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_subdomain_needs_whop_domain", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainIssueCodeFromString("subdomain_needs_whop_domain")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainIssueCode("subdomain_needs_whop_domain"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_root_domain_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainIssueCodeFromString("root_domain_pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainIssueCode("root_domain_pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_root_domain_needs_action", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainIssueCodeFromString("root_domain_needs_action")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainIssueCode("root_domain_needs_action"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -15194,6 +15703,49 @@ func TestEnumDomainStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewDomainStatusFromString("idle")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumDomainSubdomainState(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainSubdomainStateFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainSubdomainState("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ready", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainSubdomainStateFromString("ready")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainSubdomainState("ready"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_action_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainSubdomainStateFromString("action_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainSubdomainState("action_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_releasing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainSubdomainStateFromString("releasing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainSubdomainState("releasing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewDomainSubdomainStateFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewDomainSubdomainStateFromString("pending")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -15710,6 +16262,56 @@ func TestEnumListDomainsRequestStatus(t *testing.T) {
 	})
 }
 
+func TestEnumListDomainsRequestSubdomain(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestSubdomainFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestSubdomain("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ready", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestSubdomainFromString("ready")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestSubdomain("ready"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_action_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestSubdomainFromString("action_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestSubdomain("action_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_releasing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestSubdomainFromString("releasing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestSubdomain("releasing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_any", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDomainsRequestSubdomainFromString("any")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDomainsRequestSubdomain("any"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListDomainsRequestSubdomainFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListDomainsRequestSubdomainFromString("pending")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumListDomainsRequestTransfer(t *testing.T) {
 	t.Run("NewFromString_pending", func(t *testing.T) {
 		t.Parallel()
@@ -16101,6 +16703,29 @@ func TestExtraPropertiesCreateDomainsRequestRegistration(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *CreateDomainsRequestRegistration
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesCreateDomainsRequestSubdomain(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateDomainsRequestSubdomain{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateDomainsRequestSubdomain
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
@@ -16520,6 +17145,29 @@ func TestExtraPropertiesDomainStats(t *testing.T) {
 	})
 }
 
+func TestExtraPropertiesDomainSubdomain(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &DomainSubdomain{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *DomainSubdomain
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
 func TestExtraPropertiesDomainTransfer(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
@@ -16814,6 +17462,29 @@ func TestExtraPropertiesUpdateDomainsRequestRegistration(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *UpdateDomainsRequestRegistration
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesUpdateDomainsRequestSubdomain(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateDomainsRequestSubdomain{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateDomainsRequestSubdomain
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
