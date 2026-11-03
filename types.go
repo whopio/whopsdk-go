@@ -6514,7 +6514,7 @@ type AdPlatformIssue struct {
 	ResourceID *string `json:"resource_id,omitempty" url:"resource_id,omitempty"`
 	// The type of resource the issue is attached to.
 	ResourceType AdPlatformIssueResourceType `json:"resource_type" url:"resource_type"`
-	// A short, creator-facing title for the issue.
+	// A short, creator-facing title for the issue: the rule a content-review rejection names, or a generic label.
 	Title string `json:"title" url:"title"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -73288,6 +73288,7 @@ const (
 	WebhookEventAdUpdated                          WebhookEvent = "ad.updated"
 	WebhookEventAppInstallationCreated             WebhookEvent = "app_installation.created"
 	WebhookEventAppInstallationDeleted             WebhookEvent = "app_installation.deleted"
+	WebhookEventEventsCreated                      WebhookEvent = "events.created"
 	WebhookEventChatMessageCreated                 WebhookEvent = "chat.message.created"
 	WebhookEventChatReactionCreated                WebhookEvent = "chat.reaction.created"
 	WebhookEventPaymentCreated                     WebhookEvent = "payment.created"
@@ -73477,6 +73478,8 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventAppInstallationCreated, nil
 	case "app_installation.deleted":
 		return WebhookEventAppInstallationDeleted, nil
+	case "events.created":
+		return WebhookEventEventsCreated, nil
 	case "chat.message.created":
 		return WebhookEventChatMessageCreated, nil
 	case "chat.reaction.created":
