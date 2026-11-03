@@ -93,11 +93,11 @@ type CreatePayoutsRequest struct {
 	PayoutMethodID string `json:"payout_method_id" url:"-"`
 	// Whether the parent platform covers the payout fee instead of the account being paid out. Omit to use the platform's configured fee coverage policy; pass `false` to opt out of it. `true` is only accepted for accounts that belong to a platform, and requires the platform's policy to cover this payout method's category or a caller authorized to manage the platform's child account fees.
 	PlatformCoversFees *bool `json:"platform_covers_fees,omitempty" url:"-"`
-	// The server-signed quote_token returned by POST /payouts/quotes. Send it when the ledger account's payout_quote_required is true. A business with quote enforcement on refuses a payout without it with the invalid_payout_quote error type. When provided, Whop will not commit a provider payout below the destination amount the quote showed.
-	QuoteToken *string `json:"quote_token,omitempty" url:"-"`
+	// Required server-signed token from POST /payouts/quotes, matching this payout's owner, method, amount, currency and speed. Submit before expiry. For an uncertain payout, retry with the original token and Idempotency-Key to recover the existing payout.
+	QuoteToken string `json:"quote_token" url:"-"`
 	// How fast the funds should arrive. `instant` is only accepted when the account and payout method are eligible; otherwise the payout is rejected.
 	Speed *CreatePayoutsRequestSpeed `json:"speed,omitempty" url:"-"`
-	// Payment description sent with the payout, such as an invoice number or what it pays for. Must be 5-80 printable ASCII characters (letters, digits, spaces and punctuation); Whop sends it in upper case. Not all countries and banks show it on the recipient's statement, and it is not the sender name. Without a `quote_token`, omit or pass `null` to use the default descriptor. With a `quote_token`, set this value when creating the quote; the payout request may omit it but cannot add or change it.
+	// Payment description sent with the payout, such as an invoice number or what it pays for. Must be 5-80 printable ASCII characters (letters, digits, spaces and punctuation); Whop sends it in upper case. Not all countries and banks show it on the recipient's statement, and it is not the sender name. Set this value when creating the quote; the payout request may omit it but cannot add or change it.
 	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"-"`
 	// User to pay out from, prefixed `user_`. Provide exactly one of `account_id` or `user_id`.
 	UserID *string `json:"user_id,omitempty" url:"-"`
@@ -180,7 +180,7 @@ func (c *CreatePayoutsRequest) SetPlatformCoversFees(platformCoversFees *bool) {
 
 // SetQuoteToken sets the QuoteToken field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreatePayoutsRequest) SetQuoteToken(quoteToken *string) {
+func (c *CreatePayoutsRequest) SetQuoteToken(quoteToken string) {
 	c.QuoteToken = quoteToken
 	c.require(createPayoutsRequestFieldQuoteToken)
 }
