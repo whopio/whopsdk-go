@@ -93,7 +93,7 @@ var (
 )
 
 type DeleteTeamMembersRequest struct {
-	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque.
+	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_` or `minv_`. Treat it as opaque.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -299,7 +299,7 @@ var (
 )
 
 type RetrieveTeamMembersRequest struct {
-	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque.
+	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_` or `minv_`. Treat it as opaque.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -357,7 +357,7 @@ type TeamMember struct {
 	DirectReportsCount *int `json:"direct_reports_count,omitempty" url:"direct_reports_count,omitempty"`
 	// The member's email address. For an invite sent to an email with no Whop account yet, the invited address; for accepted members and invites to an existing Whop account, `null` unless the caller holds the `company:authorized_user:email:read` scope.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
-	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque: both member prefixes are accepted wherever a team member ID is.
+	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_` or `minv_`. Treat it as opaque: both member prefixes are accepted wherever a team member ID is.
 	ID string `json:"id" url:"id"`
 	// Whether this member is an agent (app-controlled account) rather than a human team member. Always `false` for invites.
 	IsAgent bool `json:"is_agent" url:"is_agent"`
@@ -1318,7 +1318,7 @@ var (
 )
 
 type UpdateTeamMembersRequest struct {
-	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque.
+	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_` or `minv_`. Treat it as opaque.
 	ID string `json:"-" url:"-"`
 	// The system role to grant. Custom roles cannot be granted through the API. The Partner role provides view-only access.
 	Role *UpdateTeamMembersRequestRole `json:"role,omitempty" url:"-"`

@@ -10,7 +10,7 @@
     "packageName": "whopsdk",
     "clientName": "Whop"
   },
-  "originGitCommit": "e14a2871acbcbb8ef5393a7aa25baecbbae8fa68",
+  "originGitCommit": "3752ea82e261de609674064855075de38ddb467a",
   "originGitCommitIsDirty": false,
   "invokedBy": "ci",
   "requestedVersion": "2.7.0",

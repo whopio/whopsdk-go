@@ -60,7 +60,8 @@ var (
 	retrievePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 18)
 	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 19)
 	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 20)
-	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 21)
+	retrievePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 21)
+	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 22)
 )
 
 // retrievePreferencesResponseNullableFields maps the wire names of RetrievePreferencesResponse's nullable fields (required or optional) to their field bits.
@@ -119,6 +120,8 @@ type RetrievePreferencesResponse struct {
 	PreferredSettlementCurrency *RetrievePreferencesResponsePreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"preferred_settlement_currency,omitempty"`
 	// When `preferred_settlement_currency` may next be changed or turned off, as an ISO 8601 timestamp. It can change at most once a day. `null` when it may change now.
 	PreferredSettlementCurrencyChangeableAt *string `json:"preferred_settlement_currency_changeable_at,omitempty" url:"preferred_settlement_currency_changeable_at,omitempty"`
+	// Whether Whop emails customers after a purchase asking them to leave a review. `true` by default. Set it to `false` to stop these emails, including ones already scheduled. They also stop while the account's `send_customer_emails` is `false`.
+	ReviewRequestEmails bool `json:"review_request_emails" url:"review_request_emails"`
 	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
 	SubscriptionFailureBehavior RetrievePreferencesResponseSubscriptionFailureBehavior `json:"subscription_failure_behavior" url:"subscription_failure_behavior"`
 
@@ -274,6 +277,13 @@ func (r *RetrievePreferencesResponse) GetPreferredSettlementCurrencyChangeableAt
 		return nil
 	}
 	return r.PreferredSettlementCurrencyChangeableAt
+}
+
+func (r *RetrievePreferencesResponse) GetReviewRequestEmails() bool {
+	if r == nil {
+		return false
+	}
+	return r.ReviewRequestEmails
 }
 
 func (r *RetrievePreferencesResponse) GetSubscriptionFailureBehavior() RetrievePreferencesResponseSubscriptionFailureBehavior {
@@ -444,6 +454,13 @@ func (r *RetrievePreferencesResponse) SetPreferredSettlementCurrency(preferredSe
 func (r *RetrievePreferencesResponse) SetPreferredSettlementCurrencyChangeableAt(preferredSettlementCurrencyChangeableAt *string) {
 	r.PreferredSettlementCurrencyChangeableAt = preferredSettlementCurrencyChangeableAt
 	r.require(retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt)
+}
+
+// SetReviewRequestEmails sets the ReviewRequestEmails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetReviewRequestEmails(reviewRequestEmails bool) {
+	r.ReviewRequestEmails = reviewRequestEmails
+	r.require(retrievePreferencesResponseFieldReviewRequestEmails)
 }
 
 // SetSubscriptionFailureBehavior sets the SubscriptionFailureBehavior field and marks it as non-optional;
@@ -3348,7 +3365,8 @@ var (
 	updatePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 18)
 	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 19)
 	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 20)
-	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 21)
+	updatePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 21)
+	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 22)
 )
 
 // updatePreferencesResponseNullableFields maps the wire names of UpdatePreferencesResponse's nullable fields (required or optional) to their field bits.
@@ -3407,6 +3425,8 @@ type UpdatePreferencesResponse struct {
 	PreferredSettlementCurrency *UpdatePreferencesResponsePreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"preferred_settlement_currency,omitempty"`
 	// When `preferred_settlement_currency` may next be changed or turned off, as an ISO 8601 timestamp. It can change at most once a day. `null` when it may change now.
 	PreferredSettlementCurrencyChangeableAt *string `json:"preferred_settlement_currency_changeable_at,omitempty" url:"preferred_settlement_currency_changeable_at,omitempty"`
+	// Whether Whop emails customers after a purchase asking them to leave a review. `true` by default. Set it to `false` to stop these emails, including ones already scheduled. They also stop while the account's `send_customer_emails` is `false`.
+	ReviewRequestEmails bool `json:"review_request_emails" url:"review_request_emails"`
 	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
 	SubscriptionFailureBehavior UpdatePreferencesResponseSubscriptionFailureBehavior `json:"subscription_failure_behavior" url:"subscription_failure_behavior"`
 
@@ -3562,6 +3582,13 @@ func (u *UpdatePreferencesResponse) GetPreferredSettlementCurrencyChangeableAt()
 		return nil
 	}
 	return u.PreferredSettlementCurrencyChangeableAt
+}
+
+func (u *UpdatePreferencesResponse) GetReviewRequestEmails() bool {
+	if u == nil {
+		return false
+	}
+	return u.ReviewRequestEmails
 }
 
 func (u *UpdatePreferencesResponse) GetSubscriptionFailureBehavior() UpdatePreferencesResponseSubscriptionFailureBehavior {
@@ -3732,6 +3759,13 @@ func (u *UpdatePreferencesResponse) SetPreferredSettlementCurrency(preferredSett
 func (u *UpdatePreferencesResponse) SetPreferredSettlementCurrencyChangeableAt(preferredSettlementCurrencyChangeableAt *string) {
 	u.PreferredSettlementCurrencyChangeableAt = preferredSettlementCurrencyChangeableAt
 	u.require(updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt)
+}
+
+// SetReviewRequestEmails sets the ReviewRequestEmails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetReviewRequestEmails(reviewRequestEmails bool) {
+	u.ReviewRequestEmails = reviewRequestEmails
+	u.require(updatePreferencesResponseFieldReviewRequestEmails)
 }
 
 // SetSubscriptionFailureBehavior sets the SubscriptionFailureBehavior field and marks it as non-optional;
@@ -5614,7 +5648,8 @@ var (
 	updatePreferencesRequestFieldEconomicIntelligenceDurationKey        = big.NewInt(1 << 12)
 	updatePreferencesRequestFieldFeedbackOptions                        = big.NewInt(1 << 13)
 	updatePreferencesRequestFieldPreferredSettlementCurrency            = big.NewInt(1 << 14)
-	updatePreferencesRequestFieldSubscriptionFailureBehavior            = big.NewInt(1 << 15)
+	updatePreferencesRequestFieldReviewRequestEmails                    = big.NewInt(1 << 15)
+	updatePreferencesRequestFieldSubscriptionFailureBehavior            = big.NewInt(1 << 16)
 )
 
 type UpdatePreferencesRequest struct {
@@ -5648,6 +5683,8 @@ type UpdatePreferencesRequest struct {
 	FeedbackOptions []*UpdatePreferencesRequestFeedbackOptionsItem `json:"feedback_options,omitempty" url:"-"`
 	// Settle every new sale into this currency, regardless of the plan's currency or what the buyer paid in; sales converted this way carry an additional 0.5% FX fee. Pass `null` to go back to settling each sale in its plan's currency. Changing it never converts money already in your balances, and it can change at most once a day (see `preferred_settlement_currency_changeable_at`). Requires the `payout:account:update` scope on your API key.
 	PreferredSettlementCurrency *UpdatePreferencesRequestPreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"-"`
+	// Whether Whop emails customers after a purchase asking them to leave a review. Set it to `false` to stop these emails, including ones already scheduled. Requires the `company:update` scope on your API key.
+	ReviewRequestEmails *bool `json:"review_request_emails,omitempty" url:"-"`
 	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting. Requires company:manage_checkout permission.
 	SubscriptionFailureBehavior *UpdatePreferencesRequestSubscriptionFailureBehavior `json:"subscription_failure_behavior,omitempty" url:"-"`
 
@@ -5767,6 +5804,13 @@ func (u *UpdatePreferencesRequest) SetFeedbackOptions(feedbackOptions []*UpdateP
 func (u *UpdatePreferencesRequest) SetPreferredSettlementCurrency(preferredSettlementCurrency *UpdatePreferencesRequestPreferredSettlementCurrency) {
 	u.PreferredSettlementCurrency = preferredSettlementCurrency
 	u.require(updatePreferencesRequestFieldPreferredSettlementCurrency)
+}
+
+// SetReviewRequestEmails sets the ReviewRequestEmails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetReviewRequestEmails(reviewRequestEmails *bool) {
+	u.ReviewRequestEmails = reviewRequestEmails
+	u.require(updatePreferencesRequestFieldReviewRequestEmails)
 }
 
 // SetSubscriptionFailureBehavior sets the SubscriptionFailureBehavior field and marks it as non-optional;
