@@ -39347,7 +39347,7 @@ client.Trades.Create(
 <dl>
 <dd>
 
-**orderType:** `*whopsdk.CreateTradesRequestOrderType` — `market` fills now within `slippage_bps` of the mid price; `limit` fills now at `price` or better. Anything unfilled is canceled. Required for an order.
+**orderType:** `*whopsdk.CreateTradesRequestOrderType` — `market` fills now within `slippage_bps` of the mid price, and anything unfilled is canceled; `limit` fills at `price` or better, and how long it stays on the book follows `time_in_force`. Required for an order.
     
 </dd>
 </dl>
@@ -39388,6 +39388,14 @@ client.Trades.Create(
 <dd>
 
 **slippageBps:** `*int` — Only for a market order or a close. The worst price as basis points from the mid price, from 1 to 1000; defaults to 100 for a perpetual, and to the swap route's own default for spot.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**timeInForce:** `*whopsdk.CreateTradesRequestTimeInForce` — Only for a perpetual limit order. `good_til_canceled` rests on the book until it fills; `add_liquidity_only` is canceled instead of filling at once; `immediate_or_cancel` fills what it can now and cancels the rest. Defaults to `good_til_canceled`. The trade stays `processing` while the order rests.
     
 </dd>
 </dl>
