@@ -40574,7 +40574,7 @@ type Payment struct {
 	RefundedAt *string `json:"refunded_at,omitempty" url:"refunded_at,omitempty"`
 	// When the earliest response is due on a dispute or Resolution Center case awaiting the account's response, as an ISO 8601 timestamp. Null when nothing awaits a response, or without the permission to read that dispute or case.
 	ResponseDueAt *string `json:"response_due_at,omitempty" url:"response_due_at,omitempty"`
-	// True when the payment is `open` and Whop can attempt the charge again — see `POST /payments/{id}/retry`.
+	// True when the payment is `open` and can be retried by hand with `POST /payments/{id}/retry`: its membership is `active`, `trialing`, or `past_due` (or it is a failed first payment on a `drafted` membership), it is not paid through an invoice payment link, and its one manual retry is not used up. A retry can still be refused when the company cannot currently accept payments.
 	Retryable bool `json:"retryable" url:"retryable"`
 	// Whop's published risk index from 0 (lowest) to 100 (highest), including enforced decision floors. This is not a fraud probability. Null when no score is available.
 	RiskScore *float64 `json:"risk_score,omitempty" url:"risk_score,omitempty"`
@@ -44778,7 +44778,7 @@ type PaymentLegacy struct {
 	Refunds []*PaymentLegacyRefundsItem `json:"refunds" url:"refunds"`
 	// The resolution center cases opened by the customer on this payment. Null if the actor in context does not have the payment:resolution_center_case:read permission.
 	Resolutions []*PaymentLegacyResolutionsItem `json:"resolutions,omitempty" url:"resolutions,omitempty"`
-	// True when the payment status is `open` and its membership is in one of the retry-eligible states (`active`, `trialing`, `completed`, or `past_due`), or when it is a failed initial billing-engine payment on a `drafted` membership with an unlimited-stock plan; otherwise false. Used to decide if Whop can attempt the charge again.
+	// True when the payment is `open`, its processor can be charged again, its membership is `active`, `trialing`, or `past_due` (or it is a failed initial payment on a `drafted` membership), it is not paid through an invoice link, and its one manual retry is not used up. Used to decide if the payment can be retried by hand. A retry can still be refused when the company cannot accept payments.
 	Retryable bool `json:"retryable" url:"retryable"`
 	// Whop's in-house fraud risk score for this payment, from 0 (lowest risk) to 100 (highest risk). Null when the payment has not been scored or scoring has not yet completed.
 	RiskScore *int `json:"risk_score,omitempty" url:"risk_score,omitempty"`
@@ -50366,7 +50366,7 @@ type PaymentListItem struct {
 	RefundedAmount *float64 `json:"refunded_amount,omitempty" url:"refunded_amount,omitempty"`
 	// When the payment was refunded (if applicable).
 	RefundedAt *time.Time `json:"refunded_at,omitempty" url:"refunded_at,omitempty"`
-	// True when the payment status is `open` and its membership is in one of the retry-eligible states (`active`, `trialing`, `completed`, or `past_due`), or when it is a failed initial billing-engine payment on a `drafted` membership with an unlimited-stock plan; otherwise false. Used to decide if Whop can attempt the charge again.
+	// True when the payment is `open`, its processor can be charged again, its membership is `active`, `trialing`, or `past_due` (or it is a failed initial payment on a `drafted` membership), it is not paid through an invoice link, and its one manual retry is not used up. Used to decide if the payment can be retried by hand. A retry can still be refused when the company cannot accept payments.
 	Retryable bool `json:"retryable" url:"retryable"`
 	// The three-letter ISO currency code for this payment (e.g., 'usd', 'eur').
 	SettlementCurrency Currencies `json:"settlement_currency" url:"settlement_currency"`
