@@ -38847,7 +38847,7 @@ client.TeamMembers.List(
 <dl>
 <dd>
 
-Adds a member to an account's team with a system role. Identify them by exactly one of `user_id` or `email`. If the person has not yet accepted, or the email does not belong to a Whop account yet, an invitation is sent instead and the response is `202` with the pending team member, whose `status` is `pending` and whose id is prefixed `ausri_`. If they already have a pending invite, the request fails with a `400`. Granting the `workforce` role is also allowed with the `bounty:create` scope.
+Adds a member to an account's team with a system role. Identify them by exactly one of `user_id` or `email`. If the person has not yet accepted, or the email does not belong to a Whop account yet, an invitation is sent instead and the response is `202` with the pending team member, whose `status` is `pending` and whose id is prefixed `ausri_` or `minv_`. If they already have a pending invite, the request fails with a `400`. Granting the `workforce` role is also allowed with the `bounty:create` scope.
 </dd>
 </dl>
 </dd>
@@ -38971,7 +38971,7 @@ client.TeamMembers.Retrieve(
 <dl>
 <dd>
 
-**id:** `string` — Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque.
+**id:** `string` — Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_` or `minv_`. Treat it as opaque.
     
 </dd>
 </dl>
@@ -38995,7 +38995,7 @@ client.TeamMembers.Retrieve(
 <dl>
 <dd>
 
-Removes a team member from the account, or revokes a pending invite when given an `ausri_` ID. A user session may delete its own membership to leave the team without the delete scope. Removing a member on the `workforce` role is also allowed with the `bounty:create` scope. The account owner cannot be removed.
+Removes a team member from the account, or revokes a pending invite when given an `ausri_` or `minv_` ID. A user session may delete its own membership to leave the team without the delete scope. Removing a member on the `workforce` role is also allowed with the `bounty:create` scope. The account owner cannot be removed.
 </dd>
 </dl>
 </dd>
@@ -39031,7 +39031,7 @@ client.TeamMembers.Delete(
 <dl>
 <dd>
 
-**id:** `string` — Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque.
+**id:** `string` — Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_` or `minv_`. Treat it as opaque.
     
 </dd>
 </dl>
@@ -39091,7 +39091,7 @@ client.TeamMembers.Update(
 <dl>
 <dd>
 
-**id:** `string` — Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque.
+**id:** `string` — Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_` or `minv_`. Treat it as opaque.
     
 </dd>
 </dl>
@@ -43880,6 +43880,7 @@ Required scopes depend on the preferences being updated:
 | `dispute_fighter_enabled` | `payment:dispute` |
 | `economic_intelligence_duration_key`, `economic_intelligence_auto_renew` | `company:update` |
 | `feedback_options`, `customer_tracking` | `company:manage_checkout` |
+| `review_request_emails` | `company:update` |
 
 When updating preferences from multiple rows, all corresponding scopes are required for the account.
 </dd>
@@ -44030,6 +44031,14 @@ client.Accounts.Preferences.Update(
 <dd>
 
 **preferredSettlementCurrency:** `*accounts.UpdatePreferencesRequestPreferredSettlementCurrency` — Settle every new sale into this currency, regardless of the plan's currency or what the buyer paid in; sales converted this way carry an additional 0.5% FX fee. Pass `null` to go back to settling each sale in its plan's currency. Changing it never converts money already in your balances, and it can change at most once a day (see `preferred_settlement_currency_changeable_at`). Requires the `payout:account:update` scope on your API key.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reviewRequestEmails:** `*bool` — Whether Whop emails customers after a purchase asking them to leave a review. Set it to `false` to stop these emails, including ones already scheduled. Requires the `company:update` scope on your API key.
     
 </dd>
 </dl>
