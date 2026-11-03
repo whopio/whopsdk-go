@@ -358,9 +358,10 @@ var (
 	tradeFieldSize            = big.NewInt(1 << 20)
 	tradeFieldStatus          = big.NewInt(1 << 21)
 	tradeFieldStatusDetail    = big.NewInt(1 << 22)
-	tradeFieldType            = big.NewInt(1 << 23)
-	tradeFieldUpdatedAt       = big.NewInt(1 << 24)
-	tradeFieldUserID          = big.NewInt(1 << 25)
+	tradeFieldStep            = big.NewInt(1 << 23)
+	tradeFieldType            = big.NewInt(1 << 24)
+	tradeFieldUpdatedAt       = big.NewInt(1 << 25)
+	tradeFieldUserID          = big.NewInt(1 << 26)
 )
 
 // tradeNullableFields maps the wire names of Trade's nullable fields (required or optional) to their field bits.
@@ -383,6 +384,7 @@ var tradeNullableFields = map[string]*big.Int{
 	"side":              tradeFieldSide,
 	"size":              tradeFieldSize,
 	"status_detail":     tradeFieldStatusDetail,
+	"step":              tradeFieldStep,
 	"user_id":           tradeFieldUserID,
 }
 
@@ -432,6 +434,8 @@ type Trade struct {
 	Status TradeStatus `json:"status" url:"status"`
 	// `partial_fill` when the order filled only part of its size. `null` otherwise.
 	StatusDetail *TradeStatusDetail `json:"status_detail,omitempty" url:"status_detail,omitempty"`
+	// What a live trade is doing now: `depositing` while the wallet's USDT0 is being sent to the bridge, `landing` once sent and until it reaches the trading balance, `placing` while the order or close is with the venue, `withdrawing` while USDC heads back to the wallet, `returning` while money an unfilled order bridged in goes back. `null` once the trade is no longer pending or processing.
+	Step *TradeStep `json:"step,omitempty" url:"step,omitempty"`
 	// `order` places one order: a perpetual order trades from the trading balance, a spot order swaps between USDT0 and the asset in the wallet. `deposit` bridges USDT0 from the wallet to the trading balance. `withdraw` sends USDC from the trading balance back to the wallet. `close` closes the whole position in one market with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
 	Type TradeType `json:"type" url:"type"`
 	// When the trade last changed, as an ISO 8601 timestamp.
@@ -605,6 +609,13 @@ func (t *Trade) GetStatusDetail() *TradeStatusDetail {
 		return nil
 	}
 	return t.StatusDetail
+}
+
+func (t *Trade) GetStep() *TradeStep {
+	if t == nil {
+		return nil
+	}
+	return t.Step
 }
 
 func (t *Trade) GetType() TradeType {
@@ -803,6 +814,13 @@ func (t *Trade) SetStatus(status TradeStatus) {
 func (t *Trade) SetStatusDetail(statusDetail *TradeStatusDetail) {
 	t.StatusDetail = statusDetail
 	t.require(tradeFieldStatusDetail)
+}
+
+// SetStep sets the Step field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *Trade) SetStep(step *TradeStep) {
+	t.Step = step
+	t.require(tradeFieldStep)
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -1097,6 +1115,38 @@ func NewTradeStatusDetailFromString(s string) (TradeStatusDetail, error) {
 }
 
 func (t TradeStatusDetail) Ptr() *TradeStatusDetail {
+	return &t
+}
+
+// What a live trade is doing now: `depositing` while the wallet's USDT0 is being sent to the bridge, `landing` once sent and until it reaches the trading balance, `placing` while the order or close is with the venue, `withdrawing` while USDC heads back to the wallet, `returning` while money an unfilled order bridged in goes back. `null` once the trade is no longer pending or processing.
+type TradeStep string
+
+const (
+	TradeStepDepositing  TradeStep = "depositing"
+	TradeStepLanding     TradeStep = "landing"
+	TradeStepPlacing     TradeStep = "placing"
+	TradeStepWithdrawing TradeStep = "withdrawing"
+	TradeStepReturning   TradeStep = "returning"
+)
+
+func NewTradeStepFromString(s string) (TradeStep, error) {
+	switch s {
+	case "depositing":
+		return TradeStepDepositing, nil
+	case "landing":
+		return TradeStepLanding, nil
+	case "placing":
+		return TradeStepPlacing, nil
+	case "withdrawing":
+		return TradeStepWithdrawing, nil
+	case "returning":
+		return TradeStepReturning, nil
+	}
+	var t TradeStep
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (t TradeStep) Ptr() *TradeStep {
 	return &t
 }
 
