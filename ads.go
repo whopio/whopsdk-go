@@ -483,6 +483,75 @@ func (p *PauseAdsRequest) SetID(id string) {
 }
 
 var (
+	reportIssuesAdsRequestFieldAdGroupID = big.NewInt(1 << 0)
+	reportIssuesAdsRequestFieldAdID      = big.NewInt(1 << 1)
+	reportIssuesAdsRequestFieldIssues    = big.NewInt(1 << 2)
+)
+
+type ReportIssuesAdsRequest struct {
+	// The ID of the ad group the issues are on, prefixed `adgrp_`.
+	AdGroupID *string `json:"ad_group_id,omitempty" url:"-"`
+	// The ID of the ad the issues are on, prefixed `ad_`. Send exactly one of `ad_id` or `ad_group_id`.
+	AdID *string `json:"ad_id,omitempty" url:"-"`
+	// Every issue the object has now, each reason once. Send an empty list when it has none.
+	Issues []*ReportIssuesAdsRequestIssuesItem `json:"issues" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *ReportIssuesAdsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetAdGroupID sets the AdGroupID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReportIssuesAdsRequest) SetAdGroupID(adGroupID *string) {
+	r.AdGroupID = adGroupID
+	r.require(reportIssuesAdsRequestFieldAdGroupID)
+}
+
+// SetAdID sets the AdID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReportIssuesAdsRequest) SetAdID(adID *string) {
+	r.AdID = adID
+	r.require(reportIssuesAdsRequestFieldAdID)
+}
+
+// SetIssues sets the Issues field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReportIssuesAdsRequest) SetIssues(issues []*ReportIssuesAdsRequestIssuesItem) {
+	r.Issues = issues
+	r.require(reportIssuesAdsRequestFieldIssues)
+}
+
+func (r *ReportIssuesAdsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ReportIssuesAdsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*r = ReportIssuesAdsRequest(body)
+	return nil
+}
+
+func (r *ReportIssuesAdsRequest) MarshalJSON() ([]byte, error) {
+	type embed ReportIssuesAdsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	reportStatsAdsRequestFieldAdID          = big.NewInt(1 << 0)
 	reportStatsAdsRequestFieldClicks        = big.NewInt(1 << 1)
 	reportStatsAdsRequestFieldHourStartedAt = big.NewInt(1 << 2)
@@ -2303,6 +2372,324 @@ func NewAdDeliveryStatusFromString(s string) (AdDeliveryStatus, error) {
 }
 
 func (a AdDeliveryStatus) Ptr() *AdDeliveryStatus {
+	return &a
+}
+
+var (
+	adIssueFieldCreatedAt    = big.NewInt(1 << 0)
+	adIssueFieldID           = big.NewInt(1 << 1)
+	adIssueFieldMessage      = big.NewInt(1 << 2)
+	adIssueFieldPolicy       = big.NewInt(1 << 3)
+	adIssueFieldReason       = big.NewInt(1 << 4)
+	adIssueFieldResourceID   = big.NewInt(1 << 5)
+	adIssueFieldResourceType = big.NewInt(1 << 6)
+	adIssueFieldUpdatedAt    = big.NewInt(1 << 7)
+)
+
+// adIssueNullableFields maps the wire names of AdIssue's nullable fields (required or optional) to their field bits.
+var adIssueNullableFields = map[string]*big.Int{
+	"policy":      adIssueFieldPolicy,
+	"resource_id": adIssueFieldResourceID,
+}
+
+type AdIssue struct {
+	// When the issue was first reported, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
+	// The issue's ID, prefixed `adiss_`.
+	ID string `json:"id" url:"id"`
+	// What the account running the campaign reads for the issue.
+	Message string `json:"message" url:"message"`
+	// The policy a `content_rejected` ad broke, or `null` when none was reported.
+	Policy *AdIssuePolicy `json:"policy,omitempty" url:"policy,omitempty"`
+	// Why the ad or ad group can't deliver yet, as reported.
+	Reason AdIssueReason `json:"reason" url:"reason"`
+	// The ID of the ad or ad group the issue is on.
+	ResourceID *string `json:"resource_id,omitempty" url:"resource_id,omitempty"`
+	// The type of object the issue is on.
+	ResourceType AdIssueResourceType `json:"resource_type" url:"resource_type"`
+	// When the issue was last reported or changed, as an ISO 8601 timestamp.
+	UpdatedAt string `json:"updated_at" url:"updated_at"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AdIssue) GetCreatedAt() string {
+	if a == nil {
+		return ""
+	}
+	return a.CreatedAt
+}
+
+func (a *AdIssue) GetID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ID
+}
+
+func (a *AdIssue) GetMessage() string {
+	if a == nil {
+		return ""
+	}
+	return a.Message
+}
+
+func (a *AdIssue) GetPolicy() *AdIssuePolicy {
+	if a == nil {
+		return nil
+	}
+	return a.Policy
+}
+
+func (a *AdIssue) GetReason() AdIssueReason {
+	if a == nil {
+		return ""
+	}
+	return a.Reason
+}
+
+func (a *AdIssue) GetResourceID() *string {
+	if a == nil {
+		return nil
+	}
+	return a.ResourceID
+}
+
+func (a *AdIssue) GetResourceType() AdIssueResourceType {
+	if a == nil {
+		return ""
+	}
+	return a.ResourceType
+}
+
+func (a *AdIssue) GetUpdatedAt() string {
+	if a == nil {
+		return ""
+	}
+	return a.UpdatedAt
+}
+
+func (a *AdIssue) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AdIssue) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdIssue) SetCreatedAt(createdAt string) {
+	a.CreatedAt = createdAt
+	a.require(adIssueFieldCreatedAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdIssue) SetID(id string) {
+	a.ID = id
+	a.require(adIssueFieldID)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdIssue) SetMessage(message string) {
+	a.Message = message
+	a.require(adIssueFieldMessage)
+}
+
+// SetPolicy sets the Policy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdIssue) SetPolicy(policy *AdIssuePolicy) {
+	a.Policy = policy
+	a.require(adIssueFieldPolicy)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdIssue) SetReason(reason AdIssueReason) {
+	a.Reason = reason
+	a.require(adIssueFieldReason)
+}
+
+// SetResourceID sets the ResourceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdIssue) SetResourceID(resourceID *string) {
+	a.ResourceID = resourceID
+	a.require(adIssueFieldResourceID)
+}
+
+// SetResourceType sets the ResourceType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdIssue) SetResourceType(resourceType AdIssueResourceType) {
+	a.ResourceType = resourceType
+	a.require(adIssueFieldResourceType)
+}
+
+// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdIssue) SetUpdatedAt(updatedAt string) {
+	a.UpdatedAt = updatedAt
+	a.require(adIssueFieldUpdatedAt)
+}
+
+func (a *AdIssue) UnmarshalJSON(data []byte) error {
+	type unmarshaler AdIssue
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AdIssue(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, adIssueNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AdIssue) MarshalJSON() ([]byte, error) {
+	type embed AdIssue
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AdIssue) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// The policy a `content_rejected` ad broke, or `null` when none was reported.
+type AdIssuePolicy string
+
+const (
+	AdIssuePolicyMisleading AdIssuePolicy = "misleading"
+	AdIssuePolicyFinancial  AdIssuePolicy = "financial"
+	AdIssuePolicyHealth     AdIssuePolicy = "health"
+	AdIssuePolicyAdult      AdIssuePolicy = "adult"
+	AdIssuePolicyGambling   AdIssuePolicy = "gambling"
+	AdIssuePolicySpam       AdIssuePolicy = "spam"
+	AdIssuePolicyCopyright  AdIssuePolicy = "copyright"
+	AdIssuePolicyPolitics   AdIssuePolicy = "politics"
+	AdIssuePolicyOther      AdIssuePolicy = "other"
+)
+
+func NewAdIssuePolicyFromString(s string) (AdIssuePolicy, error) {
+	switch s {
+	case "misleading":
+		return AdIssuePolicyMisleading, nil
+	case "financial":
+		return AdIssuePolicyFinancial, nil
+	case "health":
+		return AdIssuePolicyHealth, nil
+	case "adult":
+		return AdIssuePolicyAdult, nil
+	case "gambling":
+		return AdIssuePolicyGambling, nil
+	case "spam":
+		return AdIssuePolicySpam, nil
+	case "copyright":
+		return AdIssuePolicyCopyright, nil
+	case "politics":
+		return AdIssuePolicyPolitics, nil
+	case "other":
+		return AdIssuePolicyOther, nil
+	}
+	var t AdIssuePolicy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AdIssuePolicy) Ptr() *AdIssuePolicy {
+	return &a
+}
+
+// Why the ad or ad group can't deliver yet, as reported.
+type AdIssueReason string
+
+const (
+	AdIssueReasonContentRejected     AdIssueReason = "content_rejected"
+	AdIssueReasonLandingPageRejected AdIssueReason = "landing_page_rejected"
+	AdIssueReasonCreativeUnsupported AdIssueReason = "creative_unsupported"
+	AdIssueReasonTargetingRejected   AdIssueReason = "targeting_rejected"
+	AdIssueReasonInReview            AdIssueReason = "in_review"
+)
+
+func NewAdIssueReasonFromString(s string) (AdIssueReason, error) {
+	switch s {
+	case "content_rejected":
+		return AdIssueReasonContentRejected, nil
+	case "landing_page_rejected":
+		return AdIssueReasonLandingPageRejected, nil
+	case "creative_unsupported":
+		return AdIssueReasonCreativeUnsupported, nil
+	case "targeting_rejected":
+		return AdIssueReasonTargetingRejected, nil
+	case "in_review":
+		return AdIssueReasonInReview, nil
+	}
+	var t AdIssueReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AdIssueReason) Ptr() *AdIssueReason {
+	return &a
+}
+
+// The type of object the issue is on.
+type AdIssueResourceType string
+
+const (
+	AdIssueResourceTypeAd      AdIssueResourceType = "ad"
+	AdIssueResourceTypeAdGroup AdIssueResourceType = "ad_group"
+)
+
+func NewAdIssueResourceTypeFromString(s string) (AdIssueResourceType, error) {
+	switch s {
+	case "ad":
+		return AdIssueResourceTypeAd, nil
+	case "ad_group":
+		return AdIssueResourceTypeAdGroup, nil
+	}
+	var t AdIssueResourceType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AdIssueResourceType) Ptr() *AdIssueResourceType {
 	return &a
 }
 
@@ -4711,6 +5098,272 @@ func NewPostAdUpdatedPayloadTypeFromString(s string) (PostAdUpdatedPayloadType, 
 
 func (p PostAdUpdatedPayloadType) Ptr() *PostAdUpdatedPayloadType {
 	return &p
+}
+
+var (
+	reportIssuesAdsRequestIssuesItemFieldPolicy = big.NewInt(1 << 0)
+	reportIssuesAdsRequestIssuesItemFieldReason = big.NewInt(1 << 1)
+)
+
+type ReportIssuesAdsRequestIssuesItem struct {
+	// The policy a `content_rejected` ad broke, which the account reads in its message. Send it only with `content_rejected`.
+	Policy *ReportIssuesAdsRequestIssuesItemPolicy `json:"policy,omitempty" url:"policy,omitempty"`
+	// Why the object can't deliver yet. `content_rejected`, `landing_page_rejected`, and `creative_unsupported` go on ads, `targeting_rejected` on ad groups, and `in_review` on either.
+	Reason ReportIssuesAdsRequestIssuesItemReason `json:"reason" url:"reason"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ReportIssuesAdsRequestIssuesItem) GetPolicy() *ReportIssuesAdsRequestIssuesItemPolicy {
+	if r == nil {
+		return nil
+	}
+	return r.Policy
+}
+
+func (r *ReportIssuesAdsRequestIssuesItem) GetReason() ReportIssuesAdsRequestIssuesItemReason {
+	if r == nil {
+		return ""
+	}
+	return r.Reason
+}
+
+func (r *ReportIssuesAdsRequestIssuesItem) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ReportIssuesAdsRequestIssuesItem) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetPolicy sets the Policy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReportIssuesAdsRequestIssuesItem) SetPolicy(policy *ReportIssuesAdsRequestIssuesItemPolicy) {
+	r.Policy = policy
+	r.require(reportIssuesAdsRequestIssuesItemFieldPolicy)
+}
+
+// SetReason sets the Reason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReportIssuesAdsRequestIssuesItem) SetReason(reason ReportIssuesAdsRequestIssuesItemReason) {
+	r.Reason = reason
+	r.require(reportIssuesAdsRequestIssuesItemFieldReason)
+}
+
+func (r *ReportIssuesAdsRequestIssuesItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler ReportIssuesAdsRequestIssuesItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ReportIssuesAdsRequestIssuesItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ReportIssuesAdsRequestIssuesItem) MarshalJSON() ([]byte, error) {
+	type embed ReportIssuesAdsRequestIssuesItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ReportIssuesAdsRequestIssuesItem) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+// The policy a `content_rejected` ad broke, which the account reads in its message. Send it only with `content_rejected`.
+type ReportIssuesAdsRequestIssuesItemPolicy string
+
+const (
+	ReportIssuesAdsRequestIssuesItemPolicyMisleading ReportIssuesAdsRequestIssuesItemPolicy = "misleading"
+	ReportIssuesAdsRequestIssuesItemPolicyFinancial  ReportIssuesAdsRequestIssuesItemPolicy = "financial"
+	ReportIssuesAdsRequestIssuesItemPolicyHealth     ReportIssuesAdsRequestIssuesItemPolicy = "health"
+	ReportIssuesAdsRequestIssuesItemPolicyAdult      ReportIssuesAdsRequestIssuesItemPolicy = "adult"
+	ReportIssuesAdsRequestIssuesItemPolicyGambling   ReportIssuesAdsRequestIssuesItemPolicy = "gambling"
+	ReportIssuesAdsRequestIssuesItemPolicySpam       ReportIssuesAdsRequestIssuesItemPolicy = "spam"
+	ReportIssuesAdsRequestIssuesItemPolicyCopyright  ReportIssuesAdsRequestIssuesItemPolicy = "copyright"
+	ReportIssuesAdsRequestIssuesItemPolicyPolitics   ReportIssuesAdsRequestIssuesItemPolicy = "politics"
+	ReportIssuesAdsRequestIssuesItemPolicyOther      ReportIssuesAdsRequestIssuesItemPolicy = "other"
+)
+
+func NewReportIssuesAdsRequestIssuesItemPolicyFromString(s string) (ReportIssuesAdsRequestIssuesItemPolicy, error) {
+	switch s {
+	case "misleading":
+		return ReportIssuesAdsRequestIssuesItemPolicyMisleading, nil
+	case "financial":
+		return ReportIssuesAdsRequestIssuesItemPolicyFinancial, nil
+	case "health":
+		return ReportIssuesAdsRequestIssuesItemPolicyHealth, nil
+	case "adult":
+		return ReportIssuesAdsRequestIssuesItemPolicyAdult, nil
+	case "gambling":
+		return ReportIssuesAdsRequestIssuesItemPolicyGambling, nil
+	case "spam":
+		return ReportIssuesAdsRequestIssuesItemPolicySpam, nil
+	case "copyright":
+		return ReportIssuesAdsRequestIssuesItemPolicyCopyright, nil
+	case "politics":
+		return ReportIssuesAdsRequestIssuesItemPolicyPolitics, nil
+	case "other":
+		return ReportIssuesAdsRequestIssuesItemPolicyOther, nil
+	}
+	var t ReportIssuesAdsRequestIssuesItemPolicy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r ReportIssuesAdsRequestIssuesItemPolicy) Ptr() *ReportIssuesAdsRequestIssuesItemPolicy {
+	return &r
+}
+
+// Why the object can't deliver yet. `content_rejected`, `landing_page_rejected`, and `creative_unsupported` go on ads, `targeting_rejected` on ad groups, and `in_review` on either.
+type ReportIssuesAdsRequestIssuesItemReason string
+
+const (
+	ReportIssuesAdsRequestIssuesItemReasonContentRejected     ReportIssuesAdsRequestIssuesItemReason = "content_rejected"
+	ReportIssuesAdsRequestIssuesItemReasonLandingPageRejected ReportIssuesAdsRequestIssuesItemReason = "landing_page_rejected"
+	ReportIssuesAdsRequestIssuesItemReasonCreativeUnsupported ReportIssuesAdsRequestIssuesItemReason = "creative_unsupported"
+	ReportIssuesAdsRequestIssuesItemReasonTargetingRejected   ReportIssuesAdsRequestIssuesItemReason = "targeting_rejected"
+	ReportIssuesAdsRequestIssuesItemReasonInReview            ReportIssuesAdsRequestIssuesItemReason = "in_review"
+)
+
+func NewReportIssuesAdsRequestIssuesItemReasonFromString(s string) (ReportIssuesAdsRequestIssuesItemReason, error) {
+	switch s {
+	case "content_rejected":
+		return ReportIssuesAdsRequestIssuesItemReasonContentRejected, nil
+	case "landing_page_rejected":
+		return ReportIssuesAdsRequestIssuesItemReasonLandingPageRejected, nil
+	case "creative_unsupported":
+		return ReportIssuesAdsRequestIssuesItemReasonCreativeUnsupported, nil
+	case "targeting_rejected":
+		return ReportIssuesAdsRequestIssuesItemReasonTargetingRejected, nil
+	case "in_review":
+		return ReportIssuesAdsRequestIssuesItemReasonInReview, nil
+	}
+	var t ReportIssuesAdsRequestIssuesItemReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r ReportIssuesAdsRequestIssuesItemReason) Ptr() *ReportIssuesAdsRequestIssuesItemReason {
+	return &r
+}
+
+var (
+	reportIssuesAdsResponseFieldData = big.NewInt(1 << 0)
+)
+
+type ReportIssuesAdsResponse struct {
+	Data []*AdIssue `json:"data" url:"data"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ReportIssuesAdsResponse) GetData() []*AdIssue {
+	if r == nil {
+		return nil
+	}
+	return r.Data
+}
+
+func (r *ReportIssuesAdsResponse) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ReportIssuesAdsResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReportIssuesAdsResponse) SetData(data []*AdIssue) {
+	r.Data = data
+	r.require(reportIssuesAdsResponseFieldData)
+}
+
+func (r *ReportIssuesAdsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ReportIssuesAdsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ReportIssuesAdsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ReportIssuesAdsResponse) MarshalJSON() ([]byte, error) {
+	type embed ReportIssuesAdsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ReportIssuesAdsResponse) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
 }
 
 // The ad's clicks in the hour so far, at most `impressions`. Zero when left out.

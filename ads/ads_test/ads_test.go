@@ -77,6 +77,36 @@ func VerifyRequestCount(
 	require.Equal(t, expected, len(result.Requests))
 }
 
+func TestAdsReportIssuesWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.ReportIssuesAdsRequest{
+		Issues: []*whopsdk.ReportIssuesAdsRequestIssuesItem{
+			&whopsdk.ReportIssuesAdsRequestIssuesItem{
+				Reason: whopsdk.ReportIssuesAdsRequestIssuesItemReasonContentRejected,
+			},
+		},
+	}
+	_, invocationErr := client.Ads.ReportIssues(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAdsReportIssuesWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAdsReportIssuesWithWireMock", "POST", "/ad_issues", nil, 1)
+}
+
 func TestAdsReportStatsWithWireMock(
 	t *testing.T,
 ) {
