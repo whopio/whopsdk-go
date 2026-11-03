@@ -1948,7 +1948,7 @@ type CreateAPIKeysRequestPermissionsStatementsItem struct {
 	Actions []string `json:"actions" url:"actions"`
 	// Whether the actions are granted (`true`) or denied (`false`).
 	Grant bool `json:"grant" url:"grant"`
-	// Resource identifiers the statement applies to, for example `biz_xxx` or `biz_xxx|pass_*`. Defaults to the key's owning resource when omitted.
+	// Resource identifiers the statement applies to, for example `biz_xxx` or `biz_xxx|prod_*`. Defaults to the key's owning resource when omitted.
 	Resources []string `json:"resources,omitempty" url:"resources,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3187,7 +3187,7 @@ type UpdateAPIKeysRequestPermissionsStatementsItem struct {
 	Actions []string `json:"actions" url:"actions"`
 	// Whether the actions are granted (`true`) or denied (`false`).
 	Grant bool `json:"grant" url:"grant"`
-	// Resource identifiers the statement applies to, for example `biz_xxx` or `biz_xxx|pass_*`. Defaults to the key's owning resource when omitted.
+	// Resource identifiers the statement applies to, for example `biz_xxx` or `biz_xxx|prod_*`. Defaults to the key's owning resource when omitted.
 	Resources []string `json:"resources,omitempty" url:"resources,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
