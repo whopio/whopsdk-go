@@ -52,9 +52,11 @@ var (
 	createTradesRequestFieldSide           = big.NewInt(1 << 11)
 	createTradesRequestFieldSize           = big.NewInt(1 << 12)
 	createTradesRequestFieldSlippageBps    = big.NewInt(1 << 13)
-	createTradesRequestFieldTimeInForce    = big.NewInt(1 << 14)
-	createTradesRequestFieldTriggerPrice   = big.NewInt(1 << 15)
-	createTradesRequestFieldType           = big.NewInt(1 << 16)
+	createTradesRequestFieldStopLoss       = big.NewInt(1 << 14)
+	createTradesRequestFieldTakeProfit     = big.NewInt(1 << 15)
+	createTradesRequestFieldTimeInForce    = big.NewInt(1 << 16)
+	createTradesRequestFieldTriggerPrice   = big.NewInt(1 << 17)
+	createTradesRequestFieldType           = big.NewInt(1 << 18)
 )
 
 type CreateTradesRequest struct {
@@ -86,6 +88,10 @@ type CreateTradesRequest struct {
 	Size *string `json:"size,omitempty" url:"-"`
 	// Only for a market order or a close. The worst price as basis points from the mid price, from 1 to 1000; defaults to 100 for a perpetual, and to the swap route's own default for spot.
 	SlippageBps *int `json:"slippage_bps,omitempty" url:"-"`
+	// Only for a perpetual order that opens or adds to a position. A stop-loss for the order's full size, armed once the order fills and sent with it as its own trade, whose `parent_id` is this trade.
+	StopLoss *CreateTradesRequestStopLoss `json:"stop_loss,omitempty" url:"-"`
+	// Only for a perpetual order that opens or adds to a position. A take-profit for the order's full size, armed once the order fills and sent with it as its own trade, whose `parent_id` is this trade.
+	TakeProfit *CreateTradesRequestTakeProfit `json:"take_profit,omitempty" url:"-"`
 	// Only for a perpetual limit order. `good_til_canceled` rests on the book until it fills; `add_liquidity_only` is canceled instead of filling at once; `immediate_or_cancel` fills what it can now and cancels the rest. Defaults to `good_til_canceled`. The trade stays `processing` while the order rests.
 	TimeInForce *CreateTradesRequestTimeInForce `json:"time_in_force,omitempty" url:"-"`
 	// Required for a `take_profit` or `stop_loss`, and only for them. The USD price, as a decimal string Hyperliquid accepts without rounding, at which it sends a market order. Closing a long, a take-profit triggers above the current price and a stop-loss below; closing a short, the reverse. It is always reduce-only, needs an open position, and takes no `price`, `notional`, `leverage`, `time_in_force` or `slippage_bps`.
@@ -202,6 +208,20 @@ func (c *CreateTradesRequest) SetSize(size *string) {
 func (c *CreateTradesRequest) SetSlippageBps(slippageBps *int) {
 	c.SlippageBps = slippageBps
 	c.require(createTradesRequestFieldSlippageBps)
+}
+
+// SetStopLoss sets the StopLoss field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTradesRequest) SetStopLoss(stopLoss *CreateTradesRequestStopLoss) {
+	c.StopLoss = stopLoss
+	c.require(createTradesRequestFieldStopLoss)
+}
+
+// SetTakeProfit sets the TakeProfit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTradesRequest) SetTakeProfit(takeProfit *CreateTradesRequestTakeProfit) {
+	c.TakeProfit = takeProfit
+	c.require(createTradesRequestFieldTakeProfit)
 }
 
 // SetTimeInForce sets the TimeInForce field and marks it as non-optional;
@@ -400,17 +420,18 @@ var (
 	tradeFieldMetadata        = big.NewInt(1 << 14)
 	tradeFieldObject          = big.NewInt(1 << 15)
 	tradeFieldOrderType       = big.NewInt(1 << 16)
-	tradeFieldPrice           = big.NewInt(1 << 17)
-	tradeFieldReduceOnly      = big.NewInt(1 << 18)
-	tradeFieldSide            = big.NewInt(1 << 19)
-	tradeFieldSize            = big.NewInt(1 << 20)
-	tradeFieldStatus          = big.NewInt(1 << 21)
-	tradeFieldStatusDetail    = big.NewInt(1 << 22)
-	tradeFieldStep            = big.NewInt(1 << 23)
-	tradeFieldTriggerPrice    = big.NewInt(1 << 24)
-	tradeFieldType            = big.NewInt(1 << 25)
-	tradeFieldUpdatedAt       = big.NewInt(1 << 26)
-	tradeFieldUserID          = big.NewInt(1 << 27)
+	tradeFieldParentID        = big.NewInt(1 << 17)
+	tradeFieldPrice           = big.NewInt(1 << 18)
+	tradeFieldReduceOnly      = big.NewInt(1 << 19)
+	tradeFieldSide            = big.NewInt(1 << 20)
+	tradeFieldSize            = big.NewInt(1 << 21)
+	tradeFieldStatus          = big.NewInt(1 << 22)
+	tradeFieldStatusDetail    = big.NewInt(1 << 23)
+	tradeFieldStep            = big.NewInt(1 << 24)
+	tradeFieldTriggerPrice    = big.NewInt(1 << 25)
+	tradeFieldType            = big.NewInt(1 << 26)
+	tradeFieldUpdatedAt       = big.NewInt(1 << 27)
+	tradeFieldUserID          = big.NewInt(1 << 28)
 )
 
 // tradeNullableFields maps the wire names of Trade's nullable fields (required or optional) to their field bits.
@@ -428,6 +449,7 @@ var tradeNullableFields = map[string]*big.Int{
 	"leverage":          tradeFieldLeverage,
 	"market":            tradeFieldMarket,
 	"order_type":        tradeFieldOrderType,
+	"parent_id":         tradeFieldParentID,
 	"price":             tradeFieldPrice,
 	"reduce_only":       tradeFieldReduceOnly,
 	"side":              tradeFieldSide,
@@ -472,6 +494,8 @@ type Trade struct {
 	Object   TradeObject    `json:"object" url:"object"`
 	// `market`, `limit`, `take_profit` or `stop_loss` for an order. `null` otherwise.
 	OrderType *TradeOrderType `json:"order_type,omitempty" url:"order_type,omitempty"`
+	// For a take-profit or stop-loss sent with an order, that order's trade, prefixed `tint_`. `null` otherwise.
+	ParentID *string `json:"parent_id,omitempty" url:"parent_id,omitempty"`
 	// The limit price of the order in USD. A market order's price is the mid price moved by `slippage_bps`; a take-profit or stop-loss's is the worst price its market order may fill at once triggered. `null` for other types.
 	Price *Money `json:"price,omitempty" url:"price,omitempty"`
 	// Whether the order can only reduce a position. `null` for other types.
@@ -619,6 +643,13 @@ func (t *Trade) GetOrderType() *TradeOrderType {
 		return nil
 	}
 	return t.OrderType
+}
+
+func (t *Trade) GetParentID() *string {
+	if t == nil {
+		return nil
+	}
+	return t.ParentID
 }
 
 func (t *Trade) GetPrice() *Money {
@@ -831,6 +862,13 @@ func (t *Trade) SetObject(object TradeObject) {
 func (t *Trade) SetOrderType(orderType *TradeOrderType) {
 	t.OrderType = orderType
 	t.require(tradeFieldOrderType)
+}
+
+// SetParentID sets the ParentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *Trade) SetParentID(parentID *string) {
+	t.ParentID = parentID
+	t.require(tradeFieldParentID)
 }
 
 // SetPrice sets the Price field and marks it as non-optional;
@@ -1324,6 +1362,182 @@ func NewCreateTradesRequestSideFromString(s string) (CreateTradesRequestSide, er
 
 func (c CreateTradesRequestSide) Ptr() *CreateTradesRequestSide {
 	return &c
+}
+
+var (
+	createTradesRequestStopLossFieldTriggerPrice = big.NewInt(1 << 0)
+)
+
+// Only for a perpetual order that opens or adds to a position. A stop-loss for the order's full size, armed once the order fills and sent with it as its own trade, whose `parent_id` is this trade.
+type CreateTradesRequestStopLoss struct {
+	// The USD price, as a decimal string Hyperliquid accepts without rounding, at which the stop-loss sends its market order. Below `price` (or the mid price for a market order) for a buy, above it for a sell.
+	TriggerPrice string `json:"trigger_price" url:"trigger_price"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateTradesRequestStopLoss) GetTriggerPrice() string {
+	if c == nil {
+		return ""
+	}
+	return c.TriggerPrice
+}
+
+func (c *CreateTradesRequestStopLoss) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateTradesRequestStopLoss) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetTriggerPrice sets the TriggerPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTradesRequestStopLoss) SetTriggerPrice(triggerPrice string) {
+	c.TriggerPrice = triggerPrice
+	c.require(createTradesRequestStopLossFieldTriggerPrice)
+}
+
+func (c *CreateTradesRequestStopLoss) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateTradesRequestStopLoss
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateTradesRequestStopLoss(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateTradesRequestStopLoss) MarshalJSON() ([]byte, error) {
+	type embed CreateTradesRequestStopLoss
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateTradesRequestStopLoss) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createTradesRequestTakeProfitFieldTriggerPrice = big.NewInt(1 << 0)
+)
+
+// Only for a perpetual order that opens or adds to a position. A take-profit for the order's full size, armed once the order fills and sent with it as its own trade, whose `parent_id` is this trade.
+type CreateTradesRequestTakeProfit struct {
+	// The USD price, as a decimal string Hyperliquid accepts without rounding, at which the take-profit sends its market order. Above `price` (or the mid price for a market order) for a buy, below it for a sell.
+	TriggerPrice string `json:"trigger_price" url:"trigger_price"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateTradesRequestTakeProfit) GetTriggerPrice() string {
+	if c == nil {
+		return ""
+	}
+	return c.TriggerPrice
+}
+
+func (c *CreateTradesRequestTakeProfit) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateTradesRequestTakeProfit) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetTriggerPrice sets the TriggerPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTradesRequestTakeProfit) SetTriggerPrice(triggerPrice string) {
+	c.TriggerPrice = triggerPrice
+	c.require(createTradesRequestTakeProfitFieldTriggerPrice)
+}
+
+func (c *CreateTradesRequestTakeProfit) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateTradesRequestTakeProfit
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateTradesRequestTakeProfit(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateTradesRequestTakeProfit) MarshalJSON() ([]byte, error) {
+	type embed CreateTradesRequestTakeProfit
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateTradesRequestTakeProfit) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 // Only for a perpetual limit order. `good_til_canceled` rests on the book until it fills; `add_liquidity_only` is canceled instead of filling at once; `immediate_or_cancel` fills what it can now and cancels the rest. Defaults to `good_til_canceled`. The trade stays `processing` while the order rests.

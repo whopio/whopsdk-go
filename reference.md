@@ -39395,6 +39395,22 @@ client.Trades.Create(
 <dl>
 <dd>
 
+**stopLoss:** `*whopsdk.CreateTradesRequestStopLoss` — Only for a perpetual order that opens or adds to a position. A stop-loss for the order's full size, armed once the order fills and sent with it as its own trade, whose `parent_id` is this trade.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**takeProfit:** `*whopsdk.CreateTradesRequestTakeProfit` — Only for a perpetual order that opens or adds to a position. A take-profit for the order's full size, armed once the order fills and sent with it as its own trade, whose `parent_id` is this trade.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **timeInForce:** `*whopsdk.CreateTradesRequestTimeInForce` — Only for a perpetual limit order. `good_til_canceled` rests on the book until it fills; `add_liquidity_only` is canceled instead of filling at once; `immediate_or_cancel` fills what it can now and cancels the rest. Defaults to `good_til_canceled`. The trade stays `processing` while the order rests.
     
 </dd>
