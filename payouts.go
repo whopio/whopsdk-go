@@ -2847,6 +2847,7 @@ var (
 	createQuotePayoutsResponseFieldObject            = big.NewInt(1 << 7)
 	createQuotePayoutsResponseFieldQuoteToken        = big.NewInt(1 << 8)
 	createQuotePayoutsResponseFieldRecommendedMethod = big.NewInt(1 << 9)
+	createQuotePayoutsResponseFieldServerTime        = big.NewInt(1 << 10)
 )
 
 // createQuotePayoutsResponseNullableFields maps the wire names of CreateQuotePayoutsResponse's nullable fields (required or optional) to their field bits.
@@ -2874,6 +2875,8 @@ type CreateQuotePayoutsResponse struct {
 	QuoteToken string `json:"quote_token" url:"quote_token"`
 	// An optional payout method to connect for estimated savings. The quote still uses the requested saved method.
 	RecommendedMethod *CreateQuotePayoutsResponseRecommendedMethod `json:"recommended_method,omitempty" url:"recommended_method,omitempty"`
+	// Server time when the response was prepared, as an ISO 8601 timestamp. Subtract it from `expires_at` to get the remaining quote lifetime without relying on your own clock.
+	ServerTime time.Time `json:"server_time" url:"server_time"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2950,6 +2953,13 @@ func (c *CreateQuotePayoutsResponse) GetRecommendedMethod() *CreateQuotePayoutsR
 		return nil
 	}
 	return c.RecommendedMethod
+}
+
+func (c *CreateQuotePayoutsResponse) GetServerTime() time.Time {
+	if c == nil {
+		return time.Time{}
+	}
+	return c.ServerTime
 }
 
 func (c *CreateQuotePayoutsResponse) GetExtraProperties() map[string]interface{} {
@@ -3038,11 +3048,19 @@ func (c *CreateQuotePayoutsResponse) SetRecommendedMethod(recommendedMethod *Cre
 	c.require(createQuotePayoutsResponseFieldRecommendedMethod)
 }
 
+// SetServerTime sets the ServerTime field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponse) SetServerTime(serverTime time.Time) {
+	c.ServerTime = serverTime
+	c.require(createQuotePayoutsResponseFieldServerTime)
+}
+
 func (c *CreateQuotePayoutsResponse) UnmarshalJSON(data []byte) error {
 	type embed CreateQuotePayoutsResponse
 	var unmarshaler = struct {
 		embed
-		ExpiresAt *internal.DateTime `json:"expires_at"`
+		ExpiresAt  *internal.DateTime `json:"expires_at"`
+		ServerTime *internal.DateTime `json:"server_time"`
 	}{
 		embed: embed(*c),
 	}
@@ -3051,6 +3069,7 @@ func (c *CreateQuotePayoutsResponse) UnmarshalJSON(data []byte) error {
 	}
 	*c = CreateQuotePayoutsResponse(unmarshaler.embed)
 	c.ExpiresAt = unmarshaler.ExpiresAt.Time()
+	c.ServerTime = unmarshaler.ServerTime.Time()
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
@@ -3071,10 +3090,12 @@ func (c *CreateQuotePayoutsResponse) MarshalJSON() ([]byte, error) {
 	type embed CreateQuotePayoutsResponse
 	var marshaler = struct {
 		embed
-		ExpiresAt *internal.DateTime `json:"expires_at"`
+		ExpiresAt  *internal.DateTime `json:"expires_at"`
+		ServerTime *internal.DateTime `json:"server_time"`
 	}{
-		embed:     embed(*c),
-		ExpiresAt: internal.NewDateTime(c.ExpiresAt),
+		embed:      embed(*c),
+		ExpiresAt:  internal.NewDateTime(c.ExpiresAt),
+		ServerTime: internal.NewDateTime(c.ServerTime),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
 	return json.Marshal(explicitMarshaler)

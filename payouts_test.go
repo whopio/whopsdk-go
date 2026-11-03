@@ -6408,6 +6408,14 @@ func TestSettersCreateQuotePayoutsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetServerTime", func(t *testing.T) {
+		obj := &CreateQuotePayoutsResponse{}
+		var fernTestValueServerTime time.Time
+		obj.SetServerTime(fernTestValueServerTime)
+		assert.Equal(t, fernTestValueServerTime, obj.ServerTime)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersCreateQuotePayoutsResponse(t *testing.T) {
@@ -6689,6 +6697,29 @@ func TestGettersCreateQuotePayoutsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetRecommendedMethod() // Should return zero value
+	})
+
+	t.Run("GetServerTime", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateQuotePayoutsResponse{}
+		var expected time.Time
+		obj.ServerTime = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetServerTime(), "getter should return the property value")
+	})
+
+	t.Run("GetServerTime_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateQuotePayoutsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetServerTime() // Should return zero value
 	})
 
 }
@@ -6981,6 +7012,37 @@ func TestSettersMarkExplicitCreateQuotePayoutsResponse(t *testing.T) {
 
 		// Act
 		obj.SetRecommendedMethod(fernTestValueRecommendedMethod)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetServerTime_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateQuotePayoutsResponse{}
+		var fernTestValueServerTime time.Time
+
+		// Act
+		obj.SetServerTime(fernTestValueServerTime)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
