@@ -110,8 +110,8 @@ type Whop struct {
 	Accounts                 *client.Client
 	AdCampaigns              *adcampaigns.Client
 	AdGroups                 *adgroups.Client
-	AdPixels                 *adpixels.Client
 	Ads                      *ads.Client
+	AdPixels                 *adpixels.Client
 	Affiliates               *affiliatesclient.Client
 	AiChats                  *aichats.Client
 	APIKeys                  *apikeys.Client
@@ -219,8 +219,8 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Accounts:                 client.NewClient(options),
 		AdCampaigns:              adcampaigns.NewClient(options),
 		AdGroups:                 adgroups.NewClient(options),
-		AdPixels:                 adpixels.NewClient(options),
 		Ads:                      ads.NewClient(options),
+		AdPixels:                 adpixels.NewClient(options),
 		Affiliates:               affiliatesclient.NewClient(options),
 		AiChats:                  aichats.NewClient(options),
 		APIKeys:                  apikeys.NewClient(options),

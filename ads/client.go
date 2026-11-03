@@ -39,6 +39,37 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
+// Reports why one of a runner's ads or ad groups can't deliver yet, and replaces what the runner reported for it before. The account running the campaign sees each issue, with what to change when it can fix it. An empty `issues` list clears the object's issues, and they also clear when the runner stops holding the campaign. Takes the runner's Whop session, a user API key, or a user OAuth token with `ad_campaign:update`. A token without that scope gets a 403, and anyone not holding the whole campaign gets a 404.
+//
+// Example:
+//
+//	request := &whopsdk.ReportIssuesAdsRequest{
+//	    Issues: []*whopsdk.ReportIssuesAdsRequestIssuesItem{
+//	        &whopsdk.ReportIssuesAdsRequestIssuesItem{
+//	            Reason: whopsdk.ReportIssuesAdsRequestIssuesItemReasonContentRejected,
+//	        },
+//	    },
+//	}
+//	client.Ads.ReportIssues(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ReportIssues(
+	ctx context.Context,
+	request *whopsdk.ReportIssuesAdsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.ReportIssuesAdsResponse, error) {
+	response, err := c.WithRawResponse.ReportIssues(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Records a runner's stats for one of their ads in one hour, and pays them for the spend. Send the ad's totals so far for an hour that started in the last 24 hours; they replace what the ad held for that hour, and its ad group's and campaign's hours are rebuilt from their ads. The spend can go up but never down. Reporting on a campaign starts with the hour of its first recorded report; earlier hours are refused. The spend is recorded and paid exactly as sent, with no markup added, so send it with the runner's markup already applied. Takes the runner's Whop session, a user API key, or a user OAuth token with `ad_campaign:update`. A token without that scope gets a 403, and anyone not holding the ad's campaign gets a 404.
 //
 // Example:

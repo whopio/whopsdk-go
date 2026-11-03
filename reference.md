@@ -3364,376 +3364,87 @@ client.AdGroups.Unpause(
 </dl>
 </details>
 
-## Ad Pixels
-<details><summary><code>client.AdPixels.List() -> *whopsdk.ListAdPixelsResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-List the pixels you added for businesses whose campaigns you claimed.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.ListAdPixelsRequest{}
-client.AdPixels.List(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**accountID:** `*string` — Only return the pixels for this business, prefixed `biz_`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**first:** `*int` — Number of results to return from the start of the range.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**last:** `*int` — Number of results to return from the end of the range.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**order:** `*whopsdk.ListAdPixelsRequestOrder` 
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**direction:** `*whopsdk.ListAdPixelsRequestDirection` 
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.AdPixels.Create(request) -> *whopsdk.AdPixel</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Add your pixel for a business whose campaigns you claimed. Whop checks the access token with the ad platform, then sends the pixel the conversions credited to your claimed campaigns for that business. Each business takes one pixel per ad platform, and each pixel can serve one business. On Google, the pixel is your Google Ads account, which can serve several businesses, and Whop creates its conversion actions there with your service account key.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.CreateAdPixelsRequest{
-    AccessToken: "new-token",
-    AccountID: "biz_xxxxxxxxxxxxxx",
-    ExternalID: "998877665544",
-    Platform: whopsdk.CreateAdPixelsRequestPlatformMeta,
-}
-client.AdPixels.Create(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**accessToken:** `string` — A credential that can send events to the pixel on the ad platform: a Meta Conversions API access token, a TikTok Events API access token, or for `google`, the JSON key of a Google Cloud service account. The service account needs Standard access to the Google Ads account, and its project needs the Google Ads API and the Data Manager API turned on and Explorer access or higher to the Google Ads API. Use a service account made only for Whop, with no roles in its project. Whop never returns it.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**accountID:** `string` — The business whose claimed campaigns send conversions to this pixel, prefixed `biz_`. You must have claimed at least one of its campaigns.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**externalID:** `string` — The pixel's ID on the ad platform: the Meta pixel or dataset ID, the TikTok pixel code, or the Google Ads customer ID.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**platform:** `whopsdk.CreateAdPixelsRequestPlatform` — The ad platform the pixel belongs to.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.AdPixels.Retrieve(ID) -> *whopsdk.AdPixel</code></summary>
-<dl>
-<dd>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.RetrieveAdPixelsRequest{
-    ID: "id",
-}
-client.AdPixels.Retrieve(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — Ad pixel ID, prefixed `adpx_`.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.AdPixels.Delete(ID) -> *whopsdk.DeleteAdPixelsResponse</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Remove the pixel and its access token. Whop stops sending it conversions.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.DeleteAdPixelsRequest{
-    ID: "id",
-}
-client.AdPixels.Delete(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — Ad pixel ID, prefixed `adpx_`.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
-<details><summary><code>client.AdPixels.Update(ID, request) -> *whopsdk.AdPixel</code></summary>
-<dl>
-<dd>
-
-#### 📝 Description
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-Replace the pixel's access token. Whop checks the new token with the ad platform and resumes deliveries to an `errored` pixel.
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### 🔌 Usage
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-```go
-request := &whopsdk.UpdateAdPixelsRequest{
-    ID: "id",
-    AccessToken: "new-token",
-}
-client.AdPixels.Update(
-    context.TODO(),
-    request,
-)
-```
-</dd>
-</dl>
-</dd>
-</dl>
-
-#### ⚙️ Parameters
-
-<dl>
-<dd>
-
-<dl>
-<dd>
-
-**id:** `string` — Ad pixel ID, prefixed `adpx_`.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**accessToken:** `string` — A credential that can send events to the pixel on the ad platform: a Meta Conversions API access token, a TikTok Events API access token, or for `google`, the JSON key of a Google Cloud service account. The service account needs Standard access to the Google Ads account, and its project needs the Google Ads API and the Data Manager API turned on and Explorer access or higher to the Google Ads API. Use a service account made only for Whop, with no roles in its project. Whop never returns it.
-    
-</dd>
-</dl>
-</dd>
-</dl>
-
-
-</dd>
-</dl>
-</details>
-
 ## Ads
+<details><summary><code>client.Ads.ReportIssues(request) -> *whopsdk.ReportIssuesAdsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Reports why one of a runner's ads or ad groups can't deliver yet, and replaces what the runner reported for it before. The account running the campaign sees each issue, with what to change when it can fix it. An empty `issues` list clears the object's issues, and they also clear when the runner stops holding the campaign. Takes the runner's Whop session, a user API key, or a user OAuth token with `ad_campaign:update`. A token without that scope gets a 403, and anyone not holding the whole campaign gets a 404.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ReportIssuesAdsRequest{
+    Issues: []*whopsdk.ReportIssuesAdsRequestIssuesItem{
+        &whopsdk.ReportIssuesAdsRequestIssuesItem{
+            Reason: whopsdk.ReportIssuesAdsRequestIssuesItemReasonContentRejected,
+        },
+    },
+}
+client.Ads.ReportIssues(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**adGroupID:** `*string` — The ID of the ad group the issues are on, prefixed `adgrp_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**adID:** `*string` — The ID of the ad the issues are on, prefixed `ad_`. Send exactly one of `ad_id` or `ad_group_id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**issues:** `[]*whopsdk.ReportIssuesAdsRequestIssuesItem` — Every issue the object has now, each reason once. Send an empty list when it has none.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Ads.ReportStats(request) -> *whopsdk.AdStat</code></summary>
 <dl>
 <dd>
@@ -4636,6 +4347,375 @@ client.Ads.Unpause(
 <dd>
 
 **id:** `string` — The ad ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Ad Pixels
+<details><summary><code>client.AdPixels.List() -> *whopsdk.ListAdPixelsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+List the pixels you added for businesses whose campaigns you claimed.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ListAdPixelsRequest{}
+client.AdPixels.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — Only return the pixels for this business, prefixed `biz_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `*whopsdk.ListAdPixelsRequestOrder` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `*whopsdk.ListAdPixelsRequestDirection` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.AdPixels.Create(request) -> *whopsdk.AdPixel</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Add your pixel for a business whose campaigns you claimed. Whop checks the access token with the ad platform, then sends the pixel the conversions credited to your claimed campaigns for that business. Each business takes one pixel per ad platform, and each pixel can serve one business. On Google, the pixel is your Google Ads account, which can serve several businesses, and Whop creates its conversion actions there with your service account key.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CreateAdPixelsRequest{
+    AccessToken: "new-token",
+    AccountID: "biz_xxxxxxxxxxxxxx",
+    ExternalID: "998877665544",
+    Platform: whopsdk.CreateAdPixelsRequestPlatformMeta,
+}
+client.AdPixels.Create(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accessToken:** `string` — A credential that can send events to the pixel on the ad platform: a Meta Conversions API access token, a TikTok Events API access token, or for `google`, the JSON key of a Google Cloud service account. The service account needs Standard access to the Google Ads account, and its project needs the Google Ads API and the Data Manager API turned on and Explorer access or higher to the Google Ads API. Use a service account made only for Whop, with no roles in its project. Whop never returns it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `string` — The business whose claimed campaigns send conversions to this pixel, prefixed `biz_`. You must have claimed at least one of its campaigns.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**externalID:** `string` — The pixel's ID on the ad platform: the Meta pixel or dataset ID, the TikTok pixel code, or the Google Ads customer ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**platform:** `whopsdk.CreateAdPixelsRequestPlatform` — The ad platform the pixel belongs to.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.AdPixels.Retrieve(ID) -> *whopsdk.AdPixel</code></summary>
+<dl>
+<dd>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RetrieveAdPixelsRequest{
+    ID: "id",
+}
+client.AdPixels.Retrieve(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Ad pixel ID, prefixed `adpx_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.AdPixels.Delete(ID) -> *whopsdk.DeleteAdPixelsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Remove the pixel and its access token. Whop stops sending it conversions.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.DeleteAdPixelsRequest{
+    ID: "id",
+}
+client.AdPixels.Delete(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Ad pixel ID, prefixed `adpx_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.AdPixels.Update(ID, request) -> *whopsdk.AdPixel</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Replace the pixel's access token. Whop checks the new token with the ad platform and resumes deliveries to an `errored` pixel.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UpdateAdPixelsRequest{
+    ID: "id",
+    AccessToken: "new-token",
+}
+client.AdPixels.Update(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Ad pixel ID, prefixed `adpx_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accessToken:** `string` — A credential that can send events to the pixel on the ad platform: a Meta Conversions API access token, a TikTok Events API access token, or for `google`, the JSON key of a Google Cloud service account. The service account needs Standard access to the Google Ads account, and its project needs the Google Ads API and the Data Manager API turned on and Explorer access or higher to the Google Ads API. Use a service account made only for Whop, with no roles in its project. Whop never returns it.
     
 </dd>
 </dl>
