@@ -669,6 +669,14 @@ func TestSettersIssueInvoicesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetCollectionMethod", func(t *testing.T) {
+		obj := &IssueInvoicesRequest{}
+		var fernTestValueCollectionMethod *IssueInvoicesRequestCollectionMethod
+		obj.SetCollectionMethod(fernTestValueCollectionMethod)
+		assert.Equal(t, fernTestValueCollectionMethod, obj.CollectionMethod)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestSettersMarkExplicitIssueInvoicesRequest(t *testing.T) {
@@ -711,6 +719,37 @@ func TestSettersMarkExplicitIssueInvoicesRequest(t *testing.T) {
 
 		// Act
 		obj.SetChargeAt(fernTestValueChargeAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCollectionMethod_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &IssueInvoicesRequest{}
+		var fernTestValueCollectionMethod *IssueInvoicesRequestCollectionMethod
+
+		// Act
+		obj.SetCollectionMethod(fernTestValueCollectionMethod)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1356,6 +1395,14 @@ func TestSettersSendInvoicesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetCollectionMethod", func(t *testing.T) {
+		obj := &SendInvoicesRequest{}
+		var fernTestValueCollectionMethod *SendInvoicesRequestCollectionMethod
+		obj.SetCollectionMethod(fernTestValueCollectionMethod)
+		assert.Equal(t, fernTestValueCollectionMethod, obj.CollectionMethod)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSendAt", func(t *testing.T) {
 		obj := &SendInvoicesRequest{}
 		var fernTestValueSendAt *time.Time
@@ -1406,6 +1453,37 @@ func TestSettersMarkExplicitSendInvoicesRequest(t *testing.T) {
 
 		// Act
 		obj.SetChargeAt(fernTestValueChargeAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCollectionMethod_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SendInvoicesRequest{}
+		var fernTestValueCollectionMethod *SendInvoicesRequestCollectionMethod
+
+		// Act
+		obj.SetCollectionMethod(fernTestValueCollectionMethod)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1583,6 +1661,14 @@ func TestSettersInvoice(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMembershipID", func(t *testing.T) {
+		obj := &Invoice{}
+		var fernTestValueMembershipID *string
+		obj.SetMembershipID(fernTestValueMembershipID)
+		assert.Equal(t, fernTestValueMembershipID, obj.MembershipID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetMemo", func(t *testing.T) {
 		obj := &Invoice{}
 		var fernTestValueMemo *string
@@ -1652,6 +1738,14 @@ func TestSettersInvoice(t *testing.T) {
 		var fernTestValueScheduledChargeAt *string
 		obj.SetScheduledChargeAt(fernTestValueScheduledChargeAt)
 		assert.Equal(t, fernTestValueScheduledChargeAt, obj.ScheduledChargeAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetScheduledCollectionMethod", func(t *testing.T) {
+		obj := &Invoice{}
+		var fernTestValueScheduledCollectionMethod *InvoiceScheduledCollectionMethod
+		obj.SetScheduledCollectionMethod(fernTestValueScheduledCollectionMethod)
+		assert.Equal(t, fernTestValueScheduledCollectionMethod, obj.ScheduledCollectionMethod)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -2169,6 +2263,39 @@ func TestGettersInvoice(t *testing.T) {
 		_ = obj.GetMemberID() // Should return zero value
 	})
 
+	t.Run("GetMembershipID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var expected *string
+		obj.MembershipID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMembershipID(), "getter should return the property value")
+	})
+
+	t.Run("GetMembershipID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		obj.MembershipID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMembershipID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMembershipID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Invoice
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMembershipID() // Should return zero value
+	})
+
 	t.Run("GetMemo", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2434,6 +2561,39 @@ func TestGettersInvoice(t *testing.T) {
 			}
 		}()
 		_ = obj.GetScheduledChargeAt() // Should return zero value
+	})
+
+	t.Run("GetScheduledCollectionMethod", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var expected *InvoiceScheduledCollectionMethod
+		obj.ScheduledCollectionMethod = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetScheduledCollectionMethod(), "getter should return the property value")
+	})
+
+	t.Run("GetScheduledCollectionMethod_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		obj.ScheduledCollectionMethod = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetScheduledCollectionMethod(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetScheduledCollectionMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Invoice
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetScheduledCollectionMethod() // Should return zero value
 	})
 
 	t.Run("GetScheduledSendAt", func(t *testing.T) {
@@ -3105,6 +3265,37 @@ func TestSettersMarkExplicitInvoice(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetMembershipID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var fernTestValueMembershipID *string
+
+		// Act
+		obj.SetMembershipID(fernTestValueMembershipID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetMemo_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3361,6 +3552,37 @@ func TestSettersMarkExplicitInvoice(t *testing.T) {
 
 		// Act
 		obj.SetScheduledChargeAt(fernTestValueScheduledChargeAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetScheduledCollectionMethod_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var fernTestValueScheduledCollectionMethod *InvoiceScheduledCollectionMethod
+
+		// Act
+		obj.SetScheduledCollectionMethod(fernTestValueScheduledCollectionMethod)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -13895,10 +14117,12 @@ func TestRequiredNullableRoundTripInvoice(t *testing.T) {
 		"invoice_prefix",
 		"mailing_address_id",
 		"member_id",
+		"membership_id",
 		"memo",
 		"paid_at",
 		"payment_method_id",
 		"scheduled_charge_at",
+		"scheduled_collection_method",
 		"scheduled_send_at",
 		"tax_amount",
 	}
@@ -13913,7 +14137,7 @@ func TestRequiredNullableRoundTripInvoice(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Invoice
-		require.NoError(t, json.Unmarshal([]byte(`{"billing_address":null,"checkout_link":null,"customer_name":null,"due_at":null,"email_address":null,"invoice_prefix":null,"mailing_address_id":null,"member_id":null,"memo":null,"paid_at":null,"payment_method_id":null,"scheduled_charge_at":null,"scheduled_send_at":null,"tax_amount":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"billing_address":null,"checkout_link":null,"customer_name":null,"due_at":null,"email_address":null,"invoice_prefix":null,"mailing_address_id":null,"member_id":null,"membership_id":null,"memo":null,"paid_at":null,"payment_method_id":null,"scheduled_charge_at":null,"scheduled_collection_method":null,"scheduled_send_at":null,"tax_amount":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -15878,6 +16102,35 @@ func TestEnumInvoiceObject(t *testing.T) {
 	})
 }
 
+func TestEnumInvoiceScheduledCollectionMethod(t *testing.T) {
+	t.Run("NewFromString_charge_automatically", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewInvoiceScheduledCollectionMethodFromString("charge_automatically")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, InvoiceScheduledCollectionMethod("charge_automatically"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_send_invoice", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewInvoiceScheduledCollectionMethodFromString("send_invoice")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, InvoiceScheduledCollectionMethod("send_invoice"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewInvoiceScheduledCollectionMethodFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewInvoiceScheduledCollectionMethodFromString("charge_automatically")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumInvoiceStatus(t *testing.T) {
 	t.Run("NewFromString_draft", func(t *testing.T) {
 		t.Parallel()
@@ -15971,6 +16224,35 @@ func TestEnumInvoiceTotalsStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewInvoiceTotalsStatusFromString("estimated")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumIssueInvoicesRequestCollectionMethod(t *testing.T) {
+	t.Run("NewFromString_charge_automatically", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewIssueInvoicesRequestCollectionMethodFromString("charge_automatically")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, IssueInvoicesRequestCollectionMethod("charge_automatically"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_send_invoice", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewIssueInvoicesRequestCollectionMethodFromString("send_invoice")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, IssueInvoicesRequestCollectionMethod("send_invoice"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewIssueInvoicesRequestCollectionMethodFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewIssueInvoicesRequestCollectionMethodFromString("charge_automatically")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -16320,6 +16602,35 @@ func TestEnumPostInvoiceVoidedPayloadType(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewPostInvoiceVoidedPayloadTypeFromString("invoice.voided")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumSendInvoicesRequestCollectionMethod(t *testing.T) {
+	t.Run("NewFromString_charge_automatically", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSendInvoicesRequestCollectionMethodFromString("charge_automatically")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SendInvoicesRequestCollectionMethod("charge_automatically"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_send_invoice", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSendInvoicesRequestCollectionMethodFromString("send_invoice")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SendInvoicesRequestCollectionMethod("send_invoice"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewSendInvoicesRequestCollectionMethodFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewSendInvoicesRequestCollectionMethodFromString("charge_automatically")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

@@ -98,7 +98,7 @@ type CreateInvoicesRequest struct {
 	DueAt *time.Time `json:"due_at,omitempty" url:"-"`
 	// Resolve or create the member for this email, creating a Whop user when none exists. Mutually exclusive with member_id.
 	EmailAddress *string `json:"email_address,omitempty" url:"-"`
-	// The variants being invoiced, all in the same currency. Each variant may appear once; use quantity for multiple units. Product and price come from each variant; a recurring variant must belong to a product, bills its renewal price and, once the invoice is paid, renews as a subscription charged to the payment method that paid it. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, and access settings.
+	// The variants being invoiced, all in the same currency. Each variant may appear once; use quantity for multiple units. Product and price come from each variant; a recurring variant must belong to a product, bills its renewal price and, once the invoice is paid, renews as a subscription collected by the `collection_method` the invoice was sent or issued with. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, and access settings.
 	Items []*CreateInvoicesRequestItemsItem `json:"items" url:"-"`
 	// An address associated with the member. Mutually exclusive with billing_address.
 	MailingAddressID *string `json:"mailing_address_id,omitempty" url:"-"`
@@ -275,8 +275,9 @@ func (g *GeneratePdfInvoicesRequest) SetID(id string) {
 }
 
 var (
-	issueInvoicesRequestFieldID       = big.NewInt(1 << 0)
-	issueInvoicesRequestFieldChargeAt = big.NewInt(1 << 1)
+	issueInvoicesRequestFieldID               = big.NewInt(1 << 0)
+	issueInvoicesRequestFieldChargeAt         = big.NewInt(1 << 1)
+	issueInvoicesRequestFieldCollectionMethod = big.NewInt(1 << 2)
 )
 
 type IssueInvoicesRequest struct {
@@ -284,6 +285,8 @@ type IssueInvoicesRequest struct {
 	ID string `json:"-" url:"-"`
 	// When to charge the draft's `payment_method_id`, as an ISO 8601 timestamp in the future. Only for a draft with a `payment_method_id` and a total above zero. Omit to charge on `due_at` if it is still ahead, or right away otherwise.
 	ChargeAt *time.Time `json:"charge_at,omitempty" url:"-"`
+	// How the subscription this invoice starts collects each renewal. `charge_automatically` charges the payment method that paid the invoice each period: the draft's `payment_method_id`, or the one the customer pays the invoice link with. `send_invoice` issues a numbered invoice each period, due on the renewal date and emailed with its payment link to the latest invoice's `recipient_emails`, so it needs at least one recipient and isn't available for invoices billed to a business. Defaults to `charge_automatically`. Only for a draft with a recurring item. A scheduled send applies it when it fires (see `scheduled_collection_method`).
+	CollectionMethod *IssueInvoicesRequestCollectionMethod `json:"collection_method,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -310,6 +313,13 @@ func (i *IssueInvoicesRequest) SetID(id string) {
 func (i *IssueInvoicesRequest) SetChargeAt(chargeAt *time.Time) {
 	i.ChargeAt = chargeAt
 	i.require(issueInvoicesRequestFieldChargeAt)
+}
+
+// SetCollectionMethod sets the CollectionMethod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IssueInvoicesRequest) SetCollectionMethod(collectionMethod *IssueInvoicesRequestCollectionMethod) {
+	i.CollectionMethod = collectionMethod
+	i.require(issueInvoicesRequestFieldCollectionMethod)
 }
 
 func (i *IssueInvoicesRequest) UnmarshalJSON(data []byte) error {
@@ -537,9 +547,10 @@ func (r *RetrieveInvoicesRequest) SetID(id string) {
 }
 
 var (
-	sendInvoicesRequestFieldID       = big.NewInt(1 << 0)
-	sendInvoicesRequestFieldChargeAt = big.NewInt(1 << 1)
-	sendInvoicesRequestFieldSendAt   = big.NewInt(1 << 2)
+	sendInvoicesRequestFieldID               = big.NewInt(1 << 0)
+	sendInvoicesRequestFieldChargeAt         = big.NewInt(1 << 1)
+	sendInvoicesRequestFieldCollectionMethod = big.NewInt(1 << 2)
+	sendInvoicesRequestFieldSendAt           = big.NewInt(1 << 3)
 )
 
 type SendInvoicesRequest struct {
@@ -547,6 +558,8 @@ type SendInvoicesRequest struct {
 	ID string `json:"-" url:"-"`
 	// When to charge the draft's `payment_method_id`, as an ISO 8601 timestamp in the future and no earlier than `send_at`. Only for a draft with a `payment_method_id` and a total above zero. Omit to charge on `due_at` if it is still ahead when the draft is sent, or right away otherwise. A scheduled send that runs after `charge_at` charges right away.
 	ChargeAt *time.Time `json:"charge_at,omitempty" url:"-"`
+	// How the subscription this invoice starts collects each renewal. `charge_automatically` charges the payment method that paid the invoice each period: the draft's `payment_method_id`, or the one the customer pays the invoice link with. `send_invoice` issues a numbered invoice each period, due on the renewal date and emailed with its payment link to the latest invoice's `recipient_emails`, so it needs at least one recipient and isn't available for invoices billed to a business. Defaults to `charge_automatically`. Only for a draft with a recurring item. A scheduled send applies it when it fires (see `scheduled_collection_method`).
+	CollectionMethod *SendInvoicesRequestCollectionMethod `json:"collection_method,omitempty" url:"-"`
 	// When to send the draft, as an ISO 8601 timestamp in the future. Omit to send now.
 	SendAt *time.Time `json:"send_at,omitempty" url:"-"`
 
@@ -575,6 +588,13 @@ func (s *SendInvoicesRequest) SetID(id string) {
 func (s *SendInvoicesRequest) SetChargeAt(chargeAt *time.Time) {
 	s.ChargeAt = chargeAt
 	s.require(sendInvoicesRequestFieldChargeAt)
+}
+
+// SetCollectionMethod sets the CollectionMethod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendInvoicesRequest) SetCollectionMethod(collectionMethod *SendInvoicesRequestCollectionMethod) {
+	s.CollectionMethod = collectionMethod
+	s.require(sendInvoicesRequestFieldCollectionMethod)
 }
 
 // SetSendAt sets the SendAt field and marks it as non-optional;
@@ -618,55 +638,59 @@ func (s *SendInvoicesRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	invoiceFieldAccountID          = big.NewInt(1 << 0)
-	invoiceFieldAmountDue          = big.NewInt(1 << 1)
-	invoiceFieldBillingAddress     = big.NewInt(1 << 2)
-	invoiceFieldBuyerFeeAmount     = big.NewInt(1 << 3)
-	invoiceFieldBuyerFeePercentage = big.NewInt(1 << 4)
-	invoiceFieldCheckoutLink       = big.NewInt(1 << 5)
-	invoiceFieldCreatedAt          = big.NewInt(1 << 6)
-	invoiceFieldCustomerName       = big.NewInt(1 << 7)
-	invoiceFieldDueAt              = big.NewInt(1 << 8)
-	invoiceFieldEmailAddress       = big.NewInt(1 << 9)
-	invoiceFieldID                 = big.NewInt(1 << 10)
-	invoiceFieldInvoicePrefix      = big.NewInt(1 << 11)
-	invoiceFieldLineItems          = big.NewInt(1 << 12)
-	invoiceFieldMailingAddressID   = big.NewInt(1 << 13)
-	invoiceFieldMemberID           = big.NewInt(1 << 14)
-	invoiceFieldMemo               = big.NewInt(1 << 15)
-	invoiceFieldMetadata           = big.NewInt(1 << 16)
-	invoiceFieldNumber             = big.NewInt(1 << 17)
-	invoiceFieldObject             = big.NewInt(1 << 18)
-	invoiceFieldOverdue            = big.NewInt(1 << 19)
-	invoiceFieldPaidAt             = big.NewInt(1 << 20)
-	invoiceFieldPaymentMethodID    = big.NewInt(1 << 21)
-	invoiceFieldRecipientEmails    = big.NewInt(1 << 22)
-	invoiceFieldScheduledChargeAt  = big.NewInt(1 << 23)
-	invoiceFieldScheduledSendAt    = big.NewInt(1 << 24)
-	invoiceFieldStatus             = big.NewInt(1 << 25)
-	invoiceFieldSubtotal           = big.NewInt(1 << 26)
-	invoiceFieldTaxAmount          = big.NewInt(1 << 27)
-	invoiceFieldTotal              = big.NewInt(1 << 28)
-	invoiceFieldTotalsStatus       = big.NewInt(1 << 29)
-	invoiceFieldUpdatedAt          = big.NewInt(1 << 30)
+	invoiceFieldAccountID                 = big.NewInt(1 << 0)
+	invoiceFieldAmountDue                 = big.NewInt(1 << 1)
+	invoiceFieldBillingAddress            = big.NewInt(1 << 2)
+	invoiceFieldBuyerFeeAmount            = big.NewInt(1 << 3)
+	invoiceFieldBuyerFeePercentage        = big.NewInt(1 << 4)
+	invoiceFieldCheckoutLink              = big.NewInt(1 << 5)
+	invoiceFieldCreatedAt                 = big.NewInt(1 << 6)
+	invoiceFieldCustomerName              = big.NewInt(1 << 7)
+	invoiceFieldDueAt                     = big.NewInt(1 << 8)
+	invoiceFieldEmailAddress              = big.NewInt(1 << 9)
+	invoiceFieldID                        = big.NewInt(1 << 10)
+	invoiceFieldInvoicePrefix             = big.NewInt(1 << 11)
+	invoiceFieldLineItems                 = big.NewInt(1 << 12)
+	invoiceFieldMailingAddressID          = big.NewInt(1 << 13)
+	invoiceFieldMemberID                  = big.NewInt(1 << 14)
+	invoiceFieldMembershipID              = big.NewInt(1 << 15)
+	invoiceFieldMemo                      = big.NewInt(1 << 16)
+	invoiceFieldMetadata                  = big.NewInt(1 << 17)
+	invoiceFieldNumber                    = big.NewInt(1 << 18)
+	invoiceFieldObject                    = big.NewInt(1 << 19)
+	invoiceFieldOverdue                   = big.NewInt(1 << 20)
+	invoiceFieldPaidAt                    = big.NewInt(1 << 21)
+	invoiceFieldPaymentMethodID           = big.NewInt(1 << 22)
+	invoiceFieldRecipientEmails           = big.NewInt(1 << 23)
+	invoiceFieldScheduledChargeAt         = big.NewInt(1 << 24)
+	invoiceFieldScheduledCollectionMethod = big.NewInt(1 << 25)
+	invoiceFieldScheduledSendAt           = big.NewInt(1 << 26)
+	invoiceFieldStatus                    = big.NewInt(1 << 27)
+	invoiceFieldSubtotal                  = big.NewInt(1 << 28)
+	invoiceFieldTaxAmount                 = big.NewInt(1 << 29)
+	invoiceFieldTotal                     = big.NewInt(1 << 30)
+	invoiceFieldTotalsStatus              = big.NewInt(1 << 31)
+	invoiceFieldUpdatedAt                 = big.NewInt(1 << 32)
 )
 
 // invoiceNullableFields maps the wire names of Invoice's nullable fields (required or optional) to their field bits.
 var invoiceNullableFields = map[string]*big.Int{
-	"billing_address":     invoiceFieldBillingAddress,
-	"checkout_link":       invoiceFieldCheckoutLink,
-	"customer_name":       invoiceFieldCustomerName,
-	"due_at":              invoiceFieldDueAt,
-	"email_address":       invoiceFieldEmailAddress,
-	"invoice_prefix":      invoiceFieldInvoicePrefix,
-	"mailing_address_id":  invoiceFieldMailingAddressID,
-	"member_id":           invoiceFieldMemberID,
-	"memo":                invoiceFieldMemo,
-	"paid_at":             invoiceFieldPaidAt,
-	"payment_method_id":   invoiceFieldPaymentMethodID,
-	"scheduled_charge_at": invoiceFieldScheduledChargeAt,
-	"scheduled_send_at":   invoiceFieldScheduledSendAt,
-	"tax_amount":          invoiceFieldTaxAmount,
+	"billing_address":             invoiceFieldBillingAddress,
+	"checkout_link":               invoiceFieldCheckoutLink,
+	"customer_name":               invoiceFieldCustomerName,
+	"due_at":                      invoiceFieldDueAt,
+	"email_address":               invoiceFieldEmailAddress,
+	"invoice_prefix":              invoiceFieldInvoicePrefix,
+	"mailing_address_id":          invoiceFieldMailingAddressID,
+	"member_id":                   invoiceFieldMemberID,
+	"membership_id":               invoiceFieldMembershipID,
+	"memo":                        invoiceFieldMemo,
+	"paid_at":                     invoiceFieldPaidAt,
+	"payment_method_id":           invoiceFieldPaymentMethodID,
+	"scheduled_charge_at":         invoiceFieldScheduledChargeAt,
+	"scheduled_collection_method": invoiceFieldScheduledCollectionMethod,
+	"scheduled_send_at":           invoiceFieldScheduledSendAt,
+	"tax_amount":                  invoiceFieldTaxAmount,
 }
 
 type Invoice struct {
@@ -686,6 +710,8 @@ type Invoice struct {
 	LineItems        []*InvoiceLineItem `json:"line_items" url:"line_items"`
 	MailingAddressID *string            `json:"mailing_address_id,omitempty" url:"mailing_address_id,omitempty"`
 	MemberID         *string            `json:"member_id,omitempty" url:"member_id,omitempty"`
+	// The membership this invoice bills, prefixed `mem_`: the subscription a renewal invoice renews, or the one created when an invoice with a recurring item is issued. Null for one-off invoices, for a draft not yet issued, and without the member:basic:read permission.
+	MembershipID *string `json:"membership_id,omitempty" url:"membership_id,omitempty"`
 	// A note to the customer, shown on the invoice email, PDF, and checkout page with its line breaks kept. `null` when none is set.
 	Memo            *string           `json:"memo,omitempty" url:"memo,omitempty"`
 	Metadata        map[string]string `json:"metadata" url:"metadata"`
@@ -696,14 +722,16 @@ type Invoice struct {
 	PaymentMethodID *string           `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
 	RecipientEmails []string          `json:"recipient_emails" url:"recipient_emails"`
 	// When the invoice's saved payment method will be charged, as an ISO 8601 timestamp: the `charge_at` it was sent or issued with, or `due_at` when an invoice with a `payment_method_id` is sent or issued before it is due without one. On a draft, the `charge_at` of its scheduled send. `null` otherwise, once the charge starts, and once the invoice is paid, void, or uncollectible.
-	ScheduledChargeAt *string             `json:"scheduled_charge_at,omitempty" url:"scheduled_charge_at,omitempty"`
-	ScheduledSendAt   *string             `json:"scheduled_send_at,omitempty" url:"scheduled_send_at,omitempty"`
-	Status            InvoiceStatus       `json:"status" url:"status"`
-	Subtotal          *Money              `json:"subtotal" url:"subtotal"`
-	TaxAmount         *Money              `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
-	Total             *Money              `json:"total" url:"total"`
-	TotalsStatus      InvoiceTotalsStatus `json:"totals_status" url:"totals_status"`
-	UpdatedAt         string              `json:"updated_at" url:"updated_at"`
+	ScheduledChargeAt *string `json:"scheduled_charge_at,omitempty" url:"scheduled_charge_at,omitempty"`
+	// The `collection_method` a draft's scheduled send applies when it fires. `null` when the draft has no scheduled send or it was scheduled without one, and once the invoice is issued.
+	ScheduledCollectionMethod *InvoiceScheduledCollectionMethod `json:"scheduled_collection_method,omitempty" url:"scheduled_collection_method,omitempty"`
+	ScheduledSendAt           *string                           `json:"scheduled_send_at,omitempty" url:"scheduled_send_at,omitempty"`
+	Status                    InvoiceStatus                     `json:"status" url:"status"`
+	Subtotal                  *Money                            `json:"subtotal" url:"subtotal"`
+	TaxAmount                 *Money                            `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
+	Total                     *Money                            `json:"total" url:"total"`
+	TotalsStatus              InvoiceTotalsStatus               `json:"totals_status" url:"totals_status"`
+	UpdatedAt                 string                            `json:"updated_at" url:"updated_at"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -817,6 +845,13 @@ func (i *Invoice) GetMemberID() *string {
 	return i.MemberID
 }
 
+func (i *Invoice) GetMembershipID() *string {
+	if i == nil {
+		return nil
+	}
+	return i.MembershipID
+}
+
 func (i *Invoice) GetMemo() *string {
 	if i == nil {
 		return nil
@@ -878,6 +913,13 @@ func (i *Invoice) GetScheduledChargeAt() *string {
 		return nil
 	}
 	return i.ScheduledChargeAt
+}
+
+func (i *Invoice) GetScheduledCollectionMethod() *InvoiceScheduledCollectionMethod {
+	if i == nil {
+		return nil
+	}
+	return i.ScheduledCollectionMethod
 }
 
 func (i *Invoice) GetScheduledSendAt() *string {
@@ -1050,6 +1092,13 @@ func (i *Invoice) SetMemberID(memberID *string) {
 	i.require(invoiceFieldMemberID)
 }
 
+// SetMembershipID sets the MembershipID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetMembershipID(membershipID *string) {
+	i.MembershipID = membershipID
+	i.require(invoiceFieldMembershipID)
+}
+
 // SetMemo sets the Memo field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (i *Invoice) SetMemo(memo *string) {
@@ -1111,6 +1160,13 @@ func (i *Invoice) SetRecipientEmails(recipientEmails []string) {
 func (i *Invoice) SetScheduledChargeAt(scheduledChargeAt *string) {
 	i.ScheduledChargeAt = scheduledChargeAt
 	i.require(invoiceFieldScheduledChargeAt)
+}
+
+// SetScheduledCollectionMethod sets the ScheduledCollectionMethod field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetScheduledCollectionMethod(scheduledCollectionMethod *InvoiceScheduledCollectionMethod) {
+	i.ScheduledCollectionMethod = scheduledCollectionMethod
+	i.require(invoiceFieldScheduledCollectionMethod)
 }
 
 // SetScheduledSendAt sets the ScheduledSendAt field and marks it as non-optional;
@@ -1574,6 +1630,29 @@ func (i *InvoicePdf) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", i)
+}
+
+// The `collection_method` a draft's scheduled send applies when it fires. `null` when the draft has no scheduled send or it was scheduled without one, and once the invoice is issued.
+type InvoiceScheduledCollectionMethod string
+
+const (
+	InvoiceScheduledCollectionMethodChargeAutomatically InvoiceScheduledCollectionMethod = "charge_automatically"
+	InvoiceScheduledCollectionMethodSendInvoice         InvoiceScheduledCollectionMethod = "send_invoice"
+)
+
+func NewInvoiceScheduledCollectionMethodFromString(s string) (InvoiceScheduledCollectionMethod, error) {
+	switch s {
+	case "charge_automatically":
+		return InvoiceScheduledCollectionMethodChargeAutomatically, nil
+	case "send_invoice":
+		return InvoiceScheduledCollectionMethodSendInvoice, nil
+	}
+	var t InvoiceScheduledCollectionMethod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InvoiceScheduledCollectionMethod) Ptr() *InvoiceScheduledCollectionMethod {
+	return &i
 }
 
 type InvoiceStatus string
@@ -2991,6 +3070,29 @@ func NewCreateInvoicesRequestItemsItemVariantVisibilityFromString(s string) (Cre
 
 func (c CreateInvoicesRequestItemsItemVariantVisibility) Ptr() *CreateInvoicesRequestItemsItemVariantVisibility {
 	return &c
+}
+
+// How the subscription this invoice starts collects each renewal. `charge_automatically` charges the payment method that paid the invoice each period: the draft's `payment_method_id`, or the one the customer pays the invoice link with. `send_invoice` issues a numbered invoice each period, due on the renewal date and emailed with its payment link to the latest invoice's `recipient_emails`, so it needs at least one recipient and isn't available for invoices billed to a business. Defaults to `charge_automatically`. Only for a draft with a recurring item. A scheduled send applies it when it fires (see `scheduled_collection_method`).
+type IssueInvoicesRequestCollectionMethod string
+
+const (
+	IssueInvoicesRequestCollectionMethodChargeAutomatically IssueInvoicesRequestCollectionMethod = "charge_automatically"
+	IssueInvoicesRequestCollectionMethodSendInvoice         IssueInvoicesRequestCollectionMethod = "send_invoice"
+)
+
+func NewIssueInvoicesRequestCollectionMethodFromString(s string) (IssueInvoicesRequestCollectionMethod, error) {
+	switch s {
+	case "charge_automatically":
+		return IssueInvoicesRequestCollectionMethodChargeAutomatically, nil
+	case "send_invoice":
+		return IssueInvoicesRequestCollectionMethodSendInvoice, nil
+	}
+	var t IssueInvoicesRequestCollectionMethod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i IssueInvoicesRequestCollectionMethod) Ptr() *IssueInvoicesRequestCollectionMethod {
+	return &i
 }
 
 type ListInvoicesRequestDirection string
@@ -4656,6 +4758,29 @@ func (p PostInvoiceVoidedPayloadType) Ptr() *PostInvoiceVoidedPayloadType {
 	return &p
 }
 
+// How the subscription this invoice starts collects each renewal. `charge_automatically` charges the payment method that paid the invoice each period: the draft's `payment_method_id`, or the one the customer pays the invoice link with. `send_invoice` issues a numbered invoice each period, due on the renewal date and emailed with its payment link to the latest invoice's `recipient_emails`, so it needs at least one recipient and isn't available for invoices billed to a business. Defaults to `charge_automatically`. Only for a draft with a recurring item. A scheduled send applies it when it fires (see `scheduled_collection_method`).
+type SendInvoicesRequestCollectionMethod string
+
+const (
+	SendInvoicesRequestCollectionMethodChargeAutomatically SendInvoicesRequestCollectionMethod = "charge_automatically"
+	SendInvoicesRequestCollectionMethodSendInvoice         SendInvoicesRequestCollectionMethod = "send_invoice"
+)
+
+func NewSendInvoicesRequestCollectionMethodFromString(s string) (SendInvoicesRequestCollectionMethod, error) {
+	switch s {
+	case "charge_automatically":
+		return SendInvoicesRequestCollectionMethodChargeAutomatically, nil
+	case "send_invoice":
+		return SendInvoicesRequestCollectionMethodSendInvoice, nil
+	}
+	var t SendInvoicesRequestCollectionMethod
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SendInvoicesRequestCollectionMethod) Ptr() *SendInvoicesRequestCollectionMethod {
+	return &s
+}
+
 var (
 	updateInvoicesRequestBillingAddressFieldCity       = big.NewInt(1 << 0)
 	updateInvoicesRequestBillingAddressFieldCountry    = big.NewInt(1 << 1)
@@ -6062,7 +6187,7 @@ type UpdateInvoicesRequest struct {
 	BuyerFeePercentage *float64 `json:"buyer_fee_percentage,omitempty" url:"-"`
 	// When payment is due, as an ISO 8601 timestamp.
 	DueAt *time.Time `json:"due_at,omitempty" url:"-"`
-	// The variants being invoiced, all in the same currency. Each variant may appear once; use quantity for multiple units. Product and price come from each variant; a recurring variant must belong to a product, bills its renewal price and, once the invoice is paid, renews as a subscription charged to the payment method that paid it. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, and access settings.
+	// The variants being invoiced, all in the same currency. Each variant may appear once; use quantity for multiple units. Product and price come from each variant; a recurring variant must belong to a product, bills its renewal price and, once the invoice is paid, renews as a subscription collected by the `collection_method` the invoice was sent or issued with. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, and access settings.
 	Items []*UpdateInvoicesRequestItemsItem `json:"items,omitempty" url:"-"`
 	// An address associated with the member. Mutually exclusive with billing_address.
 	MailingAddressID *string `json:"mailing_address_id,omitempty" url:"-"`
