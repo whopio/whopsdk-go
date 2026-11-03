@@ -25,7 +25,8 @@ var (
 	createTradesRequestFieldSize           = big.NewInt(1 << 12)
 	createTradesRequestFieldSlippageBps    = big.NewInt(1 << 13)
 	createTradesRequestFieldTimeInForce    = big.NewInt(1 << 14)
-	createTradesRequestFieldType           = big.NewInt(1 << 15)
+	createTradesRequestFieldTriggerPrice   = big.NewInt(1 << 15)
+	createTradesRequestFieldType           = big.NewInt(1 << 16)
 )
 
 type CreateTradesRequest struct {
@@ -45,20 +46,22 @@ type CreateTradesRequest struct {
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
 	// Only for an order. The order value in USD, as a decimal string; the size is rounded down to the market's decimals. Send exactly one of `size` or `notional`; a spot buy takes `notional`, the USDT0 to spend.
 	Notional *string `json:"notional,omitempty" url:"-"`
-	// `market` fills now within `slippage_bps` of the mid price, and anything unfilled is canceled; `limit` fills at `price` or better, and how long it stays on the book follows `time_in_force`. Required for an order.
+	// `market` fills now within `slippage_bps` of the mid price, and anything unfilled is canceled; `limit` fills at `price` or better, and how long it stays on the book follows `time_in_force`. `take_profit` and `stop_loss` reduce the open perpetual position with a market order once the price crosses `trigger_price`; the trade stays `processing` until then. Required for an order.
 	OrderType *CreateTradesRequestOrderType `json:"order_type,omitempty" url:"-"`
 	// Only for an order. The limit price in USD, as a decimal string Hyperliquid accepts without rounding. Required for a limit order; not accepted for a market order.
 	Price *string `json:"price,omitempty" url:"-"`
 	// Only for a perpetual order. Only reduce an open position; defaults to `false`. A reduce-only order takes no `leverage`.
 	ReduceOnly *bool `json:"reduce_only,omitempty" url:"-"`
-	// `buy` or `sell`. Required for an order.
+	// `buy` or `sell`. Required for an order, except a `take_profit` or `stop_loss`, where it defaults to the side that reduces the position.
 	Side *CreateTradesRequestSide `json:"side,omitempty" url:"-"`
-	// Only for an order. The size in units of the market, as a decimal string, with at most the market's size decimals. Send exactly one of `size` or `notional`; a spot sell takes `size`. A perpetual order must be worth at least 10 USD, unless reduce-only.
+	// Only for an order. The size in units of the market, as a decimal string, with at most the market's size decimals. Send exactly one of `size` or `notional`; a spot sell takes `size`. A perpetual order must be worth at least 10 USD, unless reduce-only. A `take_profit` or `stop_loss` takes `size` or nothing for the whole position, and a set `size` must be worth at least 10 USD at `trigger_price`.
 	Size *string `json:"size,omitempty" url:"-"`
 	// Only for a market order or a close. The worst price as basis points from the mid price, from 1 to 1000; defaults to 100 for a perpetual, and to the swap route's own default for spot.
 	SlippageBps *int `json:"slippage_bps,omitempty" url:"-"`
 	// Only for a perpetual limit order. `good_til_canceled` rests on the book until it fills; `add_liquidity_only` is canceled instead of filling at once; `immediate_or_cancel` fills what it can now and cancels the rest. Defaults to `good_til_canceled`. The trade stays `processing` while the order rests.
 	TimeInForce *CreateTradesRequestTimeInForce `json:"time_in_force,omitempty" url:"-"`
+	// Required for a `take_profit` or `stop_loss`, and only for them. The USD price, as a decimal string Hyperliquid accepts without rounding, at which it sends a market order. Closing a long, a take-profit triggers above the current price and a stop-loss below; closing a short, the reverse. It is always reduce-only, needs an open position, and takes no `price`, `notional`, `leverage`, `time_in_force` or `slippage_bps`.
+	TriggerPrice *string `json:"trigger_price,omitempty" url:"-"`
 	// `order` places one order. A perpetual order trades from the trading balance, setting cross `leverage` first; when the balance is short, it bridges the USDT0 it needs from the wallet first. A spot order swaps between USDT0 and the asset in the wallet. `deposit` bridges `amount` USDT0 from the wallet to the trading balance. `withdraw` sends `amount` USDC (or `all`) from the trading balance back to the wallet. `close` closes the whole position in `market` with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
 	Type CreateTradesRequestType `json:"type" url:"-"`
 
@@ -178,6 +181,13 @@ func (c *CreateTradesRequest) SetSlippageBps(slippageBps *int) {
 func (c *CreateTradesRequest) SetTimeInForce(timeInForce *CreateTradesRequestTimeInForce) {
 	c.TimeInForce = timeInForce
 	c.require(createTradesRequestFieldTimeInForce)
+}
+
+// SetTriggerPrice sets the TriggerPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTradesRequest) SetTriggerPrice(triggerPrice *string) {
+	c.TriggerPrice = triggerPrice
+	c.require(createTradesRequestFieldTriggerPrice)
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -369,9 +379,10 @@ var (
 	tradeFieldStatus          = big.NewInt(1 << 21)
 	tradeFieldStatusDetail    = big.NewInt(1 << 22)
 	tradeFieldStep            = big.NewInt(1 << 23)
-	tradeFieldType            = big.NewInt(1 << 24)
-	tradeFieldUpdatedAt       = big.NewInt(1 << 25)
-	tradeFieldUserID          = big.NewInt(1 << 26)
+	tradeFieldTriggerPrice    = big.NewInt(1 << 24)
+	tradeFieldType            = big.NewInt(1 << 25)
+	tradeFieldUpdatedAt       = big.NewInt(1 << 26)
+	tradeFieldUserID          = big.NewInt(1 << 27)
 )
 
 // tradeNullableFields maps the wire names of Trade's nullable fields (required or optional) to their field bits.
@@ -395,6 +406,7 @@ var tradeNullableFields = map[string]*big.Int{
 	"size":              tradeFieldSize,
 	"status_detail":     tradeFieldStatusDetail,
 	"step":              tradeFieldStep,
+	"trigger_price":     tradeFieldTriggerPrice,
 	"user_id":           tradeFieldUserID,
 }
 
@@ -430,9 +442,9 @@ type Trade struct {
 	// Free-form string-to-string annotations stored on the trade.
 	Metadata map[string]any `json:"metadata" url:"metadata"`
 	Object   TradeObject    `json:"object" url:"object"`
-	// `market` or `limit` for an order. `null` otherwise.
+	// `market`, `limit`, `take_profit` or `stop_loss` for an order. `null` otherwise.
 	OrderType *TradeOrderType `json:"order_type,omitempty" url:"order_type,omitempty"`
-	// The limit price of the order in USD. A market order's price is the mid price moved by `slippage_bps`. `null` for other types.
+	// The limit price of the order in USD. A market order's price is the mid price moved by `slippage_bps`; a take-profit or stop-loss's is the worst price its market order may fill at once triggered. `null` for other types.
 	Price *Money `json:"price,omitempty" url:"price,omitempty"`
 	// Whether the order can only reduce a position. `null` for other types.
 	ReduceOnly *bool `json:"reduce_only,omitempty" url:"reduce_only,omitempty"`
@@ -446,6 +458,8 @@ type Trade struct {
 	StatusDetail *TradeStatusDetail `json:"status_detail,omitempty" url:"status_detail,omitempty"`
 	// What a live trade is doing now: `depositing` while the wallet's USDT0 is being sent to the bridge, `landing` once sent and until it reaches the trading balance, `placing` while the order or close is with the venue, `withdrawing` while USDC heads back to the wallet, `returning` while money an unfilled order bridged in goes back. `null` once the trade is no longer pending or processing.
 	Step *TradeStep `json:"step,omitempty" url:"step,omitempty"`
+	// The price in USD at which a take-profit or stop-loss sends its market order. `null` for other orders and types.
+	TriggerPrice *Money `json:"trigger_price,omitempty" url:"trigger_price,omitempty"`
 	// `order` places one order: a perpetual order trades from the trading balance, a spot order swaps between USDT0 and the asset in the wallet. `deposit` bridges USDT0 from the wallet to the trading balance. `withdraw` sends USDC from the trading balance back to the wallet. `close` closes the whole position in one market with a market reduce-only order; when the account is then flat, a `withdraw` trade sends the trading balance back to the wallet.
 	Type TradeType `json:"type" url:"type"`
 	// When the trade last changed, as an ISO 8601 timestamp.
@@ -626,6 +640,13 @@ func (t *Trade) GetStep() *TradeStep {
 		return nil
 	}
 	return t.Step
+}
+
+func (t *Trade) GetTriggerPrice() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.TriggerPrice
 }
 
 func (t *Trade) GetType() TradeType {
@@ -833,6 +854,13 @@ func (t *Trade) SetStep(step *TradeStep) {
 	t.require(tradeFieldStep)
 }
 
+// SetTriggerPrice sets the TriggerPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *Trade) SetTriggerPrice(triggerPrice *Money) {
+	t.TriggerPrice = triggerPrice
+	t.require(tradeFieldTriggerPrice)
+}
+
 // SetType sets the Type field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (t *Trade) SetType(type_ TradeType) {
@@ -1030,12 +1058,14 @@ func (t TradeObject) Ptr() *TradeObject {
 	return &t
 }
 
-// `market` or `limit` for an order. `null` otherwise.
+// `market`, `limit`, `take_profit` or `stop_loss` for an order. `null` otherwise.
 type TradeOrderType string
 
 const (
-	TradeOrderTypeMarket TradeOrderType = "market"
-	TradeOrderTypeLimit  TradeOrderType = "limit"
+	TradeOrderTypeMarket     TradeOrderType = "market"
+	TradeOrderTypeLimit      TradeOrderType = "limit"
+	TradeOrderTypeTakeProfit TradeOrderType = "take_profit"
+	TradeOrderTypeStopLoss   TradeOrderType = "stop_loss"
 )
 
 func NewTradeOrderTypeFromString(s string) (TradeOrderType, error) {
@@ -1044,6 +1074,10 @@ func NewTradeOrderTypeFromString(s string) (TradeOrderType, error) {
 		return TradeOrderTypeMarket, nil
 	case "limit":
 		return TradeOrderTypeLimit, nil
+	case "take_profit":
+		return TradeOrderTypeTakeProfit, nil
+	case "stop_loss":
+		return TradeOrderTypeStopLoss, nil
 	}
 	var t TradeOrderType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1212,12 +1246,14 @@ func (c CreateTradesRequestInstrumentType) Ptr() *CreateTradesRequestInstrumentT
 	return &c
 }
 
-// `market` fills now within `slippage_bps` of the mid price, and anything unfilled is canceled; `limit` fills at `price` or better, and how long it stays on the book follows `time_in_force`. Required for an order.
+// `market` fills now within `slippage_bps` of the mid price, and anything unfilled is canceled; `limit` fills at `price` or better, and how long it stays on the book follows `time_in_force`. `take_profit` and `stop_loss` reduce the open perpetual position with a market order once the price crosses `trigger_price`; the trade stays `processing` until then. Required for an order.
 type CreateTradesRequestOrderType string
 
 const (
-	CreateTradesRequestOrderTypeMarket CreateTradesRequestOrderType = "market"
-	CreateTradesRequestOrderTypeLimit  CreateTradesRequestOrderType = "limit"
+	CreateTradesRequestOrderTypeMarket     CreateTradesRequestOrderType = "market"
+	CreateTradesRequestOrderTypeLimit      CreateTradesRequestOrderType = "limit"
+	CreateTradesRequestOrderTypeTakeProfit CreateTradesRequestOrderType = "take_profit"
+	CreateTradesRequestOrderTypeStopLoss   CreateTradesRequestOrderType = "stop_loss"
 )
 
 func NewCreateTradesRequestOrderTypeFromString(s string) (CreateTradesRequestOrderType, error) {
@@ -1226,6 +1262,10 @@ func NewCreateTradesRequestOrderTypeFromString(s string) (CreateTradesRequestOrd
 		return CreateTradesRequestOrderTypeMarket, nil
 	case "limit":
 		return CreateTradesRequestOrderTypeLimit, nil
+	case "take_profit":
+		return CreateTradesRequestOrderTypeTakeProfit, nil
+	case "stop_loss":
+		return CreateTradesRequestOrderTypeStopLoss, nil
 	}
 	var t CreateTradesRequestOrderType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1235,7 +1275,7 @@ func (c CreateTradesRequestOrderType) Ptr() *CreateTradesRequestOrderType {
 	return &c
 }
 
-// `buy` or `sell`. Required for an order.
+// `buy` or `sell`. Required for an order, except a `take_profit` or `stop_loss`, where it defaults to the side that reduces the position.
 type CreateTradesRequestSide string
 
 const (
