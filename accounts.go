@@ -28,17 +28,17 @@ type CreateAccountsRequest struct {
 	AffiliateCode *string `json:"affiliate_code,omitempty" url:"-"`
 	// The blueprint App ID, prefixed `app_`. Creates a hosted website for the account and queues its deployment asynchronously; the Account response does not report deployment completion.
 	BlueprintID *string `json:"blueprint_id,omitempty" url:"-"`
-	// The ISO 3166-1 alpha-2 country code where the account's business is located (e.g. `US`). Defaults to the parent account's country for connected accounts.
+	// The ISO 3166-1 alpha-2 country code where the account's business is located (e.g. `US`). Defaults to the parent account's country for subaccounts.
 	Country *string `json:"country,omitempty" url:"-"`
 	// Whether Whop assembles and files dispute evidence for this account. Enabling it opts into the success fee charged on disputes it wins. Requires payment:dispute. Omit to preserve the existing setting or creation default.
 	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
-	// The email address of the account owner. Required when creating a connected account.
+	// The email address of the account owner. Required when creating a subaccount.
 	Email *string `json:"email,omitempty" url:"-"`
 	// Arbitrary key/value metadata to store on the account.
 	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
 	// Whether payment orchestration is enabled for this account. Requires payout:account:update. Omit to preserve the existing setting or creation default.
 	OrchestrationEnabled *bool `json:"orchestration_enabled,omitempty" url:"-"`
-	// Whether Whop sends transactional emails to customers on behalf of the connected account.
+	// Whether Whop sends transactional emails to customers on behalf of the subaccount.
 	SendCustomerEmails *bool `json:"send_customer_emails,omitempty" url:"-"`
 	// The display name of the account. Defaults to `metadata.external_id` or the owner's email when omitted.
 	Title *string `json:"title,omitempty" url:"-"`
@@ -154,7 +154,7 @@ var (
 )
 
 type DeleteAccountsRequest struct {
-	// Connected account ID, prefixed `biz_`.
+	// Subaccount ID, prefixed `biz_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -378,7 +378,7 @@ type ListAccountsRequest struct {
 	VolumeMin *float64 `json:"-" url:"volume_min,omitempty"`
 	// Return only accounts whose lifetime USD volume is at most this value. Requires `stats:read` on the parent account.
 	VolumeMax *float64 `json:"-" url:"volume_max,omitempty"`
-	// For platforms: the parent account ID whose direct connected accounts to return. Requires `payout:account:read` on the parent account.
+	// For platforms: the parent account ID whose direct subaccounts to return. Requires `payout:account:read` on the parent account.
 	ParentAccountID *string `json:"-" url:"parent_account_id,omitempty"`
 	// Return only accounts owned by this user (`user_...`), the account's `owner`. Cannot be combined with `parent_account_id`.
 	OwnerID *string `json:"-" url:"owner_id,omitempty"`
@@ -681,7 +681,7 @@ var (
 )
 
 type SuspendAccountsRequest struct {
-	// Connected account ID, prefixed `biz_`.
+	// Subaccount ID, prefixed `biz_`.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -944,7 +944,7 @@ type Account struct {
 	BusinessName *string `json:"business_name,omitempty" url:"business_name,omitempty"`
 	// High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
 	BusinessType *string `json:"business_type,omitempty" url:"business_type,omitempty"`
-	// Whether pending funds may be transferred from this platform account to its connected accounts.
+	// Whether pending funds may be transferred from this platform account to its subaccounts.
 	CanTransferPendingBalanceToChildren bool `json:"can_transfer_pending_balance_to_children" url:"can_transfer_pending_balance_to_children"`
 	// The account's cancellation policy document, or `null` if they have not published one.
 	CancellationPolicy *File `json:"cancellation_policy,omitempty" url:"cancellation_policy,omitempty"`
@@ -1003,7 +1003,7 @@ type Account struct {
 	OtherIndustryDescription *string `json:"other_industry_description,omitempty" url:"other_industry_description,omitempty"`
 	// The single user who owns the account, whose email is the `email` above. Distinct from the `owner` role on team members, which any number of them can hold.
 	Owner *UserSummary `json:"owner" url:"owner"`
-	// Parent account for connected accounts, or `null` for standalone accounts.
+	// Parent account for subaccounts, or `null` for standalone accounts.
 	ParentAccount *AccountParent `json:"parent_account,omitempty" url:"parent_account,omitempty"`
 	// The account's active first-tier partner. Present on retrieve responses; null when no active first-tier partner is attributed to the account. Omitted from other responses.
 	Partner *AccountPartner `json:"partner,omitempty" url:"partner,omitempty"`
@@ -6068,7 +6068,7 @@ var (
 type DeleteAccountsResponse struct {
 	// Always true.
 	Deleted bool `json:"deleted" url:"deleted"`
-	// ID of the deleted connected account.
+	// ID of the deleted subaccount.
 	ID string `json:"id" url:"id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

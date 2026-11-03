@@ -32,7 +32,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-03"
+		apiVersionDateDefault := "2026-11-03-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -54,7 +54,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists accounts visible to the credential. User tokens return the user's business accounts; Account API keys return the requesting account and its connected accounts.
+// Lists accounts visible to the credential. User tokens return the user's business accounts; Account API keys return the requesting account and its subaccounts.
 //
 // Example:
 //
@@ -134,7 +134,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates an account. User tokens create business accounts; Account API keys create connected accounts. Tax fields (`tax_remitted_by`, `tax_type`, `product_tax_code_id`, `business_address`, `tax_identifiers`) are configured with Update Account, not at creation.
+// Creates an account. User tokens create business accounts; Account API keys create subaccounts. Tax fields (`tax_remitted_by`, `tax_type`, `product_tax_code_id`, `business_address`, `tax_identifiers`) are configured with Update Account, not at creation.
 //
 // Example:
 //
@@ -293,7 +293,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Deletes a connected account directly owned by the authenticated platform account. The account must have no settled, pending, or reserved balance in any currency and no active, trialing, or past-due memberships. The account stops resolving immediately, and its products, plans, and team access are removed in the background; payment history is retained. Deletion cannot be undone through the API. This cannot delete the platform account itself or an account owned by another platform.
+// Deletes a subaccount directly owned by the authenticated platform account. The account must have no settled, pending, or reserved balance in any currency and no active, trialing, or past-due memberships. The account stops resolving immediately, and its products, plans, and team access are removed in the background; payment history is retained. Deletion cannot be undone through the API. This cannot delete the platform account itself or an account owned by another platform.
 //
 // Example:
 //
@@ -320,7 +320,7 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Updates an account. User tokens can update business accounts; Account API keys can update connected accounts.
+// Updates an account. User tokens can update business accounts; Account API keys can update subaccounts.
 //
 // Example:
 //
@@ -462,7 +462,7 @@ func (c *Client) RetryAdsPayment(
 	return response.Body, nil
 }
 
-// Suspends a connected account directly owned by the authenticated platform account. This cannot suspend the platform account itself or an account owned by another platform.
+// Suspends a subaccount directly owned by the authenticated platform account. This cannot suspend the platform account itself or an account owned by another platform.
 //
 // Example:
 //

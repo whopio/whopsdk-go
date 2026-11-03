@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-03"
+		apiVersionDateDefault := "2026-11-03-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists payment-financing applications. Without `account_id`, an account credential lists its own account and its direct connected accounts, but not deeper descendants, and a user credential lists every account it can read applications for.
+// Lists payment-financing applications. Without `account_id`, an account credential lists its own account and its direct subaccounts, but not deeper descendants, and a user credential lists every account it can read applications for.
 //
 // Example:
 //

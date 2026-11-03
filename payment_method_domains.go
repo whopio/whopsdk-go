@@ -113,7 +113,7 @@ var (
 )
 
 type ListPaymentMethodDomainsRequest struct {
-	// Only domains registered for this account (`biz_` tag). Defaults to the caller's account plus its connected accounts.
+	// Only domains registered for this account (`biz_` tag). Defaults to the caller's account plus its subaccounts.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Only the domain with this exact hostname.
 	Hostname *string `json:"-" url:"hostname,omitempty"`

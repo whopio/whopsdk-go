@@ -24,7 +24,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-03"
+		apiVersionDateDefault := "2026-11-03-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -42,7 +42,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists trades you can access, newest first. User credentials see their own trades and those of accounts they belong to, including connected accounts; account credentials see their account and its connected accounts.
+// Lists trades you can access, newest first. User credentials see their own trades and those of accounts they belong to, including subaccounts; account credentials see their account and its subaccounts.
 //
 // Example:
 //

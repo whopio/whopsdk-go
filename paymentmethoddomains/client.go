@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-03"
+		apiVersionDateDefault := "2026-11-03-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists the payment method domains registered for your account and its connected accounts. Deprecated: list domains with `GET /domains` and the `apple_pay` filter instead.
+// Lists the payment method domains registered for your account and its subaccounts. Deprecated: list domains with `GET /domains` and the `apple_pay` filter instead.
 //
 // Example:
 //

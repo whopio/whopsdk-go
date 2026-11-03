@@ -1369,7 +1369,6 @@ const (
 	RetrieveFinancialReportsResponseRowsItemGroupingBadDebt               RetrieveFinancialReportsResponseRowsItemGrouping = "bad_debt"
 	RetrieveFinancialReportsResponseRowsItemGroupingBalance               RetrieveFinancialReportsResponseRowsItemGrouping = "balance"
 	RetrieveFinancialReportsResponseRowsItemGroupingClawbacks             RetrieveFinancialReportsResponseRowsItemGrouping = "clawbacks"
-	RetrieveFinancialReportsResponseRowsItemGroupingConnectedAccounts     RetrieveFinancialReportsResponseRowsItemGrouping = "connected_accounts"
 	RetrieveFinancialReportsResponseRowsItemGroupingCrypto                RetrieveFinancialReportsResponseRowsItemGrouping = "crypto"
 	RetrieveFinancialReportsResponseRowsItemGroupingDisputes              RetrieveFinancialReportsResponseRowsItemGrouping = "disputes"
 	RetrieveFinancialReportsResponseRowsItemGroupingFees                  RetrieveFinancialReportsResponseRowsItemGrouping = "fees"
@@ -1382,6 +1381,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemGroupingPlatformCredits       RetrieveFinancialReportsResponseRowsItemGrouping = "platform_credits"
 	RetrieveFinancialReportsResponseRowsItemGroupingRefunds               RetrieveFinancialReportsResponseRowsItemGrouping = "refunds"
 	RetrieveFinancialReportsResponseRowsItemGroupingReserves              RetrieveFinancialReportsResponseRowsItemGrouping = "reserves"
+	RetrieveFinancialReportsResponseRowsItemGroupingSubaccounts           RetrieveFinancialReportsResponseRowsItemGrouping = "subaccounts"
 	RetrieveFinancialReportsResponseRowsItemGroupingTransfers             RetrieveFinancialReportsResponseRowsItemGrouping = "transfers"
 	RetrieveFinancialReportsResponseRowsItemGroupingWalletsAndBalance     RetrieveFinancialReportsResponseRowsItemGrouping = "wallets_and_balance"
 	RetrieveFinancialReportsResponseRowsItemGroupingWithdrawals           RetrieveFinancialReportsResponseRowsItemGrouping = "withdrawals"
@@ -1401,8 +1401,6 @@ func NewRetrieveFinancialReportsResponseRowsItemGroupingFromString(s string) (Re
 		return RetrieveFinancialReportsResponseRowsItemGroupingBalance, nil
 	case "clawbacks":
 		return RetrieveFinancialReportsResponseRowsItemGroupingClawbacks, nil
-	case "connected_accounts":
-		return RetrieveFinancialReportsResponseRowsItemGroupingConnectedAccounts, nil
 	case "crypto":
 		return RetrieveFinancialReportsResponseRowsItemGroupingCrypto, nil
 	case "disputes":
@@ -1427,6 +1425,8 @@ func NewRetrieveFinancialReportsResponseRowsItemGroupingFromString(s string) (Re
 		return RetrieveFinancialReportsResponseRowsItemGroupingRefunds, nil
 	case "reserves":
 		return RetrieveFinancialReportsResponseRowsItemGroupingReserves, nil
+	case "subaccounts":
+		return RetrieveFinancialReportsResponseRowsItemGroupingSubaccounts, nil
 	case "transfers":
 		return RetrieveFinancialReportsResponseRowsItemGroupingTransfers, nil
 	case "wallets_and_balance":

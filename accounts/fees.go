@@ -1566,9 +1566,9 @@ var updateFeesRequestChildMarkupsNullableFields = map[string]*big.Int{
 	"transfers":    updateFeesRequestChildMarkupsFieldTransfers,
 }
 
-// Default markups for connected accounts. Available on accounts without a parent, even before any accounts connect.
+// Default markups for subaccounts. Available on accounts without a parent, even before any accounts connect.
 type UpdateFeesRequestChildMarkups struct {
-	// The markup on card purchases settled by the connected account. `null` clears the custom markup.
+	// The markup on card purchases settled by the subaccount. `null` clears the custom markup.
 	CardSpend *UpdateFeesRequestChildMarkupsCardSpend `json:"card_spend,omitempty" url:"card_spend,omitempty"`
 	// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 	CryptoSwaps *UpdateFeesRequestChildMarkupsCryptoSwaps `json:"crypto_swaps,omitempty" url:"crypto_swaps,omitempty"`
@@ -1742,7 +1742,7 @@ var (
 	updateFeesRequestChildMarkupsCardSpendFieldPercentage = big.NewInt(1 << 1)
 )
 
-// The markup on card purchases settled by the connected account. `null` clears the custom markup.
+// The markup on card purchases settled by the subaccount. `null` clears the custom markup.
 type UpdateFeesRequestChildMarkupsCardSpend struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -2376,7 +2376,7 @@ var (
 	updateFeesRequestCoveredPayoutFeesFieldRtp           = big.NewInt(1 << 5)
 )
 
-// Changes to the payout fees this account covers for connected accounts. Send either all or individual category keys. Omitted categories stay unchanged; category changes have no effect while all is true.
+// Changes to the payout fees this account covers for subaccounts. Send either all or individual category keys. Omitted categories stay unchanged; category changes have no effect while all is true.
 type UpdateFeesRequestCoveredPayoutFees struct {
 	All           *bool `json:"all,omitempty" url:"all,omitempty"`
 	BankWire      *bool `json:"bank_wire,omitempty" url:"bank_wire,omitempty"`
@@ -5323,9 +5323,9 @@ var updateFeesRequestMarkupsNullableFields = map[string]*big.Int{
 	"transfers":    updateFeesRequestMarkupsFieldTransfers,
 }
 
-// Markups on this connected account, set by the platform it is connected to.
+// Markups on this subaccount, set by the platform it is connected to.
 type UpdateFeesRequestMarkups struct {
-	// The markup on card purchases settled by the connected account. `null` clears the custom markup.
+	// The markup on card purchases settled by the subaccount. `null` clears the custom markup.
 	CardSpend *UpdateFeesRequestMarkupsCardSpend `json:"card_spend,omitempty" url:"card_spend,omitempty"`
 	// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 	CryptoSwaps *UpdateFeesRequestMarkupsCryptoSwaps `json:"crypto_swaps,omitempty" url:"crypto_swaps,omitempty"`
@@ -5499,7 +5499,7 @@ var (
 	updateFeesRequestMarkupsCardSpendFieldPercentage = big.NewInt(1 << 1)
 )
 
-// The markup on card purchases settled by the connected account. `null` clears the custom markup.
+// The markup on card purchases settled by the subaccount. `null` clears the custom markup.
 type UpdateFeesRequestMarkupsCardSpend struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -9453,9 +9453,9 @@ type UpdateFeesRequest struct {
 	Buyer *UpdateFeesRequestBuyer `json:"buyer,omitempty" url:"-"`
 	// The fields of a fee the caller may change. Only the keys sent are replaced.
 	CardProcessing *UpdateFeesRequestCardProcessing `json:"card_processing,omitempty" url:"-"`
-	// Default markups for connected accounts. Available on accounts without a parent, even before any accounts connect.
+	// Default markups for subaccounts. Available on accounts without a parent, even before any accounts connect.
 	ChildMarkups *UpdateFeesRequestChildMarkups `json:"child_markups,omitempty" url:"-"`
-	// Changes to the payout fees this account covers for connected accounts. Send either all or individual category keys. Omitted categories stay unchanged; category changes have no effect while all is true.
+	// Changes to the payout fees this account covers for subaccounts. Send either all or individual category keys. Omitted categories stay unchanged; category changes have no effect while all is true.
 	CoveredPayoutFees *UpdateFeesRequestCoveredPayoutFees `json:"covered_payout_fees,omitempty" url:"-"`
 	// The fields of a fee the caller may change. Only the keys sent are replaced.
 	CrossBorder *UpdateFeesRequestCrossBorder `json:"cross_border,omitempty" url:"-"`
@@ -9479,7 +9479,7 @@ type UpdateFeesRequest struct {
 	HighRisk *UpdateFeesRequestHighRisk `json:"high_risk,omitempty" url:"-"`
 	// The fields of a fee the caller may change. Only the keys sent are replaced.
 	Marketplace *UpdateFeesRequestMarketplace `json:"marketplace,omitempty" url:"-"`
-	// Markups on this connected account, set by the platform it is connected to.
+	// Markups on this subaccount, set by the platform it is connected to.
 	Markups *UpdateFeesRequestMarkups `json:"markups,omitempty" url:"-"`
 	// Why the fees are changing, recorded with the change. Required when a Whop Verified Partner edits the fee schedule; ignored for markups.
 	Notes *string `json:"notes,omitempty" url:"-"`

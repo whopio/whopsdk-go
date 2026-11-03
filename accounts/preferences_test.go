@@ -120,11 +120,11 @@ func TestSettersRetrievePreferencesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetCoversConnectedAccountNegativeBalances", func(t *testing.T) {
+	t.Run("SetCoversSubaccountNegativeBalances", func(t *testing.T) {
 		obj := &RetrievePreferencesResponse{}
-		var fernTestValueCoversConnectedAccountNegativeBalances *bool
-		obj.SetCoversConnectedAccountNegativeBalances(fernTestValueCoversConnectedAccountNegativeBalances)
-		assert.Equal(t, fernTestValueCoversConnectedAccountNegativeBalances, obj.CoversConnectedAccountNegativeBalances)
+		var fernTestValueCoversSubaccountNegativeBalances *bool
+		obj.SetCoversSubaccountNegativeBalances(fernTestValueCoversSubaccountNegativeBalances)
+		assert.Equal(t, fernTestValueCoversSubaccountNegativeBalances, obj.CoversSubaccountNegativeBalances)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -467,28 +467,28 @@ func TestGettersRetrievePreferencesResponse(t *testing.T) {
 		_ = obj.GetCardsNotifications() // Should return zero value
 	})
 
-	t.Run("GetCoversConnectedAccountNegativeBalances", func(t *testing.T) {
+	t.Run("GetCoversSubaccountNegativeBalances", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrievePreferencesResponse{}
 		var expected *bool
-		obj.CoversConnectedAccountNegativeBalances = expected
+		obj.CoversSubaccountNegativeBalances = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetCoversConnectedAccountNegativeBalances(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetCoversSubaccountNegativeBalances(), "getter should return the property value")
 	})
 
-	t.Run("GetCoversConnectedAccountNegativeBalances_NilValue", func(t *testing.T) {
+	t.Run("GetCoversSubaccountNegativeBalances_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrievePreferencesResponse{}
-		obj.CoversConnectedAccountNegativeBalances = nil
+		obj.CoversSubaccountNegativeBalances = nil
 
 		// Act & Assert
-		assert.Nil(t, obj.GetCoversConnectedAccountNegativeBalances(), "getter should return nil when property is nil")
+		assert.Nil(t, obj.GetCoversSubaccountNegativeBalances(), "getter should return nil when property is nil")
 	})
 
-	t.Run("GetCoversConnectedAccountNegativeBalances_NilReceiver", func(t *testing.T) {
+	t.Run("GetCoversSubaccountNegativeBalances_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *RetrievePreferencesResponse
 		// Should not panic - getters should handle nil receiver gracefully
@@ -497,7 +497,7 @@ func TestGettersRetrievePreferencesResponse(t *testing.T) {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetCoversConnectedAccountNegativeBalances() // Should return zero value
+		_ = obj.GetCoversSubaccountNegativeBalances() // Should return zero value
 	})
 
 	t.Run("GetCustomerTracking", func(t *testing.T) {
@@ -1163,14 +1163,14 @@ func TestSettersMarkExplicitRetrievePreferencesResponse(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetCoversConnectedAccountNegativeBalances_MarksExplicit", func(t *testing.T) {
+	t.Run("SetCoversSubaccountNegativeBalances_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RetrievePreferencesResponse{}
-		var fernTestValueCoversConnectedAccountNegativeBalances *bool
+		var fernTestValueCoversSubaccountNegativeBalances *bool
 
 		// Act
-		obj.SetCoversConnectedAccountNegativeBalances(fernTestValueCoversConnectedAccountNegativeBalances)
+		obj.SetCoversSubaccountNegativeBalances(fernTestValueCoversSubaccountNegativeBalances)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -6135,11 +6135,11 @@ func TestSettersUpdatePreferencesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetCoversConnectedAccountNegativeBalances", func(t *testing.T) {
+	t.Run("SetCoversSubaccountNegativeBalances", func(t *testing.T) {
 		obj := &UpdatePreferencesResponse{}
-		var fernTestValueCoversConnectedAccountNegativeBalances *bool
-		obj.SetCoversConnectedAccountNegativeBalances(fernTestValueCoversConnectedAccountNegativeBalances)
-		assert.Equal(t, fernTestValueCoversConnectedAccountNegativeBalances, obj.CoversConnectedAccountNegativeBalances)
+		var fernTestValueCoversSubaccountNegativeBalances *bool
+		obj.SetCoversSubaccountNegativeBalances(fernTestValueCoversSubaccountNegativeBalances)
+		assert.Equal(t, fernTestValueCoversSubaccountNegativeBalances, obj.CoversSubaccountNegativeBalances)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -6482,28 +6482,28 @@ func TestGettersUpdatePreferencesResponse(t *testing.T) {
 		_ = obj.GetCardsNotifications() // Should return zero value
 	})
 
-	t.Run("GetCoversConnectedAccountNegativeBalances", func(t *testing.T) {
+	t.Run("GetCoversSubaccountNegativeBalances", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdatePreferencesResponse{}
 		var expected *bool
-		obj.CoversConnectedAccountNegativeBalances = expected
+		obj.CoversSubaccountNegativeBalances = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetCoversConnectedAccountNegativeBalances(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetCoversSubaccountNegativeBalances(), "getter should return the property value")
 	})
 
-	t.Run("GetCoversConnectedAccountNegativeBalances_NilValue", func(t *testing.T) {
+	t.Run("GetCoversSubaccountNegativeBalances_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdatePreferencesResponse{}
-		obj.CoversConnectedAccountNegativeBalances = nil
+		obj.CoversSubaccountNegativeBalances = nil
 
 		// Act & Assert
-		assert.Nil(t, obj.GetCoversConnectedAccountNegativeBalances(), "getter should return nil when property is nil")
+		assert.Nil(t, obj.GetCoversSubaccountNegativeBalances(), "getter should return nil when property is nil")
 	})
 
-	t.Run("GetCoversConnectedAccountNegativeBalances_NilReceiver", func(t *testing.T) {
+	t.Run("GetCoversSubaccountNegativeBalances_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *UpdatePreferencesResponse
 		// Should not panic - getters should handle nil receiver gracefully
@@ -6512,7 +6512,7 @@ func TestGettersUpdatePreferencesResponse(t *testing.T) {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetCoversConnectedAccountNegativeBalances() // Should return zero value
+		_ = obj.GetCoversSubaccountNegativeBalances() // Should return zero value
 	})
 
 	t.Run("GetCustomerTracking", func(t *testing.T) {
@@ -7178,14 +7178,14 @@ func TestSettersMarkExplicitUpdatePreferencesResponse(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetCoversConnectedAccountNegativeBalances_MarksExplicit", func(t *testing.T) {
+	t.Run("SetCoversSubaccountNegativeBalances_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdatePreferencesResponse{}
-		var fernTestValueCoversConnectedAccountNegativeBalances *bool
+		var fernTestValueCoversSubaccountNegativeBalances *bool
 
 		// Act
-		obj.SetCoversConnectedAccountNegativeBalances(fernTestValueCoversConnectedAccountNegativeBalances)
+		obj.SetCoversSubaccountNegativeBalances(fernTestValueCoversSubaccountNegativeBalances)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -10841,11 +10841,11 @@ func TestSettersUpdatePreferencesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetCoversConnectedAccountNegativeBalances", func(t *testing.T) {
+	t.Run("SetCoversSubaccountNegativeBalances", func(t *testing.T) {
 		obj := &UpdatePreferencesRequest{}
-		var fernTestValueCoversConnectedAccountNegativeBalances *bool
-		obj.SetCoversConnectedAccountNegativeBalances(fernTestValueCoversConnectedAccountNegativeBalances)
-		assert.Equal(t, fernTestValueCoversConnectedAccountNegativeBalances, obj.CoversConnectedAccountNegativeBalances)
+		var fernTestValueCoversSubaccountNegativeBalances *bool
+		obj.SetCoversSubaccountNegativeBalances(fernTestValueCoversSubaccountNegativeBalances)
+		assert.Equal(t, fernTestValueCoversSubaccountNegativeBalances, obj.CoversSubaccountNegativeBalances)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -11164,14 +11164,14 @@ func TestSettersMarkExplicitUpdatePreferencesRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetCoversConnectedAccountNegativeBalances_MarksExplicit", func(t *testing.T) {
+	t.Run("SetCoversSubaccountNegativeBalances_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UpdatePreferencesRequest{}
-		var fernTestValueCoversConnectedAccountNegativeBalances *bool
+		var fernTestValueCoversSubaccountNegativeBalances *bool
 
 		// Act
-		obj.SetCoversConnectedAccountNegativeBalances(fernTestValueCoversConnectedAccountNegativeBalances)
+		obj.SetCoversSubaccountNegativeBalances(fernTestValueCoversSubaccountNegativeBalances)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -12339,7 +12339,7 @@ func TestJSONMarshalingUpdatePreferencesResponseFeedbackOptionsItem(t *testing.T
 func TestRequiredNullableRoundTripRetrievePreferencesResponse(t *testing.T) {
 	requiredNullableKeys := []string{
 		"ads_payment_methods",
-		"covers_connected_account_negative_balances",
+		"covers_subaccount_negative_balances",
 		"customer_tracking",
 		"economic_intelligence_ends_at",
 		"economic_intelligence_fee_percentage",
@@ -12359,7 +12359,7 @@ func TestRequiredNullableRoundTripRetrievePreferencesResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrievePreferencesResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"covers_connected_account_negative_balances":null,"customer_tracking":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_first_renewal_at":null,"economic_intelligence_previous_period":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"covers_subaccount_negative_balances":null,"customer_tracking":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_first_renewal_at":null,"economic_intelligence_previous_period":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -12570,7 +12570,7 @@ func TestRequiredNullableRoundTripRetrievePreferencesResponseAdsTripleWhaleInteg
 func TestRequiredNullableRoundTripUpdatePreferencesResponse(t *testing.T) {
 	requiredNullableKeys := []string{
 		"ads_payment_methods",
-		"covers_connected_account_negative_balances",
+		"covers_subaccount_negative_balances",
 		"customer_tracking",
 		"economic_intelligence_ends_at",
 		"economic_intelligence_fee_percentage",
@@ -12590,7 +12590,7 @@ func TestRequiredNullableRoundTripUpdatePreferencesResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj UpdatePreferencesResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"covers_connected_account_negative_balances":null,"customer_tracking":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_first_renewal_at":null,"economic_intelligence_previous_period":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"covers_subaccount_negative_balances":null,"customer_tracking":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_first_renewal_at":null,"economic_intelligence_previous_period":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

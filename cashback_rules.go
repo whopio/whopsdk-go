@@ -31,7 +31,7 @@ type CreateCashbackRulesRequest struct {
 	MerchantName *string `json:"merchant_name,omitempty" url:"-"`
 	// Cashback rate in basis points: 500 means 5%.
 	RateBps int `json:"rate_bps" url:"-"`
-	// Account ID, prefixed `biz_`, of one direct connected account to limit the rule to. Required when both merchant filters are omitted or `null`, in which case the rule matches all eligible transactions for that account. Otherwise, omit or set `null` to designate all direct connected accounts.
+	// Account ID, prefixed `biz_`, of one direct subaccount to limit the rule to. Required when both merchant filters are omitted or `null`, in which case the rule matches all eligible transactions for that account. Otherwise, omit or set `null` to designate all direct subaccounts.
 	ScopedAccountID *string `json:"scoped_account_id,omitempty" url:"-"`
 	// Inclusive start, strictly later than the current time, as an ISO 8601 timestamp.
 	StartsAt time.Time `json:"starts_at" url:"-"`
@@ -216,11 +216,11 @@ var (
 )
 
 type PayoutCashbackRulesRequest struct {
-	// Pay only this direct connected account.
+	// Pay only this direct subaccount.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// Pay only transactions whose winning cashback rule has this ID and is funded by the authenticated platform.
 	CashbackRuleID *string `json:"cashback_rule_id,omitempty" url:"-"`
-	// Pay only this card transaction belonging to a direct connected account.
+	// Pay only this card transaction belonging to a direct subaccount.
 	TransactionID *string `json:"transaction_id,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -293,7 +293,7 @@ var cashbackPayoutNullableFields = map[string]*big.Int{
 }
 
 type CashbackPayout struct {
-	// Connected account filter from the request, prefixed `biz_`. Omitted when not supplied.
+	// Subaccount filter from the request, prefixed `biz_`. Omitted when not supplied.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
 	// Cashback rule filter from the request, prefixed `cicbr_`. Omitted when not supplied.
 	CashbackRuleID *string `json:"cashback_rule_id,omitempty" url:"cashback_rule_id,omitempty"`
@@ -497,7 +497,7 @@ type CashbackRule struct {
 	MerchantName *string `json:"merchant_name,omitempty" url:"merchant_name,omitempty"`
 	// Cashback rate in basis points. 100 means 1%, and 10000 means 100%.
 	RateBps int `json:"rate_bps" url:"rate_bps"`
-	// Connected account ID, prefixed `biz_`. Null designates all direct connected accounts of the funding platform.
+	// Subaccount ID, prefixed `biz_`. Null designates all direct subaccounts of the funding platform.
 	ScopedAccountID *string `json:"scoped_account_id,omitempty" url:"scoped_account_id,omitempty"`
 	// Inclusive start of the rule's eligibility window, as an ISO 8601 timestamp.
 	StartsAt string `json:"starts_at" url:"starts_at"`

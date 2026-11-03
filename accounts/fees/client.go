@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-03"
+		apiVersionDateDefault := "2026-11-03-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,7 +39,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Retrieves the account's fees as a single document keyed by fee, with any markups its platform adds. Connected accounts see the rates in effect for them. `adjustable` on each fee says what you may change with Update Account Fees.
+// Retrieves the account's fees as a single document keyed by fee, with any markups its platform adds. Subaccounts see the rates in effect for them. `adjustable` on each fee says what you may change with Update Account Fees.
 //
 // Example:
 //
