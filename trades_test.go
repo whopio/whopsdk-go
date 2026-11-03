@@ -130,6 +130,14 @@ func TestSettersCreateTradesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetTriggerPrice", func(t *testing.T) {
+		obj := &CreateTradesRequest{}
+		var fernTestValueTriggerPrice *string
+		obj.SetTriggerPrice(fernTestValueTriggerPrice)
+		assert.Equal(t, fernTestValueTriggerPrice, obj.TriggerPrice)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetType", func(t *testing.T) {
 		obj := &CreateTradesRequest{}
 		var fernTestValueType CreateTradesRequestType
@@ -583,6 +591,37 @@ func TestSettersMarkExplicitCreateTradesRequest(t *testing.T) {
 
 		// Act
 		obj.SetTimeInForce(fernTestValueTimeInForce)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTriggerPrice_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateTradesRequest{}
+		var fernTestValueTriggerPrice *string
+
+		// Act
+		obj.SetTriggerPrice(fernTestValueTriggerPrice)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1231,6 +1270,14 @@ func TestSettersTrade(t *testing.T) {
 		var fernTestValueStep *TradeStep
 		obj.SetStep(fernTestValueStep)
 		assert.Equal(t, fernTestValueStep, obj.Step)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTriggerPrice", func(t *testing.T) {
+		obj := &Trade{}
+		var fernTestValueTriggerPrice *Money
+		obj.SetTriggerPrice(fernTestValueTriggerPrice)
+		assert.Equal(t, fernTestValueTriggerPrice, obj.TriggerPrice)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -2011,6 +2058,39 @@ func TestGettersTrade(t *testing.T) {
 			}
 		}()
 		_ = obj.GetStep() // Should return zero value
+	})
+
+	t.Run("GetTriggerPrice", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Trade{}
+		var expected *Money
+		obj.TriggerPrice = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTriggerPrice(), "getter should return the property value")
+	})
+
+	t.Run("GetTriggerPrice_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Trade{}
+		obj.TriggerPrice = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTriggerPrice(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTriggerPrice_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Trade
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTriggerPrice() // Should return zero value
 	})
 
 	t.Run("GetType", func(t *testing.T) {
@@ -2839,6 +2919,37 @@ func TestSettersMarkExplicitTrade(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetTriggerPrice_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Trade{}
+		var fernTestValueTriggerPrice *Money
+
+		// Act
+		obj.SetTriggerPrice(fernTestValueTriggerPrice)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetType_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3528,6 +3639,7 @@ func TestRequiredNullableRoundTripTrade(t *testing.T) {
 		"size",
 		"status_detail",
 		"step",
+		"trigger_price",
 		"user_id",
 	}
 	marshalToMap := func(t *testing.T, obj *Trade) map[string]json.RawMessage {
@@ -3541,7 +3653,7 @@ func TestRequiredNullableRoundTripTrade(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Trade
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"amount":null,"average_price":null,"client_order_id":null,"completed_at":null,"external_order_id":null,"failure_code":null,"filled_size":null,"funds_location":null,"instrument_type":null,"leverage":null,"market":null,"order_type":null,"price":null,"reduce_only":null,"side":null,"size":null,"status_detail":null,"step":null,"user_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"amount":null,"average_price":null,"client_order_id":null,"completed_at":null,"external_order_id":null,"failure_code":null,"filled_size":null,"funds_location":null,"instrument_type":null,"leverage":null,"market":null,"order_type":null,"price":null,"reduce_only":null,"side":null,"size":null,"status_detail":null,"step":null,"trigger_price":null,"user_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -3659,6 +3771,20 @@ func TestEnumCreateTradesRequestOrderType(t *testing.T) {
 		val, err := NewCreateTradesRequestOrderTypeFromString("limit")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, CreateTradesRequestOrderType("limit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_take_profit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateTradesRequestOrderTypeFromString("take_profit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateTradesRequestOrderType("take_profit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_stop_loss", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateTradesRequestOrderTypeFromString("stop_loss")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateTradesRequestOrderType("stop_loss"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -4147,6 +4273,20 @@ func TestEnumTradeOrderType(t *testing.T) {
 		val, err := NewTradeOrderTypeFromString("limit")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, TradeOrderType("limit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_take_profit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTradeOrderTypeFromString("take_profit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TradeOrderType("take_profit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_stop_loss", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTradeOrderTypeFromString("stop_loss")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TradeOrderType("stop_loss"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
