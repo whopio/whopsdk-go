@@ -1043,7 +1043,7 @@ func (c *ConnectSocialAccountsResponse) String() string {
 
 type CreateSocialAccountsRequestBody struct {
 	Platform string
-	// Provisions a Whop-managed Facebook page for the account. Requires the account's `banner_image`, `logo`, and `description`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before Facebook has created the page — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+	// Whop no longer creates Facebook pages, so this returns a `facebook_page_provisioning_retired` error.
 	Facebook *CreateSocialAccountsRequestBodyFacebook
 	// Provisions a Whop-managed TikTok account for the account. Requires the account's `logo`; configure it with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before TikTok has created it — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
 	Tiktok *CreateSocialAccountsRequestBodyTiktok
@@ -1328,7 +1328,7 @@ var (
 	createSocialAccountsRequestBodyFacebookFieldAccountID = big.NewInt(1 << 0)
 )
 
-// Provisions a Whop-managed Facebook page for the account. Requires the account's `banner_image`, `logo`, and `description`; configure them with [Update Account](/api-reference/beta/accounts/update-account). The account is returned before Facebook has created the page — its `id` is usable right away, and the rest of the profile fills in once provisioning finishes.
+// Whop no longer creates Facebook pages, so this returns a `facebook_page_provisioning_retired` error.
 type CreateSocialAccountsRequestBodyFacebook struct {
 	// The Account (biz_ identifier) to create the external account for. An account-scoped API key may omit this to default to its own account. Account API keys cannot update their own account's branding through Update Account; use a user-authenticated path.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`

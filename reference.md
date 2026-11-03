@@ -5695,7 +5695,7 @@ client.APIKeys.List(
 <dl>
 <dd>
 
-Creates an API key for an account, an app, or your own user. A user API key acts as you and can only grant `ad_campaign:update`, `ad_pixel:manage`, `member:journey:read`. The response is the only place the full `secret_key` is returned — store it immediately. Requires a user session; API keys cannot manage API keys.
+Creates an API key for an account, an app, or your own user. A user API key acts as you and can only grant `ad_campaign:basic:read`, `ad_campaign:update`, `ad_pixel:manage`, `member:journey:read`. The response is the only place the full `secret_key` is returned — store it immediately. Requires a user session; API keys cannot manage API keys.
 </dd>
 </dl>
 </dd>
@@ -19408,7 +19408,7 @@ client.ExternalAccounts.List(
 <dl>
 <dd>
 
-Creates or returns a Whop-managed Facebook page or TikTok account for an account, or connects the account's existing Klaviyo account with a private API key.
+Creates or returns a Whop-managed TikTok account for an account, or connects the account's existing Klaviyo account with a private API key. Whop no longer creates Facebook pages.
 </dd>
 </dl>
 </dd>
@@ -22478,7 +22478,7 @@ client.Invoices.Create(
 <dl>
 <dd>
 
-**memberID:** `*string` — The billed customer, a member of the account. Changing email recipients does not change this buyer.
+**memberID:** `*string` — The billed customer, a member of the account, prefixed `mber_`. It can't change once the draft is created. Changing email recipients does not change this buyer.
     
 </dd>
 </dl>
@@ -22594,7 +22594,7 @@ client.Invoices.Retrieve(
 <dl>
 <dd>
 
-Updates draft invoice items and billing fields. Updates of only `recipient_emails` and `memo` are also allowed on unpaid invoices. Edit customer contact details through the member API. A draft with no saved payment method and no scheduled send needs `invoice:update`, `invoice:create`, or `payment:charge`; every other update, and setting `payment_method_id`, needs `payment:charge`.
+Updates draft invoice items and billing fields. Updates of only `recipient_emails` and `memo` are also allowed on unpaid invoices. The customer is set when the draft is created and can't change. To bill someone else, first void the draft. Then create a new invoice. Edit customer contact details through the member API. A draft with no saved payment method and no scheduled send needs `invoice:update`, `invoice:create`, or `payment:charge`; every other update, and setting `payment_method_id`, needs `payment:charge`.
 </dd>
 </dl>
 </dd>
@@ -22678,7 +22678,7 @@ client.Invoices.Update(
 <dl>
 <dd>
 
-**memberID:** `*string` — The billed customer, a member of the account. Changing email recipients does not change this buyer.
+**memberID:** `*string` — The billed customer, a member of the account, prefixed `mber_`. The customer is set when the draft is created and can't change, so pass the draft's current customer or omit this field. A draft saved without a customer can take one here. Changing email recipients does not change this buyer.
     
 </dd>
 </dl>
