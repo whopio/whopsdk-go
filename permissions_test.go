@@ -2303,6 +2303,13 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("webhook_receive:entries"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_webhook_receive_events", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("webhook_receive:events")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("webhook_receive:events"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_webhook_receive_exports", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("webhook_receive:exports")

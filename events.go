@@ -5403,6 +5403,1300 @@ func (l *ListEventsResponsePageInfo) String() string {
 }
 
 var (
+	postEventsCreatedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postEventsCreatedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postEventsCreatedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postEventsCreatedPayloadFieldData               = big.NewInt(1 << 3)
+	postEventsCreatedPayloadFieldID                 = big.NewInt(1 << 4)
+	postEventsCreatedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postEventsCreatedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postEventsCreatedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+// postEventsCreatedPayloadNullableFields maps the wire names of PostEventsCreatedPayload's nullable fields (required or optional) to their field bits.
+var postEventsCreatedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postEventsCreatedPayloadFieldAccountID,
+	"api_version_date": postEventsCreatedPayloadFieldAPIVersionDate,
+}
+
+type PostEventsCreatedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostEventsCreatedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string                       `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *PostEventsCreatedPayloadData `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostEventsCreatedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostEventsCreatedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostEventsCreatedPayload) GetAPIVersion() PostEventsCreatedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostEventsCreatedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostEventsCreatedPayload) GetData() *PostEventsCreatedPayloadData {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostEventsCreatedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostEventsCreatedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostEventsCreatedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostEventsCreatedPayload) GetType() PostEventsCreatedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostEventsCreatedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostEventsCreatedPayload) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postEventsCreatedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayload) SetAPIVersion(apiVersion PostEventsCreatedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postEventsCreatedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postEventsCreatedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayload) SetData(data *PostEventsCreatedPayloadData) {
+	p.Data = data
+	p.require(postEventsCreatedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postEventsCreatedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postEventsCreatedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postEventsCreatedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayload) SetType(type_ PostEventsCreatedPayloadType) {
+	p.Type = type_
+	p.require(postEventsCreatedPayloadFieldType)
+}
+
+func (p *PostEventsCreatedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostEventsCreatedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostEventsCreatedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postEventsCreatedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostEventsCreatedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostEventsCreatedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostEventsCreatedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostEventsCreatedPayloadAPIVersion string
+
+const (
+	PostEventsCreatedPayloadAPIVersionV1 PostEventsCreatedPayloadAPIVersion = "v1"
+)
+
+func NewPostEventsCreatedPayloadAPIVersionFromString(s string) (PostEventsCreatedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostEventsCreatedPayloadAPIVersionV1, nil
+	}
+	var t PostEventsCreatedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostEventsCreatedPayloadAPIVersion) Ptr() *PostEventsCreatedPayloadAPIVersion {
+	return &p
+}
+
+var (
+	postEventsCreatedPayloadDataFieldEvents = big.NewInt(1 << 0)
+	postEventsCreatedPayloadDataFieldID     = big.NewInt(1 << 1)
+)
+
+type PostEventsCreatedPayloadData struct {
+	// Up to 50 of the account's new events, in the order Whop recorded them.
+	Events []*PostEventsCreatedPayloadDataEventsItem `json:"events" url:"events"`
+	// The batch id. The same events always carry the same id, so a redelivered batch can be ignored.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostEventsCreatedPayloadData) GetEvents() []*PostEventsCreatedPayloadDataEventsItem {
+	if p == nil {
+		return nil
+	}
+	return p.Events
+}
+
+func (p *PostEventsCreatedPayloadData) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostEventsCreatedPayloadData) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostEventsCreatedPayloadData) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetEvents sets the Events field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadData) SetEvents(events []*PostEventsCreatedPayloadDataEventsItem) {
+	p.Events = events
+	p.require(postEventsCreatedPayloadDataFieldEvents)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadData) SetID(id string) {
+	p.ID = id
+	p.require(postEventsCreatedPayloadDataFieldID)
+}
+
+func (p *PostEventsCreatedPayloadData) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostEventsCreatedPayloadData
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PostEventsCreatedPayloadData(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostEventsCreatedPayloadData) MarshalJSON() ([]byte, error) {
+	type embed PostEventsCreatedPayloadData
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostEventsCreatedPayloadData) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	postEventsCreatedPayloadDataEventsItemFieldContext     = big.NewInt(1 << 0)
+	postEventsCreatedPayloadDataEventsItemFieldCustomName  = big.NewInt(1 << 1)
+	postEventsCreatedPayloadDataEventsItemFieldEventName   = big.NewInt(1 << 2)
+	postEventsCreatedPayloadDataEventsItemFieldEventTime   = big.NewInt(1 << 3)
+	postEventsCreatedPayloadDataEventsItemFieldID          = big.NewInt(1 << 4)
+	postEventsCreatedPayloadDataEventsItemFieldProductID   = big.NewInt(1 << 5)
+	postEventsCreatedPayloadDataEventsItemFieldReferrerURL = big.NewInt(1 << 6)
+	postEventsCreatedPayloadDataEventsItemFieldTitle       = big.NewInt(1 << 7)
+	postEventsCreatedPayloadDataEventsItemFieldURL         = big.NewInt(1 << 8)
+	postEventsCreatedPayloadDataEventsItemFieldUser        = big.NewInt(1 << 9)
+	postEventsCreatedPayloadDataEventsItemFieldValue       = big.NewInt(1 << 10)
+	postEventsCreatedPayloadDataEventsItemFieldVariantID   = big.NewInt(1 << 11)
+	postEventsCreatedPayloadDataEventsItemFieldWuid        = big.NewInt(1 << 12)
+)
+
+// postEventsCreatedPayloadDataEventsItemNullableFields maps the wire names of PostEventsCreatedPayloadDataEventsItem's nullable fields (required or optional) to their field bits.
+var postEventsCreatedPayloadDataEventsItemNullableFields = map[string]*big.Int{
+	"custom_name":  postEventsCreatedPayloadDataEventsItemFieldCustomName,
+	"product_id":   postEventsCreatedPayloadDataEventsItemFieldProductID,
+	"referrer_url": postEventsCreatedPayloadDataEventsItemFieldReferrerURL,
+	"title":        postEventsCreatedPayloadDataEventsItemFieldTitle,
+	"url":          postEventsCreatedPayloadDataEventsItemFieldURL,
+	"value":        postEventsCreatedPayloadDataEventsItemFieldValue,
+	"variant_id":   postEventsCreatedPayloadDataEventsItemFieldVariantID,
+	"wuid":         postEventsCreatedPayloadDataEventsItemFieldWuid,
+}
+
+type PostEventsCreatedPayloadDataEventsItem struct {
+	// UTM parameters, ad click ids and ad ids, as the page reported them. Keys the event did not carry are left out.
+	Context *PostEventsCreatedPayloadDataEventsItemContext `json:"context" url:"context"`
+	// The custom event's own name, for `custom` events.
+	CustomName *string `json:"custom_name,omitempty" url:"custom_name,omitempty"`
+	// The event name as `POST /events` takes it, such as `page`, `view_content`, `add_to_cart` or `custom`.
+	EventName string `json:"event_name" url:"event_name"`
+	// When the event happened.
+	EventTime time.Time `json:"event_time" url:"event_time"`
+	// The event id, unique together with `event_name`. A redelivered event carries the same pair.
+	ID string `json:"id" url:"id"`
+	// The product the event was about.
+	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
+	// The page that linked to `url`.
+	ReferrerURL *string `json:"referrer_url,omitempty" url:"referrer_url,omitempty"`
+	// The page title.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+	// The page the event happened on.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+	// Who the event was about, as far as the page knew. Keys the event did not carry are left out.
+	User *PostEventsCreatedPayloadDataEventsItemUser `json:"user" url:"user"`
+	// The event's monetary value. Null when the event carried no value or no currency.
+	Value *Money `json:"value,omitempty" url:"value,omitempty"`
+	// The variant the event was about.
+	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
+	// The visitor's `_wuid` first-party cookie id, so a browser session can be joined to this event. Null when the event carried none.
+	Wuid *string `json:"wuid,omitempty" url:"wuid,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) GetContext() *PostEventsCreatedPayloadDataEventsItemContext {
+	if p == nil {
+		return nil
+	}
+	return p.Context
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) GetCustomName() *string {
+	if p == nil {
+		return nil
+	}
+	return p.CustomName
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) GetEventName() string {
+	if p == nil {
+		return ""
+	}
+	return p.EventName
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) GetEventTime() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.EventTime
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) GetProductID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.ProductID
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) GetReferrerURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.ReferrerURL
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) GetTitle() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Title
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) GetURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.URL
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) GetUser() *PostEventsCreatedPayloadDataEventsItemUser {
+	if p == nil {
+		return nil
+	}
+	return p.User
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) GetValue() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.Value
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) GetVariantID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.VariantID
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) GetWuid() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Wuid
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetContext sets the Context field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItem) SetContext(context *PostEventsCreatedPayloadDataEventsItemContext) {
+	p.Context = context
+	p.require(postEventsCreatedPayloadDataEventsItemFieldContext)
+}
+
+// SetCustomName sets the CustomName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItem) SetCustomName(customName *string) {
+	p.CustomName = customName
+	p.require(postEventsCreatedPayloadDataEventsItemFieldCustomName)
+}
+
+// SetEventName sets the EventName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItem) SetEventName(eventName string) {
+	p.EventName = eventName
+	p.require(postEventsCreatedPayloadDataEventsItemFieldEventName)
+}
+
+// SetEventTime sets the EventTime field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItem) SetEventTime(eventTime time.Time) {
+	p.EventTime = eventTime
+	p.require(postEventsCreatedPayloadDataEventsItemFieldEventTime)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItem) SetID(id string) {
+	p.ID = id
+	p.require(postEventsCreatedPayloadDataEventsItemFieldID)
+}
+
+// SetProductID sets the ProductID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItem) SetProductID(productID *string) {
+	p.ProductID = productID
+	p.require(postEventsCreatedPayloadDataEventsItemFieldProductID)
+}
+
+// SetReferrerURL sets the ReferrerURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItem) SetReferrerURL(referrerURL *string) {
+	p.ReferrerURL = referrerURL
+	p.require(postEventsCreatedPayloadDataEventsItemFieldReferrerURL)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItem) SetTitle(title *string) {
+	p.Title = title
+	p.require(postEventsCreatedPayloadDataEventsItemFieldTitle)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItem) SetURL(url *string) {
+	p.URL = url
+	p.require(postEventsCreatedPayloadDataEventsItemFieldURL)
+}
+
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItem) SetUser(user *PostEventsCreatedPayloadDataEventsItemUser) {
+	p.User = user
+	p.require(postEventsCreatedPayloadDataEventsItemFieldUser)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItem) SetValue(value *Money) {
+	p.Value = value
+	p.require(postEventsCreatedPayloadDataEventsItemFieldValue)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItem) SetVariantID(variantID *string) {
+	p.VariantID = variantID
+	p.require(postEventsCreatedPayloadDataEventsItemFieldVariantID)
+}
+
+// SetWuid sets the Wuid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItem) SetWuid(wuid *string) {
+	p.Wuid = wuid
+	p.require(postEventsCreatedPayloadDataEventsItemFieldWuid)
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) UnmarshalJSON(data []byte) error {
+	type embed PostEventsCreatedPayloadDataEventsItem
+	var unmarshaler = struct {
+		embed
+		EventTime *internal.DateTime `json:"event_time"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostEventsCreatedPayloadDataEventsItem(unmarshaler.embed)
+	p.EventTime = unmarshaler.EventTime.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postEventsCreatedPayloadDataEventsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) MarshalJSON() ([]byte, error) {
+	type embed PostEventsCreatedPayloadDataEventsItem
+	var marshaler = struct {
+		embed
+		EventTime *internal.DateTime `json:"event_time"`
+	}{
+		embed:     embed(*p),
+		EventTime: internal.NewDateTime(p.EventTime),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItem) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	postEventsCreatedPayloadDataEventsItemContextFieldAdCampaignID = big.NewInt(1 << 0)
+	postEventsCreatedPayloadDataEventsItemContextFieldAdID         = big.NewInt(1 << 1)
+	postEventsCreatedPayloadDataEventsItemContextFieldAdSetID      = big.NewInt(1 << 2)
+	postEventsCreatedPayloadDataEventsItemContextFieldFbclid       = big.NewInt(1 << 3)
+	postEventsCreatedPayloadDataEventsItemContextFieldGbraid       = big.NewInt(1 << 4)
+	postEventsCreatedPayloadDataEventsItemContextFieldGclid        = big.NewInt(1 << 5)
+	postEventsCreatedPayloadDataEventsItemContextFieldIgSid        = big.NewInt(1 << 6)
+	postEventsCreatedPayloadDataEventsItemContextFieldLiFatID      = big.NewInt(1 << 7)
+	postEventsCreatedPayloadDataEventsItemContextFieldMsclkid      = big.NewInt(1 << 8)
+	postEventsCreatedPayloadDataEventsItemContextFieldRdtCid       = big.NewInt(1 << 9)
+	postEventsCreatedPayloadDataEventsItemContextFieldSccid        = big.NewInt(1 << 10)
+	postEventsCreatedPayloadDataEventsItemContextFieldTtclid       = big.NewInt(1 << 11)
+	postEventsCreatedPayloadDataEventsItemContextFieldTwclid       = big.NewInt(1 << 12)
+	postEventsCreatedPayloadDataEventsItemContextFieldUtmCampaign  = big.NewInt(1 << 13)
+	postEventsCreatedPayloadDataEventsItemContextFieldUtmContent   = big.NewInt(1 << 14)
+	postEventsCreatedPayloadDataEventsItemContextFieldUtmID        = big.NewInt(1 << 15)
+	postEventsCreatedPayloadDataEventsItemContextFieldUtmMedium    = big.NewInt(1 << 16)
+	postEventsCreatedPayloadDataEventsItemContextFieldUtmSource    = big.NewInt(1 << 17)
+	postEventsCreatedPayloadDataEventsItemContextFieldUtmTerm      = big.NewInt(1 << 18)
+	postEventsCreatedPayloadDataEventsItemContextFieldWbraid       = big.NewInt(1 << 19)
+)
+
+// postEventsCreatedPayloadDataEventsItemContextNullableFields maps the wire names of PostEventsCreatedPayloadDataEventsItemContext's nullable fields (required or optional) to their field bits.
+var postEventsCreatedPayloadDataEventsItemContextNullableFields = map[string]*big.Int{
+	"ad_campaign_id": postEventsCreatedPayloadDataEventsItemContextFieldAdCampaignID,
+	"ad_id":          postEventsCreatedPayloadDataEventsItemContextFieldAdID,
+	"ad_set_id":      postEventsCreatedPayloadDataEventsItemContextFieldAdSetID,
+	"fbclid":         postEventsCreatedPayloadDataEventsItemContextFieldFbclid,
+	"gbraid":         postEventsCreatedPayloadDataEventsItemContextFieldGbraid,
+	"gclid":          postEventsCreatedPayloadDataEventsItemContextFieldGclid,
+	"ig_sid":         postEventsCreatedPayloadDataEventsItemContextFieldIgSid,
+	"li_fat_id":      postEventsCreatedPayloadDataEventsItemContextFieldLiFatID,
+	"msclkid":        postEventsCreatedPayloadDataEventsItemContextFieldMsclkid,
+	"rdt_cid":        postEventsCreatedPayloadDataEventsItemContextFieldRdtCid,
+	"sccid":          postEventsCreatedPayloadDataEventsItemContextFieldSccid,
+	"ttclid":         postEventsCreatedPayloadDataEventsItemContextFieldTtclid,
+	"twclid":         postEventsCreatedPayloadDataEventsItemContextFieldTwclid,
+	"utm_campaign":   postEventsCreatedPayloadDataEventsItemContextFieldUtmCampaign,
+	"utm_content":    postEventsCreatedPayloadDataEventsItemContextFieldUtmContent,
+	"utm_id":         postEventsCreatedPayloadDataEventsItemContextFieldUtmID,
+	"utm_medium":     postEventsCreatedPayloadDataEventsItemContextFieldUtmMedium,
+	"utm_source":     postEventsCreatedPayloadDataEventsItemContextFieldUtmSource,
+	"utm_term":       postEventsCreatedPayloadDataEventsItemContextFieldUtmTerm,
+	"wbraid":         postEventsCreatedPayloadDataEventsItemContextFieldWbraid,
+}
+
+// UTM parameters, ad click ids and ad ids, as the page reported them. Keys the event did not carry are left out.
+type PostEventsCreatedPayloadDataEventsItemContext struct {
+	AdCampaignID *string `json:"ad_campaign_id,omitempty" url:"ad_campaign_id,omitempty"`
+	AdID         *string `json:"ad_id,omitempty" url:"ad_id,omitempty"`
+	AdSetID      *string `json:"ad_set_id,omitempty" url:"ad_set_id,omitempty"`
+	Fbclid       *string `json:"fbclid,omitempty" url:"fbclid,omitempty"`
+	Gbraid       *string `json:"gbraid,omitempty" url:"gbraid,omitempty"`
+	Gclid        *string `json:"gclid,omitempty" url:"gclid,omitempty"`
+	IgSid        *string `json:"ig_sid,omitempty" url:"ig_sid,omitempty"`
+	LiFatID      *string `json:"li_fat_id,omitempty" url:"li_fat_id,omitempty"`
+	Msclkid      *string `json:"msclkid,omitempty" url:"msclkid,omitempty"`
+	RdtCid       *string `json:"rdt_cid,omitempty" url:"rdt_cid,omitempty"`
+	Sccid        *string `json:"sccid,omitempty" url:"sccid,omitempty"`
+	Ttclid       *string `json:"ttclid,omitempty" url:"ttclid,omitempty"`
+	Twclid       *string `json:"twclid,omitempty" url:"twclid,omitempty"`
+	UtmCampaign  *string `json:"utm_campaign,omitempty" url:"utm_campaign,omitempty"`
+	UtmContent   *string `json:"utm_content,omitempty" url:"utm_content,omitempty"`
+	UtmID        *string `json:"utm_id,omitempty" url:"utm_id,omitempty"`
+	UtmMedium    *string `json:"utm_medium,omitempty" url:"utm_medium,omitempty"`
+	UtmSource    *string `json:"utm_source,omitempty" url:"utm_source,omitempty"`
+	UtmTerm      *string `json:"utm_term,omitempty" url:"utm_term,omitempty"`
+	Wbraid       *string `json:"wbraid,omitempty" url:"wbraid,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetAdCampaignID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AdCampaignID
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetAdID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AdID
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetAdSetID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AdSetID
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetFbclid() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Fbclid
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetGbraid() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Gbraid
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetGclid() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Gclid
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetIgSid() *string {
+	if p == nil {
+		return nil
+	}
+	return p.IgSid
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetLiFatID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.LiFatID
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetMsclkid() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Msclkid
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetRdtCid() *string {
+	if p == nil {
+		return nil
+	}
+	return p.RdtCid
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetSccid() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Sccid
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetTtclid() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Ttclid
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetTwclid() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Twclid
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetUtmCampaign() *string {
+	if p == nil {
+		return nil
+	}
+	return p.UtmCampaign
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetUtmContent() *string {
+	if p == nil {
+		return nil
+	}
+	return p.UtmContent
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetUtmID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.UtmID
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetUtmMedium() *string {
+	if p == nil {
+		return nil
+	}
+	return p.UtmMedium
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetUtmSource() *string {
+	if p == nil {
+		return nil
+	}
+	return p.UtmSource
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetUtmTerm() *string {
+	if p == nil {
+		return nil
+	}
+	return p.UtmTerm
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetWbraid() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Wbraid
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAdCampaignID sets the AdCampaignID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetAdCampaignID(adCampaignID *string) {
+	p.AdCampaignID = adCampaignID
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldAdCampaignID)
+}
+
+// SetAdID sets the AdID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetAdID(adID *string) {
+	p.AdID = adID
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldAdID)
+}
+
+// SetAdSetID sets the AdSetID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetAdSetID(adSetID *string) {
+	p.AdSetID = adSetID
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldAdSetID)
+}
+
+// SetFbclid sets the Fbclid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetFbclid(fbclid *string) {
+	p.Fbclid = fbclid
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldFbclid)
+}
+
+// SetGbraid sets the Gbraid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetGbraid(gbraid *string) {
+	p.Gbraid = gbraid
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldGbraid)
+}
+
+// SetGclid sets the Gclid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetGclid(gclid *string) {
+	p.Gclid = gclid
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldGclid)
+}
+
+// SetIgSid sets the IgSid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetIgSid(igSid *string) {
+	p.IgSid = igSid
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldIgSid)
+}
+
+// SetLiFatID sets the LiFatID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetLiFatID(liFatID *string) {
+	p.LiFatID = liFatID
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldLiFatID)
+}
+
+// SetMsclkid sets the Msclkid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetMsclkid(msclkid *string) {
+	p.Msclkid = msclkid
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldMsclkid)
+}
+
+// SetRdtCid sets the RdtCid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetRdtCid(rdtCid *string) {
+	p.RdtCid = rdtCid
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldRdtCid)
+}
+
+// SetSccid sets the Sccid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetSccid(sccid *string) {
+	p.Sccid = sccid
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldSccid)
+}
+
+// SetTtclid sets the Ttclid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetTtclid(ttclid *string) {
+	p.Ttclid = ttclid
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldTtclid)
+}
+
+// SetTwclid sets the Twclid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetTwclid(twclid *string) {
+	p.Twclid = twclid
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldTwclid)
+}
+
+// SetUtmCampaign sets the UtmCampaign field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetUtmCampaign(utmCampaign *string) {
+	p.UtmCampaign = utmCampaign
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldUtmCampaign)
+}
+
+// SetUtmContent sets the UtmContent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetUtmContent(utmContent *string) {
+	p.UtmContent = utmContent
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldUtmContent)
+}
+
+// SetUtmID sets the UtmID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetUtmID(utmID *string) {
+	p.UtmID = utmID
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldUtmID)
+}
+
+// SetUtmMedium sets the UtmMedium field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetUtmMedium(utmMedium *string) {
+	p.UtmMedium = utmMedium
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldUtmMedium)
+}
+
+// SetUtmSource sets the UtmSource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetUtmSource(utmSource *string) {
+	p.UtmSource = utmSource
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldUtmSource)
+}
+
+// SetUtmTerm sets the UtmTerm field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetUtmTerm(utmTerm *string) {
+	p.UtmTerm = utmTerm
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldUtmTerm)
+}
+
+// SetWbraid sets the Wbraid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemContext) SetWbraid(wbraid *string) {
+	p.Wbraid = wbraid
+	p.require(postEventsCreatedPayloadDataEventsItemContextFieldWbraid)
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostEventsCreatedPayloadDataEventsItemContext
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PostEventsCreatedPayloadDataEventsItemContext(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postEventsCreatedPayloadDataEventsItemContextNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) MarshalJSON() ([]byte, error) {
+	type embed PostEventsCreatedPayloadDataEventsItemContext
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemContext) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	postEventsCreatedPayloadDataEventsItemUserFieldEmail     = big.NewInt(1 << 0)
+	postEventsCreatedPayloadDataEventsItemUserFieldFirstName = big.NewInt(1 << 1)
+	postEventsCreatedPayloadDataEventsItemUserFieldLastName  = big.NewInt(1 << 2)
+	postEventsCreatedPayloadDataEventsItemUserFieldName      = big.NewInt(1 << 3)
+	postEventsCreatedPayloadDataEventsItemUserFieldPhone     = big.NewInt(1 << 4)
+	postEventsCreatedPayloadDataEventsItemUserFieldUserID    = big.NewInt(1 << 5)
+)
+
+// postEventsCreatedPayloadDataEventsItemUserNullableFields maps the wire names of PostEventsCreatedPayloadDataEventsItemUser's nullable fields (required or optional) to their field bits.
+var postEventsCreatedPayloadDataEventsItemUserNullableFields = map[string]*big.Int{
+	"email":      postEventsCreatedPayloadDataEventsItemUserFieldEmail,
+	"first_name": postEventsCreatedPayloadDataEventsItemUserFieldFirstName,
+	"last_name":  postEventsCreatedPayloadDataEventsItemUserFieldLastName,
+	"name":       postEventsCreatedPayloadDataEventsItemUserFieldName,
+	"phone":      postEventsCreatedPayloadDataEventsItemUserFieldPhone,
+	"user_id":    postEventsCreatedPayloadDataEventsItemUserFieldUserID,
+}
+
+// Who the event was about, as far as the page knew. Keys the event did not carry are left out.
+type PostEventsCreatedPayloadDataEventsItemUser struct {
+	Email     *string `json:"email,omitempty" url:"email,omitempty"`
+	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
+	LastName  *string `json:"last_name,omitempty" url:"last_name,omitempty"`
+	Name      *string `json:"name,omitempty" url:"name,omitempty"`
+	Phone     *string `json:"phone,omitempty" url:"phone,omitempty"`
+	UserID    *string `json:"user_id,omitempty" url:"user_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemUser) GetEmail() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Email
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemUser) GetFirstName() *string {
+	if p == nil {
+		return nil
+	}
+	return p.FirstName
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemUser) GetLastName() *string {
+	if p == nil {
+		return nil
+	}
+	return p.LastName
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemUser) GetName() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Name
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemUser) GetPhone() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Phone
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemUser) GetUserID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.UserID
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemUser) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemUser) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemUser) SetEmail(email *string) {
+	p.Email = email
+	p.require(postEventsCreatedPayloadDataEventsItemUserFieldEmail)
+}
+
+// SetFirstName sets the FirstName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemUser) SetFirstName(firstName *string) {
+	p.FirstName = firstName
+	p.require(postEventsCreatedPayloadDataEventsItemUserFieldFirstName)
+}
+
+// SetLastName sets the LastName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemUser) SetLastName(lastName *string) {
+	p.LastName = lastName
+	p.require(postEventsCreatedPayloadDataEventsItemUserFieldLastName)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemUser) SetName(name *string) {
+	p.Name = name
+	p.require(postEventsCreatedPayloadDataEventsItemUserFieldName)
+}
+
+// SetPhone sets the Phone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemUser) SetPhone(phone *string) {
+	p.Phone = phone
+	p.require(postEventsCreatedPayloadDataEventsItemUserFieldPhone)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostEventsCreatedPayloadDataEventsItemUser) SetUserID(userID *string) {
+	p.UserID = userID
+	p.require(postEventsCreatedPayloadDataEventsItemUserFieldUserID)
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostEventsCreatedPayloadDataEventsItemUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PostEventsCreatedPayloadDataEventsItemUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postEventsCreatedPayloadDataEventsItemUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemUser) MarshalJSON() ([]byte, error) {
+	type embed PostEventsCreatedPayloadDataEventsItemUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostEventsCreatedPayloadDataEventsItemUser) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The webhook event type
+type PostEventsCreatedPayloadType string
+
+const (
+	PostEventsCreatedPayloadTypeEventsCreated PostEventsCreatedPayloadType = "events.created"
+)
+
+func NewPostEventsCreatedPayloadTypeFromString(s string) (PostEventsCreatedPayloadType, error) {
+	switch s {
+	case "events.created":
+		return PostEventsCreatedPayloadTypeEventsCreated, nil
+	}
+	var t PostEventsCreatedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostEventsCreatedPayloadType) Ptr() *PostEventsCreatedPayloadType {
+	return &p
+}
+
+var (
 	pulseEventsResponseFieldData     = big.NewInt(1 << 0)
 	pulseEventsResponseFieldPageInfo = big.NewInt(1 << 1)
 )
