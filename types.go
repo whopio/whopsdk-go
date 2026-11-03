@@ -40219,7 +40219,7 @@ type Payment struct {
 	NextPaymentAttemptAt *string `json:"next_payment_attempt_at,omitempty" url:"next_payment_attempt_at,omitempty"`
 	// When the money was collected, or null while it has not been.
 	PaidAt *string `json:"paid_at,omitempty" url:"paid_at,omitempty"`
-	// The instrument shaped for display: a buyer-facing name, the standard icon set, and the card's brand, last four and issuer identification number when it was a card.
+	// The instrument shaped for display: a buyer-facing name, the standard icon set, and when it was a card, the card's brand, last four, issuer identification number, and the network transaction id the account uses for the card.
 	PaymentInstrument *PaymentInstrument `json:"payment_instrument,omitempty" url:"payment_instrument,omitempty"`
 	// The stored payment method that was charged, prefixed `payt_`. Null when the method was not saved.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
@@ -43905,7 +43905,7 @@ var paymentInstrumentNullableFields = map[string]*big.Int{
 }
 
 type PaymentInstrument struct {
-	// Card payments only: the card's network, last four, and issuer identification number.
+	// Card payments only: the card's network, last four, issuer identification number, expiry, and network transaction id.
 	Card *PaymentInstrumentCard `json:"card,omitempty" url:"card,omitempty"`
 	// Buyer-facing instrument name — "Visa •••• 4242" when the card surfaced, else the method's own name ("Klarna").
 	DisplayName string `json:"display_name" url:"display_name"`
@@ -44064,6 +44064,7 @@ var (
 	paymentInstrumentCardFieldExpYear                    = big.NewInt(1 << 2)
 	paymentInstrumentCardFieldIssuerIdentificationNumber = big.NewInt(1 << 3)
 	paymentInstrumentCardFieldLast4                      = big.NewInt(1 << 4)
+	paymentInstrumentCardFieldNetworkTransactionID       = big.NewInt(1 << 5)
 )
 
 // paymentInstrumentCardNullableFields maps the wire names of PaymentInstrumentCard's nullable fields (required or optional) to their field bits.
@@ -44073,6 +44074,7 @@ var paymentInstrumentCardNullableFields = map[string]*big.Int{
 	"exp_year":                     paymentInstrumentCardFieldExpYear,
 	"issuer_identification_number": paymentInstrumentCardFieldIssuerIdentificationNumber,
 	"last4":                        paymentInstrumentCardFieldLast4,
+	"network_transaction_id":       paymentInstrumentCardFieldNetworkTransactionID,
 }
 
 type PaymentInstrumentCard struct {
@@ -44086,6 +44088,8 @@ type PaymentInstrumentCard struct {
 	IssuerIdentificationNumber *string `json:"issuer_identification_number,omitempty" url:"issuer_identification_number,omitempty"`
 	// The card's last four digits, when captured.
 	Last4 *string `json:"last4,omitempty" url:"last4,omitempty"`
+	// The network transaction id this account uses for the card. It's this account's own id, from its first customer-present charge or verification on the card, when Whop has one. Otherwise it's an earlier network transaction id for this card, which can come from another account's transaction or be one brought with the card. Cite it as the prior transaction on a later merchant-initiated charge of this card at this account. Null until there is one. A webhook sent as a payment is first recorded can carry `null`, so retrieve the payment to read it.
+	NetworkTransactionID *string `json:"network_transaction_id,omitempty" url:"network_transaction_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -44127,6 +44131,13 @@ func (p *PaymentInstrumentCard) GetLast4() *string {
 		return nil
 	}
 	return p.Last4
+}
+
+func (p *PaymentInstrumentCard) GetNetworkTransactionID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.NetworkTransactionID
 }
 
 func (p *PaymentInstrumentCard) GetExtraProperties() map[string]interface{} {
@@ -44178,6 +44189,13 @@ func (p *PaymentInstrumentCard) SetIssuerIdentificationNumber(issuerIdentificati
 func (p *PaymentInstrumentCard) SetLast4(last4 *string) {
 	p.Last4 = last4
 	p.require(paymentInstrumentCardFieldLast4)
+}
+
+// SetNetworkTransactionID sets the NetworkTransactionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInstrumentCard) SetNetworkTransactionID(networkTransactionID *string) {
+	p.NetworkTransactionID = networkTransactionID
+	p.require(paymentInstrumentCardFieldNetworkTransactionID)
 }
 
 func (p *PaymentInstrumentCard) UnmarshalJSON(data []byte) error {
@@ -63441,7 +63459,7 @@ type SetupIntent struct {
 	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
 	// Your own key-value data attached when the setup intent was created.
 	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// The method behind this setup shaped for display: a buyer-facing name, the standard icon set, and the card's brand, last four, issuer identification number, and expiry when it was a card. Null until a method was collected.
+	// The method behind this setup shaped for display: a buyer-facing name, the standard icon set, and the card's brand, last four, issuer identification number, expiry, and network transaction id when it was a card. Null until a method was collected.
 	PaymentInstrument *PaymentInstrument `json:"payment_instrument,omitempty" url:"payment_instrument,omitempty"`
 	// The saved payment method, prefixed `payt_`, ready to charge with Create Payment. Null until the setup has `succeeded`.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`

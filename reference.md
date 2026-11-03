@@ -22790,7 +22790,7 @@ client.Invoices.Charge(
 </dl>
 </details>
 
-<details><summary><code>client.Invoices.GeneratePdf(ID) -> *whopsdk.InvoicePdf</code></summary>
+<details><summary><code>client.Invoices.GeneratePdf(ID, request) -> *whopsdk.InvoicePdf</code></summary>
 <dl>
 <dd>
 
@@ -22839,6 +22839,14 @@ client.Invoices.GeneratePdf(
 <dd>
 
 **id:** `string` — The invoice's pay_ ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeDescriptions:** `*bool` — Whether to print each line item's `description` under it. Defaults to `true`.
     
 </dd>
 </dl>

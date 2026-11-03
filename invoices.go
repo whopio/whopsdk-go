@@ -247,12 +247,15 @@ func (c *CreateInvoicesRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	generatePdfInvoicesRequestFieldID = big.NewInt(1 << 0)
+	generatePdfInvoicesRequestFieldID                  = big.NewInt(1 << 0)
+	generatePdfInvoicesRequestFieldIncludeDescriptions = big.NewInt(1 << 1)
 )
 
 type GeneratePdfInvoicesRequest struct {
 	// The invoice's pay_ ID.
 	ID string `json:"-" url:"-"`
+	// Whether to print each line item's `description` under it. Defaults to `true`.
+	IncludeDescriptions *bool `json:"include_descriptions,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -272,6 +275,34 @@ func (g *GeneratePdfInvoicesRequest) require(field *big.Int) {
 func (g *GeneratePdfInvoicesRequest) SetID(id string) {
 	g.ID = id
 	g.require(generatePdfInvoicesRequestFieldID)
+}
+
+// SetIncludeDescriptions sets the IncludeDescriptions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GeneratePdfInvoicesRequest) SetIncludeDescriptions(includeDescriptions *bool) {
+	g.IncludeDescriptions = includeDescriptions
+	g.require(generatePdfInvoicesRequestFieldIncludeDescriptions)
+}
+
+func (g *GeneratePdfInvoicesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler GeneratePdfInvoicesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*g = GeneratePdfInvoicesRequest(body)
+	return nil
+}
+
+func (g *GeneratePdfInvoicesRequest) MarshalJSON() ([]byte, error) {
+	type embed GeneratePdfInvoicesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 var (
@@ -1268,19 +1299,21 @@ func (i *Invoice) String() string {
 }
 
 var (
-	invoiceLineItemFieldDiscountAmount = big.NewInt(1 << 0)
-	invoiceLineItemFieldID             = big.NewInt(1 << 1)
-	invoiceLineItemFieldLabel          = big.NewInt(1 << 2)
-	invoiceLineItemFieldProductID      = big.NewInt(1 << 3)
-	invoiceLineItemFieldQuantity       = big.NewInt(1 << 4)
-	invoiceLineItemFieldSubtotal       = big.NewInt(1 << 5)
-	invoiceLineItemFieldTaxAmount      = big.NewInt(1 << 6)
-	invoiceLineItemFieldUnitAmount     = big.NewInt(1 << 7)
-	invoiceLineItemFieldVariantID      = big.NewInt(1 << 8)
+	invoiceLineItemFieldDescription    = big.NewInt(1 << 0)
+	invoiceLineItemFieldDiscountAmount = big.NewInt(1 << 1)
+	invoiceLineItemFieldID             = big.NewInt(1 << 2)
+	invoiceLineItemFieldLabel          = big.NewInt(1 << 3)
+	invoiceLineItemFieldProductID      = big.NewInt(1 << 4)
+	invoiceLineItemFieldQuantity       = big.NewInt(1 << 5)
+	invoiceLineItemFieldSubtotal       = big.NewInt(1 << 6)
+	invoiceLineItemFieldTaxAmount      = big.NewInt(1 << 7)
+	invoiceLineItemFieldUnitAmount     = big.NewInt(1 << 8)
+	invoiceLineItemFieldVariantID      = big.NewInt(1 << 9)
 )
 
 // invoiceLineItemNullableFields maps the wire names of InvoiceLineItem's nullable fields (required or optional) to their field bits.
 var invoiceLineItemNullableFields = map[string]*big.Int{
+	"description":     invoiceLineItemFieldDescription,
 	"discount_amount": invoiceLineItemFieldDiscountAmount,
 	"id":              invoiceLineItemFieldID,
 	"label":           invoiceLineItemFieldLabel,
@@ -1292,6 +1325,8 @@ var invoiceLineItemNullableFields = map[string]*big.Int{
 }
 
 type InvoiceLineItem struct {
+	// Text shown under the item on the invoice, its email, and its PDF, read from the variant's `description`. A custom charge sets it with the item's `description`; a product variant keeps its own. Null when the variant has none or has since been deleted.
+	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// The promo discount applied to this item, in the payment's `currency`. Null when no discount was recorded.
 	DiscountAmount *Money `json:"discount_amount,omitempty" url:"discount_amount,omitempty"`
 	// Line item ID, prefixed `li_`. Null when the payment predates item snapshots and the item is read from the payment's variant.
@@ -1316,6 +1351,13 @@ type InvoiceLineItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceLineItem) GetDescription() *string {
+	if i == nil {
+		return nil
+	}
+	return i.Description
 }
 
 func (i *InvoiceLineItem) GetDiscountAmount() *Money {
@@ -1395,6 +1437,13 @@ func (i *InvoiceLineItem) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	i.explicitFields = next
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLineItem) SetDescription(description *string) {
+	i.Description = description
+	i.require(invoiceLineItemFieldDescription)
 }
 
 // SetDiscountAmount sets the DiscountAmount field and marks it as non-optional;

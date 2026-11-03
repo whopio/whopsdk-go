@@ -616,6 +616,14 @@ func TestSettersGeneratePdfInvoicesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIncludeDescriptions", func(t *testing.T) {
+		obj := &GeneratePdfInvoicesRequest{}
+		var fernTestValueIncludeDescriptions *bool
+		obj.SetIncludeDescriptions(fernTestValueIncludeDescriptions)
+		assert.Equal(t, fernTestValueIncludeDescriptions, obj.IncludeDescriptions)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestSettersMarkExplicitGeneratePdfInvoicesRequest(t *testing.T) {
@@ -627,6 +635,37 @@ func TestSettersMarkExplicitGeneratePdfInvoicesRequest(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIncludeDescriptions_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GeneratePdfInvoicesRequest{}
+		var fernTestValueIncludeDescriptions *bool
+
+		// Act
+		obj.SetIncludeDescriptions(fernTestValueIncludeDescriptions)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3826,6 +3865,14 @@ func TestSettersMarkExplicitInvoice(t *testing.T) {
 }
 
 func TestSettersInvoiceLineItem(t *testing.T) {
+	t.Run("SetDescription", func(t *testing.T) {
+		obj := &InvoiceLineItem{}
+		var fernTestValueDescription *string
+		obj.SetDescription(fernTestValueDescription)
+		assert.Equal(t, fernTestValueDescription, obj.Description)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDiscountAmount", func(t *testing.T) {
 		obj := &InvoiceLineItem{}
 		var fernTestValueDiscountAmount *Money
@@ -3901,6 +3948,39 @@ func TestSettersInvoiceLineItem(t *testing.T) {
 }
 
 func TestGettersInvoiceLineItem(t *testing.T) {
+	t.Run("GetDescription", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &InvoiceLineItem{}
+		var expected *string
+		obj.Description = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDescription(), "getter should return the property value")
+	})
+
+	t.Run("GetDescription_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &InvoiceLineItem{}
+		obj.Description = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDescription(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDescription_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *InvoiceLineItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDescription() // Should return zero value
+	})
+
 	t.Run("GetDiscountAmount", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -4191,6 +4271,37 @@ func TestGettersInvoiceLineItem(t *testing.T) {
 }
 
 func TestSettersMarkExplicitInvoiceLineItem(t *testing.T) {
+	t.Run("SetDescription_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &InvoiceLineItem{}
+		var fernTestValueDescription *string
+
+		// Act
+		obj.SetDescription(fernTestValueDescription)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetDiscountAmount_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -14167,6 +14278,7 @@ func TestRequiredNullableRoundTripInvoice(t *testing.T) {
 
 func TestRequiredNullableRoundTripInvoiceLineItem(t *testing.T) {
 	requiredNullableKeys := []string{
+		"description",
 		"discount_amount",
 		"id",
 		"label",
@@ -14187,7 +14299,7 @@ func TestRequiredNullableRoundTripInvoiceLineItem(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj InvoiceLineItem
-		require.NoError(t, json.Unmarshal([]byte(`{"discount_amount":null,"id":null,"label":null,"product_id":null,"subtotal":null,"tax_amount":null,"unit_amount":null,"variant_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"description":null,"discount_amount":null,"id":null,"label":null,"product_id":null,"subtotal":null,"tax_amount":null,"unit_amount":null,"variant_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
