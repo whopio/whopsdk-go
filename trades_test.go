@@ -122,6 +122,14 @@ func TestSettersCreateTradesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetTimeInForce", func(t *testing.T) {
+		obj := &CreateTradesRequest{}
+		var fernTestValueTimeInForce *CreateTradesRequestTimeInForce
+		obj.SetTimeInForce(fernTestValueTimeInForce)
+		assert.Equal(t, fernTestValueTimeInForce, obj.TimeInForce)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetType", func(t *testing.T) {
 		obj := &CreateTradesRequest{}
 		var fernTestValueType CreateTradesRequestType
@@ -544,6 +552,37 @@ func TestSettersMarkExplicitCreateTradesRequest(t *testing.T) {
 
 		// Act
 		obj.SetSlippageBps(fernTestValueSlippageBps)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTimeInForce_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateTradesRequest{}
+		var fernTestValueTimeInForce *CreateTradesRequestTimeInForce
+
+		// Act
+		obj.SetTimeInForce(fernTestValueTimeInForce)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3658,6 +3697,42 @@ func TestEnumCreateTradesRequestSide(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewCreateTradesRequestSideFromString("buy")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreateTradesRequestTimeInForce(t *testing.T) {
+	t.Run("NewFromString_add_liquidity_only", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateTradesRequestTimeInForceFromString("add_liquidity_only")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateTradesRequestTimeInForce("add_liquidity_only"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_good_til_canceled", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateTradesRequestTimeInForceFromString("good_til_canceled")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateTradesRequestTimeInForce("good_til_canceled"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_immediate_or_cancel", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateTradesRequestTimeInForceFromString("immediate_or_cancel")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateTradesRequestTimeInForce("immediate_or_cancel"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateTradesRequestTimeInForceFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateTradesRequestTimeInForceFromString("add_liquidity_only")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
