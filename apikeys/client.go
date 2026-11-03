@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-02"
+		apiVersionDateDefault := "2026-11-02-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -122,7 +122,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates an API key for an account, an app, or your own user. A user API key acts as you and can only grant `ad_campaign:update`, `ad_pixel:manage`, `member:journey:read`. The response is the only place the full `secret_key` is returned — store it immediately. Requires a user session; API keys cannot manage API keys.
+// Creates an API key for an account, an app, or your own user. A user API key acts as you and can only grant `ad_campaign:basic:read`, `ad_campaign:update`, `ad_pixel:manage`, `member:journey:read`. The response is the only place the full `secret_key` is returned — store it immediately. Requires a user session; API keys cannot manage API keys.
 //
 // Example:
 //

@@ -102,7 +102,7 @@ type CreateInvoicesRequest struct {
 	Items []*CreateInvoicesRequestItemsItem `json:"items" url:"-"`
 	// An address associated with the member. Mutually exclusive with billing_address.
 	MailingAddressID *string `json:"mailing_address_id,omitempty" url:"-"`
-	// The billed customer, a member of the account. Changing email recipients does not change this buyer.
+	// The billed customer, a member of the account, prefixed `mber_`. It can't change once the draft is created. Changing email recipients does not change this buyer.
 	MemberID *string `json:"member_id,omitempty" url:"-"`
 	// A note to the customer, shown on the invoice email, PDF, and checkout page with its line breaks kept. Trimmed; `null` or blank clears it. Can be updated on draft, open, or uncollectible invoices.
 	Memo *string `json:"memo,omitempty" url:"-"`
@@ -6240,7 +6240,7 @@ type UpdateInvoicesRequest struct {
 	Items []*UpdateInvoicesRequestItemsItem `json:"items,omitempty" url:"-"`
 	// An address associated with the member. Mutually exclusive with billing_address.
 	MailingAddressID *string `json:"mailing_address_id,omitempty" url:"-"`
-	// The billed customer, a member of the account. Changing email recipients does not change this buyer.
+	// The billed customer, a member of the account, prefixed `mber_`. The customer is set when the draft is created and can't change, so pass the draft's current customer or omit this field. A draft saved without a customer can take one here. Changing email recipients does not change this buyer.
 	MemberID *string `json:"member_id,omitempty" url:"-"`
 	// A note to the customer, shown on the invoice email, PDF, and checkout page with its line breaks kept. Trimmed; `null` or blank clears it. Can be updated on draft, open, or uncollectible invoices.
 	Memo *string `json:"memo,omitempty" url:"-"`
