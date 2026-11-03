@@ -1490,6 +1490,14 @@ func TestSettersMarkExplicitRetrieveAdCampaignsRequest(t *testing.T) {
 }
 
 func TestSettersAdCampaign(t *testing.T) {
+	t.Run("SetAccount", func(t *testing.T) {
+		obj := &AdCampaign{}
+		var fernTestValueAccount *StorefrontAccount
+		obj.SetAccount(fernTestValueAccount)
+		assert.Equal(t, fernTestValueAccount, obj.Account)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAddedToCartValue", func(t *testing.T) {
 		obj := &AdCampaign{}
 		var fernTestValueAddedToCartValue float64
@@ -1997,6 +2005,39 @@ func TestSettersAdCampaign(t *testing.T) {
 }
 
 func TestGettersAdCampaign(t *testing.T) {
+	t.Run("GetAccount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdCampaign{}
+		var expected *StorefrontAccount
+		obj.Account = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAccount(), "getter should return the property value")
+	})
+
+	t.Run("GetAccount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdCampaign{}
+		obj.Account = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAccount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAccount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdCampaign
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAccount() // Should return zero value
+	})
+
 	t.Run("GetAddedToCartValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3729,6 +3770,37 @@ func TestGettersAdCampaign(t *testing.T) {
 }
 
 func TestSettersMarkExplicitAdCampaign(t *testing.T) {
+	t.Run("SetAccount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdCampaign{}
+		var fernTestValueAccount *StorefrontAccount
+
+		// Act
+		obj.SetAccount(fernTestValueAccount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetAddedToCartValue_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -6874,6 +6946,14 @@ func TestSettersMarkExplicitPostAdCampaignPaymentFailedPayload(t *testing.T) {
 }
 
 func TestSettersPostAdCampaignPaymentFailedPayloadData(t *testing.T) {
+	t.Run("SetAccount", func(t *testing.T) {
+		obj := &PostAdCampaignPaymentFailedPayloadData{}
+		var fernTestValueAccount *StorefrontAccount
+		obj.SetAccount(fernTestValueAccount)
+		assert.Equal(t, fernTestValueAccount, obj.Account)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetBudgetAmount", func(t *testing.T) {
 		obj := &PostAdCampaignPaymentFailedPayloadData{}
 		var fernTestValueBudgetAmount *float64
@@ -7021,6 +7101,39 @@ func TestSettersPostAdCampaignPaymentFailedPayloadData(t *testing.T) {
 }
 
 func TestGettersPostAdCampaignPaymentFailedPayloadData(t *testing.T) {
+	t.Run("GetAccount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostAdCampaignPaymentFailedPayloadData{}
+		var expected *StorefrontAccount
+		obj.Account = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAccount(), "getter should return the property value")
+	})
+
+	t.Run("GetAccount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostAdCampaignPaymentFailedPayloadData{}
+		obj.Account = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAccount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAccount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PostAdCampaignPaymentFailedPayloadData
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAccount() // Should return zero value
+	})
+
 	t.Run("GetBudgetAmount", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -7538,6 +7651,37 @@ func TestGettersPostAdCampaignPaymentFailedPayloadData(t *testing.T) {
 }
 
 func TestSettersMarkExplicitPostAdCampaignPaymentFailedPayloadData(t *testing.T) {
+	t.Run("SetAccount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostAdCampaignPaymentFailedPayloadData{}
+		var fernTestValueAccount *StorefrontAccount
+
+		// Act
+		obj.SetAccount(fernTestValueAccount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetBudgetAmount_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -8644,6 +8788,14 @@ func TestSettersMarkExplicitPostAdCampaignUpdatedPayload(t *testing.T) {
 }
 
 func TestSettersPostAdCampaignUpdatedPayloadData(t *testing.T) {
+	t.Run("SetAccount", func(t *testing.T) {
+		obj := &PostAdCampaignUpdatedPayloadData{}
+		var fernTestValueAccount *StorefrontAccount
+		obj.SetAccount(fernTestValueAccount)
+		assert.Equal(t, fernTestValueAccount, obj.Account)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetBudgetAmount", func(t *testing.T) {
 		obj := &PostAdCampaignUpdatedPayloadData{}
 		var fernTestValueBudgetAmount *float64
@@ -8791,6 +8943,39 @@ func TestSettersPostAdCampaignUpdatedPayloadData(t *testing.T) {
 }
 
 func TestGettersPostAdCampaignUpdatedPayloadData(t *testing.T) {
+	t.Run("GetAccount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostAdCampaignUpdatedPayloadData{}
+		var expected *StorefrontAccount
+		obj.Account = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAccount(), "getter should return the property value")
+	})
+
+	t.Run("GetAccount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostAdCampaignUpdatedPayloadData{}
+		obj.Account = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAccount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAccount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PostAdCampaignUpdatedPayloadData
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAccount() // Should return zero value
+	})
+
 	t.Run("GetBudgetAmount", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -9308,6 +9493,37 @@ func TestGettersPostAdCampaignUpdatedPayloadData(t *testing.T) {
 }
 
 func TestSettersMarkExplicitPostAdCampaignUpdatedPayloadData(t *testing.T) {
+	t.Run("SetAccount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostAdCampaignUpdatedPayloadData{}
+		var fernTestValueAccount *StorefrontAccount
+
+		// Act
+		obj.SetAccount(fernTestValueAccount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetBudgetAmount_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -10686,6 +10902,7 @@ func TestJSONMarshalingPostAdCampaignUpdatedPayloadData(t *testing.T) {
 
 func TestRequiredNullableRoundTripAdCampaign(t *testing.T) {
 	requiredNullableKeys := []string{
+		"account",
 		"budget_amount",
 		"budget_amount_local",
 		"budget_optimization",
@@ -10721,7 +10938,7 @@ func TestRequiredNullableRoundTripAdCampaign(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj AdCampaign
-		require.NoError(t, json.Unmarshal([]byte(`{"budget_amount":null,"budget_amount_local":null,"budget_optimization":null,"budget_type":null,"cost_per_added_to_cart":null,"cost_per_completed_registration":null,"cost_per_contact":null,"cost_per_lead":null,"cost_per_purchase":null,"cost_per_result":null,"cost_per_schedule":null,"cost_per_submitted_application":null,"cost_per_unique_click":null,"cost_per_viewed_content":null,"ends_at":null,"frequency":null,"objective":null,"result_event":null,"result_event_name":null,"results":null,"spend_currency":null,"starts_at":null,"unique_click_through_rate":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"budget_amount":null,"budget_amount_local":null,"budget_optimization":null,"budget_type":null,"cost_per_added_to_cart":null,"cost_per_completed_registration":null,"cost_per_contact":null,"cost_per_lead":null,"cost_per_purchase":null,"cost_per_result":null,"cost_per_schedule":null,"cost_per_submitted_application":null,"cost_per_unique_click":null,"cost_per_viewed_content":null,"ends_at":null,"frequency":null,"objective":null,"result_event":null,"result_event_name":null,"results":null,"spend_currency":null,"starts_at":null,"unique_click_through_rate":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -10838,6 +11055,7 @@ func TestRequiredNullableRoundTripPostAdCampaignPaymentFailedPayload(t *testing.
 
 func TestRequiredNullableRoundTripPostAdCampaignPaymentFailedPayloadData(t *testing.T) {
 	requiredNullableKeys := []string{
+		"account",
 		"budget_amount",
 		"budget_amount_local",
 		"budget_optimization",
@@ -10857,7 +11075,7 @@ func TestRequiredNullableRoundTripPostAdCampaignPaymentFailedPayloadData(t *test
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PostAdCampaignPaymentFailedPayloadData
-		require.NoError(t, json.Unmarshal([]byte(`{"budget_amount":null,"budget_amount_local":null,"budget_optimization":null,"budget_type":null,"ends_at":null,"objective":null,"starts_at":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"budget_amount":null,"budget_amount_local":null,"budget_optimization":null,"budget_type":null,"ends_at":null,"objective":null,"starts_at":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -10930,6 +11148,7 @@ func TestRequiredNullableRoundTripPostAdCampaignUpdatedPayload(t *testing.T) {
 
 func TestRequiredNullableRoundTripPostAdCampaignUpdatedPayloadData(t *testing.T) {
 	requiredNullableKeys := []string{
+		"account",
 		"budget_amount",
 		"budget_amount_local",
 		"budget_optimization",
@@ -10949,7 +11168,7 @@ func TestRequiredNullableRoundTripPostAdCampaignUpdatedPayloadData(t *testing.T)
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PostAdCampaignUpdatedPayloadData
-		require.NoError(t, json.Unmarshal([]byte(`{"budget_amount":null,"budget_amount_local":null,"budget_optimization":null,"budget_type":null,"ends_at":null,"objective":null,"starts_at":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"budget_amount":null,"budget_amount_local":null,"budget_optimization":null,"budget_type":null,"ends_at":null,"objective":null,"starts_at":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
