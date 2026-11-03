@@ -33596,24 +33596,25 @@ var (
 	membershipLegacyFieldCreatedAt               = big.NewInt(1 << 7)
 	membershipLegacyFieldCurrency                = big.NewInt(1 << 8)
 	membershipLegacyFieldCustomFieldResponses    = big.NewInt(1 << 9)
-	membershipLegacyFieldFeedbackOption          = big.NewInt(1 << 10)
-	membershipLegacyFieldFormattedRenewalPrice   = big.NewInt(1 << 11)
-	membershipLegacyFieldID                      = big.NewInt(1 << 12)
-	membershipLegacyFieldInitialPricePaid        = big.NewInt(1 << 13)
-	membershipLegacyFieldJoinedAt                = big.NewInt(1 << 14)
-	membershipLegacyFieldLicenseKey              = big.NewInt(1 << 15)
-	membershipLegacyFieldManageURL               = big.NewInt(1 << 16)
-	membershipLegacyFieldMember                  = big.NewInt(1 << 17)
-	membershipLegacyFieldMetadata                = big.NewInt(1 << 18)
-	membershipLegacyFieldPaymentCollectionPaused = big.NewInt(1 << 19)
-	membershipLegacyFieldPlan                    = big.NewInt(1 << 20)
-	membershipLegacyFieldProduct                 = big.NewInt(1 << 21)
-	membershipLegacyFieldPromoCode               = big.NewInt(1 << 22)
-	membershipLegacyFieldRenewalPeriodEnd        = big.NewInt(1 << 23)
-	membershipLegacyFieldRenewalPeriodStart      = big.NewInt(1 << 24)
-	membershipLegacyFieldStatus                  = big.NewInt(1 << 25)
-	membershipLegacyFieldUpdatedAt               = big.NewInt(1 << 26)
-	membershipLegacyFieldUser                    = big.NewInt(1 << 27)
+	membershipLegacyFieldExternalAccounts        = big.NewInt(1 << 10)
+	membershipLegacyFieldFeedbackOption          = big.NewInt(1 << 11)
+	membershipLegacyFieldFormattedRenewalPrice   = big.NewInt(1 << 12)
+	membershipLegacyFieldID                      = big.NewInt(1 << 13)
+	membershipLegacyFieldInitialPricePaid        = big.NewInt(1 << 14)
+	membershipLegacyFieldJoinedAt                = big.NewInt(1 << 15)
+	membershipLegacyFieldLicenseKey              = big.NewInt(1 << 16)
+	membershipLegacyFieldManageURL               = big.NewInt(1 << 17)
+	membershipLegacyFieldMember                  = big.NewInt(1 << 18)
+	membershipLegacyFieldMetadata                = big.NewInt(1 << 19)
+	membershipLegacyFieldPaymentCollectionPaused = big.NewInt(1 << 20)
+	membershipLegacyFieldPlan                    = big.NewInt(1 << 21)
+	membershipLegacyFieldProduct                 = big.NewInt(1 << 22)
+	membershipLegacyFieldPromoCode               = big.NewInt(1 << 23)
+	membershipLegacyFieldRenewalPeriodEnd        = big.NewInt(1 << 24)
+	membershipLegacyFieldRenewalPeriodStart      = big.NewInt(1 << 25)
+	membershipLegacyFieldStatus                  = big.NewInt(1 << 26)
+	membershipLegacyFieldUpdatedAt               = big.NewInt(1 << 27)
+	membershipLegacyFieldUser                    = big.NewInt(1 << 28)
 )
 
 // membershipLegacyNullableFields maps the wire names of MembershipLegacy's nullable fields (required or optional) to their field bits.
@@ -33624,6 +33625,7 @@ var membershipLegacyNullableFields = map[string]*big.Int{
 	"cancellation_reason":       membershipLegacyFieldCancellationReason,
 	"checkout_configuration_id": membershipLegacyFieldCheckoutConfigurationID,
 	"currency":                  membershipLegacyFieldCurrency,
+	"external_accounts":         membershipLegacyFieldExternalAccounts,
 	"feedback_option":           membershipLegacyFieldFeedbackOption,
 	"formatted_renewal_price":   membershipLegacyFieldFormattedRenewalPrice,
 	"joined_at":                 membershipLegacyFieldJoinedAt,
@@ -33659,6 +33661,8 @@ type MembershipLegacy struct {
 	Currency *Currencies `json:"currency,omitempty" url:"currency,omitempty"`
 	// The customer's responses to custom checkout questions configured on the product at the time of purchase.
 	CustomFieldResponses []*MembershipLegacyCustomFieldResponsesItem `json:"custom_field_responses" url:"custom_field_responses"`
+	// The member's accounts on outside platforms, such as Discord and Telegram. Empty when the member has none linked. Null in webhooks.
+	ExternalAccounts []*MembershipLegacyExternalAccountsItem `json:"external_accounts,omitempty" url:"external_accounts,omitempty"`
 	// The account's own cancel reason the member picked, as they saw it. `null` when the member picked a default category or gave no reason.
 	FeedbackOption *MembershipLegacyFeedbackOption `json:"feedback_option,omitempty" url:"feedback_option,omitempty"`
 	// The recurring renewal price for this membership, formatted with currency symbol and billing interval. Null if the membership is not recurring.
@@ -33771,6 +33775,13 @@ func (m *MembershipLegacy) GetCustomFieldResponses() []*MembershipLegacyCustomFi
 		return nil
 	}
 	return m.CustomFieldResponses
+}
+
+func (m *MembershipLegacy) GetExternalAccounts() []*MembershipLegacyExternalAccountsItem {
+	if m == nil {
+		return nil
+	}
+	return m.ExternalAccounts
 }
 
 func (m *MembershipLegacy) GetFeedbackOption() *MembershipLegacyFeedbackOption {
@@ -33983,6 +33994,13 @@ func (m *MembershipLegacy) SetCurrency(currency *Currencies) {
 func (m *MembershipLegacy) SetCustomFieldResponses(customFieldResponses []*MembershipLegacyCustomFieldResponsesItem) {
 	m.CustomFieldResponses = customFieldResponses
 	m.require(membershipLegacyFieldCustomFieldResponses)
+}
+
+// SetExternalAccounts sets the ExternalAccounts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacy) SetExternalAccounts(externalAccounts []*MembershipLegacyExternalAccountsItem) {
+	m.ExternalAccounts = externalAccounts
+	m.require(membershipLegacyFieldExternalAccounts)
 }
 
 // SetFeedbackOption sets the FeedbackOption field and marks it as non-optional;
@@ -34401,6 +34419,140 @@ func (m *MembershipLegacyCustomFieldResponsesItem) MarshalJSON() ([]byte, error)
 }
 
 func (m *MembershipLegacyCustomFieldResponsesItem) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+var (
+	membershipLegacyExternalAccountsItemFieldExternalID = big.NewInt(1 << 0)
+	membershipLegacyExternalAccountsItemFieldPlatform   = big.NewInt(1 << 1)
+	membershipLegacyExternalAccountsItemFieldUsername   = big.NewInt(1 << 2)
+)
+
+// membershipLegacyExternalAccountsItemNullableFields maps the wire names of MembershipLegacyExternalAccountsItem's nullable fields (required or optional) to their field bits.
+var membershipLegacyExternalAccountsItemNullableFields = map[string]*big.Int{
+	"username": membershipLegacyExternalAccountsItemFieldUsername,
+}
+
+// A member's account on an outside platform, such as Discord or Telegram.
+type MembershipLegacyExternalAccountsItem struct {
+	// The member's user ID on the platform, such as a Discord user ID. Prefixed with the platform (`discord_<external_id>`), it is the `external_account` value List Memberships filters by.
+	ExternalID string `json:"external_id" url:"external_id"`
+	// The platform the member's account is on: `discord` or `telegram`.
+	Platform string `json:"platform" url:"platform"`
+	// The member's username on the platform. Null when Whop doesn't know it, such as for a membership imported with only a Discord ID.
+	Username *string `json:"username,omitempty" url:"username,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipLegacyExternalAccountsItem) GetExternalID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ExternalID
+}
+
+func (m *MembershipLegacyExternalAccountsItem) GetPlatform() string {
+	if m == nil {
+		return ""
+	}
+	return m.Platform
+}
+
+func (m *MembershipLegacyExternalAccountsItem) GetUsername() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Username
+}
+
+func (m *MembershipLegacyExternalAccountsItem) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipLegacyExternalAccountsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
+	}
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetExternalID sets the ExternalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyExternalAccountsItem) SetExternalID(externalID string) {
+	m.ExternalID = externalID
+	m.require(membershipLegacyExternalAccountsItemFieldExternalID)
+}
+
+// SetPlatform sets the Platform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyExternalAccountsItem) SetPlatform(platform string) {
+	m.Platform = platform
+	m.require(membershipLegacyExternalAccountsItemFieldPlatform)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipLegacyExternalAccountsItem) SetUsername(username *string) {
+	m.Username = username
+	m.require(membershipLegacyExternalAccountsItemFieldUsername)
+}
+
+func (m *MembershipLegacyExternalAccountsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipLegacyExternalAccountsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipLegacyExternalAccountsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, membershipLegacyExternalAccountsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipLegacyExternalAccountsItem) MarshalJSON() ([]byte, error) {
+	type embed MembershipLegacyExternalAccountsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipLegacyExternalAccountsItem) String() string {
 	if m == nil {
 		return "<nil>"
 	}
@@ -35109,24 +35261,25 @@ var (
 	membershipListItemFieldCompany                 = big.NewInt(1 << 6)
 	membershipListItemFieldCreatedAt               = big.NewInt(1 << 7)
 	membershipListItemFieldCurrency                = big.NewInt(1 << 8)
-	membershipListItemFieldFeedbackOption          = big.NewInt(1 << 9)
-	membershipListItemFieldFormattedRenewalPrice   = big.NewInt(1 << 10)
-	membershipListItemFieldID                      = big.NewInt(1 << 11)
-	membershipListItemFieldInitialPricePaid        = big.NewInt(1 << 12)
-	membershipListItemFieldJoinedAt                = big.NewInt(1 << 13)
-	membershipListItemFieldLicenseKey              = big.NewInt(1 << 14)
-	membershipListItemFieldManageURL               = big.NewInt(1 << 15)
-	membershipListItemFieldMember                  = big.NewInt(1 << 16)
-	membershipListItemFieldMetadata                = big.NewInt(1 << 17)
-	membershipListItemFieldPaymentCollectionPaused = big.NewInt(1 << 18)
-	membershipListItemFieldPlan                    = big.NewInt(1 << 19)
-	membershipListItemFieldProduct                 = big.NewInt(1 << 20)
-	membershipListItemFieldPromoCode               = big.NewInt(1 << 21)
-	membershipListItemFieldRenewalPeriodEnd        = big.NewInt(1 << 22)
-	membershipListItemFieldRenewalPeriodStart      = big.NewInt(1 << 23)
-	membershipListItemFieldStatus                  = big.NewInt(1 << 24)
-	membershipListItemFieldUpdatedAt               = big.NewInt(1 << 25)
-	membershipListItemFieldUser                    = big.NewInt(1 << 26)
+	membershipListItemFieldExternalAccounts        = big.NewInt(1 << 9)
+	membershipListItemFieldFeedbackOption          = big.NewInt(1 << 10)
+	membershipListItemFieldFormattedRenewalPrice   = big.NewInt(1 << 11)
+	membershipListItemFieldID                      = big.NewInt(1 << 12)
+	membershipListItemFieldInitialPricePaid        = big.NewInt(1 << 13)
+	membershipListItemFieldJoinedAt                = big.NewInt(1 << 14)
+	membershipListItemFieldLicenseKey              = big.NewInt(1 << 15)
+	membershipListItemFieldManageURL               = big.NewInt(1 << 16)
+	membershipListItemFieldMember                  = big.NewInt(1 << 17)
+	membershipListItemFieldMetadata                = big.NewInt(1 << 18)
+	membershipListItemFieldPaymentCollectionPaused = big.NewInt(1 << 19)
+	membershipListItemFieldPlan                    = big.NewInt(1 << 20)
+	membershipListItemFieldProduct                 = big.NewInt(1 << 21)
+	membershipListItemFieldPromoCode               = big.NewInt(1 << 22)
+	membershipListItemFieldRenewalPeriodEnd        = big.NewInt(1 << 23)
+	membershipListItemFieldRenewalPeriodStart      = big.NewInt(1 << 24)
+	membershipListItemFieldStatus                  = big.NewInt(1 << 25)
+	membershipListItemFieldUpdatedAt               = big.NewInt(1 << 26)
+	membershipListItemFieldUser                    = big.NewInt(1 << 27)
 )
 
 // membershipListItemNullableFields maps the wire names of MembershipListItem's nullable fields (required or optional) to their field bits.
@@ -35137,6 +35290,7 @@ var membershipListItemNullableFields = map[string]*big.Int{
 	"cancellation_reason":       membershipListItemFieldCancellationReason,
 	"checkout_configuration_id": membershipListItemFieldCheckoutConfigurationID,
 	"currency":                  membershipListItemFieldCurrency,
+	"external_accounts":         membershipListItemFieldExternalAccounts,
 	"feedback_option":           membershipListItemFieldFeedbackOption,
 	"formatted_renewal_price":   membershipListItemFieldFormattedRenewalPrice,
 	"joined_at":                 membershipListItemFieldJoinedAt,
@@ -35170,6 +35324,8 @@ type MembershipListItem struct {
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// The three-letter ISO currency code for this membership's billing. Null if the membership is free.
 	Currency *Currencies `json:"currency,omitempty" url:"currency,omitempty"`
+	// The member's accounts on outside platforms, such as Discord and Telegram. Empty when the member has none linked. Null in webhooks.
+	ExternalAccounts []*MembershipListItemExternalAccountsItem `json:"external_accounts,omitempty" url:"external_accounts,omitempty"`
 	// The account's own cancel reason the member picked, as they saw it. `null` when the member picked a default category or gave no reason.
 	FeedbackOption *MembershipListItemFeedbackOption `json:"feedback_option,omitempty" url:"feedback_option,omitempty"`
 	// The recurring renewal price for this membership, formatted with currency symbol and billing interval. Null if the membership is not recurring.
@@ -35275,6 +35431,13 @@ func (m *MembershipListItem) GetCurrency() *Currencies {
 		return nil
 	}
 	return m.Currency
+}
+
+func (m *MembershipListItem) GetExternalAccounts() []*MembershipListItemExternalAccountsItem {
+	if m == nil {
+		return nil
+	}
+	return m.ExternalAccounts
 }
 
 func (m *MembershipListItem) GetFeedbackOption() *MembershipListItemFeedbackOption {
@@ -35480,6 +35643,13 @@ func (m *MembershipListItem) SetCreatedAt(createdAt time.Time) {
 func (m *MembershipListItem) SetCurrency(currency *Currencies) {
 	m.Currency = currency
 	m.require(membershipListItemFieldCurrency)
+}
+
+// SetExternalAccounts sets the ExternalAccounts field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipListItem) SetExternalAccounts(externalAccounts []*MembershipListItemExternalAccountsItem) {
+	m.ExternalAccounts = externalAccounts
+	m.require(membershipListItemFieldExternalAccounts)
 }
 
 // SetFeedbackOption sets the FeedbackOption field and marks it as non-optional;
@@ -35776,6 +35946,140 @@ func (m *MembershipListItemCompany) MarshalJSON() ([]byte, error) {
 }
 
 func (m *MembershipListItemCompany) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+var (
+	membershipListItemExternalAccountsItemFieldExternalID = big.NewInt(1 << 0)
+	membershipListItemExternalAccountsItemFieldPlatform   = big.NewInt(1 << 1)
+	membershipListItemExternalAccountsItemFieldUsername   = big.NewInt(1 << 2)
+)
+
+// membershipListItemExternalAccountsItemNullableFields maps the wire names of MembershipListItemExternalAccountsItem's nullable fields (required or optional) to their field bits.
+var membershipListItemExternalAccountsItemNullableFields = map[string]*big.Int{
+	"username": membershipListItemExternalAccountsItemFieldUsername,
+}
+
+// A member's account on an outside platform, such as Discord or Telegram.
+type MembershipListItemExternalAccountsItem struct {
+	// The member's user ID on the platform, such as a Discord user ID. Prefixed with the platform (`discord_<external_id>`), it is the `external_account` value List Memberships filters by.
+	ExternalID string `json:"external_id" url:"external_id"`
+	// The platform the member's account is on: `discord` or `telegram`.
+	Platform string `json:"platform" url:"platform"`
+	// The member's username on the platform. Null when Whop doesn't know it, such as for a membership imported with only a Discord ID.
+	Username *string `json:"username,omitempty" url:"username,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MembershipListItemExternalAccountsItem) GetExternalID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ExternalID
+}
+
+func (m *MembershipListItemExternalAccountsItem) GetPlatform() string {
+	if m == nil {
+		return ""
+	}
+	return m.Platform
+}
+
+func (m *MembershipListItemExternalAccountsItem) GetUsername() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Username
+}
+
+func (m *MembershipListItemExternalAccountsItem) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MembershipListItemExternalAccountsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
+	}
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetExternalID sets the ExternalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipListItemExternalAccountsItem) SetExternalID(externalID string) {
+	m.ExternalID = externalID
+	m.require(membershipListItemExternalAccountsItemFieldExternalID)
+}
+
+// SetPlatform sets the Platform field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipListItemExternalAccountsItem) SetPlatform(platform string) {
+	m.Platform = platform
+	m.require(membershipListItemExternalAccountsItemFieldPlatform)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MembershipListItemExternalAccountsItem) SetUsername(username *string) {
+	m.Username = username
+	m.require(membershipListItemExternalAccountsItemFieldUsername)
+}
+
+func (m *MembershipListItemExternalAccountsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler MembershipListItemExternalAccountsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MembershipListItemExternalAccountsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, membershipListItemExternalAccountsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MembershipListItemExternalAccountsItem) MarshalJSON() ([]byte, error) {
+	type embed MembershipListItemExternalAccountsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MembershipListItemExternalAccountsItem) String() string {
 	if m == nil {
 		return "<nil>"
 	}
