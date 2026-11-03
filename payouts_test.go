@@ -208,7 +208,7 @@ func TestSettersCreatePayoutsRequest(t *testing.T) {
 
 	t.Run("SetQuoteToken", func(t *testing.T) {
 		obj := &CreatePayoutsRequest{}
-		var fernTestValueQuoteToken *string
+		var fernTestValueQuoteToken string
 		obj.SetQuoteToken(fernTestValueQuoteToken)
 		assert.Equal(t, fernTestValueQuoteToken, obj.QuoteToken)
 		assert.NotNil(t, obj.explicitFields)
@@ -524,7 +524,7 @@ func TestSettersMarkExplicitCreatePayoutsRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreatePayoutsRequest{}
-		var fernTestValueQuoteToken *string
+		var fernTestValueQuoteToken string
 
 		// Act
 		obj.SetQuoteToken(fernTestValueQuoteToken)

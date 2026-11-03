@@ -28,7 +28,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-02-1"
+		apiVersionDateDefault := "2026-11-03"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -128,13 +128,14 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Sends money from an account or user balance to a saved payout method for that owner.
+// Sends money from an account or user balance to a saved payout method for that owner. First create a quote with POST /payouts/quotes, then submit its quote_token with the same payout details before it expires.
 //
 // Example:
 //
 //	request := &whopsdk.CreatePayoutsRequest{
 //	    Amount: 50,
 //	    PayoutMethodID: "potk_xxxxxxxxxxxxxx",
+//	    QuoteToken: "signed-payout-quote",
 //	}
 //	client.Payouts.Create(
 //	    context.TODO(),

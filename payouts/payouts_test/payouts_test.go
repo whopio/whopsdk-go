@@ -115,6 +115,7 @@ func TestPayoutsCreateWithWireMock(
 	request := &whopsdk.CreatePayoutsRequest{
 		Amount:         50,
 		PayoutMethodID: "potk_xxxxxxxxxxxxxx",
+		QuoteToken:     "signed-payout-quote",
 	}
 	_, invocationErr := client.Payouts.Create(
 		context.TODO(),
