@@ -2651,6 +2651,7 @@ const (
 	AdGroupDeliveryStatusNoAds           AdGroupDeliveryStatus = "no_ads"
 	AdGroupDeliveryStatusCampaignPaused  AdGroupDeliveryStatus = "campaign_paused"
 	AdGroupDeliveryStatusPaused          AdGroupDeliveryStatus = "paused"
+	AdGroupDeliveryStatusInReview        AdGroupDeliveryStatus = "in_review"
 	AdGroupDeliveryStatusProcessing      AdGroupDeliveryStatus = "processing"
 	AdGroupDeliveryStatusIssues          AdGroupDeliveryStatus = "issues"
 	AdGroupDeliveryStatusScheduled       AdGroupDeliveryStatus = "scheduled"
@@ -2677,6 +2678,8 @@ func NewAdGroupDeliveryStatusFromString(s string) (AdGroupDeliveryStatus, error)
 		return AdGroupDeliveryStatusCampaignPaused, nil
 	case "paused":
 		return AdGroupDeliveryStatusPaused, nil
+	case "in_review":
+		return AdGroupDeliveryStatusInReview, nil
 	case "processing":
 		return AdGroupDeliveryStatusProcessing, nil
 	case "issues":
@@ -7664,6 +7667,7 @@ const (
 	PostAdGroupUpdatedPayloadDataDeliveryStatusNoAds           PostAdGroupUpdatedPayloadDataDeliveryStatus = "no_ads"
 	PostAdGroupUpdatedPayloadDataDeliveryStatusCampaignPaused  PostAdGroupUpdatedPayloadDataDeliveryStatus = "campaign_paused"
 	PostAdGroupUpdatedPayloadDataDeliveryStatusPaused          PostAdGroupUpdatedPayloadDataDeliveryStatus = "paused"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusInReview        PostAdGroupUpdatedPayloadDataDeliveryStatus = "in_review"
 	PostAdGroupUpdatedPayloadDataDeliveryStatusProcessing      PostAdGroupUpdatedPayloadDataDeliveryStatus = "processing"
 	PostAdGroupUpdatedPayloadDataDeliveryStatusIssues          PostAdGroupUpdatedPayloadDataDeliveryStatus = "issues"
 	PostAdGroupUpdatedPayloadDataDeliveryStatusScheduled       PostAdGroupUpdatedPayloadDataDeliveryStatus = "scheduled"
@@ -7690,6 +7694,8 @@ func NewPostAdGroupUpdatedPayloadDataDeliveryStatusFromString(s string) (PostAdG
 		return PostAdGroupUpdatedPayloadDataDeliveryStatusCampaignPaused, nil
 	case "paused":
 		return PostAdGroupUpdatedPayloadDataDeliveryStatusPaused, nil
+	case "in_review":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusInReview, nil
 	case "processing":
 		return PostAdGroupUpdatedPayloadDataDeliveryStatusProcessing, nil
 	case "issues":
