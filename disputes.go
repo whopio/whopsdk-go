@@ -2290,7 +2290,7 @@ type DisputePayment struct {
 	Currency *string `json:"currency,omitempty" url:"currency,omitempty"`
 	// Payment ID, prefixed `pay_`.
 	ID string `json:"id" url:"id"`
-	// The instrument this payment was made with, shaped for display: the method type, a buyer-facing name, the standard icon set, and the card facts when it was a card. Null when the payment names no method.
+	// The instrument this payment was made with, shaped for display: the method type, a buyer-facing name, the standard icon set, and the card facts, including the network transaction id the account uses for the card, when it was a card. Null when the payment names no method.
 	PaymentInstrument *PaymentInstrument `json:"payment_instrument,omitempty" url:"payment_instrument,omitempty"`
 	// How the customer paid, such as `card` or `paypal`.
 	PaymentMethodType *string `json:"payment_method_type,omitempty" url:"payment_method_type,omitempty"`
