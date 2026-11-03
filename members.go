@@ -29,6 +29,7 @@ var (
 	listMembersRequestFieldAfter             = big.NewInt(1 << 15)
 	listMembersRequestFieldLast              = big.NewInt(1 << 16)
 	listMembersRequestFieldBefore            = big.NewInt(1 << 17)
+	listMembersRequestFieldIncludeTotalCount = big.NewInt(1 << 18)
 )
 
 type ListMembersRequest struct {
@@ -68,6 +69,8 @@ type ListMembersRequest struct {
 	Last *int `json:"-" url:"last,omitempty"`
 	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
+	// Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+	IncludeTotalCount *bool `json:"-" url:"include_total_count,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -206,6 +209,13 @@ func (l *ListMembersRequest) SetLast(last *int) {
 func (l *ListMembersRequest) SetBefore(before *string) {
 	l.Before = before
 	l.require(listMembersRequestFieldBefore)
+}
+
+// SetIncludeTotalCount sets the IncludeTotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembersRequest) SetIncludeTotalCount(includeTotalCount *bool) {
+	l.IncludeTotalCount = includeTotalCount
+	l.require(listMembersRequestFieldIncludeTotalCount)
 }
 
 var (
@@ -999,16 +1009,19 @@ func (l *ListMembersResponse) String() string {
 }
 
 var (
-	listMembersResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
-	listMembersResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
-	listMembersResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
-	listMembersResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+	listMembersResponsePageInfoFieldEndCursor        = big.NewInt(1 << 0)
+	listMembersResponsePageInfoFieldHasNextPage      = big.NewInt(1 << 1)
+	listMembersResponsePageInfoFieldHasPreviousPage  = big.NewInt(1 << 2)
+	listMembersResponsePageInfoFieldStartCursor      = big.NewInt(1 << 3)
+	listMembersResponsePageInfoFieldTotalCount       = big.NewInt(1 << 4)
+	listMembersResponsePageInfoFieldTotalCountCapped = big.NewInt(1 << 5)
 )
 
 // listMembersResponsePageInfoNullableFields maps the wire names of ListMembersResponsePageInfo's nullable fields (required or optional) to their field bits.
 var listMembersResponsePageInfoNullableFields = map[string]*big.Int{
 	"end_cursor":   listMembersResponsePageInfoFieldEndCursor,
 	"start_cursor": listMembersResponsePageInfoFieldStartCursor,
+	"total_count":  listMembersResponsePageInfoFieldTotalCount,
 }
 
 type ListMembersResponsePageInfo struct {
@@ -1016,6 +1029,10 @@ type ListMembersResponsePageInfo struct {
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
 	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
 	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+	// Number of results matching the filters, across every page. Counting stops at 10,000. `null` when `include_total_count` isn't `true`, or when the count ran out of time.
+	TotalCount *int `json:"total_count,omitempty" url:"total_count,omitempty"`
+	// Whether counting stopped at the limit. `true` means `total_count` is 10,000 or more.
+	TotalCountCapped bool `json:"total_count_capped" url:"total_count_capped"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1050,6 +1067,20 @@ func (l *ListMembersResponsePageInfo) GetStartCursor() *string {
 		return nil
 	}
 	return l.StartCursor
+}
+
+func (l *ListMembersResponsePageInfo) GetTotalCount() *int {
+	if l == nil {
+		return nil
+	}
+	return l.TotalCount
+}
+
+func (l *ListMembersResponsePageInfo) GetTotalCountCapped() bool {
+	if l == nil {
+		return false
+	}
+	return l.TotalCountCapped
 }
 
 func (l *ListMembersResponsePageInfo) GetExtraProperties() map[string]interface{} {
@@ -1094,6 +1125,20 @@ func (l *ListMembersResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
 func (l *ListMembersResponsePageInfo) SetStartCursor(startCursor *string) {
 	l.StartCursor = startCursor
 	l.require(listMembersResponsePageInfoFieldStartCursor)
+}
+
+// SetTotalCount sets the TotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembersResponsePageInfo) SetTotalCount(totalCount *int) {
+	l.TotalCount = totalCount
+	l.require(listMembersResponsePageInfoFieldTotalCount)
+}
+
+// SetTotalCountCapped sets the TotalCountCapped field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembersResponsePageInfo) SetTotalCountCapped(totalCountCapped bool) {
+	l.TotalCountCapped = totalCountCapped
+	l.require(listMembersResponsePageInfoFieldTotalCountCapped)
 }
 
 func (l *ListMembersResponsePageInfo) UnmarshalJSON(data []byte) error {

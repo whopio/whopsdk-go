@@ -307,25 +307,26 @@ func (e *ExtendMembershipsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	listMembershipsRequestFieldAccountID       = big.NewInt(1 << 0)
-	listMembershipsRequestFieldUserID          = big.NewInt(1 << 1)
-	listMembershipsRequestFieldMemberID        = big.NewInt(1 << 2)
-	listMembershipsRequestFieldExternalAccount = big.NewInt(1 << 3)
-	listMembershipsRequestFieldStatus          = big.NewInt(1 << 4)
-	listMembershipsRequestFieldStatuses        = big.NewInt(1 << 5)
-	listMembershipsRequestFieldProductID       = big.NewInt(1 << 6)
-	listMembershipsRequestFieldProductIDs      = big.NewInt(1 << 7)
-	listMembershipsRequestFieldVariantID       = big.NewInt(1 << 8)
-	listMembershipsRequestFieldVariantIDs      = big.NewInt(1 << 9)
-	listMembershipsRequestFieldPromoCodeIDs    = big.NewInt(1 << 10)
-	listMembershipsRequestFieldCreatedAfter    = big.NewInt(1 << 11)
-	listMembershipsRequestFieldCreatedBefore   = big.NewInt(1 << 12)
-	listMembershipsRequestFieldOrder           = big.NewInt(1 << 13)
-	listMembershipsRequestFieldDirection       = big.NewInt(1 << 14)
-	listMembershipsRequestFieldFirst           = big.NewInt(1 << 15)
-	listMembershipsRequestFieldAfter           = big.NewInt(1 << 16)
-	listMembershipsRequestFieldLast            = big.NewInt(1 << 17)
-	listMembershipsRequestFieldBefore          = big.NewInt(1 << 18)
+	listMembershipsRequestFieldAccountID         = big.NewInt(1 << 0)
+	listMembershipsRequestFieldUserID            = big.NewInt(1 << 1)
+	listMembershipsRequestFieldMemberID          = big.NewInt(1 << 2)
+	listMembershipsRequestFieldExternalAccount   = big.NewInt(1 << 3)
+	listMembershipsRequestFieldStatus            = big.NewInt(1 << 4)
+	listMembershipsRequestFieldStatuses          = big.NewInt(1 << 5)
+	listMembershipsRequestFieldProductID         = big.NewInt(1 << 6)
+	listMembershipsRequestFieldProductIDs        = big.NewInt(1 << 7)
+	listMembershipsRequestFieldVariantID         = big.NewInt(1 << 8)
+	listMembershipsRequestFieldVariantIDs        = big.NewInt(1 << 9)
+	listMembershipsRequestFieldPromoCodeIDs      = big.NewInt(1 << 10)
+	listMembershipsRequestFieldCreatedAfter      = big.NewInt(1 << 11)
+	listMembershipsRequestFieldCreatedBefore     = big.NewInt(1 << 12)
+	listMembershipsRequestFieldOrder             = big.NewInt(1 << 13)
+	listMembershipsRequestFieldDirection         = big.NewInt(1 << 14)
+	listMembershipsRequestFieldFirst             = big.NewInt(1 << 15)
+	listMembershipsRequestFieldAfter             = big.NewInt(1 << 16)
+	listMembershipsRequestFieldLast              = big.NewInt(1 << 17)
+	listMembershipsRequestFieldBefore            = big.NewInt(1 << 18)
+	listMembershipsRequestFieldIncludeTotalCount = big.NewInt(1 << 19)
 )
 
 type ListMembershipsRequest struct {
@@ -367,6 +368,8 @@ type ListMembershipsRequest struct {
 	Last *int `json:"-" url:"last,omitempty"`
 	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
+	// Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+	IncludeTotalCount *bool `json:"-" url:"include_total_count,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -512,6 +515,13 @@ func (l *ListMembershipsRequest) SetLast(last *int) {
 func (l *ListMembershipsRequest) SetBefore(before *string) {
 	l.Before = before
 	l.require(listMembershipsRequestFieldBefore)
+}
+
+// SetIncludeTotalCount sets the IncludeTotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembershipsRequest) SetIncludeTotalCount(includeTotalCount *bool) {
+	l.IncludeTotalCount = includeTotalCount
+	l.require(listMembershipsRequestFieldIncludeTotalCount)
 }
 
 var (
@@ -3072,16 +3082,19 @@ func (l *ListMembershipsResponse) String() string {
 }
 
 var (
-	listMembershipsResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
-	listMembershipsResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
-	listMembershipsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
-	listMembershipsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+	listMembershipsResponsePageInfoFieldEndCursor        = big.NewInt(1 << 0)
+	listMembershipsResponsePageInfoFieldHasNextPage      = big.NewInt(1 << 1)
+	listMembershipsResponsePageInfoFieldHasPreviousPage  = big.NewInt(1 << 2)
+	listMembershipsResponsePageInfoFieldStartCursor      = big.NewInt(1 << 3)
+	listMembershipsResponsePageInfoFieldTotalCount       = big.NewInt(1 << 4)
+	listMembershipsResponsePageInfoFieldTotalCountCapped = big.NewInt(1 << 5)
 )
 
 // listMembershipsResponsePageInfoNullableFields maps the wire names of ListMembershipsResponsePageInfo's nullable fields (required or optional) to their field bits.
 var listMembershipsResponsePageInfoNullableFields = map[string]*big.Int{
 	"end_cursor":   listMembershipsResponsePageInfoFieldEndCursor,
 	"start_cursor": listMembershipsResponsePageInfoFieldStartCursor,
+	"total_count":  listMembershipsResponsePageInfoFieldTotalCount,
 }
 
 type ListMembershipsResponsePageInfo struct {
@@ -3089,6 +3102,10 @@ type ListMembershipsResponsePageInfo struct {
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
 	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
 	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+	// Number of results matching the filters, across every page. Counting stops at 10,000. `null` when `include_total_count` isn't `true`, or when the count ran out of time.
+	TotalCount *int `json:"total_count,omitempty" url:"total_count,omitempty"`
+	// Whether counting stopped at the limit. `true` means `total_count` is 10,000 or more.
+	TotalCountCapped bool `json:"total_count_capped" url:"total_count_capped"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3123,6 +3140,20 @@ func (l *ListMembershipsResponsePageInfo) GetStartCursor() *string {
 		return nil
 	}
 	return l.StartCursor
+}
+
+func (l *ListMembershipsResponsePageInfo) GetTotalCount() *int {
+	if l == nil {
+		return nil
+	}
+	return l.TotalCount
+}
+
+func (l *ListMembershipsResponsePageInfo) GetTotalCountCapped() bool {
+	if l == nil {
+		return false
+	}
+	return l.TotalCountCapped
 }
 
 func (l *ListMembershipsResponsePageInfo) GetExtraProperties() map[string]interface{} {
@@ -3167,6 +3198,20 @@ func (l *ListMembershipsResponsePageInfo) SetHasPreviousPage(hasPreviousPage boo
 func (l *ListMembershipsResponsePageInfo) SetStartCursor(startCursor *string) {
 	l.StartCursor = startCursor
 	l.require(listMembershipsResponsePageInfoFieldStartCursor)
+}
+
+// SetTotalCount sets the TotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembershipsResponsePageInfo) SetTotalCount(totalCount *int) {
+	l.TotalCount = totalCount
+	l.require(listMembershipsResponsePageInfoFieldTotalCount)
+}
+
+// SetTotalCountCapped sets the TotalCountCapped field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembershipsResponsePageInfo) SetTotalCountCapped(totalCountCapped bool) {
+	l.TotalCountCapped = totalCountCapped
+	l.require(listMembershipsResponsePageInfoFieldTotalCountCapped)
 }
 
 func (l *ListMembershipsResponsePageInfo) UnmarshalJSON(data []byte) error {

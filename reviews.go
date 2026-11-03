@@ -39,18 +39,19 @@ func (d *DeleteReviewsRequest) SetID(id string) {
 }
 
 var (
-	listReviewsRequestFieldAccountID     = big.NewInt(1 << 0)
-	listReviewsRequestFieldProductID     = big.NewInt(1 << 1)
-	listReviewsRequestFieldMinStars      = big.NewInt(1 << 2)
-	listReviewsRequestFieldMaxStars      = big.NewInt(1 << 3)
-	listReviewsRequestFieldCreatedBefore = big.NewInt(1 << 4)
-	listReviewsRequestFieldCreatedAfter  = big.NewInt(1 << 5)
-	listReviewsRequestFieldOrder         = big.NewInt(1 << 6)
-	listReviewsRequestFieldDirection     = big.NewInt(1 << 7)
-	listReviewsRequestFieldFirst         = big.NewInt(1 << 8)
-	listReviewsRequestFieldAfter         = big.NewInt(1 << 9)
-	listReviewsRequestFieldLast          = big.NewInt(1 << 10)
-	listReviewsRequestFieldBefore        = big.NewInt(1 << 11)
+	listReviewsRequestFieldAccountID         = big.NewInt(1 << 0)
+	listReviewsRequestFieldProductID         = big.NewInt(1 << 1)
+	listReviewsRequestFieldMinStars          = big.NewInt(1 << 2)
+	listReviewsRequestFieldMaxStars          = big.NewInt(1 << 3)
+	listReviewsRequestFieldCreatedBefore     = big.NewInt(1 << 4)
+	listReviewsRequestFieldCreatedAfter      = big.NewInt(1 << 5)
+	listReviewsRequestFieldOrder             = big.NewInt(1 << 6)
+	listReviewsRequestFieldDirection         = big.NewInt(1 << 7)
+	listReviewsRequestFieldFirst             = big.NewInt(1 << 8)
+	listReviewsRequestFieldAfter             = big.NewInt(1 << 9)
+	listReviewsRequestFieldLast              = big.NewInt(1 << 10)
+	listReviewsRequestFieldBefore            = big.NewInt(1 << 11)
+	listReviewsRequestFieldIncludeTotalCount = big.NewInt(1 << 12)
 )
 
 type ListReviewsRequest struct {
@@ -78,6 +79,8 @@ type ListReviewsRequest struct {
 	Last *int `json:"-" url:"last,omitempty"`
 	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
+	// Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+	IncludeTotalCount *bool `json:"-" url:"include_total_count,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -174,6 +177,13 @@ func (l *ListReviewsRequest) SetLast(last *int) {
 func (l *ListReviewsRequest) SetBefore(before *string) {
 	l.Before = before
 	l.require(listReviewsRequestFieldBefore)
+}
+
+// SetIncludeTotalCount sets the IncludeTotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReviewsRequest) SetIncludeTotalCount(includeTotalCount *bool) {
+	l.IncludeTotalCount = includeTotalCount
+	l.require(listReviewsRequestFieldIncludeTotalCount)
 }
 
 var (
@@ -1621,16 +1631,19 @@ func (l *ListReviewsResponse) String() string {
 }
 
 var (
-	listReviewsResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
-	listReviewsResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
-	listReviewsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
-	listReviewsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+	listReviewsResponsePageInfoFieldEndCursor        = big.NewInt(1 << 0)
+	listReviewsResponsePageInfoFieldHasNextPage      = big.NewInt(1 << 1)
+	listReviewsResponsePageInfoFieldHasPreviousPage  = big.NewInt(1 << 2)
+	listReviewsResponsePageInfoFieldStartCursor      = big.NewInt(1 << 3)
+	listReviewsResponsePageInfoFieldTotalCount       = big.NewInt(1 << 4)
+	listReviewsResponsePageInfoFieldTotalCountCapped = big.NewInt(1 << 5)
 )
 
 // listReviewsResponsePageInfoNullableFields maps the wire names of ListReviewsResponsePageInfo's nullable fields (required or optional) to their field bits.
 var listReviewsResponsePageInfoNullableFields = map[string]*big.Int{
 	"end_cursor":   listReviewsResponsePageInfoFieldEndCursor,
 	"start_cursor": listReviewsResponsePageInfoFieldStartCursor,
+	"total_count":  listReviewsResponsePageInfoFieldTotalCount,
 }
 
 type ListReviewsResponsePageInfo struct {
@@ -1638,6 +1651,10 @@ type ListReviewsResponsePageInfo struct {
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
 	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
 	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+	// Number of results matching the filters, across every page. Counting stops at 10,000. `null` when `include_total_count` isn't `true`, or when the count ran out of time.
+	TotalCount *int `json:"total_count,omitempty" url:"total_count,omitempty"`
+	// Whether counting stopped at the limit. `true` means `total_count` is 10,000 or more.
+	TotalCountCapped bool `json:"total_count_capped" url:"total_count_capped"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1672,6 +1689,20 @@ func (l *ListReviewsResponsePageInfo) GetStartCursor() *string {
 		return nil
 	}
 	return l.StartCursor
+}
+
+func (l *ListReviewsResponsePageInfo) GetTotalCount() *int {
+	if l == nil {
+		return nil
+	}
+	return l.TotalCount
+}
+
+func (l *ListReviewsResponsePageInfo) GetTotalCountCapped() bool {
+	if l == nil {
+		return false
+	}
+	return l.TotalCountCapped
 }
 
 func (l *ListReviewsResponsePageInfo) GetExtraProperties() map[string]interface{} {
@@ -1716,6 +1747,20 @@ func (l *ListReviewsResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
 func (l *ListReviewsResponsePageInfo) SetStartCursor(startCursor *string) {
 	l.StartCursor = startCursor
 	l.require(listReviewsResponsePageInfoFieldStartCursor)
+}
+
+// SetTotalCount sets the TotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReviewsResponsePageInfo) SetTotalCount(totalCount *int) {
+	l.TotalCount = totalCount
+	l.require(listReviewsResponsePageInfoFieldTotalCount)
+}
+
+// SetTotalCountCapped sets the TotalCountCapped field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReviewsResponsePageInfo) SetTotalCountCapped(totalCountCapped bool) {
+	l.TotalCountCapped = totalCountCapped
+	l.require(listReviewsResponsePageInfoFieldTotalCountCapped)
 }
 
 func (l *ListReviewsResponsePageInfo) UnmarshalJSON(data []byte) error {

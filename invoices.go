@@ -383,19 +383,20 @@ func (i *IssueInvoicesRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	listInvoicesRequestFieldAccountID     = big.NewInt(1 << 0)
-	listInvoicesRequestFieldStatus        = big.NewInt(1 << 1)
-	listInvoicesRequestFieldOverdue       = big.NewInt(1 << 2)
-	listInvoicesRequestFieldMemberID      = big.NewInt(1 << 3)
-	listInvoicesRequestFieldProductID     = big.NewInt(1 << 4)
-	listInvoicesRequestFieldCreatedAfter  = big.NewInt(1 << 5)
-	listInvoicesRequestFieldCreatedBefore = big.NewInt(1 << 6)
-	listInvoicesRequestFieldOrder         = big.NewInt(1 << 7)
-	listInvoicesRequestFieldDirection     = big.NewInt(1 << 8)
-	listInvoicesRequestFieldFirst         = big.NewInt(1 << 9)
-	listInvoicesRequestFieldAfter         = big.NewInt(1 << 10)
-	listInvoicesRequestFieldLast          = big.NewInt(1 << 11)
-	listInvoicesRequestFieldBefore        = big.NewInt(1 << 12)
+	listInvoicesRequestFieldAccountID         = big.NewInt(1 << 0)
+	listInvoicesRequestFieldStatus            = big.NewInt(1 << 1)
+	listInvoicesRequestFieldOverdue           = big.NewInt(1 << 2)
+	listInvoicesRequestFieldMemberID          = big.NewInt(1 << 3)
+	listInvoicesRequestFieldProductID         = big.NewInt(1 << 4)
+	listInvoicesRequestFieldCreatedAfter      = big.NewInt(1 << 5)
+	listInvoicesRequestFieldCreatedBefore     = big.NewInt(1 << 6)
+	listInvoicesRequestFieldOrder             = big.NewInt(1 << 7)
+	listInvoicesRequestFieldDirection         = big.NewInt(1 << 8)
+	listInvoicesRequestFieldFirst             = big.NewInt(1 << 9)
+	listInvoicesRequestFieldAfter             = big.NewInt(1 << 10)
+	listInvoicesRequestFieldLast              = big.NewInt(1 << 11)
+	listInvoicesRequestFieldBefore            = big.NewInt(1 << 12)
+	listInvoicesRequestFieldIncludeTotalCount = big.NewInt(1 << 13)
 )
 
 type ListInvoicesRequest struct {
@@ -416,6 +417,8 @@ type ListInvoicesRequest struct {
 	Last *int `json:"-" url:"last,omitempty"`
 	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
+	// Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+	IncludeTotalCount *bool `json:"-" url:"include_total_count,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -519,6 +522,13 @@ func (l *ListInvoicesRequest) SetLast(last *int) {
 func (l *ListInvoicesRequest) SetBefore(before *string) {
 	l.Before = before
 	l.require(listInvoicesRequestFieldBefore)
+}
+
+// SetIncludeTotalCount sets the IncludeTotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInvoicesRequest) SetIncludeTotalCount(includeTotalCount *bool) {
+	l.IncludeTotalCount = includeTotalCount
+	l.require(listInvoicesRequestFieldIncludeTotalCount)
 }
 
 var (
@@ -3331,16 +3341,19 @@ func (l *ListInvoicesResponse) String() string {
 }
 
 var (
-	listInvoicesResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
-	listInvoicesResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
-	listInvoicesResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
-	listInvoicesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+	listInvoicesResponsePageInfoFieldEndCursor        = big.NewInt(1 << 0)
+	listInvoicesResponsePageInfoFieldHasNextPage      = big.NewInt(1 << 1)
+	listInvoicesResponsePageInfoFieldHasPreviousPage  = big.NewInt(1 << 2)
+	listInvoicesResponsePageInfoFieldStartCursor      = big.NewInt(1 << 3)
+	listInvoicesResponsePageInfoFieldTotalCount       = big.NewInt(1 << 4)
+	listInvoicesResponsePageInfoFieldTotalCountCapped = big.NewInt(1 << 5)
 )
 
 // listInvoicesResponsePageInfoNullableFields maps the wire names of ListInvoicesResponsePageInfo's nullable fields (required or optional) to their field bits.
 var listInvoicesResponsePageInfoNullableFields = map[string]*big.Int{
 	"end_cursor":   listInvoicesResponsePageInfoFieldEndCursor,
 	"start_cursor": listInvoicesResponsePageInfoFieldStartCursor,
+	"total_count":  listInvoicesResponsePageInfoFieldTotalCount,
 }
 
 type ListInvoicesResponsePageInfo struct {
@@ -3348,6 +3361,10 @@ type ListInvoicesResponsePageInfo struct {
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
 	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
 	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+	// Number of results matching the filters, across every page. Counting stops at 10,000. `null` when `include_total_count` isn't `true`, or when the count ran out of time.
+	TotalCount *int `json:"total_count,omitempty" url:"total_count,omitempty"`
+	// Whether counting stopped at the limit. `true` means `total_count` is 10,000 or more.
+	TotalCountCapped bool `json:"total_count_capped" url:"total_count_capped"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3382,6 +3399,20 @@ func (l *ListInvoicesResponsePageInfo) GetStartCursor() *string {
 		return nil
 	}
 	return l.StartCursor
+}
+
+func (l *ListInvoicesResponsePageInfo) GetTotalCount() *int {
+	if l == nil {
+		return nil
+	}
+	return l.TotalCount
+}
+
+func (l *ListInvoicesResponsePageInfo) GetTotalCountCapped() bool {
+	if l == nil {
+		return false
+	}
+	return l.TotalCountCapped
 }
 
 func (l *ListInvoicesResponsePageInfo) GetExtraProperties() map[string]interface{} {
@@ -3426,6 +3457,20 @@ func (l *ListInvoicesResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) 
 func (l *ListInvoicesResponsePageInfo) SetStartCursor(startCursor *string) {
 	l.StartCursor = startCursor
 	l.require(listInvoicesResponsePageInfoFieldStartCursor)
+}
+
+// SetTotalCount sets the TotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInvoicesResponsePageInfo) SetTotalCount(totalCount *int) {
+	l.TotalCount = totalCount
+	l.require(listInvoicesResponsePageInfoFieldTotalCount)
+}
+
+// SetTotalCountCapped sets the TotalCountCapped field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInvoicesResponsePageInfo) SetTotalCountCapped(totalCountCapped bool) {
+	l.TotalCountCapped = totalCountCapped
+	l.require(listInvoicesResponsePageInfoFieldTotalCountCapped)
 }
 
 func (l *ListInvoicesResponsePageInfo) UnmarshalJSON(data []byte) error {

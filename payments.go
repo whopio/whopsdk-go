@@ -331,6 +331,7 @@ var (
 	listPaymentsRequestFieldAfter                = big.NewInt(1 << 32)
 	listPaymentsRequestFieldLast                 = big.NewInt(1 << 33)
 	listPaymentsRequestFieldBefore               = big.NewInt(1 << 34)
+	listPaymentsRequestFieldIncludeTotalCount    = big.NewInt(1 << 35)
 )
 
 type ListPaymentsRequest struct {
@@ -404,6 +405,8 @@ type ListPaymentsRequest struct {
 	Last *int `json:"-" url:"last,omitempty"`
 	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
+	// Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+	IncludeTotalCount *bool `json:"-" url:"include_total_count,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -661,6 +664,13 @@ func (l *ListPaymentsRequest) SetLast(last *int) {
 func (l *ListPaymentsRequest) SetBefore(before *string) {
 	l.Before = before
 	l.require(listPaymentsRequestFieldBefore)
+}
+
+// SetIncludeTotalCount sets the IncludeTotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetIncludeTotalCount(includeTotalCount *bool) {
+	l.IncludeTotalCount = includeTotalCount
+	l.require(listPaymentsRequestFieldIncludeTotalCount)
 }
 
 var (
@@ -5664,16 +5674,19 @@ func (l *ListPaymentsResponse) String() string {
 }
 
 var (
-	listPaymentsResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
-	listPaymentsResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
-	listPaymentsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
-	listPaymentsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+	listPaymentsResponsePageInfoFieldEndCursor        = big.NewInt(1 << 0)
+	listPaymentsResponsePageInfoFieldHasNextPage      = big.NewInt(1 << 1)
+	listPaymentsResponsePageInfoFieldHasPreviousPage  = big.NewInt(1 << 2)
+	listPaymentsResponsePageInfoFieldStartCursor      = big.NewInt(1 << 3)
+	listPaymentsResponsePageInfoFieldTotalCount       = big.NewInt(1 << 4)
+	listPaymentsResponsePageInfoFieldTotalCountCapped = big.NewInt(1 << 5)
 )
 
 // listPaymentsResponsePageInfoNullableFields maps the wire names of ListPaymentsResponsePageInfo's nullable fields (required or optional) to their field bits.
 var listPaymentsResponsePageInfoNullableFields = map[string]*big.Int{
 	"end_cursor":   listPaymentsResponsePageInfoFieldEndCursor,
 	"start_cursor": listPaymentsResponsePageInfoFieldStartCursor,
+	"total_count":  listPaymentsResponsePageInfoFieldTotalCount,
 }
 
 type ListPaymentsResponsePageInfo struct {
@@ -5681,6 +5694,10 @@ type ListPaymentsResponsePageInfo struct {
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
 	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
 	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+	// Number of results matching the filters, across every page. Counting stops at 10,000. `null` when `include_total_count` isn't `true`, or when the count ran out of time.
+	TotalCount *int `json:"total_count,omitempty" url:"total_count,omitempty"`
+	// Whether counting stopped at the limit. `true` means `total_count` is 10,000 or more.
+	TotalCountCapped bool `json:"total_count_capped" url:"total_count_capped"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -5715,6 +5732,20 @@ func (l *ListPaymentsResponsePageInfo) GetStartCursor() *string {
 		return nil
 	}
 	return l.StartCursor
+}
+
+func (l *ListPaymentsResponsePageInfo) GetTotalCount() *int {
+	if l == nil {
+		return nil
+	}
+	return l.TotalCount
+}
+
+func (l *ListPaymentsResponsePageInfo) GetTotalCountCapped() bool {
+	if l == nil {
+		return false
+	}
+	return l.TotalCountCapped
 }
 
 func (l *ListPaymentsResponsePageInfo) GetExtraProperties() map[string]interface{} {
@@ -5759,6 +5790,20 @@ func (l *ListPaymentsResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) 
 func (l *ListPaymentsResponsePageInfo) SetStartCursor(startCursor *string) {
 	l.StartCursor = startCursor
 	l.require(listPaymentsResponsePageInfoFieldStartCursor)
+}
+
+// SetTotalCount sets the TotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsResponsePageInfo) SetTotalCount(totalCount *int) {
+	l.TotalCount = totalCount
+	l.require(listPaymentsResponsePageInfoFieldTotalCount)
+}
+
+// SetTotalCountCapped sets the TotalCountCapped field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsResponsePageInfo) SetTotalCountCapped(totalCountCapped bool) {
+	l.TotalCountCapped = totalCountCapped
+	l.require(listPaymentsResponsePageInfoFieldTotalCountCapped)
 }
 
 func (l *ListPaymentsResponsePageInfo) UnmarshalJSON(data []byte) error {
