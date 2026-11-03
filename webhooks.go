@@ -23,7 +23,7 @@ var (
 type CreateWebhooksRequest struct {
 	// The dated API version (Api-Version-Date) to pin this webhook's payloads to. Omit to leave the webhook unpinned, tracking the current payload shape.
 	APIVersionDate *string `json:"api_version_date,omitempty" url:"-"`
-	// Whether to send events for child resources. For example, if the webhook is created for an account, enabling this sends events only from its connected accounts.
+	// Whether to send events for child resources. For example, if the webhook is created for an account, enabling this sends events only from its subaccounts.
 	ChildResourceEvents *bool `json:"child_resource_events,omitempty" url:"-"`
 	// Whether or not the webhook is enabled. Defaults to `true`.
 	Enabled *bool `json:"enabled,omitempty" url:"-"`
@@ -634,7 +634,7 @@ type Webhook struct {
 	APIVersion WebhookAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) that v1 payloads for this endpoint are pinned to: events serialize exactly like a REST read at this version (the native serializer where the resource has one). Null when unpinned — legacy (v2/v5) webhooks, and v1 webhooks on the legacy payload shape.
 	APIVersionDate *string `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	// Whether events are sent for child resources. For example, if the webhook is on an account, enabling this sends events only from its connected accounts.
+	// Whether events are sent for child resources. For example, if the webhook is on an account, enabling this sends events only from its subaccounts.
 	ChildResourceEvents bool `json:"child_resource_events" url:"child_resource_events"`
 	// Number of consecutive deliveries whose first attempt to this endpoint failed since it last accepted one. Later retries of the same delivery do not increment it. Resets to `0` when a delivery succeeds or the webhook is re-enabled.
 	ConsecutiveFailures int `json:"consecutive_failures" url:"consecutive_failures"`
@@ -1713,7 +1713,7 @@ type WebhookListItem struct {
 	APIVersion WebhookListItemAPIVersion `json:"api_version" url:"api_version"`
 	// The dated API version (Api-Version-Date) that v1 payloads for this endpoint are pinned to: events serialize exactly like a REST read at this version (the native serializer where the resource has one). Null when unpinned — legacy (v2/v5) webhooks, and v1 webhooks on the legacy payload shape.
 	APIVersionDate *string `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
-	// Whether events are sent for child resources. For example, if the webhook is on an account, enabling this sends events only from its connected accounts.
+	// Whether events are sent for child resources. For example, if the webhook is on an account, enabling this sends events only from its subaccounts.
 	ChildResourceEvents bool `json:"child_resource_events" url:"child_resource_events"`
 	// Number of consecutive deliveries whose first attempt to this endpoint failed since it last accepted one. Later retries of the same delivery do not increment it. Resets to `0` when a delivery succeeds or the webhook is re-enabled.
 	ConsecutiveFailures int `json:"consecutive_failures" url:"consecutive_failures"`

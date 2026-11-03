@@ -225,7 +225,7 @@ var (
 )
 
 type ListBountiesRequest struct {
-	// Scope the list to this account (`biz_` tag). Requires read access to the account; account API keys may pass their own account or a connected account.
+	// Scope the list to this account (`biz_` tag). Requires read access to the account; account API keys may pass their own account or a subaccount.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// List the bounties this user participated in (`user_` tag). Must be the authenticated user.
 	UserID *string `json:"-" url:"user_id,omitempty"`

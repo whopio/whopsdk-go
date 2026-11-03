@@ -47,7 +47,7 @@ var (
 	retrievePreferencesResponseFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 5)
 	retrievePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
 	retrievePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 7)
-	retrievePreferencesResponseFieldCoversConnectedAccountNegativeBalances  = big.NewInt(1 << 8)
+	retrievePreferencesResponseFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 8)
 	retrievePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 9)
 	retrievePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 10)
 	retrievePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 11)
@@ -67,7 +67,7 @@ var (
 // retrievePreferencesResponseNullableFields maps the wire names of RetrievePreferencesResponse's nullable fields (required or optional) to their field bits.
 var retrievePreferencesResponseNullableFields = map[string]*big.Int{
 	"ads_payment_methods":                         retrievePreferencesResponseFieldAdsPaymentMethods,
-	"covers_connected_account_negative_balances":  retrievePreferencesResponseFieldCoversConnectedAccountNegativeBalances,
+	"covers_subaccount_negative_balances":         retrievePreferencesResponseFieldCoversSubaccountNegativeBalances,
 	"customer_tracking":                           retrievePreferencesResponseFieldCustomerTracking,
 	"economic_intelligence_ends_at":               retrievePreferencesResponseFieldEconomicIntelligenceEndsAt,
 	"economic_intelligence_fee_percentage":        retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage,
@@ -94,8 +94,8 @@ type RetrievePreferencesResponse struct {
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
 	// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
 	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
-	// Whether this account covers its connected accounts' negative balances. When a connected account's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Refunds on its connected accounts may also take them negative by up to this account's available balance. `null` when the account has no connected accounts.
-	CoversConnectedAccountNegativeBalances *bool `json:"covers_connected_account_negative_balances,omitempty" url:"covers_connected_account_negative_balances,omitempty"`
+	// Whether this account covers its subaccounts' negative balances. When a subaccount's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Refunds on its subaccounts may also take them negative by up to this account's available balance. `null` when the account has no subaccounts.
+	CoversSubaccountNegativeBalances *bool `json:"covers_subaccount_negative_balances,omitempty" url:"covers_subaccount_negative_balances,omitempty"`
 	// The saved customer tracking settings for the hosted tracking page and Element, exactly as saved. `null` until set; tracking is off unless `enabled` is `true`.
 	CustomerTracking *v2.CustomerTrackingPreferences `json:"customer_tracking,omitempty" url:"customer_tracking,omitempty"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
@@ -188,11 +188,11 @@ func (r *RetrievePreferencesResponse) GetCardsNotifications() bool {
 	return r.CardsNotifications
 }
 
-func (r *RetrievePreferencesResponse) GetCoversConnectedAccountNegativeBalances() *bool {
+func (r *RetrievePreferencesResponse) GetCoversSubaccountNegativeBalances() *bool {
 	if r == nil {
 		return nil
 	}
-	return r.CoversConnectedAccountNegativeBalances
+	return r.CoversSubaccountNegativeBalances
 }
 
 func (r *RetrievePreferencesResponse) GetCustomerTracking() *v2.CustomerTrackingPreferences {
@@ -365,11 +365,11 @@ func (r *RetrievePreferencesResponse) SetCardsNotifications(cardsNotifications b
 	r.require(retrievePreferencesResponseFieldCardsNotifications)
 }
 
-// SetCoversConnectedAccountNegativeBalances sets the CoversConnectedAccountNegativeBalances field and marks it as non-optional;
+// SetCoversSubaccountNegativeBalances sets the CoversSubaccountNegativeBalances field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrievePreferencesResponse) SetCoversConnectedAccountNegativeBalances(coversConnectedAccountNegativeBalances *bool) {
-	r.CoversConnectedAccountNegativeBalances = coversConnectedAccountNegativeBalances
-	r.require(retrievePreferencesResponseFieldCoversConnectedAccountNegativeBalances)
+func (r *RetrievePreferencesResponse) SetCoversSubaccountNegativeBalances(coversSubaccountNegativeBalances *bool) {
+	r.CoversSubaccountNegativeBalances = coversSubaccountNegativeBalances
+	r.require(retrievePreferencesResponseFieldCoversSubaccountNegativeBalances)
 }
 
 // SetCustomerTracking sets the CustomerTracking field and marks it as non-optional;
@@ -3352,7 +3352,7 @@ var (
 	updatePreferencesResponseFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 5)
 	updatePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
 	updatePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 7)
-	updatePreferencesResponseFieldCoversConnectedAccountNegativeBalances  = big.NewInt(1 << 8)
+	updatePreferencesResponseFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 8)
 	updatePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 9)
 	updatePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 10)
 	updatePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 11)
@@ -3372,7 +3372,7 @@ var (
 // updatePreferencesResponseNullableFields maps the wire names of UpdatePreferencesResponse's nullable fields (required or optional) to their field bits.
 var updatePreferencesResponseNullableFields = map[string]*big.Int{
 	"ads_payment_methods":                         updatePreferencesResponseFieldAdsPaymentMethods,
-	"covers_connected_account_negative_balances":  updatePreferencesResponseFieldCoversConnectedAccountNegativeBalances,
+	"covers_subaccount_negative_balances":         updatePreferencesResponseFieldCoversSubaccountNegativeBalances,
 	"customer_tracking":                           updatePreferencesResponseFieldCustomerTracking,
 	"economic_intelligence_ends_at":               updatePreferencesResponseFieldEconomicIntelligenceEndsAt,
 	"economic_intelligence_fee_percentage":        updatePreferencesResponseFieldEconomicIntelligenceFeePercentage,
@@ -3399,8 +3399,8 @@ type UpdatePreferencesResponse struct {
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
 	// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
 	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
-	// Whether this account covers its connected accounts' negative balances. When a connected account's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Refunds on its connected accounts may also take them negative by up to this account's available balance. `null` when the account has no connected accounts.
-	CoversConnectedAccountNegativeBalances *bool `json:"covers_connected_account_negative_balances,omitempty" url:"covers_connected_account_negative_balances,omitempty"`
+	// Whether this account covers its subaccounts' negative balances. When a subaccount's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Refunds on its subaccounts may also take them negative by up to this account's available balance. `null` when the account has no subaccounts.
+	CoversSubaccountNegativeBalances *bool `json:"covers_subaccount_negative_balances,omitempty" url:"covers_subaccount_negative_balances,omitempty"`
 	// The saved customer tracking settings for the hosted tracking page and Element, exactly as saved. `null` until set; tracking is off unless `enabled` is `true`.
 	CustomerTracking *v2.CustomerTrackingPreferences `json:"customer_tracking,omitempty" url:"customer_tracking,omitempty"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
@@ -3493,11 +3493,11 @@ func (u *UpdatePreferencesResponse) GetCardsNotifications() bool {
 	return u.CardsNotifications
 }
 
-func (u *UpdatePreferencesResponse) GetCoversConnectedAccountNegativeBalances() *bool {
+func (u *UpdatePreferencesResponse) GetCoversSubaccountNegativeBalances() *bool {
 	if u == nil {
 		return nil
 	}
-	return u.CoversConnectedAccountNegativeBalances
+	return u.CoversSubaccountNegativeBalances
 }
 
 func (u *UpdatePreferencesResponse) GetCustomerTracking() *v2.CustomerTrackingPreferences {
@@ -3670,11 +3670,11 @@ func (u *UpdatePreferencesResponse) SetCardsNotifications(cardsNotifications boo
 	u.require(updatePreferencesResponseFieldCardsNotifications)
 }
 
-// SetCoversConnectedAccountNegativeBalances sets the CoversConnectedAccountNegativeBalances field and marks it as non-optional;
+// SetCoversSubaccountNegativeBalances sets the CoversSubaccountNegativeBalances field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdatePreferencesResponse) SetCoversConnectedAccountNegativeBalances(coversConnectedAccountNegativeBalances *bool) {
-	u.CoversConnectedAccountNegativeBalances = coversConnectedAccountNegativeBalances
-	u.require(updatePreferencesResponseFieldCoversConnectedAccountNegativeBalances)
+func (u *UpdatePreferencesResponse) SetCoversSubaccountNegativeBalances(coversSubaccountNegativeBalances *bool) {
+	u.CoversSubaccountNegativeBalances = coversSubaccountNegativeBalances
+	u.require(updatePreferencesResponseFieldCoversSubaccountNegativeBalances)
 }
 
 // SetCustomerTracking sets the CustomerTracking field and marks it as non-optional;
@@ -5633,23 +5633,23 @@ func (u UpdatePreferencesResponseSubscriptionFailureBehavior) Ptr() *UpdatePrefe
 }
 
 var (
-	updatePreferencesRequestFieldAccountID                              = big.NewInt(1 << 0)
-	updatePreferencesRequestFieldAdsCertifications                      = big.NewInt(1 << 1)
-	updatePreferencesRequestFieldAdsPaymentMethods                      = big.NewInt(1 << 2)
-	updatePreferencesRequestFieldAdsReportingCurrency                   = big.NewInt(1 << 3)
-	updatePreferencesRequestFieldAdsSchedulingTimezone                  = big.NewInt(1 << 4)
-	updatePreferencesRequestFieldAdsTripleWhaleIntegration              = big.NewInt(1 << 5)
-	updatePreferencesRequestFieldCardsAutoTopUp                         = big.NewInt(1 << 6)
-	updatePreferencesRequestFieldCardsNotifications                     = big.NewInt(1 << 7)
-	updatePreferencesRequestFieldCoversConnectedAccountNegativeBalances = big.NewInt(1 << 8)
-	updatePreferencesRequestFieldCustomerTracking                       = big.NewInt(1 << 9)
-	updatePreferencesRequestFieldDisputeFighterEnabled                  = big.NewInt(1 << 10)
-	updatePreferencesRequestFieldEconomicIntelligenceAutoRenew          = big.NewInt(1 << 11)
-	updatePreferencesRequestFieldEconomicIntelligenceDurationKey        = big.NewInt(1 << 12)
-	updatePreferencesRequestFieldFeedbackOptions                        = big.NewInt(1 << 13)
-	updatePreferencesRequestFieldPreferredSettlementCurrency            = big.NewInt(1 << 14)
-	updatePreferencesRequestFieldReviewRequestEmails                    = big.NewInt(1 << 15)
-	updatePreferencesRequestFieldSubscriptionFailureBehavior            = big.NewInt(1 << 16)
+	updatePreferencesRequestFieldAccountID                        = big.NewInt(1 << 0)
+	updatePreferencesRequestFieldAdsCertifications                = big.NewInt(1 << 1)
+	updatePreferencesRequestFieldAdsPaymentMethods                = big.NewInt(1 << 2)
+	updatePreferencesRequestFieldAdsReportingCurrency             = big.NewInt(1 << 3)
+	updatePreferencesRequestFieldAdsSchedulingTimezone            = big.NewInt(1 << 4)
+	updatePreferencesRequestFieldAdsTripleWhaleIntegration        = big.NewInt(1 << 5)
+	updatePreferencesRequestFieldCardsAutoTopUp                   = big.NewInt(1 << 6)
+	updatePreferencesRequestFieldCardsNotifications               = big.NewInt(1 << 7)
+	updatePreferencesRequestFieldCoversSubaccountNegativeBalances = big.NewInt(1 << 8)
+	updatePreferencesRequestFieldCustomerTracking                 = big.NewInt(1 << 9)
+	updatePreferencesRequestFieldDisputeFighterEnabled            = big.NewInt(1 << 10)
+	updatePreferencesRequestFieldEconomicIntelligenceAutoRenew    = big.NewInt(1 << 11)
+	updatePreferencesRequestFieldEconomicIntelligenceDurationKey  = big.NewInt(1 << 12)
+	updatePreferencesRequestFieldFeedbackOptions                  = big.NewInt(1 << 13)
+	updatePreferencesRequestFieldPreferredSettlementCurrency      = big.NewInt(1 << 14)
+	updatePreferencesRequestFieldReviewRequestEmails              = big.NewInt(1 << 15)
+	updatePreferencesRequestFieldSubscriptionFailureBehavior      = big.NewInt(1 << 16)
 )
 
 type UpdatePreferencesRequest struct {
@@ -5669,8 +5669,8 @@ type UpdatePreferencesRequest struct {
 	CardsAutoTopUp *bool `json:"cards_auto_top_up,omitempty" url:"-"`
 	// Whether Whop Card notifications reach this account's team. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected. Requires a cards balance on the account and the `payout:account:update` scope on your API key.
 	CardsNotifications *bool `json:"cards_notifications,omitempty" url:"-"`
-	// Whether this account covers its connected accounts' negative balances. When a connected account's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Only accounts with connected accounts can set it. Requires the `payout:account:update` scope on your API key.
-	CoversConnectedAccountNegativeBalances *bool `json:"covers_connected_account_negative_balances,omitempty" url:"-"`
+	// Whether this account covers its subaccounts' negative balances. When a subaccount's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Only accounts with subaccounts can set it. Requires the `payout:account:update` scope on your API key.
+	CoversSubaccountNegativeBalances *bool `json:"covers_subaccount_negative_balances,omitempty" url:"-"`
 	// Customer tracking settings for the hosted tracking page and Element, replaced as a whole: fields left out are saved as unset. Pass null to clear them, which turns tracking off. Tracking is off unless `enabled` is `true`. Requires the `company:manage_checkout` scope on your API key.
 	CustomerTracking *UpdatePreferencesRequestCustomerTracking `json:"customer_tracking,omitempty" url:"-"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins. Requires the `payment:dispute` scope on your API key.
@@ -5757,11 +5757,11 @@ func (u *UpdatePreferencesRequest) SetCardsNotifications(cardsNotifications *boo
 	u.require(updatePreferencesRequestFieldCardsNotifications)
 }
 
-// SetCoversConnectedAccountNegativeBalances sets the CoversConnectedAccountNegativeBalances field and marks it as non-optional;
+// SetCoversSubaccountNegativeBalances sets the CoversSubaccountNegativeBalances field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdatePreferencesRequest) SetCoversConnectedAccountNegativeBalances(coversConnectedAccountNegativeBalances *bool) {
-	u.CoversConnectedAccountNegativeBalances = coversConnectedAccountNegativeBalances
-	u.require(updatePreferencesRequestFieldCoversConnectedAccountNegativeBalances)
+func (u *UpdatePreferencesRequest) SetCoversSubaccountNegativeBalances(coversSubaccountNegativeBalances *bool) {
+	u.CoversSubaccountNegativeBalances = coversSubaccountNegativeBalances
+	u.require(updatePreferencesRequestFieldCoversSubaccountNegativeBalances)
 }
 
 // SetCustomerTracking sets the CustomerTracking field and marks it as non-optional;

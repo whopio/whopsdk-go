@@ -296,41 +296,41 @@ func (g *GeneratePdfPaymentsRequest) SetID(id string) {
 }
 
 var (
-	listPaymentsRequestFieldMode                     = big.NewInt(1 << 0)
-	listPaymentsRequestFieldAccountID                = big.NewInt(1 << 1)
-	listPaymentsRequestFieldStatus                   = big.NewInt(1 << 2)
-	listPaymentsRequestFieldTrackingStatus           = big.NewInt(1 << 3)
-	listPaymentsRequestFieldBillingReason            = big.NewInt(1 << 4)
-	listPaymentsRequestFieldCurrency                 = big.NewInt(1 << 5)
-	listPaymentsRequestFieldUserID                   = big.NewInt(1 << 6)
-	listPaymentsRequestFieldQuery                    = big.NewInt(1 << 7)
-	listPaymentsRequestFieldIncludeConnectedAccounts = big.NewInt(1 << 8)
-	listPaymentsRequestFieldMemberID                 = big.NewInt(1 << 9)
-	listPaymentsRequestFieldMembershipID             = big.NewInt(1 << 10)
-	listPaymentsRequestFieldProductID                = big.NewInt(1 << 11)
-	listPaymentsRequestFieldVariantID                = big.NewInt(1 << 12)
-	listPaymentsRequestFieldCreatedBefore            = big.NewInt(1 << 13)
-	listPaymentsRequestFieldCreatedAfter             = big.NewInt(1 << 14)
-	listPaymentsRequestFieldStatuses                 = big.NewInt(1 << 15)
-	listPaymentsRequestFieldSubstatuses              = big.NewInt(1 << 16)
-	listPaymentsRequestFieldBillingReasons           = big.NewInt(1 << 17)
-	listPaymentsRequestFieldCurrencies               = big.NewInt(1 << 18)
-	listPaymentsRequestFieldVariantIDs               = big.NewInt(1 << 19)
-	listPaymentsRequestFieldProductIDs               = big.NewInt(1 << 20)
-	listPaymentsRequestFieldPaymentMethods           = big.NewInt(1 << 21)
-	listPaymentsRequestFieldTrackingStates           = big.NewInt(1 << 22)
-	listPaymentsRequestFieldRefundedAfter            = big.NewInt(1 << 23)
-	listPaymentsRequestFieldRefundedBefore           = big.NewInt(1 << 24)
-	listPaymentsRequestFieldDisputeAlertedAfter      = big.NewInt(1 << 25)
-	listPaymentsRequestFieldDisputeAlertedBefore     = big.NewInt(1 << 26)
-	listPaymentsRequestFieldDisputeCreatedAfter      = big.NewInt(1 << 27)
-	listPaymentsRequestFieldDisputeCreatedBefore     = big.NewInt(1 << 28)
-	listPaymentsRequestFieldOrder                    = big.NewInt(1 << 29)
-	listPaymentsRequestFieldDirection                = big.NewInt(1 << 30)
-	listPaymentsRequestFieldFirst                    = big.NewInt(1 << 31)
-	listPaymentsRequestFieldAfter                    = big.NewInt(1 << 32)
-	listPaymentsRequestFieldLast                     = big.NewInt(1 << 33)
-	listPaymentsRequestFieldBefore                   = big.NewInt(1 << 34)
+	listPaymentsRequestFieldMode                 = big.NewInt(1 << 0)
+	listPaymentsRequestFieldAccountID            = big.NewInt(1 << 1)
+	listPaymentsRequestFieldStatus               = big.NewInt(1 << 2)
+	listPaymentsRequestFieldTrackingStatus       = big.NewInt(1 << 3)
+	listPaymentsRequestFieldBillingReason        = big.NewInt(1 << 4)
+	listPaymentsRequestFieldCurrency             = big.NewInt(1 << 5)
+	listPaymentsRequestFieldUserID               = big.NewInt(1 << 6)
+	listPaymentsRequestFieldQuery                = big.NewInt(1 << 7)
+	listPaymentsRequestFieldIncludeSubaccounts   = big.NewInt(1 << 8)
+	listPaymentsRequestFieldMemberID             = big.NewInt(1 << 9)
+	listPaymentsRequestFieldMembershipID         = big.NewInt(1 << 10)
+	listPaymentsRequestFieldProductID            = big.NewInt(1 << 11)
+	listPaymentsRequestFieldVariantID            = big.NewInt(1 << 12)
+	listPaymentsRequestFieldCreatedBefore        = big.NewInt(1 << 13)
+	listPaymentsRequestFieldCreatedAfter         = big.NewInt(1 << 14)
+	listPaymentsRequestFieldStatuses             = big.NewInt(1 << 15)
+	listPaymentsRequestFieldSubstatuses          = big.NewInt(1 << 16)
+	listPaymentsRequestFieldBillingReasons       = big.NewInt(1 << 17)
+	listPaymentsRequestFieldCurrencies           = big.NewInt(1 << 18)
+	listPaymentsRequestFieldVariantIDs           = big.NewInt(1 << 19)
+	listPaymentsRequestFieldProductIDs           = big.NewInt(1 << 20)
+	listPaymentsRequestFieldPaymentMethods       = big.NewInt(1 << 21)
+	listPaymentsRequestFieldTrackingStates       = big.NewInt(1 << 22)
+	listPaymentsRequestFieldRefundedAfter        = big.NewInt(1 << 23)
+	listPaymentsRequestFieldRefundedBefore       = big.NewInt(1 << 24)
+	listPaymentsRequestFieldDisputeAlertedAfter  = big.NewInt(1 << 25)
+	listPaymentsRequestFieldDisputeAlertedBefore = big.NewInt(1 << 26)
+	listPaymentsRequestFieldDisputeCreatedAfter  = big.NewInt(1 << 27)
+	listPaymentsRequestFieldDisputeCreatedBefore = big.NewInt(1 << 28)
+	listPaymentsRequestFieldOrder                = big.NewInt(1 << 29)
+	listPaymentsRequestFieldDirection            = big.NewInt(1 << 30)
+	listPaymentsRequestFieldFirst                = big.NewInt(1 << 31)
+	listPaymentsRequestFieldAfter                = big.NewInt(1 << 32)
+	listPaymentsRequestFieldLast                 = big.NewInt(1 << 33)
+	listPaymentsRequestFieldBefore               = big.NewInt(1 << 34)
 )
 
 type ListPaymentsRequest struct {
@@ -350,8 +350,8 @@ type ListPaymentsRequest struct {
 	UserID *string `json:"-" url:"user_id,omitempty"`
 	// Search payments by payment ID, dispute ID, user ID, membership ID, user email, name, or username. Email filtering requires the member:email:read permission.
 	Query *string `json:"-" url:"query,omitempty"`
-	// Also cover the account's connected accounts. Requires `account_id`, and is a 400 without it. Without `query`, lists the payments of the account and every connected account, newest first by `created_at` only; another `order` is a 400. The listing is cut off after 10 seconds, which a rare filter on an account with little recent activity can reach; add a `query` to narrow it. With `query`, matches on payment, dispute, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`); free-text queries such as a name search only the named account. Connected accounts' payments are returned only for connected accounts you can read payments on.
-	IncludeConnectedAccounts *bool `json:"-" url:"include_connected_accounts,omitempty"`
+	// Also cover the account's subaccounts. Requires `account_id`, and is a 400 without it. Without `query`, lists the payments of the account and every subaccount, newest first by `created_at` only; another `order` is a 400. The listing is cut off after 10 seconds, which a rare filter on an account with little recent activity can reach; add a `query` to narrow it. With `query`, matches on payment, dispute, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`); free-text queries such as a name search only the named account. Subaccounts' payments are returned only for subaccounts you can read payments on.
+	IncludeSubaccounts *bool `json:"-" url:"include_subaccounts,omitempty"`
 	// Only payments made by this member, prefixed `mber_`.
 	MemberID *string `json:"-" url:"member_id,omitempty"`
 	// Only payments billed under this membership, prefixed `mem_`.
@@ -474,11 +474,11 @@ func (l *ListPaymentsRequest) SetQuery(query *string) {
 	l.require(listPaymentsRequestFieldQuery)
 }
 
-// SetIncludeConnectedAccounts sets the IncludeConnectedAccounts field and marks it as non-optional;
+// SetIncludeSubaccounts sets the IncludeSubaccounts field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPaymentsRequest) SetIncludeConnectedAccounts(includeConnectedAccounts *bool) {
-	l.IncludeConnectedAccounts = includeConnectedAccounts
-	l.require(listPaymentsRequestFieldIncludeConnectedAccounts)
+func (l *ListPaymentsRequest) SetIncludeSubaccounts(includeSubaccounts *bool) {
+	l.IncludeSubaccounts = includeSubaccounts
+	l.require(listPaymentsRequestFieldIncludeSubaccounts)
 }
 
 // SetMemberID sets the MemberID field and marks it as non-optional;
@@ -924,26 +924,26 @@ func (r *RetryPaymentsRequest) SetID(id string) {
 }
 
 var (
-	summaryPaymentsRequestFieldGroups                   = big.NewInt(1 << 0)
-	summaryPaymentsRequestFieldAccountID                = big.NewInt(1 << 1)
-	summaryPaymentsRequestFieldStatuses                 = big.NewInt(1 << 2)
-	summaryPaymentsRequestFieldSubstatuses              = big.NewInt(1 << 3)
-	summaryPaymentsRequestFieldBillingReasons           = big.NewInt(1 << 4)
-	summaryPaymentsRequestFieldCurrencies               = big.NewInt(1 << 5)
-	summaryPaymentsRequestFieldVariantIDs               = big.NewInt(1 << 6)
-	summaryPaymentsRequestFieldProductIDs               = big.NewInt(1 << 7)
-	summaryPaymentsRequestFieldPaymentMethods           = big.NewInt(1 << 8)
-	summaryPaymentsRequestFieldTrackingStates           = big.NewInt(1 << 9)
-	summaryPaymentsRequestFieldCreatedAfter             = big.NewInt(1 << 10)
-	summaryPaymentsRequestFieldCreatedBefore            = big.NewInt(1 << 11)
-	summaryPaymentsRequestFieldRefundedAfter            = big.NewInt(1 << 12)
-	summaryPaymentsRequestFieldRefundedBefore           = big.NewInt(1 << 13)
-	summaryPaymentsRequestFieldDisputeAlertedAfter      = big.NewInt(1 << 14)
-	summaryPaymentsRequestFieldDisputeAlertedBefore     = big.NewInt(1 << 15)
-	summaryPaymentsRequestFieldDisputeCreatedAfter      = big.NewInt(1 << 16)
-	summaryPaymentsRequestFieldDisputeCreatedBefore     = big.NewInt(1 << 17)
-	summaryPaymentsRequestFieldQuery                    = big.NewInt(1 << 18)
-	summaryPaymentsRequestFieldIncludeConnectedAccounts = big.NewInt(1 << 19)
+	summaryPaymentsRequestFieldGroups               = big.NewInt(1 << 0)
+	summaryPaymentsRequestFieldAccountID            = big.NewInt(1 << 1)
+	summaryPaymentsRequestFieldStatuses             = big.NewInt(1 << 2)
+	summaryPaymentsRequestFieldSubstatuses          = big.NewInt(1 << 3)
+	summaryPaymentsRequestFieldBillingReasons       = big.NewInt(1 << 4)
+	summaryPaymentsRequestFieldCurrencies           = big.NewInt(1 << 5)
+	summaryPaymentsRequestFieldVariantIDs           = big.NewInt(1 << 6)
+	summaryPaymentsRequestFieldProductIDs           = big.NewInt(1 << 7)
+	summaryPaymentsRequestFieldPaymentMethods       = big.NewInt(1 << 8)
+	summaryPaymentsRequestFieldTrackingStates       = big.NewInt(1 << 9)
+	summaryPaymentsRequestFieldCreatedAfter         = big.NewInt(1 << 10)
+	summaryPaymentsRequestFieldCreatedBefore        = big.NewInt(1 << 11)
+	summaryPaymentsRequestFieldRefundedAfter        = big.NewInt(1 << 12)
+	summaryPaymentsRequestFieldRefundedBefore       = big.NewInt(1 << 13)
+	summaryPaymentsRequestFieldDisputeAlertedAfter  = big.NewInt(1 << 14)
+	summaryPaymentsRequestFieldDisputeAlertedBefore = big.NewInt(1 << 15)
+	summaryPaymentsRequestFieldDisputeCreatedAfter  = big.NewInt(1 << 16)
+	summaryPaymentsRequestFieldDisputeCreatedBefore = big.NewInt(1 << 17)
+	summaryPaymentsRequestFieldQuery                = big.NewInt(1 << 18)
+	summaryPaymentsRequestFieldIncludeSubaccounts   = big.NewInt(1 << 19)
 )
 
 type SummaryPaymentsRequest struct {
@@ -985,8 +985,8 @@ type SummaryPaymentsRequest struct {
 	DisputeCreatedBefore *time.Time `json:"-" url:"dispute_created_before,omitempty"`
 	// Search payments by payment ID, dispute ID, user ID, membership ID, user email, name, or username.
 	Query *string `json:"-" url:"query,omitempty"`
-	// Only for searches: with `query`, also search the account's connected accounts. Requires `account_id` and `query`, and is a 400 without either; it never lists connected accounts' payments on its own. Matches on payment, dispute, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`). Free-text queries such as a name search only the named account. Connected accounts' payments are returned only for connected accounts you can read payments on.
-	IncludeConnectedAccounts *bool `json:"-" url:"include_connected_accounts,omitempty"`
+	// Only for searches: with `query`, also search the account's subaccounts. Requires `account_id` and `query`, and is a 400 without either; it never lists subaccounts' payments on its own. Matches on payment, dispute, user or membership ID, buyer email, or a card's first 6 or 8 digits and last 4 separated by a space or dash (`424242 4242`). Free-text queries such as a name search only the named account. Subaccounts' payments are returned only for subaccounts you can read payments on.
+	IncludeSubaccounts *bool `json:"-" url:"include_subaccounts,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1134,11 +1134,11 @@ func (s *SummaryPaymentsRequest) SetQuery(query *string) {
 	s.require(summaryPaymentsRequestFieldQuery)
 }
 
-// SetIncludeConnectedAccounts sets the IncludeConnectedAccounts field and marks it as non-optional;
+// SetIncludeSubaccounts sets the IncludeSubaccounts field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SummaryPaymentsRequest) SetIncludeConnectedAccounts(includeConnectedAccounts *bool) {
-	s.IncludeConnectedAccounts = includeConnectedAccounts
-	s.require(summaryPaymentsRequestFieldIncludeConnectedAccounts)
+func (s *SummaryPaymentsRequest) SetIncludeSubaccounts(includeSubaccounts *bool) {
+	s.IncludeSubaccounts = includeSubaccounts
+	s.require(summaryPaymentsRequestFieldIncludeSubaccounts)
 }
 
 var (
@@ -2699,7 +2699,7 @@ var createPaymentsRequestLineItemsItemVariantNullableFields = map[string]*big.In
 type CreatePaymentsRequestLineItemsItemVariant struct {
 	// Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
 	AllowMultipleQuantity *bool `json:"allow_multiple_quantity,omitempty" url:"allow_multiple_quantity,omitempty"`
-	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for connected accounts with a parent account.
+	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for subaccounts with a parent account.
 	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
 	// Recurring billing interval in days.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`

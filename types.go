@@ -1348,17 +1348,17 @@ var (
 )
 
 type AccountCoveredPayoutFees struct {
-	// Whether this account pays payout fees for all of its connected accounts' payout methods. Turning this off clears category coverage.
+	// Whether this account pays payout fees for all of its subaccounts' payout methods. Turning this off clears category coverage.
 	All bool `json:"all" url:"all"`
-	// Whether this account covers its connected accounts' bank wire payout fees. Individual changes have no effect while `all` is true.
+	// Whether this account covers its subaccounts' bank wire payout fees. Individual changes have no effect while `all` is true.
 	BankWire bool `json:"bank_wire" url:"bank_wire"`
-	// Whether this account covers its connected accounts' crypto payout fees. Individual changes have no effect while `all` is true.
+	// Whether this account covers its subaccounts' crypto payout fees. Individual changes have no effect while `all` is true.
 	Crypto bool `json:"crypto" url:"crypto"`
-	// Whether this account covers its connected accounts' digital wallet payout fees. Individual changes have no effect while `all` is true.
+	// Whether this account covers its subaccounts' digital wallet payout fees. Individual changes have no effect while `all` is true.
 	DigitalWallet bool `json:"digital_wallet" url:"digital_wallet"`
-	// Whether this account covers its connected accounts' next day bank payout fees. Individual changes have no effect while `all` is true.
+	// Whether this account covers its subaccounts' next day bank payout fees. Individual changes have no effect while `all` is true.
 	NextDayBank bool `json:"next_day_bank" url:"next_day_bank"`
-	// Whether this account covers its connected accounts' real-time payment payout fees. Individual changes have no effect while `all` is true.
+	// Whether this account covers its subaccounts' real-time payment payout fees. Individual changes have no effect while `all` is true.
 	Rtp bool `json:"rtp" url:"rtp"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2114,9 +2114,9 @@ type AccountFee struct {
 	Adjustable bool `json:"adjustable" url:"adjustable"`
 	// Which group of the fee schedule this fee belongs to, for grouping in a UI.
 	Category AccountFeeCategory `json:"category" url:"category"`
-	// The platform rate before custom or inherited pricing is applied. Its `percentage` and `fixed` are `null` when a connected account's fees are read without access to its parent account.
+	// The platform rate before custom or inherited pricing is applied. Its `percentage` and `fixed` are `null` when a subaccount's fees are read without access to its parent account.
 	Default *AccountFeeRate `json:"default" url:"default"`
-	// When a custom or inherited rate expires and the fee returns to `default`, as an ISO 8601 timestamp. `null` when the default applies, the rate does not expire, or a connected account's fees are read without access to its parent account.
+	// When a custom or inherited rate expires and the fee returns to `default`, as an ISO 8601 timestamp. `null` when the default applies, the rate does not expire, or a subaccount's fees are read without access to its parent account.
 	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
 	// The amount charged per event in effect. `null` when the fee has no fixed component.
 	Fixed *Money `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -2130,9 +2130,9 @@ type AccountFee struct {
 	Region *AccountFeeRegion `json:"region,omitempty" url:"region,omitempty"`
 	// The rate, source, default, reset rate, and editable limits in every other region this fee varies by, keyed by region. Empty for a fee that does not vary by region.
 	Regions map[string]*AccountFeeRegionalRate `json:"regions" url:"regions"`
-	// The rate that takes effect when this account's custom rate is cleared, including inherited pricing. Its `percentage` and `fixed` are `null` when a connected account's fees are read without access to its parent account.
+	// The rate that takes effect when this account's custom rate is cleared, including inherited pricing. Its `percentage` and `fixed` are `null` when a subaccount's fees are read without access to its parent account.
 	Reset *AccountFeeRate `json:"reset" url:"reset"`
-	// Where the rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to. `null` when a connected account's fees are read without access to its parent account.
+	// Where the rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to. `null` when a subaccount's fees are read without access to its parent account.
 	Source *AccountFeeSource `json:"source,omitempty" url:"source,omitempty"`
 	// Why the caller may not change this fee, or `null` when `adjustable`. `not_permitted` when the caller has no say over it.
 	UnadjustableReason *AccountFeeUnadjustableReason `json:"unadjustable_reason,omitempty" url:"unadjustable_reason,omitempty"`
@@ -2442,7 +2442,7 @@ var accountFeeMarkupNullableFields = map[string]*big.Int{
 type AccountFeeMarkup struct {
 	// Whether the caller may change this markup through `PATCH`. True for the platform's team holding the `company:update_child_fees` scope.
 	Adjustable bool `json:"adjustable" url:"adjustable"`
-	// What applies if this row is cleared: the platform's default for all its connected accounts, or zero. Its `percentage` and `fixed` are `null` when a connected account's fees are read without access to its parent account.
+	// What applies if this row is cleared: the platform's default for all its subaccounts, or zero. Its `percentage` and `fixed` are `null` when a subaccount's fees are read without access to its parent account.
 	Default *AccountFeeRate `json:"default" url:"default"`
 	// The amount the platform adds per event. Zero when no markup is set.
 	Fixed *Money `json:"fixed" url:"fixed"`
@@ -2450,7 +2450,7 @@ type AccountFeeMarkup struct {
 	Maximum *AccountFeeRate `json:"maximum" url:"maximum"`
 	// The percentage of the transaction the platform adds, where `2` means 2%. `0` when no markup is set.
 	Percentage float64 `json:"percentage" url:"percentage"`
-	// `custom` when a row is set at this level, `default` when the rate falls through to the platform default or zero. `null` when a connected account's fees are read without access to its parent account.
+	// `custom` when a row is set at this level, `default` when the rate falls through to the platform default or zero. `null` when a subaccount's fees are read without access to its parent account.
 	Source *AccountFeeMarkupSource `json:"source,omitempty" url:"source,omitempty"`
 	// Why the caller may not change this markup, or `null` when `adjustable`.
 	UnadjustableReason *AccountFeeMarkupUnadjustableReason `json:"unadjustable_reason,omitempty" url:"unadjustable_reason,omitempty"`
@@ -2625,7 +2625,7 @@ func (a *AccountFeeMarkup) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// `custom` when a row is set at this level, `default` when the rate falls through to the platform default or zero. `null` when a connected account's fees are read without access to its parent account.
+// `custom` when a row is set at this level, `default` when the rate falls through to the platform default or zero. `null` when a subaccount's fees are read without access to its parent account.
 type AccountFeeMarkupSource string
 
 const (
@@ -2678,13 +2678,13 @@ var (
 )
 
 type AccountFeeMarkups struct {
-	// The markup on card purchases settled by the connected account.
+	// The markup on card purchases settled by the subaccount.
 	CardSpend *AccountFeeMarkup `json:"card_spend" url:"card_spend"`
 	// The markup on cryptocurrency token swaps.
 	CryptoSwaps *AccountFeeMarkup `json:"crypto_swaps" url:"crypto_swaps"`
 	// Markups on deposits into the account's balance, keyed by rail: `bank` and `crypto`.
 	Deposits map[string]*AccountFeeMarkup `json:"deposits" url:"deposits"`
-	// The markup on payments the connected account collects without a checkout application fee.
+	// The markup on payments the subaccount collects without a checkout application fee.
 	Payments *AccountFeeMarkup `json:"payments" url:"payments"`
 	// Markups on withdrawals, keyed by payout method: `bank_wire`, `next_day_bank`, `rtp`, `crypto`, and `digital_wallet`.
 	Payouts map[string]*AccountFeeMarkup `json:"payouts" url:"payouts"`
@@ -3262,7 +3262,7 @@ func (a AccountFeeRegionalRateSource) Ptr() *AccountFeeRegionalRateSource {
 	return &a
 }
 
-// Where the rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to. `null` when a connected account's fees are read without access to its parent account.
+// Where the rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to. `null` when a subaccount's fees are read without access to its parent account.
 type AccountFeeSource string
 
 const (
@@ -3368,9 +3368,9 @@ type AccountFees struct {
 	Buyer *AccountFee `json:"buyer" url:"buyer"`
 	// Card payments. `percentage` and `fixed` are the rate in the headline `region`; every other acquirer region is under `regions`.
 	CardProcessing *AccountFee `json:"card_processing" url:"card_processing"`
-	// The default markups this account charges connected accounts, configurable before any accounts connect. `null` if this account has a parent.
+	// The default markups this account charges subaccounts, configurable before any accounts connect. `null` if this account has a parent.
 	ChildMarkups *AccountFeeMarkups `json:"child_markups,omitempty" url:"child_markups,omitempty"`
-	// Which payout fees this account pays for its connected accounts.
+	// Which payout fees this account pays for its subaccounts.
 	CoveredPayoutFees *AccountCoveredPayoutFees `json:"covered_payout_fees" url:"covered_payout_fees"`
 	// Added to a payment whose card was issued outside the region where the payment was processed.
 	CrossBorder *AccountFee `json:"cross_border" url:"cross_border"`
@@ -3402,7 +3402,7 @@ type AccountFees struct {
 	ParentAccountID *string `json:"parent_account_id,omitempty" url:"parent_account_id,omitempty"`
 	// Processing fees for every non-card payment method the platform prices, keyed by payment method type such as `us_bank_account` or `klarna`.
 	PaymentMethods map[string]*AccountFee `json:"payment_methods" url:"payment_methods"`
-	// Fees on withdrawals, keyed by payout method: `bank_wire`, `same_day_bank`, `next_day_bank`, `rtp`, `crypto`, and `digital_wallet`. Payout fees the parent account covers show as zero when a connected account's fees are read without access to its parent account.
+	// Fees on withdrawals, keyed by payout method: `bank_wire`, `same_day_bank`, `next_day_bank`, `rtp`, `crypto`, and `digital_wallet`. Payout fees the parent account covers show as zero when a subaccount's fees are read without access to its parent account.
 	Payouts map[string]*AccountFee `json:"payouts" url:"payouts"`
 	// Charged when pending, not-yet-settled balance is advanced to fund the account's cards balance.
 	PendingAutoTopup *AccountFee `json:"pending_auto_topup" url:"pending_auto_topup"`
@@ -4001,7 +4001,7 @@ var accountParentNullableFields = map[string]*big.Int{
 }
 
 type AccountParent struct {
-	// Markup rates this parent charges the connected account being read, keyed by fee type (for example `crypto_deposit_markup`), each with `percentage_fee` and `fixed_fee_usd`. Resolved with the connected account's own overrides winning over the platform default.
+	// Markup rates this parent charges the subaccount being read, keyed by fee type (for example `crypto_deposit_markup`), each with `percentage_fee` and `fixed_fee_usd`. Resolved with the subaccount's own overrides winning over the platform default.
 	Fees map[string]*AccountParentFeesValue `json:"fees,omitempty" url:"fees,omitempty"`
 	// Account ID, prefixed `biz_`.
 	ID string `json:"id" url:"id"`
@@ -4267,7 +4267,7 @@ var (
 	accountPreferencesFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 5)
 	accountPreferencesFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
 	accountPreferencesFieldCardsNotifications                      = big.NewInt(1 << 7)
-	accountPreferencesFieldCoversConnectedAccountNegativeBalances  = big.NewInt(1 << 8)
+	accountPreferencesFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 8)
 	accountPreferencesFieldCustomerTracking                        = big.NewInt(1 << 9)
 	accountPreferencesFieldDisputeFighterEnabled                   = big.NewInt(1 << 10)
 	accountPreferencesFieldEconomicIntelligence                    = big.NewInt(1 << 11)
@@ -4287,7 +4287,7 @@ var (
 // accountPreferencesNullableFields maps the wire names of AccountPreferences's nullable fields (required or optional) to their field bits.
 var accountPreferencesNullableFields = map[string]*big.Int{
 	"ads_payment_methods":                         accountPreferencesFieldAdsPaymentMethods,
-	"covers_connected_account_negative_balances":  accountPreferencesFieldCoversConnectedAccountNegativeBalances,
+	"covers_subaccount_negative_balances":         accountPreferencesFieldCoversSubaccountNegativeBalances,
 	"customer_tracking":                           accountPreferencesFieldCustomerTracking,
 	"economic_intelligence_ends_at":               accountPreferencesFieldEconomicIntelligenceEndsAt,
 	"economic_intelligence_fee_percentage":        accountPreferencesFieldEconomicIntelligenceFeePercentage,
@@ -4313,8 +4313,8 @@ type AccountPreferences struct {
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
 	// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
 	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
-	// Whether this account covers its connected accounts' negative balances. When a connected account's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Refunds on its connected accounts may also take them negative by up to this account's available balance. `null` when the account has no connected accounts.
-	CoversConnectedAccountNegativeBalances *bool `json:"covers_connected_account_negative_balances,omitempty" url:"covers_connected_account_negative_balances,omitempty"`
+	// Whether this account covers its subaccounts' negative balances. When a subaccount's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Refunds on its subaccounts may also take them negative by up to this account's available balance. `null` when the account has no subaccounts.
+	CoversSubaccountNegativeBalances *bool `json:"covers_subaccount_negative_balances,omitempty" url:"covers_subaccount_negative_balances,omitempty"`
 	// The saved customer tracking settings for the hosted tracking page and Element, exactly as saved. `null` until set; tracking is off unless `enabled` is `true`.
 	CustomerTracking *CustomerTrackingPreferences `json:"customer_tracking,omitempty" url:"customer_tracking,omitempty"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
@@ -4405,11 +4405,11 @@ func (a *AccountPreferences) GetCardsNotifications() bool {
 	return a.CardsNotifications
 }
 
-func (a *AccountPreferences) GetCoversConnectedAccountNegativeBalances() *bool {
+func (a *AccountPreferences) GetCoversSubaccountNegativeBalances() *bool {
 	if a == nil {
 		return nil
 	}
-	return a.CoversConnectedAccountNegativeBalances
+	return a.CoversSubaccountNegativeBalances
 }
 
 func (a *AccountPreferences) GetCustomerTracking() *CustomerTrackingPreferences {
@@ -4582,11 +4582,11 @@ func (a *AccountPreferences) SetCardsNotifications(cardsNotifications bool) {
 	a.require(accountPreferencesFieldCardsNotifications)
 }
 
-// SetCoversConnectedAccountNegativeBalances sets the CoversConnectedAccountNegativeBalances field and marks it as non-optional;
+// SetCoversSubaccountNegativeBalances sets the CoversSubaccountNegativeBalances field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountPreferences) SetCoversConnectedAccountNegativeBalances(coversConnectedAccountNegativeBalances *bool) {
-	a.CoversConnectedAccountNegativeBalances = coversConnectedAccountNegativeBalances
-	a.require(accountPreferencesFieldCoversConnectedAccountNegativeBalances)
+func (a *AccountPreferences) SetCoversSubaccountNegativeBalances(coversSubaccountNegativeBalances *bool) {
+	a.CoversSubaccountNegativeBalances = coversSubaccountNegativeBalances
+	a.require(accountPreferencesFieldCoversSubaccountNegativeBalances)
 }
 
 // SetCustomerTracking sets the CustomerTracking field and marks it as non-optional;
@@ -42704,7 +42704,7 @@ var paymentInputVariantNullableFields = map[string]*big.Int{
 type PaymentInputVariant struct {
 	// Whether more than one unit can be purchased in an order. Renewal variants cannot enable it. When `false`, checkouts, carts, and invoices reject a quantity above 1.
 	AllowMultipleQuantity *bool `json:"allow_multiple_quantity,omitempty" url:"allow_multiple_quantity,omitempty"`
-	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for connected accounts with a parent account.
+	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for subaccounts with a parent account.
 	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
 	// Recurring billing interval in days.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`

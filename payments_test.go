@@ -873,11 +873,11 @@ func TestSettersListPaymentsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetIncludeConnectedAccounts", func(t *testing.T) {
+	t.Run("SetIncludeSubaccounts", func(t *testing.T) {
 		obj := &ListPaymentsRequest{}
-		var fernTestValueIncludeConnectedAccounts *bool
-		obj.SetIncludeConnectedAccounts(fernTestValueIncludeConnectedAccounts)
-		assert.Equal(t, fernTestValueIncludeConnectedAccounts, obj.IncludeConnectedAccounts)
+		var fernTestValueIncludeSubaccounts *bool
+		obj.SetIncludeSubaccounts(fernTestValueIncludeSubaccounts)
+		assert.Equal(t, fernTestValueIncludeSubaccounts, obj.IncludeSubaccounts)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1340,14 +1340,14 @@ func TestSettersMarkExplicitListPaymentsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetIncludeConnectedAccounts_MarksExplicit", func(t *testing.T) {
+	t.Run("SetIncludeSubaccounts_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListPaymentsRequest{}
-		var fernTestValueIncludeConnectedAccounts *bool
+		var fernTestValueIncludeSubaccounts *bool
 
 		// Act
-		obj.SetIncludeConnectedAccounts(fernTestValueIncludeConnectedAccounts)
+		obj.SetIncludeSubaccounts(fernTestValueIncludeSubaccounts)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2797,11 +2797,11 @@ func TestSettersSummaryPaymentsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetIncludeConnectedAccounts", func(t *testing.T) {
+	t.Run("SetIncludeSubaccounts", func(t *testing.T) {
 		obj := &SummaryPaymentsRequest{}
-		var fernTestValueIncludeConnectedAccounts *bool
-		obj.SetIncludeConnectedAccounts(fernTestValueIncludeConnectedAccounts)
-		assert.Equal(t, fernTestValueIncludeConnectedAccounts, obj.IncludeConnectedAccounts)
+		var fernTestValueIncludeSubaccounts *bool
+		obj.SetIncludeSubaccounts(fernTestValueIncludeSubaccounts)
+		assert.Equal(t, fernTestValueIncludeSubaccounts, obj.IncludeSubaccounts)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -3397,14 +3397,14 @@ func TestSettersMarkExplicitSummaryPaymentsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetIncludeConnectedAccounts_MarksExplicit", func(t *testing.T) {
+	t.Run("SetIncludeSubaccounts_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &SummaryPaymentsRequest{}
-		var fernTestValueIncludeConnectedAccounts *bool
+		var fernTestValueIncludeSubaccounts *bool
 
 		// Act
-		obj.SetIncludeConnectedAccounts(fernTestValueIncludeConnectedAccounts)
+		obj.SetIncludeSubaccounts(fernTestValueIncludeSubaccounts)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
