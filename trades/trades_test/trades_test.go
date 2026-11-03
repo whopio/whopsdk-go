@@ -153,3 +153,29 @@ func TestTradesRetrieveWithWireMock(
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestTradesRetrieveWithWireMock", "GET", "/trades/id", nil, 1)
 }
+
+func TestTradesCancelWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.CancelTradesRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Trades.Cancel(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestTradesCancelWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestTradesCancelWithWireMock", "POST", "/trades/id/cancel", nil, 1)
+}

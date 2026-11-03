@@ -176,3 +176,30 @@ func (c *Client) Retrieve(
 	}
 	return response.Body, nil
 }
+
+// Cancels the order of a trade while it rests on the book, such as a `good_til_canceled` limit order. Answers with the trade still `processing`; read it with `GET /trades/:id` until its `status` is `completed` or `failed`. A part that filled before the cancel landed stays filled, and money bridged in for an order that did not fill goes back to the wallet. Calling it again sends no second cancel. Answers `409` when the trade has no order on the book.
+//
+// Example:
+//
+//	request := &whopsdk.CancelTradesRequest{
+//	    ID: "id",
+//	}
+//	client.Trades.Cancel(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Cancel(
+	ctx context.Context,
+	request *whopsdk.CancelTradesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Trade, error) {
+	response, err := c.WithRawResponse.Cancel(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
