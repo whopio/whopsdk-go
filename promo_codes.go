@@ -269,18 +269,19 @@ func (d *DeletePromoCodesRequest) SetID(id string) {
 }
 
 var (
-	listPromoCodesRequestFieldAccountID     = big.NewInt(1 << 0)
-	listPromoCodesRequestFieldStatus        = big.NewInt(1 << 1)
-	listPromoCodesRequestFieldProductIDs    = big.NewInt(1 << 2)
-	listPromoCodesRequestFieldVariantIDs    = big.NewInt(1 << 3)
-	listPromoCodesRequestFieldCreatedBefore = big.NewInt(1 << 4)
-	listPromoCodesRequestFieldCreatedAfter  = big.NewInt(1 << 5)
-	listPromoCodesRequestFieldOrder         = big.NewInt(1 << 6)
-	listPromoCodesRequestFieldDirection     = big.NewInt(1 << 7)
-	listPromoCodesRequestFieldFirst         = big.NewInt(1 << 8)
-	listPromoCodesRequestFieldAfter         = big.NewInt(1 << 9)
-	listPromoCodesRequestFieldLast          = big.NewInt(1 << 10)
-	listPromoCodesRequestFieldBefore        = big.NewInt(1 << 11)
+	listPromoCodesRequestFieldAccountID         = big.NewInt(1 << 0)
+	listPromoCodesRequestFieldStatus            = big.NewInt(1 << 1)
+	listPromoCodesRequestFieldProductIDs        = big.NewInt(1 << 2)
+	listPromoCodesRequestFieldVariantIDs        = big.NewInt(1 << 3)
+	listPromoCodesRequestFieldCreatedBefore     = big.NewInt(1 << 4)
+	listPromoCodesRequestFieldCreatedAfter      = big.NewInt(1 << 5)
+	listPromoCodesRequestFieldOrder             = big.NewInt(1 << 6)
+	listPromoCodesRequestFieldDirection         = big.NewInt(1 << 7)
+	listPromoCodesRequestFieldFirst             = big.NewInt(1 << 8)
+	listPromoCodesRequestFieldAfter             = big.NewInt(1 << 9)
+	listPromoCodesRequestFieldLast              = big.NewInt(1 << 10)
+	listPromoCodesRequestFieldBefore            = big.NewInt(1 << 11)
+	listPromoCodesRequestFieldIncludeTotalCount = big.NewInt(1 << 12)
 )
 
 type ListPromoCodesRequest struct {
@@ -308,6 +309,8 @@ type ListPromoCodesRequest struct {
 	Last *int `json:"-" url:"last,omitempty"`
 	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
+	// Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+	IncludeTotalCount *bool `json:"-" url:"include_total_count,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -404,6 +407,13 @@ func (l *ListPromoCodesRequest) SetLast(last *int) {
 func (l *ListPromoCodesRequest) SetBefore(before *string) {
 	l.Before = before
 	l.require(listPromoCodesRequestFieldBefore)
+}
+
+// SetIncludeTotalCount sets the IncludeTotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPromoCodesRequest) SetIncludeTotalCount(includeTotalCount *bool) {
+	l.IncludeTotalCount = includeTotalCount
+	l.require(listPromoCodesRequestFieldIncludeTotalCount)
 }
 
 var (
@@ -2898,16 +2908,19 @@ func (l *ListPromoCodesResponse) String() string {
 }
 
 var (
-	listPromoCodesResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
-	listPromoCodesResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
-	listPromoCodesResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
-	listPromoCodesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+	listPromoCodesResponsePageInfoFieldEndCursor        = big.NewInt(1 << 0)
+	listPromoCodesResponsePageInfoFieldHasNextPage      = big.NewInt(1 << 1)
+	listPromoCodesResponsePageInfoFieldHasPreviousPage  = big.NewInt(1 << 2)
+	listPromoCodesResponsePageInfoFieldStartCursor      = big.NewInt(1 << 3)
+	listPromoCodesResponsePageInfoFieldTotalCount       = big.NewInt(1 << 4)
+	listPromoCodesResponsePageInfoFieldTotalCountCapped = big.NewInt(1 << 5)
 )
 
 // listPromoCodesResponsePageInfoNullableFields maps the wire names of ListPromoCodesResponsePageInfo's nullable fields (required or optional) to their field bits.
 var listPromoCodesResponsePageInfoNullableFields = map[string]*big.Int{
 	"end_cursor":   listPromoCodesResponsePageInfoFieldEndCursor,
 	"start_cursor": listPromoCodesResponsePageInfoFieldStartCursor,
+	"total_count":  listPromoCodesResponsePageInfoFieldTotalCount,
 }
 
 type ListPromoCodesResponsePageInfo struct {
@@ -2915,6 +2928,10 @@ type ListPromoCodesResponsePageInfo struct {
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
 	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
 	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+	// Number of results matching the filters, across every page. Counting stops at 10,000. `null` when `include_total_count` isn't `true`, or when the count ran out of time.
+	TotalCount *int `json:"total_count,omitempty" url:"total_count,omitempty"`
+	// Whether counting stopped at the limit. `true` means `total_count` is 10,000 or more.
+	TotalCountCapped bool `json:"total_count_capped" url:"total_count_capped"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2949,6 +2966,20 @@ func (l *ListPromoCodesResponsePageInfo) GetStartCursor() *string {
 		return nil
 	}
 	return l.StartCursor
+}
+
+func (l *ListPromoCodesResponsePageInfo) GetTotalCount() *int {
+	if l == nil {
+		return nil
+	}
+	return l.TotalCount
+}
+
+func (l *ListPromoCodesResponsePageInfo) GetTotalCountCapped() bool {
+	if l == nil {
+		return false
+	}
+	return l.TotalCountCapped
 }
 
 func (l *ListPromoCodesResponsePageInfo) GetExtraProperties() map[string]interface{} {
@@ -2993,6 +3024,20 @@ func (l *ListPromoCodesResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool
 func (l *ListPromoCodesResponsePageInfo) SetStartCursor(startCursor *string) {
 	l.StartCursor = startCursor
 	l.require(listPromoCodesResponsePageInfoFieldStartCursor)
+}
+
+// SetTotalCount sets the TotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPromoCodesResponsePageInfo) SetTotalCount(totalCount *int) {
+	l.TotalCount = totalCount
+	l.require(listPromoCodesResponsePageInfoFieldTotalCount)
+}
+
+// SetTotalCountCapped sets the TotalCountCapped field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPromoCodesResponsePageInfo) SetTotalCountCapped(totalCountCapped bool) {
+	l.TotalCountCapped = totalCountCapped
+	l.require(listPromoCodesResponsePageInfoFieldTotalCountCapped)
 }
 
 func (l *ListPromoCodesResponsePageInfo) UnmarshalJSON(data []byte) error {

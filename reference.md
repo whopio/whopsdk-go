@@ -22357,6 +22357,14 @@ client.Invoices.List(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**includeTotalCount:** `*bool` — Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -24307,6 +24315,14 @@ client.Members.List(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**includeTotalCount:** `*bool` — Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -24654,6 +24670,14 @@ client.Memberships.List(
 <dd>
 
 **before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeTotalCount:** `*bool` — Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
     
 </dd>
 </dl>
@@ -29159,6 +29183,14 @@ client.Payments.List(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**includeTotalCount:** `*bool` — Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -32972,6 +33004,14 @@ client.Products.List(
 <dl>
 <dd>
 
+**includeTotalCount:** `*bool` — Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **createdAfter:** `*string` — Only return products created after this ISO 8601 timestamp.
     
 </dd>
@@ -33732,6 +33772,14 @@ client.PromoCodes.List(
 <dd>
 
 **before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeTotalCount:** `*bool` — Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
     
 </dd>
 </dl>
@@ -35792,6 +35840,14 @@ client.Reviews.List(
 <dd>
 
 **before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeTotalCount:** `*bool` — Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
     
 </dd>
 </dl>
@@ -45151,6 +45207,14 @@ client.Members.Notes.List(
 <dd>
 
 **before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeTotalCount:** `*bool` — Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
     
 </dd>
 </dl>
