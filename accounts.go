@@ -843,93 +843,95 @@ var (
 	accountFieldParentAccount                       = big.NewInt(1 << 36)
 	accountFieldPartner                             = big.NewInt(1 << 37)
 	accountFieldPaymentControls                     = big.NewInt(1 << 38)
-	accountFieldPlatformCredits                     = big.NewInt(1 << 39)
-	accountFieldPrivacyPolicy                       = big.NewInt(1 << 40)
-	accountFieldProductTaxCode                      = big.NewInt(1 << 41)
-	accountFieldRecommendedActions                  = big.NewInt(1 << 42)
-	accountFieldRequire2Fa                          = big.NewInt(1 << 43)
-	accountFieldRequiredActions                     = big.NewInt(1 << 44)
-	accountFieldReturnPolicy                        = big.NewInt(1 << 45)
-	accountFieldRewards                             = big.NewInt(1 << 46)
-	accountFieldRoute                               = big.NewInt(1 << 47)
-	accountFieldSendCustomerEmails                  = big.NewInt(1 << 48)
-	accountFieldShippingPolicy                      = big.NewInt(1 << 49)
-	accountFieldShowJoinedWhops                     = big.NewInt(1 << 50)
-	accountFieldShowReviewsDtc                      = big.NewInt(1 << 51)
-	accountFieldShowUserDirectory                   = big.NewInt(1 << 52)
-	accountFieldSocialLinks                         = big.NewInt(1 << 53)
-	accountFieldStatus                              = big.NewInt(1 << 54)
-	accountFieldStatusReason                        = big.NewInt(1 << 55)
-	accountFieldStorePageConfig                     = big.NewInt(1 << 56)
-	accountFieldTargetAudience                      = big.NewInt(1 << 57)
-	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 58)
-	accountFieldTaxIdentifiers                      = big.NewInt(1 << 59)
-	accountFieldTaxRemittedBy                       = big.NewInt(1 << 60)
-	accountFieldTaxType                             = big.NewInt(1 << 61)
-	accountFieldTermsOfService                      = big.NewInt(1 << 62)
-	accountFieldThreeDsLevel                        = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	accountFieldTitle                               = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	accountFieldVolumeL30DUsd                       = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 71)
-	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 72)
-	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 73)
-	accountFieldWhopPartnerEnabledAt                = big.NewInt(0).Lsh(big.NewInt(1), 74)
+	accountFieldPaymentMethodConfiguration          = big.NewInt(1 << 39)
+	accountFieldPlatformCredits                     = big.NewInt(1 << 40)
+	accountFieldPrivacyPolicy                       = big.NewInt(1 << 41)
+	accountFieldProductTaxCode                      = big.NewInt(1 << 42)
+	accountFieldRecommendedActions                  = big.NewInt(1 << 43)
+	accountFieldRequire2Fa                          = big.NewInt(1 << 44)
+	accountFieldRequiredActions                     = big.NewInt(1 << 45)
+	accountFieldReturnPolicy                        = big.NewInt(1 << 46)
+	accountFieldRewards                             = big.NewInt(1 << 47)
+	accountFieldRoute                               = big.NewInt(1 << 48)
+	accountFieldSendCustomerEmails                  = big.NewInt(1 << 49)
+	accountFieldShippingPolicy                      = big.NewInt(1 << 50)
+	accountFieldShowJoinedWhops                     = big.NewInt(1 << 51)
+	accountFieldShowReviewsDtc                      = big.NewInt(1 << 52)
+	accountFieldShowUserDirectory                   = big.NewInt(1 << 53)
+	accountFieldSocialLinks                         = big.NewInt(1 << 54)
+	accountFieldStatus                              = big.NewInt(1 << 55)
+	accountFieldStatusReason                        = big.NewInt(1 << 56)
+	accountFieldStorePageConfig                     = big.NewInt(1 << 57)
+	accountFieldTargetAudience                      = big.NewInt(1 << 58)
+	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 59)
+	accountFieldTaxIdentifiers                      = big.NewInt(1 << 60)
+	accountFieldTaxRemittedBy                       = big.NewInt(1 << 61)
+	accountFieldTaxType                             = big.NewInt(1 << 62)
+	accountFieldTermsOfService                      = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	accountFieldThreeDsLevel                        = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	accountFieldTitle                               = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	accountFieldVolumeL30DUsd                       = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 73)
+	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 74)
+	accountFieldWhopPartnerEnabledAt                = big.NewInt(0).Lsh(big.NewInt(1), 75)
 )
 
 // accountNullableFields maps the wire names of Account's nullable fields (required or optional) to their field bits.
 var accountNullableFields = map[string]*big.Int{
-	"ads_spend_usd":              accountFieldAdsSpendUsd,
-	"banner_image_url":           accountFieldBannerImageURL,
-	"business_address":           accountFieldBusinessAddress,
-	"business_name":              accountFieldBusinessName,
-	"business_type":              accountFieldBusinessType,
-	"cancellation_policy":        accountFieldCancellationPolicy,
-	"capabilities":               accountFieldCapabilities,
-	"cards":                      accountFieldCards,
-	"country":                    accountFieldCountry,
-	"customers_l30d":             accountFieldCustomersL30D,
-	"description":                accountFieldDescription,
-	"email":                      accountFieldEmail,
-	"eula":                       accountFieldEula,
-	"financing":                  accountFieldFinancing,
-	"industry_type":              accountFieldIndustryType,
-	"invoice_prefix":             accountFieldInvoicePrefix,
-	"level":                      accountFieldLevel,
-	"logo_url":                   accountFieldLogoURL,
-	"onboarding_type":            accountFieldOnboardingType,
-	"opengraph_image_url":        accountFieldOpengraphImageURL,
-	"opengraph_image_variant":    accountFieldOpengraphImageVariant,
-	"other_business_description": accountFieldOtherBusinessDescription,
-	"other_industry_description": accountFieldOtherIndustryDescription,
-	"parent_account":             accountFieldParentAccount,
-	"partner":                    accountFieldPartner,
-	"payment_controls":           accountFieldPaymentControls,
-	"privacy_policy":             accountFieldPrivacyPolicy,
-	"product_tax_code":           accountFieldProductTaxCode,
-	"recommended_actions":        accountFieldRecommendedActions,
-	"required_actions":           accountFieldRequiredActions,
-	"return_policy":              accountFieldReturnPolicy,
-	"shipping_policy":            accountFieldShippingPolicy,
-	"status":                     accountFieldStatus,
-	"status_reason":              accountFieldStatusReason,
-	"target_audience":            accountFieldTargetAudience,
-	"tax_remitted_by":            accountFieldTaxRemittedBy,
-	"tax_type":                   accountFieldTaxType,
-	"terms_of_service":           accountFieldTermsOfService,
-	"three_ds_level":             accountFieldThreeDsLevel,
-	"total_earned_usd":           accountFieldTotalEarnedUsd,
-	"total_usd":                  accountFieldTotalUsd,
-	"trading":                    accountFieldTrading,
-	"volume_l30d_usd":            accountFieldVolumeL30DUsd,
-	"volume_usd":                 accountFieldVolumeUsd,
-	"wallet":                     accountFieldWallet,
-	"website":                    accountFieldWebsite,
-	"whop_partner_enabled_at":    accountFieldWhopPartnerEnabledAt,
+	"ads_spend_usd":                accountFieldAdsSpendUsd,
+	"banner_image_url":             accountFieldBannerImageURL,
+	"business_address":             accountFieldBusinessAddress,
+	"business_name":                accountFieldBusinessName,
+	"business_type":                accountFieldBusinessType,
+	"cancellation_policy":          accountFieldCancellationPolicy,
+	"capabilities":                 accountFieldCapabilities,
+	"cards":                        accountFieldCards,
+	"country":                      accountFieldCountry,
+	"customers_l30d":               accountFieldCustomersL30D,
+	"description":                  accountFieldDescription,
+	"email":                        accountFieldEmail,
+	"eula":                         accountFieldEula,
+	"financing":                    accountFieldFinancing,
+	"industry_type":                accountFieldIndustryType,
+	"invoice_prefix":               accountFieldInvoicePrefix,
+	"level":                        accountFieldLevel,
+	"logo_url":                     accountFieldLogoURL,
+	"onboarding_type":              accountFieldOnboardingType,
+	"opengraph_image_url":          accountFieldOpengraphImageURL,
+	"opengraph_image_variant":      accountFieldOpengraphImageVariant,
+	"other_business_description":   accountFieldOtherBusinessDescription,
+	"other_industry_description":   accountFieldOtherIndustryDescription,
+	"parent_account":               accountFieldParentAccount,
+	"partner":                      accountFieldPartner,
+	"payment_controls":             accountFieldPaymentControls,
+	"payment_method_configuration": accountFieldPaymentMethodConfiguration,
+	"privacy_policy":               accountFieldPrivacyPolicy,
+	"product_tax_code":             accountFieldProductTaxCode,
+	"recommended_actions":          accountFieldRecommendedActions,
+	"required_actions":             accountFieldRequiredActions,
+	"return_policy":                accountFieldReturnPolicy,
+	"shipping_policy":              accountFieldShippingPolicy,
+	"status":                       accountFieldStatus,
+	"status_reason":                accountFieldStatusReason,
+	"target_audience":              accountFieldTargetAudience,
+	"tax_remitted_by":              accountFieldTaxRemittedBy,
+	"tax_type":                     accountFieldTaxType,
+	"terms_of_service":             accountFieldTermsOfService,
+	"three_ds_level":               accountFieldThreeDsLevel,
+	"total_earned_usd":             accountFieldTotalEarnedUsd,
+	"total_usd":                    accountFieldTotalUsd,
+	"trading":                      accountFieldTrading,
+	"volume_l30d_usd":              accountFieldVolumeL30DUsd,
+	"volume_usd":                   accountFieldVolumeUsd,
+	"wallet":                       accountFieldWallet,
+	"website":                      accountFieldWebsite,
+	"whop_partner_enabled_at":      accountFieldWhopPartnerEnabledAt,
 }
 
 type Account struct {
@@ -1009,7 +1011,9 @@ type Account struct {
 	Partner *AccountPartner `json:"partner,omitempty" url:"partner,omitempty"`
 	// Payment health controls currently applied to the account. Computed only on `retrieve` and `me` for callers with `company:balance:read` scope; `null` otherwise.
 	PaymentControls *AccountPaymentControls `json:"payment_controls,omitempty" url:"payment_controls,omitempty"`
-	PlatformCredits []*Money                `json:"platform_credits" url:"platform_credits"`
+	// The account's default payment methods at checkout. A variant's or checkout configuration's own `payment_method_configuration` takes precedence. `null` when the account uses Whop's platform defaults.
+	PaymentMethodConfiguration *CheckoutSessionPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
+	PlatformCredits            []*Money                                   `json:"platform_credits" url:"platform_credits"`
 	// The account's privacy policy document, or `null` if they have not published one.
 	PrivacyPolicy *File `json:"privacy_policy,omitempty" url:"privacy_policy,omitempty"`
 	// Tax classification code applied by default to the account's products, with `id`, `name`, and `product_type`. `null` when no default is set.
@@ -1354,6 +1358,13 @@ func (a *Account) GetPaymentControls() *AccountPaymentControls {
 		return nil
 	}
 	return a.PaymentControls
+}
+
+func (a *Account) GetPaymentMethodConfiguration() *CheckoutSessionPaymentMethodConfiguration {
+	if a == nil {
+		return nil
+	}
+	return a.PaymentMethodConfiguration
 }
 
 func (a *Account) GetPlatformCredits() []*Money {
@@ -1895,6 +1906,13 @@ func (a *Account) SetPartner(partner *AccountPartner) {
 func (a *Account) SetPaymentControls(paymentControls *AccountPaymentControls) {
 	a.PaymentControls = paymentControls
 	a.require(accountFieldPaymentControls)
+}
+
+// SetPaymentMethodConfiguration sets the PaymentMethodConfiguration field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetPaymentMethodConfiguration(paymentMethodConfiguration *CheckoutSessionPaymentMethodConfiguration) {
+	a.PaymentMethodConfiguration = paymentMethodConfiguration
+	a.require(accountFieldPaymentMethodConfiguration)
 }
 
 // SetPlatformCredits sets the PlatformCredits field and marks it as non-optional;
