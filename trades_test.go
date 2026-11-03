@@ -1187,6 +1187,14 @@ func TestSettersTrade(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetStep", func(t *testing.T) {
+		obj := &Trade{}
+		var fernTestValueStep *TradeStep
+		obj.SetStep(fernTestValueStep)
+		assert.Equal(t, fernTestValueStep, obj.Step)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetType", func(t *testing.T) {
 		obj := &Trade{}
 		var fernTestValueType TradeType
@@ -1931,6 +1939,39 @@ func TestGettersTrade(t *testing.T) {
 			}
 		}()
 		_ = obj.GetStatusDetail() // Should return zero value
+	})
+
+	t.Run("GetStep", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Trade{}
+		var expected *TradeStep
+		obj.Step = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStep(), "getter should return the property value")
+	})
+
+	t.Run("GetStep_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Trade{}
+		obj.Step = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetStep(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetStep_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Trade
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStep() // Should return zero value
 	})
 
 	t.Run("GetType", func(t *testing.T) {
@@ -2728,6 +2769,37 @@ func TestSettersMarkExplicitTrade(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetStep_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Trade{}
+		var fernTestValueStep *TradeStep
+
+		// Act
+		obj.SetStep(fernTestValueStep)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetType_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3416,6 +3488,7 @@ func TestRequiredNullableRoundTripTrade(t *testing.T) {
 		"side",
 		"size",
 		"status_detail",
+		"step",
 		"user_id",
 	}
 	marshalToMap := func(t *testing.T, obj *Trade) map[string]json.RawMessage {
@@ -3429,7 +3502,7 @@ func TestRequiredNullableRoundTripTrade(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Trade
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"amount":null,"average_price":null,"client_order_id":null,"completed_at":null,"external_order_id":null,"failure_code":null,"filled_size":null,"funds_location":null,"instrument_type":null,"leverage":null,"market":null,"order_type":null,"price":null,"reduce_only":null,"side":null,"size":null,"status_detail":null,"user_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"amount":null,"average_price":null,"client_order_id":null,"completed_at":null,"external_order_id":null,"failure_code":null,"filled_size":null,"funds_location":null,"instrument_type":null,"leverage":null,"market":null,"order_type":null,"price":null,"reduce_only":null,"side":null,"size":null,"status_detail":null,"step":null,"user_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -4109,6 +4182,56 @@ func TestEnumTradeStatusDetail(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewTradeStatusDetailFromString("partial_fill")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumTradeStep(t *testing.T) {
+	t.Run("NewFromString_depositing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTradeStepFromString("depositing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TradeStep("depositing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_landing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTradeStepFromString("landing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TradeStep("landing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_placing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTradeStepFromString("placing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TradeStep("placing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdrawing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTradeStepFromString("withdrawing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TradeStep("withdrawing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_returning", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTradeStepFromString("returning")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TradeStep("returning"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewTradeStepFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewTradeStepFromString("depositing")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
