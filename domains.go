@@ -46,9 +46,10 @@ var (
 	createDomainsRequestFieldMetadata     = big.NewInt(1 << 4)
 	createDomainsRequestFieldPixel        = big.NewInt(1 << 5)
 	createDomainsRequestFieldRegistration = big.NewInt(1 << 6)
-	createDomainsRequestFieldTransfer     = big.NewInt(1 << 7)
-	createDomainsRequestFieldVerification = big.NewInt(1 << 8)
-	createDomainsRequestFieldWebsite      = big.NewInt(1 << 9)
+	createDomainsRequestFieldSubdomain    = big.NewInt(1 << 7)
+	createDomainsRequestFieldTransfer     = big.NewInt(1 << 8)
+	createDomainsRequestFieldVerification = big.NewInt(1 << 9)
+	createDomainsRequestFieldWebsite      = big.NewInt(1 << 10)
 )
 
 type CreateDomainsRequest struct {
@@ -58,7 +59,7 @@ type CreateDomainsRequest struct {
 	ApplePay *CreateDomainsRequestApplePay `json:"apple_pay,omitempty" url:"-"`
 	// Bare hostname, such as example.com or checkout.example.com. A bought domain must be a root domain. Wildcards, paths, schemes, and ports are not accepted.
 	Domain string `json:"domain" url:"-"`
-	// Send and receive email on the domain. Only a domain bought through Whop, or a subdomain of one in the same account, can have it. Whop publishes the DNS records and stays `pending` until its email provider verifies them, then turns `ready`. Pass `null` to remove email.
+	// Send and receive email on the domain. It needs `registration` or `subdomain`, so only a domain bought through Whop, or a subdomain of one in the same account, can have it. Whop publishes the DNS records and stays `pending` until its email provider verifies them, then turns `ready`. Pass `null` to remove email.
 	Email *CreateDomainsRequestEmail `json:"email,omitempty" url:"-"`
 	// Custom string keys and values.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
@@ -66,6 +67,8 @@ type CreateDomainsRequest struct {
 	Pixel *CreateDomainsRequestPixel `json:"pixel,omitempty" url:"-"`
 	// Buy the domain through Whop, or transfer in a domain you own elsewhere with `auth_code`, then renew it every year and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase, or to cancel a transfer while its current registrar can still stop it.
 	Registration *CreateDomainsRequestRegistration `json:"registration,omitempty" url:"-"`
+	// Use a subdomain of a domain this account bought through Whop, such as shop.example.com under example.com. It's the default when you add such a subdomain without a capability. Whop publishes its DNS records in the root domain's zone, so it needs nothing from you: it stays `pending` until the root domain is set up, then turns `ready`. Whop releases it, and its website, when the account no longer holds the root domain, and deletes it when the root domain leaves the account. Pass `null` to release it. Can't be combined with `verification` or `registration`.
+	Subdomain *CreateDomainsRequestSubdomain `json:"subdomain,omitempty" url:"-"`
 	// Move a domain registered through Whop to another Whop account. Turning it on returns a code in `transfer.code`; the receiving account enters it as `registration.auth_code` on its own copy of the domain. Whop then removes the domain's email, email addresses and Apple Pay from this account, moves the registration with its expiry, stops charging this account to renew it, and removes the domain from this account. Pass `null` to turn it off and invalidate the code, until another account has entered it.
 	Transfer *CreateDomainsRequestTransfer `json:"transfer,omitempty" url:"-"`
 	// Prove you control the domain's DNS: Whop returns a TXT record to publish in `issues`, and whoever publishes it owns the domain on Whop. Pass `null` to release it. Can't be combined with `registration`.
@@ -133,6 +136,13 @@ func (c *CreateDomainsRequest) SetPixel(pixel *CreateDomainsRequestPixel) {
 func (c *CreateDomainsRequest) SetRegistration(registration *CreateDomainsRequestRegistration) {
 	c.Registration = registration
 	c.require(createDomainsRequestFieldRegistration)
+}
+
+// SetSubdomain sets the Subdomain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDomainsRequest) SetSubdomain(subdomain *CreateDomainsRequestSubdomain) {
+	c.Subdomain = subdomain
+	c.require(createDomainsRequestFieldSubdomain)
 }
 
 // SetTransfer sets the Transfer field and marks it as non-optional;
@@ -221,11 +231,12 @@ var (
 	listDomainsRequestFieldVerification = big.NewInt(1 << 12)
 	listDomainsRequestFieldRegistration = big.NewInt(1 << 13)
 	listDomainsRequestFieldPlatform     = big.NewInt(1 << 14)
-	listDomainsRequestFieldWebsite      = big.NewInt(1 << 15)
-	listDomainsRequestFieldApplePay     = big.NewInt(1 << 16)
-	listDomainsRequestFieldPixel        = big.NewInt(1 << 17)
-	listDomainsRequestFieldEmail        = big.NewInt(1 << 18)
-	listDomainsRequestFieldTransfer     = big.NewInt(1 << 19)
+	listDomainsRequestFieldSubdomain    = big.NewInt(1 << 15)
+	listDomainsRequestFieldWebsite      = big.NewInt(1 << 16)
+	listDomainsRequestFieldApplePay     = big.NewInt(1 << 17)
+	listDomainsRequestFieldPixel        = big.NewInt(1 << 18)
+	listDomainsRequestFieldEmail        = big.NewInt(1 << 19)
+	listDomainsRequestFieldTransfer     = big.NewInt(1 << 20)
 )
 
 type ListDomainsRequest struct {
@@ -259,6 +270,8 @@ type ListDomainsRequest struct {
 	Registration *ListDomainsRequestRegistration `json:"-" url:"registration,omitempty"`
 	// Only domains with platform in this state, such as `ready`, or `any` for every domain that has platform.
 	Platform *ListDomainsRequestPlatform `json:"-" url:"platform,omitempty"`
+	// Only domains with subdomain in this state, such as `ready`, or `any` for every domain that has subdomain.
+	Subdomain *ListDomainsRequestSubdomain `json:"-" url:"subdomain,omitempty"`
 	// Only domains with website in this state, such as `ready`, or `any` for every domain that has website.
 	Website *ListDomainsRequestWebsite `json:"-" url:"website,omitempty"`
 	// Only domains with apple_pay in this state, such as `ready`, or `any` for every domain that has apple_pay.
@@ -388,6 +401,13 @@ func (l *ListDomainsRequest) SetPlatform(platform *ListDomainsRequestPlatform) {
 	l.require(listDomainsRequestFieldPlatform)
 }
 
+// SetSubdomain sets the Subdomain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListDomainsRequest) SetSubdomain(subdomain *ListDomainsRequestSubdomain) {
+	l.Subdomain = subdomain
+	l.require(listDomainsRequestFieldSubdomain)
+}
+
 // SetWebsite sets the Website field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListDomainsRequest) SetWebsite(website *ListDomainsRequestWebsite) {
@@ -468,10 +488,11 @@ var (
 	domainFieldRegistration = big.NewInt(1 << 13)
 	domainFieldStats        = big.NewInt(1 << 14)
 	domainFieldStatus       = big.NewInt(1 << 15)
-	domainFieldTransfer     = big.NewInt(1 << 16)
-	domainFieldUpdatedAt    = big.NewInt(1 << 17)
-	domainFieldVerification = big.NewInt(1 << 18)
-	domainFieldWebsite      = big.NewInt(1 << 19)
+	domainFieldSubdomain    = big.NewInt(1 << 16)
+	domainFieldTransfer     = big.NewInt(1 << 17)
+	domainFieldUpdatedAt    = big.NewInt(1 << 18)
+	domainFieldVerification = big.NewInt(1 << 19)
+	domainFieldWebsite      = big.NewInt(1 << 20)
 )
 
 // domainNullableFields maps the wire names of Domain's nullable fields (required or optional) to their field bits.
@@ -489,6 +510,7 @@ var domainNullableFields = map[string]*big.Int{
 	"registration":  domainFieldRegistration,
 	"stats":         domainFieldStats,
 	"status":        domainFieldStatus,
+	"subdomain":     domainFieldSubdomain,
 	"transfer":      domainFieldTransfer,
 	"updated_at":    domainFieldUpdatedAt,
 	"verification":  domainFieldVerification,
@@ -527,6 +549,8 @@ type Domain struct {
 	Stats *DomainStats `json:"stats,omitempty" url:"stats,omitempty"`
 	// The most pressing state of the domain's capabilities: `releasing`, then `action_required`, then `pending`, then `ready`. `idle` when it wants nothing.
 	Status *DomainStatus `json:"status,omitempty" url:"status,omitempty"`
+	// A subdomain of a domain this account bought through Whop, whose DNS Whop runs. Whop removes it when the account no longer holds the root domain. `null` for other domains or when not visible to you.
+	Subdomain *DomainSubdomain `json:"subdomain,omitempty" url:"subdomain,omitempty"`
 	// Moving the domain to another Whop account. `null` when not turned on or not visible to you.
 	Transfer *DomainTransfer `json:"transfer,omitempty" url:"transfer,omitempty"`
 	// When the domain was last updated, as an ISO 8601 timestamp.
@@ -653,6 +677,13 @@ func (d *Domain) GetStatus() *DomainStatus {
 		return nil
 	}
 	return d.Status
+}
+
+func (d *Domain) GetSubdomain() *DomainSubdomain {
+	if d == nil {
+		return nil
+	}
+	return d.Subdomain
 }
 
 func (d *Domain) GetTransfer() *DomainTransfer {
@@ -809,6 +840,13 @@ func (d *Domain) SetStats(stats *DomainStats) {
 func (d *Domain) SetStatus(status *DomainStatus) {
 	d.Status = status
 	d.require(domainFieldStatus)
+}
+
+// SetSubdomain sets the Subdomain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Domain) SetSubdomain(subdomain *DomainSubdomain) {
+	d.Subdomain = subdomain
+	d.require(domainFieldSubdomain)
 }
 
 // SetTransfer sets the Transfer field and marks it as non-optional;
@@ -1629,6 +1667,7 @@ const (
 	DomainIssueCapabilityVerification DomainIssueCapability = "verification"
 	DomainIssueCapabilityRegistration DomainIssueCapability = "registration"
 	DomainIssueCapabilityPlatform     DomainIssueCapability = "platform"
+	DomainIssueCapabilitySubdomain    DomainIssueCapability = "subdomain"
 	DomainIssueCapabilityWebsite      DomainIssueCapability = "website"
 	DomainIssueCapabilityApplePay     DomainIssueCapability = "apple_pay"
 	DomainIssueCapabilityPixel        DomainIssueCapability = "pixel"
@@ -1644,6 +1683,8 @@ func NewDomainIssueCapabilityFromString(s string) (DomainIssueCapability, error)
 		return DomainIssueCapabilityRegistration, nil
 	case "platform":
 		return DomainIssueCapabilityPlatform, nil
+	case "subdomain":
+		return DomainIssueCapabilitySubdomain, nil
 	case "website":
 		return DomainIssueCapabilityWebsite, nil
 	case "apple_pay":
@@ -1701,6 +1742,9 @@ const (
 	DomainIssueCodeEmailUnreachable          DomainIssueCode = "email_unreachable"
 	DomainIssueCodeEmailIdentityInUse        DomainIssueCode = "email_identity_in_use"
 	DomainIssueCodeEmailVerificationFailed   DomainIssueCode = "email_verification_failed"
+	DomainIssueCodeSubdomainNeedsWhopDomain  DomainIssueCode = "subdomain_needs_whop_domain"
+	DomainIssueCodeRootDomainPending         DomainIssueCode = "root_domain_pending"
+	DomainIssueCodeRootDomainNeedsAction     DomainIssueCode = "root_domain_needs_action"
 )
 
 func NewDomainIssueCodeFromString(s string) (DomainIssueCode, error) {
@@ -1773,6 +1817,12 @@ func NewDomainIssueCodeFromString(s string) (DomainIssueCode, error) {
 		return DomainIssueCodeEmailIdentityInUse, nil
 	case "email_verification_failed":
 		return DomainIssueCodeEmailVerificationFailed, nil
+	case "subdomain_needs_whop_domain":
+		return DomainIssueCodeSubdomainNeedsWhopDomain, nil
+	case "root_domain_pending":
+		return DomainIssueCodeRootDomainPending, nil
+	case "root_domain_needs_action":
+		return DomainIssueCodeRootDomainNeedsAction, nil
 	}
 	var t DomainIssueCode
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1798,10 +1848,11 @@ var (
 	domainListItemFieldRegistration = big.NewInt(1 << 12)
 	domainListItemFieldStats        = big.NewInt(1 << 13)
 	domainListItemFieldStatus       = big.NewInt(1 << 14)
-	domainListItemFieldTransfer     = big.NewInt(1 << 15)
-	domainListItemFieldUpdatedAt    = big.NewInt(1 << 16)
-	domainListItemFieldVerification = big.NewInt(1 << 17)
-	domainListItemFieldWebsite      = big.NewInt(1 << 18)
+	domainListItemFieldSubdomain    = big.NewInt(1 << 15)
+	domainListItemFieldTransfer     = big.NewInt(1 << 16)
+	domainListItemFieldUpdatedAt    = big.NewInt(1 << 17)
+	domainListItemFieldVerification = big.NewInt(1 << 18)
+	domainListItemFieldWebsite      = big.NewInt(1 << 19)
 )
 
 // domainListItemNullableFields maps the wire names of DomainListItem's nullable fields (required or optional) to their field bits.
@@ -1818,6 +1869,7 @@ var domainListItemNullableFields = map[string]*big.Int{
 	"registration": domainListItemFieldRegistration,
 	"stats":        domainListItemFieldStats,
 	"status":       domainListItemFieldStatus,
+	"subdomain":    domainListItemFieldSubdomain,
 	"transfer":     domainListItemFieldTransfer,
 	"updated_at":   domainListItemFieldUpdatedAt,
 	"verification": domainListItemFieldVerification,
@@ -1854,6 +1906,8 @@ type DomainListItem struct {
 	Stats *DomainStats `json:"stats,omitempty" url:"stats,omitempty"`
 	// The most pressing state of the domain's capabilities: `releasing`, then `action_required`, then `pending`, then `ready`. `idle` when it wants nothing.
 	Status *DomainListItemStatus `json:"status,omitempty" url:"status,omitempty"`
+	// A subdomain of a domain this account bought through Whop, whose DNS Whop runs. Whop removes it when the account no longer holds the root domain. `null` for other domains or when not visible to you.
+	Subdomain *DomainSubdomain `json:"subdomain,omitempty" url:"subdomain,omitempty"`
 	// Moving the domain to another Whop account. `null` when not turned on or not visible to you.
 	Transfer *DomainTransfer `json:"transfer,omitempty" url:"transfer,omitempty"`
 	// When the domain was last updated, as an ISO 8601 timestamp.
@@ -1973,6 +2027,13 @@ func (d *DomainListItem) GetStatus() *DomainListItemStatus {
 		return nil
 	}
 	return d.Status
+}
+
+func (d *DomainListItem) GetSubdomain() *DomainSubdomain {
+	if d == nil {
+		return nil
+	}
+	return d.Subdomain
 }
 
 func (d *DomainListItem) GetTransfer() *DomainTransfer {
@@ -2122,6 +2183,13 @@ func (d *DomainListItem) SetStats(stats *DomainStats) {
 func (d *DomainListItem) SetStatus(status *DomainListItemStatus) {
 	d.Status = status
 	d.require(domainListItemFieldStatus)
+}
+
+// SetSubdomain sets the Subdomain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainListItem) SetSubdomain(subdomain *DomainSubdomain) {
+	d.Subdomain = subdomain
+	d.require(domainListItemFieldSubdomain)
 }
 
 // SetTransfer sets the Transfer field and marks it as non-optional;
@@ -3626,6 +3694,122 @@ func (d DomainStatus) Ptr() *DomainStatus {
 }
 
 var (
+	domainSubdomainFieldState = big.NewInt(1 << 0)
+)
+
+type DomainSubdomain struct {
+	// Whether Whop has published the subdomain's DNS records in its root domain's zone. It stays `pending` until the root domain is set up.
+	State DomainSubdomainState `json:"state" url:"state"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DomainSubdomain) GetState() DomainSubdomainState {
+	if d == nil {
+		return ""
+	}
+	return d.State
+}
+
+func (d *DomainSubdomain) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DomainSubdomain) require(field *big.Int) {
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
+	}
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DomainSubdomain) SetState(state DomainSubdomainState) {
+	d.State = state
+	d.require(domainSubdomainFieldState)
+}
+
+func (d *DomainSubdomain) UnmarshalJSON(data []byte) error {
+	type unmarshaler DomainSubdomain
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DomainSubdomain(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DomainSubdomain) MarshalJSON() ([]byte, error) {
+	type embed DomainSubdomain
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DomainSubdomain) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
+}
+
+// Whether Whop has published the subdomain's DNS records in its root domain's zone. It stays `pending` until the root domain is set up.
+type DomainSubdomainState string
+
+const (
+	DomainSubdomainStatePending        DomainSubdomainState = "pending"
+	DomainSubdomainStateReady          DomainSubdomainState = "ready"
+	DomainSubdomainStateActionRequired DomainSubdomainState = "action_required"
+	DomainSubdomainStateReleasing      DomainSubdomainState = "releasing"
+)
+
+func NewDomainSubdomainStateFromString(s string) (DomainSubdomainState, error) {
+	switch s {
+	case "pending":
+		return DomainSubdomainStatePending, nil
+	case "ready":
+		return DomainSubdomainStateReady, nil
+	case "action_required":
+		return DomainSubdomainStateActionRequired, nil
+	case "releasing":
+		return DomainSubdomainStateReleasing, nil
+	}
+	var t DomainSubdomainState
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (d DomainSubdomainState) Ptr() *DomainSubdomainState {
+	return &d
+}
+
+var (
 	domainTransferFieldCode        = big.NewInt(1 << 0)
 	domainTransferFieldDestination = big.NewInt(1 << 1)
 	domainTransferFieldState       = big.NewInt(1 << 2)
@@ -4275,7 +4459,7 @@ func (c *CreateDomainsRequestApplePay) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Send and receive email on the domain. Only a domain bought through Whop, or a subdomain of one in the same account, can have it. Whop publishes the DNS records and stays `pending` until its email provider verifies them, then turns `ready`. Pass `null` to remove email.
+// Send and receive email on the domain. It needs `registration` or `subdomain`, so only a domain bought through Whop, or a subdomain of one in the same account, can have it. Whop publishes the DNS records and stays `pending` until its email provider verifies them, then turns `ready`. Pass `null` to remove email.
 type CreateDomainsRequestEmail struct {
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -4531,6 +4715,74 @@ func (c *CreateDomainsRequestRegistration) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CreateDomainsRequestRegistration) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Use a subdomain of a domain this account bought through Whop, such as shop.example.com under example.com. It's the default when you add such a subdomain without a capability. Whop publishes its DNS records in the root domain's zone, so it needs nothing from you: it stays `pending` until the root domain is set up, then turns `ready`. Whop releases it, and its website, when the account no longer holds the root domain, and deletes it when the root domain leaves the account. Pass `null` to release it. Can't be combined with `verification` or `registration`.
+type CreateDomainsRequestSubdomain struct {
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateDomainsRequestSubdomain) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateDomainsRequestSubdomain) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+func (c *CreateDomainsRequestSubdomain) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateDomainsRequestSubdomain
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateDomainsRequestSubdomain(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateDomainsRequestSubdomain) MarshalJSON() ([]byte, error) {
+	type embed CreateDomainsRequestSubdomain
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateDomainsRequestSubdomain) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -5054,6 +5306,37 @@ func NewListDomainsRequestStatusFromString(s string) (ListDomainsRequestStatus, 
 }
 
 func (l ListDomainsRequestStatus) Ptr() *ListDomainsRequestStatus {
+	return &l
+}
+
+type ListDomainsRequestSubdomain string
+
+const (
+	ListDomainsRequestSubdomainPending        ListDomainsRequestSubdomain = "pending"
+	ListDomainsRequestSubdomainReady          ListDomainsRequestSubdomain = "ready"
+	ListDomainsRequestSubdomainActionRequired ListDomainsRequestSubdomain = "action_required"
+	ListDomainsRequestSubdomainReleasing      ListDomainsRequestSubdomain = "releasing"
+	ListDomainsRequestSubdomainAny            ListDomainsRequestSubdomain = "any"
+)
+
+func NewListDomainsRequestSubdomainFromString(s string) (ListDomainsRequestSubdomain, error) {
+	switch s {
+	case "pending":
+		return ListDomainsRequestSubdomainPending, nil
+	case "ready":
+		return ListDomainsRequestSubdomainReady, nil
+	case "action_required":
+		return ListDomainsRequestSubdomainActionRequired, nil
+	case "releasing":
+		return ListDomainsRequestSubdomainReleasing, nil
+	case "any":
+		return ListDomainsRequestSubdomainAny, nil
+	}
+	var t ListDomainsRequestSubdomain
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListDomainsRequestSubdomain) Ptr() *ListDomainsRequestSubdomain {
 	return &l
 }
 
@@ -6265,7 +6548,7 @@ func (u *UpdateDomainsRequestApplePay) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Send and receive email on the domain. Only a domain bought through Whop, or a subdomain of one in the same account, can have it. Whop publishes the DNS records and stays `pending` until its email provider verifies them, then turns `ready`. Pass `null` to remove email.
+// Send and receive email on the domain. It needs `registration` or `subdomain`, so only a domain bought through Whop, or a subdomain of one in the same account, can have it. Whop publishes the DNS records and stays `pending` until its email provider verifies them, then turns `ready`. Pass `null` to remove email.
 type UpdateDomainsRequestEmail struct {
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -6521,6 +6804,74 @@ func (u *UpdateDomainsRequestRegistration) MarshalJSON() ([]byte, error) {
 }
 
 func (u *UpdateDomainsRequestRegistration) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// Use a subdomain of a domain this account bought through Whop, such as shop.example.com under example.com. It's the default when you add such a subdomain without a capability. Whop publishes its DNS records in the root domain's zone, so it needs nothing from you: it stays `pending` until the root domain is set up, then turns `ready`. Whop releases it, and its website, when the account no longer holds the root domain, and deletes it when the root domain leaves the account. Pass `null` to release it. Can't be combined with `verification` or `registration`.
+type UpdateDomainsRequestSubdomain struct {
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateDomainsRequestSubdomain) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateDomainsRequestSubdomain) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+func (u *UpdateDomainsRequestSubdomain) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateDomainsRequestSubdomain
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateDomainsRequestSubdomain(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateDomainsRequestSubdomain) MarshalJSON() ([]byte, error) {
+	type embed UpdateDomainsRequestSubdomain
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateDomainsRequestSubdomain) String() string {
 	if u == nil {
 		return "<nil>"
 	}
@@ -6818,9 +7169,10 @@ var (
 	updateDomainsRequestFieldMetadata     = big.NewInt(1 << 3)
 	updateDomainsRequestFieldPixel        = big.NewInt(1 << 4)
 	updateDomainsRequestFieldRegistration = big.NewInt(1 << 5)
-	updateDomainsRequestFieldTransfer     = big.NewInt(1 << 6)
-	updateDomainsRequestFieldVerification = big.NewInt(1 << 7)
-	updateDomainsRequestFieldWebsite      = big.NewInt(1 << 8)
+	updateDomainsRequestFieldSubdomain    = big.NewInt(1 << 6)
+	updateDomainsRequestFieldTransfer     = big.NewInt(1 << 7)
+	updateDomainsRequestFieldVerification = big.NewInt(1 << 8)
+	updateDomainsRequestFieldWebsite      = big.NewInt(1 << 9)
 )
 
 type UpdateDomainsRequest struct {
@@ -6828,7 +7180,7 @@ type UpdateDomainsRequest struct {
 	ID string `json:"-" url:"-"`
 	// Accept Apple Pay at checkout on the domain. It needs no other capability. Whop registers the domain with Apple: it stays `pending` until Apple answers, then turns `ready`, or `action_required` when Apple couldn't fetch the domain association file. Serve the file, then check the domain to register it again. Pass `null` to turn Apple Pay off: Whop removes the domain from Apple, and the domain stays, like releasing any other capability.
 	ApplePay *UpdateDomainsRequestApplePay `json:"apple_pay,omitempty" url:"-"`
-	// Send and receive email on the domain. Only a domain bought through Whop, or a subdomain of one in the same account, can have it. Whop publishes the DNS records and stays `pending` until its email provider verifies them, then turns `ready`. Pass `null` to remove email.
+	// Send and receive email on the domain. It needs `registration` or `subdomain`, so only a domain bought through Whop, or a subdomain of one in the same account, can have it. Whop publishes the DNS records and stays `pending` until its email provider verifies them, then turns `ready`. Pass `null` to remove email.
 	Email *UpdateDomainsRequestEmail `json:"email,omitempty" url:"-"`
 	// Replacement custom string keys and values.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
@@ -6836,6 +7188,8 @@ type UpdateDomainsRequest struct {
 	Pixel *UpdateDomainsRequestPixel `json:"pixel,omitempty" url:"-"`
 	// Buy the domain through Whop, or transfer in a domain you own elsewhere with `auth_code`, then renew it every year and let Whop run its DNS. Pass `null` to release an unpaid or failed purchase, or to cancel a transfer while its current registrar can still stop it.
 	Registration *UpdateDomainsRequestRegistration `json:"registration,omitempty" url:"-"`
+	// Use a subdomain of a domain this account bought through Whop, such as shop.example.com under example.com. It's the default when you add such a subdomain without a capability. Whop publishes its DNS records in the root domain's zone, so it needs nothing from you: it stays `pending` until the root domain is set up, then turns `ready`. Whop releases it, and its website, when the account no longer holds the root domain, and deletes it when the root domain leaves the account. Pass `null` to release it. Can't be combined with `verification` or `registration`.
+	Subdomain *UpdateDomainsRequestSubdomain `json:"subdomain,omitempty" url:"-"`
 	// Move a domain registered through Whop to another Whop account. Turning it on returns a code in `transfer.code`; the receiving account enters it as `registration.auth_code` on its own copy of the domain. Whop then removes the domain's email, email addresses and Apple Pay from this account, moves the registration with its expiry, stops charging this account to renew it, and removes the domain from this account. Pass `null` to turn it off and invalidate the code, until another account has entered it.
 	Transfer *UpdateDomainsRequestTransfer `json:"transfer,omitempty" url:"-"`
 	// Prove you control the domain's DNS: Whop returns a TXT record to publish in `issues`, and whoever publishes it owns the domain on Whop. Pass `null` to release it. Can't be combined with `registration`.
@@ -6896,6 +7250,13 @@ func (u *UpdateDomainsRequest) SetPixel(pixel *UpdateDomainsRequestPixel) {
 func (u *UpdateDomainsRequest) SetRegistration(registration *UpdateDomainsRequestRegistration) {
 	u.Registration = registration
 	u.require(updateDomainsRequestFieldRegistration)
+}
+
+// SetSubdomain sets the Subdomain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateDomainsRequest) SetSubdomain(subdomain *UpdateDomainsRequestSubdomain) {
+	u.Subdomain = subdomain
+	u.require(updateDomainsRequestFieldSubdomain)
 }
 
 // SetTransfer sets the Transfer field and marks it as non-optional;
