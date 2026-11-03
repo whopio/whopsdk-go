@@ -826,60 +826,61 @@ var (
 	accountFieldEmail                               = big.NewInt(1 << 19)
 	accountFieldEula                                = big.NewInt(1 << 20)
 	accountFieldFinancing                           = big.NewInt(1 << 21)
-	accountFieldHomePreferences                     = big.NewInt(1 << 22)
-	accountFieldID                                  = big.NewInt(1 << 23)
-	accountFieldIndustryType                        = big.NewInt(1 << 24)
-	accountFieldInvoicePrefix                       = big.NewInt(1 << 25)
-	accountFieldLevel                               = big.NewInt(1 << 26)
-	accountFieldLogoURL                             = big.NewInt(1 << 27)
-	accountFieldMetadata                            = big.NewInt(1 << 28)
-	accountFieldOnboardingType                      = big.NewInt(1 << 29)
-	accountFieldOpengraphImageURL                   = big.NewInt(1 << 30)
-	accountFieldOpengraphImageVariant               = big.NewInt(1 << 31)
-	accountFieldOrchestrationEnabled                = big.NewInt(1 << 32)
-	accountFieldOtherBusinessDescription            = big.NewInt(1 << 33)
-	accountFieldOtherIndustryDescription            = big.NewInt(1 << 34)
-	accountFieldOwner                               = big.NewInt(1 << 35)
-	accountFieldParentAccount                       = big.NewInt(1 << 36)
-	accountFieldPartner                             = big.NewInt(1 << 37)
-	accountFieldPaymentControls                     = big.NewInt(1 << 38)
-	accountFieldPaymentMethodConfiguration          = big.NewInt(1 << 39)
-	accountFieldPlatformCredits                     = big.NewInt(1 << 40)
-	accountFieldPrivacyPolicy                       = big.NewInt(1 << 41)
-	accountFieldProductTaxCode                      = big.NewInt(1 << 42)
-	accountFieldRecommendedActions                  = big.NewInt(1 << 43)
-	accountFieldRequire2Fa                          = big.NewInt(1 << 44)
-	accountFieldRequiredActions                     = big.NewInt(1 << 45)
-	accountFieldReturnPolicy                        = big.NewInt(1 << 46)
-	accountFieldRewards                             = big.NewInt(1 << 47)
-	accountFieldRoute                               = big.NewInt(1 << 48)
-	accountFieldSendCustomerEmails                  = big.NewInt(1 << 49)
-	accountFieldShippingPolicy                      = big.NewInt(1 << 50)
-	accountFieldShowJoinedWhops                     = big.NewInt(1 << 51)
-	accountFieldShowReviewsDtc                      = big.NewInt(1 << 52)
-	accountFieldShowUserDirectory                   = big.NewInt(1 << 53)
-	accountFieldSocialLinks                         = big.NewInt(1 << 54)
-	accountFieldStatus                              = big.NewInt(1 << 55)
-	accountFieldStatusReason                        = big.NewInt(1 << 56)
-	accountFieldStorePageConfig                     = big.NewInt(1 << 57)
-	accountFieldTargetAudience                      = big.NewInt(1 << 58)
-	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 59)
-	accountFieldTaxIdentifiers                      = big.NewInt(1 << 60)
-	accountFieldTaxRemittedBy                       = big.NewInt(1 << 61)
-	accountFieldTaxType                             = big.NewInt(1 << 62)
-	accountFieldTermsOfService                      = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	accountFieldThreeDsLevel                        = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	accountFieldTitle                               = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	accountFieldVolumeL30DUsd                       = big.NewInt(0).Lsh(big.NewInt(1), 71)
-	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 72)
-	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 73)
-	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 74)
-	accountFieldWhopPartnerEnabledAt                = big.NewInt(0).Lsh(big.NewInt(1), 75)
+	accountFieldFundsReleaseAt                      = big.NewInt(1 << 22)
+	accountFieldHomePreferences                     = big.NewInt(1 << 23)
+	accountFieldID                                  = big.NewInt(1 << 24)
+	accountFieldIndustryType                        = big.NewInt(1 << 25)
+	accountFieldInvoicePrefix                       = big.NewInt(1 << 26)
+	accountFieldLevel                               = big.NewInt(1 << 27)
+	accountFieldLogoURL                             = big.NewInt(1 << 28)
+	accountFieldMetadata                            = big.NewInt(1 << 29)
+	accountFieldOnboardingType                      = big.NewInt(1 << 30)
+	accountFieldOpengraphImageURL                   = big.NewInt(1 << 31)
+	accountFieldOpengraphImageVariant               = big.NewInt(1 << 32)
+	accountFieldOrchestrationEnabled                = big.NewInt(1 << 33)
+	accountFieldOtherBusinessDescription            = big.NewInt(1 << 34)
+	accountFieldOtherIndustryDescription            = big.NewInt(1 << 35)
+	accountFieldOwner                               = big.NewInt(1 << 36)
+	accountFieldParentAccount                       = big.NewInt(1 << 37)
+	accountFieldPartner                             = big.NewInt(1 << 38)
+	accountFieldPaymentControls                     = big.NewInt(1 << 39)
+	accountFieldPaymentMethodConfiguration          = big.NewInt(1 << 40)
+	accountFieldPlatformCredits                     = big.NewInt(1 << 41)
+	accountFieldPrivacyPolicy                       = big.NewInt(1 << 42)
+	accountFieldProductTaxCode                      = big.NewInt(1 << 43)
+	accountFieldRecommendedActions                  = big.NewInt(1 << 44)
+	accountFieldRequire2Fa                          = big.NewInt(1 << 45)
+	accountFieldRequiredActions                     = big.NewInt(1 << 46)
+	accountFieldReturnPolicy                        = big.NewInt(1 << 47)
+	accountFieldRewards                             = big.NewInt(1 << 48)
+	accountFieldRoute                               = big.NewInt(1 << 49)
+	accountFieldSendCustomerEmails                  = big.NewInt(1 << 50)
+	accountFieldShippingPolicy                      = big.NewInt(1 << 51)
+	accountFieldShowJoinedWhops                     = big.NewInt(1 << 52)
+	accountFieldShowReviewsDtc                      = big.NewInt(1 << 53)
+	accountFieldShowUserDirectory                   = big.NewInt(1 << 54)
+	accountFieldSocialLinks                         = big.NewInt(1 << 55)
+	accountFieldStatus                              = big.NewInt(1 << 56)
+	accountFieldStatusReason                        = big.NewInt(1 << 57)
+	accountFieldStorePageConfig                     = big.NewInt(1 << 58)
+	accountFieldTargetAudience                      = big.NewInt(1 << 59)
+	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 60)
+	accountFieldTaxIdentifiers                      = big.NewInt(1 << 61)
+	accountFieldTaxRemittedBy                       = big.NewInt(1 << 62)
+	accountFieldTaxType                             = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	accountFieldTermsOfService                      = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	accountFieldThreeDsLevel                        = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	accountFieldTitle                               = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	accountFieldVolumeL30DUsd                       = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 73)
+	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 74)
+	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 75)
+	accountFieldWhopPartnerEnabledAt                = big.NewInt(0).Lsh(big.NewInt(1), 76)
 )
 
 // accountNullableFields maps the wire names of Account's nullable fields (required or optional) to their field bits.
@@ -898,6 +899,7 @@ var accountNullableFields = map[string]*big.Int{
 	"email":                        accountFieldEmail,
 	"eula":                         accountFieldEula,
 	"financing":                    accountFieldFinancing,
+	"funds_release_at":             accountFieldFundsReleaseAt,
 	"industry_type":                accountFieldIndustryType,
 	"invoice_prefix":               accountFieldInvoicePrefix,
 	"level":                        accountFieldLevel,
@@ -977,7 +979,9 @@ type Account struct {
 	// The account's end-user license agreement document, or `null` if they have not published one.
 	Eula *File `json:"eula,omitempty" url:"eula,omitempty"`
 	// The account's most recent financing application. Computed only on `retrieve` and `me` for callers with `company:balance:read` scope; `null` otherwise, or when the account has never applied for financing.
-	Financing       *AccountFinancing            `json:"financing,omitempty" url:"financing,omitempty"`
+	Financing *AccountFinancing `json:"financing,omitempty" url:"financing,omitempty"`
+	// When a suspended account can pay out its balance to its own payout method, as an ISO 8601 timestamp. A dispute can move it later. Computed on `retrieve`, `me`, and `suspend`; `null` otherwise, when `status` is not `suspended`, and when the suspension holds the balance.
+	FundsReleaseAt  *string                      `json:"funds_release_at,omitempty" url:"funds_release_at,omitempty"`
 	HomePreferences []AccountHomePreferencesItem `json:"home_preferences" url:"home_preferences"`
 	// Account ID, prefixed `biz_`.
 	ID string `json:"id" url:"id"`
@@ -1239,6 +1243,13 @@ func (a *Account) GetFinancing() *AccountFinancing {
 		return nil
 	}
 	return a.Financing
+}
+
+func (a *Account) GetFundsReleaseAt() *string {
+	if a == nil {
+		return nil
+	}
+	return a.FundsReleaseAt
 }
 
 func (a *Account) GetHomePreferences() []AccountHomePreferencesItem {
@@ -1787,6 +1798,13 @@ func (a *Account) SetEula(eula *File) {
 func (a *Account) SetFinancing(financing *AccountFinancing) {
 	a.Financing = financing
 	a.require(accountFieldFinancing)
+}
+
+// SetFundsReleaseAt sets the FundsReleaseAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetFundsReleaseAt(fundsReleaseAt *string) {
+	a.FundsReleaseAt = fundsReleaseAt
+	a.require(accountFieldFundsReleaseAt)
 }
 
 // SetHomePreferences sets the HomePreferences field and marks it as non-optional;

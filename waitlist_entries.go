@@ -267,7 +267,7 @@ type ListWaitlistEntriesRequest struct {
 	BuyerAccountID *string `json:"-" url:"buyer_account_id,omitempty"`
 	// Only return signups in this state. Canceled signups are returned only when `status` is `canceled`.
 	Status *ListWaitlistEntriesRequestStatus `json:"-" url:"status,omitempty"`
-	// Search signups by the user's name or username, or the name of the account they were submitted on behalf of. An account ID, prefixed `biz_`, matches signups submitted on behalf of that account, and an exact email address matches that user's signups.
+	// Search signups by the user's name or username, or the name of the account they were submitted on behalf of. An account ID, prefixed `biz_`, matches signups submitted on behalf of that account, and a user ID, prefixed `user_`, or an exact email address matches that user's signups.
 	Query *string `json:"-" url:"query,omitempty"`
 	// Only return signups submitted at or before this ISO 8601 timestamp.
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
