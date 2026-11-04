@@ -26516,6 +26516,14 @@ client.PartnerReferralRequests.List(
 <dl>
 <dd>
 
+**referringAccountID:** `*string` — Only the referral links created for memberships on this business's team, prefixed `biz_`. Needs read access to the business: its owner sees every member's links, a manager the links of the people reporting to them, and other members only their own.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **status:** `*whopsdk.ListPartnerReferralRequestsRequestStatus` — Only requests with this approval status.
     
 </dd>
