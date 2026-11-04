@@ -603,19 +603,20 @@ var (
 	createCardsResponseFieldBilling         = big.NewInt(1 << 0)
 	createCardsResponseFieldCanceledAt      = big.NewInt(1 << 1)
 	createCardsResponseFieldCreatedAt       = big.NewInt(1 << 2)
-	createCardsResponseFieldExpirationMonth = big.NewInt(1 << 3)
-	createCardsResponseFieldExpirationYear  = big.NewInt(1 << 4)
-	createCardsResponseFieldID              = big.NewInt(1 << 5)
-	createCardsResponseFieldIssued          = big.NewInt(1 << 6)
-	createCardsResponseFieldLast4           = big.NewInt(1 << 7)
-	createCardsResponseFieldLimit           = big.NewInt(1 << 8)
-	createCardsResponseFieldName            = big.NewInt(1 << 9)
-	createCardsResponseFieldObject          = big.NewInt(1 << 10)
-	createCardsResponseFieldSecrets         = big.NewInt(1 << 11)
-	createCardsResponseFieldSpentLastMonth  = big.NewInt(1 << 12)
-	createCardsResponseFieldStatus          = big.NewInt(1 << 13)
-	createCardsResponseFieldType            = big.NewInt(1 << 14)
-	createCardsResponseFieldUserID          = big.NewInt(1 << 15)
+	createCardsResponseFieldDigitalWallets  = big.NewInt(1 << 3)
+	createCardsResponseFieldExpirationMonth = big.NewInt(1 << 4)
+	createCardsResponseFieldExpirationYear  = big.NewInt(1 << 5)
+	createCardsResponseFieldID              = big.NewInt(1 << 6)
+	createCardsResponseFieldIssued          = big.NewInt(1 << 7)
+	createCardsResponseFieldLast4           = big.NewInt(1 << 8)
+	createCardsResponseFieldLimit           = big.NewInt(1 << 9)
+	createCardsResponseFieldName            = big.NewInt(1 << 10)
+	createCardsResponseFieldObject          = big.NewInt(1 << 11)
+	createCardsResponseFieldSecrets         = big.NewInt(1 << 12)
+	createCardsResponseFieldSpentLastMonth  = big.NewInt(1 << 13)
+	createCardsResponseFieldStatus          = big.NewInt(1 << 14)
+	createCardsResponseFieldType            = big.NewInt(1 << 15)
+	createCardsResponseFieldUserID          = big.NewInt(1 << 16)
 )
 
 // createCardsResponseNullableFields maps the wire names of CreateCardsResponse's nullable fields (required or optional) to their field bits.
@@ -623,6 +624,7 @@ var createCardsResponseNullableFields = map[string]*big.Int{
 	"billing":          createCardsResponseFieldBilling,
 	"canceled_at":      createCardsResponseFieldCanceledAt,
 	"created_at":       createCardsResponseFieldCreatedAt,
+	"digital_wallets":  createCardsResponseFieldDigitalWallets,
 	"expiration_month": createCardsResponseFieldExpirationMonth,
 	"expiration_year":  createCardsResponseFieldExpirationYear,
 	"last4":            createCardsResponseFieldLast4,
@@ -642,6 +644,8 @@ type CreateCardsResponse struct {
 	CanceledAt *time.Time `json:"canceled_at,omitempty" url:"canceled_at,omitempty"`
 	// When the card was created.
 	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
+	// The digital wallets the card has been added to. List Cards, Update Card, and webhook payloads return `null`, as does Retrieve Card when the wallets cannot be retrieved.
+	DigitalWallets []CreateCardsResponseDigitalWalletsItem `json:"digital_wallets,omitempty" url:"digital_wallets,omitempty"`
 	// Card expiration month.
 	ExpirationMonth *string `json:"expiration_month,omitempty" url:"expiration_month,omitempty"`
 	// Card expiration year.
@@ -694,6 +698,13 @@ func (c *CreateCardsResponse) GetCreatedAt() *time.Time {
 		return nil
 	}
 	return c.CreatedAt
+}
+
+func (c *CreateCardsResponse) GetDigitalWallets() []CreateCardsResponseDigitalWalletsItem {
+	if c == nil {
+		return nil
+	}
+	return c.DigitalWallets
 }
 
 func (c *CreateCardsResponse) GetExpirationMonth() *string {
@@ -822,6 +833,13 @@ func (c *CreateCardsResponse) SetCanceledAt(canceledAt *time.Time) {
 func (c *CreateCardsResponse) SetCreatedAt(createdAt *time.Time) {
 	c.CreatedAt = createdAt
 	c.require(createCardsResponseFieldCreatedAt)
+}
+
+// SetDigitalWallets sets the DigitalWallets field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCardsResponse) SetDigitalWallets(digitalWallets []CreateCardsResponseDigitalWalletsItem) {
+	c.DigitalWallets = digitalWallets
+	c.require(createCardsResponseFieldDigitalWallets)
 }
 
 // SetExpirationMonth sets the ExpirationMonth field and marks it as non-optional;
@@ -1164,6 +1182,28 @@ func (c *CreateCardsResponseBilling) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+type CreateCardsResponseDigitalWalletsItem string
+
+const (
+	CreateCardsResponseDigitalWalletsItemApplePay  CreateCardsResponseDigitalWalletsItem = "apple_pay"
+	CreateCardsResponseDigitalWalletsItemGooglePay CreateCardsResponseDigitalWalletsItem = "google_pay"
+)
+
+func NewCreateCardsResponseDigitalWalletsItemFromString(s string) (CreateCardsResponseDigitalWalletsItem, error) {
+	switch s {
+	case "apple_pay":
+		return CreateCardsResponseDigitalWalletsItemApplePay, nil
+	case "google_pay":
+		return CreateCardsResponseDigitalWalletsItemGooglePay, nil
+	}
+	var t CreateCardsResponseDigitalWalletsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateCardsResponseDigitalWalletsItem) Ptr() *CreateCardsResponseDigitalWalletsItem {
+	return &c
 }
 
 var (
@@ -1619,19 +1659,20 @@ var (
 	listCardsResponseDataItemFieldBilling         = big.NewInt(1 << 0)
 	listCardsResponseDataItemFieldCanceledAt      = big.NewInt(1 << 1)
 	listCardsResponseDataItemFieldCreatedAt       = big.NewInt(1 << 2)
-	listCardsResponseDataItemFieldExpirationMonth = big.NewInt(1 << 3)
-	listCardsResponseDataItemFieldExpirationYear  = big.NewInt(1 << 4)
-	listCardsResponseDataItemFieldID              = big.NewInt(1 << 5)
-	listCardsResponseDataItemFieldIssued          = big.NewInt(1 << 6)
-	listCardsResponseDataItemFieldLast4           = big.NewInt(1 << 7)
-	listCardsResponseDataItemFieldLimit           = big.NewInt(1 << 8)
-	listCardsResponseDataItemFieldName            = big.NewInt(1 << 9)
-	listCardsResponseDataItemFieldObject          = big.NewInt(1 << 10)
-	listCardsResponseDataItemFieldSecrets         = big.NewInt(1 << 11)
-	listCardsResponseDataItemFieldSpentLastMonth  = big.NewInt(1 << 12)
-	listCardsResponseDataItemFieldStatus          = big.NewInt(1 << 13)
-	listCardsResponseDataItemFieldType            = big.NewInt(1 << 14)
-	listCardsResponseDataItemFieldUserID          = big.NewInt(1 << 15)
+	listCardsResponseDataItemFieldDigitalWallets  = big.NewInt(1 << 3)
+	listCardsResponseDataItemFieldExpirationMonth = big.NewInt(1 << 4)
+	listCardsResponseDataItemFieldExpirationYear  = big.NewInt(1 << 5)
+	listCardsResponseDataItemFieldID              = big.NewInt(1 << 6)
+	listCardsResponseDataItemFieldIssued          = big.NewInt(1 << 7)
+	listCardsResponseDataItemFieldLast4           = big.NewInt(1 << 8)
+	listCardsResponseDataItemFieldLimit           = big.NewInt(1 << 9)
+	listCardsResponseDataItemFieldName            = big.NewInt(1 << 10)
+	listCardsResponseDataItemFieldObject          = big.NewInt(1 << 11)
+	listCardsResponseDataItemFieldSecrets         = big.NewInt(1 << 12)
+	listCardsResponseDataItemFieldSpentLastMonth  = big.NewInt(1 << 13)
+	listCardsResponseDataItemFieldStatus          = big.NewInt(1 << 14)
+	listCardsResponseDataItemFieldType            = big.NewInt(1 << 15)
+	listCardsResponseDataItemFieldUserID          = big.NewInt(1 << 16)
 )
 
 // listCardsResponseDataItemNullableFields maps the wire names of ListCardsResponseDataItem's nullable fields (required or optional) to their field bits.
@@ -1639,6 +1680,7 @@ var listCardsResponseDataItemNullableFields = map[string]*big.Int{
 	"billing":          listCardsResponseDataItemFieldBilling,
 	"canceled_at":      listCardsResponseDataItemFieldCanceledAt,
 	"created_at":       listCardsResponseDataItemFieldCreatedAt,
+	"digital_wallets":  listCardsResponseDataItemFieldDigitalWallets,
 	"expiration_month": listCardsResponseDataItemFieldExpirationMonth,
 	"expiration_year":  listCardsResponseDataItemFieldExpirationYear,
 	"last4":            listCardsResponseDataItemFieldLast4,
@@ -1658,6 +1700,8 @@ type ListCardsResponseDataItem struct {
 	CanceledAt *time.Time `json:"canceled_at,omitempty" url:"canceled_at,omitempty"`
 	// When the card was created.
 	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
+	// The digital wallets the card has been added to. List Cards, Update Card, and webhook payloads return `null`, as does Retrieve Card when the wallets cannot be retrieved.
+	DigitalWallets []ListCardsResponseDataItemDigitalWalletsItem `json:"digital_wallets,omitempty" url:"digital_wallets,omitempty"`
 	// Card expiration month.
 	ExpirationMonth *string `json:"expiration_month,omitempty" url:"expiration_month,omitempty"`
 	// Card expiration year.
@@ -1710,6 +1754,13 @@ func (l *ListCardsResponseDataItem) GetCreatedAt() *time.Time {
 		return nil
 	}
 	return l.CreatedAt
+}
+
+func (l *ListCardsResponseDataItem) GetDigitalWallets() []ListCardsResponseDataItemDigitalWalletsItem {
+	if l == nil {
+		return nil
+	}
+	return l.DigitalWallets
 }
 
 func (l *ListCardsResponseDataItem) GetExpirationMonth() *string {
@@ -1838,6 +1889,13 @@ func (l *ListCardsResponseDataItem) SetCanceledAt(canceledAt *time.Time) {
 func (l *ListCardsResponseDataItem) SetCreatedAt(createdAt *time.Time) {
 	l.CreatedAt = createdAt
 	l.require(listCardsResponseDataItemFieldCreatedAt)
+}
+
+// SetDigitalWallets sets the DigitalWallets field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListCardsResponseDataItem) SetDigitalWallets(digitalWallets []ListCardsResponseDataItemDigitalWalletsItem) {
+	l.DigitalWallets = digitalWallets
+	l.require(listCardsResponseDataItemFieldDigitalWallets)
 }
 
 // SetExpirationMonth sets the ExpirationMonth field and marks it as non-optional;
@@ -2180,6 +2238,28 @@ func (l *ListCardsResponseDataItemBilling) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+type ListCardsResponseDataItemDigitalWalletsItem string
+
+const (
+	ListCardsResponseDataItemDigitalWalletsItemApplePay  ListCardsResponseDataItemDigitalWalletsItem = "apple_pay"
+	ListCardsResponseDataItemDigitalWalletsItemGooglePay ListCardsResponseDataItemDigitalWalletsItem = "google_pay"
+)
+
+func NewListCardsResponseDataItemDigitalWalletsItemFromString(s string) (ListCardsResponseDataItemDigitalWalletsItem, error) {
+	switch s {
+	case "apple_pay":
+		return ListCardsResponseDataItemDigitalWalletsItemApplePay, nil
+	case "google_pay":
+		return ListCardsResponseDataItemDigitalWalletsItemGooglePay, nil
+	}
+	var t ListCardsResponseDataItemDigitalWalletsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListCardsResponseDataItemDigitalWalletsItem) Ptr() *ListCardsResponseDataItemDigitalWalletsItem {
+	return &l
 }
 
 var (
@@ -4695,19 +4775,20 @@ var (
 	postCardCanceledPayloadDataFieldBilling         = big.NewInt(1 << 0)
 	postCardCanceledPayloadDataFieldCanceledAt      = big.NewInt(1 << 1)
 	postCardCanceledPayloadDataFieldCreatedAt       = big.NewInt(1 << 2)
-	postCardCanceledPayloadDataFieldExpirationMonth = big.NewInt(1 << 3)
-	postCardCanceledPayloadDataFieldExpirationYear  = big.NewInt(1 << 4)
-	postCardCanceledPayloadDataFieldID              = big.NewInt(1 << 5)
-	postCardCanceledPayloadDataFieldIssued          = big.NewInt(1 << 6)
-	postCardCanceledPayloadDataFieldLast4           = big.NewInt(1 << 7)
-	postCardCanceledPayloadDataFieldLimit           = big.NewInt(1 << 8)
-	postCardCanceledPayloadDataFieldName            = big.NewInt(1 << 9)
-	postCardCanceledPayloadDataFieldObject          = big.NewInt(1 << 10)
-	postCardCanceledPayloadDataFieldSecrets         = big.NewInt(1 << 11)
-	postCardCanceledPayloadDataFieldSpentLastMonth  = big.NewInt(1 << 12)
-	postCardCanceledPayloadDataFieldStatus          = big.NewInt(1 << 13)
-	postCardCanceledPayloadDataFieldType            = big.NewInt(1 << 14)
-	postCardCanceledPayloadDataFieldUserID          = big.NewInt(1 << 15)
+	postCardCanceledPayloadDataFieldDigitalWallets  = big.NewInt(1 << 3)
+	postCardCanceledPayloadDataFieldExpirationMonth = big.NewInt(1 << 4)
+	postCardCanceledPayloadDataFieldExpirationYear  = big.NewInt(1 << 5)
+	postCardCanceledPayloadDataFieldID              = big.NewInt(1 << 6)
+	postCardCanceledPayloadDataFieldIssued          = big.NewInt(1 << 7)
+	postCardCanceledPayloadDataFieldLast4           = big.NewInt(1 << 8)
+	postCardCanceledPayloadDataFieldLimit           = big.NewInt(1 << 9)
+	postCardCanceledPayloadDataFieldName            = big.NewInt(1 << 10)
+	postCardCanceledPayloadDataFieldObject          = big.NewInt(1 << 11)
+	postCardCanceledPayloadDataFieldSecrets         = big.NewInt(1 << 12)
+	postCardCanceledPayloadDataFieldSpentLastMonth  = big.NewInt(1 << 13)
+	postCardCanceledPayloadDataFieldStatus          = big.NewInt(1 << 14)
+	postCardCanceledPayloadDataFieldType            = big.NewInt(1 << 15)
+	postCardCanceledPayloadDataFieldUserID          = big.NewInt(1 << 16)
 )
 
 // postCardCanceledPayloadDataNullableFields maps the wire names of PostCardCanceledPayloadData's nullable fields (required or optional) to their field bits.
@@ -4715,6 +4796,7 @@ var postCardCanceledPayloadDataNullableFields = map[string]*big.Int{
 	"billing":          postCardCanceledPayloadDataFieldBilling,
 	"canceled_at":      postCardCanceledPayloadDataFieldCanceledAt,
 	"created_at":       postCardCanceledPayloadDataFieldCreatedAt,
+	"digital_wallets":  postCardCanceledPayloadDataFieldDigitalWallets,
 	"expiration_month": postCardCanceledPayloadDataFieldExpirationMonth,
 	"expiration_year":  postCardCanceledPayloadDataFieldExpirationYear,
 	"last4":            postCardCanceledPayloadDataFieldLast4,
@@ -4734,6 +4816,8 @@ type PostCardCanceledPayloadData struct {
 	CanceledAt *time.Time `json:"canceled_at,omitempty" url:"canceled_at,omitempty"`
 	// When the card was created.
 	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
+	// The digital wallets the card has been added to. List Cards, Update Card, and webhook payloads return `null`, as does Retrieve Card when the wallets cannot be retrieved.
+	DigitalWallets []PostCardCanceledPayloadDataDigitalWalletsItem `json:"digital_wallets,omitempty" url:"digital_wallets,omitempty"`
 	// Card expiration month.
 	ExpirationMonth *string `json:"expiration_month,omitempty" url:"expiration_month,omitempty"`
 	// Card expiration year.
@@ -4786,6 +4870,13 @@ func (p *PostCardCanceledPayloadData) GetCreatedAt() *time.Time {
 		return nil
 	}
 	return p.CreatedAt
+}
+
+func (p *PostCardCanceledPayloadData) GetDigitalWallets() []PostCardCanceledPayloadDataDigitalWalletsItem {
+	if p == nil {
+		return nil
+	}
+	return p.DigitalWallets
 }
 
 func (p *PostCardCanceledPayloadData) GetExpirationMonth() *string {
@@ -4914,6 +5005,13 @@ func (p *PostCardCanceledPayloadData) SetCanceledAt(canceledAt *time.Time) {
 func (p *PostCardCanceledPayloadData) SetCreatedAt(createdAt *time.Time) {
 	p.CreatedAt = createdAt
 	p.require(postCardCanceledPayloadDataFieldCreatedAt)
+}
+
+// SetDigitalWallets sets the DigitalWallets field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostCardCanceledPayloadData) SetDigitalWallets(digitalWallets []PostCardCanceledPayloadDataDigitalWalletsItem) {
+	p.DigitalWallets = digitalWallets
+	p.require(postCardCanceledPayloadDataFieldDigitalWallets)
 }
 
 // SetExpirationMonth sets the ExpirationMonth field and marks it as non-optional;
@@ -5256,6 +5354,28 @@ func (p *PostCardCanceledPayloadDataBilling) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+type PostCardCanceledPayloadDataDigitalWalletsItem string
+
+const (
+	PostCardCanceledPayloadDataDigitalWalletsItemApplePay  PostCardCanceledPayloadDataDigitalWalletsItem = "apple_pay"
+	PostCardCanceledPayloadDataDigitalWalletsItemGooglePay PostCardCanceledPayloadDataDigitalWalletsItem = "google_pay"
+)
+
+func NewPostCardCanceledPayloadDataDigitalWalletsItemFromString(s string) (PostCardCanceledPayloadDataDigitalWalletsItem, error) {
+	switch s {
+	case "apple_pay":
+		return PostCardCanceledPayloadDataDigitalWalletsItemApplePay, nil
+	case "google_pay":
+		return PostCardCanceledPayloadDataDigitalWalletsItemGooglePay, nil
+	}
+	var t PostCardCanceledPayloadDataDigitalWalletsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostCardCanceledPayloadDataDigitalWalletsItem) Ptr() *PostCardCanceledPayloadDataDigitalWalletsItem {
+	return &p
 }
 
 var (
@@ -5891,19 +6011,20 @@ var (
 	postCardCreatedPayloadDataFieldBilling         = big.NewInt(1 << 0)
 	postCardCreatedPayloadDataFieldCanceledAt      = big.NewInt(1 << 1)
 	postCardCreatedPayloadDataFieldCreatedAt       = big.NewInt(1 << 2)
-	postCardCreatedPayloadDataFieldExpirationMonth = big.NewInt(1 << 3)
-	postCardCreatedPayloadDataFieldExpirationYear  = big.NewInt(1 << 4)
-	postCardCreatedPayloadDataFieldID              = big.NewInt(1 << 5)
-	postCardCreatedPayloadDataFieldIssued          = big.NewInt(1 << 6)
-	postCardCreatedPayloadDataFieldLast4           = big.NewInt(1 << 7)
-	postCardCreatedPayloadDataFieldLimit           = big.NewInt(1 << 8)
-	postCardCreatedPayloadDataFieldName            = big.NewInt(1 << 9)
-	postCardCreatedPayloadDataFieldObject          = big.NewInt(1 << 10)
-	postCardCreatedPayloadDataFieldSecrets         = big.NewInt(1 << 11)
-	postCardCreatedPayloadDataFieldSpentLastMonth  = big.NewInt(1 << 12)
-	postCardCreatedPayloadDataFieldStatus          = big.NewInt(1 << 13)
-	postCardCreatedPayloadDataFieldType            = big.NewInt(1 << 14)
-	postCardCreatedPayloadDataFieldUserID          = big.NewInt(1 << 15)
+	postCardCreatedPayloadDataFieldDigitalWallets  = big.NewInt(1 << 3)
+	postCardCreatedPayloadDataFieldExpirationMonth = big.NewInt(1 << 4)
+	postCardCreatedPayloadDataFieldExpirationYear  = big.NewInt(1 << 5)
+	postCardCreatedPayloadDataFieldID              = big.NewInt(1 << 6)
+	postCardCreatedPayloadDataFieldIssued          = big.NewInt(1 << 7)
+	postCardCreatedPayloadDataFieldLast4           = big.NewInt(1 << 8)
+	postCardCreatedPayloadDataFieldLimit           = big.NewInt(1 << 9)
+	postCardCreatedPayloadDataFieldName            = big.NewInt(1 << 10)
+	postCardCreatedPayloadDataFieldObject          = big.NewInt(1 << 11)
+	postCardCreatedPayloadDataFieldSecrets         = big.NewInt(1 << 12)
+	postCardCreatedPayloadDataFieldSpentLastMonth  = big.NewInt(1 << 13)
+	postCardCreatedPayloadDataFieldStatus          = big.NewInt(1 << 14)
+	postCardCreatedPayloadDataFieldType            = big.NewInt(1 << 15)
+	postCardCreatedPayloadDataFieldUserID          = big.NewInt(1 << 16)
 )
 
 // postCardCreatedPayloadDataNullableFields maps the wire names of PostCardCreatedPayloadData's nullable fields (required or optional) to their field bits.
@@ -5911,6 +6032,7 @@ var postCardCreatedPayloadDataNullableFields = map[string]*big.Int{
 	"billing":          postCardCreatedPayloadDataFieldBilling,
 	"canceled_at":      postCardCreatedPayloadDataFieldCanceledAt,
 	"created_at":       postCardCreatedPayloadDataFieldCreatedAt,
+	"digital_wallets":  postCardCreatedPayloadDataFieldDigitalWallets,
 	"expiration_month": postCardCreatedPayloadDataFieldExpirationMonth,
 	"expiration_year":  postCardCreatedPayloadDataFieldExpirationYear,
 	"last4":            postCardCreatedPayloadDataFieldLast4,
@@ -5930,6 +6052,8 @@ type PostCardCreatedPayloadData struct {
 	CanceledAt *time.Time `json:"canceled_at,omitempty" url:"canceled_at,omitempty"`
 	// When the card was created.
 	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
+	// The digital wallets the card has been added to. List Cards, Update Card, and webhook payloads return `null`, as does Retrieve Card when the wallets cannot be retrieved.
+	DigitalWallets []PostCardCreatedPayloadDataDigitalWalletsItem `json:"digital_wallets,omitempty" url:"digital_wallets,omitempty"`
 	// Card expiration month.
 	ExpirationMonth *string `json:"expiration_month,omitempty" url:"expiration_month,omitempty"`
 	// Card expiration year.
@@ -5982,6 +6106,13 @@ func (p *PostCardCreatedPayloadData) GetCreatedAt() *time.Time {
 		return nil
 	}
 	return p.CreatedAt
+}
+
+func (p *PostCardCreatedPayloadData) GetDigitalWallets() []PostCardCreatedPayloadDataDigitalWalletsItem {
+	if p == nil {
+		return nil
+	}
+	return p.DigitalWallets
 }
 
 func (p *PostCardCreatedPayloadData) GetExpirationMonth() *string {
@@ -6110,6 +6241,13 @@ func (p *PostCardCreatedPayloadData) SetCanceledAt(canceledAt *time.Time) {
 func (p *PostCardCreatedPayloadData) SetCreatedAt(createdAt *time.Time) {
 	p.CreatedAt = createdAt
 	p.require(postCardCreatedPayloadDataFieldCreatedAt)
+}
+
+// SetDigitalWallets sets the DigitalWallets field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostCardCreatedPayloadData) SetDigitalWallets(digitalWallets []PostCardCreatedPayloadDataDigitalWalletsItem) {
+	p.DigitalWallets = digitalWallets
+	p.require(postCardCreatedPayloadDataFieldDigitalWallets)
 }
 
 // SetExpirationMonth sets the ExpirationMonth field and marks it as non-optional;
@@ -6452,6 +6590,28 @@ func (p *PostCardCreatedPayloadDataBilling) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+type PostCardCreatedPayloadDataDigitalWalletsItem string
+
+const (
+	PostCardCreatedPayloadDataDigitalWalletsItemApplePay  PostCardCreatedPayloadDataDigitalWalletsItem = "apple_pay"
+	PostCardCreatedPayloadDataDigitalWalletsItemGooglePay PostCardCreatedPayloadDataDigitalWalletsItem = "google_pay"
+)
+
+func NewPostCardCreatedPayloadDataDigitalWalletsItemFromString(s string) (PostCardCreatedPayloadDataDigitalWalletsItem, error) {
+	switch s {
+	case "apple_pay":
+		return PostCardCreatedPayloadDataDigitalWalletsItemApplePay, nil
+	case "google_pay":
+		return PostCardCreatedPayloadDataDigitalWalletsItemGooglePay, nil
+	}
+	var t PostCardCreatedPayloadDataDigitalWalletsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostCardCreatedPayloadDataDigitalWalletsItem) Ptr() *PostCardCreatedPayloadDataDigitalWalletsItem {
+	return &p
 }
 
 var (
@@ -7087,19 +7247,20 @@ var (
 	postCardFrozenPayloadDataFieldBilling         = big.NewInt(1 << 0)
 	postCardFrozenPayloadDataFieldCanceledAt      = big.NewInt(1 << 1)
 	postCardFrozenPayloadDataFieldCreatedAt       = big.NewInt(1 << 2)
-	postCardFrozenPayloadDataFieldExpirationMonth = big.NewInt(1 << 3)
-	postCardFrozenPayloadDataFieldExpirationYear  = big.NewInt(1 << 4)
-	postCardFrozenPayloadDataFieldID              = big.NewInt(1 << 5)
-	postCardFrozenPayloadDataFieldIssued          = big.NewInt(1 << 6)
-	postCardFrozenPayloadDataFieldLast4           = big.NewInt(1 << 7)
-	postCardFrozenPayloadDataFieldLimit           = big.NewInt(1 << 8)
-	postCardFrozenPayloadDataFieldName            = big.NewInt(1 << 9)
-	postCardFrozenPayloadDataFieldObject          = big.NewInt(1 << 10)
-	postCardFrozenPayloadDataFieldSecrets         = big.NewInt(1 << 11)
-	postCardFrozenPayloadDataFieldSpentLastMonth  = big.NewInt(1 << 12)
-	postCardFrozenPayloadDataFieldStatus          = big.NewInt(1 << 13)
-	postCardFrozenPayloadDataFieldType            = big.NewInt(1 << 14)
-	postCardFrozenPayloadDataFieldUserID          = big.NewInt(1 << 15)
+	postCardFrozenPayloadDataFieldDigitalWallets  = big.NewInt(1 << 3)
+	postCardFrozenPayloadDataFieldExpirationMonth = big.NewInt(1 << 4)
+	postCardFrozenPayloadDataFieldExpirationYear  = big.NewInt(1 << 5)
+	postCardFrozenPayloadDataFieldID              = big.NewInt(1 << 6)
+	postCardFrozenPayloadDataFieldIssued          = big.NewInt(1 << 7)
+	postCardFrozenPayloadDataFieldLast4           = big.NewInt(1 << 8)
+	postCardFrozenPayloadDataFieldLimit           = big.NewInt(1 << 9)
+	postCardFrozenPayloadDataFieldName            = big.NewInt(1 << 10)
+	postCardFrozenPayloadDataFieldObject          = big.NewInt(1 << 11)
+	postCardFrozenPayloadDataFieldSecrets         = big.NewInt(1 << 12)
+	postCardFrozenPayloadDataFieldSpentLastMonth  = big.NewInt(1 << 13)
+	postCardFrozenPayloadDataFieldStatus          = big.NewInt(1 << 14)
+	postCardFrozenPayloadDataFieldType            = big.NewInt(1 << 15)
+	postCardFrozenPayloadDataFieldUserID          = big.NewInt(1 << 16)
 )
 
 // postCardFrozenPayloadDataNullableFields maps the wire names of PostCardFrozenPayloadData's nullable fields (required or optional) to their field bits.
@@ -7107,6 +7268,7 @@ var postCardFrozenPayloadDataNullableFields = map[string]*big.Int{
 	"billing":          postCardFrozenPayloadDataFieldBilling,
 	"canceled_at":      postCardFrozenPayloadDataFieldCanceledAt,
 	"created_at":       postCardFrozenPayloadDataFieldCreatedAt,
+	"digital_wallets":  postCardFrozenPayloadDataFieldDigitalWallets,
 	"expiration_month": postCardFrozenPayloadDataFieldExpirationMonth,
 	"expiration_year":  postCardFrozenPayloadDataFieldExpirationYear,
 	"last4":            postCardFrozenPayloadDataFieldLast4,
@@ -7126,6 +7288,8 @@ type PostCardFrozenPayloadData struct {
 	CanceledAt *time.Time `json:"canceled_at,omitempty" url:"canceled_at,omitempty"`
 	// When the card was created.
 	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
+	// The digital wallets the card has been added to. List Cards, Update Card, and webhook payloads return `null`, as does Retrieve Card when the wallets cannot be retrieved.
+	DigitalWallets []PostCardFrozenPayloadDataDigitalWalletsItem `json:"digital_wallets,omitempty" url:"digital_wallets,omitempty"`
 	// Card expiration month.
 	ExpirationMonth *string `json:"expiration_month,omitempty" url:"expiration_month,omitempty"`
 	// Card expiration year.
@@ -7178,6 +7342,13 @@ func (p *PostCardFrozenPayloadData) GetCreatedAt() *time.Time {
 		return nil
 	}
 	return p.CreatedAt
+}
+
+func (p *PostCardFrozenPayloadData) GetDigitalWallets() []PostCardFrozenPayloadDataDigitalWalletsItem {
+	if p == nil {
+		return nil
+	}
+	return p.DigitalWallets
 }
 
 func (p *PostCardFrozenPayloadData) GetExpirationMonth() *string {
@@ -7306,6 +7477,13 @@ func (p *PostCardFrozenPayloadData) SetCanceledAt(canceledAt *time.Time) {
 func (p *PostCardFrozenPayloadData) SetCreatedAt(createdAt *time.Time) {
 	p.CreatedAt = createdAt
 	p.require(postCardFrozenPayloadDataFieldCreatedAt)
+}
+
+// SetDigitalWallets sets the DigitalWallets field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostCardFrozenPayloadData) SetDigitalWallets(digitalWallets []PostCardFrozenPayloadDataDigitalWalletsItem) {
+	p.DigitalWallets = digitalWallets
+	p.require(postCardFrozenPayloadDataFieldDigitalWallets)
 }
 
 // SetExpirationMonth sets the ExpirationMonth field and marks it as non-optional;
@@ -7648,6 +7826,28 @@ func (p *PostCardFrozenPayloadDataBilling) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+type PostCardFrozenPayloadDataDigitalWalletsItem string
+
+const (
+	PostCardFrozenPayloadDataDigitalWalletsItemApplePay  PostCardFrozenPayloadDataDigitalWalletsItem = "apple_pay"
+	PostCardFrozenPayloadDataDigitalWalletsItemGooglePay PostCardFrozenPayloadDataDigitalWalletsItem = "google_pay"
+)
+
+func NewPostCardFrozenPayloadDataDigitalWalletsItemFromString(s string) (PostCardFrozenPayloadDataDigitalWalletsItem, error) {
+	switch s {
+	case "apple_pay":
+		return PostCardFrozenPayloadDataDigitalWalletsItemApplePay, nil
+	case "google_pay":
+		return PostCardFrozenPayloadDataDigitalWalletsItemGooglePay, nil
+	}
+	var t PostCardFrozenPayloadDataDigitalWalletsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostCardFrozenPayloadDataDigitalWalletsItem) Ptr() *PostCardFrozenPayloadDataDigitalWalletsItem {
+	return &p
 }
 
 var (
@@ -9613,19 +9813,20 @@ var (
 	postCardUpdatedPayloadDataFieldBilling         = big.NewInt(1 << 0)
 	postCardUpdatedPayloadDataFieldCanceledAt      = big.NewInt(1 << 1)
 	postCardUpdatedPayloadDataFieldCreatedAt       = big.NewInt(1 << 2)
-	postCardUpdatedPayloadDataFieldExpirationMonth = big.NewInt(1 << 3)
-	postCardUpdatedPayloadDataFieldExpirationYear  = big.NewInt(1 << 4)
-	postCardUpdatedPayloadDataFieldID              = big.NewInt(1 << 5)
-	postCardUpdatedPayloadDataFieldIssued          = big.NewInt(1 << 6)
-	postCardUpdatedPayloadDataFieldLast4           = big.NewInt(1 << 7)
-	postCardUpdatedPayloadDataFieldLimit           = big.NewInt(1 << 8)
-	postCardUpdatedPayloadDataFieldName            = big.NewInt(1 << 9)
-	postCardUpdatedPayloadDataFieldObject          = big.NewInt(1 << 10)
-	postCardUpdatedPayloadDataFieldSecrets         = big.NewInt(1 << 11)
-	postCardUpdatedPayloadDataFieldSpentLastMonth  = big.NewInt(1 << 12)
-	postCardUpdatedPayloadDataFieldStatus          = big.NewInt(1 << 13)
-	postCardUpdatedPayloadDataFieldType            = big.NewInt(1 << 14)
-	postCardUpdatedPayloadDataFieldUserID          = big.NewInt(1 << 15)
+	postCardUpdatedPayloadDataFieldDigitalWallets  = big.NewInt(1 << 3)
+	postCardUpdatedPayloadDataFieldExpirationMonth = big.NewInt(1 << 4)
+	postCardUpdatedPayloadDataFieldExpirationYear  = big.NewInt(1 << 5)
+	postCardUpdatedPayloadDataFieldID              = big.NewInt(1 << 6)
+	postCardUpdatedPayloadDataFieldIssued          = big.NewInt(1 << 7)
+	postCardUpdatedPayloadDataFieldLast4           = big.NewInt(1 << 8)
+	postCardUpdatedPayloadDataFieldLimit           = big.NewInt(1 << 9)
+	postCardUpdatedPayloadDataFieldName            = big.NewInt(1 << 10)
+	postCardUpdatedPayloadDataFieldObject          = big.NewInt(1 << 11)
+	postCardUpdatedPayloadDataFieldSecrets         = big.NewInt(1 << 12)
+	postCardUpdatedPayloadDataFieldSpentLastMonth  = big.NewInt(1 << 13)
+	postCardUpdatedPayloadDataFieldStatus          = big.NewInt(1 << 14)
+	postCardUpdatedPayloadDataFieldType            = big.NewInt(1 << 15)
+	postCardUpdatedPayloadDataFieldUserID          = big.NewInt(1 << 16)
 )
 
 // postCardUpdatedPayloadDataNullableFields maps the wire names of PostCardUpdatedPayloadData's nullable fields (required or optional) to their field bits.
@@ -9633,6 +9834,7 @@ var postCardUpdatedPayloadDataNullableFields = map[string]*big.Int{
 	"billing":          postCardUpdatedPayloadDataFieldBilling,
 	"canceled_at":      postCardUpdatedPayloadDataFieldCanceledAt,
 	"created_at":       postCardUpdatedPayloadDataFieldCreatedAt,
+	"digital_wallets":  postCardUpdatedPayloadDataFieldDigitalWallets,
 	"expiration_month": postCardUpdatedPayloadDataFieldExpirationMonth,
 	"expiration_year":  postCardUpdatedPayloadDataFieldExpirationYear,
 	"last4":            postCardUpdatedPayloadDataFieldLast4,
@@ -9652,6 +9854,8 @@ type PostCardUpdatedPayloadData struct {
 	CanceledAt *time.Time `json:"canceled_at,omitempty" url:"canceled_at,omitempty"`
 	// When the card was created.
 	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
+	// The digital wallets the card has been added to. List Cards, Update Card, and webhook payloads return `null`, as does Retrieve Card when the wallets cannot be retrieved.
+	DigitalWallets []PostCardUpdatedPayloadDataDigitalWalletsItem `json:"digital_wallets,omitempty" url:"digital_wallets,omitempty"`
 	// Card expiration month.
 	ExpirationMonth *string `json:"expiration_month,omitempty" url:"expiration_month,omitempty"`
 	// Card expiration year.
@@ -9704,6 +9908,13 @@ func (p *PostCardUpdatedPayloadData) GetCreatedAt() *time.Time {
 		return nil
 	}
 	return p.CreatedAt
+}
+
+func (p *PostCardUpdatedPayloadData) GetDigitalWallets() []PostCardUpdatedPayloadDataDigitalWalletsItem {
+	if p == nil {
+		return nil
+	}
+	return p.DigitalWallets
 }
 
 func (p *PostCardUpdatedPayloadData) GetExpirationMonth() *string {
@@ -9832,6 +10043,13 @@ func (p *PostCardUpdatedPayloadData) SetCanceledAt(canceledAt *time.Time) {
 func (p *PostCardUpdatedPayloadData) SetCreatedAt(createdAt *time.Time) {
 	p.CreatedAt = createdAt
 	p.require(postCardUpdatedPayloadDataFieldCreatedAt)
+}
+
+// SetDigitalWallets sets the DigitalWallets field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostCardUpdatedPayloadData) SetDigitalWallets(digitalWallets []PostCardUpdatedPayloadDataDigitalWalletsItem) {
+	p.DigitalWallets = digitalWallets
+	p.require(postCardUpdatedPayloadDataFieldDigitalWallets)
 }
 
 // SetExpirationMonth sets the ExpirationMonth field and marks it as non-optional;
@@ -10174,6 +10392,28 @@ func (p *PostCardUpdatedPayloadDataBilling) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+type PostCardUpdatedPayloadDataDigitalWalletsItem string
+
+const (
+	PostCardUpdatedPayloadDataDigitalWalletsItemApplePay  PostCardUpdatedPayloadDataDigitalWalletsItem = "apple_pay"
+	PostCardUpdatedPayloadDataDigitalWalletsItemGooglePay PostCardUpdatedPayloadDataDigitalWalletsItem = "google_pay"
+)
+
+func NewPostCardUpdatedPayloadDataDigitalWalletsItemFromString(s string) (PostCardUpdatedPayloadDataDigitalWalletsItem, error) {
+	switch s {
+	case "apple_pay":
+		return PostCardUpdatedPayloadDataDigitalWalletsItemApplePay, nil
+	case "google_pay":
+		return PostCardUpdatedPayloadDataDigitalWalletsItemGooglePay, nil
+	}
+	var t PostCardUpdatedPayloadDataDigitalWalletsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostCardUpdatedPayloadDataDigitalWalletsItem) Ptr() *PostCardUpdatedPayloadDataDigitalWalletsItem {
+	return &p
 }
 
 var (
@@ -10563,19 +10803,20 @@ var (
 	retrieveCardsResponseFieldBilling         = big.NewInt(1 << 0)
 	retrieveCardsResponseFieldCanceledAt      = big.NewInt(1 << 1)
 	retrieveCardsResponseFieldCreatedAt       = big.NewInt(1 << 2)
-	retrieveCardsResponseFieldExpirationMonth = big.NewInt(1 << 3)
-	retrieveCardsResponseFieldExpirationYear  = big.NewInt(1 << 4)
-	retrieveCardsResponseFieldID              = big.NewInt(1 << 5)
-	retrieveCardsResponseFieldIssued          = big.NewInt(1 << 6)
-	retrieveCardsResponseFieldLast4           = big.NewInt(1 << 7)
-	retrieveCardsResponseFieldLimit           = big.NewInt(1 << 8)
-	retrieveCardsResponseFieldName            = big.NewInt(1 << 9)
-	retrieveCardsResponseFieldObject          = big.NewInt(1 << 10)
-	retrieveCardsResponseFieldSecrets         = big.NewInt(1 << 11)
-	retrieveCardsResponseFieldSpentLastMonth  = big.NewInt(1 << 12)
-	retrieveCardsResponseFieldStatus          = big.NewInt(1 << 13)
-	retrieveCardsResponseFieldType            = big.NewInt(1 << 14)
-	retrieveCardsResponseFieldUserID          = big.NewInt(1 << 15)
+	retrieveCardsResponseFieldDigitalWallets  = big.NewInt(1 << 3)
+	retrieveCardsResponseFieldExpirationMonth = big.NewInt(1 << 4)
+	retrieveCardsResponseFieldExpirationYear  = big.NewInt(1 << 5)
+	retrieveCardsResponseFieldID              = big.NewInt(1 << 6)
+	retrieveCardsResponseFieldIssued          = big.NewInt(1 << 7)
+	retrieveCardsResponseFieldLast4           = big.NewInt(1 << 8)
+	retrieveCardsResponseFieldLimit           = big.NewInt(1 << 9)
+	retrieveCardsResponseFieldName            = big.NewInt(1 << 10)
+	retrieveCardsResponseFieldObject          = big.NewInt(1 << 11)
+	retrieveCardsResponseFieldSecrets         = big.NewInt(1 << 12)
+	retrieveCardsResponseFieldSpentLastMonth  = big.NewInt(1 << 13)
+	retrieveCardsResponseFieldStatus          = big.NewInt(1 << 14)
+	retrieveCardsResponseFieldType            = big.NewInt(1 << 15)
+	retrieveCardsResponseFieldUserID          = big.NewInt(1 << 16)
 )
 
 // retrieveCardsResponseNullableFields maps the wire names of RetrieveCardsResponse's nullable fields (required or optional) to their field bits.
@@ -10583,6 +10824,7 @@ var retrieveCardsResponseNullableFields = map[string]*big.Int{
 	"billing":          retrieveCardsResponseFieldBilling,
 	"canceled_at":      retrieveCardsResponseFieldCanceledAt,
 	"created_at":       retrieveCardsResponseFieldCreatedAt,
+	"digital_wallets":  retrieveCardsResponseFieldDigitalWallets,
 	"expiration_month": retrieveCardsResponseFieldExpirationMonth,
 	"expiration_year":  retrieveCardsResponseFieldExpirationYear,
 	"last4":            retrieveCardsResponseFieldLast4,
@@ -10602,6 +10844,8 @@ type RetrieveCardsResponse struct {
 	CanceledAt *time.Time `json:"canceled_at,omitempty" url:"canceled_at,omitempty"`
 	// When the card was created.
 	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
+	// The digital wallets the card has been added to. List Cards, Update Card, and webhook payloads return `null`, as does Retrieve Card when the wallets cannot be retrieved.
+	DigitalWallets []RetrieveCardsResponseDigitalWalletsItem `json:"digital_wallets,omitempty" url:"digital_wallets,omitempty"`
 	// Card expiration month.
 	ExpirationMonth *string `json:"expiration_month,omitempty" url:"expiration_month,omitempty"`
 	// Card expiration year.
@@ -10654,6 +10898,13 @@ func (r *RetrieveCardsResponse) GetCreatedAt() *time.Time {
 		return nil
 	}
 	return r.CreatedAt
+}
+
+func (r *RetrieveCardsResponse) GetDigitalWallets() []RetrieveCardsResponseDigitalWalletsItem {
+	if r == nil {
+		return nil
+	}
+	return r.DigitalWallets
 }
 
 func (r *RetrieveCardsResponse) GetExpirationMonth() *string {
@@ -10782,6 +11033,13 @@ func (r *RetrieveCardsResponse) SetCanceledAt(canceledAt *time.Time) {
 func (r *RetrieveCardsResponse) SetCreatedAt(createdAt *time.Time) {
 	r.CreatedAt = createdAt
 	r.require(retrieveCardsResponseFieldCreatedAt)
+}
+
+// SetDigitalWallets sets the DigitalWallets field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveCardsResponse) SetDigitalWallets(digitalWallets []RetrieveCardsResponseDigitalWalletsItem) {
+	r.DigitalWallets = digitalWallets
+	r.require(retrieveCardsResponseFieldDigitalWallets)
 }
 
 // SetExpirationMonth sets the ExpirationMonth field and marks it as non-optional;
@@ -11124,6 +11382,28 @@ func (r *RetrieveCardsResponseBilling) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", r)
+}
+
+type RetrieveCardsResponseDigitalWalletsItem string
+
+const (
+	RetrieveCardsResponseDigitalWalletsItemApplePay  RetrieveCardsResponseDigitalWalletsItem = "apple_pay"
+	RetrieveCardsResponseDigitalWalletsItemGooglePay RetrieveCardsResponseDigitalWalletsItem = "google_pay"
+)
+
+func NewRetrieveCardsResponseDigitalWalletsItemFromString(s string) (RetrieveCardsResponseDigitalWalletsItem, error) {
+	switch s {
+	case "apple_pay":
+		return RetrieveCardsResponseDigitalWalletsItemApplePay, nil
+	case "google_pay":
+		return RetrieveCardsResponseDigitalWalletsItemGooglePay, nil
+	}
+	var t RetrieveCardsResponseDigitalWalletsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrieveCardsResponseDigitalWalletsItem) Ptr() *RetrieveCardsResponseDigitalWalletsItem {
+	return &r
 }
 
 var (
@@ -11834,19 +12114,20 @@ var (
 	updateCardsResponseFieldBilling         = big.NewInt(1 << 0)
 	updateCardsResponseFieldCanceledAt      = big.NewInt(1 << 1)
 	updateCardsResponseFieldCreatedAt       = big.NewInt(1 << 2)
-	updateCardsResponseFieldExpirationMonth = big.NewInt(1 << 3)
-	updateCardsResponseFieldExpirationYear  = big.NewInt(1 << 4)
-	updateCardsResponseFieldID              = big.NewInt(1 << 5)
-	updateCardsResponseFieldIssued          = big.NewInt(1 << 6)
-	updateCardsResponseFieldLast4           = big.NewInt(1 << 7)
-	updateCardsResponseFieldLimit           = big.NewInt(1 << 8)
-	updateCardsResponseFieldName            = big.NewInt(1 << 9)
-	updateCardsResponseFieldObject          = big.NewInt(1 << 10)
-	updateCardsResponseFieldSecrets         = big.NewInt(1 << 11)
-	updateCardsResponseFieldSpentLastMonth  = big.NewInt(1 << 12)
-	updateCardsResponseFieldStatus          = big.NewInt(1 << 13)
-	updateCardsResponseFieldType            = big.NewInt(1 << 14)
-	updateCardsResponseFieldUserID          = big.NewInt(1 << 15)
+	updateCardsResponseFieldDigitalWallets  = big.NewInt(1 << 3)
+	updateCardsResponseFieldExpirationMonth = big.NewInt(1 << 4)
+	updateCardsResponseFieldExpirationYear  = big.NewInt(1 << 5)
+	updateCardsResponseFieldID              = big.NewInt(1 << 6)
+	updateCardsResponseFieldIssued          = big.NewInt(1 << 7)
+	updateCardsResponseFieldLast4           = big.NewInt(1 << 8)
+	updateCardsResponseFieldLimit           = big.NewInt(1 << 9)
+	updateCardsResponseFieldName            = big.NewInt(1 << 10)
+	updateCardsResponseFieldObject          = big.NewInt(1 << 11)
+	updateCardsResponseFieldSecrets         = big.NewInt(1 << 12)
+	updateCardsResponseFieldSpentLastMonth  = big.NewInt(1 << 13)
+	updateCardsResponseFieldStatus          = big.NewInt(1 << 14)
+	updateCardsResponseFieldType            = big.NewInt(1 << 15)
+	updateCardsResponseFieldUserID          = big.NewInt(1 << 16)
 )
 
 // updateCardsResponseNullableFields maps the wire names of UpdateCardsResponse's nullable fields (required or optional) to their field bits.
@@ -11854,6 +12135,7 @@ var updateCardsResponseNullableFields = map[string]*big.Int{
 	"billing":          updateCardsResponseFieldBilling,
 	"canceled_at":      updateCardsResponseFieldCanceledAt,
 	"created_at":       updateCardsResponseFieldCreatedAt,
+	"digital_wallets":  updateCardsResponseFieldDigitalWallets,
 	"expiration_month": updateCardsResponseFieldExpirationMonth,
 	"expiration_year":  updateCardsResponseFieldExpirationYear,
 	"last4":            updateCardsResponseFieldLast4,
@@ -11873,6 +12155,8 @@ type UpdateCardsResponse struct {
 	CanceledAt *time.Time `json:"canceled_at,omitempty" url:"canceled_at,omitempty"`
 	// When the card was created.
 	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
+	// The digital wallets the card has been added to. List Cards, Update Card, and webhook payloads return `null`, as does Retrieve Card when the wallets cannot be retrieved.
+	DigitalWallets []UpdateCardsResponseDigitalWalletsItem `json:"digital_wallets,omitempty" url:"digital_wallets,omitempty"`
 	// Card expiration month.
 	ExpirationMonth *string `json:"expiration_month,omitempty" url:"expiration_month,omitempty"`
 	// Card expiration year.
@@ -11925,6 +12209,13 @@ func (u *UpdateCardsResponse) GetCreatedAt() *time.Time {
 		return nil
 	}
 	return u.CreatedAt
+}
+
+func (u *UpdateCardsResponse) GetDigitalWallets() []UpdateCardsResponseDigitalWalletsItem {
+	if u == nil {
+		return nil
+	}
+	return u.DigitalWallets
 }
 
 func (u *UpdateCardsResponse) GetExpirationMonth() *string {
@@ -12053,6 +12344,13 @@ func (u *UpdateCardsResponse) SetCanceledAt(canceledAt *time.Time) {
 func (u *UpdateCardsResponse) SetCreatedAt(createdAt *time.Time) {
 	u.CreatedAt = createdAt
 	u.require(updateCardsResponseFieldCreatedAt)
+}
+
+// SetDigitalWallets sets the DigitalWallets field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateCardsResponse) SetDigitalWallets(digitalWallets []UpdateCardsResponseDigitalWalletsItem) {
+	u.DigitalWallets = digitalWallets
+	u.require(updateCardsResponseFieldDigitalWallets)
 }
 
 // SetExpirationMonth sets the ExpirationMonth field and marks it as non-optional;
@@ -12395,6 +12693,28 @@ func (u *UpdateCardsResponseBilling) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", u)
+}
+
+type UpdateCardsResponseDigitalWalletsItem string
+
+const (
+	UpdateCardsResponseDigitalWalletsItemApplePay  UpdateCardsResponseDigitalWalletsItem = "apple_pay"
+	UpdateCardsResponseDigitalWalletsItemGooglePay UpdateCardsResponseDigitalWalletsItem = "google_pay"
+)
+
+func NewUpdateCardsResponseDigitalWalletsItemFromString(s string) (UpdateCardsResponseDigitalWalletsItem, error) {
+	switch s {
+	case "apple_pay":
+		return UpdateCardsResponseDigitalWalletsItemApplePay, nil
+	case "google_pay":
+		return UpdateCardsResponseDigitalWalletsItemGooglePay, nil
+	}
+	var t UpdateCardsResponseDigitalWalletsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateCardsResponseDigitalWalletsItem) Ptr() *UpdateCardsResponseDigitalWalletsItem {
+	return &u
 }
 
 var (
