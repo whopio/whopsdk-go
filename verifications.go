@@ -10599,7 +10599,7 @@ type UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItem struc
 	Value *string `json:"value,omitempty" url:"value,omitempty"`
 	// Whether `value` is raw input or a vault token.
 	ValueType *UpdateVerificationsRequestBodyBusinessAddressRequestedInformationItemValueType `json:"value_type,omitempty" url:"value_type,omitempty"`
-	// Every chosen option for a `select` item that accepts more than one answer, such as the countries an advertising certification covers. Use `value` for every other item.
+	// Every chosen option for a `select` item that accepts more than one answer. Use `value` for every other item.
 	Values []string `json:"values,omitempty" url:"values,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -11652,7 +11652,7 @@ type UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem struc
 	Value *string `json:"value,omitempty" url:"value,omitempty"`
 	// Whether `value` is raw input or a vault token.
 	ValueType *UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemValueType `json:"value_type,omitempty" url:"value_type,omitempty"`
-	// Every chosen option for a `select` item that accepts more than one answer, such as the countries an advertising certification covers. Use `value` for every other item.
+	// Every chosen option for a `select` item that accepts more than one answer. Use `value` for every other item.
 	Values []string `json:"values,omitempty" url:"values,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

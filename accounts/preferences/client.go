@@ -21,7 +21,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-03-1"
+		apiVersionDateDefault := "2026-11-04"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -71,7 +71,7 @@ func (c *Client) Retrieve(
 //
 // | Preferences | Required scope |
 // | --- | --- |
-// | `ads_payment_methods`, `ads_reporting_currency`, `ads_scheduling_timezone`, `ads_triple_whale_integration`, `ads_certifications` | `ad_campaign:create` |
+// | `ads_payment_methods`, `ads_reporting_currency`, `ads_scheduling_timezone`, `ads_triple_whale_integration` | `ad_campaign:create` |
 // | `cards_auto_top_up`, `cards_notifications`, `covers_subaccount_negative_balances` | `payout:account:update` |
 // | `dispute_fighter_enabled` | `payment:dispute` |
 // | `economic_intelligence_duration_key`, `economic_intelligence_auto_renew` | `company:update` |
