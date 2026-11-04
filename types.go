@@ -24636,6 +24636,11 @@ const (
 	LedgerActivityLineTypePlatformCreditsPayment                    LedgerActivityLineType = "platform_credits_payment"
 	LedgerActivityLineTypePlatformCreditsPaymentRefund              LedgerActivityLineType = "platform_credits_payment_refund"
 	LedgerActivityLineTypePlatformCreditsGranted                    LedgerActivityLineType = "platform_credits_granted"
+	LedgerActivityLineTypeLevelsPointsCard                          LedgerActivityLineType = "levels_points_card"
+	LedgerActivityLineTypeLevelsPointsAds                           LedgerActivityLineType = "levels_points_ads"
+	LedgerActivityLineTypeLevelsPointsTrading                       LedgerActivityLineType = "levels_points_trading"
+	LedgerActivityLineTypeLevelsPointsPartner                       LedgerActivityLineType = "levels_points_partner"
+	LedgerActivityLineTypeLevelsPointsIssued                        LedgerActivityLineType = "levels_points_issued"
 	LedgerActivityLineTypePlatformBalanceTransferOutgoing           LedgerActivityLineType = "platform_balance_transfer_outgoing"
 	LedgerActivityLineTypePlatformBalanceTransferIncoming           LedgerActivityLineType = "platform_balance_transfer_incoming"
 	LedgerActivityLineTypeInternalBalanceTransferOutgoing           LedgerActivityLineType = "internal_balance_transfer_outgoing"
@@ -25083,6 +25088,16 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypePlatformCreditsPaymentRefund, nil
 	case "platform_credits_granted":
 		return LedgerActivityLineTypePlatformCreditsGranted, nil
+	case "levels_points_card":
+		return LedgerActivityLineTypeLevelsPointsCard, nil
+	case "levels_points_ads":
+		return LedgerActivityLineTypeLevelsPointsAds, nil
+	case "levels_points_trading":
+		return LedgerActivityLineTypeLevelsPointsTrading, nil
+	case "levels_points_partner":
+		return LedgerActivityLineTypeLevelsPointsPartner, nil
+	case "levels_points_issued":
+		return LedgerActivityLineTypeLevelsPointsIssued, nil
 	case "platform_balance_transfer_outgoing":
 		return LedgerActivityLineTypePlatformBalanceTransferOutgoing, nil
 	case "platform_balance_transfer_incoming":

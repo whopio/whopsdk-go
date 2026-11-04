@@ -1374,6 +1374,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemGroupingFees                  RetrieveFinancialReportsResponseRowsItemGrouping = "fees"
 	RetrieveFinancialReportsResponseRowsItemGroupingFx                    RetrieveFinancialReportsResponseRowsItemGrouping = "fx"
 	RetrieveFinancialReportsResponseRowsItemGroupingLegacy                RetrieveFinancialReportsResponseRowsItemGrouping = "legacy"
+	RetrieveFinancialReportsResponseRowsItemGroupingLevelsPoints          RetrieveFinancialReportsResponseRowsItemGrouping = "levels_points"
 	RetrieveFinancialReportsResponseRowsItemGroupingMisc                  RetrieveFinancialReportsResponseRowsItemGrouping = "misc"
 	RetrieveFinancialReportsResponseRowsItemGroupingOperationalCosts      RetrieveFinancialReportsResponseRowsItemGrouping = "operational_costs"
 	RetrieveFinancialReportsResponseRowsItemGroupingOther                 RetrieveFinancialReportsResponseRowsItemGrouping = "other"
@@ -1411,6 +1412,8 @@ func NewRetrieveFinancialReportsResponseRowsItemGroupingFromString(s string) (Re
 		return RetrieveFinancialReportsResponseRowsItemGroupingFx, nil
 	case "legacy":
 		return RetrieveFinancialReportsResponseRowsItemGroupingLegacy, nil
+	case "levels_points":
+		return RetrieveFinancialReportsResponseRowsItemGroupingLevelsPoints, nil
 	case "misc":
 		return RetrieveFinancialReportsResponseRowsItemGroupingMisc, nil
 	case "operational_costs":
@@ -1559,6 +1562,11 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLegacyCryptoPayment                       RetrieveFinancialReportsResponseRowsItemLineCategory = "legacy_crypto_payment"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLegacyPayment                             RetrieveFinancialReportsResponseRowsItemLineCategory = "legacy_payment"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLegacyPaymentRefund                       RetrieveFinancialReportsResponseRowsItemLineCategory = "legacy_payment_refund"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsAds                           RetrieveFinancialReportsResponseRowsItemLineCategory = "levels_points_ads"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsCard                          RetrieveFinancialReportsResponseRowsItemLineCategory = "levels_points_card"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsIssued                        RetrieveFinancialReportsResponseRowsItemLineCategory = "levels_points_issued"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsPartner                       RetrieveFinancialReportsResponseRowsItemLineCategory = "levels_points_partner"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsTrading                       RetrieveFinancialReportsResponseRowsItemLineCategory = "levels_points_trading"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLicenseSale                               RetrieveFinancialReportsResponseRowsItemLineCategory = "license_sale"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLicenseSaleCommission                     RetrieveFinancialReportsResponseRowsItemLineCategory = "license_sale_commission"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLicenseSaleRevenue                        RetrieveFinancialReportsResponseRowsItemLineCategory = "license_sale_revenue"
@@ -1983,6 +1991,16 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryLegacyPayment, nil
 	case "legacy_payment_refund":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryLegacyPaymentRefund, nil
+	case "levels_points_ads":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsAds, nil
+	case "levels_points_card":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsCard, nil
+	case "levels_points_issued":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsIssued, nil
+	case "levels_points_partner":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsPartner, nil
+	case "levels_points_trading":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsTrading, nil
 	case "license_sale":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryLicenseSale, nil
 	case "license_sale_commission":
