@@ -282,6 +282,7 @@ const (
 	RetrieveFinancialReportsRequestLineTypesItemLegacyCryptoPayment                       RetrieveFinancialReportsRequestLineTypesItem = "legacy_crypto_payment"
 	RetrieveFinancialReportsRequestLineTypesItemLegacyPayment                             RetrieveFinancialReportsRequestLineTypesItem = "legacy_payment"
 	RetrieveFinancialReportsRequestLineTypesItemLegacyPaymentRefund                       RetrieveFinancialReportsRequestLineTypesItem = "legacy_payment_refund"
+	RetrieveFinancialReportsRequestLineTypesItemLevelsRebate                              RetrieveFinancialReportsRequestLineTypesItem = "levels_rebate"
 	RetrieveFinancialReportsRequestLineTypesItemLicenseSale                               RetrieveFinancialReportsRequestLineTypesItem = "license_sale"
 	RetrieveFinancialReportsRequestLineTypesItemLicenseSaleCommission                     RetrieveFinancialReportsRequestLineTypesItem = "license_sale_commission"
 	RetrieveFinancialReportsRequestLineTypesItemLicenseSaleRevenue                        RetrieveFinancialReportsRequestLineTypesItem = "license_sale_revenue"
@@ -492,6 +493,8 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 		return RetrieveFinancialReportsRequestLineTypesItemLegacyPayment, nil
 	case "legacy_payment_refund":
 		return RetrieveFinancialReportsRequestLineTypesItemLegacyPaymentRefund, nil
+	case "levels_rebate":
+		return RetrieveFinancialReportsRequestLineTypesItemLevelsRebate, nil
 	case "license_sale":
 		return RetrieveFinancialReportsRequestLineTypesItemLicenseSale, nil
 	case "license_sale_commission":
@@ -1563,13 +1566,16 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLegacyPayment                             RetrieveFinancialReportsResponseRowsItemLineCategory = "legacy_payment"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLegacyPaymentRefund                       RetrieveFinancialReportsResponseRowsItemLineCategory = "legacy_payment_refund"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsAds                           RetrieveFinancialReportsResponseRowsItemLineCategory = "levels_points_ads"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsBurned                        RetrieveFinancialReportsResponseRowsItemLineCategory = "levels_points_burned"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsCard                          RetrieveFinancialReportsResponseRowsItemLineCategory = "levels_points_card"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsIssued                        RetrieveFinancialReportsResponseRowsItemLineCategory = "levels_points_issued"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsPartner                       RetrieveFinancialReportsResponseRowsItemLineCategory = "levels_points_partner"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsTrading                       RetrieveFinancialReportsResponseRowsItemLineCategory = "levels_points_trading"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsRebate                              RetrieveFinancialReportsResponseRowsItemLineCategory = "levels_rebate"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLicenseSale                               RetrieveFinancialReportsResponseRowsItemLineCategory = "license_sale"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLicenseSaleCommission                     RetrieveFinancialReportsResponseRowsItemLineCategory = "license_sale_commission"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLicenseSaleRevenue                        RetrieveFinancialReportsResponseRowsItemLineCategory = "license_sale_revenue"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryMarketingExpense                          RetrieveFinancialReportsResponseRowsItemLineCategory = "marketing_expense"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryMarketplaceAffiliateFee                   RetrieveFinancialReportsResponseRowsItemLineCategory = "marketplace_affiliate_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryMiscPurchase                              RetrieveFinancialReportsResponseRowsItemLineCategory = "misc_purchase"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryMiscRefund                                RetrieveFinancialReportsResponseRowsItemLineCategory = "misc_refund"
@@ -1993,6 +1999,8 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryLegacyPaymentRefund, nil
 	case "levels_points_ads":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsAds, nil
+	case "levels_points_burned":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsBurned, nil
 	case "levels_points_card":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsCard, nil
 	case "levels_points_issued":
@@ -2001,12 +2009,16 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsPartner, nil
 	case "levels_points_trading":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsTrading, nil
+	case "levels_rebate":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsRebate, nil
 	case "license_sale":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryLicenseSale, nil
 	case "license_sale_commission":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryLicenseSaleCommission, nil
 	case "license_sale_revenue":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryLicenseSaleRevenue, nil
+	case "marketing_expense":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryMarketingExpense, nil
 	case "marketplace_affiliate_fee":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryMarketplaceAffiliateFee, nil
 	case "misc_purchase":

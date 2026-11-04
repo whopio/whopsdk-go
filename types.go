@@ -24640,7 +24640,10 @@ const (
 	LedgerActivityLineTypeLevelsPointsAds                           LedgerActivityLineType = "levels_points_ads"
 	LedgerActivityLineTypeLevelsPointsTrading                       LedgerActivityLineType = "levels_points_trading"
 	LedgerActivityLineTypeLevelsPointsPartner                       LedgerActivityLineType = "levels_points_partner"
+	LedgerActivityLineTypeLevelsPointsBurned                        LedgerActivityLineType = "levels_points_burned"
 	LedgerActivityLineTypeLevelsPointsIssued                        LedgerActivityLineType = "levels_points_issued"
+	LedgerActivityLineTypeLevelsRebate                              LedgerActivityLineType = "levels_rebate"
+	LedgerActivityLineTypeMarketingExpense                          LedgerActivityLineType = "marketing_expense"
 	LedgerActivityLineTypePlatformBalanceTransferOutgoing           LedgerActivityLineType = "platform_balance_transfer_outgoing"
 	LedgerActivityLineTypePlatformBalanceTransferIncoming           LedgerActivityLineType = "platform_balance_transfer_incoming"
 	LedgerActivityLineTypeInternalBalanceTransferOutgoing           LedgerActivityLineType = "internal_balance_transfer_outgoing"
@@ -25096,8 +25099,14 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeLevelsPointsTrading, nil
 	case "levels_points_partner":
 		return LedgerActivityLineTypeLevelsPointsPartner, nil
+	case "levels_points_burned":
+		return LedgerActivityLineTypeLevelsPointsBurned, nil
 	case "levels_points_issued":
 		return LedgerActivityLineTypeLevelsPointsIssued, nil
+	case "levels_rebate":
+		return LedgerActivityLineTypeLevelsRebate, nil
+	case "marketing_expense":
+		return LedgerActivityLineTypeMarketingExpense, nil
 	case "platform_balance_transfer_outgoing":
 		return LedgerActivityLineTypePlatformBalanceTransferOutgoing, nil
 	case "platform_balance_transfer_incoming":
