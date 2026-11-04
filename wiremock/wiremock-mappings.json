@@ -13445,6 +13445,46 @@
       }
     },
     {
+      "id": "89c28d3e-850e-4184-b1f1-9aafdefc23d6",
+      "name": "Search account records - default",
+      "request": {
+        "urlPathTemplate": "/search",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "queryParameters": {
+          "query": {
+            "equalTo": "query"
+          },
+          "account_id": {
+            "equalTo": "account_id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"match_reason\": \"id\",\n      \"record\": {\n        \"banner_image_url\": null,\n        \"description\": null,\n        \"id\": \"id\",\n        \"image_url\": null,\n        \"parent_account_id\": null,\n        \"subtitle\": null,\n        \"title\": null,\n        \"object\": \"account\"\n      }\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "89c28d3e-850e-4184-b1f1-9aafdefc23d6",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
       "id": "734594ca-51d2-425d-8c2e-3110298773c5",
       "name": "List Setup Intents - default",
       "request": {
@@ -17685,6 +17725,6 @@
     }
   ],
   "meta": {
-    "total": 494
+    "total": 495
   }
 }
