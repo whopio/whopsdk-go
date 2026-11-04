@@ -1336,6 +1336,14 @@ func TestSettersCreateCardsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDigitalWallets", func(t *testing.T) {
+		obj := &CreateCardsResponse{}
+		var fernTestValueDigitalWallets []CreateCardsResponseDigitalWalletsItem
+		obj.SetDigitalWallets(fernTestValueDigitalWallets)
+		assert.Equal(t, fernTestValueDigitalWallets, obj.DigitalWallets)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetExpirationMonth", func(t *testing.T) {
 		obj := &CreateCardsResponse{}
 		var fernTestValueExpirationMonth *string
@@ -1540,6 +1548,39 @@ func TestGettersCreateCardsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCreatedAt() // Should return zero value
+	})
+
+	t.Run("GetDigitalWallets", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCardsResponse{}
+		var expected []CreateCardsResponseDigitalWalletsItem
+		obj.DigitalWallets = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDigitalWallets(), "getter should return the property value")
+	})
+
+	t.Run("GetDigitalWallets_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCardsResponse{}
+		obj.DigitalWallets = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDigitalWallets(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDigitalWallets_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateCardsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDigitalWallets() // Should return zero value
 	})
 
 	t.Run("GetExpirationMonth", func(t *testing.T) {
@@ -2014,6 +2055,37 @@ func TestSettersMarkExplicitCreateCardsResponse(t *testing.T) {
 
 		// Act
 		obj.SetCreatedAt(fernTestValueCreatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDigitalWallets_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateCardsResponse{}
+		var fernTestValueDigitalWallets []CreateCardsResponseDigitalWalletsItem
+
+		// Act
+		obj.SetDigitalWallets(fernTestValueDigitalWallets)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3399,6 +3471,14 @@ func TestSettersListCardsResponseDataItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDigitalWallets", func(t *testing.T) {
+		obj := &ListCardsResponseDataItem{}
+		var fernTestValueDigitalWallets []ListCardsResponseDataItemDigitalWalletsItem
+		obj.SetDigitalWallets(fernTestValueDigitalWallets)
+		assert.Equal(t, fernTestValueDigitalWallets, obj.DigitalWallets)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetExpirationMonth", func(t *testing.T) {
 		obj := &ListCardsResponseDataItem{}
 		var fernTestValueExpirationMonth *string
@@ -3603,6 +3683,39 @@ func TestGettersListCardsResponseDataItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCreatedAt() // Should return zero value
+	})
+
+	t.Run("GetDigitalWallets", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListCardsResponseDataItem{}
+		var expected []ListCardsResponseDataItemDigitalWalletsItem
+		obj.DigitalWallets = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDigitalWallets(), "getter should return the property value")
+	})
+
+	t.Run("GetDigitalWallets_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListCardsResponseDataItem{}
+		obj.DigitalWallets = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDigitalWallets(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDigitalWallets_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListCardsResponseDataItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDigitalWallets() // Should return zero value
 	})
 
 	t.Run("GetExpirationMonth", func(t *testing.T) {
@@ -4077,6 +4190,37 @@ func TestSettersMarkExplicitListCardsResponseDataItem(t *testing.T) {
 
 		// Act
 		obj.SetCreatedAt(fernTestValueCreatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDigitalWallets_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListCardsResponseDataItem{}
+		var fernTestValueDigitalWallets []ListCardsResponseDataItemDigitalWalletsItem
+
+		// Act
+		obj.SetDigitalWallets(fernTestValueDigitalWallets)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9174,6 +9318,14 @@ func TestSettersPostCardCanceledPayloadData(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDigitalWallets", func(t *testing.T) {
+		obj := &PostCardCanceledPayloadData{}
+		var fernTestValueDigitalWallets []PostCardCanceledPayloadDataDigitalWalletsItem
+		obj.SetDigitalWallets(fernTestValueDigitalWallets)
+		assert.Equal(t, fernTestValueDigitalWallets, obj.DigitalWallets)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetExpirationMonth", func(t *testing.T) {
 		obj := &PostCardCanceledPayloadData{}
 		var fernTestValueExpirationMonth *string
@@ -9378,6 +9530,39 @@ func TestGettersPostCardCanceledPayloadData(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCreatedAt() // Should return zero value
+	})
+
+	t.Run("GetDigitalWallets", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostCardCanceledPayloadData{}
+		var expected []PostCardCanceledPayloadDataDigitalWalletsItem
+		obj.DigitalWallets = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDigitalWallets(), "getter should return the property value")
+	})
+
+	t.Run("GetDigitalWallets_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostCardCanceledPayloadData{}
+		obj.DigitalWallets = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDigitalWallets(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDigitalWallets_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PostCardCanceledPayloadData
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDigitalWallets() // Should return zero value
 	})
 
 	t.Run("GetExpirationMonth", func(t *testing.T) {
@@ -9852,6 +10037,37 @@ func TestSettersMarkExplicitPostCardCanceledPayloadData(t *testing.T) {
 
 		// Act
 		obj.SetCreatedAt(fernTestValueCreatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDigitalWallets_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostCardCanceledPayloadData{}
+		var fernTestValueDigitalWallets []PostCardCanceledPayloadDataDigitalWalletsItem
+
+		// Act
+		obj.SetDigitalWallets(fernTestValueDigitalWallets)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -11701,6 +11917,14 @@ func TestSettersPostCardCreatedPayloadData(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDigitalWallets", func(t *testing.T) {
+		obj := &PostCardCreatedPayloadData{}
+		var fernTestValueDigitalWallets []PostCardCreatedPayloadDataDigitalWalletsItem
+		obj.SetDigitalWallets(fernTestValueDigitalWallets)
+		assert.Equal(t, fernTestValueDigitalWallets, obj.DigitalWallets)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetExpirationMonth", func(t *testing.T) {
 		obj := &PostCardCreatedPayloadData{}
 		var fernTestValueExpirationMonth *string
@@ -11905,6 +12129,39 @@ func TestGettersPostCardCreatedPayloadData(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCreatedAt() // Should return zero value
+	})
+
+	t.Run("GetDigitalWallets", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostCardCreatedPayloadData{}
+		var expected []PostCardCreatedPayloadDataDigitalWalletsItem
+		obj.DigitalWallets = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDigitalWallets(), "getter should return the property value")
+	})
+
+	t.Run("GetDigitalWallets_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostCardCreatedPayloadData{}
+		obj.DigitalWallets = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDigitalWallets(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDigitalWallets_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PostCardCreatedPayloadData
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDigitalWallets() // Should return zero value
 	})
 
 	t.Run("GetExpirationMonth", func(t *testing.T) {
@@ -12379,6 +12636,37 @@ func TestSettersMarkExplicitPostCardCreatedPayloadData(t *testing.T) {
 
 		// Act
 		obj.SetCreatedAt(fernTestValueCreatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDigitalWallets_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostCardCreatedPayloadData{}
+		var fernTestValueDigitalWallets []PostCardCreatedPayloadDataDigitalWalletsItem
+
+		// Act
+		obj.SetDigitalWallets(fernTestValueDigitalWallets)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -14228,6 +14516,14 @@ func TestSettersPostCardFrozenPayloadData(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDigitalWallets", func(t *testing.T) {
+		obj := &PostCardFrozenPayloadData{}
+		var fernTestValueDigitalWallets []PostCardFrozenPayloadDataDigitalWalletsItem
+		obj.SetDigitalWallets(fernTestValueDigitalWallets)
+		assert.Equal(t, fernTestValueDigitalWallets, obj.DigitalWallets)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetExpirationMonth", func(t *testing.T) {
 		obj := &PostCardFrozenPayloadData{}
 		var fernTestValueExpirationMonth *string
@@ -14432,6 +14728,39 @@ func TestGettersPostCardFrozenPayloadData(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCreatedAt() // Should return zero value
+	})
+
+	t.Run("GetDigitalWallets", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostCardFrozenPayloadData{}
+		var expected []PostCardFrozenPayloadDataDigitalWalletsItem
+		obj.DigitalWallets = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDigitalWallets(), "getter should return the property value")
+	})
+
+	t.Run("GetDigitalWallets_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostCardFrozenPayloadData{}
+		obj.DigitalWallets = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDigitalWallets(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDigitalWallets_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PostCardFrozenPayloadData
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDigitalWallets() // Should return zero value
 	})
 
 	t.Run("GetExpirationMonth", func(t *testing.T) {
@@ -14906,6 +15235,37 @@ func TestSettersMarkExplicitPostCardFrozenPayloadData(t *testing.T) {
 
 		// Act
 		obj.SetCreatedAt(fernTestValueCreatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDigitalWallets_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostCardFrozenPayloadData{}
+		var fernTestValueDigitalWallets []PostCardFrozenPayloadDataDigitalWalletsItem
+
+		// Act
+		obj.SetDigitalWallets(fernTestValueDigitalWallets)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -19480,6 +19840,14 @@ func TestSettersPostCardUpdatedPayloadData(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDigitalWallets", func(t *testing.T) {
+		obj := &PostCardUpdatedPayloadData{}
+		var fernTestValueDigitalWallets []PostCardUpdatedPayloadDataDigitalWalletsItem
+		obj.SetDigitalWallets(fernTestValueDigitalWallets)
+		assert.Equal(t, fernTestValueDigitalWallets, obj.DigitalWallets)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetExpirationMonth", func(t *testing.T) {
 		obj := &PostCardUpdatedPayloadData{}
 		var fernTestValueExpirationMonth *string
@@ -19684,6 +20052,39 @@ func TestGettersPostCardUpdatedPayloadData(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCreatedAt() // Should return zero value
+	})
+
+	t.Run("GetDigitalWallets", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostCardUpdatedPayloadData{}
+		var expected []PostCardUpdatedPayloadDataDigitalWalletsItem
+		obj.DigitalWallets = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDigitalWallets(), "getter should return the property value")
+	})
+
+	t.Run("GetDigitalWallets_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostCardUpdatedPayloadData{}
+		obj.DigitalWallets = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDigitalWallets(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDigitalWallets_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PostCardUpdatedPayloadData
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDigitalWallets() // Should return zero value
 	})
 
 	t.Run("GetExpirationMonth", func(t *testing.T) {
@@ -20158,6 +20559,37 @@ func TestSettersMarkExplicitPostCardUpdatedPayloadData(t *testing.T) {
 
 		// Act
 		obj.SetCreatedAt(fernTestValueCreatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDigitalWallets_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostCardUpdatedPayloadData{}
+		var fernTestValueDigitalWallets []PostCardUpdatedPayloadDataDigitalWalletsItem
+
+		// Act
+		obj.SetDigitalWallets(fernTestValueDigitalWallets)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -21462,6 +21894,14 @@ func TestSettersRetrieveCardsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDigitalWallets", func(t *testing.T) {
+		obj := &RetrieveCardsResponse{}
+		var fernTestValueDigitalWallets []RetrieveCardsResponseDigitalWalletsItem
+		obj.SetDigitalWallets(fernTestValueDigitalWallets)
+		assert.Equal(t, fernTestValueDigitalWallets, obj.DigitalWallets)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetExpirationMonth", func(t *testing.T) {
 		obj := &RetrieveCardsResponse{}
 		var fernTestValueExpirationMonth *string
@@ -21666,6 +22106,39 @@ func TestGettersRetrieveCardsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCreatedAt() // Should return zero value
+	})
+
+	t.Run("GetDigitalWallets", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveCardsResponse{}
+		var expected []RetrieveCardsResponseDigitalWalletsItem
+		obj.DigitalWallets = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDigitalWallets(), "getter should return the property value")
+	})
+
+	t.Run("GetDigitalWallets_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveCardsResponse{}
+		obj.DigitalWallets = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDigitalWallets(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDigitalWallets_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveCardsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDigitalWallets() // Should return zero value
 	})
 
 	t.Run("GetExpirationMonth", func(t *testing.T) {
@@ -22140,6 +22613,37 @@ func TestSettersMarkExplicitRetrieveCardsResponse(t *testing.T) {
 
 		// Act
 		obj.SetCreatedAt(fernTestValueCreatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDigitalWallets_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveCardsResponse{}
+		var fernTestValueDigitalWallets []RetrieveCardsResponseDigitalWalletsItem
+
+		// Act
+		obj.SetDigitalWallets(fernTestValueDigitalWallets)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -24142,6 +24646,14 @@ func TestSettersUpdateCardsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDigitalWallets", func(t *testing.T) {
+		obj := &UpdateCardsResponse{}
+		var fernTestValueDigitalWallets []UpdateCardsResponseDigitalWalletsItem
+		obj.SetDigitalWallets(fernTestValueDigitalWallets)
+		assert.Equal(t, fernTestValueDigitalWallets, obj.DigitalWallets)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetExpirationMonth", func(t *testing.T) {
 		obj := &UpdateCardsResponse{}
 		var fernTestValueExpirationMonth *string
@@ -24346,6 +24858,39 @@ func TestGettersUpdateCardsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCreatedAt() // Should return zero value
+	})
+
+	t.Run("GetDigitalWallets", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCardsResponse{}
+		var expected []UpdateCardsResponseDigitalWalletsItem
+		obj.DigitalWallets = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDigitalWallets(), "getter should return the property value")
+	})
+
+	t.Run("GetDigitalWallets_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCardsResponse{}
+		obj.DigitalWallets = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDigitalWallets(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDigitalWallets_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateCardsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDigitalWallets() // Should return zero value
 	})
 
 	t.Run("GetExpirationMonth", func(t *testing.T) {
@@ -24820,6 +25365,37 @@ func TestSettersMarkExplicitUpdateCardsResponse(t *testing.T) {
 
 		// Act
 		obj.SetCreatedAt(fernTestValueCreatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDigitalWallets_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateCardsResponse{}
+		var fernTestValueDigitalWallets []UpdateCardsResponseDigitalWalletsItem
+
+		// Act
+		obj.SetDigitalWallets(fernTestValueDigitalWallets)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -28399,6 +28975,7 @@ func TestRequiredNullableRoundTripCreateCardsResponse(t *testing.T) {
 		"billing",
 		"canceled_at",
 		"created_at",
+		"digital_wallets",
 		"expiration_month",
 		"expiration_year",
 		"last4",
@@ -28420,7 +28997,7 @@ func TestRequiredNullableRoundTripCreateCardsResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj CreateCardsResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"billing":null,"canceled_at":null,"created_at":null,"expiration_month":null,"expiration_year":null,"last4":null,"limit":null,"name":null,"spent_last_month":null,"status":null,"type":null,"user_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"billing":null,"canceled_at":null,"created_at":null,"digital_wallets":null,"expiration_month":null,"expiration_year":null,"last4":null,"limit":null,"name":null,"spent_last_month":null,"status":null,"type":null,"user_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -28545,6 +29122,7 @@ func TestRequiredNullableRoundTripListCardsResponseDataItem(t *testing.T) {
 		"billing",
 		"canceled_at",
 		"created_at",
+		"digital_wallets",
 		"expiration_month",
 		"expiration_year",
 		"last4",
@@ -28566,7 +29144,7 @@ func TestRequiredNullableRoundTripListCardsResponseDataItem(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ListCardsResponseDataItem
-		require.NoError(t, json.Unmarshal([]byte(`{"billing":null,"canceled_at":null,"created_at":null,"expiration_month":null,"expiration_year":null,"last4":null,"limit":null,"name":null,"spent_last_month":null,"status":null,"type":null,"user_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"billing":null,"canceled_at":null,"created_at":null,"digital_wallets":null,"expiration_month":null,"expiration_year":null,"last4":null,"limit":null,"name":null,"spent_last_month":null,"status":null,"type":null,"user_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -29078,6 +29656,7 @@ func TestRequiredNullableRoundTripPostCardCanceledPayloadData(t *testing.T) {
 		"billing",
 		"canceled_at",
 		"created_at",
+		"digital_wallets",
 		"expiration_month",
 		"expiration_year",
 		"last4",
@@ -29099,7 +29678,7 @@ func TestRequiredNullableRoundTripPostCardCanceledPayloadData(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PostCardCanceledPayloadData
-		require.NoError(t, json.Unmarshal([]byte(`{"billing":null,"canceled_at":null,"created_at":null,"expiration_month":null,"expiration_year":null,"last4":null,"limit":null,"name":null,"spent_last_month":null,"status":null,"type":null,"user_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"billing":null,"canceled_at":null,"created_at":null,"digital_wallets":null,"expiration_month":null,"expiration_year":null,"last4":null,"limit":null,"name":null,"spent_last_month":null,"status":null,"type":null,"user_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -29267,6 +29846,7 @@ func TestRequiredNullableRoundTripPostCardCreatedPayloadData(t *testing.T) {
 		"billing",
 		"canceled_at",
 		"created_at",
+		"digital_wallets",
 		"expiration_month",
 		"expiration_year",
 		"last4",
@@ -29288,7 +29868,7 @@ func TestRequiredNullableRoundTripPostCardCreatedPayloadData(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PostCardCreatedPayloadData
-		require.NoError(t, json.Unmarshal([]byte(`{"billing":null,"canceled_at":null,"created_at":null,"expiration_month":null,"expiration_year":null,"last4":null,"limit":null,"name":null,"spent_last_month":null,"status":null,"type":null,"user_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"billing":null,"canceled_at":null,"created_at":null,"digital_wallets":null,"expiration_month":null,"expiration_year":null,"last4":null,"limit":null,"name":null,"spent_last_month":null,"status":null,"type":null,"user_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -29456,6 +30036,7 @@ func TestRequiredNullableRoundTripPostCardFrozenPayloadData(t *testing.T) {
 		"billing",
 		"canceled_at",
 		"created_at",
+		"digital_wallets",
 		"expiration_month",
 		"expiration_year",
 		"last4",
@@ -29477,7 +30058,7 @@ func TestRequiredNullableRoundTripPostCardFrozenPayloadData(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PostCardFrozenPayloadData
-		require.NoError(t, json.Unmarshal([]byte(`{"billing":null,"canceled_at":null,"created_at":null,"expiration_month":null,"expiration_year":null,"last4":null,"limit":null,"name":null,"spent_last_month":null,"status":null,"type":null,"user_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"billing":null,"canceled_at":null,"created_at":null,"digital_wallets":null,"expiration_month":null,"expiration_year":null,"last4":null,"limit":null,"name":null,"spent_last_month":null,"status":null,"type":null,"user_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -29860,6 +30441,7 @@ func TestRequiredNullableRoundTripPostCardUpdatedPayloadData(t *testing.T) {
 		"billing",
 		"canceled_at",
 		"created_at",
+		"digital_wallets",
 		"expiration_month",
 		"expiration_year",
 		"last4",
@@ -29881,7 +30463,7 @@ func TestRequiredNullableRoundTripPostCardUpdatedPayloadData(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PostCardUpdatedPayloadData
-		require.NoError(t, json.Unmarshal([]byte(`{"billing":null,"canceled_at":null,"created_at":null,"expiration_month":null,"expiration_year":null,"last4":null,"limit":null,"name":null,"spent_last_month":null,"status":null,"type":null,"user_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"billing":null,"canceled_at":null,"created_at":null,"digital_wallets":null,"expiration_month":null,"expiration_year":null,"last4":null,"limit":null,"name":null,"spent_last_month":null,"status":null,"type":null,"user_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -30006,6 +30588,7 @@ func TestRequiredNullableRoundTripRetrieveCardsResponse(t *testing.T) {
 		"billing",
 		"canceled_at",
 		"created_at",
+		"digital_wallets",
 		"expiration_month",
 		"expiration_year",
 		"last4",
@@ -30027,7 +30610,7 @@ func TestRequiredNullableRoundTripRetrieveCardsResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrieveCardsResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"billing":null,"canceled_at":null,"created_at":null,"expiration_month":null,"expiration_year":null,"last4":null,"limit":null,"name":null,"spent_last_month":null,"status":null,"type":null,"user_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"billing":null,"canceled_at":null,"created_at":null,"digital_wallets":null,"expiration_month":null,"expiration_year":null,"last4":null,"limit":null,"name":null,"spent_last_month":null,"status":null,"type":null,"user_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -30152,6 +30735,7 @@ func TestRequiredNullableRoundTripUpdateCardsResponse(t *testing.T) {
 		"billing",
 		"canceled_at",
 		"created_at",
+		"digital_wallets",
 		"expiration_month",
 		"expiration_year",
 		"last4",
@@ -30173,7 +30757,7 @@ func TestRequiredNullableRoundTripUpdateCardsResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj UpdateCardsResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"billing":null,"canceled_at":null,"created_at":null,"expiration_month":null,"expiration_year":null,"last4":null,"limit":null,"name":null,"spent_last_month":null,"status":null,"type":null,"user_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"billing":null,"canceled_at":null,"created_at":null,"digital_wallets":null,"expiration_month":null,"expiration_year":null,"last4":null,"limit":null,"name":null,"spent_last_month":null,"status":null,"type":null,"user_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -32132,6 +32716,35 @@ func TestEnumCreateCardsRequestSpendLimitFrequency(t *testing.T) {
 	})
 }
 
+func TestEnumCreateCardsResponseDigitalWalletsItem(t *testing.T) {
+	t.Run("NewFromString_apple_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCardsResponseDigitalWalletsItemFromString("apple_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCardsResponseDigitalWalletsItem("apple_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_google_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateCardsResponseDigitalWalletsItemFromString("google_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateCardsResponseDigitalWalletsItem("google_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateCardsResponseDigitalWalletsItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateCardsResponseDigitalWalletsItemFromString("apple_pay")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumCreateCardsResponseLimitFrequency(t *testing.T) {
 	t.Run("NewFromString_daily", func(t *testing.T) {
 		t.Parallel()
@@ -32276,6 +32889,35 @@ func TestEnumCreateCardsResponseType(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewCreateCardsResponseTypeFromString("virtual")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListCardsResponseDataItemDigitalWalletsItem(t *testing.T) {
+	t.Run("NewFromString_apple_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListCardsResponseDataItemDigitalWalletsItemFromString("apple_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListCardsResponseDataItemDigitalWalletsItem("apple_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_google_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListCardsResponseDataItemDigitalWalletsItemFromString("google_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListCardsResponseDataItemDigitalWalletsItem("google_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListCardsResponseDataItemDigitalWalletsItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListCardsResponseDataItemDigitalWalletsItemFromString("apple_pay")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -33004,6 +33646,35 @@ func TestEnumPostCardCanceledPayloadAPIVersion(t *testing.T) {
 	})
 }
 
+func TestEnumPostCardCanceledPayloadDataDigitalWalletsItem(t *testing.T) {
+	t.Run("NewFromString_apple_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostCardCanceledPayloadDataDigitalWalletsItemFromString("apple_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostCardCanceledPayloadDataDigitalWalletsItem("apple_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_google_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostCardCanceledPayloadDataDigitalWalletsItemFromString("google_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostCardCanceledPayloadDataDigitalWalletsItem("google_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPostCardCanceledPayloadDataDigitalWalletsItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPostCardCanceledPayloadDataDigitalWalletsItemFromString("apple_pay")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumPostCardCanceledPayloadDataLimitFrequency(t *testing.T) {
 	t.Run("NewFromString_daily", func(t *testing.T) {
 		t.Parallel()
@@ -33199,6 +33870,35 @@ func TestEnumPostCardCreatedPayloadAPIVersion(t *testing.T) {
 	})
 }
 
+func TestEnumPostCardCreatedPayloadDataDigitalWalletsItem(t *testing.T) {
+	t.Run("NewFromString_apple_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostCardCreatedPayloadDataDigitalWalletsItemFromString("apple_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostCardCreatedPayloadDataDigitalWalletsItem("apple_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_google_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostCardCreatedPayloadDataDigitalWalletsItemFromString("google_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostCardCreatedPayloadDataDigitalWalletsItem("google_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPostCardCreatedPayloadDataDigitalWalletsItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPostCardCreatedPayloadDataDigitalWalletsItemFromString("apple_pay")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumPostCardCreatedPayloadDataLimitFrequency(t *testing.T) {
 	t.Run("NewFromString_daily", func(t *testing.T) {
 		t.Parallel()
@@ -33387,6 +34087,35 @@ func TestEnumPostCardFrozenPayloadAPIVersion(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewPostCardFrozenPayloadAPIVersionFromString("v1")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumPostCardFrozenPayloadDataDigitalWalletsItem(t *testing.T) {
+	t.Run("NewFromString_apple_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostCardFrozenPayloadDataDigitalWalletsItemFromString("apple_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostCardFrozenPayloadDataDigitalWalletsItem("apple_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_google_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostCardFrozenPayloadDataDigitalWalletsItemFromString("google_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostCardFrozenPayloadDataDigitalWalletsItem("google_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPostCardFrozenPayloadDataDigitalWalletsItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPostCardFrozenPayloadDataDigitalWalletsItemFromString("apple_pay")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -33809,6 +34538,35 @@ func TestEnumPostCardUpdatedPayloadAPIVersion(t *testing.T) {
 	})
 }
 
+func TestEnumPostCardUpdatedPayloadDataDigitalWalletsItem(t *testing.T) {
+	t.Run("NewFromString_apple_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostCardUpdatedPayloadDataDigitalWalletsItemFromString("apple_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostCardUpdatedPayloadDataDigitalWalletsItem("apple_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_google_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostCardUpdatedPayloadDataDigitalWalletsItemFromString("google_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostCardUpdatedPayloadDataDigitalWalletsItem("google_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPostCardUpdatedPayloadDataDigitalWalletsItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPostCardUpdatedPayloadDataDigitalWalletsItemFromString("apple_pay")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumPostCardUpdatedPayloadDataLimitFrequency(t *testing.T) {
 	t.Run("NewFromString_daily", func(t *testing.T) {
 		t.Parallel()
@@ -33975,6 +34733,35 @@ func TestEnumPostCardUpdatedPayloadType(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewPostCardUpdatedPayloadTypeFromString("card.updated")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumRetrieveCardsResponseDigitalWalletsItem(t *testing.T) {
+	t.Run("NewFromString_apple_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveCardsResponseDigitalWalletsItemFromString("apple_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveCardsResponseDigitalWalletsItem("apple_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_google_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveCardsResponseDigitalWalletsItemFromString("google_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveCardsResponseDigitalWalletsItem("google_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRetrieveCardsResponseDigitalWalletsItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRetrieveCardsResponseDigitalWalletsItemFromString("apple_pay")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -34169,6 +34956,35 @@ func TestEnumUpdateCardsRequestSpendLimitFrequency(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdateCardsRequestSpendLimitFrequencyFromString("daily")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateCardsResponseDigitalWalletsItem(t *testing.T) {
+	t.Run("NewFromString_apple_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCardsResponseDigitalWalletsItemFromString("apple_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCardsResponseDigitalWalletsItem("apple_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_google_pay", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateCardsResponseDigitalWalletsItemFromString("google_pay")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateCardsResponseDigitalWalletsItem("google_pay"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateCardsResponseDigitalWalletsItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateCardsResponseDigitalWalletsItemFromString("apple_pay")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
