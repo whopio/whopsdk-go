@@ -153,7 +153,8 @@ var (
 	listAiChatsRequestFieldFirst           = big.NewInt(1 << 2)
 	listAiChatsRequestFieldLast            = big.NewInt(1 << 3)
 	listAiChatsRequestFieldAgentIdentifier = big.NewInt(1 << 4)
-	listAiChatsRequestFieldOnlyActiveCrons = big.NewInt(1 << 5)
+	listAiChatsRequestFieldAccountID       = big.NewInt(1 << 5)
+	listAiChatsRequestFieldOnlyActiveCrons = big.NewInt(1 << 6)
 )
 
 type ListAiChatsRequest struct {
@@ -166,6 +167,8 @@ type ListAiChatsRequest struct {
 	// Returns the last _n_ elements from the list.
 	Last            *int                    `json:"-" url:"last,omitempty"`
 	AgentIdentifier *AiChatAgentIdentifiers `json:"-" url:"agent_identifier,omitempty"`
+	// Only return chats associated with this business account.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// When true, returns only chats with an active cron schedule
 	OnlyActiveCrons *bool `json:"-" url:"only_active_crons,omitempty"`
 
@@ -215,6 +218,13 @@ func (l *ListAiChatsRequest) SetLast(last *int) {
 func (l *ListAiChatsRequest) SetAgentIdentifier(agentIdentifier *AiChatAgentIdentifiers) {
 	l.AgentIdentifier = agentIdentifier
 	l.require(listAiChatsRequestFieldAgentIdentifier)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAiChatsRequest) SetAccountID(accountID *string) {
+	l.AccountID = accountID
+	l.require(listAiChatsRequestFieldAccountID)
 }
 
 // SetOnlyActiveCrons sets the OnlyActiveCrons field and marks it as non-optional;
