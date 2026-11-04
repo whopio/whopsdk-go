@@ -94,20 +94,21 @@ func (d *DeclinePartnerReferralRequestsRequest) SetID(id string) {
 }
 
 var (
-	listPartnerReferralRequestsRequestFieldAccountID        = big.NewInt(1 << 0)
-	listPartnerReferralRequestsRequestFieldTargetUserID     = big.NewInt(1 << 1)
-	listPartnerReferralRequestsRequestFieldPartnerID        = big.NewInt(1 << 2)
-	listPartnerReferralRequestsRequestFieldStatus           = big.NewInt(1 << 3)
-	listPartnerReferralRequestsRequestFieldRequestType      = big.NewInt(1 << 4)
-	listPartnerReferralRequestsRequestFieldAuthorizedUserID = big.NewInt(1 << 5)
-	listPartnerReferralRequestsRequestFieldMemberID         = big.NewInt(1 << 6)
-	listPartnerReferralRequestsRequestFieldPersonal         = big.NewInt(1 << 7)
-	listPartnerReferralRequestsRequestFieldOrder            = big.NewInt(1 << 8)
-	listPartnerReferralRequestsRequestFieldDirection        = big.NewInt(1 << 9)
-	listPartnerReferralRequestsRequestFieldFirst            = big.NewInt(1 << 10)
-	listPartnerReferralRequestsRequestFieldAfter            = big.NewInt(1 << 11)
-	listPartnerReferralRequestsRequestFieldLast             = big.NewInt(1 << 12)
-	listPartnerReferralRequestsRequestFieldBefore           = big.NewInt(1 << 13)
+	listPartnerReferralRequestsRequestFieldAccountID          = big.NewInt(1 << 0)
+	listPartnerReferralRequestsRequestFieldTargetUserID       = big.NewInt(1 << 1)
+	listPartnerReferralRequestsRequestFieldPartnerID          = big.NewInt(1 << 2)
+	listPartnerReferralRequestsRequestFieldReferringAccountID = big.NewInt(1 << 3)
+	listPartnerReferralRequestsRequestFieldStatus             = big.NewInt(1 << 4)
+	listPartnerReferralRequestsRequestFieldRequestType        = big.NewInt(1 << 5)
+	listPartnerReferralRequestsRequestFieldAuthorizedUserID   = big.NewInt(1 << 6)
+	listPartnerReferralRequestsRequestFieldMemberID           = big.NewInt(1 << 7)
+	listPartnerReferralRequestsRequestFieldPersonal           = big.NewInt(1 << 8)
+	listPartnerReferralRequestsRequestFieldOrder              = big.NewInt(1 << 9)
+	listPartnerReferralRequestsRequestFieldDirection          = big.NewInt(1 << 10)
+	listPartnerReferralRequestsRequestFieldFirst              = big.NewInt(1 << 11)
+	listPartnerReferralRequestsRequestFieldAfter              = big.NewInt(1 << 12)
+	listPartnerReferralRequestsRequestFieldLast               = big.NewInt(1 << 13)
+	listPartnerReferralRequestsRequestFieldBefore             = big.NewInt(1 << 14)
 )
 
 type ListPartnerReferralRequestsRequest struct {
@@ -117,6 +118,8 @@ type ListPartnerReferralRequestsRequest struct {
 	TargetUserID *string `json:"-" url:"target_user_id,omitempty"`
 	// Only requests sent by this partner's user ID, prefixed `user_`.
 	PartnerID *string `json:"-" url:"partner_id,omitempty"`
+	// Only the referral links created for memberships on this business's team, prefixed `biz_`. Needs read access to the business: its owner sees every member's links, a manager the links of the people reporting to them, and other members only their own.
+	ReferringAccountID *string `json:"-" url:"referring_account_id,omitempty"`
 	// Only requests with this approval status.
 	Status *ListPartnerReferralRequestsRequestStatus `json:"-" url:"status,omitempty"`
 	// Only requests initiated in this way.
@@ -172,6 +175,13 @@ func (l *ListPartnerReferralRequestsRequest) SetTargetUserID(targetUserID *strin
 func (l *ListPartnerReferralRequestsRequest) SetPartnerID(partnerID *string) {
 	l.PartnerID = partnerID
 	l.require(listPartnerReferralRequestsRequestFieldPartnerID)
+}
+
+// SetReferringAccountID sets the ReferringAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPartnerReferralRequestsRequest) SetReferringAccountID(referringAccountID *string) {
+	l.ReferringAccountID = referringAccountID
+	l.require(listPartnerReferralRequestsRequestFieldReferringAccountID)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
