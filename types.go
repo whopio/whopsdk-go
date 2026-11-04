@@ -38017,17 +38017,20 @@ func (o *OauthGrant) String() string {
 }
 
 var (
-	ownerLevelPointsFieldAds     = big.NewInt(1 << 0)
-	ownerLevelPointsFieldCards   = big.NewInt(1 << 1)
-	ownerLevelPointsFieldTrading = big.NewInt(1 << 2)
+	ownerLevelPointsFieldAds      = big.NewInt(1 << 0)
+	ownerLevelPointsFieldCards    = big.NewInt(1 << 1)
+	ownerLevelPointsFieldPartners = big.NewInt(1 << 2)
+	ownerLevelPointsFieldTrading  = big.NewInt(1 << 3)
 )
 
 type OwnerLevelPoints struct {
-	// Points from charged Whop Ads spend: 10 for every whole dollar.
+	// Points from paid Whop Ads charges, net of refunds: 10 for every dollar, rounded toward zero.
 	Ads int `json:"ads" url:"ads"`
-	// Points from Whop Card spend: 10 for every whole dollar.
+	// Points from captured Whop Card spend, net of refunds: 10 for every dollar, rounded toward zero.
 	Cards int `json:"cards" url:"cards"`
-	// Points from perpetual trading volume: 1 for every whole dollar traded.
+	// Points from accounts the owner referred as a partner: 1 for every 3 they earn, rounded toward zero.
+	Partners int `json:"partners" url:"partners"`
+	// Points from perpetual trading volume filled through Whop: 1 for every dollar traded, rounded toward zero.
 	Trading int `json:"trading" url:"trading"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -38049,6 +38052,13 @@ func (o *OwnerLevelPoints) GetCards() int {
 		return 0
 	}
 	return o.Cards
+}
+
+func (o *OwnerLevelPoints) GetPartners() int {
+	if o == nil {
+		return 0
+	}
+	return o.Partners
 }
 
 func (o *OwnerLevelPoints) GetTrading() int {
@@ -38086,6 +38096,13 @@ func (o *OwnerLevelPoints) SetAds(ads int) {
 func (o *OwnerLevelPoints) SetCards(cards int) {
 	o.Cards = cards
 	o.require(ownerLevelPointsFieldCards)
+}
+
+// SetPartners sets the Partners field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevelPoints) SetPartners(partners int) {
+	o.Partners = partners
+	o.require(ownerLevelPointsFieldPartners)
 }
 
 // SetTrading sets the Trading field and marks it as non-optional;
