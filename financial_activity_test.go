@@ -1815,6 +1815,13 @@ func TestEnumListFinancialActivityRequestLineTypesItem(t *testing.T) {
 		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("legacy_payment_refund"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_levels_rebate", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("levels_rebate")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("levels_rebate"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_license_sale", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListFinancialActivityRequestLineTypesItemFromString("license_sale")

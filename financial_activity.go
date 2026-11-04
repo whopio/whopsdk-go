@@ -326,6 +326,7 @@ const (
 	ListFinancialActivityRequestLineTypesItemLegacyCryptoPayment                       ListFinancialActivityRequestLineTypesItem = "legacy_crypto_payment"
 	ListFinancialActivityRequestLineTypesItemLegacyPayment                             ListFinancialActivityRequestLineTypesItem = "legacy_payment"
 	ListFinancialActivityRequestLineTypesItemLegacyPaymentRefund                       ListFinancialActivityRequestLineTypesItem = "legacy_payment_refund"
+	ListFinancialActivityRequestLineTypesItemLevelsRebate                              ListFinancialActivityRequestLineTypesItem = "levels_rebate"
 	ListFinancialActivityRequestLineTypesItemLicenseSale                               ListFinancialActivityRequestLineTypesItem = "license_sale"
 	ListFinancialActivityRequestLineTypesItemLicenseSaleCommission                     ListFinancialActivityRequestLineTypesItem = "license_sale_commission"
 	ListFinancialActivityRequestLineTypesItemLicenseSaleRevenue                        ListFinancialActivityRequestLineTypesItem = "license_sale_revenue"
@@ -536,6 +537,8 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemLegacyPayment, nil
 	case "legacy_payment_refund":
 		return ListFinancialActivityRequestLineTypesItemLegacyPaymentRefund, nil
+	case "levels_rebate":
+		return ListFinancialActivityRequestLineTypesItemLevelsRebate, nil
 	case "license_sale":
 		return ListFinancialActivityRequestLineTypesItemLicenseSale, nil
 	case "license_sale_commission":
