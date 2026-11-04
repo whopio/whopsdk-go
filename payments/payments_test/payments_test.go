@@ -94,6 +94,12 @@ func TestPaymentsListWithWireMock(
 				"eur",
 			),
 		},
+		MinAmount: whopsdk.Float64(
+			995,
+		),
+		MaxAmount: whopsdk.Float64(
+			995,
+		),
 		VariantIDs: []*string{
 			whopsdk.String(
 				"plan_xxxxxxxxxxxxx",
@@ -114,7 +120,7 @@ func TestPaymentsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPaymentsListWithWireMock", "GET", "/payments", map[string]interface{}{"currencies": "eur", "variant_ids": "plan_xxxxxxxxxxxxx", "product_ids": "prod_xxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestPaymentsListWithWireMock", "GET", "/payments", map[string]interface{}{"currencies": "eur", "min_amount": "995", "max_amount": "995", "variant_ids": "plan_xxxxxxxxxxxxx", "product_ids": "prod_xxxxxxxxxxxxx"}, 1)
 }
 
 func TestPaymentsCreateWithWireMock(
@@ -160,6 +166,12 @@ func TestPaymentsSummaryWithWireMock(
 				"usd",
 			),
 		},
+		MinAmount: whopsdk.Float64(
+			995,
+		),
+		MaxAmount: whopsdk.Float64(
+			995,
+		),
 		VariantIDs: []*string{
 			whopsdk.String(
 				"plan_xxxxxxxxxxxxx",
@@ -180,7 +192,7 @@ func TestPaymentsSummaryWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestPaymentsSummaryWithWireMock", "GET", "/payments/summary", map[string]interface{}{"currencies": "usd", "variant_ids": "plan_xxxxxxxxxxxxx", "product_ids": "prod_xxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestPaymentsSummaryWithWireMock", "GET", "/payments/summary", map[string]interface{}{"currencies": "usd", "min_amount": "995", "max_amount": "995", "variant_ids": "plan_xxxxxxxxxxxxx", "product_ids": "prod_xxxxxxxxxxxxx"}, 1)
 }
 
 func TestPaymentsRetrieveWithWireMock(

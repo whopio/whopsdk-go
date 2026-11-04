@@ -315,23 +315,25 @@ var (
 	listPaymentsRequestFieldSubstatuses          = big.NewInt(1 << 16)
 	listPaymentsRequestFieldBillingReasons       = big.NewInt(1 << 17)
 	listPaymentsRequestFieldCurrencies           = big.NewInt(1 << 18)
-	listPaymentsRequestFieldVariantIDs           = big.NewInt(1 << 19)
-	listPaymentsRequestFieldProductIDs           = big.NewInt(1 << 20)
-	listPaymentsRequestFieldPaymentMethods       = big.NewInt(1 << 21)
-	listPaymentsRequestFieldTrackingStates       = big.NewInt(1 << 22)
-	listPaymentsRequestFieldRefundedAfter        = big.NewInt(1 << 23)
-	listPaymentsRequestFieldRefundedBefore       = big.NewInt(1 << 24)
-	listPaymentsRequestFieldDisputeAlertedAfter  = big.NewInt(1 << 25)
-	listPaymentsRequestFieldDisputeAlertedBefore = big.NewInt(1 << 26)
-	listPaymentsRequestFieldDisputeCreatedAfter  = big.NewInt(1 << 27)
-	listPaymentsRequestFieldDisputeCreatedBefore = big.NewInt(1 << 28)
-	listPaymentsRequestFieldOrder                = big.NewInt(1 << 29)
-	listPaymentsRequestFieldDirection            = big.NewInt(1 << 30)
-	listPaymentsRequestFieldFirst                = big.NewInt(1 << 31)
-	listPaymentsRequestFieldAfter                = big.NewInt(1 << 32)
-	listPaymentsRequestFieldLast                 = big.NewInt(1 << 33)
-	listPaymentsRequestFieldBefore               = big.NewInt(1 << 34)
-	listPaymentsRequestFieldIncludeTotalCount    = big.NewInt(1 << 35)
+	listPaymentsRequestFieldMinAmount            = big.NewInt(1 << 19)
+	listPaymentsRequestFieldMaxAmount            = big.NewInt(1 << 20)
+	listPaymentsRequestFieldVariantIDs           = big.NewInt(1 << 21)
+	listPaymentsRequestFieldProductIDs           = big.NewInt(1 << 22)
+	listPaymentsRequestFieldPaymentMethods       = big.NewInt(1 << 23)
+	listPaymentsRequestFieldTrackingStates       = big.NewInt(1 << 24)
+	listPaymentsRequestFieldRefundedAfter        = big.NewInt(1 << 25)
+	listPaymentsRequestFieldRefundedBefore       = big.NewInt(1 << 26)
+	listPaymentsRequestFieldDisputeAlertedAfter  = big.NewInt(1 << 27)
+	listPaymentsRequestFieldDisputeAlertedBefore = big.NewInt(1 << 28)
+	listPaymentsRequestFieldDisputeCreatedAfter  = big.NewInt(1 << 29)
+	listPaymentsRequestFieldDisputeCreatedBefore = big.NewInt(1 << 30)
+	listPaymentsRequestFieldOrder                = big.NewInt(1 << 31)
+	listPaymentsRequestFieldDirection            = big.NewInt(1 << 32)
+	listPaymentsRequestFieldFirst                = big.NewInt(1 << 33)
+	listPaymentsRequestFieldAfter                = big.NewInt(1 << 34)
+	listPaymentsRequestFieldLast                 = big.NewInt(1 << 35)
+	listPaymentsRequestFieldBefore               = big.NewInt(1 << 36)
+	listPaymentsRequestFieldIncludeTotalCount    = big.NewInt(1 << 37)
 )
 
 type ListPaymentsRequest struct {
@@ -373,6 +375,10 @@ type ListPaymentsRequest struct {
 	BillingReasons []*ListPaymentsRequestBillingReasonsItem `json:"-" url:"billing_reasons,omitempty"`
 	// Only payments presented in any of these three-letter currencies. Repeat the parameter to pass several. Combined with `currency` when both are sent.
 	Currencies []*string `json:"-" url:"currencies,omitempty"`
+	// Only payments charged at least this amount: what the buyer was charged after discounts and including tax, in the currency each payment was presented in, the same amount `order=amount` sorts by. Where tax is added on top of the price (`tax_behavior` is `exclusive`), that is the price plus the tax, so a 995 price with tax added does not match `995`: match a range instead. A failed payment that charged nothing matches 0, not its price. Inclusive and compared to the cent. Pair it with `currencies` when the account sells in several. Send the same value as `max_amount` to match one exact amount.
+	MinAmount *float64 `json:"-" url:"min_amount,omitempty"`
+	// Only payments charged at most this amount, measured like `min_amount`: after discounts and including tax, in the currency each payment was presented in. Inclusive and compared to the cent. Must not be less than `min_amount`.
+	MaxAmount *float64 `json:"-" url:"max_amount,omitempty"`
 	// Only payments priced by any of these variants, each prefixed `plan_`. Repeat the parameter to pass several. Combined with `variant_id` when both are sent.
 	VariantIDs []*string `json:"-" url:"variant_ids,omitempty"`
 	// Only payments for any of these products, each prefixed `prod_`. Repeat the parameter to pass several. Combined with `product_id` when both are sent.
@@ -552,6 +558,20 @@ func (l *ListPaymentsRequest) SetBillingReasons(billingReasons []*ListPaymentsRe
 func (l *ListPaymentsRequest) SetCurrencies(currencies []*string) {
 	l.Currencies = currencies
 	l.require(listPaymentsRequestFieldCurrencies)
+}
+
+// SetMinAmount sets the MinAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetMinAmount(minAmount *float64) {
+	l.MinAmount = minAmount
+	l.require(listPaymentsRequestFieldMinAmount)
+}
+
+// SetMaxAmount sets the MaxAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPaymentsRequest) SetMaxAmount(maxAmount *float64) {
+	l.MaxAmount = maxAmount
+	l.require(listPaymentsRequestFieldMaxAmount)
 }
 
 // SetVariantIDs sets the VariantIDs field and marks it as non-optional;
@@ -940,20 +960,22 @@ var (
 	summaryPaymentsRequestFieldSubstatuses          = big.NewInt(1 << 3)
 	summaryPaymentsRequestFieldBillingReasons       = big.NewInt(1 << 4)
 	summaryPaymentsRequestFieldCurrencies           = big.NewInt(1 << 5)
-	summaryPaymentsRequestFieldVariantIDs           = big.NewInt(1 << 6)
-	summaryPaymentsRequestFieldProductIDs           = big.NewInt(1 << 7)
-	summaryPaymentsRequestFieldPaymentMethods       = big.NewInt(1 << 8)
-	summaryPaymentsRequestFieldTrackingStates       = big.NewInt(1 << 9)
-	summaryPaymentsRequestFieldCreatedAfter         = big.NewInt(1 << 10)
-	summaryPaymentsRequestFieldCreatedBefore        = big.NewInt(1 << 11)
-	summaryPaymentsRequestFieldRefundedAfter        = big.NewInt(1 << 12)
-	summaryPaymentsRequestFieldRefundedBefore       = big.NewInt(1 << 13)
-	summaryPaymentsRequestFieldDisputeAlertedAfter  = big.NewInt(1 << 14)
-	summaryPaymentsRequestFieldDisputeAlertedBefore = big.NewInt(1 << 15)
-	summaryPaymentsRequestFieldDisputeCreatedAfter  = big.NewInt(1 << 16)
-	summaryPaymentsRequestFieldDisputeCreatedBefore = big.NewInt(1 << 17)
-	summaryPaymentsRequestFieldQuery                = big.NewInt(1 << 18)
-	summaryPaymentsRequestFieldIncludeSubaccounts   = big.NewInt(1 << 19)
+	summaryPaymentsRequestFieldMinAmount            = big.NewInt(1 << 6)
+	summaryPaymentsRequestFieldMaxAmount            = big.NewInt(1 << 7)
+	summaryPaymentsRequestFieldVariantIDs           = big.NewInt(1 << 8)
+	summaryPaymentsRequestFieldProductIDs           = big.NewInt(1 << 9)
+	summaryPaymentsRequestFieldPaymentMethods       = big.NewInt(1 << 10)
+	summaryPaymentsRequestFieldTrackingStates       = big.NewInt(1 << 11)
+	summaryPaymentsRequestFieldCreatedAfter         = big.NewInt(1 << 12)
+	summaryPaymentsRequestFieldCreatedBefore        = big.NewInt(1 << 13)
+	summaryPaymentsRequestFieldRefundedAfter        = big.NewInt(1 << 14)
+	summaryPaymentsRequestFieldRefundedBefore       = big.NewInt(1 << 15)
+	summaryPaymentsRequestFieldDisputeAlertedAfter  = big.NewInt(1 << 16)
+	summaryPaymentsRequestFieldDisputeAlertedBefore = big.NewInt(1 << 17)
+	summaryPaymentsRequestFieldDisputeCreatedAfter  = big.NewInt(1 << 18)
+	summaryPaymentsRequestFieldDisputeCreatedBefore = big.NewInt(1 << 19)
+	summaryPaymentsRequestFieldQuery                = big.NewInt(1 << 20)
+	summaryPaymentsRequestFieldIncludeSubaccounts   = big.NewInt(1 << 21)
 )
 
 type SummaryPaymentsRequest struct {
@@ -969,6 +991,10 @@ type SummaryPaymentsRequest struct {
 	BillingReasons []*SummaryPaymentsRequestBillingReasonsItem `json:"-" url:"billing_reasons,omitempty"`
 	// Only payments presented in any of these three-letter currencies. Repeat the parameter to pass several.
 	Currencies []*string `json:"-" url:"currencies,omitempty"`
+	// Only payments charged at least this amount: what the buyer was charged after discounts and including tax, in the currency each payment was presented in. Where tax is added on top of the price (`tax_behavior` is `exclusive`), that is the price plus the tax. A failed payment that charged nothing counts as 0. Inclusive and compared to the cent.
+	MinAmount *float64 `json:"-" url:"min_amount,omitempty"`
+	// Only payments charged at most this amount, measured like `min_amount`: after discounts and including tax. Inclusive and compared to the cent. Must not be less than `min_amount`.
+	MaxAmount *float64 `json:"-" url:"max_amount,omitempty"`
 	// Only payments priced by any of these variants, each prefixed `plan_`. Repeat the parameter to pass several.
 	VariantIDs []*string `json:"-" url:"variant_ids,omitempty"`
 	// Only payments for any of these products, each prefixed `prod_`. Repeat the parameter to pass several.
@@ -1051,6 +1077,20 @@ func (s *SummaryPaymentsRequest) SetBillingReasons(billingReasons []*SummaryPaym
 func (s *SummaryPaymentsRequest) SetCurrencies(currencies []*string) {
 	s.Currencies = currencies
 	s.require(summaryPaymentsRequestFieldCurrencies)
+}
+
+// SetMinAmount sets the MinAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetMinAmount(minAmount *float64) {
+	s.MinAmount = minAmount
+	s.require(summaryPaymentsRequestFieldMinAmount)
+}
+
+// SetMaxAmount sets the MaxAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryPaymentsRequest) SetMaxAmount(maxAmount *float64) {
+	s.MaxAmount = maxAmount
+	s.require(summaryPaymentsRequestFieldMaxAmount)
 }
 
 // SetVariantIDs sets the VariantIDs field and marks it as non-optional;
