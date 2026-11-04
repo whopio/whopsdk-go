@@ -179249,6 +179249,41 @@ func TestEnumLedgerActivityLineType(t *testing.T) {
 		assert.Equal(t, LedgerActivityLineType("platform_credits_granted"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_levels_points_card", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("levels_points_card")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("levels_points_card"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_levels_points_ads", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("levels_points_ads")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("levels_points_ads"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_levels_points_trading", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("levels_points_trading")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("levels_points_trading"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_levels_points_partner", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("levels_points_partner")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("levels_points_partner"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_levels_points_issued", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("levels_points_issued")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("levels_points_issued"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_platform_balance_transfer_outgoing", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewLedgerActivityLineTypeFromString("platform_balance_transfer_outgoing")
