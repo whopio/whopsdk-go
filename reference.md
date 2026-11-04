@@ -5216,6 +5216,14 @@ client.AiChats.List(
 <dl>
 <dd>
 
+**accountID:** `*string` — Only return chats associated with this business account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **onlyActiveCrons:** `*bool` — When true, returns only chats with an active cron schedule
     
 </dd>
