@@ -928,6 +928,7 @@ const (
 	PlatformTrendsReportsRequestOrderRepeatRate         PlatformTrendsReportsRequestOrder = "repeat_rate"
 	PlatformTrendsReportsRequestOrderMedianGrossRevenue PlatformTrendsReportsRequestOrder = "median_gross_revenue"
 	PlatformTrendsReportsRequestOrderNewBusinesses      PlatformTrendsReportsRequestOrder = "new_businesses"
+	PlatformTrendsReportsRequestOrderNewCustomers       PlatformTrendsReportsRequestOrder = "new_customers"
 	PlatformTrendsReportsRequestOrderAvgBusinessAge     PlatformTrendsReportsRequestOrder = "avg_business_age"
 	PlatformTrendsReportsRequestOrderAvgOwnerAge        PlatformTrendsReportsRequestOrder = "avg_owner_age"
 	PlatformTrendsReportsRequestOrderAvgCustomerAge     PlatformTrendsReportsRequestOrder = "avg_customer_age"
@@ -953,6 +954,8 @@ func NewPlatformTrendsReportsRequestOrderFromString(s string) (PlatformTrendsRep
 		return PlatformTrendsReportsRequestOrderMedianGrossRevenue, nil
 	case "new_businesses":
 		return PlatformTrendsReportsRequestOrderNewBusinesses, nil
+	case "new_customers":
+		return PlatformTrendsReportsRequestOrderNewCustomers, nil
 	case "avg_business_age":
 		return PlatformTrendsReportsRequestOrderAvgBusinessAge, nil
 	case "avg_owner_age":
@@ -1619,10 +1622,11 @@ var (
 	platformTrendsReportsResponseDataReportsItemRowsItemFieldIndustryType       = big.NewInt(1 << 10)
 	platformTrendsReportsResponseDataReportsItemRowsItemFieldMedianGrossRevenue = big.NewInt(1 << 11)
 	platformTrendsReportsResponseDataReportsItemRowsItemFieldNewBusinesses      = big.NewInt(1 << 12)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldPayments           = big.NewInt(1 << 13)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldProductCategory    = big.NewInt(1 << 14)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldProducts           = big.NewInt(1 << 15)
-	platformTrendsReportsResponseDataReportsItemRowsItemFieldRepeatRate         = big.NewInt(1 << 16)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldNewCustomers       = big.NewInt(1 << 13)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldPayments           = big.NewInt(1 << 14)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldProductCategory    = big.NewInt(1 << 15)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldProducts           = big.NewInt(1 << 16)
+	platformTrendsReportsResponseDataReportsItemRowsItemFieldRepeatRate         = big.NewInt(1 << 17)
 )
 
 // platformTrendsReportsResponseDataReportsItemRowsItemNullableFields maps the wire names of PlatformTrendsReportsResponseDataReportsItemRowsItem's nullable fields (required or optional) to their field bits.
@@ -1640,6 +1644,7 @@ var platformTrendsReportsResponseDataReportsItemRowsItemNullableFields = map[str
 	"industry_type":        platformTrendsReportsResponseDataReportsItemRowsItemFieldIndustryType,
 	"median_gross_revenue": platformTrendsReportsResponseDataReportsItemRowsItemFieldMedianGrossRevenue,
 	"new_businesses":       platformTrendsReportsResponseDataReportsItemRowsItemFieldNewBusinesses,
+	"new_customers":        platformTrendsReportsResponseDataReportsItemRowsItemFieldNewCustomers,
 	"payments":             platformTrendsReportsResponseDataReportsItemRowsItemFieldPayments,
 	"product_category":     platformTrendsReportsResponseDataReportsItemRowsItemFieldProductCategory,
 	"products":             platformTrendsReportsResponseDataReportsItemRowsItemFieldProducts,
@@ -1669,6 +1674,8 @@ type PlatformTrendsReportsResponseDataReportsItemRowsItem struct {
 	MedianGrossRevenue *v2.Money `json:"median_gross_revenue,omitempty" url:"median_gross_revenue,omitempty"`
 	// Businesses created in the window that also sold in it.
 	NewBusinesses *int `json:"new_businesses,omitempty" url:"new_businesses,omitempty"`
+	// Customers who joined Whop in the window and paid in it. A customer who pays in two groups counts in both.
+	NewCustomers *int `json:"new_customers,omitempty" url:"new_customers,omitempty"`
 	// Paid payments.
 	Payments        *int                                                                 `json:"payments,omitempty" url:"payments,omitempty"`
 	ProductCategory *PlatformTrendsReportsResponseDataReportsItemRowsItemProductCategory `json:"product_category,omitempty" url:"product_category,omitempty"`
@@ -1773,6 +1780,13 @@ func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetNewBusinesses(
 		return nil
 	}
 	return p.NewBusinesses
+}
+
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetNewCustomers() *int {
+	if p == nil {
+		return nil
+	}
+	return p.NewCustomers
 }
 
 func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) GetPayments() *int {
@@ -1908,6 +1922,13 @@ func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetMedianGrossRev
 func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetNewBusinesses(newBusinesses *int) {
 	p.NewBusinesses = newBusinesses
 	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldNewBusinesses)
+}
+
+// SetNewCustomers sets the NewCustomers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsResponseDataReportsItemRowsItem) SetNewCustomers(newCustomers *int) {
+	p.NewCustomers = newCustomers
+	p.require(platformTrendsReportsResponseDataReportsItemRowsItemFieldNewCustomers)
 }
 
 // SetPayments sets the Payments field and marks it as non-optional;
