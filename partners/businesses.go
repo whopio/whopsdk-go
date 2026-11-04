@@ -5685,36 +5685,38 @@ var (
 	retrieveBusinessesResponseFieldCreatedAt                           = big.NewInt(1 << 6)
 	retrieveBusinessesResponseFieldDealClosedReason                    = big.NewInt(1 << 7)
 	retrieveBusinessesResponseFieldEarningsUsd                         = big.NewInt(1 << 8)
-	retrieveBusinessesResponseFieldFirstTierPartner                    = big.NewInt(1 << 9)
-	retrieveBusinessesResponseFieldID                                  = big.NewInt(1 << 10)
-	retrieveBusinessesResponseFieldMyPartnerTier                       = big.NewInt(1 << 11)
-	retrieveBusinessesResponseFieldMyPayoutPercentages                 = big.NewInt(1 << 12)
-	retrieveBusinessesResponseFieldObject                              = big.NewInt(1 << 13)
-	retrieveBusinessesResponseFieldOwner                               = big.NewInt(1 << 14)
-	retrieveBusinessesResponseFieldPayoutPercentages                   = big.NewInt(1 << 15)
-	retrieveBusinessesResponseFieldPendingOwnerInvites                 = big.NewInt(1 << 16)
-	retrieveBusinessesResponseFieldReferralExpiresAt                   = big.NewInt(1 << 17)
-	retrieveBusinessesResponseFieldReferralStartedAt                   = big.NewInt(1 << 18)
-	retrieveBusinessesResponseFieldReferringBusiness                   = big.NewInt(1 << 19)
-	retrieveBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 20)
-	retrieveBusinessesResponseFieldStatus                              = big.NewInt(1 << 21)
-	retrieveBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 22)
+	retrieveBusinessesResponseFieldEstimatedCommissionRate             = big.NewInt(1 << 9)
+	retrieveBusinessesResponseFieldFirstTierPartner                    = big.NewInt(1 << 10)
+	retrieveBusinessesResponseFieldID                                  = big.NewInt(1 << 11)
+	retrieveBusinessesResponseFieldMyPartnerTier                       = big.NewInt(1 << 12)
+	retrieveBusinessesResponseFieldMyPayoutPercentages                 = big.NewInt(1 << 13)
+	retrieveBusinessesResponseFieldObject                              = big.NewInt(1 << 14)
+	retrieveBusinessesResponseFieldOwner                               = big.NewInt(1 << 15)
+	retrieveBusinessesResponseFieldPayoutPercentages                   = big.NewInt(1 << 16)
+	retrieveBusinessesResponseFieldPendingOwnerInvites                 = big.NewInt(1 << 17)
+	retrieveBusinessesResponseFieldReferralExpiresAt                   = big.NewInt(1 << 18)
+	retrieveBusinessesResponseFieldReferralStartedAt                   = big.NewInt(1 << 19)
+	retrieveBusinessesResponseFieldReferringBusiness                   = big.NewInt(1 << 20)
+	retrieveBusinessesResponseFieldSecondTierPartner                   = big.NewInt(1 << 21)
+	retrieveBusinessesResponseFieldStatus                              = big.NewInt(1 << 22)
+	retrieveBusinessesResponseFieldVolumeUsd                           = big.NewInt(1 << 23)
 )
 
 // retrieveBusinessesResponseNullableFields maps the wire names of RetrieveBusinessesResponse's nullable fields (required or optional) to their field bits.
 var retrieveBusinessesResponseNullableFields = map[string]*big.Int{
-	"account":                 retrieveBusinessesResponseFieldAccount,
-	"blueprint_partner":       retrieveBusinessesResponseFieldBlueprintPartner,
-	"commission_advance":      retrieveBusinessesResponseFieldCommissionAdvance,
-	"commission_advance_rate": retrieveBusinessesResponseFieldCommissionAdvanceRate,
-	"deal_closed_reason":      retrieveBusinessesResponseFieldDealClosedReason,
-	"first_tier_partner":      retrieveBusinessesResponseFieldFirstTierPartner,
-	"my_payout_percentages":   retrieveBusinessesResponseFieldMyPayoutPercentages,
-	"owner":                   retrieveBusinessesResponseFieldOwner,
-	"referral_expires_at":     retrieveBusinessesResponseFieldReferralExpiresAt,
-	"referral_started_at":     retrieveBusinessesResponseFieldReferralStartedAt,
-	"referring_business":      retrieveBusinessesResponseFieldReferringBusiness,
-	"second_tier_partner":     retrieveBusinessesResponseFieldSecondTierPartner,
+	"account":                   retrieveBusinessesResponseFieldAccount,
+	"blueprint_partner":         retrieveBusinessesResponseFieldBlueprintPartner,
+	"commission_advance":        retrieveBusinessesResponseFieldCommissionAdvance,
+	"commission_advance_rate":   retrieveBusinessesResponseFieldCommissionAdvanceRate,
+	"deal_closed_reason":        retrieveBusinessesResponseFieldDealClosedReason,
+	"estimated_commission_rate": retrieveBusinessesResponseFieldEstimatedCommissionRate,
+	"first_tier_partner":        retrieveBusinessesResponseFieldFirstTierPartner,
+	"my_payout_percentages":     retrieveBusinessesResponseFieldMyPayoutPercentages,
+	"owner":                     retrieveBusinessesResponseFieldOwner,
+	"referral_expires_at":       retrieveBusinessesResponseFieldReferralExpiresAt,
+	"referral_started_at":       retrieveBusinessesResponseFieldReferralStartedAt,
+	"referring_business":        retrieveBusinessesResponseFieldReferringBusiness,
+	"second_tier_partner":       retrieveBusinessesResponseFieldSecondTierPartner,
 }
 
 type RetrieveBusinessesResponse struct {
@@ -5735,6 +5737,8 @@ type RetrieveBusinessesResponse struct {
 	// How the partner closed this business, in their own words. Null until the partner saves one.
 	DealClosedReason *string                                `json:"deal_closed_reason,omitempty" url:"deal_closed_reason,omitempty"`
 	EarningsUsd      *RetrieveBusinessesResponseEarningsUsd `json:"earnings_usd" url:"earnings_usd"`
+	// Estimated regular commission per USD of card and BNPL payments, as a decimal string (for example `0.004`). Once the advance qualifies, the rate its terms were sized with; before that, observed payout rates or, without payment history, reference US card fees. Multiply payments by this rate to estimate commissions, including those that resume after a commission advance term. `null` when pricing is unavailable or the response has neither `commission_advance_rate` nor `commission_advance`.
+	EstimatedCommissionRate *string `json:"estimated_commission_rate,omitempty" url:"estimated_commission_rate,omitempty"`
 	// The partner who referred the business owner onto Whop (first tier). Null if there is no active first-tier partner.
 	FirstTierPartner *RetrieveBusinessesResponseFirstTierPartner `json:"first_tier_partner,omitempty" url:"first_tier_partner,omitempty"`
 	// Partner business ID.
@@ -5830,6 +5834,13 @@ func (r *RetrieveBusinessesResponse) GetEarningsUsd() *RetrieveBusinessesRespons
 		return nil
 	}
 	return r.EarningsUsd
+}
+
+func (r *RetrieveBusinessesResponse) GetEstimatedCommissionRate() *string {
+	if r == nil {
+		return nil
+	}
+	return r.EstimatedCommissionRate
 }
 
 func (r *RetrieveBusinessesResponse) GetFirstTierPartner() *RetrieveBusinessesResponseFirstTierPartner {
@@ -6007,6 +6018,13 @@ func (r *RetrieveBusinessesResponse) SetDealClosedReason(dealClosedReason *strin
 func (r *RetrieveBusinessesResponse) SetEarningsUsd(earningsUsd *RetrieveBusinessesResponseEarningsUsd) {
 	r.EarningsUsd = earningsUsd
 	r.require(retrieveBusinessesResponseFieldEarningsUsd)
+}
+
+// SetEstimatedCommissionRate sets the EstimatedCommissionRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveBusinessesResponse) SetEstimatedCommissionRate(estimatedCommissionRate *string) {
+	r.EstimatedCommissionRate = estimatedCommissionRate
+	r.require(retrieveBusinessesResponseFieldEstimatedCommissionRate)
 }
 
 // SetFirstTierPartner sets the FirstTierPartner field and marks it as non-optional;

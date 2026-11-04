@@ -10829,6 +10829,14 @@ func TestSettersRetrieveBusinessesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetEstimatedCommissionRate", func(t *testing.T) {
+		obj := &RetrieveBusinessesResponse{}
+		var fernTestValueEstimatedCommissionRate *string
+		obj.SetEstimatedCommissionRate(fernTestValueEstimatedCommissionRate)
+		assert.Equal(t, fernTestValueEstimatedCommissionRate, obj.EstimatedCommissionRate)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFirstTierPartner", func(t *testing.T) {
 		obj := &RetrieveBusinessesResponse{}
 		var fernTestValueFirstTierPartner *RetrieveBusinessesResponseFirstTierPartner
@@ -11229,6 +11237,39 @@ func TestGettersRetrieveBusinessesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetEarningsUsd() // Should return zero value
+	})
+
+	t.Run("GetEstimatedCommissionRate", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBusinessesResponse{}
+		var expected *string
+		obj.EstimatedCommissionRate = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEstimatedCommissionRate(), "getter should return the property value")
+	})
+
+	t.Run("GetEstimatedCommissionRate_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBusinessesResponse{}
+		obj.EstimatedCommissionRate = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetEstimatedCommissionRate(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetEstimatedCommissionRate_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveBusinessesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEstimatedCommissionRate() // Should return zero value
 	})
 
 	t.Run("GetFirstTierPartner", func(t *testing.T) {
@@ -11912,6 +11953,37 @@ func TestSettersMarkExplicitRetrieveBusinessesResponse(t *testing.T) {
 
 		// Act
 		obj.SetEarningsUsd(fernTestValueEarningsUsd)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetEstimatedCommissionRate_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveBusinessesResponse{}
+		var fernTestValueEstimatedCommissionRate *string
+
+		// Act
+		obj.SetEstimatedCommissionRate(fernTestValueEstimatedCommissionRate)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -18662,6 +18734,7 @@ func TestRequiredNullableRoundTripRetrieveBusinessesResponse(t *testing.T) {
 		"account",
 		"blueprint_partner",
 		"deal_closed_reason",
+		"estimated_commission_rate",
 		"first_tier_partner",
 		"my_payout_percentages",
 		"owner",
@@ -18680,7 +18753,7 @@ func TestRequiredNullableRoundTripRetrieveBusinessesResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrieveBusinessesResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"blueprint_partner":null,"deal_closed_reason":null,"first_tier_partner":null,"my_payout_percentages":null,"owner":null,"referral_expires_at":null,"referral_started_at":null,"second_tier_partner":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"blueprint_partner":null,"deal_closed_reason":null,"estimated_commission_rate":null,"first_tier_partner":null,"my_payout_percentages":null,"owner":null,"referral_expires_at":null,"referral_started_at":null,"second_tier_partner":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
