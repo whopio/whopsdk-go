@@ -1016,11 +1016,11 @@ func TestSettersMarkExplicitRetrieveUsersRequest(t *testing.T) {
 }
 
 func TestSettersOwnerLevel(t *testing.T) {
-	t.Run("SetCurrent", func(t *testing.T) {
+	t.Run("SetAppliedLevel", func(t *testing.T) {
 		obj := &OwnerLevel{}
-		var fernTestValueCurrent int
-		obj.SetCurrent(fernTestValueCurrent)
-		assert.Equal(t, fernTestValueCurrent, obj.Current)
+		var fernTestValueAppliedLevel int
+		obj.SetAppliedLevel(fernTestValueAppliedLevel)
+		assert.Equal(t, fernTestValueAppliedLevel, obj.AppliedLevel)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1088,14 +1088,6 @@ func TestSettersOwnerLevel(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetProcessingRatePercentage", func(t *testing.T) {
-		obj := &OwnerLevel{}
-		var fernTestValueProcessingRatePercentage float64
-		obj.SetProcessingRatePercentage(fernTestValueProcessingRatePercentage)
-		assert.Equal(t, fernTestValueProcessingRatePercentage, obj.ProcessingRatePercentage)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetResetsAt", func(t *testing.T) {
 		obj := &OwnerLevel{}
 		var fernTestValueResetsAt string
@@ -1107,18 +1099,18 @@ func TestSettersOwnerLevel(t *testing.T) {
 }
 
 func TestGettersOwnerLevel(t *testing.T) {
-	t.Run("GetCurrent", func(t *testing.T) {
+	t.Run("GetAppliedLevel", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &OwnerLevel{}
 		var expected int
-		obj.Current = expected
+		obj.AppliedLevel = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetCurrent(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetAppliedLevel(), "getter should return the property value")
 	})
 
-	t.Run("GetCurrent_NilReceiver", func(t *testing.T) {
+	t.Run("GetAppliedLevel_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *OwnerLevel
 		// Should not panic - getters should handle nil receiver gracefully
@@ -1127,7 +1119,7 @@ func TestGettersOwnerLevel(t *testing.T) {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetCurrent() // Should return zero value
+		_ = obj.GetAppliedLevel() // Should return zero value
 	})
 
 	t.Run("GetLevels", func(t *testing.T) {
@@ -1384,29 +1376,6 @@ func TestGettersOwnerLevel(t *testing.T) {
 		_ = obj.GetPointsToNext() // Should return zero value
 	})
 
-	t.Run("GetProcessingRatePercentage", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OwnerLevel{}
-		var expected float64
-		obj.ProcessingRatePercentage = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetProcessingRatePercentage(), "getter should return the property value")
-	})
-
-	t.Run("GetProcessingRatePercentage_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *OwnerLevel
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetProcessingRatePercentage() // Should return zero value
-	})
-
 	t.Run("GetResetsAt", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1433,14 +1402,14 @@ func TestGettersOwnerLevel(t *testing.T) {
 }
 
 func TestSettersMarkExplicitOwnerLevel(t *testing.T) {
-	t.Run("SetCurrent_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAppliedLevel_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &OwnerLevel{}
-		var fernTestValueCurrent int
+		var fernTestValueAppliedLevel int
 
 		// Act
-		obj.SetCurrent(fernTestValueCurrent)
+		obj.SetAppliedLevel(fernTestValueAppliedLevel)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1689,37 +1658,6 @@ func TestSettersMarkExplicitOwnerLevel(t *testing.T) {
 
 		// Act
 		obj.SetPointsToNext(fernTestValuePointsToNext)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetProcessingRatePercentage_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &OwnerLevel{}
-		var fernTestValueProcessingRatePercentage float64
-
-		// Act
-		obj.SetProcessingRatePercentage(fernTestValueProcessingRatePercentage)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

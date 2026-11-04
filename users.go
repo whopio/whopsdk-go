@@ -351,17 +351,16 @@ func (r *RetrieveUsersRequest) SetTimeZone(timeZone *string) {
 }
 
 var (
-	ownerLevelFieldCurrent                  = big.NewInt(1 << 0)
-	ownerLevelFieldLevels                   = big.NewInt(1 << 1)
-	ownerLevelFieldMonthlyAdsSpend          = big.NewInt(1 << 2)
-	ownerLevelFieldMonthlyCardSpend         = big.NewInt(1 << 3)
-	ownerLevelFieldMonthlyQualifyingSpend   = big.NewInt(1 << 4)
-	ownerLevelFieldMonthlyTradingVolume     = big.NewInt(1 << 5)
-	ownerLevelFieldPoints                   = big.NewInt(1 << 6)
-	ownerLevelFieldPointsBySource           = big.NewInt(1 << 7)
-	ownerLevelFieldPointsToNext             = big.NewInt(1 << 8)
-	ownerLevelFieldProcessingRatePercentage = big.NewInt(1 << 9)
-	ownerLevelFieldResetsAt                 = big.NewInt(1 << 10)
+	ownerLevelFieldAppliedLevel           = big.NewInt(1 << 0)
+	ownerLevelFieldLevels                 = big.NewInt(1 << 1)
+	ownerLevelFieldMonthlyAdsSpend        = big.NewInt(1 << 2)
+	ownerLevelFieldMonthlyCardSpend       = big.NewInt(1 << 3)
+	ownerLevelFieldMonthlyQualifyingSpend = big.NewInt(1 << 4)
+	ownerLevelFieldMonthlyTradingVolume   = big.NewInt(1 << 5)
+	ownerLevelFieldPoints                 = big.NewInt(1 << 6)
+	ownerLevelFieldPointsBySource         = big.NewInt(1 << 7)
+	ownerLevelFieldPointsToNext           = big.NewInt(1 << 8)
+	ownerLevelFieldResetsAt               = big.NewInt(1 << 9)
 )
 
 // ownerLevelNullableFields maps the wire names of OwnerLevel's nullable fields (required or optional) to their field bits.
@@ -370,25 +369,23 @@ var ownerLevelNullableFields = map[string]*big.Int{
 }
 
 type OwnerLevel struct {
-	// Current level, from `0` before the first threshold up to `10`.
-	Current int                            `json:"current" url:"current"`
-	Levels  []*AccountProcessingOfferLevel `json:"levels" url:"levels"`
-	// Charged Whop Ads spend this calendar month across every account the owner owns, in USD.
+	// The level that applies: the highest the owner reached this month or in the 5 months before, from `0` up to `10`.
+	AppliedLevel int                            `json:"applied_level" url:"applied_level"`
+	Levels       []*AccountProcessingOfferLevel `json:"levels" url:"levels"`
+	// Whop Ads charges paid this calendar month across every account the owner owns, net of refunds, in USD, so it can be negative. An account whose month nets to zero or below is left out.
 	MonthlyAdsSpend *Money `json:"monthly_ads_spend" url:"monthly_ads_spend"`
-	// Effective Whop Card spend this calendar month across every account the owner owns, in USD.
+	// Captured Whop Card spend this calendar month across every account the owner owns, net of refunds, in USD, so it can be negative. An account whose month nets to zero or below is left out.
 	MonthlyCardSpend *Money `json:"monthly_card_spend" url:"monthly_card_spend"`
-	// Qualifying spend this calendar month across every account the owner owns, in USD: Whop Ads spend, Whop Card spend, and a tenth of perpetual trading volume.
+	// Qualifying spend this calendar month across every account the owner owns, plus the owner's partner points, in USD: `points` divided by 10.
 	MonthlyQualifyingSpend *Money `json:"monthly_qualifying_spend" url:"monthly_qualifying_spend"`
-	// Perpetual trading notional volume this calendar month across every account the owner owns, in USD.
+	// Perpetual trading volume filled through Whop this calendar month across every account the owner owns, in USD. An account whose month nets to zero or below is left out.
 	MonthlyTradingVolume *Money `json:"monthly_trading_volume" url:"monthly_trading_volume"`
-	// Points earned this month across every account the owner owns.
+	// Points earned this month across every account the owner owns, plus the owner's partner points, rounded down. An account whose month nets below zero counts as zero.
 	Points int `json:"points" url:"points"`
-	// This month's points, split by where they were earned.
+	// This month's points, split by where they were earned. Each source is net of its refunds, so one can be negative.
 	PointsBySource *OwnerLevelPoints `json:"points_by_source" url:"points_by_source"`
 	// Points still needed this month to reach the next level, or `null` at level `10`.
 	PointsToNext *int `json:"points_to_next,omitempty" url:"points_to_next,omitempty"`
-	// The standard US and Canada card processing percentage at `current`, before any account's custom rate.
-	ProcessingRatePercentage float64 `json:"processing_rate_percentage" url:"processing_rate_percentage"`
 	// When this month's points reset to zero, as an ISO 8601 timestamp.
 	ResetsAt string `json:"resets_at" url:"resets_at"`
 
@@ -399,11 +396,11 @@ type OwnerLevel struct {
 	rawJSON         json.RawMessage
 }
 
-func (o *OwnerLevel) GetCurrent() int {
+func (o *OwnerLevel) GetAppliedLevel() int {
 	if o == nil {
 		return 0
 	}
-	return o.Current
+	return o.AppliedLevel
 }
 
 func (o *OwnerLevel) GetLevels() []*AccountProcessingOfferLevel {
@@ -462,13 +459,6 @@ func (o *OwnerLevel) GetPointsToNext() *int {
 	return o.PointsToNext
 }
 
-func (o *OwnerLevel) GetProcessingRatePercentage() float64 {
-	if o == nil {
-		return 0
-	}
-	return o.ProcessingRatePercentage
-}
-
 func (o *OwnerLevel) GetResetsAt() string {
 	if o == nil {
 		return ""
@@ -492,11 +482,11 @@ func (o *OwnerLevel) require(field *big.Int) {
 	o.explicitFields = next
 }
 
-// SetCurrent sets the Current field and marks it as non-optional;
+// SetAppliedLevel sets the AppliedLevel field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetCurrent(current int) {
-	o.Current = current
-	o.require(ownerLevelFieldCurrent)
+func (o *OwnerLevel) SetAppliedLevel(appliedLevel int) {
+	o.AppliedLevel = appliedLevel
+	o.require(ownerLevelFieldAppliedLevel)
 }
 
 // SetLevels sets the Levels field and marks it as non-optional;
@@ -553,13 +543,6 @@ func (o *OwnerLevel) SetPointsBySource(pointsBySource *OwnerLevelPoints) {
 func (o *OwnerLevel) SetPointsToNext(pointsToNext *int) {
 	o.PointsToNext = pointsToNext
 	o.require(ownerLevelFieldPointsToNext)
-}
-
-// SetProcessingRatePercentage sets the ProcessingRatePercentage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetProcessingRatePercentage(processingRatePercentage float64) {
-	o.ProcessingRatePercentage = processingRatePercentage
-	o.require(ownerLevelFieldProcessingRatePercentage)
 }
 
 // SetResetsAt sets the ResetsAt field and marks it as non-optional;

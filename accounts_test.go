@@ -8961,19 +8961,27 @@ func TestSettersMarkExplicitAccountFinancing(t *testing.T) {
 }
 
 func TestSettersAccountLevel(t *testing.T) {
+	t.Run("SetAccountLevel", func(t *testing.T) {
+		obj := &AccountLevel{}
+		var fernTestValueAccountLevel int
+		obj.SetAccountLevel(fernTestValueAccountLevel)
+		assert.Equal(t, fernTestValueAccountLevel, obj.AccountLevel)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetAppliedLevel", func(t *testing.T) {
+		obj := &AccountLevel{}
+		var fernTestValueAppliedLevel int
+		obj.SetAppliedLevel(fernTestValueAppliedLevel)
+		assert.Equal(t, fernTestValueAppliedLevel, obj.AppliedLevel)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetBoosted", func(t *testing.T) {
 		obj := &AccountLevel{}
 		var fernTestValueBoosted bool
 		obj.SetBoosted(fernTestValueBoosted)
 		assert.Equal(t, fernTestValueBoosted, obj.Boosted)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetCurrent", func(t *testing.T) {
-		obj := &AccountLevel{}
-		var fernTestValueCurrent int
-		obj.SetCurrent(fernTestValueCurrent)
-		assert.Equal(t, fernTestValueCurrent, obj.Current)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -9041,14 +9049,6 @@ func TestSettersAccountLevel(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetProcessingRatePercentage", func(t *testing.T) {
-		obj := &AccountLevel{}
-		var fernTestValueProcessingRatePercentage float64
-		obj.SetProcessingRatePercentage(fernTestValueProcessingRatePercentage)
-		assert.Equal(t, fernTestValueProcessingRatePercentage, obj.ProcessingRatePercentage)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetResetsAt", func(t *testing.T) {
 		obj := &AccountLevel{}
 		var fernTestValueResetsAt string
@@ -9060,6 +9060,52 @@ func TestSettersAccountLevel(t *testing.T) {
 }
 
 func TestGettersAccountLevel(t *testing.T) {
+	t.Run("GetAccountLevel", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountLevel{}
+		var expected int
+		obj.AccountLevel = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAccountLevel(), "getter should return the property value")
+	})
+
+	t.Run("GetAccountLevel_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountLevel
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAccountLevel() // Should return zero value
+	})
+
+	t.Run("GetAppliedLevel", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountLevel{}
+		var expected int
+		obj.AppliedLevel = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAppliedLevel(), "getter should return the property value")
+	})
+
+	t.Run("GetAppliedLevel_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountLevel
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAppliedLevel() // Should return zero value
+	})
+
 	t.Run("GetBoosted", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -9081,29 +9127,6 @@ func TestGettersAccountLevel(t *testing.T) {
 			}
 		}()
 		_ = obj.GetBoosted() // Should return zero value
-	})
-
-	t.Run("GetCurrent", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AccountLevel{}
-		var expected int
-		obj.Current = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetCurrent(), "getter should return the property value")
-	})
-
-	t.Run("GetCurrent_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *AccountLevel
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetCurrent() // Should return zero value
 	})
 
 	t.Run("GetLevels", func(t *testing.T) {
@@ -9360,29 +9383,6 @@ func TestGettersAccountLevel(t *testing.T) {
 		_ = obj.GetPointsToNext() // Should return zero value
 	})
 
-	t.Run("GetProcessingRatePercentage", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AccountLevel{}
-		var expected float64
-		obj.ProcessingRatePercentage = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetProcessingRatePercentage(), "getter should return the property value")
-	})
-
-	t.Run("GetProcessingRatePercentage_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *AccountLevel
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetProcessingRatePercentage() // Should return zero value
-	})
-
 	t.Run("GetResetsAt", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -9409,14 +9409,14 @@ func TestGettersAccountLevel(t *testing.T) {
 }
 
 func TestSettersMarkExplicitAccountLevel(t *testing.T) {
-	t.Run("SetBoosted_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAccountLevel_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &AccountLevel{}
-		var fernTestValueBoosted bool
+		var fernTestValueAccountLevel int
 
 		// Act
-		obj.SetBoosted(fernTestValueBoosted)
+		obj.SetAccountLevel(fernTestValueAccountLevel)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9440,14 +9440,45 @@ func TestSettersMarkExplicitAccountLevel(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetCurrent_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAppliedLevel_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &AccountLevel{}
-		var fernTestValueCurrent int
+		var fernTestValueAppliedLevel int
 
 		// Act
-		obj.SetCurrent(fernTestValueCurrent)
+		obj.SetAppliedLevel(fernTestValueAppliedLevel)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetBoosted_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountLevel{}
+		var fernTestValueBoosted bool
+
+		// Act
+		obj.SetBoosted(fernTestValueBoosted)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9696,37 +9727,6 @@ func TestSettersMarkExplicitAccountLevel(t *testing.T) {
 
 		// Act
 		obj.SetPointsToNext(fernTestValuePointsToNext)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetProcessingRatePercentage_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AccountLevel{}
-		var fernTestValueProcessingRatePercentage float64
-
-		// Act
-		obj.SetProcessingRatePercentage(fernTestValueProcessingRatePercentage)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
