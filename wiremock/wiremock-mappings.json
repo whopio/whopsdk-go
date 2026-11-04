@@ -11072,6 +11072,12 @@
               }
             ]
           },
+          "min_amount": {
+            "equalTo": "995"
+          },
+          "max_amount": {
+            "equalTo": "995"
+          },
           "variant_ids": {
             "hasExactly": [
               {
@@ -11157,6 +11163,12 @@
                 "equalTo": "usd"
               }
             ]
+          },
+          "min_amount": {
+            "equalTo": "995"
+          },
+          "max_amount": {
+            "equalTo": "995"
           },
           "variant_ids": {
             "hasExactly": [

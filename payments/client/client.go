@@ -52,6 +52,12 @@ func NewClient(options *core.RequestOptions) *Client {
 //	            "eur",
 //	        ),
 //	    },
+//	    MinAmount: whopsdk.Float64(
+//	        995,
+//	    ),
+//	    MaxAmount: whopsdk.Float64(
+//	        995,
+//	    ),
 //	    VariantIDs: []*string{
 //	        whopsdk.String(
 //	            "plan_xxxxxxxxxxxxx",
@@ -175,6 +181,12 @@ func (c *Client) Create(
 //	            "usd",
 //	        ),
 //	    },
+//	    MinAmount: whopsdk.Float64(
+//	        995,
+//	    ),
+//	    MaxAmount: whopsdk.Float64(
+//	        995,
+//	    ),
 //	    VariantIDs: []*string{
 //	        whopsdk.String(
 //	            "plan_xxxxxxxxxxxxx",
