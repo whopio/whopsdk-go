@@ -299,19 +299,19 @@ var (
 )
 
 type ListProductsRequest struct {
-	// The unique identifier of the account to list products for. Omit to search the public marketplace.
+	// Account to list products for, prefixed `biz_`. Without the `access_pass:basic:read` permission on it, only the products its store page lists are returned. Omit to search the public marketplace.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Filters products by text. The public marketplace list searches product title, account name, headline and description, ranking products that match every word first and the closest partial matches after them; an account's own list is a plain substring match over title, headline and description. Omit to browse by recency.
 	Query *string `json:"-" url:"query,omitempty"`
 	// Only return marketplace products assigned to this category route, such as `trading`.
 	MarketplaceCategoryRoute *string `json:"-" url:"marketplace_category_route,omitempty"`
-	// Filter to products with a buyable variant of these billing models, such as `one_time` or `renewal`.
+	// Filter to products with a buyable variant of these billing models, such as `one_time` or `renewal`. On an account list, needs the `access_pass:basic:read` permission.
 	BillingTypes []*ListProductsRequestBillingTypesItem `json:"-" url:"billing_types,omitempty"`
-	// Only return products whose advertised buyable variant has a displayed price of at least this amount. Recurring variants use renewal price.
+	// Only return products whose advertised buyable variant has a displayed price of at least this amount. Recurring variants use renewal price. On an account list, needs the `access_pass:basic:read` permission.
 	PriceMinimum *float64 `json:"-" url:"price_minimum,omitempty"`
-	// Only return products whose advertised buyable variant has a displayed price of at most this amount. Recurring variants use renewal price.
+	// Only return products whose advertised buyable variant has a displayed price of at most this amount. Recurring variants use renewal price. On an account list, needs the `access_pass:basic:read` permission.
 	PriceMaximum *float64 `json:"-" url:"price_maximum,omitempty"`
-	// Filter to only products matching these visibility states. Ignored on the public marketplace list, which only returns visible products.
+	// Filter to only products matching these visibility states. Ignored on the public marketplace list, which only returns visible products. Without the `access_pass:basic:read` permission on the account, only `visible` matches anything.
 	Visibilities []*string `json:"-" url:"visibilities,omitempty"`
 	// Filter to only products matching these types.
 	AccessPassTypes []*string `json:"-" url:"access_pass_types,omitempty"`
@@ -319,7 +319,7 @@ type ListProductsRequest struct {
 	Labels []*string `json:"-" url:"labels,omitempty"`
 	// The sort direction for results. Defaults to descending.
 	Direction *ListProductsRequestDirection `json:"-" url:"direction,omitempty"`
-	// The field to sort results by. Account lists default to `created_at`. Marketplace lists default to `discoverable_at` and accept `created_at` or `discoverable_at`. Cannot be combined with `query`.
+	// Field to sort results by. Account lists accept `created_at` (the default), `active_memberships_count`, `usd_gmv`, `usd_gmv_30_days` and `position`; `position` with `direction` `asc` matches the order the store page shows. Without the `access_pass:basic:read` permission, an account list sorts only by `created_at` or `position`. Marketplace lists default to `discoverable_at`, accept only `created_at` or `discoverable_at`, and can't be combined with `query`.
 	Order *string `json:"-" url:"order,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
@@ -540,28 +540,30 @@ var (
 	productFieldCustomStatementDescriptor = big.NewInt(1 << 5)
 	productFieldDefaultVariant            = big.NewInt(1 << 6)
 	productFieldDescription               = big.NewInt(1 << 7)
-	productFieldExternalIdentifier        = big.NewInt(1 << 8)
-	productFieldGalleryImages             = big.NewInt(1 << 9)
-	productFieldGlobalAffiliatePercentage = big.NewInt(1 << 10)
-	productFieldGlobalAffiliateStatus     = big.NewInt(1 << 11)
-	productFieldHeadline                  = big.NewInt(1 << 12)
-	productFieldID                        = big.NewInt(1 << 13)
-	productFieldLabels                    = big.NewInt(1 << 14)
-	productFieldMarketplaceStatus         = big.NewInt(1 << 15)
-	productFieldMemberAffiliatePercentage = big.NewInt(1 << 16)
-	productFieldMemberAffiliateStatus     = big.NewInt(1 << 17)
-	productFieldMemberCount               = big.NewInt(1 << 18)
-	productFieldMetadata                  = big.NewInt(1 << 19)
-	productFieldOwnerUser                 = big.NewInt(1 << 20)
-	productFieldProductTaxCode            = big.NewInt(1 << 21)
-	productFieldPublishedReviewsCount     = big.NewInt(1 << 22)
-	productFieldRoute                     = big.NewInt(1 << 23)
-	productFieldTitle                     = big.NewInt(1 << 24)
-	productFieldUpdatedAt                 = big.NewInt(1 << 25)
-	productFieldVariantAttributes         = big.NewInt(1 << 26)
-	productFieldVariants                  = big.NewInt(1 << 27)
-	productFieldVerified                  = big.NewInt(1 << 28)
-	productFieldVisibility                = big.NewInt(1 << 29)
+	productFieldExperiences               = big.NewInt(1 << 8)
+	productFieldExternalIdentifier        = big.NewInt(1 << 9)
+	productFieldGalleryImages             = big.NewInt(1 << 10)
+	productFieldGlobalAffiliatePercentage = big.NewInt(1 << 11)
+	productFieldGlobalAffiliateStatus     = big.NewInt(1 << 12)
+	productFieldHeadline                  = big.NewInt(1 << 13)
+	productFieldID                        = big.NewInt(1 << 14)
+	productFieldLabels                    = big.NewInt(1 << 15)
+	productFieldLogoURL                   = big.NewInt(1 << 16)
+	productFieldMarketplaceStatus         = big.NewInt(1 << 17)
+	productFieldMemberAffiliatePercentage = big.NewInt(1 << 18)
+	productFieldMemberAffiliateStatus     = big.NewInt(1 << 19)
+	productFieldMemberCount               = big.NewInt(1 << 20)
+	productFieldMetadata                  = big.NewInt(1 << 21)
+	productFieldOwnerUser                 = big.NewInt(1 << 22)
+	productFieldProductTaxCode            = big.NewInt(1 << 23)
+	productFieldPublishedReviewsCount     = big.NewInt(1 << 24)
+	productFieldRoute                     = big.NewInt(1 << 25)
+	productFieldTitle                     = big.NewInt(1 << 26)
+	productFieldUpdatedAt                 = big.NewInt(1 << 27)
+	productFieldVariantAttributes         = big.NewInt(1 << 28)
+	productFieldVariants                  = big.NewInt(1 << 29)
+	productFieldVerified                  = big.NewInt(1 << 30)
+	productFieldVisibility                = big.NewInt(1 << 31)
 )
 
 // productNullableFields maps the wire names of Product's nullable fields (required or optional) to their field bits.
@@ -576,6 +578,7 @@ var productNullableFields = map[string]*big.Int{
 	"global_affiliate_percentage": productFieldGlobalAffiliatePercentage,
 	"global_affiliate_status":     productFieldGlobalAffiliateStatus,
 	"headline":                    productFieldHeadline,
+	"logo_url":                    productFieldLogoURL,
 	"member_affiliate_percentage": productFieldMemberAffiliatePercentage,
 	"member_affiliate_status":     productFieldMemberAffiliateStatus,
 	"metadata":                    productFieldMetadata,
@@ -602,7 +605,8 @@ type Product struct {
 	// Buyable variant to show and check out with. The configured default when that variant is buyable, otherwise the first buyable variant in product-page order. `null` when none is buyable.
 	DefaultVariant *ProductPublicVariant `json:"default_variant,omitempty" url:"default_variant,omitempty"`
 	// Written description displayed on the product page. `null` if none is set.
-	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	Description *string              `json:"description,omitempty" url:"description,omitempty"`
+	Experiences []*ProductExperience `json:"experiences" url:"experiences"`
 	// External identifier stored on the product for your own reference.
 	ExternalIdentifier *string                `json:"external_identifier,omitempty" url:"external_identifier,omitempty"`
 	GalleryImages      []*ProductGalleryImage `json:"gallery_images" url:"gallery_images"`
@@ -615,6 +619,8 @@ type Product struct {
 	// Product ID, prefixed `prod_`.
 	ID     string   `json:"id" url:"id"`
 	Labels []string `json:"labels" url:"labels"`
+	// Logo image URL shown on product pages and in search results. `null` when the product has no logo.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
 	// Listing state on the whop.com marketplace. `pending_review` means submitted and awaiting review; `live_marketplace` means approved and discoverable.
 	MarketplaceStatus ProductMarketplaceStatus `json:"marketplace_status" url:"marketplace_status"`
 	// Commission rate members earn through the member affiliate program.
@@ -708,6 +714,13 @@ func (p *Product) GetDescription() *string {
 	return p.Description
 }
 
+func (p *Product) GetExperiences() []*ProductExperience {
+	if p == nil {
+		return nil
+	}
+	return p.Experiences
+}
+
 func (p *Product) GetExternalIdentifier() *string {
 	if p == nil {
 		return nil
@@ -755,6 +768,13 @@ func (p *Product) GetLabels() []string {
 		return nil
 	}
 	return p.Labels
+}
+
+func (p *Product) GetLogoURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.LogoURL
 }
 
 func (p *Product) GetMarketplaceStatus() ProductMarketplaceStatus {
@@ -934,6 +954,13 @@ func (p *Product) SetDescription(description *string) {
 	p.require(productFieldDescription)
 }
 
+// SetExperiences sets the Experiences field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Product) SetExperiences(experiences []*ProductExperience) {
+	p.Experiences = experiences
+	p.require(productFieldExperiences)
+}
+
 // SetExternalIdentifier sets the ExternalIdentifier field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *Product) SetExternalIdentifier(externalIdentifier *string) {
@@ -981,6 +1008,13 @@ func (p *Product) SetID(id string) {
 func (p *Product) SetLabels(labels []string) {
 	p.Labels = labels
 	p.require(productFieldLabels)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Product) SetLogoURL(logoURL *string) {
+	p.LogoURL = logoURL
+	p.require(productFieldLogoURL)
 }
 
 // SetMarketplaceStatus sets the MarketplaceStatus field and marks it as non-optional;
@@ -1194,6 +1228,277 @@ func (p ProductCustomCta) Ptr() *ProductCustomCta {
 }
 
 var (
+	productExperienceFieldApp     = big.NewInt(1 << 0)
+	productExperienceFieldID      = big.NewInt(1 << 1)
+	productExperienceFieldLogoURL = big.NewInt(1 << 2)
+	productExperienceFieldName    = big.NewInt(1 << 3)
+)
+
+// productExperienceNullableFields maps the wire names of ProductExperience's nullable fields (required or optional) to their field bits.
+var productExperienceNullableFields = map[string]*big.Int{
+	"logo_url": productExperienceFieldLogoURL,
+}
+
+type ProductExperience struct {
+	// App the experience runs in.
+	App *ProductExperienceApp `json:"app" url:"app"`
+	// Experience ID, prefixed `exp_`.
+	ID string `json:"id" url:"id"`
+	// Logo image URL uploaded for this experience. `null` when it has none; show the app's `icon` instead.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// Experience display name.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *ProductExperience) GetApp() *ProductExperienceApp {
+	if p == nil {
+		return nil
+	}
+	return p.App
+}
+
+func (p *ProductExperience) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *ProductExperience) GetLogoURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.LogoURL
+}
+
+func (p *ProductExperience) GetName() string {
+	if p == nil {
+		return ""
+	}
+	return p.Name
+}
+
+func (p *ProductExperience) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *ProductExperience) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetApp sets the App field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *ProductExperience) SetApp(app *ProductExperienceApp) {
+	p.App = app
+	p.require(productExperienceFieldApp)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *ProductExperience) SetID(id string) {
+	p.ID = id
+	p.require(productExperienceFieldID)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *ProductExperience) SetLogoURL(logoURL *string) {
+	p.LogoURL = logoURL
+	p.require(productExperienceFieldLogoURL)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *ProductExperience) SetName(name string) {
+	p.Name = name
+	p.require(productExperienceFieldName)
+}
+
+func (p *ProductExperience) UnmarshalJSON(data []byte) error {
+	type unmarshaler ProductExperience
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = ProductExperience(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, productExperienceNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *ProductExperience) MarshalJSON() ([]byte, error) {
+	type embed ProductExperience
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *ProductExperience) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	productExperienceAppFieldIcon = big.NewInt(1 << 0)
+	productExperienceAppFieldID   = big.NewInt(1 << 1)
+	productExperienceAppFieldName = big.NewInt(1 << 2)
+)
+
+type ProductExperienceApp struct {
+	// App icon. Falls back to the default app icon when none is uploaded.
+	Icon *AppIcon `json:"icon" url:"icon"`
+	// App ID, prefixed `app_`.
+	ID string `json:"id" url:"id"`
+	// App display name.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *ProductExperienceApp) GetIcon() *AppIcon {
+	if p == nil {
+		return nil
+	}
+	return p.Icon
+}
+
+func (p *ProductExperienceApp) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *ProductExperienceApp) GetName() string {
+	if p == nil {
+		return ""
+	}
+	return p.Name
+}
+
+func (p *ProductExperienceApp) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *ProductExperienceApp) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetIcon sets the Icon field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *ProductExperienceApp) SetIcon(icon *AppIcon) {
+	p.Icon = icon
+	p.require(productExperienceAppFieldIcon)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *ProductExperienceApp) SetID(id string) {
+	p.ID = id
+	p.require(productExperienceAppFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *ProductExperienceApp) SetName(name string) {
+	p.Name = name
+	p.require(productExperienceAppFieldName)
+}
+
+func (p *ProductExperienceApp) UnmarshalJSON(data []byte) error {
+	type unmarshaler ProductExperienceApp
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = ProductExperienceApp(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *ProductExperienceApp) MarshalJSON() ([]byte, error) {
+	type embed ProductExperienceApp
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *ProductExperienceApp) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
 	productGalleryImageFieldContentType = big.NewInt(1 << 0)
 	productGalleryImageFieldID          = big.NewInt(1 << 1)
 	productGalleryImageFieldURL         = big.NewInt(1 << 2)
@@ -1356,20 +1661,22 @@ var (
 	productListItemFieldCreatedAt             = big.NewInt(1 << 2)
 	productListItemFieldDefaultVariant        = big.NewInt(1 << 3)
 	productListItemFieldDescription           = big.NewInt(1 << 4)
-	productListItemFieldExternalIdentifier    = big.NewInt(1 << 5)
-	productListItemFieldGalleryImages         = big.NewInt(1 << 6)
-	productListItemFieldHeadline              = big.NewInt(1 << 7)
-	productListItemFieldID                    = big.NewInt(1 << 8)
-	productListItemFieldLabels                = big.NewInt(1 << 9)
-	productListItemFieldMemberCount           = big.NewInt(1 << 10)
-	productListItemFieldMetadata              = big.NewInt(1 << 11)
-	productListItemFieldPublishedReviewsCount = big.NewInt(1 << 12)
-	productListItemFieldRoute                 = big.NewInt(1 << 13)
-	productListItemFieldTitle                 = big.NewInt(1 << 14)
-	productListItemFieldUpdatedAt             = big.NewInt(1 << 15)
-	productListItemFieldVariantAttributes     = big.NewInt(1 << 16)
-	productListItemFieldVerified              = big.NewInt(1 << 17)
-	productListItemFieldVisibility            = big.NewInt(1 << 18)
+	productListItemFieldExperiences           = big.NewInt(1 << 5)
+	productListItemFieldExternalIdentifier    = big.NewInt(1 << 6)
+	productListItemFieldGalleryImages         = big.NewInt(1 << 7)
+	productListItemFieldHeadline              = big.NewInt(1 << 8)
+	productListItemFieldID                    = big.NewInt(1 << 9)
+	productListItemFieldLabels                = big.NewInt(1 << 10)
+	productListItemFieldLogoURL               = big.NewInt(1 << 11)
+	productListItemFieldMemberCount           = big.NewInt(1 << 12)
+	productListItemFieldMetadata              = big.NewInt(1 << 13)
+	productListItemFieldPublishedReviewsCount = big.NewInt(1 << 14)
+	productListItemFieldRoute                 = big.NewInt(1 << 15)
+	productListItemFieldTitle                 = big.NewInt(1 << 16)
+	productListItemFieldUpdatedAt             = big.NewInt(1 << 17)
+	productListItemFieldVariantAttributes     = big.NewInt(1 << 18)
+	productListItemFieldVerified              = big.NewInt(1 << 19)
+	productListItemFieldVisibility            = big.NewInt(1 << 20)
 )
 
 // productListItemNullableFields maps the wire names of ProductListItem's nullable fields (required or optional) to their field bits.
@@ -1379,6 +1686,7 @@ var productListItemNullableFields = map[string]*big.Int{
 	"description":         productListItemFieldDescription,
 	"external_identifier": productListItemFieldExternalIdentifier,
 	"headline":            productListItemFieldHeadline,
+	"logo_url":            productListItemFieldLogoURL,
 	"metadata":            productListItemFieldMetadata,
 	"variant_attributes":  productListItemFieldVariantAttributes,
 	"visibility":          productListItemFieldVisibility,
@@ -1394,7 +1702,8 @@ type ProductListItem struct {
 	// Buyable variant to show and check out with. The configured default when that variant is buyable, otherwise the first buyable variant in product-page order. `null` when none is buyable.
 	DefaultVariant *ProductPublicVariant `json:"default_variant,omitempty" url:"default_variant,omitempty"`
 	// Written description displayed on the product page. `null` if none is set.
-	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	Description *string              `json:"description,omitempty" url:"description,omitempty"`
+	Experiences []*ProductExperience `json:"experiences" url:"experiences"`
 	// External identifier stored on the product for your own reference.
 	ExternalIdentifier *string                `json:"external_identifier,omitempty" url:"external_identifier,omitempty"`
 	GalleryImages      []*ProductGalleryImage `json:"gallery_images" url:"gallery_images"`
@@ -1403,6 +1712,8 @@ type ProductListItem struct {
 	// Product ID, prefixed `prod_`.
 	ID     string   `json:"id" url:"id"`
 	Labels []string `json:"labels" url:"labels"`
+	// Logo image URL shown on product pages and in search results. `null` when the product has no logo.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
 	// Active memberships for this product; 0 if public member counts are disabled.
 	MemberCount float64 `json:"member_count" url:"member_count"`
 	// Custom key-value pairs stored on the product.
@@ -1464,6 +1775,13 @@ func (p *ProductListItem) GetDescription() *string {
 	return p.Description
 }
 
+func (p *ProductListItem) GetExperiences() []*ProductExperience {
+	if p == nil {
+		return nil
+	}
+	return p.Experiences
+}
+
 func (p *ProductListItem) GetExternalIdentifier() *string {
 	if p == nil {
 		return nil
@@ -1497,6 +1815,13 @@ func (p *ProductListItem) GetLabels() []string {
 		return nil
 	}
 	return p.Labels
+}
+
+func (p *ProductListItem) GetLogoURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.LogoURL
 }
 
 func (p *ProductListItem) GetMemberCount() float64 {
@@ -1613,6 +1938,13 @@ func (p *ProductListItem) SetDescription(description *string) {
 	p.require(productListItemFieldDescription)
 }
 
+// SetExperiences sets the Experiences field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *ProductListItem) SetExperiences(experiences []*ProductExperience) {
+	p.Experiences = experiences
+	p.require(productListItemFieldExperiences)
+}
+
 // SetExternalIdentifier sets the ExternalIdentifier field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *ProductListItem) SetExternalIdentifier(externalIdentifier *string) {
@@ -1646,6 +1978,13 @@ func (p *ProductListItem) SetID(id string) {
 func (p *ProductListItem) SetLabels(labels []string) {
 	p.Labels = labels
 	p.require(productListItemFieldLabels)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *ProductListItem) SetLogoURL(logoURL *string) {
+	p.LogoURL = logoURL
+	p.require(productListItemFieldLogoURL)
 }
 
 // SetMemberCount sets the MemberCount field and marks it as non-optional;
