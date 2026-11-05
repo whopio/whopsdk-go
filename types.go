@@ -40396,65 +40396,67 @@ var (
 	paymentFieldBillingReason              = big.NewInt(1 << 5)
 	paymentFieldCaptureExpiresAt           = big.NewInt(1 << 6)
 	paymentFieldCheckoutConfigurationID    = big.NewInt(1 << 7)
-	paymentFieldClientSecret               = big.NewInt(1 << 8)
-	paymentFieldCreatedAt                  = big.NewInt(1 << 9)
-	paymentFieldCurrency                   = big.NewInt(1 << 10)
-	paymentFieldCustomerEmail              = big.NewInt(1 << 11)
-	paymentFieldCustomerPhone              = big.NewInt(1 << 12)
-	paymentFieldDeclineCode                = big.NewInt(1 << 13)
-	paymentFieldDisputeAlertedAt           = big.NewInt(1 << 14)
-	paymentFieldDisputeCreatedAt           = big.NewInt(1 << 15)
-	paymentFieldFailureMessage             = big.NewInt(1 << 16)
-	paymentFieldFinancingInstallmentsCount = big.NewInt(1 << 17)
-	paymentFieldHolds                      = big.NewInt(1 << 18)
-	paymentFieldID                         = big.NewInt(1 << 19)
-	paymentFieldIPAddress                  = big.NewInt(1 << 20)
-	paymentFieldLastPaymentAttemptAt       = big.NewInt(1 << 21)
-	paymentFieldLineItems                  = big.NewInt(1 << 22)
-	paymentFieldMemberID                   = big.NewInt(1 << 23)
-	paymentFieldMembershipID               = big.NewInt(1 << 24)
-	paymentFieldMetadata                   = big.NewInt(1 << 25)
-	paymentFieldNeedsTracking              = big.NewInt(1 << 26)
-	paymentFieldNextPaymentAttemptAt       = big.NewInt(1 << 27)
-	paymentFieldPaidAt                     = big.NewInt(1 << 28)
-	paymentFieldPaymentInstrument          = big.NewInt(1 << 29)
-	paymentFieldPaymentMethodID            = big.NewInt(1 << 30)
-	paymentFieldPaymentMethodType          = big.NewInt(1 << 31)
-	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 32)
-	paymentFieldPaymentsFailed             = big.NewInt(1 << 33)
-	paymentFieldPresentmentRefundedAmount  = big.NewInt(1 << 34)
-	paymentFieldPresentmentTaxAmount       = big.NewInt(1 << 35)
-	paymentFieldPresentmentTotal           = big.NewInt(1 << 36)
-	paymentFieldProductID                  = big.NewInt(1 << 37)
-	paymentFieldPromoCodeID                = big.NewInt(1 << 38)
-	paymentFieldQuoteID                    = big.NewInt(1 << 39)
-	paymentFieldRecoveryURL                = big.NewInt(1 << 40)
-	paymentFieldRefundable                 = big.NewInt(1 << 41)
-	paymentFieldRefundedAmount             = big.NewInt(1 << 42)
-	paymentFieldRefundedAt                 = big.NewInt(1 << 43)
-	paymentFieldResponseDueAt              = big.NewInt(1 << 44)
-	paymentFieldRetryable                  = big.NewInt(1 << 45)
-	paymentFieldRiskScore                  = big.NewInt(1 << 46)
-	paymentFieldRiskSignals                = big.NewInt(1 << 47)
-	paymentFieldSettlementTimeAt           = big.NewInt(1 << 48)
-	paymentFieldShipmentID                 = big.NewInt(1 << 49)
-	paymentFieldShippingAddress            = big.NewInt(1 << 50)
-	paymentFieldStatus                     = big.NewInt(1 << 51)
-	paymentFieldSubstatus                  = big.NewInt(1 << 52)
-	paymentFieldSubtotal                   = big.NewInt(1 << 53)
-	paymentFieldTaxAmount                  = big.NewInt(1 << 54)
-	paymentFieldTaxBehavior                = big.NewInt(1 << 55)
-	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 56)
-	paymentFieldThreeDsVerified            = big.NewInt(1 << 57)
-	paymentFieldTotal                      = big.NewInt(1 << 58)
-	paymentFieldUpdatedAt                  = big.NewInt(1 << 59)
-	paymentFieldUsdTotal                   = big.NewInt(1 << 60)
-	paymentFieldUser                       = big.NewInt(1 << 61)
-	paymentFieldUserAgent                  = big.NewInt(1 << 62)
-	paymentFieldVariantID                  = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	paymentFieldVerificationChecks         = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	paymentFieldVoidable                   = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	paymentFieldWuid                       = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	paymentFieldCheckoutOrigin             = big.NewInt(1 << 8)
+	paymentFieldCheckoutSurface            = big.NewInt(1 << 9)
+	paymentFieldClientSecret               = big.NewInt(1 << 10)
+	paymentFieldCreatedAt                  = big.NewInt(1 << 11)
+	paymentFieldCurrency                   = big.NewInt(1 << 12)
+	paymentFieldCustomerEmail              = big.NewInt(1 << 13)
+	paymentFieldCustomerPhone              = big.NewInt(1 << 14)
+	paymentFieldDeclineCode                = big.NewInt(1 << 15)
+	paymentFieldDisputeAlertedAt           = big.NewInt(1 << 16)
+	paymentFieldDisputeCreatedAt           = big.NewInt(1 << 17)
+	paymentFieldFailureMessage             = big.NewInt(1 << 18)
+	paymentFieldFinancingInstallmentsCount = big.NewInt(1 << 19)
+	paymentFieldHolds                      = big.NewInt(1 << 20)
+	paymentFieldID                         = big.NewInt(1 << 21)
+	paymentFieldIPAddress                  = big.NewInt(1 << 22)
+	paymentFieldLastPaymentAttemptAt       = big.NewInt(1 << 23)
+	paymentFieldLineItems                  = big.NewInt(1 << 24)
+	paymentFieldMemberID                   = big.NewInt(1 << 25)
+	paymentFieldMembershipID               = big.NewInt(1 << 26)
+	paymentFieldMetadata                   = big.NewInt(1 << 27)
+	paymentFieldNeedsTracking              = big.NewInt(1 << 28)
+	paymentFieldNextPaymentAttemptAt       = big.NewInt(1 << 29)
+	paymentFieldPaidAt                     = big.NewInt(1 << 30)
+	paymentFieldPaymentInstrument          = big.NewInt(1 << 31)
+	paymentFieldPaymentMethodID            = big.NewInt(1 << 32)
+	paymentFieldPaymentMethodType          = big.NewInt(1 << 33)
+	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 34)
+	paymentFieldPaymentsFailed             = big.NewInt(1 << 35)
+	paymentFieldPresentmentRefundedAmount  = big.NewInt(1 << 36)
+	paymentFieldPresentmentTaxAmount       = big.NewInt(1 << 37)
+	paymentFieldPresentmentTotal           = big.NewInt(1 << 38)
+	paymentFieldProductID                  = big.NewInt(1 << 39)
+	paymentFieldPromoCodeID                = big.NewInt(1 << 40)
+	paymentFieldQuoteID                    = big.NewInt(1 << 41)
+	paymentFieldRecoveryURL                = big.NewInt(1 << 42)
+	paymentFieldRefundable                 = big.NewInt(1 << 43)
+	paymentFieldRefundedAmount             = big.NewInt(1 << 44)
+	paymentFieldRefundedAt                 = big.NewInt(1 << 45)
+	paymentFieldResponseDueAt              = big.NewInt(1 << 46)
+	paymentFieldRetryable                  = big.NewInt(1 << 47)
+	paymentFieldRiskScore                  = big.NewInt(1 << 48)
+	paymentFieldRiskSignals                = big.NewInt(1 << 49)
+	paymentFieldSettlementTimeAt           = big.NewInt(1 << 50)
+	paymentFieldShipmentID                 = big.NewInt(1 << 51)
+	paymentFieldShippingAddress            = big.NewInt(1 << 52)
+	paymentFieldStatus                     = big.NewInt(1 << 53)
+	paymentFieldSubstatus                  = big.NewInt(1 << 54)
+	paymentFieldSubtotal                   = big.NewInt(1 << 55)
+	paymentFieldTaxAmount                  = big.NewInt(1 << 56)
+	paymentFieldTaxBehavior                = big.NewInt(1 << 57)
+	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 58)
+	paymentFieldThreeDsVerified            = big.NewInt(1 << 59)
+	paymentFieldTotal                      = big.NewInt(1 << 60)
+	paymentFieldUpdatedAt                  = big.NewInt(1 << 61)
+	paymentFieldUsdTotal                   = big.NewInt(1 << 62)
+	paymentFieldUser                       = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	paymentFieldUserAgent                  = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	paymentFieldVariantID                  = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	paymentFieldVerificationChecks         = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	paymentFieldVoidable                   = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	paymentFieldWuid                       = big.NewInt(0).Lsh(big.NewInt(1), 68)
 )
 
 // paymentNullableFields maps the wire names of Payment's nullable fields (required or optional) to their field bits.
@@ -40465,6 +40467,8 @@ var paymentNullableFields = map[string]*big.Int{
 	"billing_reason":               paymentFieldBillingReason,
 	"capture_expires_at":           paymentFieldCaptureExpiresAt,
 	"checkout_configuration_id":    paymentFieldCheckoutConfigurationID,
+	"checkout_origin":              paymentFieldCheckoutOrigin,
+	"checkout_surface":             paymentFieldCheckoutSurface,
 	"client_secret":                paymentFieldClientSecret,
 	"customer_email":               paymentFieldCustomerEmail,
 	"customer_phone":               paymentFieldCustomerPhone,
@@ -40528,6 +40532,10 @@ type Payment struct {
 	CaptureExpiresAt *string `json:"capture_expires_at,omitempty" url:"capture_expires_at,omitempty"`
 	// The checkout configuration the buyer paid through, prefixed `ch_`, or null.
 	CheckoutConfigurationID *string `json:"checkout_configuration_id,omitempty" url:"checkout_configuration_id,omitempty"`
+	// The scheme and host of the website where the buyer opened the checkout, such as `https://store.example.com`. Use it to tell apart payments from different websites on one account. Null when the website was not recorded, including for payments made without the buyer present.
+	CheckoutOrigin *string `json:"checkout_origin,omitempty" url:"checkout_origin,omitempty"`
+	// The checkout experience that produced this payment, such as `embedded_checkout` for a checkout on the account's own website or `off_session` for a subscription renewal. Null when the checkout was not recorded.
+	CheckoutSurface *PaymentCheckoutSurface `json:"checkout_surface,omitempty" url:"checkout_surface,omitempty"`
 	// The credential a buyer's surface presents to poll this payment, set its return URL and resume it when the bank asked the customer to authenticate. Only on payments created from a confirmation token or waiting on that authentication, and always null in list responses — retrieve the payment for it.
 	ClientSecret *string `json:"client_secret,omitempty" url:"client_secret,omitempty"`
 	// When the payment was created, as an ISO 8601 timestamp.
@@ -40706,6 +40714,20 @@ func (p *Payment) GetCheckoutConfigurationID() *string {
 		return nil
 	}
 	return p.CheckoutConfigurationID
+}
+
+func (p *Payment) GetCheckoutOrigin() *string {
+	if p == nil {
+		return nil
+	}
+	return p.CheckoutOrigin
+}
+
+func (p *Payment) GetCheckoutSurface() *PaymentCheckoutSurface {
+	if p == nil {
+		return nil
+	}
+	return p.CheckoutSurface
 }
 
 func (p *Payment) GetClientSecret() *string {
@@ -41191,6 +41213,20 @@ func (p *Payment) SetCaptureExpiresAt(captureExpiresAt *string) {
 func (p *Payment) SetCheckoutConfigurationID(checkoutConfigurationID *string) {
 	p.CheckoutConfigurationID = checkoutConfigurationID
 	p.require(paymentFieldCheckoutConfigurationID)
+}
+
+// SetCheckoutOrigin sets the CheckoutOrigin field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetCheckoutOrigin(checkoutOrigin *string) {
+	p.CheckoutOrigin = checkoutOrigin
+	p.require(paymentFieldCheckoutOrigin)
+}
+
+// SetCheckoutSurface sets the CheckoutSurface field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetCheckoutSurface(checkoutSurface *PaymentCheckoutSurface) {
+	p.CheckoutSurface = checkoutSurface
+	p.require(paymentFieldCheckoutSurface)
 }
 
 // SetClientSecret sets the ClientSecret field and marks it as non-optional;
@@ -42357,6 +42393,47 @@ func (p *PaymentBankTransferInstructions) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+// The checkout experience that produced this payment, such as `embedded_checkout` for a checkout on the account's own website or `off_session` for a subscription renewal. Null when the checkout was not recorded.
+type PaymentCheckoutSurface string
+
+const (
+	PaymentCheckoutSurfaceHostedCheckout   PaymentCheckoutSurface = "hosted_checkout"
+	PaymentCheckoutSurfaceEmbeddedCheckout PaymentCheckoutSurface = "embedded_checkout"
+	PaymentCheckoutSurfaceCustomCheckout   PaymentCheckoutSurface = "custom_checkout"
+	PaymentCheckoutSurfaceModalCheckout    PaymentCheckoutSurface = "modal_checkout"
+	PaymentCheckoutSurfaceInAppCheckout    PaymentCheckoutSurface = "in_app_checkout"
+	PaymentCheckoutSurfaceMobileCheckout   PaymentCheckoutSurface = "mobile_checkout"
+	PaymentCheckoutSurfaceOffSession       PaymentCheckoutSurface = "off_session"
+	PaymentCheckoutSurfaceCardPresent      PaymentCheckoutSurface = "card_present"
+)
+
+func NewPaymentCheckoutSurfaceFromString(s string) (PaymentCheckoutSurface, error) {
+	switch s {
+	case "hosted_checkout":
+		return PaymentCheckoutSurfaceHostedCheckout, nil
+	case "embedded_checkout":
+		return PaymentCheckoutSurfaceEmbeddedCheckout, nil
+	case "custom_checkout":
+		return PaymentCheckoutSurfaceCustomCheckout, nil
+	case "modal_checkout":
+		return PaymentCheckoutSurfaceModalCheckout, nil
+	case "in_app_checkout":
+		return PaymentCheckoutSurfaceInAppCheckout, nil
+	case "mobile_checkout":
+		return PaymentCheckoutSurfaceMobileCheckout, nil
+	case "off_session":
+		return PaymentCheckoutSurfaceOffSession, nil
+	case "card_present":
+		return PaymentCheckoutSurfaceCardPresent, nil
+	}
+	var t PaymentCheckoutSurface
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentCheckoutSurface) Ptr() *PaymentCheckoutSurface {
+	return &p
 }
 
 // The reason a payment was declined.
