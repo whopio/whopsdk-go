@@ -1153,6 +1153,14 @@ func TestSettersDispute(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSubmissionFailureReason", func(t *testing.T) {
+		obj := &Dispute{}
+		var fernTestValueSubmissionFailureReason *string
+		obj.SetSubmissionFailureReason(fernTestValueSubmissionFailureReason)
+		assert.Equal(t, fernTestValueSubmissionFailureReason, obj.SubmissionFailureReason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetUpdatedAt", func(t *testing.T) {
 		obj := &Dispute{}
 		var fernTestValueUpdatedAt string
@@ -1796,6 +1804,39 @@ func TestGettersDispute(t *testing.T) {
 			}
 		}()
 		_ = obj.GetStatus() // Should return zero value
+	})
+
+	t.Run("GetSubmissionFailureReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Dispute{}
+		var expected *string
+		obj.SubmissionFailureReason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSubmissionFailureReason(), "getter should return the property value")
+	})
+
+	t.Run("GetSubmissionFailureReason_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Dispute{}
+		obj.SubmissionFailureReason = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSubmissionFailureReason(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSubmissionFailureReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Dispute
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSubmissionFailureReason() // Should return zero value
 	})
 
 	t.Run("GetUpdatedAt", func(t *testing.T) {
@@ -2516,6 +2557,37 @@ func TestSettersMarkExplicitDispute(t *testing.T) {
 
 		// Act
 		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubmissionFailureReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Dispute{}
+		var fernTestValueSubmissionFailureReason *string
+
+		// Act
+		obj.SetSubmissionFailureReason(fernTestValueSubmissionFailureReason)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -8468,6 +8540,14 @@ func TestSettersMarkExplicitSummaryDisputesResponseGroups(t *testing.T) {
 }
 
 func TestSettersSummaryDisputesResponseGroupsStatus(t *testing.T) {
+	t.Run("SetGeneratingResponse", func(t *testing.T) {
+		obj := &SummaryDisputesResponseGroupsStatus{}
+		var fernTestValueGeneratingResponse int
+		obj.SetGeneratingResponse(fernTestValueGeneratingResponse)
+		assert.Equal(t, fernTestValueGeneratingResponse, obj.GeneratingResponse)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetLost", func(t *testing.T) {
 		obj := &SummaryDisputesResponseGroupsStatus{}
 		var fernTestValueLost int
@@ -8535,6 +8615,29 @@ func TestSettersSummaryDisputesResponseGroupsStatus(t *testing.T) {
 }
 
 func TestGettersSummaryDisputesResponseGroupsStatus(t *testing.T) {
+	t.Run("GetGeneratingResponse", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SummaryDisputesResponseGroupsStatus{}
+		var expected int
+		obj.GeneratingResponse = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetGeneratingResponse(), "getter should return the property value")
+	})
+
+	t.Run("GetGeneratingResponse_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SummaryDisputesResponseGroupsStatus
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetGeneratingResponse() // Should return zero value
+	})
+
 	t.Run("GetLost", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -8722,6 +8825,37 @@ func TestGettersSummaryDisputesResponseGroupsStatus(t *testing.T) {
 }
 
 func TestSettersMarkExplicitSummaryDisputesResponseGroupsStatus(t *testing.T) {
+	t.Run("SetGeneratingResponse_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SummaryDisputesResponseGroupsStatus{}
+		var fernTestValueGeneratingResponse int
+
+		// Act
+		obj.SetGeneratingResponse(fernTestValueGeneratingResponse)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetLost_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -12117,6 +12251,7 @@ func TestRequiredNullableRoundTripDispute(t *testing.T) {
 		"fee",
 		"product_id",
 		"reason_code",
+		"submission_failure_reason",
 		"variant_id",
 	}
 	marshalToMap := func(t *testing.T, obj *Dispute) map[string]json.RawMessage {
@@ -12130,7 +12265,7 @@ func TestRequiredNullableRoundTripDispute(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Dispute
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"evidence_due_at":null,"evidence_locked_reason":null,"evidence_submitted_at":null,"fee":null,"product_id":null,"reason_code":null,"variant_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"evidence_due_at":null,"evidence_locked_reason":null,"evidence_submitted_at":null,"fee":null,"product_id":null,"reason_code":null,"submission_failure_reason":null,"variant_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -13489,6 +13624,13 @@ func TestEnumDisputeStatus(t *testing.T) {
 		assert.Equal(t, DisputeStatus("warning_under_review"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_generating_response", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDisputeStatusFromString("generating_response")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DisputeStatus("generating_response"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_won", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewDisputeStatusFromString("won")
@@ -13623,6 +13765,13 @@ func TestEnumListDisputesRequestStatusItem(t *testing.T) {
 		val, err := NewListDisputesRequestStatusItemFromString("warning_under_review")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListDisputesRequestStatusItem("warning_under_review"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_generating_response", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDisputesRequestStatusItemFromString("generating_response")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDisputesRequestStatusItem("generating_response"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_won", func(t *testing.T) {
@@ -13811,6 +13960,13 @@ func TestEnumSummaryDisputesRequestStatusItem(t *testing.T) {
 		val, err := NewSummaryDisputesRequestStatusItemFromString("warning_under_review")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, SummaryDisputesRequestStatusItem("warning_under_review"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_generating_response", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSummaryDisputesRequestStatusItemFromString("generating_response")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SummaryDisputesRequestStatusItem("generating_response"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_won", func(t *testing.T) {
