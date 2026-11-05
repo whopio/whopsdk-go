@@ -43067,43 +43067,45 @@ func (p *PaymentInput) String() string {
 }
 
 var (
-	paymentInputVariantFieldAllowMultipleQuantity = big.NewInt(1 << 0)
-	paymentInputVariantFieldApplicationFeeAmount  = big.NewInt(1 << 1)
-	paymentInputVariantFieldBillingPeriod         = big.NewInt(1 << 2)
-	paymentInputVariantFieldBillingType           = big.NewInt(1 << 3)
-	paymentInputVariantFieldCurrency              = big.NewInt(1 << 4)
-	paymentInputVariantFieldDescription           = big.NewInt(1 << 5)
-	paymentInputVariantFieldExpirationDays        = big.NewInt(1 << 6)
-	paymentInputVariantFieldForceCreateNewPlan    = big.NewInt(1 << 7)
-	paymentInputVariantFieldInitialPrice          = big.NewInt(1 << 8)
-	paymentInputVariantFieldInternalNotes         = big.NewInt(1 << 9)
-	paymentInputVariantFieldOverrideTaxType       = big.NewInt(1 << 10)
-	paymentInputVariantFieldProduct               = big.NewInt(1 << 11)
-	paymentInputVariantFieldProductID             = big.NewInt(1 << 12)
-	paymentInputVariantFieldRenewalPrice          = big.NewInt(1 << 13)
-	paymentInputVariantFieldTitle                 = big.NewInt(1 << 14)
-	paymentInputVariantFieldTrialPeriodDays       = big.NewInt(1 << 15)
-	paymentInputVariantFieldVisibility            = big.NewInt(1 << 16)
+	paymentInputVariantFieldAllowMultipleQuantity    = big.NewInt(1 << 0)
+	paymentInputVariantFieldApplicationFeeAmount     = big.NewInt(1 << 1)
+	paymentInputVariantFieldBillingPeriod            = big.NewInt(1 << 2)
+	paymentInputVariantFieldBillingType              = big.NewInt(1 << 3)
+	paymentInputVariantFieldCurrency                 = big.NewInt(1 << 4)
+	paymentInputVariantFieldDescription              = big.NewInt(1 << 5)
+	paymentInputVariantFieldExpirationDays           = big.NewInt(1 << 6)
+	paymentInputVariantFieldForceCreateNewPlan       = big.NewInt(1 << 7)
+	paymentInputVariantFieldInitialPrice             = big.NewInt(1 << 8)
+	paymentInputVariantFieldInternalNotes            = big.NewInt(1 << 9)
+	paymentInputVariantFieldOverrideTaxType          = big.NewInt(1 << 10)
+	paymentInputVariantFieldProduct                  = big.NewInt(1 << 11)
+	paymentInputVariantFieldProductID                = big.NewInt(1 << 12)
+	paymentInputVariantFieldRenewalPrice             = big.NewInt(1 << 13)
+	paymentInputVariantFieldSplitPayRequiredPayments = big.NewInt(1 << 14)
+	paymentInputVariantFieldTitle                    = big.NewInt(1 << 15)
+	paymentInputVariantFieldTrialPeriodDays          = big.NewInt(1 << 16)
+	paymentInputVariantFieldVisibility               = big.NewInt(1 << 17)
 )
 
 // paymentInputVariantNullableFields maps the wire names of PaymentInputVariant's nullable fields (required or optional) to their field bits.
 var paymentInputVariantNullableFields = map[string]*big.Int{
-	"allow_multiple_quantity": paymentInputVariantFieldAllowMultipleQuantity,
-	"application_fee_amount":  paymentInputVariantFieldApplicationFeeAmount,
-	"billing_period":          paymentInputVariantFieldBillingPeriod,
-	"billing_type":            paymentInputVariantFieldBillingType,
-	"description":             paymentInputVariantFieldDescription,
-	"expiration_days":         paymentInputVariantFieldExpirationDays,
-	"force_create_new_plan":   paymentInputVariantFieldForceCreateNewPlan,
-	"initial_price":           paymentInputVariantFieldInitialPrice,
-	"internal_notes":          paymentInputVariantFieldInternalNotes,
-	"override_tax_type":       paymentInputVariantFieldOverrideTaxType,
-	"product":                 paymentInputVariantFieldProduct,
-	"product_id":              paymentInputVariantFieldProductID,
-	"renewal_price":           paymentInputVariantFieldRenewalPrice,
-	"title":                   paymentInputVariantFieldTitle,
-	"trial_period_days":       paymentInputVariantFieldTrialPeriodDays,
-	"visibility":              paymentInputVariantFieldVisibility,
+	"allow_multiple_quantity":     paymentInputVariantFieldAllowMultipleQuantity,
+	"application_fee_amount":      paymentInputVariantFieldApplicationFeeAmount,
+	"billing_period":              paymentInputVariantFieldBillingPeriod,
+	"billing_type":                paymentInputVariantFieldBillingType,
+	"description":                 paymentInputVariantFieldDescription,
+	"expiration_days":             paymentInputVariantFieldExpirationDays,
+	"force_create_new_plan":       paymentInputVariantFieldForceCreateNewPlan,
+	"initial_price":               paymentInputVariantFieldInitialPrice,
+	"internal_notes":              paymentInputVariantFieldInternalNotes,
+	"override_tax_type":           paymentInputVariantFieldOverrideTaxType,
+	"product":                     paymentInputVariantFieldProduct,
+	"product_id":                  paymentInputVariantFieldProductID,
+	"renewal_price":               paymentInputVariantFieldRenewalPrice,
+	"split_pay_required_payments": paymentInputVariantFieldSplitPayRequiredPayments,
+	"title":                       paymentInputVariantFieldTitle,
+	"trial_period_days":           paymentInputVariantFieldTrialPeriodDays,
+	"visibility":                  paymentInputVariantFieldVisibility,
 }
 
 // The variant purchased, described by its attributes instead of an id: the variant with exactly these attributes is used, and one is created when none exists. Mutually exclusive with `variant_id` and `line_items`. Creating a variant requires `plan:create`; creating or updating a product requires the corresponding product permission.
@@ -43136,6 +43138,8 @@ type PaymentInputVariant struct {
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// Recurring price in the variant currency.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
+	// How many payments a recurring variant collects before it stops billing, from 2 to 115. Only valid for `renewal` variants. `null` bills until the subscription is canceled.
+	SplitPayRequiredPayments *int `json:"split_pay_required_payments,omitempty" url:"split_pay_required_payments,omitempty"`
 	// Variant title.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
 	// Free trial days before renewal.
@@ -43246,6 +43250,13 @@ func (p *PaymentInputVariant) GetRenewalPrice() *float64 {
 		return nil
 	}
 	return p.RenewalPrice
+}
+
+func (p *PaymentInputVariant) GetSplitPayRequiredPayments() *int {
+	if p == nil {
+		return nil
+	}
+	return p.SplitPayRequiredPayments
 }
 
 func (p *PaymentInputVariant) GetTitle() *string {
@@ -43381,6 +43392,13 @@ func (p *PaymentInputVariant) SetProductID(productID *string) {
 func (p *PaymentInputVariant) SetRenewalPrice(renewalPrice *float64) {
 	p.RenewalPrice = renewalPrice
 	p.require(paymentInputVariantFieldRenewalPrice)
+}
+
+// SetSplitPayRequiredPayments sets the SplitPayRequiredPayments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputVariant) SetSplitPayRequiredPayments(splitPayRequiredPayments *int) {
+	p.SplitPayRequiredPayments = splitPayRequiredPayments
+	p.require(paymentInputVariantFieldSplitPayRequiredPayments)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;

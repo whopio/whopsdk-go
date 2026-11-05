@@ -2033,43 +2033,45 @@ func (c *CreateInvoicesRequestItemsItem) Accept(visitor CreateInvoicesRequestIte
 }
 
 var (
-	createInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity = big.NewInt(1 << 0)
-	createInvoicesRequestItemsItemVariantFieldApplicationFeeAmount  = big.NewInt(1 << 1)
-	createInvoicesRequestItemsItemVariantFieldBillingPeriod         = big.NewInt(1 << 2)
-	createInvoicesRequestItemsItemVariantFieldBillingType           = big.NewInt(1 << 3)
-	createInvoicesRequestItemsItemVariantFieldCurrency              = big.NewInt(1 << 4)
-	createInvoicesRequestItemsItemVariantFieldDescription           = big.NewInt(1 << 5)
-	createInvoicesRequestItemsItemVariantFieldExpirationDays        = big.NewInt(1 << 6)
-	createInvoicesRequestItemsItemVariantFieldForceCreateNewPlan    = big.NewInt(1 << 7)
-	createInvoicesRequestItemsItemVariantFieldInitialPrice          = big.NewInt(1 << 8)
-	createInvoicesRequestItemsItemVariantFieldInternalNotes         = big.NewInt(1 << 9)
-	createInvoicesRequestItemsItemVariantFieldOverrideTaxType       = big.NewInt(1 << 10)
-	createInvoicesRequestItemsItemVariantFieldProduct               = big.NewInt(1 << 11)
-	createInvoicesRequestItemsItemVariantFieldProductID             = big.NewInt(1 << 12)
-	createInvoicesRequestItemsItemVariantFieldRenewalPrice          = big.NewInt(1 << 13)
-	createInvoicesRequestItemsItemVariantFieldTitle                 = big.NewInt(1 << 14)
-	createInvoicesRequestItemsItemVariantFieldTrialPeriodDays       = big.NewInt(1 << 15)
-	createInvoicesRequestItemsItemVariantFieldVisibility            = big.NewInt(1 << 16)
+	createInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity    = big.NewInt(1 << 0)
+	createInvoicesRequestItemsItemVariantFieldApplicationFeeAmount     = big.NewInt(1 << 1)
+	createInvoicesRequestItemsItemVariantFieldBillingPeriod            = big.NewInt(1 << 2)
+	createInvoicesRequestItemsItemVariantFieldBillingType              = big.NewInt(1 << 3)
+	createInvoicesRequestItemsItemVariantFieldCurrency                 = big.NewInt(1 << 4)
+	createInvoicesRequestItemsItemVariantFieldDescription              = big.NewInt(1 << 5)
+	createInvoicesRequestItemsItemVariantFieldExpirationDays           = big.NewInt(1 << 6)
+	createInvoicesRequestItemsItemVariantFieldForceCreateNewPlan       = big.NewInt(1 << 7)
+	createInvoicesRequestItemsItemVariantFieldInitialPrice             = big.NewInt(1 << 8)
+	createInvoicesRequestItemsItemVariantFieldInternalNotes            = big.NewInt(1 << 9)
+	createInvoicesRequestItemsItemVariantFieldOverrideTaxType          = big.NewInt(1 << 10)
+	createInvoicesRequestItemsItemVariantFieldProduct                  = big.NewInt(1 << 11)
+	createInvoicesRequestItemsItemVariantFieldProductID                = big.NewInt(1 << 12)
+	createInvoicesRequestItemsItemVariantFieldRenewalPrice             = big.NewInt(1 << 13)
+	createInvoicesRequestItemsItemVariantFieldSplitPayRequiredPayments = big.NewInt(1 << 14)
+	createInvoicesRequestItemsItemVariantFieldTitle                    = big.NewInt(1 << 15)
+	createInvoicesRequestItemsItemVariantFieldTrialPeriodDays          = big.NewInt(1 << 16)
+	createInvoicesRequestItemsItemVariantFieldVisibility               = big.NewInt(1 << 17)
 )
 
 // createInvoicesRequestItemsItemVariantNullableFields maps the wire names of CreateInvoicesRequestItemsItemVariant's nullable fields (required or optional) to their field bits.
 var createInvoicesRequestItemsItemVariantNullableFields = map[string]*big.Int{
-	"allow_multiple_quantity": createInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity,
-	"application_fee_amount":  createInvoicesRequestItemsItemVariantFieldApplicationFeeAmount,
-	"billing_period":          createInvoicesRequestItemsItemVariantFieldBillingPeriod,
-	"billing_type":            createInvoicesRequestItemsItemVariantFieldBillingType,
-	"description":             createInvoicesRequestItemsItemVariantFieldDescription,
-	"expiration_days":         createInvoicesRequestItemsItemVariantFieldExpirationDays,
-	"force_create_new_plan":   createInvoicesRequestItemsItemVariantFieldForceCreateNewPlan,
-	"initial_price":           createInvoicesRequestItemsItemVariantFieldInitialPrice,
-	"internal_notes":          createInvoicesRequestItemsItemVariantFieldInternalNotes,
-	"override_tax_type":       createInvoicesRequestItemsItemVariantFieldOverrideTaxType,
-	"product":                 createInvoicesRequestItemsItemVariantFieldProduct,
-	"product_id":              createInvoicesRequestItemsItemVariantFieldProductID,
-	"renewal_price":           createInvoicesRequestItemsItemVariantFieldRenewalPrice,
-	"title":                   createInvoicesRequestItemsItemVariantFieldTitle,
-	"trial_period_days":       createInvoicesRequestItemsItemVariantFieldTrialPeriodDays,
-	"visibility":              createInvoicesRequestItemsItemVariantFieldVisibility,
+	"allow_multiple_quantity":     createInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity,
+	"application_fee_amount":      createInvoicesRequestItemsItemVariantFieldApplicationFeeAmount,
+	"billing_period":              createInvoicesRequestItemsItemVariantFieldBillingPeriod,
+	"billing_type":                createInvoicesRequestItemsItemVariantFieldBillingType,
+	"description":                 createInvoicesRequestItemsItemVariantFieldDescription,
+	"expiration_days":             createInvoicesRequestItemsItemVariantFieldExpirationDays,
+	"force_create_new_plan":       createInvoicesRequestItemsItemVariantFieldForceCreateNewPlan,
+	"initial_price":               createInvoicesRequestItemsItemVariantFieldInitialPrice,
+	"internal_notes":              createInvoicesRequestItemsItemVariantFieldInternalNotes,
+	"override_tax_type":           createInvoicesRequestItemsItemVariantFieldOverrideTaxType,
+	"product":                     createInvoicesRequestItemsItemVariantFieldProduct,
+	"product_id":                  createInvoicesRequestItemsItemVariantFieldProductID,
+	"renewal_price":               createInvoicesRequestItemsItemVariantFieldRenewalPrice,
+	"split_pay_required_payments": createInvoicesRequestItemsItemVariantFieldSplitPayRequiredPayments,
+	"title":                       createInvoicesRequestItemsItemVariantFieldTitle,
+	"trial_period_days":           createInvoicesRequestItemsItemVariantFieldTrialPeriodDays,
+	"visibility":                  createInvoicesRequestItemsItemVariantFieldVisibility,
 }
 
 // Find or create a variant inline by its attributes, using the payment API properties. Requires plan:create.
@@ -2102,6 +2104,8 @@ type CreateInvoicesRequestItemsItemVariant struct {
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// Recurring price in the variant currency.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
+	// How many payments a recurring variant collects before it stops billing, from 2 to 115. Only valid for `renewal` variants. `null` bills until the subscription is canceled.
+	SplitPayRequiredPayments *int `json:"split_pay_required_payments,omitempty" url:"split_pay_required_payments,omitempty"`
 	// Variant title.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
 	// Free trial days before renewal.
@@ -2212,6 +2216,13 @@ func (c *CreateInvoicesRequestItemsItemVariant) GetRenewalPrice() *float64 {
 		return nil
 	}
 	return c.RenewalPrice
+}
+
+func (c *CreateInvoicesRequestItemsItemVariant) GetSplitPayRequiredPayments() *int {
+	if c == nil {
+		return nil
+	}
+	return c.SplitPayRequiredPayments
 }
 
 func (c *CreateInvoicesRequestItemsItemVariant) GetTitle() *string {
@@ -2347,6 +2358,13 @@ func (c *CreateInvoicesRequestItemsItemVariant) SetProductID(productID *string) 
 func (c *CreateInvoicesRequestItemsItemVariant) SetRenewalPrice(renewalPrice *float64) {
 	c.RenewalPrice = renewalPrice
 	c.require(createInvoicesRequestItemsItemVariantFieldRenewalPrice)
+}
+
+// SetSplitPayRequiredPayments sets the SplitPayRequiredPayments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestItemsItemVariant) SetSplitPayRequiredPayments(splitPayRequiredPayments *int) {
+	c.SplitPayRequiredPayments = splitPayRequiredPayments
+	c.require(createInvoicesRequestItemsItemVariantFieldSplitPayRequiredPayments)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
@@ -5132,43 +5150,45 @@ func (u *UpdateInvoicesRequestItemsItem) Accept(visitor UpdateInvoicesRequestIte
 }
 
 var (
-	updateInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity = big.NewInt(1 << 0)
-	updateInvoicesRequestItemsItemVariantFieldApplicationFeeAmount  = big.NewInt(1 << 1)
-	updateInvoicesRequestItemsItemVariantFieldBillingPeriod         = big.NewInt(1 << 2)
-	updateInvoicesRequestItemsItemVariantFieldBillingType           = big.NewInt(1 << 3)
-	updateInvoicesRequestItemsItemVariantFieldCurrency              = big.NewInt(1 << 4)
-	updateInvoicesRequestItemsItemVariantFieldDescription           = big.NewInt(1 << 5)
-	updateInvoicesRequestItemsItemVariantFieldExpirationDays        = big.NewInt(1 << 6)
-	updateInvoicesRequestItemsItemVariantFieldForceCreateNewPlan    = big.NewInt(1 << 7)
-	updateInvoicesRequestItemsItemVariantFieldInitialPrice          = big.NewInt(1 << 8)
-	updateInvoicesRequestItemsItemVariantFieldInternalNotes         = big.NewInt(1 << 9)
-	updateInvoicesRequestItemsItemVariantFieldOverrideTaxType       = big.NewInt(1 << 10)
-	updateInvoicesRequestItemsItemVariantFieldProduct               = big.NewInt(1 << 11)
-	updateInvoicesRequestItemsItemVariantFieldProductID             = big.NewInt(1 << 12)
-	updateInvoicesRequestItemsItemVariantFieldRenewalPrice          = big.NewInt(1 << 13)
-	updateInvoicesRequestItemsItemVariantFieldTitle                 = big.NewInt(1 << 14)
-	updateInvoicesRequestItemsItemVariantFieldTrialPeriodDays       = big.NewInt(1 << 15)
-	updateInvoicesRequestItemsItemVariantFieldVisibility            = big.NewInt(1 << 16)
+	updateInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity    = big.NewInt(1 << 0)
+	updateInvoicesRequestItemsItemVariantFieldApplicationFeeAmount     = big.NewInt(1 << 1)
+	updateInvoicesRequestItemsItemVariantFieldBillingPeriod            = big.NewInt(1 << 2)
+	updateInvoicesRequestItemsItemVariantFieldBillingType              = big.NewInt(1 << 3)
+	updateInvoicesRequestItemsItemVariantFieldCurrency                 = big.NewInt(1 << 4)
+	updateInvoicesRequestItemsItemVariantFieldDescription              = big.NewInt(1 << 5)
+	updateInvoicesRequestItemsItemVariantFieldExpirationDays           = big.NewInt(1 << 6)
+	updateInvoicesRequestItemsItemVariantFieldForceCreateNewPlan       = big.NewInt(1 << 7)
+	updateInvoicesRequestItemsItemVariantFieldInitialPrice             = big.NewInt(1 << 8)
+	updateInvoicesRequestItemsItemVariantFieldInternalNotes            = big.NewInt(1 << 9)
+	updateInvoicesRequestItemsItemVariantFieldOverrideTaxType          = big.NewInt(1 << 10)
+	updateInvoicesRequestItemsItemVariantFieldProduct                  = big.NewInt(1 << 11)
+	updateInvoicesRequestItemsItemVariantFieldProductID                = big.NewInt(1 << 12)
+	updateInvoicesRequestItemsItemVariantFieldRenewalPrice             = big.NewInt(1 << 13)
+	updateInvoicesRequestItemsItemVariantFieldSplitPayRequiredPayments = big.NewInt(1 << 14)
+	updateInvoicesRequestItemsItemVariantFieldTitle                    = big.NewInt(1 << 15)
+	updateInvoicesRequestItemsItemVariantFieldTrialPeriodDays          = big.NewInt(1 << 16)
+	updateInvoicesRequestItemsItemVariantFieldVisibility               = big.NewInt(1 << 17)
 )
 
 // updateInvoicesRequestItemsItemVariantNullableFields maps the wire names of UpdateInvoicesRequestItemsItemVariant's nullable fields (required or optional) to their field bits.
 var updateInvoicesRequestItemsItemVariantNullableFields = map[string]*big.Int{
-	"allow_multiple_quantity": updateInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity,
-	"application_fee_amount":  updateInvoicesRequestItemsItemVariantFieldApplicationFeeAmount,
-	"billing_period":          updateInvoicesRequestItemsItemVariantFieldBillingPeriod,
-	"billing_type":            updateInvoicesRequestItemsItemVariantFieldBillingType,
-	"description":             updateInvoicesRequestItemsItemVariantFieldDescription,
-	"expiration_days":         updateInvoicesRequestItemsItemVariantFieldExpirationDays,
-	"force_create_new_plan":   updateInvoicesRequestItemsItemVariantFieldForceCreateNewPlan,
-	"initial_price":           updateInvoicesRequestItemsItemVariantFieldInitialPrice,
-	"internal_notes":          updateInvoicesRequestItemsItemVariantFieldInternalNotes,
-	"override_tax_type":       updateInvoicesRequestItemsItemVariantFieldOverrideTaxType,
-	"product":                 updateInvoicesRequestItemsItemVariantFieldProduct,
-	"product_id":              updateInvoicesRequestItemsItemVariantFieldProductID,
-	"renewal_price":           updateInvoicesRequestItemsItemVariantFieldRenewalPrice,
-	"title":                   updateInvoicesRequestItemsItemVariantFieldTitle,
-	"trial_period_days":       updateInvoicesRequestItemsItemVariantFieldTrialPeriodDays,
-	"visibility":              updateInvoicesRequestItemsItemVariantFieldVisibility,
+	"allow_multiple_quantity":     updateInvoicesRequestItemsItemVariantFieldAllowMultipleQuantity,
+	"application_fee_amount":      updateInvoicesRequestItemsItemVariantFieldApplicationFeeAmount,
+	"billing_period":              updateInvoicesRequestItemsItemVariantFieldBillingPeriod,
+	"billing_type":                updateInvoicesRequestItemsItemVariantFieldBillingType,
+	"description":                 updateInvoicesRequestItemsItemVariantFieldDescription,
+	"expiration_days":             updateInvoicesRequestItemsItemVariantFieldExpirationDays,
+	"force_create_new_plan":       updateInvoicesRequestItemsItemVariantFieldForceCreateNewPlan,
+	"initial_price":               updateInvoicesRequestItemsItemVariantFieldInitialPrice,
+	"internal_notes":              updateInvoicesRequestItemsItemVariantFieldInternalNotes,
+	"override_tax_type":           updateInvoicesRequestItemsItemVariantFieldOverrideTaxType,
+	"product":                     updateInvoicesRequestItemsItemVariantFieldProduct,
+	"product_id":                  updateInvoicesRequestItemsItemVariantFieldProductID,
+	"renewal_price":               updateInvoicesRequestItemsItemVariantFieldRenewalPrice,
+	"split_pay_required_payments": updateInvoicesRequestItemsItemVariantFieldSplitPayRequiredPayments,
+	"title":                       updateInvoicesRequestItemsItemVariantFieldTitle,
+	"trial_period_days":           updateInvoicesRequestItemsItemVariantFieldTrialPeriodDays,
+	"visibility":                  updateInvoicesRequestItemsItemVariantFieldVisibility,
 }
 
 // Find or create a variant inline by its attributes, using the payment API properties. Requires plan:create.
@@ -5201,6 +5221,8 @@ type UpdateInvoicesRequestItemsItemVariant struct {
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// Recurring price in the variant currency.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
+	// How many payments a recurring variant collects before it stops billing, from 2 to 115. Only valid for `renewal` variants. `null` bills until the subscription is canceled.
+	SplitPayRequiredPayments *int `json:"split_pay_required_payments,omitempty" url:"split_pay_required_payments,omitempty"`
 	// Variant title.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
 	// Free trial days before renewal.
@@ -5311,6 +5333,13 @@ func (u *UpdateInvoicesRequestItemsItemVariant) GetRenewalPrice() *float64 {
 		return nil
 	}
 	return u.RenewalPrice
+}
+
+func (u *UpdateInvoicesRequestItemsItemVariant) GetSplitPayRequiredPayments() *int {
+	if u == nil {
+		return nil
+	}
+	return u.SplitPayRequiredPayments
 }
 
 func (u *UpdateInvoicesRequestItemsItemVariant) GetTitle() *string {
@@ -5446,6 +5475,13 @@ func (u *UpdateInvoicesRequestItemsItemVariant) SetProductID(productID *string) 
 func (u *UpdateInvoicesRequestItemsItemVariant) SetRenewalPrice(renewalPrice *float64) {
 	u.RenewalPrice = renewalPrice
 	u.require(updateInvoicesRequestItemsItemVariantFieldRenewalPrice)
+}
+
+// SetSplitPayRequiredPayments sets the SplitPayRequiredPayments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItemVariant) SetSplitPayRequiredPayments(splitPayRequiredPayments *int) {
+	u.SplitPayRequiredPayments = splitPayRequiredPayments
+	u.require(updateInvoicesRequestItemsItemVariantFieldSplitPayRequiredPayments)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
