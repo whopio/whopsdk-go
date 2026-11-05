@@ -915,7 +915,7 @@ type Ad struct {
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
 	// The URL the ad links to, without its query string. Parameters belong in `url_parameters`; any you send on `url` are moved there.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
-	// Every query parameter appended to the URL, keyed by parameter name — including any you sent on `url` itself. Whop adds its own click-attribution parameters; those are reserved, and setting one returns an error that names it.
+	// Query parameters appended to `url`, keyed by name. Whop's click-attribution parameters are reserved.
 	URLParameters map[string]any `json:"url_parameters" url:"url_parameters"`
 	// USD value attributed to view-content events. Sums the value sent with each event, normalized to USD; events without a value contribute 0.
 	ViewedContentValue float64 `json:"viewed_content_value" url:"viewed_content_value"`
@@ -4577,7 +4577,7 @@ type PostAdUpdatedPayloadData struct {
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
 	// The URL the ad links to, without its query string. Parameters belong in `url_parameters`; any you send on `url` are moved there.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
-	// Every query parameter appended to the URL, keyed by parameter name — including any you sent on `url` itself. Whop adds its own click-attribution parameters; those are reserved, and setting one returns an error that names it.
+	// Query parameters appended to `url`, keyed by name. Whop's click-attribution parameters are reserved.
 	URLParameters map[string]any `json:"url_parameters" url:"url_parameters"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
