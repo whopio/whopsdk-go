@@ -4876,6 +4876,27 @@ func TestEnumTradeStep(t *testing.T) {
 		assert.Equal(t, TradeStep("returning"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_quoting", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTradeStepFromString("quoting")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TradeStep("quoting"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_swapping", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTradeStepFromString("swapping")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TradeStep("swapping"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_crediting", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewTradeStepFromString("crediting")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, TradeStep("crediting"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewTradeStepFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
