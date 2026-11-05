@@ -117,26 +117,28 @@ func (d *DeleteTeamMembersRequest) SetID(id string) {
 }
 
 var (
-	listTeamMembersRequestFieldAccountID        = big.NewInt(1 << 0)
-	listTeamMembersRequestFieldStatus           = big.NewInt(1 << 1)
-	listTeamMembersRequestFieldUserID           = big.NewInt(1 << 2)
-	listTeamMembersRequestFieldRole             = big.NewInt(1 << 3)
-	listTeamMembersRequestFieldQuery            = big.NewInt(1 << 4)
-	listTeamMembersRequestFieldReportsToID      = big.NewInt(1 << 5)
-	listTeamMembersRequestFieldDirectReportsMin = big.NewInt(1 << 6)
-	listTeamMembersRequestFieldDirectReportsMax = big.NewInt(1 << 7)
-	listTeamMembersRequestFieldCreatedBefore    = big.NewInt(1 << 8)
-	listTeamMembersRequestFieldCreatedAfter     = big.NewInt(1 << 9)
-	listTeamMembersRequestFieldOrder            = big.NewInt(1 << 10)
-	listTeamMembersRequestFieldDirection        = big.NewInt(1 << 11)
-	listTeamMembersRequestFieldFirst            = big.NewInt(1 << 12)
-	listTeamMembersRequestFieldAfter            = big.NewInt(1 << 13)
-	listTeamMembersRequestFieldLast             = big.NewInt(1 << 14)
-	listTeamMembersRequestFieldBefore           = big.NewInt(1 << 15)
+	listTeamMembersRequestFieldAccountID             = big.NewInt(1 << 0)
+	listTeamMembersRequestFieldStatus                = big.NewInt(1 << 1)
+	listTeamMembersRequestFieldUserID                = big.NewInt(1 << 2)
+	listTeamMembersRequestFieldRole                  = big.NewInt(1 << 3)
+	listTeamMembersRequestFieldQuery                 = big.NewInt(1 << 4)
+	listTeamMembersRequestFieldReportsToID           = big.NewInt(1 << 5)
+	listTeamMembersRequestFieldDirectReportsMin      = big.NewInt(1 << 6)
+	listTeamMembersRequestFieldDirectReportsMax      = big.NewInt(1 << 7)
+	listTeamMembersRequestFieldTeamLeadID            = big.NewInt(1 << 8)
+	listTeamMembersRequestFieldHasReferredBusinesses = big.NewInt(1 << 9)
+	listTeamMembersRequestFieldCreatedBefore         = big.NewInt(1 << 10)
+	listTeamMembersRequestFieldCreatedAfter          = big.NewInt(1 << 11)
+	listTeamMembersRequestFieldOrder                 = big.NewInt(1 << 12)
+	listTeamMembersRequestFieldDirection             = big.NewInt(1 << 13)
+	listTeamMembersRequestFieldFirst                 = big.NewInt(1 << 14)
+	listTeamMembersRequestFieldAfter                 = big.NewInt(1 << 15)
+	listTeamMembersRequestFieldLast                  = big.NewInt(1 << 16)
+	listTeamMembersRequestFieldBefore                = big.NewInt(1 << 17)
 )
 
 type ListTeamMembersRequest struct {
-	// Account ID, prefixed `biz_`.
+	// Account ID, prefixed `biz_`. A global admin query passes `global` to list the joined members of every partner account, in `created_at` order; of the reporting line filters, only `team_lead_id` and `has_referred_businesses` apply.
 	AccountID string `json:"-" url:"account_id"`
 	// Only return members with this status: `joined` (accepted members) or `pending` (pending invites). Both are returned by default.
 	Status *ListTeamMembersRequestStatus `json:"-" url:"status,omitempty"`
@@ -152,6 +154,10 @@ type ListTeamMembersRequest struct {
 	DirectReportsMin *int `json:"-" url:"direct_reports_min,omitempty"`
 	// Only return members with at most this many direct reports; `0` returns the people who manage no one. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
 	DirectReportsMax *int `json:"-" url:"direct_reports_max,omitempty"`
+	// Only return this user, prefixed `user_`, and everyone under them in today's org chart: the same team the stats API's `team_lead_id` reads. With `account_id=global`, their line in every partner account where they hold a role. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
+	TeamLeadID *string `json:"-" url:"team_lead_id,omitempty"`
+	// When true, only members who referred at least one business for their account, the reps the `partner_reps` stats metric counts; when false, only members who referred none. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
+	HasReferredBusinesses *bool `json:"-" url:"has_referred_businesses,omitempty"`
 	// Only return members added before this ISO 8601 timestamp.
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only return members added after this ISO 8601 timestamp.
@@ -236,6 +242,20 @@ func (l *ListTeamMembersRequest) SetDirectReportsMin(directReportsMin *int) {
 func (l *ListTeamMembersRequest) SetDirectReportsMax(directReportsMax *int) {
 	l.DirectReportsMax = directReportsMax
 	l.require(listTeamMembersRequestFieldDirectReportsMax)
+}
+
+// SetTeamLeadID sets the TeamLeadID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTeamMembersRequest) SetTeamLeadID(teamLeadID *string) {
+	l.TeamLeadID = teamLeadID
+	l.require(listTeamMembersRequestFieldTeamLeadID)
+}
+
+// SetHasReferredBusinesses sets the HasReferredBusinesses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTeamMembersRequest) SetHasReferredBusinesses(hasReferredBusinesses *bool) {
+	l.HasReferredBusinesses = hasReferredBusinesses
+	l.require(listTeamMembersRequestFieldHasReferredBusinesses)
 }
 
 // SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;
@@ -330,11 +350,12 @@ var (
 	teamMemberFieldEmail              = big.NewInt(1 << 4)
 	teamMemberFieldID                 = big.NewInt(1 << 5)
 	teamMemberFieldIsAgent            = big.NewInt(1 << 6)
-	teamMemberFieldReportsToID        = big.NewInt(1 << 7)
-	teamMemberFieldRole               = big.NewInt(1 << 8)
-	teamMemberFieldStatus             = big.NewInt(1 << 9)
-	teamMemberFieldUpdatedAt          = big.NewInt(1 << 10)
-	teamMemberFieldUser               = big.NewInt(1 << 11)
+	teamMemberFieldReportsToChain     = big.NewInt(1 << 7)
+	teamMemberFieldReportsToID        = big.NewInt(1 << 8)
+	teamMemberFieldRole               = big.NewInt(1 << 9)
+	teamMemberFieldStatus             = big.NewInt(1 << 10)
+	teamMemberFieldUpdatedAt          = big.NewInt(1 << 11)
+	teamMemberFieldUser               = big.NewInt(1 << 12)
 )
 
 // teamMemberNullableFields maps the wire names of TeamMember's nullable fields (required or optional) to their field bits.
@@ -342,6 +363,7 @@ var teamMemberNullableFields = map[string]*big.Int{
 	"authorized_role":      teamMemberFieldAuthorizedRole,
 	"direct_reports_count": teamMemberFieldDirectReportsCount,
 	"email":                teamMemberFieldEmail,
+	"reports_to_chain":     teamMemberFieldReportsToChain,
 	"reports_to_id":        teamMemberFieldReportsToID,
 	"user":                 teamMemberFieldUser,
 }
@@ -360,7 +382,8 @@ type TeamMember struct {
 	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque: both member prefixes are accepted wherever a team member ID is.
 	ID string `json:"id" url:"id"`
 	// Whether this member is an agent (app-controlled account) rather than a human team member. Always `false` for invites.
-	IsAgent bool `json:"is_agent" url:"is_agent"`
+	IsAgent        bool                 `json:"is_agent" url:"is_agent"`
+	ReportsToChain []*TeamMemberManager `json:"reports_to_chain,omitempty" url:"reports_to_chain,omitempty"`
 	// The ID of the team member this member reports to, starting with `ausr_` or `mber_`; treat it as opaque. `null` when the member reports to the business directly, and for invites.
 	ReportsToID *string `json:"reports_to_id,omitempty" url:"reports_to_id,omitempty"`
 	// The member's role on the account. `custom` means a bespoke dashboard-managed role; the API can read but not grant it.
@@ -426,6 +449,13 @@ func (t *TeamMember) GetIsAgent() bool {
 		return false
 	}
 	return t.IsAgent
+}
+
+func (t *TeamMember) GetReportsToChain() []*TeamMemberManager {
+	if t == nil {
+		return nil
+	}
+	return t.ReportsToChain
 }
 
 func (t *TeamMember) GetReportsToID() *string {
@@ -526,6 +556,13 @@ func (t *TeamMember) SetID(id string) {
 func (t *TeamMember) SetIsAgent(isAgent bool) {
 	t.IsAgent = isAgent
 	t.require(teamMemberFieldIsAgent)
+}
+
+// SetReportsToChain sets the ReportsToChain field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TeamMember) SetReportsToChain(reportsToChain []*TeamMemberManager) {
+	t.ReportsToChain = reportsToChain
+	t.require(teamMemberFieldReportsToChain)
 }
 
 // SetReportsToID sets the ReportsToID field and marks it as non-optional;
@@ -702,6 +739,110 @@ func (t *TeamMemberAuthorizedRole) MarshalJSON() ([]byte, error) {
 }
 
 func (t *TeamMemberAuthorizedRole) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+var (
+	teamMemberManagerFieldID   = big.NewInt(1 << 0)
+	teamMemberManagerFieldUser = big.NewInt(1 << 1)
+)
+
+type TeamMemberManager struct {
+	// The manager's team member ID, starting with `ausr_` or `mber_`; treat it as opaque.
+	ID string `json:"id" url:"id"`
+	// The user behind the manager's team membership.
+	User *UserSummary `json:"user" url:"user"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TeamMemberManager) GetID() string {
+	if t == nil {
+		return ""
+	}
+	return t.ID
+}
+
+func (t *TeamMemberManager) GetUser() *UserSummary {
+	if t == nil {
+		return nil
+	}
+	return t.User
+}
+
+func (t *TeamMemberManager) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TeamMemberManager) require(field *big.Int) {
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
+	}
+	next.Or(next, field)
+	t.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TeamMemberManager) SetID(id string) {
+	t.ID = id
+	t.require(teamMemberManagerFieldID)
+}
+
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TeamMemberManager) SetUser(user *UserSummary) {
+	t.User = user
+	t.require(teamMemberManagerFieldUser)
+}
+
+func (t *TeamMemberManager) UnmarshalJSON(data []byte) error {
+	type unmarshaler TeamMemberManager
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TeamMemberManager(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TeamMemberManager) MarshalJSON() ([]byte, error) {
+	type embed TeamMemberManager
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TeamMemberManager) String() string {
 	if t == nil {
 		return "<nil>"
 	}

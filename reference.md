@@ -1165,7 +1165,7 @@ client.Accounts.Update(
 <dl>
 <dd>
 
-**whopPartnerEnabled:** `*bool` — Set to `true` to turn on Whop Partner mode for the account, so its team can refer businesses and the account is paid partner commission on their sales. Recorded once; `false` is rejected.
+**whopPartnerEnabled:** `*bool` — Set to `true` to turn on Whop Partner mode for the account, so its team can refer businesses and the account is paid partner commission on their sales. Recorded once; `false` is rejected. Only a verified Whop Partner can turn it on.
     
 </dd>
 </dl>
@@ -38932,7 +38932,7 @@ client.Swaps.Retrieve(
 <dl>
 <dd>
 
-Lists an account's team members, including pending invites. A user credential with `company:basic:read` may list only its own joined membership by passing its own `user_id` and `status=joined`. Listing `role=workforce` is also allowed with the `bounty:create` scope. Members with the view-only Partner role are listed after all other members.
+Lists an account's team members, including pending invites. A user credential with `company:basic:read` may list only its own joined membership by passing its own `user_id` and `status=joined`. Listing `role=workforce` is also allowed with the `bounty:create` scope. A signed-in Partner, or a member others report to, without `company:authorized_user:read` lists only their own joined membership and the members who report up to them, never pending invites. Members with the view-only Partner role are listed after all other members.
 </dd>
 </dl>
 </dd>
@@ -38968,7 +38968,7 @@ client.TeamMembers.List(
 <dl>
 <dd>
 
-**accountID:** `string` — Account ID, prefixed `biz_`.
+**accountID:** `string` — Account ID, prefixed `biz_`. A global admin query passes `global` to list the joined members of every partner account, in `created_at` order; of the reporting line filters, only `team_lead_id` and `has_referred_businesses` apply.
     
 </dd>
 </dl>
@@ -39025,6 +39025,22 @@ client.TeamMembers.List(
 <dd>
 
 **directReportsMax:** `*int` — Only return members with at most this many direct reports; `0` returns the people who manage no one. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**teamLeadID:** `*string` — Only return this user, prefixed `user_`, and everyone under them in today's org chart: the same team the stats API's `team_lead_id` reads. With `account_id=global`, their line in every partner account where they hold a role. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**hasReferredBusinesses:** `*bool` — When true, only members who referred at least one business for their account, the reps the `partner_reps` stats metric counts; when false, only members who referred none. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
     
 </dd>
 </dl>
