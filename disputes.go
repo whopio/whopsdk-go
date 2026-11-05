@@ -341,42 +341,44 @@ func (s *SummaryDisputesRequest) SetIncludeSubaccounts(includeSubaccounts *bool)
 }
 
 var (
-	disputeFieldAcceptable           = big.NewInt(1 << 0)
-	disputeFieldAccountID            = big.NewInt(1 << 1)
-	disputeFieldAmount               = big.NewInt(1 << 2)
-	disputeFieldBuyer                = big.NewInt(1 << 3)
-	disputeFieldCreatedAt            = big.NewInt(1 << 4)
-	disputeFieldCurrency             = big.NewInt(1 << 5)
-	disputeFieldEvidence             = big.NewInt(1 << 6)
-	disputeFieldEvidenceDueAt        = big.NewInt(1 << 7)
-	disputeFieldEvidenceEditable     = big.NewInt(1 << 8)
-	disputeFieldEvidenceLockedReason = big.NewInt(1 << 9)
-	disputeFieldEvidenceSubmittedAt  = big.NewInt(1 << 10)
-	disputeFieldFee                  = big.NewInt(1 << 11)
-	disputeFieldFeeCharged           = big.NewInt(1 << 12)
-	disputeFieldID                   = big.NewInt(1 << 13)
-	disputeFieldInquiry              = big.NewInt(1 << 14)
-	disputeFieldIssuerComments       = big.NewInt(1 << 15)
-	disputeFieldLineItems            = big.NewInt(1 << 16)
-	disputeFieldPayment              = big.NewInt(1 << 17)
-	disputeFieldProductID            = big.NewInt(1 << 18)
-	disputeFieldReason               = big.NewInt(1 << 19)
-	disputeFieldReasonCode           = big.NewInt(1 << 20)
-	disputeFieldStatus               = big.NewInt(1 << 21)
-	disputeFieldUpdatedAt            = big.NewInt(1 << 22)
-	disputeFieldVariantID            = big.NewInt(1 << 23)
+	disputeFieldAcceptable              = big.NewInt(1 << 0)
+	disputeFieldAccountID               = big.NewInt(1 << 1)
+	disputeFieldAmount                  = big.NewInt(1 << 2)
+	disputeFieldBuyer                   = big.NewInt(1 << 3)
+	disputeFieldCreatedAt               = big.NewInt(1 << 4)
+	disputeFieldCurrency                = big.NewInt(1 << 5)
+	disputeFieldEvidence                = big.NewInt(1 << 6)
+	disputeFieldEvidenceDueAt           = big.NewInt(1 << 7)
+	disputeFieldEvidenceEditable        = big.NewInt(1 << 8)
+	disputeFieldEvidenceLockedReason    = big.NewInt(1 << 9)
+	disputeFieldEvidenceSubmittedAt     = big.NewInt(1 << 10)
+	disputeFieldFee                     = big.NewInt(1 << 11)
+	disputeFieldFeeCharged              = big.NewInt(1 << 12)
+	disputeFieldID                      = big.NewInt(1 << 13)
+	disputeFieldInquiry                 = big.NewInt(1 << 14)
+	disputeFieldIssuerComments          = big.NewInt(1 << 15)
+	disputeFieldLineItems               = big.NewInt(1 << 16)
+	disputeFieldPayment                 = big.NewInt(1 << 17)
+	disputeFieldProductID               = big.NewInt(1 << 18)
+	disputeFieldReason                  = big.NewInt(1 << 19)
+	disputeFieldReasonCode              = big.NewInt(1 << 20)
+	disputeFieldStatus                  = big.NewInt(1 << 21)
+	disputeFieldSubmissionFailureReason = big.NewInt(1 << 22)
+	disputeFieldUpdatedAt               = big.NewInt(1 << 23)
+	disputeFieldVariantID               = big.NewInt(1 << 24)
 )
 
 // disputeNullableFields maps the wire names of Dispute's nullable fields (required or optional) to their field bits.
 var disputeNullableFields = map[string]*big.Int{
-	"account_id":             disputeFieldAccountID,
-	"evidence_due_at":        disputeFieldEvidenceDueAt,
-	"evidence_locked_reason": disputeFieldEvidenceLockedReason,
-	"evidence_submitted_at":  disputeFieldEvidenceSubmittedAt,
-	"fee":                    disputeFieldFee,
-	"product_id":             disputeFieldProductID,
-	"reason_code":            disputeFieldReasonCode,
-	"variant_id":             disputeFieldVariantID,
+	"account_id":                disputeFieldAccountID,
+	"evidence_due_at":           disputeFieldEvidenceDueAt,
+	"evidence_locked_reason":    disputeFieldEvidenceLockedReason,
+	"evidence_submitted_at":     disputeFieldEvidenceSubmittedAt,
+	"fee":                       disputeFieldFee,
+	"product_id":                disputeFieldProductID,
+	"reason_code":               disputeFieldReasonCode,
+	"submission_failure_reason": disputeFieldSubmissionFailureReason,
+	"variant_id":                disputeFieldVariantID,
 }
 
 type Dispute struct {
@@ -420,8 +422,10 @@ type Dispute struct {
 	Reason DisputeReason `json:"reason" url:"reason"`
 	// The raw card-network or processor reason code, such as `10.4`. Informational only — `reason` is not derived from it.
 	ReasonCode *string `json:"reason_code,omitempty" url:"reason_code,omitempty"`
-	// Where the dispute stands. `needs_response` is awaiting evidence, `under_review` is with the processor, `won` returned the funds to the seller, `lost` returned them to the customer, and `prevented` means the customer was refunded before any ruling, so it settles like `lost`. The `warning_` statuses are the same stages for an inquiry, which moves no funds. A dispute past its `evidence_due_at` reports `under_review` — the window to respond has closed.
+	// `needs_response` awaits evidence (after a processor refused a filing, `submission_failure_reason` says why); `generating_response` has evidence with the processor, not yet accepted; `under_review` is with the processor; `won`/`lost` are the rulings; `prevented` settles like `lost`. `warning_` statuses are the inquiry tiers. Past `evidence_due_at` an open one reports `under_review`.
 	Status DisputeStatus `json:"status" url:"status"`
+	// Why the payment processor refused the last filing, in plain English, while the dispute is back in `needs_response`. Fix what it names and submit again. Only on retrieve: `dispute.updated` reports the move back to `needs_response`, then read this here.
+	SubmissionFailureReason *string `json:"submission_failure_reason,omitempty" url:"submission_failure_reason,omitempty"`
 	// When the dispute was last changed, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
 	// The variant the disputed payment was made on, prefixed `plan_`.
@@ -586,6 +590,13 @@ func (d *Dispute) GetStatus() DisputeStatus {
 		return ""
 	}
 	return d.Status
+}
+
+func (d *Dispute) GetSubmissionFailureReason() *string {
+	if d == nil {
+		return nil
+	}
+	return d.SubmissionFailureReason
 }
 
 func (d *Dispute) GetUpdatedAt() string {
@@ -770,6 +781,13 @@ func (d *Dispute) SetReasonCode(reasonCode *string) {
 func (d *Dispute) SetStatus(status DisputeStatus) {
 	d.Status = status
 	d.require(disputeFieldStatus)
+}
+
+// SetSubmissionFailureReason sets the SubmissionFailureReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *Dispute) SetSubmissionFailureReason(submissionFailureReason *string) {
+	d.SubmissionFailureReason = submissionFailureReason
+	d.require(disputeFieldSubmissionFailureReason)
 }
 
 // SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
@@ -2549,7 +2567,7 @@ func (d DisputeReason) Ptr() *DisputeReason {
 	return &d
 }
 
-// Where the dispute stands. `needs_response` is awaiting evidence, `under_review` is with the processor, `won` returned the funds to the seller, `lost` returned them to the customer, and `prevented` means the customer was refunded before any ruling, so it settles like `lost`. The `warning_` statuses are the same stages for an inquiry, which moves no funds. A dispute past its `evidence_due_at` reports `under_review` — the window to respond has closed.
+// `needs_response` awaits evidence (after a processor refused a filing, `submission_failure_reason` says why); `generating_response` has evidence with the processor, not yet accepted; `under_review` is with the processor; `won`/`lost` are the rulings; `prevented` settles like `lost`. `warning_` statuses are the inquiry tiers. Past `evidence_due_at` an open one reports `under_review`.
 type DisputeStatus string
 
 const (
@@ -2557,6 +2575,7 @@ const (
 	DisputeStatusWarningNeedsResponse DisputeStatus = "warning_needs_response"
 	DisputeStatusUnderReview          DisputeStatus = "under_review"
 	DisputeStatusWarningUnderReview   DisputeStatus = "warning_under_review"
+	DisputeStatusGeneratingResponse   DisputeStatus = "generating_response"
 	DisputeStatusWon                  DisputeStatus = "won"
 	DisputeStatusLost                 DisputeStatus = "lost"
 	DisputeStatusPrevented            DisputeStatus = "prevented"
@@ -2573,6 +2592,8 @@ func NewDisputeStatusFromString(s string) (DisputeStatus, error) {
 		return DisputeStatusUnderReview, nil
 	case "warning_under_review":
 		return DisputeStatusWarningUnderReview, nil
+	case "generating_response":
+		return DisputeStatusGeneratingResponse, nil
 	case "won":
 		return DisputeStatusWon, nil
 	case "lost":
@@ -2644,6 +2665,7 @@ const (
 	ListDisputesRequestStatusItemWarningNeedsResponse ListDisputesRequestStatusItem = "warning_needs_response"
 	ListDisputesRequestStatusItemUnderReview          ListDisputesRequestStatusItem = "under_review"
 	ListDisputesRequestStatusItemWarningUnderReview   ListDisputesRequestStatusItem = "warning_under_review"
+	ListDisputesRequestStatusItemGeneratingResponse   ListDisputesRequestStatusItem = "generating_response"
 	ListDisputesRequestStatusItemWon                  ListDisputesRequestStatusItem = "won"
 	ListDisputesRequestStatusItemLost                 ListDisputesRequestStatusItem = "lost"
 	ListDisputesRequestStatusItemPrevented            ListDisputesRequestStatusItem = "prevented"
@@ -2660,6 +2682,8 @@ func NewListDisputesRequestStatusItemFromString(s string) (ListDisputesRequestSt
 		return ListDisputesRequestStatusItemUnderReview, nil
 	case "warning_under_review":
 		return ListDisputesRequestStatusItemWarningUnderReview, nil
+	case "generating_response":
+		return ListDisputesRequestStatusItemGeneratingResponse, nil
 	case "won":
 		return ListDisputesRequestStatusItemWon, nil
 	case "lost":
@@ -3487,6 +3511,7 @@ const (
 	SummaryDisputesRequestStatusItemWarningNeedsResponse SummaryDisputesRequestStatusItem = "warning_needs_response"
 	SummaryDisputesRequestStatusItemUnderReview          SummaryDisputesRequestStatusItem = "under_review"
 	SummaryDisputesRequestStatusItemWarningUnderReview   SummaryDisputesRequestStatusItem = "warning_under_review"
+	SummaryDisputesRequestStatusItemGeneratingResponse   SummaryDisputesRequestStatusItem = "generating_response"
 	SummaryDisputesRequestStatusItemWon                  SummaryDisputesRequestStatusItem = "won"
 	SummaryDisputesRequestStatusItemLost                 SummaryDisputesRequestStatusItem = "lost"
 	SummaryDisputesRequestStatusItemPrevented            SummaryDisputesRequestStatusItem = "prevented"
@@ -3503,6 +3528,8 @@ func NewSummaryDisputesRequestStatusItemFromString(s string) (SummaryDisputesReq
 		return SummaryDisputesRequestStatusItemUnderReview, nil
 	case "warning_under_review":
 		return SummaryDisputesRequestStatusItemWarningUnderReview, nil
+	case "generating_response":
+		return SummaryDisputesRequestStatusItemGeneratingResponse, nil
 	case "won":
 		return SummaryDisputesRequestStatusItemWon, nil
 	case "lost":
@@ -3730,18 +3757,20 @@ func (s *SummaryDisputesResponseGroups) String() string {
 }
 
 var (
-	summaryDisputesResponseGroupsStatusFieldLost                 = big.NewInt(1 << 0)
-	summaryDisputesResponseGroupsStatusFieldNeedsResponse        = big.NewInt(1 << 1)
-	summaryDisputesResponseGroupsStatusFieldPrevented            = big.NewInt(1 << 2)
-	summaryDisputesResponseGroupsStatusFieldUnderReview          = big.NewInt(1 << 3)
-	summaryDisputesResponseGroupsStatusFieldWarningClosed        = big.NewInt(1 << 4)
-	summaryDisputesResponseGroupsStatusFieldWarningNeedsResponse = big.NewInt(1 << 5)
-	summaryDisputesResponseGroupsStatusFieldWarningUnderReview   = big.NewInt(1 << 6)
-	summaryDisputesResponseGroupsStatusFieldWon                  = big.NewInt(1 << 7)
+	summaryDisputesResponseGroupsStatusFieldGeneratingResponse   = big.NewInt(1 << 0)
+	summaryDisputesResponseGroupsStatusFieldLost                 = big.NewInt(1 << 1)
+	summaryDisputesResponseGroupsStatusFieldNeedsResponse        = big.NewInt(1 << 2)
+	summaryDisputesResponseGroupsStatusFieldPrevented            = big.NewInt(1 << 3)
+	summaryDisputesResponseGroupsStatusFieldUnderReview          = big.NewInt(1 << 4)
+	summaryDisputesResponseGroupsStatusFieldWarningClosed        = big.NewInt(1 << 5)
+	summaryDisputesResponseGroupsStatusFieldWarningNeedsResponse = big.NewInt(1 << 6)
+	summaryDisputesResponseGroupsStatusFieldWarningUnderReview   = big.NewInt(1 << 7)
+	summaryDisputesResponseGroupsStatusFieldWon                  = big.NewInt(1 << 8)
 )
 
 // How many of the matching disputes are in each status. Every status is present, including those with a count of zero.
 type SummaryDisputesResponseGroupsStatus struct {
+	GeneratingResponse   int `json:"generating_response" url:"generating_response"`
 	Lost                 int `json:"lost" url:"lost"`
 	NeedsResponse        int `json:"needs_response" url:"needs_response"`
 	Prevented            int `json:"prevented" url:"prevented"`
@@ -3756,6 +3785,13 @@ type SummaryDisputesResponseGroupsStatus struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (s *SummaryDisputesResponseGroupsStatus) GetGeneratingResponse() int {
+	if s == nil {
+		return 0
+	}
+	return s.GeneratingResponse
 }
 
 func (s *SummaryDisputesResponseGroupsStatus) GetLost() int {
@@ -3828,6 +3864,13 @@ func (s *SummaryDisputesResponseGroupsStatus) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	s.explicitFields = next
+}
+
+// SetGeneratingResponse sets the GeneratingResponse field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryDisputesResponseGroupsStatus) SetGeneratingResponse(generatingResponse int) {
+	s.GeneratingResponse = generatingResponse
+	s.require(summaryDisputesResponseGroupsStatusFieldGeneratingResponse)
 }
 
 // SetLost sets the Lost field and marks it as non-optional;
