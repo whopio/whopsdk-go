@@ -1044,43 +1044,45 @@ func (c CreateDirectRequestPaymentMethodType) Ptr() *CreateDirectRequestPaymentM
 }
 
 var (
-	createDirectRequestPlanFieldAllowMultipleQuantity = big.NewInt(1 << 0)
-	createDirectRequestPlanFieldApplicationFeeAmount  = big.NewInt(1 << 1)
-	createDirectRequestPlanFieldBillingPeriod         = big.NewInt(1 << 2)
-	createDirectRequestPlanFieldCurrency              = big.NewInt(1 << 3)
-	createDirectRequestPlanFieldDescription           = big.NewInt(1 << 4)
-	createDirectRequestPlanFieldExpirationDays        = big.NewInt(1 << 5)
-	createDirectRequestPlanFieldForceCreateNewPlan    = big.NewInt(1 << 6)
-	createDirectRequestPlanFieldInitialPrice          = big.NewInt(1 << 7)
-	createDirectRequestPlanFieldInternalNotes         = big.NewInt(1 << 8)
-	createDirectRequestPlanFieldOverrideTaxType       = big.NewInt(1 << 9)
-	createDirectRequestPlanFieldPlanType              = big.NewInt(1 << 10)
-	createDirectRequestPlanFieldProduct               = big.NewInt(1 << 11)
-	createDirectRequestPlanFieldProductID             = big.NewInt(1 << 12)
-	createDirectRequestPlanFieldRenewalPrice          = big.NewInt(1 << 13)
-	createDirectRequestPlanFieldTitle                 = big.NewInt(1 << 14)
-	createDirectRequestPlanFieldTrialPeriodDays       = big.NewInt(1 << 15)
-	createDirectRequestPlanFieldVisibility            = big.NewInt(1 << 16)
+	createDirectRequestPlanFieldAllowMultipleQuantity    = big.NewInt(1 << 0)
+	createDirectRequestPlanFieldApplicationFeeAmount     = big.NewInt(1 << 1)
+	createDirectRequestPlanFieldBillingPeriod            = big.NewInt(1 << 2)
+	createDirectRequestPlanFieldCurrency                 = big.NewInt(1 << 3)
+	createDirectRequestPlanFieldDescription              = big.NewInt(1 << 4)
+	createDirectRequestPlanFieldExpirationDays           = big.NewInt(1 << 5)
+	createDirectRequestPlanFieldForceCreateNewPlan       = big.NewInt(1 << 6)
+	createDirectRequestPlanFieldInitialPrice             = big.NewInt(1 << 7)
+	createDirectRequestPlanFieldInternalNotes            = big.NewInt(1 << 8)
+	createDirectRequestPlanFieldOverrideTaxType          = big.NewInt(1 << 9)
+	createDirectRequestPlanFieldPlanType                 = big.NewInt(1 << 10)
+	createDirectRequestPlanFieldProduct                  = big.NewInt(1 << 11)
+	createDirectRequestPlanFieldProductID                = big.NewInt(1 << 12)
+	createDirectRequestPlanFieldRenewalPrice             = big.NewInt(1 << 13)
+	createDirectRequestPlanFieldSplitPayRequiredPayments = big.NewInt(1 << 14)
+	createDirectRequestPlanFieldTitle                    = big.NewInt(1 << 15)
+	createDirectRequestPlanFieldTrialPeriodDays          = big.NewInt(1 << 16)
+	createDirectRequestPlanFieldVisibility               = big.NewInt(1 << 17)
 )
 
 // createDirectRequestPlanNullableFields maps the wire names of CreateDirectRequestPlan's nullable fields (required or optional) to their field bits.
 var createDirectRequestPlanNullableFields = map[string]*big.Int{
-	"allow_multiple_quantity": createDirectRequestPlanFieldAllowMultipleQuantity,
-	"application_fee_amount":  createDirectRequestPlanFieldApplicationFeeAmount,
-	"billing_period":          createDirectRequestPlanFieldBillingPeriod,
-	"description":             createDirectRequestPlanFieldDescription,
-	"expiration_days":         createDirectRequestPlanFieldExpirationDays,
-	"force_create_new_plan":   createDirectRequestPlanFieldForceCreateNewPlan,
-	"initial_price":           createDirectRequestPlanFieldInitialPrice,
-	"internal_notes":          createDirectRequestPlanFieldInternalNotes,
-	"override_tax_type":       createDirectRequestPlanFieldOverrideTaxType,
-	"plan_type":               createDirectRequestPlanFieldPlanType,
-	"product":                 createDirectRequestPlanFieldProduct,
-	"product_id":              createDirectRequestPlanFieldProductID,
-	"renewal_price":           createDirectRequestPlanFieldRenewalPrice,
-	"title":                   createDirectRequestPlanFieldTitle,
-	"trial_period_days":       createDirectRequestPlanFieldTrialPeriodDays,
-	"visibility":              createDirectRequestPlanFieldVisibility,
+	"allow_multiple_quantity":     createDirectRequestPlanFieldAllowMultipleQuantity,
+	"application_fee_amount":      createDirectRequestPlanFieldApplicationFeeAmount,
+	"billing_period":              createDirectRequestPlanFieldBillingPeriod,
+	"description":                 createDirectRequestPlanFieldDescription,
+	"expiration_days":             createDirectRequestPlanFieldExpirationDays,
+	"force_create_new_plan":       createDirectRequestPlanFieldForceCreateNewPlan,
+	"initial_price":               createDirectRequestPlanFieldInitialPrice,
+	"internal_notes":              createDirectRequestPlanFieldInternalNotes,
+	"override_tax_type":           createDirectRequestPlanFieldOverrideTaxType,
+	"plan_type":                   createDirectRequestPlanFieldPlanType,
+	"product":                     createDirectRequestPlanFieldProduct,
+	"product_id":                  createDirectRequestPlanFieldProductID,
+	"renewal_price":               createDirectRequestPlanFieldRenewalPrice,
+	"split_pay_required_payments": createDirectRequestPlanFieldSplitPayRequiredPayments,
+	"title":                       createDirectRequestPlanFieldTitle,
+	"trial_period_days":           createDirectRequestPlanFieldTrialPeriodDays,
+	"visibility":                  createDirectRequestPlanFieldVisibility,
 }
 
 // Deprecated: send `variant`, which takes `billing_type` in place of `plan_type`. Accepted only from callers pinned to an API version before 2026-10-27-2.
@@ -1113,6 +1115,8 @@ type CreateDirectRequestPlan struct {
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// Recurring price in the variant currency.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
+	// How many payments a recurring variant collects before it stops billing, from 2 to 115. Only valid for `renewal` variants. `null` bills until the subscription is canceled.
+	SplitPayRequiredPayments *int `json:"split_pay_required_payments,omitempty" url:"split_pay_required_payments,omitempty"`
 	// Variant title.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
 	// Free trial days before renewal.
@@ -1223,6 +1227,13 @@ func (c *CreateDirectRequestPlan) GetRenewalPrice() *float64 {
 		return nil
 	}
 	return c.RenewalPrice
+}
+
+func (c *CreateDirectRequestPlan) GetSplitPayRequiredPayments() *int {
+	if c == nil {
+		return nil
+	}
+	return c.SplitPayRequiredPayments
 }
 
 func (c *CreateDirectRequestPlan) GetTitle() *string {
@@ -1358,6 +1369,13 @@ func (c *CreateDirectRequestPlan) SetProductID(productID *string) {
 func (c *CreateDirectRequestPlan) SetRenewalPrice(renewalPrice *float64) {
 	c.RenewalPrice = renewalPrice
 	c.require(createDirectRequestPlanFieldRenewalPrice)
+}
+
+// SetSplitPayRequiredPayments sets the SplitPayRequiredPayments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetSplitPayRequiredPayments(splitPayRequiredPayments *int) {
+	c.SplitPayRequiredPayments = splitPayRequiredPayments
+	c.require(createDirectRequestPlanFieldSplitPayRequiredPayments)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;

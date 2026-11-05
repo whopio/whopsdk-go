@@ -2706,43 +2706,45 @@ func (c *CreatePaymentsRequestLineItemsItem) Accept(visitor CreatePaymentsReques
 }
 
 var (
-	createPaymentsRequestLineItemsItemVariantFieldAllowMultipleQuantity = big.NewInt(1 << 0)
-	createPaymentsRequestLineItemsItemVariantFieldApplicationFeeAmount  = big.NewInt(1 << 1)
-	createPaymentsRequestLineItemsItemVariantFieldBillingPeriod         = big.NewInt(1 << 2)
-	createPaymentsRequestLineItemsItemVariantFieldBillingType           = big.NewInt(1 << 3)
-	createPaymentsRequestLineItemsItemVariantFieldCurrency              = big.NewInt(1 << 4)
-	createPaymentsRequestLineItemsItemVariantFieldDescription           = big.NewInt(1 << 5)
-	createPaymentsRequestLineItemsItemVariantFieldExpirationDays        = big.NewInt(1 << 6)
-	createPaymentsRequestLineItemsItemVariantFieldForceCreateNewPlan    = big.NewInt(1 << 7)
-	createPaymentsRequestLineItemsItemVariantFieldInitialPrice          = big.NewInt(1 << 8)
-	createPaymentsRequestLineItemsItemVariantFieldInternalNotes         = big.NewInt(1 << 9)
-	createPaymentsRequestLineItemsItemVariantFieldOverrideTaxType       = big.NewInt(1 << 10)
-	createPaymentsRequestLineItemsItemVariantFieldProduct               = big.NewInt(1 << 11)
-	createPaymentsRequestLineItemsItemVariantFieldProductID             = big.NewInt(1 << 12)
-	createPaymentsRequestLineItemsItemVariantFieldRenewalPrice          = big.NewInt(1 << 13)
-	createPaymentsRequestLineItemsItemVariantFieldTitle                 = big.NewInt(1 << 14)
-	createPaymentsRequestLineItemsItemVariantFieldTrialPeriodDays       = big.NewInt(1 << 15)
-	createPaymentsRequestLineItemsItemVariantFieldVisibility            = big.NewInt(1 << 16)
+	createPaymentsRequestLineItemsItemVariantFieldAllowMultipleQuantity    = big.NewInt(1 << 0)
+	createPaymentsRequestLineItemsItemVariantFieldApplicationFeeAmount     = big.NewInt(1 << 1)
+	createPaymentsRequestLineItemsItemVariantFieldBillingPeriod            = big.NewInt(1 << 2)
+	createPaymentsRequestLineItemsItemVariantFieldBillingType              = big.NewInt(1 << 3)
+	createPaymentsRequestLineItemsItemVariantFieldCurrency                 = big.NewInt(1 << 4)
+	createPaymentsRequestLineItemsItemVariantFieldDescription              = big.NewInt(1 << 5)
+	createPaymentsRequestLineItemsItemVariantFieldExpirationDays           = big.NewInt(1 << 6)
+	createPaymentsRequestLineItemsItemVariantFieldForceCreateNewPlan       = big.NewInt(1 << 7)
+	createPaymentsRequestLineItemsItemVariantFieldInitialPrice             = big.NewInt(1 << 8)
+	createPaymentsRequestLineItemsItemVariantFieldInternalNotes            = big.NewInt(1 << 9)
+	createPaymentsRequestLineItemsItemVariantFieldOverrideTaxType          = big.NewInt(1 << 10)
+	createPaymentsRequestLineItemsItemVariantFieldProduct                  = big.NewInt(1 << 11)
+	createPaymentsRequestLineItemsItemVariantFieldProductID                = big.NewInt(1 << 12)
+	createPaymentsRequestLineItemsItemVariantFieldRenewalPrice             = big.NewInt(1 << 13)
+	createPaymentsRequestLineItemsItemVariantFieldSplitPayRequiredPayments = big.NewInt(1 << 14)
+	createPaymentsRequestLineItemsItemVariantFieldTitle                    = big.NewInt(1 << 15)
+	createPaymentsRequestLineItemsItemVariantFieldTrialPeriodDays          = big.NewInt(1 << 16)
+	createPaymentsRequestLineItemsItemVariantFieldVisibility               = big.NewInt(1 << 17)
 )
 
 // createPaymentsRequestLineItemsItemVariantNullableFields maps the wire names of CreatePaymentsRequestLineItemsItemVariant's nullable fields (required or optional) to their field bits.
 var createPaymentsRequestLineItemsItemVariantNullableFields = map[string]*big.Int{
-	"allow_multiple_quantity": createPaymentsRequestLineItemsItemVariantFieldAllowMultipleQuantity,
-	"application_fee_amount":  createPaymentsRequestLineItemsItemVariantFieldApplicationFeeAmount,
-	"billing_period":          createPaymentsRequestLineItemsItemVariantFieldBillingPeriod,
-	"billing_type":            createPaymentsRequestLineItemsItemVariantFieldBillingType,
-	"description":             createPaymentsRequestLineItemsItemVariantFieldDescription,
-	"expiration_days":         createPaymentsRequestLineItemsItemVariantFieldExpirationDays,
-	"force_create_new_plan":   createPaymentsRequestLineItemsItemVariantFieldForceCreateNewPlan,
-	"initial_price":           createPaymentsRequestLineItemsItemVariantFieldInitialPrice,
-	"internal_notes":          createPaymentsRequestLineItemsItemVariantFieldInternalNotes,
-	"override_tax_type":       createPaymentsRequestLineItemsItemVariantFieldOverrideTaxType,
-	"product":                 createPaymentsRequestLineItemsItemVariantFieldProduct,
-	"product_id":              createPaymentsRequestLineItemsItemVariantFieldProductID,
-	"renewal_price":           createPaymentsRequestLineItemsItemVariantFieldRenewalPrice,
-	"title":                   createPaymentsRequestLineItemsItemVariantFieldTitle,
-	"trial_period_days":       createPaymentsRequestLineItemsItemVariantFieldTrialPeriodDays,
-	"visibility":              createPaymentsRequestLineItemsItemVariantFieldVisibility,
+	"allow_multiple_quantity":     createPaymentsRequestLineItemsItemVariantFieldAllowMultipleQuantity,
+	"application_fee_amount":      createPaymentsRequestLineItemsItemVariantFieldApplicationFeeAmount,
+	"billing_period":              createPaymentsRequestLineItemsItemVariantFieldBillingPeriod,
+	"billing_type":                createPaymentsRequestLineItemsItemVariantFieldBillingType,
+	"description":                 createPaymentsRequestLineItemsItemVariantFieldDescription,
+	"expiration_days":             createPaymentsRequestLineItemsItemVariantFieldExpirationDays,
+	"force_create_new_plan":       createPaymentsRequestLineItemsItemVariantFieldForceCreateNewPlan,
+	"initial_price":               createPaymentsRequestLineItemsItemVariantFieldInitialPrice,
+	"internal_notes":              createPaymentsRequestLineItemsItemVariantFieldInternalNotes,
+	"override_tax_type":           createPaymentsRequestLineItemsItemVariantFieldOverrideTaxType,
+	"product":                     createPaymentsRequestLineItemsItemVariantFieldProduct,
+	"product_id":                  createPaymentsRequestLineItemsItemVariantFieldProductID,
+	"renewal_price":               createPaymentsRequestLineItemsItemVariantFieldRenewalPrice,
+	"split_pay_required_payments": createPaymentsRequestLineItemsItemVariantFieldSplitPayRequiredPayments,
+	"title":                       createPaymentsRequestLineItemsItemVariantFieldTitle,
+	"trial_period_days":           createPaymentsRequestLineItemsItemVariantFieldTrialPeriodDays,
+	"visibility":                  createPaymentsRequestLineItemsItemVariantFieldVisibility,
 }
 
 // Find or create the variant for this entry by its attributes. Unknown properties return an error. Creating a variant requires `plan:create`, and creating or updating a product requires the matching product permission.
@@ -2775,6 +2777,8 @@ type CreatePaymentsRequestLineItemsItemVariant struct {
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// Recurring price in the variant currency.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
+	// How many payments a recurring variant collects before it stops billing, from 2 to 115. Only valid for `renewal` variants. `null` bills until the subscription is canceled.
+	SplitPayRequiredPayments *int `json:"split_pay_required_payments,omitempty" url:"split_pay_required_payments,omitempty"`
 	// Variant title.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
 	// Free trial days before renewal.
@@ -2885,6 +2889,13 @@ func (c *CreatePaymentsRequestLineItemsItemVariant) GetRenewalPrice() *float64 {
 		return nil
 	}
 	return c.RenewalPrice
+}
+
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetSplitPayRequiredPayments() *int {
+	if c == nil {
+		return nil
+	}
+	return c.SplitPayRequiredPayments
 }
 
 func (c *CreatePaymentsRequestLineItemsItemVariant) GetTitle() *string {
@@ -3020,6 +3031,13 @@ func (c *CreatePaymentsRequestLineItemsItemVariant) SetProductID(productID *stri
 func (c *CreatePaymentsRequestLineItemsItemVariant) SetRenewalPrice(renewalPrice *float64) {
 	c.RenewalPrice = renewalPrice
 	c.require(createPaymentsRequestLineItemsItemVariantFieldRenewalPrice)
+}
+
+// SetSplitPayRequiredPayments sets the SplitPayRequiredPayments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetSplitPayRequiredPayments(splitPayRequiredPayments *int) {
+	c.SplitPayRequiredPayments = splitPayRequiredPayments
+	c.require(createPaymentsRequestLineItemsItemVariantFieldSplitPayRequiredPayments)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
