@@ -58,28 +58,3 @@ func (c *Client) List(
 	}
 	return response.Body, nil
 }
-
-// Retrieves payments across all of Whop for up to four windows at once, optionally broken down by business type, industry type, product category, account country or customer country. The report covers the whole platform, so it takes no `account_id` and any authenticated caller can read it.
-//
-// Example:
-//
-//	request := &stats.PlatformTrendsReportsRequest{}
-//	client.Stats.Reports.PlatformTrends(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) PlatformTrends(
-	ctx context.Context,
-	request *stats.PlatformTrendsReportsRequest,
-	opts ...option.RequestOption,
-) (*stats.PlatformTrendsReportsResponse, error) {
-	response, err := c.WithRawResponse.PlatformTrends(
-		ctx,
-		request,
-		opts...,
-	)
-	if err != nil {
-		return nil, err
-	}
-	return response.Body, nil
-}
