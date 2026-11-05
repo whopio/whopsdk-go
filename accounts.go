@@ -946,7 +946,7 @@ type Account struct {
 	BusinessAddress map[string]any `json:"business_address,omitempty" url:"business_address,omitempty"`
 	// The account's legal business name used with its tax address.
 	BusinessName *string `json:"business_name,omitempty" url:"business_name,omitempty"`
-	// High-level business category for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
+	// High-level business category for the account. See the [business types and industries glossary](/api-reference/accounts/account#business-types-and-industries-glossary) for valid values.
 	BusinessType *string `json:"business_type,omitempty" url:"business_type,omitempty"`
 	// Whether pending funds may be transferred from this platform account to its subaccounts.
 	CanTransferPendingBalanceToChildren bool `json:"can_transfer_pending_balance_to_children" url:"can_transfer_pending_balance_to_children"`
@@ -958,7 +958,7 @@ type Account struct {
 	Cards *AccountCards `json:"cards,omitempty" url:"cards,omitempty"`
 	// Whether checkout shows a VAT/tax ID field for buyers to optionally enter. Does not require a VAT ID to purchase.
 	CollectVatID bool `json:"collect_vat_id" url:"collect_vat_id"`
-	// Company formation state for the account, managed through [Form Company](/api-reference/beta/accounts/form-company). A `draft` `status` until the formation checkout is paid, then filing progress with downloadable documents and signatures awaiting action. Empty when the formation state is temporarily unavailable.
+	// Company formation state for the account, managed through [Form Company](/api-reference/accounts/form-company). A `draft` `status` until the formation checkout is paid, then filing progress with downloadable documents and signatures awaiting action. Empty when the formation state is temporarily unavailable.
 	CompanyFormation *AccountCompanyFormation `json:"company_formation" url:"company_formation"`
 	// Country where the account is located.
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
@@ -985,7 +985,7 @@ type Account struct {
 	HomePreferences []AccountHomePreferencesItem `json:"home_preferences" url:"home_preferences"`
 	// Account ID, prefixed `biz_`.
 	ID string `json:"id" url:"id"`
-	// Specific industry vertical for the account. See the [business types and industries glossary](/api-reference/beta/accounts/account#business-types-and-industries-glossary) for valid values.
+	// Specific industry vertical for the account. See the [business types and industries glossary](/api-reference/accounts/account#business-types-and-industries-glossary) for valid values.
 	IndustryType *string `json:"industry_type,omitempty" url:"industry_type,omitempty"`
 	// Prefix used for account invoices.
 	InvoicePrefix *string `json:"invoice_prefix,omitempty" url:"invoice_prefix,omitempty"`
