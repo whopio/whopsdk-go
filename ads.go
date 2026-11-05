@@ -728,56 +728,57 @@ var (
 	adFieldCompletedRegistrations       = big.NewInt(1 << 8)
 	adFieldContactValue                 = big.NewInt(1 << 9)
 	adFieldContacts                     = big.NewInt(1 << 10)
-	adFieldCostPerAddedToCart           = big.NewInt(1 << 11)
-	adFieldCostPerClick                 = big.NewInt(1 << 12)
-	adFieldCostPerCompletedRegistration = big.NewInt(1 << 13)
-	adFieldCostPerContact               = big.NewInt(1 << 14)
-	adFieldCostPerLead                  = big.NewInt(1 << 15)
-	adFieldCostPerMille                 = big.NewInt(1 << 16)
-	adFieldCostPerPurchase              = big.NewInt(1 << 17)
-	adFieldCostPerResult                = big.NewInt(1 << 18)
-	adFieldCostPerSchedule              = big.NewInt(1 << 19)
-	adFieldCostPerSubmittedApplication  = big.NewInt(1 << 20)
-	adFieldCostPerUniqueClick           = big.NewInt(1 << 21)
-	adFieldCostPerViewedContent         = big.NewInt(1 << 22)
-	adFieldCreatedAt                    = big.NewInt(1 << 23)
-	adFieldCreatives                    = big.NewInt(1 << 24)
-	adFieldCustomConversions            = big.NewInt(1 << 25)
-	adFieldCustomEventCounts            = big.NewInt(1 << 26)
-	adFieldCustomEventValues            = big.NewInt(1 << 27)
-	adFieldDeliveryStatus               = big.NewInt(1 << 28)
-	adFieldDescriptions                 = big.NewInt(1 << 29)
-	adFieldFrequency                    = big.NewInt(1 << 30)
-	adFieldHeadlines                    = big.NewInt(1 << 31)
-	adFieldID                           = big.NewInt(1 << 32)
-	adFieldImpressions                  = big.NewInt(1 << 33)
-	adFieldIssues                       = big.NewInt(1 << 34)
-	adFieldLeadValue                    = big.NewInt(1 << 35)
-	adFieldLeads                        = big.NewInt(1 << 36)
-	adFieldLinkClicks                   = big.NewInt(1 << 37)
-	adFieldPrimaryTexts                 = big.NewInt(1 << 38)
-	adFieldPurchaseValue                = big.NewInt(1 << 39)
-	adFieldPurchases                    = big.NewInt(1 << 40)
-	adFieldReach                        = big.NewInt(1 << 41)
-	adFieldResultEvent                  = big.NewInt(1 << 42)
-	adFieldResultEventName              = big.NewInt(1 << 43)
-	adFieldResults                      = big.NewInt(1 << 44)
-	adFieldReturnOnAdSpend              = big.NewInt(1 << 45)
-	adFieldScheduleValue                = big.NewInt(1 << 46)
-	adFieldSchedules                    = big.NewInt(1 << 47)
-	adFieldSpend                        = big.NewInt(1 << 48)
-	adFieldSpendCurrency                = big.NewInt(1 << 49)
-	adFieldStatus                       = big.NewInt(1 << 50)
-	adFieldSubmittedApplicationValue    = big.NewInt(1 << 51)
-	adFieldSubmittedApplications        = big.NewInt(1 << 52)
-	adFieldTitle                        = big.NewInt(1 << 53)
-	adFieldUniqueClickThroughRate       = big.NewInt(1 << 54)
-	adFieldUniqueClicks                 = big.NewInt(1 << 55)
-	adFieldUpdatedAt                    = big.NewInt(1 << 56)
-	adFieldURL                          = big.NewInt(1 << 57)
-	adFieldURLParameters                = big.NewInt(1 << 58)
-	adFieldViewedContentValue           = big.NewInt(1 << 59)
-	adFieldViewedContents               = big.NewInt(1 << 60)
+	adFieldContentReview                = big.NewInt(1 << 11)
+	adFieldCostPerAddedToCart           = big.NewInt(1 << 12)
+	adFieldCostPerClick                 = big.NewInt(1 << 13)
+	adFieldCostPerCompletedRegistration = big.NewInt(1 << 14)
+	adFieldCostPerContact               = big.NewInt(1 << 15)
+	adFieldCostPerLead                  = big.NewInt(1 << 16)
+	adFieldCostPerMille                 = big.NewInt(1 << 17)
+	adFieldCostPerPurchase              = big.NewInt(1 << 18)
+	adFieldCostPerResult                = big.NewInt(1 << 19)
+	adFieldCostPerSchedule              = big.NewInt(1 << 20)
+	adFieldCostPerSubmittedApplication  = big.NewInt(1 << 21)
+	adFieldCostPerUniqueClick           = big.NewInt(1 << 22)
+	adFieldCostPerViewedContent         = big.NewInt(1 << 23)
+	adFieldCreatedAt                    = big.NewInt(1 << 24)
+	adFieldCreatives                    = big.NewInt(1 << 25)
+	adFieldCustomConversions            = big.NewInt(1 << 26)
+	adFieldCustomEventCounts            = big.NewInt(1 << 27)
+	adFieldCustomEventValues            = big.NewInt(1 << 28)
+	adFieldDeliveryStatus               = big.NewInt(1 << 29)
+	adFieldDescriptions                 = big.NewInt(1 << 30)
+	adFieldFrequency                    = big.NewInt(1 << 31)
+	adFieldHeadlines                    = big.NewInt(1 << 32)
+	adFieldID                           = big.NewInt(1 << 33)
+	adFieldImpressions                  = big.NewInt(1 << 34)
+	adFieldIssues                       = big.NewInt(1 << 35)
+	adFieldLeadValue                    = big.NewInt(1 << 36)
+	adFieldLeads                        = big.NewInt(1 << 37)
+	adFieldLinkClicks                   = big.NewInt(1 << 38)
+	adFieldPrimaryTexts                 = big.NewInt(1 << 39)
+	adFieldPurchaseValue                = big.NewInt(1 << 40)
+	adFieldPurchases                    = big.NewInt(1 << 41)
+	adFieldReach                        = big.NewInt(1 << 42)
+	adFieldResultEvent                  = big.NewInt(1 << 43)
+	adFieldResultEventName              = big.NewInt(1 << 44)
+	adFieldResults                      = big.NewInt(1 << 45)
+	adFieldReturnOnAdSpend              = big.NewInt(1 << 46)
+	adFieldScheduleValue                = big.NewInt(1 << 47)
+	adFieldSchedules                    = big.NewInt(1 << 48)
+	adFieldSpend                        = big.NewInt(1 << 49)
+	adFieldSpendCurrency                = big.NewInt(1 << 50)
+	adFieldStatus                       = big.NewInt(1 << 51)
+	adFieldSubmittedApplicationValue    = big.NewInt(1 << 52)
+	adFieldSubmittedApplications        = big.NewInt(1 << 53)
+	adFieldTitle                        = big.NewInt(1 << 54)
+	adFieldUniqueClickThroughRate       = big.NewInt(1 << 55)
+	adFieldUniqueClicks                 = big.NewInt(1 << 56)
+	adFieldUpdatedAt                    = big.NewInt(1 << 57)
+	adFieldURL                          = big.NewInt(1 << 58)
+	adFieldURLParameters                = big.NewInt(1 << 59)
+	adFieldViewedContentValue           = big.NewInt(1 << 60)
+	adFieldViewedContents               = big.NewInt(1 << 61)
 )
 
 // adNullableFields maps the wire names of Ad's nullable fields (required or optional) to their field bits.
@@ -826,6 +827,8 @@ type Ad struct {
 	ContactValue float64 `json:"contact_value" url:"contact_value"`
 	// Whop pixel-attributed contact events, last-click.
 	Contacts float64 `json:"contacts" url:"contacts"`
+	// Whop's content review of this ad: whether it has finished, which ad networks it is recommended for, and the content rules it breaks.
+	ContentReview *AdContentReview `json:"content_review" url:"content_review"`
 	// Spend divided by attributed add-to-cart events; null when they are not the goal and none are attributed.
 	CostPerAddedToCart *float64 `json:"cost_per_added_to_cart,omitempty" url:"cost_per_added_to_cart,omitempty"`
 	// Spend divided by clicks; 0 when there are no clicks.
@@ -1004,6 +1007,13 @@ func (a *Ad) GetContacts() float64 {
 		return 0
 	}
 	return a.Contacts
+}
+
+func (a *Ad) GetContentReview() *AdContentReview {
+	if a == nil {
+		return nil
+	}
+	return a.ContentReview
 }
 
 func (a *Ad) GetCostPerAddedToCart() *float64 {
@@ -1447,6 +1457,13 @@ func (a *Ad) SetContactValue(contactValue float64) {
 func (a *Ad) SetContacts(contacts float64) {
 	a.Contacts = contacts
 	a.require(adFieldContacts)
+}
+
+// SetContentReview sets the ContentReview field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Ad) SetContentReview(contentReview *AdContentReview) {
+	a.ContentReview = contentReview
+	a.require(adFieldContentReview)
 }
 
 // SetCostPerAddedToCart sets the CostPerAddedToCart field and marks it as non-optional;
@@ -1965,6 +1982,388 @@ func NewAdCallToActionFromString(s string) (AdCallToAction, error) {
 
 func (a AdCallToAction) Ptr() *AdCallToAction {
 	return &a
+}
+
+var (
+	adContentReviewFieldNetworks = big.NewInt(1 << 0)
+	adContentReviewFieldStatus   = big.NewInt(1 << 1)
+	adContentReviewFieldTags     = big.NewInt(1 << 2)
+)
+
+type AdContentReview struct {
+	Networks []*AdContentReviewNetwork `json:"networks" url:"networks"`
+	// `reviewed` once Whop content review finishes, `in_review` while it runs, `not_reviewed` when it never ran.
+	Status AdContentReviewStatus `json:"status" url:"status"`
+	Tags   []*AdContentReviewTag `json:"tags" url:"tags"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AdContentReview) GetNetworks() []*AdContentReviewNetwork {
+	if a == nil {
+		return nil
+	}
+	return a.Networks
+}
+
+func (a *AdContentReview) GetStatus() AdContentReviewStatus {
+	if a == nil {
+		return ""
+	}
+	return a.Status
+}
+
+func (a *AdContentReview) GetTags() []*AdContentReviewTag {
+	if a == nil {
+		return nil
+	}
+	return a.Tags
+}
+
+func (a *AdContentReview) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AdContentReview) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetNetworks sets the Networks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdContentReview) SetNetworks(networks []*AdContentReviewNetwork) {
+	a.Networks = networks
+	a.require(adContentReviewFieldNetworks)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdContentReview) SetStatus(status AdContentReviewStatus) {
+	a.Status = status
+	a.require(adContentReviewFieldStatus)
+}
+
+// SetTags sets the Tags field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdContentReview) SetTags(tags []*AdContentReviewTag) {
+	a.Tags = tags
+	a.require(adContentReviewFieldTags)
+}
+
+func (a *AdContentReview) UnmarshalJSON(data []byte) error {
+	type unmarshaler AdContentReview
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AdContentReview(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AdContentReview) MarshalJSON() ([]byte, error) {
+	type embed AdContentReview
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AdContentReview) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
+	adContentReviewNetworkFieldRecommended = big.NewInt(1 << 0)
+	adContentReviewNetworkFieldTitle       = big.NewInt(1 << 1)
+)
+
+type AdContentReviewNetwork struct {
+	// Whether the ad passes Whop's content policy and this network's.
+	Recommended bool `json:"recommended" url:"recommended"`
+	// The network. `whop` is Whop's own content policy, which every other network also requires.
+	Title AdContentReviewNetworkTitle `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AdContentReviewNetwork) GetRecommended() bool {
+	if a == nil {
+		return false
+	}
+	return a.Recommended
+}
+
+func (a *AdContentReviewNetwork) GetTitle() AdContentReviewNetworkTitle {
+	if a == nil {
+		return ""
+	}
+	return a.Title
+}
+
+func (a *AdContentReviewNetwork) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AdContentReviewNetwork) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetRecommended sets the Recommended field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdContentReviewNetwork) SetRecommended(recommended bool) {
+	a.Recommended = recommended
+	a.require(adContentReviewNetworkFieldRecommended)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdContentReviewNetwork) SetTitle(title AdContentReviewNetworkTitle) {
+	a.Title = title
+	a.require(adContentReviewNetworkFieldTitle)
+}
+
+func (a *AdContentReviewNetwork) UnmarshalJSON(data []byte) error {
+	type unmarshaler AdContentReviewNetwork
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AdContentReviewNetwork(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AdContentReviewNetwork) MarshalJSON() ([]byte, error) {
+	type embed AdContentReviewNetwork
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AdContentReviewNetwork) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// The network. `whop` is Whop's own content policy, which every other network also requires.
+type AdContentReviewNetworkTitle string
+
+const (
+	AdContentReviewNetworkTitleWhop   AdContentReviewNetworkTitle = "whop"
+	AdContentReviewNetworkTitleMeta   AdContentReviewNetworkTitle = "meta"
+	AdContentReviewNetworkTitleTiktok AdContentReviewNetworkTitle = "tiktok"
+	AdContentReviewNetworkTitleGoogle AdContentReviewNetworkTitle = "google"
+)
+
+func NewAdContentReviewNetworkTitleFromString(s string) (AdContentReviewNetworkTitle, error) {
+	switch s {
+	case "whop":
+		return AdContentReviewNetworkTitleWhop, nil
+	case "meta":
+		return AdContentReviewNetworkTitleMeta, nil
+	case "tiktok":
+		return AdContentReviewNetworkTitleTiktok, nil
+	case "google":
+		return AdContentReviewNetworkTitleGoogle, nil
+	}
+	var t AdContentReviewNetworkTitle
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AdContentReviewNetworkTitle) Ptr() *AdContentReviewNetworkTitle {
+	return &a
+}
+
+// `reviewed` once Whop content review finishes, `in_review` while it runs, `not_reviewed` when it never ran.
+type AdContentReviewStatus string
+
+const (
+	AdContentReviewStatusReviewed    AdContentReviewStatus = "reviewed"
+	AdContentReviewStatusInReview    AdContentReviewStatus = "in_review"
+	AdContentReviewStatusNotReviewed AdContentReviewStatus = "not_reviewed"
+)
+
+func NewAdContentReviewStatusFromString(s string) (AdContentReviewStatus, error) {
+	switch s {
+	case "reviewed":
+		return AdContentReviewStatusReviewed, nil
+	case "in_review":
+		return AdContentReviewStatusInReview, nil
+	case "not_reviewed":
+		return AdContentReviewStatusNotReviewed, nil
+	}
+	var t AdContentReviewStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AdContentReviewStatus) Ptr() *AdContentReviewStatus {
+	return &a
+}
+
+var (
+	adContentReviewTagFieldMessage = big.NewInt(1 << 0)
+	adContentReviewTagFieldTitle   = big.NewInt(1 << 1)
+)
+
+type AdContentReviewTag struct {
+	// The evidence the review recorded for this rule.
+	Message string `json:"message" url:"message"`
+	// The rule Whop content review found the ad breaks.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AdContentReviewTag) GetMessage() string {
+	if a == nil {
+		return ""
+	}
+	return a.Message
+}
+
+func (a *AdContentReviewTag) GetTitle() string {
+	if a == nil {
+		return ""
+	}
+	return a.Title
+}
+
+func (a *AdContentReviewTag) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AdContentReviewTag) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdContentReviewTag) SetMessage(message string) {
+	a.Message = message
+	a.require(adContentReviewTagFieldMessage)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdContentReviewTag) SetTitle(title string) {
+	a.Title = title
+	a.require(adContentReviewTagFieldTitle)
+}
+
+func (a *AdContentReviewTag) UnmarshalJSON(data []byte) error {
+	type unmarshaler AdContentReviewTag
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AdContentReviewTag(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AdContentReviewTag) MarshalJSON() ([]byte, error) {
+	type embed AdContentReviewTag
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AdContentReviewTag) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
 }
 
 var (
@@ -4529,19 +4928,20 @@ var (
 	postAdUpdatedPayloadDataFieldAdCampaign     = big.NewInt(1 << 0)
 	postAdUpdatedPayloadDataFieldAdGroup        = big.NewInt(1 << 1)
 	postAdUpdatedPayloadDataFieldCallToAction   = big.NewInt(1 << 2)
-	postAdUpdatedPayloadDataFieldCreatedAt      = big.NewInt(1 << 3)
-	postAdUpdatedPayloadDataFieldCreatives      = big.NewInt(1 << 4)
-	postAdUpdatedPayloadDataFieldDeliveryStatus = big.NewInt(1 << 5)
-	postAdUpdatedPayloadDataFieldDescriptions   = big.NewInt(1 << 6)
-	postAdUpdatedPayloadDataFieldHeadlines      = big.NewInt(1 << 7)
-	postAdUpdatedPayloadDataFieldID             = big.NewInt(1 << 8)
-	postAdUpdatedPayloadDataFieldIssues         = big.NewInt(1 << 9)
-	postAdUpdatedPayloadDataFieldPrimaryTexts   = big.NewInt(1 << 10)
-	postAdUpdatedPayloadDataFieldStatus         = big.NewInt(1 << 11)
-	postAdUpdatedPayloadDataFieldTitle          = big.NewInt(1 << 12)
-	postAdUpdatedPayloadDataFieldUpdatedAt      = big.NewInt(1 << 13)
-	postAdUpdatedPayloadDataFieldURL            = big.NewInt(1 << 14)
-	postAdUpdatedPayloadDataFieldURLParameters  = big.NewInt(1 << 15)
+	postAdUpdatedPayloadDataFieldContentReview  = big.NewInt(1 << 3)
+	postAdUpdatedPayloadDataFieldCreatedAt      = big.NewInt(1 << 4)
+	postAdUpdatedPayloadDataFieldCreatives      = big.NewInt(1 << 5)
+	postAdUpdatedPayloadDataFieldDeliveryStatus = big.NewInt(1 << 6)
+	postAdUpdatedPayloadDataFieldDescriptions   = big.NewInt(1 << 7)
+	postAdUpdatedPayloadDataFieldHeadlines      = big.NewInt(1 << 8)
+	postAdUpdatedPayloadDataFieldID             = big.NewInt(1 << 9)
+	postAdUpdatedPayloadDataFieldIssues         = big.NewInt(1 << 10)
+	postAdUpdatedPayloadDataFieldPrimaryTexts   = big.NewInt(1 << 11)
+	postAdUpdatedPayloadDataFieldStatus         = big.NewInt(1 << 12)
+	postAdUpdatedPayloadDataFieldTitle          = big.NewInt(1 << 13)
+	postAdUpdatedPayloadDataFieldUpdatedAt      = big.NewInt(1 << 14)
+	postAdUpdatedPayloadDataFieldURL            = big.NewInt(1 << 15)
+	postAdUpdatedPayloadDataFieldURLParameters  = big.NewInt(1 << 16)
 )
 
 // postAdUpdatedPayloadDataNullableFields maps the wire names of PostAdUpdatedPayloadData's nullable fields (required or optional) to their field bits.
@@ -4558,6 +4958,8 @@ type PostAdUpdatedPayloadData struct {
 	AdGroup *AdEntityReference `json:"ad_group" url:"ad_group"`
 	// The call-to-action button shown on the ad.
 	CallToAction *PostAdUpdatedPayloadDataCallToAction `json:"call_to_action,omitempty" url:"call_to_action,omitempty"`
+	// Whop's content review of this ad: whether it has finished, which ad networks it is recommended for, and the content rules it breaks.
+	ContentReview *AdContentReview `json:"content_review" url:"content_review"`
 	// When the ad was created, as an ISO 8601 timestamp.
 	CreatedAt string        `json:"created_at" url:"created_at"`
 	Creatives []*AdCreative `json:"creatives" url:"creatives"`
@@ -4606,6 +5008,13 @@ func (p *PostAdUpdatedPayloadData) GetCallToAction() *PostAdUpdatedPayloadDataCa
 		return nil
 	}
 	return p.CallToAction
+}
+
+func (p *PostAdUpdatedPayloadData) GetContentReview() *AdContentReview {
+	if p == nil {
+		return nil
+	}
+	return p.ContentReview
 }
 
 func (p *PostAdUpdatedPayloadData) GetCreatedAt() string {
@@ -4734,6 +5143,13 @@ func (p *PostAdUpdatedPayloadData) SetAdGroup(adGroup *AdEntityReference) {
 func (p *PostAdUpdatedPayloadData) SetCallToAction(callToAction *PostAdUpdatedPayloadDataCallToAction) {
 	p.CallToAction = callToAction
 	p.require(postAdUpdatedPayloadDataFieldCallToAction)
+}
+
+// SetContentReview sets the ContentReview field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetContentReview(contentReview *AdContentReview) {
+	p.ContentReview = contentReview
+	p.require(postAdUpdatedPayloadDataFieldContentReview)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
