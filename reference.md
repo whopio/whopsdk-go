@@ -35781,6 +35781,152 @@ client.ResolutionCenterCases.Withdraw(
 </dl>
 </details>
 
+## Review reports
+<details><summary><code>client.ReviewReports.List() -> *whopsdk.ListReviewReportsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the reports filed against customer reviews on the accounts you can moderate, newest first. Use it to check whether a review was reported and where the report stands. Omit `account_id` to cover every account you can moderate.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ListReviewReportsRequest{
+    AccountID: whopsdk.String(
+        "biz_xxxxxxxxxxxxxx",
+    ),
+    ReviewID: whopsdk.String(
+        "rev_xxxxxxxxxxxxxx",
+    ),
+}
+client.ReviewReports.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — Only reports on this account's reviews.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**reviewID:** `*string` — Only reports filed against this review.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `*whopsdk.ListReviewReportsRequestStatus` — Only reports in this status.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdBefore:** `*time.Time` — Only reports filed before this timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdAfter:** `*time.Time` — Only reports filed after this timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `*whopsdk.ListReviewReportsRequestOrder` — The field to sort reports by.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `*whopsdk.ListReviewReportsRequestDirection` — The sort direction.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Reviews
 <details><summary><code>client.Reviews.List() -> *whopsdk.ListReviewsResponse</code></summary>
 <dl>
