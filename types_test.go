@@ -76589,6 +76589,22 @@ func TestSettersPayment(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetCheckoutOrigin", func(t *testing.T) {
+		obj := &Payment{}
+		var fernTestValueCheckoutOrigin *string
+		obj.SetCheckoutOrigin(fernTestValueCheckoutOrigin)
+		assert.Equal(t, fernTestValueCheckoutOrigin, obj.CheckoutOrigin)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetCheckoutSurface", func(t *testing.T) {
+		obj := &Payment{}
+		var fernTestValueCheckoutSurface *PaymentCheckoutSurface
+		obj.SetCheckoutSurface(fernTestValueCheckoutSurface)
+		assert.Equal(t, fernTestValueCheckoutSurface, obj.CheckoutSurface)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetClientSecret", func(t *testing.T) {
 		obj := &Payment{}
 		var fernTestValueClientSecret *string
@@ -77316,6 +77332,72 @@ func TestGettersPayment(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCheckoutConfigurationID() // Should return zero value
+	})
+
+	t.Run("GetCheckoutOrigin", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		var expected *string
+		obj.CheckoutOrigin = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCheckoutOrigin(), "getter should return the property value")
+	})
+
+	t.Run("GetCheckoutOrigin_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		obj.CheckoutOrigin = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCheckoutOrigin(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCheckoutOrigin_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Payment
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCheckoutOrigin() // Should return zero value
+	})
+
+	t.Run("GetCheckoutSurface", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		var expected *PaymentCheckoutSurface
+		obj.CheckoutSurface = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCheckoutSurface(), "getter should return the property value")
+	})
+
+	t.Run("GetCheckoutSurface_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		obj.CheckoutSurface = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCheckoutSurface(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCheckoutSurface_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Payment
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCheckoutSurface() // Should return zero value
 	})
 
 	t.Run("GetClientSecret", func(t *testing.T) {
@@ -79383,6 +79465,68 @@ func TestSettersMarkExplicitPayment(t *testing.T) {
 
 		// Act
 		obj.SetCheckoutConfigurationID(fernTestValueCheckoutConfigurationID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCheckoutOrigin_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		var fernTestValueCheckoutOrigin *string
+
+		// Act
+		obj.SetCheckoutOrigin(fernTestValueCheckoutOrigin)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCheckoutSurface_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		var fernTestValueCheckoutSurface *PaymentCheckoutSurface
+
+		// Act
+		obj.SetCheckoutSurface(fernTestValueCheckoutSurface)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -161426,6 +161570,8 @@ func TestRequiredNullableRoundTripPayment(t *testing.T) {
 		"billing_reason",
 		"capture_expires_at",
 		"checkout_configuration_id",
+		"checkout_origin",
+		"checkout_surface",
 		"client_secret",
 		"customer_email",
 		"customer_phone",
@@ -161482,7 +161628,7 @@ func TestRequiredNullableRoundTripPayment(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Payment
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"auto_capture_at":null,"billing_address":null,"billing_reason":null,"capture_expires_at":null,"checkout_configuration_id":null,"client_secret":null,"customer_email":null,"customer_phone":null,"decline_code":null,"dispute_alerted_at":null,"dispute_created_at":null,"failure_message":null,"financing_installments_count":null,"ip_address":null,"last_payment_attempt_at":null,"member_id":null,"membership_id":null,"metadata":null,"needs_tracking":null,"next_payment_attempt_at":null,"paid_at":null,"payment_instrument":null,"payment_method_id":null,"payment_method_type":null,"presentment_refunded_amount":null,"presentment_tax_amount":null,"presentment_total":null,"product_id":null,"promo_code_id":null,"quote_id":null,"recovery_url":null,"refunded_amount":null,"refunded_at":null,"response_due_at":null,"risk_score":null,"risk_signals":null,"settlement_time_at":null,"shipment_id":null,"shipping_address":null,"subtotal":null,"tax_amount":null,"tax_behavior":null,"total":null,"usd_total":null,"user":null,"user_agent":null,"variant_id":null,"verification_checks":null,"wuid":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"auto_capture_at":null,"billing_address":null,"billing_reason":null,"capture_expires_at":null,"checkout_configuration_id":null,"checkout_origin":null,"checkout_surface":null,"client_secret":null,"customer_email":null,"customer_phone":null,"decline_code":null,"dispute_alerted_at":null,"dispute_created_at":null,"failure_message":null,"financing_installments_count":null,"ip_address":null,"last_payment_attempt_at":null,"member_id":null,"membership_id":null,"metadata":null,"needs_tracking":null,"next_payment_attempt_at":null,"paid_at":null,"payment_instrument":null,"payment_method_id":null,"payment_method_type":null,"presentment_refunded_amount":null,"presentment_tax_amount":null,"presentment_total":null,"product_id":null,"promo_code_id":null,"quote_id":null,"recovery_url":null,"refunded_amount":null,"refunded_at":null,"response_due_at":null,"risk_score":null,"risk_signals":null,"settlement_time_at":null,"shipment_id":null,"shipping_address":null,"subtotal":null,"tax_amount":null,"tax_behavior":null,"total":null,"usd_total":null,"user":null,"user_agent":null,"variant_id":null,"verification_checks":null,"wuid":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -181631,6 +181777,77 @@ func TestEnumPasskeyRequestOptionsUserVerification(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewPasskeyRequestOptionsUserVerificationFromString("required")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumPaymentCheckoutSurface(t *testing.T) {
+	t.Run("NewFromString_hosted_checkout", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentCheckoutSurfaceFromString("hosted_checkout")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentCheckoutSurface("hosted_checkout"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_embedded_checkout", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentCheckoutSurfaceFromString("embedded_checkout")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentCheckoutSurface("embedded_checkout"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_custom_checkout", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentCheckoutSurfaceFromString("custom_checkout")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentCheckoutSurface("custom_checkout"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_modal_checkout", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentCheckoutSurfaceFromString("modal_checkout")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentCheckoutSurface("modal_checkout"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_in_app_checkout", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentCheckoutSurfaceFromString("in_app_checkout")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentCheckoutSurface("in_app_checkout"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_mobile_checkout", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentCheckoutSurfaceFromString("mobile_checkout")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentCheckoutSurface("mobile_checkout"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_off_session", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentCheckoutSurfaceFromString("off_session")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentCheckoutSurface("off_session"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_present", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentCheckoutSurfaceFromString("card_present")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentCheckoutSurface("card_present"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPaymentCheckoutSurfaceFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPaymentCheckoutSurfaceFromString("hosted_checkout")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
