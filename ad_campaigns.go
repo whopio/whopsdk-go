@@ -589,12 +589,14 @@ var (
 	adCampaignFieldStatus                       = big.NewInt(1 << 55)
 	adCampaignFieldSubmittedApplicationValue    = big.NewInt(1 << 56)
 	adCampaignFieldSubmittedApplications        = big.NewInt(1 << 57)
-	adCampaignFieldTitle                        = big.NewInt(1 << 58)
-	adCampaignFieldUniqueClickThroughRate       = big.NewInt(1 << 59)
-	adCampaignFieldUniqueClicks                 = big.NewInt(1 << 60)
-	adCampaignFieldUpdatedAt                    = big.NewInt(1 << 61)
-	adCampaignFieldViewedContentValue           = big.NewInt(1 << 62)
-	adCampaignFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adCampaignFieldTargetCostPerResult          = big.NewInt(1 << 58)
+	adCampaignFieldTargetResultEvent            = big.NewInt(1 << 59)
+	adCampaignFieldTitle                        = big.NewInt(1 << 60)
+	adCampaignFieldUniqueClickThroughRate       = big.NewInt(1 << 61)
+	adCampaignFieldUniqueClicks                 = big.NewInt(1 << 62)
+	adCampaignFieldUpdatedAt                    = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	adCampaignFieldViewedContentValue           = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	adCampaignFieldViewedContents               = big.NewInt(0).Lsh(big.NewInt(1), 65)
 )
 
 // adCampaignNullableFields maps the wire names of AdCampaign's nullable fields (required or optional) to their field bits.
@@ -623,6 +625,8 @@ var adCampaignNullableFields = map[string]*big.Int{
 	"results":                         adCampaignFieldResults,
 	"spend_currency":                  adCampaignFieldSpendCurrency,
 	"starts_at":                       adCampaignFieldStartsAt,
+	"target_cost_per_result":          adCampaignFieldTargetCostPerResult,
+	"target_result_event":             adCampaignFieldTargetResultEvent,
 	"unique_click_through_rate":       adCampaignFieldUniqueClickThroughRate,
 }
 
@@ -741,6 +745,10 @@ type AdCampaign struct {
 	SubmittedApplicationValue float64 `json:"submitted_application_value" url:"submitted_application_value"`
 	// Whop pixel-attributed submit-application events, last-click.
 	SubmittedApplications float64 `json:"submitted_applications" url:"submitted_applications"`
+	// The desired cost per result for `target_result_event`, in USD. `null` when none is set.
+	TargetCostPerResult *float64 `json:"target_cost_per_result,omitempty" url:"target_cost_per_result,omitempty"`
+	// The event `target_cost_per_result` is priced per, such as `purchase` or `lead`. `null` when the campaign has no single goal.
+	TargetResultEvent *string `json:"target_result_event,omitempty" url:"target_result_event,omitempty"`
 	// Display name of the ad campaign.
 	Title string `json:"title" url:"title"`
 	// Unique clicks divided by impressions, between 0 and 1.
@@ -1165,6 +1173,20 @@ func (a *AdCampaign) GetSubmittedApplications() float64 {
 		return 0
 	}
 	return a.SubmittedApplications
+}
+
+func (a *AdCampaign) GetTargetCostPerResult() *float64 {
+	if a == nil {
+		return nil
+	}
+	return a.TargetCostPerResult
+}
+
+func (a *AdCampaign) GetTargetResultEvent() *string {
+	if a == nil {
+		return nil
+	}
+	return a.TargetResultEvent
 }
 
 func (a *AdCampaign) GetTitle() string {
@@ -1629,6 +1651,20 @@ func (a *AdCampaign) SetSubmittedApplicationValue(submittedApplicationValue floa
 func (a *AdCampaign) SetSubmittedApplications(submittedApplications float64) {
 	a.SubmittedApplications = submittedApplications
 	a.require(adCampaignFieldSubmittedApplications)
+}
+
+// SetTargetCostPerResult sets the TargetCostPerResult field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdCampaign) SetTargetCostPerResult(targetCostPerResult *float64) {
+	a.TargetCostPerResult = targetCostPerResult
+	a.require(adCampaignFieldTargetCostPerResult)
+}
+
+// SetTargetResultEvent sets the TargetResultEvent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdCampaign) SetTargetResultEvent(targetResultEvent *string) {
+	a.TargetResultEvent = targetResultEvent
+	a.require(adCampaignFieldTargetResultEvent)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
@@ -3001,8 +3037,10 @@ var (
 	postAdCampaignPaymentFailedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 14)
 	postAdCampaignPaymentFailedPayloadDataFieldStartsAt             = big.NewInt(1 << 15)
 	postAdCampaignPaymentFailedPayloadDataFieldStatus               = big.NewInt(1 << 16)
-	postAdCampaignPaymentFailedPayloadDataFieldTitle                = big.NewInt(1 << 17)
-	postAdCampaignPaymentFailedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 18)
+	postAdCampaignPaymentFailedPayloadDataFieldTargetCostPerResult  = big.NewInt(1 << 17)
+	postAdCampaignPaymentFailedPayloadDataFieldTargetResultEvent    = big.NewInt(1 << 18)
+	postAdCampaignPaymentFailedPayloadDataFieldTitle                = big.NewInt(1 << 19)
+	postAdCampaignPaymentFailedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 20)
 )
 
 // postAdCampaignPaymentFailedPayloadDataNullableFields maps the wire names of PostAdCampaignPaymentFailedPayloadData's nullable fields (required or optional) to their field bits.
@@ -3016,6 +3054,8 @@ var postAdCampaignPaymentFailedPayloadDataNullableFields = map[string]*big.Int{
 	"ends_at":                 postAdCampaignPaymentFailedPayloadDataFieldEndsAt,
 	"objective":               postAdCampaignPaymentFailedPayloadDataFieldObjective,
 	"starts_at":               postAdCampaignPaymentFailedPayloadDataFieldStartsAt,
+	"target_cost_per_result":  postAdCampaignPaymentFailedPayloadDataFieldTargetCostPerResult,
+	"target_result_event":     postAdCampaignPaymentFailedPayloadDataFieldTargetResultEvent,
 }
 
 type PostAdCampaignPaymentFailedPayloadData struct {
@@ -3051,6 +3091,10 @@ type PostAdCampaignPaymentFailedPayloadData struct {
 	StartsAt *string `json:"starts_at,omitempty" url:"starts_at,omitempty"`
 	// The configured lifecycle status of the ad campaign. Billing failures preserve active or paused here and set delivery_status to payment_failed.
 	Status PostAdCampaignPaymentFailedPayloadDataStatus `json:"status" url:"status"`
+	// The desired cost per result for `target_result_event`, in USD. `null` when none is set.
+	TargetCostPerResult *float64 `json:"target_cost_per_result,omitempty" url:"target_cost_per_result,omitempty"`
+	// The event `target_cost_per_result` is priced per, such as `purchase` or `lead`. `null` when the campaign has no single goal.
+	TargetResultEvent *string `json:"target_result_event,omitempty" url:"target_result_event,omitempty"`
 	// Display name of the ad campaign.
 	Title string `json:"title" url:"title"`
 	// When the campaign was last updated, as an ISO 8601 timestamp.
@@ -3180,6 +3224,20 @@ func (p *PostAdCampaignPaymentFailedPayloadData) GetStatus() PostAdCampaignPayme
 		return ""
 	}
 	return p.Status
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetTargetCostPerResult() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.TargetCostPerResult
+}
+
+func (p *PostAdCampaignPaymentFailedPayloadData) GetTargetResultEvent() *string {
+	if p == nil {
+		return nil
+	}
+	return p.TargetResultEvent
 }
 
 func (p *PostAdCampaignPaymentFailedPayloadData) GetTitle() string {
@@ -3329,6 +3387,20 @@ func (p *PostAdCampaignPaymentFailedPayloadData) SetStartsAt(startsAt *string) {
 func (p *PostAdCampaignPaymentFailedPayloadData) SetStatus(status PostAdCampaignPaymentFailedPayloadDataStatus) {
 	p.Status = status
 	p.require(postAdCampaignPaymentFailedPayloadDataFieldStatus)
+}
+
+// SetTargetCostPerResult sets the TargetCostPerResult field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetTargetCostPerResult(targetCostPerResult *float64) {
+	p.TargetCostPerResult = targetCostPerResult
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldTargetCostPerResult)
+}
+
+// SetTargetResultEvent sets the TargetResultEvent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignPaymentFailedPayloadData) SetTargetResultEvent(targetResultEvent *string) {
+	p.TargetResultEvent = targetResultEvent
+	p.require(postAdCampaignPaymentFailedPayloadDataFieldTargetResultEvent)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
@@ -3926,8 +3998,10 @@ var (
 	postAdCampaignUpdatedPayloadDataFieldSpecialAdCategories  = big.NewInt(1 << 14)
 	postAdCampaignUpdatedPayloadDataFieldStartsAt             = big.NewInt(1 << 15)
 	postAdCampaignUpdatedPayloadDataFieldStatus               = big.NewInt(1 << 16)
-	postAdCampaignUpdatedPayloadDataFieldTitle                = big.NewInt(1 << 17)
-	postAdCampaignUpdatedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 18)
+	postAdCampaignUpdatedPayloadDataFieldTargetCostPerResult  = big.NewInt(1 << 17)
+	postAdCampaignUpdatedPayloadDataFieldTargetResultEvent    = big.NewInt(1 << 18)
+	postAdCampaignUpdatedPayloadDataFieldTitle                = big.NewInt(1 << 19)
+	postAdCampaignUpdatedPayloadDataFieldUpdatedAt            = big.NewInt(1 << 20)
 )
 
 // postAdCampaignUpdatedPayloadDataNullableFields maps the wire names of PostAdCampaignUpdatedPayloadData's nullable fields (required or optional) to their field bits.
@@ -3941,6 +4015,8 @@ var postAdCampaignUpdatedPayloadDataNullableFields = map[string]*big.Int{
 	"ends_at":                 postAdCampaignUpdatedPayloadDataFieldEndsAt,
 	"objective":               postAdCampaignUpdatedPayloadDataFieldObjective,
 	"starts_at":               postAdCampaignUpdatedPayloadDataFieldStartsAt,
+	"target_cost_per_result":  postAdCampaignUpdatedPayloadDataFieldTargetCostPerResult,
+	"target_result_event":     postAdCampaignUpdatedPayloadDataFieldTargetResultEvent,
 }
 
 type PostAdCampaignUpdatedPayloadData struct {
@@ -3976,6 +4052,10 @@ type PostAdCampaignUpdatedPayloadData struct {
 	StartsAt *string `json:"starts_at,omitempty" url:"starts_at,omitempty"`
 	// The configured lifecycle status of the ad campaign. Billing failures preserve active or paused here and set delivery_status to payment_failed.
 	Status PostAdCampaignUpdatedPayloadDataStatus `json:"status" url:"status"`
+	// The desired cost per result for `target_result_event`, in USD. `null` when none is set.
+	TargetCostPerResult *float64 `json:"target_cost_per_result,omitempty" url:"target_cost_per_result,omitempty"`
+	// The event `target_cost_per_result` is priced per, such as `purchase` or `lead`. `null` when the campaign has no single goal.
+	TargetResultEvent *string `json:"target_result_event,omitempty" url:"target_result_event,omitempty"`
 	// Display name of the ad campaign.
 	Title string `json:"title" url:"title"`
 	// When the campaign was last updated, as an ISO 8601 timestamp.
@@ -4105,6 +4185,20 @@ func (p *PostAdCampaignUpdatedPayloadData) GetStatus() PostAdCampaignUpdatedPayl
 		return ""
 	}
 	return p.Status
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetTargetCostPerResult() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.TargetCostPerResult
+}
+
+func (p *PostAdCampaignUpdatedPayloadData) GetTargetResultEvent() *string {
+	if p == nil {
+		return nil
+	}
+	return p.TargetResultEvent
 }
 
 func (p *PostAdCampaignUpdatedPayloadData) GetTitle() string {
@@ -4254,6 +4348,20 @@ func (p *PostAdCampaignUpdatedPayloadData) SetStartsAt(startsAt *string) {
 func (p *PostAdCampaignUpdatedPayloadData) SetStatus(status PostAdCampaignUpdatedPayloadDataStatus) {
 	p.Status = status
 	p.require(postAdCampaignUpdatedPayloadDataFieldStatus)
+}
+
+// SetTargetCostPerResult sets the TargetCostPerResult field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetTargetCostPerResult(targetCostPerResult *float64) {
+	p.TargetCostPerResult = targetCostPerResult
+	p.require(postAdCampaignUpdatedPayloadDataFieldTargetCostPerResult)
+}
+
+// SetTargetResultEvent sets the TargetResultEvent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdCampaignUpdatedPayloadData) SetTargetResultEvent(targetResultEvent *string) {
+	p.TargetResultEvent = targetResultEvent
+	p.require(postAdCampaignUpdatedPayloadDataFieldTargetResultEvent)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
