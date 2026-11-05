@@ -508,7 +508,7 @@ type Trade struct {
 	Status TradeStatus `json:"status" url:"status"`
 	// `partial_fill` when the order filled only part of its size. `null` otherwise.
 	StatusDetail *TradeStatusDetail `json:"status_detail,omitempty" url:"status_detail,omitempty"`
-	// What a live trade is doing now: `depositing` while the wallet's USDT0 is being sent to the bridge, `landing` once sent and until it reaches the trading balance, `placing` while the order or close is with the venue, `withdrawing` while USDC heads back to the wallet, `returning` while money an unfilled order bridged in goes back. `null` once the trade is no longer pending or processing.
+	// What a live trade is doing now: `depositing` while the wallet's USDT0 is being sent to the bridge, `landing` once sent and until it reaches the trading balance, `placing` while the order or close is with the venue, `withdrawing` while USDC heads back to the wallet, `returning` while money an unfilled order bridged in goes back. A spot order is `quoting` while the swap is priced, `swapping` while it runs onchain, and `crediting` until the new balance shows in the wallet. `null` once the trade is no longer pending or processing.
 	Step *TradeStep `json:"step,omitempty" url:"step,omitempty"`
 	// The price in USD at which a take-profit or stop-loss sends its market order. `null` for other orders and types.
 	TriggerPrice *Money `json:"trigger_price,omitempty" url:"trigger_price,omitempty"`
@@ -1228,7 +1228,7 @@ func (t TradeStatusDetail) Ptr() *TradeStatusDetail {
 	return &t
 }
 
-// What a live trade is doing now: `depositing` while the wallet's USDT0 is being sent to the bridge, `landing` once sent and until it reaches the trading balance, `placing` while the order or close is with the venue, `withdrawing` while USDC heads back to the wallet, `returning` while money an unfilled order bridged in goes back. `null` once the trade is no longer pending or processing.
+// What a live trade is doing now: `depositing` while the wallet's USDT0 is being sent to the bridge, `landing` once sent and until it reaches the trading balance, `placing` while the order or close is with the venue, `withdrawing` while USDC heads back to the wallet, `returning` while money an unfilled order bridged in goes back. A spot order is `quoting` while the swap is priced, `swapping` while it runs onchain, and `crediting` until the new balance shows in the wallet. `null` once the trade is no longer pending or processing.
 type TradeStep string
 
 const (
@@ -1237,6 +1237,9 @@ const (
 	TradeStepPlacing     TradeStep = "placing"
 	TradeStepWithdrawing TradeStep = "withdrawing"
 	TradeStepReturning   TradeStep = "returning"
+	TradeStepQuoting     TradeStep = "quoting"
+	TradeStepSwapping    TradeStep = "swapping"
+	TradeStepCrediting   TradeStep = "crediting"
 )
 
 func NewTradeStepFromString(s string) (TradeStep, error) {
@@ -1251,6 +1254,12 @@ func NewTradeStepFromString(s string) (TradeStep, error) {
 		return TradeStepWithdrawing, nil
 	case "returning":
 		return TradeStepReturning, nil
+	case "quoting":
+		return TradeStepQuoting, nil
+	case "swapping":
+		return TradeStepSwapping, nil
+	case "crediting":
+		return TradeStepCrediting, nil
 	}
 	var t TradeStep
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

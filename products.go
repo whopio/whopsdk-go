@@ -319,8 +319,8 @@ type ListProductsRequest struct {
 	Labels []*string `json:"-" url:"labels,omitempty"`
 	// The sort direction for results. Defaults to descending.
 	Direction *ListProductsRequestDirection `json:"-" url:"direction,omitempty"`
-	// Field to sort results by. Account lists accept `created_at` (the default), `active_memberships_count`, `usd_gmv`, `usd_gmv_30_days` and `position`; `position` with `direction` `asc` matches the order the store page shows. Without the `access_pass:basic:read` permission, an account list sorts only by `created_at` or `position`. Marketplace lists default to `discoverable_at`, accept only `created_at` or `discoverable_at`, and can't be combined with `query`.
-	Order *string `json:"-" url:"order,omitempty"`
+	// Field to sort results by. Account lists default to `created_at`, and `position` with `direction` `asc` matches the order the store page shows. Without the `access_pass:basic:read` permission, an account list sorts only by `created_at` or `position`. Marketplace lists default to `discoverable_at`, accept only `created_at` or `discoverable_at`, and can't be combined with `query`.
+	Order *ListProductsRequestOrder `json:"-" url:"order,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
@@ -421,7 +421,7 @@ func (l *ListProductsRequest) SetDirection(direction *ListProductsRequestDirecti
 
 // SetOrder sets the Order field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListProductsRequest) SetOrder(order *string) {
+func (l *ListProductsRequest) SetOrder(order *ListProductsRequestOrder) {
 	l.Order = order
 	l.require(listProductsRequestFieldOrder)
 }
@@ -2788,6 +2788,40 @@ func NewListProductsRequestDirectionFromString(s string) (ListProductsRequestDir
 }
 
 func (l ListProductsRequestDirection) Ptr() *ListProductsRequestDirection {
+	return &l
+}
+
+type ListProductsRequestOrder string
+
+const (
+	ListProductsRequestOrderCreatedAt              ListProductsRequestOrder = "created_at"
+	ListProductsRequestOrderActiveMembershipsCount ListProductsRequestOrder = "active_memberships_count"
+	ListProductsRequestOrderUsdGmv                 ListProductsRequestOrder = "usd_gmv"
+	ListProductsRequestOrderUsdGmv30Days           ListProductsRequestOrder = "usd_gmv_30_days"
+	ListProductsRequestOrderPosition               ListProductsRequestOrder = "position"
+	ListProductsRequestOrderDiscoverableAt         ListProductsRequestOrder = "discoverable_at"
+)
+
+func NewListProductsRequestOrderFromString(s string) (ListProductsRequestOrder, error) {
+	switch s {
+	case "created_at":
+		return ListProductsRequestOrderCreatedAt, nil
+	case "active_memberships_count":
+		return ListProductsRequestOrderActiveMembershipsCount, nil
+	case "usd_gmv":
+		return ListProductsRequestOrderUsdGmv, nil
+	case "usd_gmv_30_days":
+		return ListProductsRequestOrderUsdGmv30Days, nil
+	case "position":
+		return ListProductsRequestOrderPosition, nil
+	case "discoverable_at":
+		return ListProductsRequestOrderDiscoverableAt, nil
+	}
+	var t ListProductsRequestOrder
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListProductsRequestOrder) Ptr() *ListProductsRequestOrder {
 	return &l
 }
 

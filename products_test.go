@@ -924,7 +924,7 @@ func TestSettersListProductsRequest(t *testing.T) {
 
 	t.Run("SetOrder", func(t *testing.T) {
 		obj := &ListProductsRequest{}
-		var fernTestValueOrder *string
+		var fernTestValueOrder *ListProductsRequestOrder
 		obj.SetOrder(fernTestValueOrder)
 		assert.Equal(t, fernTestValueOrder, obj.Order)
 		assert.NotNil(t, obj.explicitFields)
@@ -1303,7 +1303,7 @@ func TestSettersMarkExplicitListProductsRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListProductsRequest{}
-		var fernTestValueOrder *string
+		var fernTestValueOrder *ListProductsRequestOrder
 
 		// Act
 		obj.SetOrder(fernTestValueOrder)
@@ -12725,6 +12725,63 @@ func TestEnumListProductsRequestDirection(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewListProductsRequestDirectionFromString("asc")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListProductsRequestOrder(t *testing.T) {
+	t.Run("NewFromString_created_at", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListProductsRequestOrderFromString("created_at")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListProductsRequestOrder("created_at"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_active_memberships_count", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListProductsRequestOrderFromString("active_memberships_count")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListProductsRequestOrder("active_memberships_count"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_usd_gmv", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListProductsRequestOrderFromString("usd_gmv")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListProductsRequestOrder("usd_gmv"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_usd_gmv_30_days", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListProductsRequestOrderFromString("usd_gmv_30_days")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListProductsRequestOrder("usd_gmv_30_days"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_position", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListProductsRequestOrderFromString("position")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListProductsRequestOrder("position"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_discoverable_at", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListProductsRequestOrderFromString("discoverable_at")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListProductsRequestOrder("discoverable_at"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListProductsRequestOrderFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListProductsRequestOrderFromString("created_at")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
