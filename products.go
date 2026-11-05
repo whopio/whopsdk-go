@@ -2149,22 +2149,24 @@ func (p ProductMemberAffiliateStatus) Ptr() *ProductMemberAffiliateStatus {
 }
 
 var (
-	productPublicVariantFieldBillingPeriod  = big.NewInt(1 << 0)
-	productPublicVariantFieldBillingType    = big.NewInt(1 << 1)
-	productPublicVariantFieldExpirationDays = big.NewInt(1 << 2)
-	productPublicVariantFieldID             = big.NewInt(1 << 3)
-	productPublicVariantFieldInitialPrice   = big.NewInt(1 << 4)
-	productPublicVariantFieldRenewalPrice   = big.NewInt(1 << 5)
-	productPublicVariantFieldTitle          = big.NewInt(1 << 6)
-	productPublicVariantFieldUnlimitedStock = big.NewInt(1 << 7)
-	productPublicVariantFieldVisibility     = big.NewInt(1 << 8)
+	productPublicVariantFieldBillingPeriod   = big.NewInt(1 << 0)
+	productPublicVariantFieldBillingType     = big.NewInt(1 << 1)
+	productPublicVariantFieldExpirationDays  = big.NewInt(1 << 2)
+	productPublicVariantFieldID              = big.NewInt(1 << 3)
+	productPublicVariantFieldInitialPrice    = big.NewInt(1 << 4)
+	productPublicVariantFieldRenewalPrice    = big.NewInt(1 << 5)
+	productPublicVariantFieldTitle           = big.NewInt(1 << 6)
+	productPublicVariantFieldTrialPeriodDays = big.NewInt(1 << 7)
+	productPublicVariantFieldUnlimitedStock  = big.NewInt(1 << 8)
+	productPublicVariantFieldVisibility      = big.NewInt(1 << 9)
 )
 
 // productPublicVariantNullableFields maps the wire names of ProductPublicVariant's nullable fields (required or optional) to their field bits.
 var productPublicVariantNullableFields = map[string]*big.Int{
-	"billing_period":  productPublicVariantFieldBillingPeriod,
-	"expiration_days": productPublicVariantFieldExpirationDays,
-	"title":           productPublicVariantFieldTitle,
+	"billing_period":    productPublicVariantFieldBillingPeriod,
+	"expiration_days":   productPublicVariantFieldExpirationDays,
+	"title":             productPublicVariantFieldTitle,
+	"trial_period_days": productPublicVariantFieldTrialPeriodDays,
 }
 
 type ProductPublicVariant struct {
@@ -2182,6 +2184,8 @@ type ProductPublicVariant struct {
 	RenewalPrice *Money `json:"renewal_price" url:"renewal_price"`
 	// Variant display name shown to customers. `null` if no title has been set.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
+	// Free trial days before the first renewal charge. `null` if no trial is configured or the signed-in user has already used a trial on this variant.
+	TrialPeriodDays *float64 `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
 	// Whether the variant has unlimited stock.
 	UnlimitedStock bool `json:"unlimited_stock" url:"unlimited_stock"`
 	// Where this variant can be seen. `visible` variants appear on the product page.
@@ -2241,6 +2245,13 @@ func (p *ProductPublicVariant) GetTitle() *string {
 		return nil
 	}
 	return p.Title
+}
+
+func (p *ProductPublicVariant) GetTrialPeriodDays() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.TrialPeriodDays
 }
 
 func (p *ProductPublicVariant) GetUnlimitedStock() bool {
@@ -2320,6 +2331,13 @@ func (p *ProductPublicVariant) SetRenewalPrice(renewalPrice *Money) {
 func (p *ProductPublicVariant) SetTitle(title *string) {
 	p.Title = title
 	p.require(productPublicVariantFieldTitle)
+}
+
+// SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *ProductPublicVariant) SetTrialPeriodDays(trialPeriodDays *float64) {
+	p.TrialPeriodDays = trialPeriodDays
+	p.require(productPublicVariantFieldTrialPeriodDays)
 }
 
 // SetUnlimitedStock sets the UnlimitedStock field and marks it as non-optional;
