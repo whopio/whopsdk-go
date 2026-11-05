@@ -13333,6 +13333,46 @@
       }
     },
     {
+      "id": "56ec76a9-33a8-4d6d-a874-e17367c8037a",
+      "name": "List review reports - default",
+      "request": {
+        "urlPathTemplate": "/review_reports",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "queryParameters": {
+          "account_id": {
+            "equalTo": "biz_xxxxxxxxxxxxxx"
+          },
+          "review_id": {
+            "equalTo": "rev_xxxxxxxxxxxxxx"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"rrpt_xxxxxxxxxxxxxx\",\n      \"reason\": \"The reviewer bought a different product\",\n      \"review_id\": \"rev_xxxxxxxxxxxxxx\",\n      \"status\": \"pending\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"user_id\": \"user_xxxxxxxxxxxxxx\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "56ec76a9-33a8-4d6d-a874-e17367c8037a",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
       "id": "8ef5d976-7b35-471a-be1b-91ba18b96214",
       "name": "List reviews - default",
       "request": {
@@ -17693,6 +17733,6 @@
     }
   ],
   "meta": {
-    "total": 494
+    "total": 495
   }
 }
