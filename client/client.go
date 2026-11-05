@@ -88,6 +88,7 @@ import (
 	refunds "github.com/whopio/whopsdk-go/v2/refunds"
 	resolutioncentercases "github.com/whopio/whopsdk-go/v2/resolutioncentercases"
 	reviews "github.com/whopio/whopsdk-go/v2/reviews"
+	search "github.com/whopio/whopsdk-go/v2/search"
 	setupintentsclient "github.com/whopio/whopsdk-go/v2/setupintents/client"
 	shipments "github.com/whopio/whopsdk-go/v2/shipments"
 	socialaccounts "github.com/whopio/whopsdk-go/v2/socialaccounts"
@@ -187,6 +188,7 @@ type Whop struct {
 	Refunds                  *refunds.Client
 	ResolutionCenterCases    *resolutioncentercases.Client
 	Reviews                  *reviews.Client
+	Search                   *search.Client
 	SetupIntents             *setupintentsclient.Client
 	Shipments                *shipments.Client
 	SocialAccounts           *socialaccounts.Client
@@ -296,6 +298,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Refunds:                  refunds.NewClient(options),
 		ResolutionCenterCases:    resolutioncentercases.NewClient(options),
 		Reviews:                  reviews.NewClient(options),
+		Search:                   search.NewClient(options),
 		SetupIntents:             setupintentsclient.NewClient(options),
 		Shipments:                shipments.NewClient(options),
 		SocialAccounts:           socialaccounts.NewClient(options),
