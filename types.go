@@ -67750,6 +67750,636 @@ func (s ShipmentSubstatuses) Ptr() *ShipmentSubstatuses {
 	return &s
 }
 
+var (
+	shippingAddressChangedWebhookAddressFieldCity       = big.NewInt(1 << 0)
+	shippingAddressChangedWebhookAddressFieldCountry    = big.NewInt(1 << 1)
+	shippingAddressChangedWebhookAddressFieldPostalCode = big.NewInt(1 << 2)
+	shippingAddressChangedWebhookAddressFieldState      = big.NewInt(1 << 3)
+)
+
+// shippingAddressChangedWebhookAddressNullableFields maps the wire names of ShippingAddressChangedWebhookAddress's nullable fields (required or optional) to their field bits.
+var shippingAddressChangedWebhookAddressNullableFields = map[string]*big.Int{
+	"city":        shippingAddressChangedWebhookAddressFieldCity,
+	"country":     shippingAddressChangedWebhookAddressFieldCountry,
+	"postal_code": shippingAddressChangedWebhookAddressFieldPostalCode,
+	"state":       shippingAddressChangedWebhookAddressFieldState,
+}
+
+type ShippingAddressChangedWebhookAddress struct {
+	// The city.
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// The two-letter ISO 3166-1 country code.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// The postal code.
+	PostalCode *string `json:"postal_code,omitempty" url:"postal_code,omitempty"`
+	// The state, province or region code.
+	State *string `json:"state,omitempty" url:"state,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *ShippingAddressChangedWebhookAddress) GetCity() *string {
+	if s == nil {
+		return nil
+	}
+	return s.City
+}
+
+func (s *ShippingAddressChangedWebhookAddress) GetCountry() *string {
+	if s == nil {
+		return nil
+	}
+	return s.Country
+}
+
+func (s *ShippingAddressChangedWebhookAddress) GetPostalCode() *string {
+	if s == nil {
+		return nil
+	}
+	return s.PostalCode
+}
+
+func (s *ShippingAddressChangedWebhookAddress) GetState() *string {
+	if s == nil {
+		return nil
+	}
+	return s.State
+}
+
+func (s *ShippingAddressChangedWebhookAddress) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *ShippingAddressChangedWebhookAddress) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShippingAddressChangedWebhookAddress) SetCity(city *string) {
+	s.City = city
+	s.require(shippingAddressChangedWebhookAddressFieldCity)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShippingAddressChangedWebhookAddress) SetCountry(country *string) {
+	s.Country = country
+	s.require(shippingAddressChangedWebhookAddressFieldCountry)
+}
+
+// SetPostalCode sets the PostalCode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShippingAddressChangedWebhookAddress) SetPostalCode(postalCode *string) {
+	s.PostalCode = postalCode
+	s.require(shippingAddressChangedWebhookAddressFieldPostalCode)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShippingAddressChangedWebhookAddress) SetState(state *string) {
+	s.State = state
+	s.require(shippingAddressChangedWebhookAddressFieldState)
+}
+
+func (s *ShippingAddressChangedWebhookAddress) UnmarshalJSON(data []byte) error {
+	type unmarshaler ShippingAddressChangedWebhookAddress
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = ShippingAddressChangedWebhookAddress(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, shippingAddressChangedWebhookAddressNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *ShippingAddressChangedWebhookAddress) MarshalJSON() ([]byte, error) {
+	type embed ShippingAddressChangedWebhookAddress
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *ShippingAddressChangedWebhookAddress) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	shippingAddressChangedWebhookDataFieldAmount          = big.NewInt(1 << 0)
+	shippingAddressChangedWebhookDataFieldLineItems       = big.NewInt(1 << 1)
+	shippingAddressChangedWebhookDataFieldPaymentID       = big.NewInt(1 << 2)
+	shippingAddressChangedWebhookDataFieldShippingAddress = big.NewInt(1 << 3)
+)
+
+type ShippingAddressChangedWebhookData struct {
+	// The payment's original total, before your price for this address.
+	Amount    *Money                                   `json:"amount" url:"amount"`
+	LineItems []*ShippingAddressChangedWebhookLineItem `json:"line_items" url:"line_items"`
+	// The payment being priced, prefixed `pay_`.
+	PaymentID string `json:"payment_id" url:"payment_id"`
+	// The address the buyer picked. PayPal shares only these fields until the buyer approves.
+	ShippingAddress *ShippingAddressChangedWebhookAddress `json:"shipping_address" url:"shipping_address"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *ShippingAddressChangedWebhookData) GetAmount() *Money {
+	if s == nil {
+		return nil
+	}
+	return s.Amount
+}
+
+func (s *ShippingAddressChangedWebhookData) GetLineItems() []*ShippingAddressChangedWebhookLineItem {
+	if s == nil {
+		return nil
+	}
+	return s.LineItems
+}
+
+func (s *ShippingAddressChangedWebhookData) GetPaymentID() string {
+	if s == nil {
+		return ""
+	}
+	return s.PaymentID
+}
+
+func (s *ShippingAddressChangedWebhookData) GetShippingAddress() *ShippingAddressChangedWebhookAddress {
+	if s == nil {
+		return nil
+	}
+	return s.ShippingAddress
+}
+
+func (s *ShippingAddressChangedWebhookData) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *ShippingAddressChangedWebhookData) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShippingAddressChangedWebhookData) SetAmount(amount *Money) {
+	s.Amount = amount
+	s.require(shippingAddressChangedWebhookDataFieldAmount)
+}
+
+// SetLineItems sets the LineItems field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShippingAddressChangedWebhookData) SetLineItems(lineItems []*ShippingAddressChangedWebhookLineItem) {
+	s.LineItems = lineItems
+	s.require(shippingAddressChangedWebhookDataFieldLineItems)
+}
+
+// SetPaymentID sets the PaymentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShippingAddressChangedWebhookData) SetPaymentID(paymentID string) {
+	s.PaymentID = paymentID
+	s.require(shippingAddressChangedWebhookDataFieldPaymentID)
+}
+
+// SetShippingAddress sets the ShippingAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShippingAddressChangedWebhookData) SetShippingAddress(shippingAddress *ShippingAddressChangedWebhookAddress) {
+	s.ShippingAddress = shippingAddress
+	s.require(shippingAddressChangedWebhookDataFieldShippingAddress)
+}
+
+func (s *ShippingAddressChangedWebhookData) UnmarshalJSON(data []byte) error {
+	type unmarshaler ShippingAddressChangedWebhookData
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = ShippingAddressChangedWebhookData(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *ShippingAddressChangedWebhookData) MarshalJSON() ([]byte, error) {
+	type embed ShippingAddressChangedWebhookData
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *ShippingAddressChangedWebhookData) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	shippingAddressChangedWebhookLineItemFieldAmount    = big.NewInt(1 << 0)
+	shippingAddressChangedWebhookLineItemFieldID        = big.NewInt(1 << 1)
+	shippingAddressChangedWebhookLineItemFieldQuantity  = big.NewInt(1 << 2)
+	shippingAddressChangedWebhookLineItemFieldVariantID = big.NewInt(1 << 3)
+)
+
+// shippingAddressChangedWebhookLineItemNullableFields maps the wire names of ShippingAddressChangedWebhookLineItem's nullable fields (required or optional) to their field bits.
+var shippingAddressChangedWebhookLineItemNullableFields = map[string]*big.Int{
+	"variant_id": shippingAddressChangedWebhookLineItemFieldVariantID,
+}
+
+type ShippingAddressChangedWebhookLineItem struct {
+	// The line's original total, the same on every call for this payment.
+	Amount *Money `json:"amount" url:"amount"`
+	// The line item, prefixed `li_`. Your reply names each line by this id.
+	ID string `json:"id" url:"id"`
+	// How many of the variant this line holds.
+	Quantity float64 `json:"quantity" url:"quantity"`
+	// The variant bought on this line, prefixed `plan_`.
+	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *ShippingAddressChangedWebhookLineItem) GetAmount() *Money {
+	if s == nil {
+		return nil
+	}
+	return s.Amount
+}
+
+func (s *ShippingAddressChangedWebhookLineItem) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *ShippingAddressChangedWebhookLineItem) GetQuantity() float64 {
+	if s == nil {
+		return 0
+	}
+	return s.Quantity
+}
+
+func (s *ShippingAddressChangedWebhookLineItem) GetVariantID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.VariantID
+}
+
+func (s *ShippingAddressChangedWebhookLineItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *ShippingAddressChangedWebhookLineItem) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShippingAddressChangedWebhookLineItem) SetAmount(amount *Money) {
+	s.Amount = amount
+	s.require(shippingAddressChangedWebhookLineItemFieldAmount)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShippingAddressChangedWebhookLineItem) SetID(id string) {
+	s.ID = id
+	s.require(shippingAddressChangedWebhookLineItemFieldID)
+}
+
+// SetQuantity sets the Quantity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShippingAddressChangedWebhookLineItem) SetQuantity(quantity float64) {
+	s.Quantity = quantity
+	s.require(shippingAddressChangedWebhookLineItemFieldQuantity)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShippingAddressChangedWebhookLineItem) SetVariantID(variantID *string) {
+	s.VariantID = variantID
+	s.require(shippingAddressChangedWebhookLineItemFieldVariantID)
+}
+
+func (s *ShippingAddressChangedWebhookLineItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler ShippingAddressChangedWebhookLineItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = ShippingAddressChangedWebhookLineItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, shippingAddressChangedWebhookLineItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *ShippingAddressChangedWebhookLineItem) MarshalJSON() ([]byte, error) {
+	type embed ShippingAddressChangedWebhookLineItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *ShippingAddressChangedWebhookLineItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	shippingAddressChangedWebhookReplyFieldLineItems = big.NewInt(1 << 0)
+)
+
+type ShippingAddressChangedWebhookReply struct {
+	LineItems []*ShippingAddressChangedWebhookReplyLineItem `json:"line_items" url:"line_items"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *ShippingAddressChangedWebhookReply) GetLineItems() []*ShippingAddressChangedWebhookReplyLineItem {
+	if s == nil {
+		return nil
+	}
+	return s.LineItems
+}
+
+func (s *ShippingAddressChangedWebhookReply) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *ShippingAddressChangedWebhookReply) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetLineItems sets the LineItems field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShippingAddressChangedWebhookReply) SetLineItems(lineItems []*ShippingAddressChangedWebhookReplyLineItem) {
+	s.LineItems = lineItems
+	s.require(shippingAddressChangedWebhookReplyFieldLineItems)
+}
+
+func (s *ShippingAddressChangedWebhookReply) UnmarshalJSON(data []byte) error {
+	type unmarshaler ShippingAddressChangedWebhookReply
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = ShippingAddressChangedWebhookReply(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *ShippingAddressChangedWebhookReply) MarshalJSON() ([]byte, error) {
+	type embed ShippingAddressChangedWebhookReply
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *ShippingAddressChangedWebhookReply) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
+var (
+	shippingAddressChangedWebhookReplyLineItemFieldAmount = big.NewInt(1 << 0)
+	shippingAddressChangedWebhookReplyLineItemFieldID     = big.NewInt(1 << 1)
+)
+
+type ShippingAddressChangedWebhookReplyLineItem struct {
+	// The line's total at this address, tax and shipping included, in the payment's currency.
+	Amount *Money `json:"amount" url:"amount"`
+	// The line item, prefixed `li_`, from `data.line_items`.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (s *ShippingAddressChangedWebhookReplyLineItem) GetAmount() *Money {
+	if s == nil {
+		return nil
+	}
+	return s.Amount
+}
+
+func (s *ShippingAddressChangedWebhookReplyLineItem) GetID() string {
+	if s == nil {
+		return ""
+	}
+	return s.ID
+}
+
+func (s *ShippingAddressChangedWebhookReplyLineItem) GetExtraProperties() map[string]interface{} {
+	if s == nil {
+		return nil
+	}
+	return s.extraProperties
+}
+
+func (s *ShippingAddressChangedWebhookReplyLineItem) require(field *big.Int) {
+	next := new(big.Int)
+	if s.explicitFields != nil {
+		next.Set(s.explicitFields)
+	}
+	next.Or(next, field)
+	s.explicitFields = next
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShippingAddressChangedWebhookReplyLineItem) SetAmount(amount *Money) {
+	s.Amount = amount
+	s.require(shippingAddressChangedWebhookReplyLineItemFieldAmount)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShippingAddressChangedWebhookReplyLineItem) SetID(id string) {
+	s.ID = id
+	s.require(shippingAddressChangedWebhookReplyLineItemFieldID)
+}
+
+func (s *ShippingAddressChangedWebhookReplyLineItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler ShippingAddressChangedWebhookReplyLineItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*s = ShippingAddressChangedWebhookReplyLineItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *s)
+	if err != nil {
+		return err
+	}
+	s.extraProperties = extraProperties
+	s.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (s *ShippingAddressChangedWebhookReplyLineItem) MarshalJSON() ([]byte, error) {
+	type embed ShippingAddressChangedWebhookReplyLineItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*s),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, s.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (s *ShippingAddressChangedWebhookReplyLineItem) String() string {
+	if s == nil {
+		return "<nil>"
+	}
+	if len(s.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(s.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(s); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", s)
+}
+
 // The origin of the specific fee
 type SpecificFeeOrigins string
 
@@ -73729,6 +74359,7 @@ const (
 	WebhookEventRefundUpdated                      WebhookEvent = "refund.updated"
 	WebhookEventDisputeAlertCreated                WebhookEvent = "dispute_alert.created"
 	WebhookEventMembershipCancelAtPeriodEndChanged WebhookEvent = "membership.cancel_at_period_end_changed"
+	WebhookEventShippingAddressChanged             WebhookEvent = "shipping_address.changed"
 )
 
 func NewWebhookEventFromString(s string) (WebhookEvent, error) {
@@ -73933,6 +74564,8 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventDisputeAlertCreated, nil
 	case "membership.cancel_at_period_end_changed":
 		return WebhookEventMembershipCancelAtPeriodEndChanged, nil
+	case "shipping_address.changed":
+		return WebhookEventShippingAddressChanged, nil
 	}
 	var t WebhookEvent
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
