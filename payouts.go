@@ -1287,6 +1287,7 @@ func (c CancelPayoutsResponseObject) Ptr() *CancelPayoutsResponseObject {
 var (
 	cancelPayoutsResponsePayoutMethodFieldNickname              = big.NewInt(1 << 0)
 	cancelPayoutsResponsePayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
+	cancelPayoutsResponsePayoutMethodFieldType                  = big.NewInt(1 << 2)
 )
 
 // cancelPayoutsResponsePayoutMethodNullableFields maps the wire names of CancelPayoutsResponsePayoutMethod's nullable fields (required or optional) to their field bits.
@@ -1301,6 +1302,8 @@ type CancelPayoutsResponsePayoutMethod struct {
 	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
 	// Supported payout method display details.
 	SupportedPayoutMethod *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
+	// The kind of payout method the payout used. `external` sent funds out of Whop. `whop_card` moved funds onto the account's own Whop Card.
+	Type CancelPayoutsResponsePayoutMethodType `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1321,6 +1324,13 @@ func (c *CancelPayoutsResponsePayoutMethod) GetSupportedPayoutMethod() *CancelPa
 		return nil
 	}
 	return c.SupportedPayoutMethod
+}
+
+func (c *CancelPayoutsResponsePayoutMethod) GetType() CancelPayoutsResponsePayoutMethodType {
+	if c == nil {
+		return ""
+	}
+	return c.Type
 }
 
 func (c *CancelPayoutsResponsePayoutMethod) GetExtraProperties() map[string]interface{} {
@@ -1351,6 +1361,13 @@ func (c *CancelPayoutsResponsePayoutMethod) SetNickname(nickname *string) {
 func (c *CancelPayoutsResponsePayoutMethod) SetSupportedPayoutMethod(supportedPayoutMethod *CancelPayoutsResponsePayoutMethodSupportedPayoutMethod) {
 	c.SupportedPayoutMethod = supportedPayoutMethod
 	c.require(cancelPayoutsResponsePayoutMethodFieldSupportedPayoutMethod)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponsePayoutMethod) SetType(type_ CancelPayoutsResponsePayoutMethodType) {
+	c.Type = type_
+	c.require(cancelPayoutsResponsePayoutMethodFieldType)
 }
 
 func (c *CancelPayoutsResponsePayoutMethod) UnmarshalJSON(data []byte) error {
@@ -1578,6 +1595,29 @@ func NewCancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeFromSt
 }
 
 func (c CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType) Ptr() *CancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType {
+	return &c
+}
+
+// The kind of payout method the payout used. `external` sent funds out of Whop. `whop_card` moved funds onto the account's own Whop Card.
+type CancelPayoutsResponsePayoutMethodType string
+
+const (
+	CancelPayoutsResponsePayoutMethodTypeExternal CancelPayoutsResponsePayoutMethodType = "external"
+	CancelPayoutsResponsePayoutMethodTypeWhopCard CancelPayoutsResponsePayoutMethodType = "whop_card"
+)
+
+func NewCancelPayoutsResponsePayoutMethodTypeFromString(s string) (CancelPayoutsResponsePayoutMethodType, error) {
+	switch s {
+	case "external":
+		return CancelPayoutsResponsePayoutMethodTypeExternal, nil
+	case "whop_card":
+		return CancelPayoutsResponsePayoutMethodTypeWhopCard, nil
+	}
+	var t CancelPayoutsResponsePayoutMethodType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CancelPayoutsResponsePayoutMethodType) Ptr() *CancelPayoutsResponsePayoutMethodType {
 	return &c
 }
 
@@ -2429,6 +2469,7 @@ func (c CreatePayoutsResponseObject) Ptr() *CreatePayoutsResponseObject {
 var (
 	createPayoutsResponsePayoutMethodFieldNickname              = big.NewInt(1 << 0)
 	createPayoutsResponsePayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
+	createPayoutsResponsePayoutMethodFieldType                  = big.NewInt(1 << 2)
 )
 
 // createPayoutsResponsePayoutMethodNullableFields maps the wire names of CreatePayoutsResponsePayoutMethod's nullable fields (required or optional) to their field bits.
@@ -2443,6 +2484,8 @@ type CreatePayoutsResponsePayoutMethod struct {
 	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
 	// Supported payout method display details.
 	SupportedPayoutMethod *CreatePayoutsResponsePayoutMethodSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
+	// The kind of payout method the payout used. `external` sent funds out of Whop. `whop_card` moved funds onto the account's own Whop Card.
+	Type CreatePayoutsResponsePayoutMethodType `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2463,6 +2506,13 @@ func (c *CreatePayoutsResponsePayoutMethod) GetSupportedPayoutMethod() *CreatePa
 		return nil
 	}
 	return c.SupportedPayoutMethod
+}
+
+func (c *CreatePayoutsResponsePayoutMethod) GetType() CreatePayoutsResponsePayoutMethodType {
+	if c == nil {
+		return ""
+	}
+	return c.Type
 }
 
 func (c *CreatePayoutsResponsePayoutMethod) GetExtraProperties() map[string]interface{} {
@@ -2493,6 +2543,13 @@ func (c *CreatePayoutsResponsePayoutMethod) SetNickname(nickname *string) {
 func (c *CreatePayoutsResponsePayoutMethod) SetSupportedPayoutMethod(supportedPayoutMethod *CreatePayoutsResponsePayoutMethodSupportedPayoutMethod) {
 	c.SupportedPayoutMethod = supportedPayoutMethod
 	c.require(createPayoutsResponsePayoutMethodFieldSupportedPayoutMethod)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsResponsePayoutMethod) SetType(type_ CreatePayoutsResponsePayoutMethodType) {
+	c.Type = type_
+	c.require(createPayoutsResponsePayoutMethodFieldType)
 }
 
 func (c *CreatePayoutsResponsePayoutMethod) UnmarshalJSON(data []byte) error {
@@ -2720,6 +2777,29 @@ func NewCreatePayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeFromSt
 }
 
 func (c CreatePayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType) Ptr() *CreatePayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType {
+	return &c
+}
+
+// The kind of payout method the payout used. `external` sent funds out of Whop. `whop_card` moved funds onto the account's own Whop Card.
+type CreatePayoutsResponsePayoutMethodType string
+
+const (
+	CreatePayoutsResponsePayoutMethodTypeExternal CreatePayoutsResponsePayoutMethodType = "external"
+	CreatePayoutsResponsePayoutMethodTypeWhopCard CreatePayoutsResponsePayoutMethodType = "whop_card"
+)
+
+func NewCreatePayoutsResponsePayoutMethodTypeFromString(s string) (CreatePayoutsResponsePayoutMethodType, error) {
+	switch s {
+	case "external":
+		return CreatePayoutsResponsePayoutMethodTypeExternal, nil
+	case "whop_card":
+		return CreatePayoutsResponsePayoutMethodTypeWhopCard, nil
+	}
+	var t CreatePayoutsResponsePayoutMethodType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePayoutsResponsePayoutMethodType) Ptr() *CreatePayoutsResponsePayoutMethodType {
 	return &c
 }
 
@@ -4247,6 +4327,7 @@ func (l ListPayoutsResponseDataItemObject) Ptr() *ListPayoutsResponseDataItemObj
 var (
 	listPayoutsResponseDataItemPayoutMethodFieldNickname              = big.NewInt(1 << 0)
 	listPayoutsResponseDataItemPayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
+	listPayoutsResponseDataItemPayoutMethodFieldType                  = big.NewInt(1 << 2)
 )
 
 // listPayoutsResponseDataItemPayoutMethodNullableFields maps the wire names of ListPayoutsResponseDataItemPayoutMethod's nullable fields (required or optional) to their field bits.
@@ -4261,6 +4342,8 @@ type ListPayoutsResponseDataItemPayoutMethod struct {
 	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
 	// Supported payout method display details.
 	SupportedPayoutMethod *ListPayoutsResponseDataItemPayoutMethodSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
+	// The kind of payout method the payout used. `external` sent funds out of Whop. `whop_card` moved funds onto the account's own Whop Card.
+	Type ListPayoutsResponseDataItemPayoutMethodType `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4281,6 +4364,13 @@ func (l *ListPayoutsResponseDataItemPayoutMethod) GetSupportedPayoutMethod() *Li
 		return nil
 	}
 	return l.SupportedPayoutMethod
+}
+
+func (l *ListPayoutsResponseDataItemPayoutMethod) GetType() ListPayoutsResponseDataItemPayoutMethodType {
+	if l == nil {
+		return ""
+	}
+	return l.Type
 }
 
 func (l *ListPayoutsResponseDataItemPayoutMethod) GetExtraProperties() map[string]interface{} {
@@ -4311,6 +4401,13 @@ func (l *ListPayoutsResponseDataItemPayoutMethod) SetNickname(nickname *string) 
 func (l *ListPayoutsResponseDataItemPayoutMethod) SetSupportedPayoutMethod(supportedPayoutMethod *ListPayoutsResponseDataItemPayoutMethodSupportedPayoutMethod) {
 	l.SupportedPayoutMethod = supportedPayoutMethod
 	l.require(listPayoutsResponseDataItemPayoutMethodFieldSupportedPayoutMethod)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPayoutsResponseDataItemPayoutMethod) SetType(type_ ListPayoutsResponseDataItemPayoutMethodType) {
+	l.Type = type_
+	l.require(listPayoutsResponseDataItemPayoutMethodFieldType)
 }
 
 func (l *ListPayoutsResponseDataItemPayoutMethod) UnmarshalJSON(data []byte) error {
@@ -4538,6 +4635,29 @@ func NewListPayoutsResponseDataItemPayoutMethodSupportedPayoutMethodDeliveryType
 }
 
 func (l ListPayoutsResponseDataItemPayoutMethodSupportedPayoutMethodDeliveryType) Ptr() *ListPayoutsResponseDataItemPayoutMethodSupportedPayoutMethodDeliveryType {
+	return &l
+}
+
+// The kind of payout method the payout used. `external` sent funds out of Whop. `whop_card` moved funds onto the account's own Whop Card.
+type ListPayoutsResponseDataItemPayoutMethodType string
+
+const (
+	ListPayoutsResponseDataItemPayoutMethodTypeExternal ListPayoutsResponseDataItemPayoutMethodType = "external"
+	ListPayoutsResponseDataItemPayoutMethodTypeWhopCard ListPayoutsResponseDataItemPayoutMethodType = "whop_card"
+)
+
+func NewListPayoutsResponseDataItemPayoutMethodTypeFromString(s string) (ListPayoutsResponseDataItemPayoutMethodType, error) {
+	switch s {
+	case "external":
+		return ListPayoutsResponseDataItemPayoutMethodTypeExternal, nil
+	case "whop_card":
+		return ListPayoutsResponseDataItemPayoutMethodTypeWhopCard, nil
+	}
+	var t ListPayoutsResponseDataItemPayoutMethodType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPayoutsResponseDataItemPayoutMethodType) Ptr() *ListPayoutsResponseDataItemPayoutMethodType {
 	return &l
 }
 
@@ -5759,6 +5879,7 @@ func (p PostPayoutCreatedPayloadDataObject) Ptr() *PostPayoutCreatedPayloadDataO
 var (
 	postPayoutCreatedPayloadDataPayoutMethodFieldNickname              = big.NewInt(1 << 0)
 	postPayoutCreatedPayloadDataPayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
+	postPayoutCreatedPayloadDataPayoutMethodFieldType                  = big.NewInt(1 << 2)
 )
 
 // postPayoutCreatedPayloadDataPayoutMethodNullableFields maps the wire names of PostPayoutCreatedPayloadDataPayoutMethod's nullable fields (required or optional) to their field bits.
@@ -5773,6 +5894,8 @@ type PostPayoutCreatedPayloadDataPayoutMethod struct {
 	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
 	// Supported payout method display details.
 	SupportedPayoutMethod *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
+	// The kind of payout method the payout used. `external` sent funds out of Whop. `whop_card` moved funds onto the account's own Whop Card.
+	Type PostPayoutCreatedPayloadDataPayoutMethodType `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -5793,6 +5916,13 @@ func (p *PostPayoutCreatedPayloadDataPayoutMethod) GetSupportedPayoutMethod() *P
 		return nil
 	}
 	return p.SupportedPayoutMethod
+}
+
+func (p *PostPayoutCreatedPayloadDataPayoutMethod) GetType() PostPayoutCreatedPayloadDataPayoutMethodType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
 }
 
 func (p *PostPayoutCreatedPayloadDataPayoutMethod) GetExtraProperties() map[string]interface{} {
@@ -5823,6 +5953,13 @@ func (p *PostPayoutCreatedPayloadDataPayoutMethod) SetNickname(nickname *string)
 func (p *PostPayoutCreatedPayloadDataPayoutMethod) SetSupportedPayoutMethod(supportedPayoutMethod *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethod) {
 	p.SupportedPayoutMethod = supportedPayoutMethod
 	p.require(postPayoutCreatedPayloadDataPayoutMethodFieldSupportedPayoutMethod)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadDataPayoutMethod) SetType(type_ PostPayoutCreatedPayloadDataPayoutMethodType) {
+	p.Type = type_
+	p.require(postPayoutCreatedPayloadDataPayoutMethodFieldType)
 }
 
 func (p *PostPayoutCreatedPayloadDataPayoutMethod) UnmarshalJSON(data []byte) error {
@@ -6050,6 +6187,29 @@ func NewPostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTyp
 }
 
 func (p PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType) Ptr() *PostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType {
+	return &p
+}
+
+// The kind of payout method the payout used. `external` sent funds out of Whop. `whop_card` moved funds onto the account's own Whop Card.
+type PostPayoutCreatedPayloadDataPayoutMethodType string
+
+const (
+	PostPayoutCreatedPayloadDataPayoutMethodTypeExternal PostPayoutCreatedPayloadDataPayoutMethodType = "external"
+	PostPayoutCreatedPayloadDataPayoutMethodTypeWhopCard PostPayoutCreatedPayloadDataPayoutMethodType = "whop_card"
+)
+
+func NewPostPayoutCreatedPayloadDataPayoutMethodTypeFromString(s string) (PostPayoutCreatedPayloadDataPayoutMethodType, error) {
+	switch s {
+	case "external":
+		return PostPayoutCreatedPayloadDataPayoutMethodTypeExternal, nil
+	case "whop_card":
+		return PostPayoutCreatedPayloadDataPayoutMethodTypeWhopCard, nil
+	}
+	var t PostPayoutCreatedPayloadDataPayoutMethodType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPayoutCreatedPayloadDataPayoutMethodType) Ptr() *PostPayoutCreatedPayloadDataPayoutMethodType {
 	return &p
 }
 
@@ -6431,7 +6591,8 @@ var (
 	postPayoutMethodCreatedPayloadDataFieldStatus                = big.NewInt(1 << 18)
 	postPayoutMethodCreatedPayloadDataFieldStatusReason          = big.NewInt(1 << 19)
 	postPayoutMethodCreatedPayloadDataFieldSupportedPayoutMethod = big.NewInt(1 << 20)
-	postPayoutMethodCreatedPayloadDataFieldUnavailableReason     = big.NewInt(1 << 21)
+	postPayoutMethodCreatedPayloadDataFieldType                  = big.NewInt(1 << 21)
+	postPayoutMethodCreatedPayloadDataFieldUnavailableReason     = big.NewInt(1 << 22)
 )
 
 // postPayoutMethodCreatedPayloadDataNullableFields maps the wire names of PostPayoutMethodCreatedPayloadData's nullable fields (required or optional) to their field bits.
@@ -6492,6 +6653,8 @@ type PostPayoutMethodCreatedPayloadData struct {
 	StatusReason *string `json:"status_reason,omitempty" url:"status_reason,omitempty"`
 	// The supported payout method this saved method was created from.
 	SupportedPayoutMethod *PostPayoutMethodCreatedPayloadDataSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
+	// The kind of payout method. `external` sends funds out of Whop. `whop_card` moves funds onto the account's own Whop Card. A `whop_card` method takes standard-speed payouts only, and cannot be updated, reconnected, or deleted.
+	Type PostPayoutMethodCreatedPayloadDataType `json:"type" url:"type"`
 	// Why this method is unavailable: `destination_retired` means the payout provider stopped offering the destination. Whop may automatically remap an eligible method that was not linked through Plaid to a compatible replacement; otherwise, the account owner must re-add it. `null` means no unavailability reason is known.
 	UnavailableReason *PostPayoutMethodCreatedPayloadDataUnavailableReason `json:"unavailable_reason,omitempty" url:"unavailable_reason,omitempty"`
 
@@ -6647,6 +6810,13 @@ func (p *PostPayoutMethodCreatedPayloadData) GetSupportedPayoutMethod() *PostPay
 		return nil
 	}
 	return p.SupportedPayoutMethod
+}
+
+func (p *PostPayoutMethodCreatedPayloadData) GetType() PostPayoutMethodCreatedPayloadDataType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
 }
 
 func (p *PostPayoutMethodCreatedPayloadData) GetUnavailableReason() *PostPayoutMethodCreatedPayloadDataUnavailableReason {
@@ -6817,6 +6987,13 @@ func (p *PostPayoutMethodCreatedPayloadData) SetStatusReason(statusReason *strin
 func (p *PostPayoutMethodCreatedPayloadData) SetSupportedPayoutMethod(supportedPayoutMethod *PostPayoutMethodCreatedPayloadDataSupportedPayoutMethod) {
 	p.SupportedPayoutMethod = supportedPayoutMethod
 	p.require(postPayoutMethodCreatedPayloadDataFieldSupportedPayoutMethod)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutMethodCreatedPayloadData) SetType(type_ PostPayoutMethodCreatedPayloadDataType) {
+	p.Type = type_
+	p.require(postPayoutMethodCreatedPayloadDataFieldType)
 }
 
 // SetUnavailableReason sets the UnavailableReason field and marks it as non-optional;
@@ -8050,6 +8227,29 @@ func (p PostPayoutMethodCreatedPayloadDataSupportedPayoutMethodDeliveryType) Ptr
 	return &p
 }
 
+// The kind of payout method. `external` sends funds out of Whop. `whop_card` moves funds onto the account's own Whop Card. A `whop_card` method takes standard-speed payouts only, and cannot be updated, reconnected, or deleted.
+type PostPayoutMethodCreatedPayloadDataType string
+
+const (
+	PostPayoutMethodCreatedPayloadDataTypeExternal PostPayoutMethodCreatedPayloadDataType = "external"
+	PostPayoutMethodCreatedPayloadDataTypeWhopCard PostPayoutMethodCreatedPayloadDataType = "whop_card"
+)
+
+func NewPostPayoutMethodCreatedPayloadDataTypeFromString(s string) (PostPayoutMethodCreatedPayloadDataType, error) {
+	switch s {
+	case "external":
+		return PostPayoutMethodCreatedPayloadDataTypeExternal, nil
+	case "whop_card":
+		return PostPayoutMethodCreatedPayloadDataTypeWhopCard, nil
+	}
+	var t PostPayoutMethodCreatedPayloadDataType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPayoutMethodCreatedPayloadDataType) Ptr() *PostPayoutMethodCreatedPayloadDataType {
+	return &p
+}
+
 // Why this method is unavailable: `destination_retired` means the payout provider stopped offering the destination. Whop may automatically remap an eligible method that was not linked through Plaid to a compatible replacement; otherwise, the account owner must re-add it. `null` means no unavailability reason is known.
 type PostPayoutMethodCreatedPayloadDataUnavailableReason string
 
@@ -9071,6 +9271,7 @@ func (p PostPayoutReversedPayloadDataObject) Ptr() *PostPayoutReversedPayloadDat
 var (
 	postPayoutReversedPayloadDataPayoutMethodFieldNickname              = big.NewInt(1 << 0)
 	postPayoutReversedPayloadDataPayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
+	postPayoutReversedPayloadDataPayoutMethodFieldType                  = big.NewInt(1 << 2)
 )
 
 // postPayoutReversedPayloadDataPayoutMethodNullableFields maps the wire names of PostPayoutReversedPayloadDataPayoutMethod's nullable fields (required or optional) to their field bits.
@@ -9085,6 +9286,8 @@ type PostPayoutReversedPayloadDataPayoutMethod struct {
 	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
 	// Supported payout method display details.
 	SupportedPayoutMethod *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
+	// The kind of payout method the payout used. `external` sent funds out of Whop. `whop_card` moved funds onto the account's own Whop Card.
+	Type PostPayoutReversedPayloadDataPayoutMethodType `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -9105,6 +9308,13 @@ func (p *PostPayoutReversedPayloadDataPayoutMethod) GetSupportedPayoutMethod() *
 		return nil
 	}
 	return p.SupportedPayoutMethod
+}
+
+func (p *PostPayoutReversedPayloadDataPayoutMethod) GetType() PostPayoutReversedPayloadDataPayoutMethodType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
 }
 
 func (p *PostPayoutReversedPayloadDataPayoutMethod) GetExtraProperties() map[string]interface{} {
@@ -9135,6 +9345,13 @@ func (p *PostPayoutReversedPayloadDataPayoutMethod) SetNickname(nickname *string
 func (p *PostPayoutReversedPayloadDataPayoutMethod) SetSupportedPayoutMethod(supportedPayoutMethod *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethod) {
 	p.SupportedPayoutMethod = supportedPayoutMethod
 	p.require(postPayoutReversedPayloadDataPayoutMethodFieldSupportedPayoutMethod)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutReversedPayloadDataPayoutMethod) SetType(type_ PostPayoutReversedPayloadDataPayoutMethodType) {
+	p.Type = type_
+	p.require(postPayoutReversedPayloadDataPayoutMethodFieldType)
 }
 
 func (p *PostPayoutReversedPayloadDataPayoutMethod) UnmarshalJSON(data []byte) error {
@@ -9362,6 +9579,29 @@ func NewPostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTy
 }
 
 func (p PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType) Ptr() *PostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType {
+	return &p
+}
+
+// The kind of payout method the payout used. `external` sent funds out of Whop. `whop_card` moved funds onto the account's own Whop Card.
+type PostPayoutReversedPayloadDataPayoutMethodType string
+
+const (
+	PostPayoutReversedPayloadDataPayoutMethodTypeExternal PostPayoutReversedPayloadDataPayoutMethodType = "external"
+	PostPayoutReversedPayloadDataPayoutMethodTypeWhopCard PostPayoutReversedPayloadDataPayoutMethodType = "whop_card"
+)
+
+func NewPostPayoutReversedPayloadDataPayoutMethodTypeFromString(s string) (PostPayoutReversedPayloadDataPayoutMethodType, error) {
+	switch s {
+	case "external":
+		return PostPayoutReversedPayloadDataPayoutMethodTypeExternal, nil
+	case "whop_card":
+		return PostPayoutReversedPayloadDataPayoutMethodTypeWhopCard, nil
+	}
+	var t PostPayoutReversedPayloadDataPayoutMethodType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPayoutReversedPayloadDataPayoutMethodType) Ptr() *PostPayoutReversedPayloadDataPayoutMethodType {
 	return &p
 }
 
@@ -10456,6 +10696,7 @@ func (p PostPayoutUpdatedPayloadDataObject) Ptr() *PostPayoutUpdatedPayloadDataO
 var (
 	postPayoutUpdatedPayloadDataPayoutMethodFieldNickname              = big.NewInt(1 << 0)
 	postPayoutUpdatedPayloadDataPayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
+	postPayoutUpdatedPayloadDataPayoutMethodFieldType                  = big.NewInt(1 << 2)
 )
 
 // postPayoutUpdatedPayloadDataPayoutMethodNullableFields maps the wire names of PostPayoutUpdatedPayloadDataPayoutMethod's nullable fields (required or optional) to their field bits.
@@ -10470,6 +10711,8 @@ type PostPayoutUpdatedPayloadDataPayoutMethod struct {
 	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
 	// Supported payout method display details.
 	SupportedPayoutMethod *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
+	// The kind of payout method the payout used. `external` sent funds out of Whop. `whop_card` moved funds onto the account's own Whop Card.
+	Type PostPayoutUpdatedPayloadDataPayoutMethodType `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -10490,6 +10733,13 @@ func (p *PostPayoutUpdatedPayloadDataPayoutMethod) GetSupportedPayoutMethod() *P
 		return nil
 	}
 	return p.SupportedPayoutMethod
+}
+
+func (p *PostPayoutUpdatedPayloadDataPayoutMethod) GetType() PostPayoutUpdatedPayloadDataPayoutMethodType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
 }
 
 func (p *PostPayoutUpdatedPayloadDataPayoutMethod) GetExtraProperties() map[string]interface{} {
@@ -10520,6 +10770,13 @@ func (p *PostPayoutUpdatedPayloadDataPayoutMethod) SetNickname(nickname *string)
 func (p *PostPayoutUpdatedPayloadDataPayoutMethod) SetSupportedPayoutMethod(supportedPayoutMethod *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethod) {
 	p.SupportedPayoutMethod = supportedPayoutMethod
 	p.require(postPayoutUpdatedPayloadDataPayoutMethodFieldSupportedPayoutMethod)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutUpdatedPayloadDataPayoutMethod) SetType(type_ PostPayoutUpdatedPayloadDataPayoutMethodType) {
+	p.Type = type_
+	p.require(postPayoutUpdatedPayloadDataPayoutMethodFieldType)
 }
 
 func (p *PostPayoutUpdatedPayloadDataPayoutMethod) UnmarshalJSON(data []byte) error {
@@ -10747,6 +11004,29 @@ func NewPostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTyp
 }
 
 func (p PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType) Ptr() *PostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryType {
+	return &p
+}
+
+// The kind of payout method the payout used. `external` sent funds out of Whop. `whop_card` moved funds onto the account's own Whop Card.
+type PostPayoutUpdatedPayloadDataPayoutMethodType string
+
+const (
+	PostPayoutUpdatedPayloadDataPayoutMethodTypeExternal PostPayoutUpdatedPayloadDataPayoutMethodType = "external"
+	PostPayoutUpdatedPayloadDataPayoutMethodTypeWhopCard PostPayoutUpdatedPayloadDataPayoutMethodType = "whop_card"
+)
+
+func NewPostPayoutUpdatedPayloadDataPayoutMethodTypeFromString(s string) (PostPayoutUpdatedPayloadDataPayoutMethodType, error) {
+	switch s {
+	case "external":
+		return PostPayoutUpdatedPayloadDataPayoutMethodTypeExternal, nil
+	case "whop_card":
+		return PostPayoutUpdatedPayloadDataPayoutMethodTypeWhopCard, nil
+	}
+	var t PostPayoutUpdatedPayloadDataPayoutMethodType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPayoutUpdatedPayloadDataPayoutMethodType) Ptr() *PostPayoutUpdatedPayloadDataPayoutMethodType {
 	return &p
 }
 
@@ -11687,6 +11967,7 @@ func (r RetrievePayoutsResponseObject) Ptr() *RetrievePayoutsResponseObject {
 var (
 	retrievePayoutsResponsePayoutMethodFieldNickname              = big.NewInt(1 << 0)
 	retrievePayoutsResponsePayoutMethodFieldSupportedPayoutMethod = big.NewInt(1 << 1)
+	retrievePayoutsResponsePayoutMethodFieldType                  = big.NewInt(1 << 2)
 )
 
 // retrievePayoutsResponsePayoutMethodNullableFields maps the wire names of RetrievePayoutsResponsePayoutMethod's nullable fields (required or optional) to their field bits.
@@ -11701,6 +11982,8 @@ type RetrievePayoutsResponsePayoutMethod struct {
 	Nickname *string `json:"nickname,omitempty" url:"nickname,omitempty"`
 	// Supported payout method display details.
 	SupportedPayoutMethod *RetrievePayoutsResponsePayoutMethodSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
+	// The kind of payout method the payout used. `external` sent funds out of Whop. `whop_card` moved funds onto the account's own Whop Card.
+	Type RetrievePayoutsResponsePayoutMethodType `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -11721,6 +12004,13 @@ func (r *RetrievePayoutsResponsePayoutMethod) GetSupportedPayoutMethod() *Retrie
 		return nil
 	}
 	return r.SupportedPayoutMethod
+}
+
+func (r *RetrievePayoutsResponsePayoutMethod) GetType() RetrievePayoutsResponsePayoutMethodType {
+	if r == nil {
+		return ""
+	}
+	return r.Type
 }
 
 func (r *RetrievePayoutsResponsePayoutMethod) GetExtraProperties() map[string]interface{} {
@@ -11751,6 +12041,13 @@ func (r *RetrievePayoutsResponsePayoutMethod) SetNickname(nickname *string) {
 func (r *RetrievePayoutsResponsePayoutMethod) SetSupportedPayoutMethod(supportedPayoutMethod *RetrievePayoutsResponsePayoutMethodSupportedPayoutMethod) {
 	r.SupportedPayoutMethod = supportedPayoutMethod
 	r.require(retrievePayoutsResponsePayoutMethodFieldSupportedPayoutMethod)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponsePayoutMethod) SetType(type_ RetrievePayoutsResponsePayoutMethodType) {
+	r.Type = type_
+	r.require(retrievePayoutsResponsePayoutMethodFieldType)
 }
 
 func (r *RetrievePayoutsResponsePayoutMethod) UnmarshalJSON(data []byte) error {
@@ -11978,6 +12275,29 @@ func NewRetrievePayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeFrom
 }
 
 func (r RetrievePayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType) Ptr() *RetrievePayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType {
+	return &r
+}
+
+// The kind of payout method the payout used. `external` sent funds out of Whop. `whop_card` moved funds onto the account's own Whop Card.
+type RetrievePayoutsResponsePayoutMethodType string
+
+const (
+	RetrievePayoutsResponsePayoutMethodTypeExternal RetrievePayoutsResponsePayoutMethodType = "external"
+	RetrievePayoutsResponsePayoutMethodTypeWhopCard RetrievePayoutsResponsePayoutMethodType = "whop_card"
+)
+
+func NewRetrievePayoutsResponsePayoutMethodTypeFromString(s string) (RetrievePayoutsResponsePayoutMethodType, error) {
+	switch s {
+	case "external":
+		return RetrievePayoutsResponsePayoutMethodTypeExternal, nil
+	case "whop_card":
+		return RetrievePayoutsResponsePayoutMethodTypeWhopCard, nil
+	}
+	var t RetrievePayoutsResponsePayoutMethodType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePayoutsResponsePayoutMethodType) Ptr() *RetrievePayoutsResponsePayoutMethodType {
 	return &r
 }
 
