@@ -2980,6 +2980,7 @@ const (
 	AccountFeeRegionNg  AccountFeeRegion = "ng"
 	AccountFeeRegionMy  AccountFeeRegion = "my"
 	AccountFeeRegionDo  AccountFeeRegion = "do"
+	AccountFeeRegionSv  AccountFeeRegion = "sv"
 )
 
 func NewAccountFeeRegionFromString(s string) (AccountFeeRegion, error) {
@@ -3022,6 +3023,8 @@ func NewAccountFeeRegionFromString(s string) (AccountFeeRegion, error) {
 		return AccountFeeRegionMy, nil
 	case "do":
 		return AccountFeeRegionDo, nil
+	case "sv":
+		return AccountFeeRegionSv, nil
 	}
 	var t AccountFeeRegion
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
