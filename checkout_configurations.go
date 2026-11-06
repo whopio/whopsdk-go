@@ -475,30 +475,32 @@ func (c CreateCheckoutConfigurationsRequestThreeDsLevel) Ptr() *CreateCheckoutCo
 
 var (
 	createCheckoutConfigurationsRequestVariantFieldAccountID                  = big.NewInt(1 << 0)
-	createCheckoutConfigurationsRequestVariantFieldBillingPeriod              = big.NewInt(1 << 1)
-	createCheckoutConfigurationsRequestVariantFieldBillingType                = big.NewInt(1 << 2)
-	createCheckoutConfigurationsRequestVariantFieldCurrency                   = big.NewInt(1 << 3)
-	createCheckoutConfigurationsRequestVariantFieldDescription                = big.NewInt(1 << 4)
-	createCheckoutConfigurationsRequestVariantFieldExpirationDays             = big.NewInt(1 << 5)
-	createCheckoutConfigurationsRequestVariantFieldForceCreateNewPlan         = big.NewInt(1 << 6)
-	createCheckoutConfigurationsRequestVariantFieldInitialPrice               = big.NewInt(1 << 7)
-	createCheckoutConfigurationsRequestVariantFieldMetadata                   = big.NewInt(1 << 8)
-	createCheckoutConfigurationsRequestVariantFieldOverrideTaxType            = big.NewInt(1 << 9)
-	createCheckoutConfigurationsRequestVariantFieldPaymentMethodConfiguration = big.NewInt(1 << 10)
-	createCheckoutConfigurationsRequestVariantFieldProductID                  = big.NewInt(1 << 11)
-	createCheckoutConfigurationsRequestVariantFieldReleaseMethod              = big.NewInt(1 << 12)
-	createCheckoutConfigurationsRequestVariantFieldRenewalPrice               = big.NewInt(1 << 13)
-	createCheckoutConfigurationsRequestVariantFieldStock                      = big.NewInt(1 << 14)
-	createCheckoutConfigurationsRequestVariantFieldThreeDsLevel               = big.NewInt(1 << 15)
-	createCheckoutConfigurationsRequestVariantFieldTitle                      = big.NewInt(1 << 16)
-	createCheckoutConfigurationsRequestVariantFieldTrialPeriodDays            = big.NewInt(1 << 17)
-	createCheckoutConfigurationsRequestVariantFieldUnlimitedStock             = big.NewInt(1 << 18)
-	createCheckoutConfigurationsRequestVariantFieldVisibility                 = big.NewInt(1 << 19)
+	createCheckoutConfigurationsRequestVariantFieldApplicationFeeAmount       = big.NewInt(1 << 1)
+	createCheckoutConfigurationsRequestVariantFieldBillingPeriod              = big.NewInt(1 << 2)
+	createCheckoutConfigurationsRequestVariantFieldBillingType                = big.NewInt(1 << 3)
+	createCheckoutConfigurationsRequestVariantFieldCurrency                   = big.NewInt(1 << 4)
+	createCheckoutConfigurationsRequestVariantFieldDescription                = big.NewInt(1 << 5)
+	createCheckoutConfigurationsRequestVariantFieldExpirationDays             = big.NewInt(1 << 6)
+	createCheckoutConfigurationsRequestVariantFieldForceCreateNewPlan         = big.NewInt(1 << 7)
+	createCheckoutConfigurationsRequestVariantFieldInitialPrice               = big.NewInt(1 << 8)
+	createCheckoutConfigurationsRequestVariantFieldMetadata                   = big.NewInt(1 << 9)
+	createCheckoutConfigurationsRequestVariantFieldOverrideTaxType            = big.NewInt(1 << 10)
+	createCheckoutConfigurationsRequestVariantFieldPaymentMethodConfiguration = big.NewInt(1 << 11)
+	createCheckoutConfigurationsRequestVariantFieldProductID                  = big.NewInt(1 << 12)
+	createCheckoutConfigurationsRequestVariantFieldReleaseMethod              = big.NewInt(1 << 13)
+	createCheckoutConfigurationsRequestVariantFieldRenewalPrice               = big.NewInt(1 << 14)
+	createCheckoutConfigurationsRequestVariantFieldStock                      = big.NewInt(1 << 15)
+	createCheckoutConfigurationsRequestVariantFieldThreeDsLevel               = big.NewInt(1 << 16)
+	createCheckoutConfigurationsRequestVariantFieldTitle                      = big.NewInt(1 << 17)
+	createCheckoutConfigurationsRequestVariantFieldTrialPeriodDays            = big.NewInt(1 << 18)
+	createCheckoutConfigurationsRequestVariantFieldUnlimitedStock             = big.NewInt(1 << 19)
+	createCheckoutConfigurationsRequestVariantFieldVisibility                 = big.NewInt(1 << 20)
 )
 
 // createCheckoutConfigurationsRequestVariantNullableFields maps the wire names of CreateCheckoutConfigurationsRequestVariant's nullable fields (required or optional) to their field bits.
 var createCheckoutConfigurationsRequestVariantNullableFields = map[string]*big.Int{
 	"account_id":                   createCheckoutConfigurationsRequestVariantFieldAccountID,
+	"application_fee_amount":       createCheckoutConfigurationsRequestVariantFieldApplicationFeeAmount,
 	"billing_period":               createCheckoutConfigurationsRequestVariantFieldBillingPeriod,
 	"billing_type":                 createCheckoutConfigurationsRequestVariantFieldBillingType,
 	"currency":                     createCheckoutConfigurationsRequestVariantFieldCurrency,
@@ -524,6 +526,8 @@ var createCheckoutConfigurationsRequestVariantNullableFields = map[string]*big.I
 type CreateCheckoutConfigurationsRequestVariant struct {
 	// Account ID for the inline variant, prefixed `biz_`. Defaults to the account resolved from the request.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for subaccounts with a parent account.
+	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
 	// Recurring billing interval in days, such as 30 for monthly or 365 for annual.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
 	// Billing model for the variant.
@@ -575,6 +579,13 @@ func (c *CreateCheckoutConfigurationsRequestVariant) GetAccountID() *string {
 		return nil
 	}
 	return c.AccountID
+}
+
+func (c *CreateCheckoutConfigurationsRequestVariant) GetApplicationFeeAmount() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.ApplicationFeeAmount
 }
 
 func (c *CreateCheckoutConfigurationsRequestVariant) GetBillingPeriod() *int {
@@ -731,6 +742,13 @@ func (c *CreateCheckoutConfigurationsRequestVariant) require(field *big.Int) {
 func (c *CreateCheckoutConfigurationsRequestVariant) SetAccountID(accountID *string) {
 	c.AccountID = accountID
 	c.require(createCheckoutConfigurationsRequestVariantFieldAccountID)
+}
+
+// SetApplicationFeeAmount sets the ApplicationFeeAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateCheckoutConfigurationsRequestVariant) SetApplicationFeeAmount(applicationFeeAmount *float64) {
+	c.ApplicationFeeAmount = applicationFeeAmount
+	c.require(createCheckoutConfigurationsRequestVariantFieldApplicationFeeAmount)
 }
 
 // SetBillingPeriod sets the BillingPeriod field and marks it as non-optional;
