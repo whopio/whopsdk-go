@@ -179527,13 +179527,6 @@ func TestEnumFinancingProviderReason(t *testing.T) {
 		assert.Equal(t, FinancingProviderReason("turned_off_in_checkout_settings"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_billing_address_hidden", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewFinancingProviderReasonFromString("billing_address_hidden")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, FinancingProviderReason("billing_address_hidden"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_provider_review", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewFinancingProviderReasonFromString("provider_review")
