@@ -3041,6 +3041,560 @@
       }
     },
     {
+      "id": "5b2319a1-a0d9-4439-8b01-b4a2294507b1",
+      "name": "List Automation Enrollments - default",
+      "request": {
+        "urlPathTemplate": "/automation_enrollments",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"automation_id\": \"ato_xxxxxxxxxxxxxx\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"atoe_xxxxxxxxxxxxxx\",\n      \"member_id\": \"mber_xxxxxxxxxxxxxx\",\n      \"next_run_at\": \"2026-01-01T12:00:00.000Z\",\n      \"next_step_id\": \"atos_xxxxxxxxxxxxxx\",\n      \"next_step_key\": 1,\n      \"status\": \"active\",\n      \"trigger_event\": \"payment.succeeded\",\n      \"trigger_resource_id\": \"mber_xxxxxxxxxxxxxx\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"user_id\": \"user_xxxxxxxxxxxxxx\",\n      \"version\": 1\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "5b2319a1-a0d9-4439-8b01-b4a2294507b1",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "b989c4da-a79c-48ba-8bd0-440e4e18ad82",
+      "name": "Retrieve Automation Enrollment - default",
+      "request": {
+        "urlPathTemplate": "/automation_enrollments/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"automation_id\": \"ato_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"atoe_xxxxxxxxxxxxxx\",\n  \"member_id\": \"mber_xxxxxxxxxxxxxx\",\n  \"next_run_at\": \"2026-01-01T12:00:00.000Z\",\n  \"next_step_id\": \"atos_xxxxxxxxxxxxxx\",\n  \"next_step_key\": 1,\n  \"status\": \"active\",\n  \"trigger_event\": \"payment.succeeded\",\n  \"trigger_resource_id\": \"mber_xxxxxxxxxxxxxx\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user_id\": \"user_xxxxxxxxxxxxxx\",\n  \"version\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "b989c4da-a79c-48ba-8bd0-440e4e18ad82",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "cc34c2df-8374-4df4-b8e2-6eed1603c54e",
+      "name": "Cancel Automation Enrollment - default",
+      "request": {
+        "urlPathTemplate": "/automation_enrollments/{id}/cancel",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"automation_id\": \"ato_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"atoe_xxxxxxxxxxxxxx\",\n  \"member_id\": \"mber_xxxxxxxxxxxxxx\",\n  \"next_run_at\": \"2026-01-01T12:00:00.000Z\",\n  \"next_step_id\": \"atos_xxxxxxxxxxxxxx\",\n  \"next_step_key\": 1,\n  \"status\": \"active\",\n  \"trigger_event\": \"payment.succeeded\",\n  \"trigger_resource_id\": \"mber_xxxxxxxxxxxxxx\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user_id\": \"user_xxxxxxxxxxxxxx\",\n  \"version\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "cc34c2df-8374-4df4-b8e2-6eed1603c54e",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "7dec4f4b-6de5-4f1e-990c-eb07a20b3598",
+      "name": "List Automation Steps - default",
+      "request": {
+        "urlPathTemplate": "/automation_steps",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"action_type\": \"wait\",\n      \"automation_id\": \"ato_xxxxxxxxxxxxxx\",\n      \"config\": {\n        \"delay_seconds\": 86400\n      },\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"atos_xxxxxxxxxxxxxx\",\n      \"issues\": [\n        \"issues\"\n      ],\n      \"key\": 2,\n      \"previous_step_id\": \"atos_xxxxxxxxxxxxxx\",\n      \"sender\": {\n        \"address\": \"address\",\n        \"id\": \"id\",\n        \"object\": \"email_address\"\n      },\n      \"source_code\": \"export default () => message.send({ subject: \\\"Thanks!\\\", text: \\\"Thanks for your order!\\\" });\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"version\": 1,\n      \"waiting_enrollments_count\": 0\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"MQ\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "7dec4f4b-6de5-4f1e-990c-eb07a20b3598",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "2ff7e053-7e7b-43ab-8d16-b67193933278",
+      "name": "Create Automation Step - default",
+      "request": {
+        "urlPathTemplate": "/automation_steps",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"action_type\": \"wait\",\n  \"automation_id\": \"ato_xxxxxxxxxxxxxx\",\n  \"config\": {\n    \"delay_seconds\": 86400\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"atos_xxxxxxxxxxxxxx\",\n  \"issues\": [\n    \"issues\"\n  ],\n  \"key\": 2,\n  \"previous_step_id\": \"atos_xxxxxxxxxxxxxx\",\n  \"sender\": {\n    \"address\": \"address\",\n    \"id\": \"id\",\n    \"object\": \"email_address\"\n  },\n  \"source_code\": \"export default () => message.send({ subject: \\\"Thanks!\\\", text: \\\"Thanks for your order!\\\" });\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"version\": 1,\n  \"waiting_enrollments_count\": 0\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "2ff7e053-7e7b-43ab-8d16-b67193933278",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "4395b17f-e86a-4b4c-a27f-d34fb859fe12",
+      "name": "Retrieve Automation Step - default",
+      "request": {
+        "urlPathTemplate": "/automation_steps/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"action_type\": \"wait\",\n  \"automation_id\": \"ato_xxxxxxxxxxxxxx\",\n  \"config\": {\n    \"delay_seconds\": 86400\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"atos_xxxxxxxxxxxxxx\",\n  \"issues\": [\n    \"issues\"\n  ],\n  \"key\": 2,\n  \"previous_step_id\": \"atos_xxxxxxxxxxxxxx\",\n  \"sender\": {\n    \"address\": \"address\",\n    \"id\": \"id\",\n    \"object\": \"email_address\"\n  },\n  \"source_code\": \"export default () => message.send({ subject: \\\"Thanks!\\\", text: \\\"Thanks for your order!\\\" });\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"version\": 1,\n  \"waiting_enrollments_count\": 0\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "4395b17f-e86a-4b4c-a27f-d34fb859fe12",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "a23a563b-0436-4a5e-acaa-ad7ce2fc69f5",
+      "name": "Delete Automation Step - default",
+      "request": {
+        "urlPathTemplate": "/automation_steps/{id}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"action_type\": \"wait\",\n  \"automation_id\": \"ato_xxxxxxxxxxxxxx\",\n  \"config\": {\n    \"delay_seconds\": 86400\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"atos_xxxxxxxxxxxxxx\",\n  \"issues\": [\n    \"issues\"\n  ],\n  \"key\": 2,\n  \"previous_step_id\": \"atos_xxxxxxxxxxxxxx\",\n  \"sender\": {\n    \"address\": \"address\",\n    \"id\": \"id\",\n    \"object\": \"email_address\"\n  },\n  \"source_code\": \"export default () => message.send({ subject: \\\"Thanks!\\\", text: \\\"Thanks for your order!\\\" });\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"version\": 1,\n  \"waiting_enrollments_count\": 0\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "a23a563b-0436-4a5e-acaa-ad7ce2fc69f5",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "99f7812e-9a6b-4fa6-9f85-4d3f1b92a850",
+      "name": "Update Automation Step - default",
+      "request": {
+        "urlPathTemplate": "/automation_steps/{id}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"action_type\": \"wait\",\n  \"automation_id\": \"ato_xxxxxxxxxxxxxx\",\n  \"config\": {\n    \"delay_seconds\": 86400\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"atos_xxxxxxxxxxxxxx\",\n  \"issues\": [\n    \"issues\"\n  ],\n  \"key\": 2,\n  \"previous_step_id\": \"atos_xxxxxxxxxxxxxx\",\n  \"sender\": {\n    \"address\": \"address\",\n    \"id\": \"id\",\n    \"object\": \"email_address\"\n  },\n  \"source_code\": \"export default () => message.send({ subject: \\\"Thanks!\\\", text: \\\"Thanks for your order!\\\" });\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"version\": 1,\n  \"waiting_enrollments_count\": 0\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "99f7812e-9a6b-4fa6-9f85-4d3f1b92a850",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "bbe45fc1-0365-4197-8947-f9cd180c0571",
+      "name": "Preview Automation Step - default",
+      "request": {
+        "urlPathTemplate": "/automation_steps/{id}/preview",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"action_type\": \"email\",\n  \"html\": \"<html><body><p>Hi there</p><table role=\\\"presentation\\\" data-whop-footer width=\\\"100%\\\" cellpadding=\\\"0\\\" cellspacing=\\\"0\\\" style=\\\"margin:32px 0 0;border-top:1px solid #e6e6e6;\\\">\\n<tr><td style=\\\"padding:20px 16px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#6f6f6f;\\\">\\n<p style=\\\"margin:0 0 8px;\\\">You&#39;re receiving this because you bought from Batman1. <a href=\\\"{{whop_unsubscribe_url}}\\\" style=\\\"color:#6f6f6f;text-decoration:underline;\\\">Unsubscribe from Batman1 emails</a>.</p>\\n<p style=\\\"margin:0 0 8px;\\\">Problem with your order? <a href=\\\"https://whop.com/@me/settings/resolution-center/\\\" style=\\\"color:#6f6f6f;text-decoration:underline;\\\">Open a case in the Resolution Center</a>.</p>\\n<p style=\\\"margin:0;font-weight:600;color:#9a9a9a;\\\">Sent with Whop</p>\\n<!--whop:open-pixel-->\\n</td></tr>\\n</table>\\n\\n</body></html>\",\n  \"outcome\": \"sent\",\n  \"preheader\": \"preheader\",\n  \"reason\": \"reason\",\n  \"subject\": \"How's the kettle?\",\n  \"text\": \"Hi there\\n\\n--\\nYou're receiving this because you bought from Batman1. Unsubscribe from Batman1 emails: {{whop_unsubscribe_url}}\\nProblem with your order? Open a case in the Resolution Center: https://whop.com/@me/settings/resolution-center/\\nSent with Whop\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "bbe45fc1-0365-4197-8947-f9cd180c0571",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "9c459cef-64ef-484b-988f-3584e7eb8130",
+      "name": "List Automations - default",
+      "request": {
+        "urlPathTemplate": "/automations",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"active_enrollments_count\": 0,\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"created_by_actor\": {\n        \"id\": \"biz_xxxxxxxxxxxxxx\",\n        \"object\": \"user\"\n      },\n      \"draft_version\": 2,\n      \"has_unpublished_changes\": false,\n      \"id\": \"ato_xxxxxxxxxxxxxx\",\n      \"name\": \"After an order\",\n      \"published_at\": \"2026-01-01T12:00:00.000Z\",\n      \"published_by_actor\": {\n        \"id\": \"biz_xxxxxxxxxxxxxx\",\n        \"object\": \"user\"\n      },\n      \"published_version\": 1,\n      \"secret_names\": [\n        \"SHOP_TOKEN\"\n      ],\n      \"status\": \"active\",\n      \"total_enrollments_count\": 0,\n      \"trigger_event\": \"payment.succeeded\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "9c459cef-64ef-484b-988f-3584e7eb8130",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "71dd01a9-cd14-4065-ae86-ce00da15e434",
+      "name": "Create Automation - default",
+      "request": {
+        "urlPathTemplate": "/automations",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"active_enrollments_count\": 0,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by_actor\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"object\": \"user\"\n  },\n  \"draft_version\": 2,\n  \"has_unpublished_changes\": false,\n  \"id\": \"ato_xxxxxxxxxxxxxx\",\n  \"name\": \"After an order\",\n  \"published_at\": \"2026-01-01T12:00:00.000Z\",\n  \"published_by_actor\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"object\": \"user\"\n  },\n  \"published_version\": 1,\n  \"secret_names\": [\n    \"SHOP_TOKEN\"\n  ],\n  \"status\": \"active\",\n  \"total_enrollments_count\": 0,\n  \"trigger_event\": \"payment.succeeded\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "71dd01a9-cd14-4065-ae86-ce00da15e434",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "cb0b036e-5d51-4f6b-bb53-c562a9beafec",
+      "name": "Retrieve Automation - default",
+      "request": {
+        "urlPathTemplate": "/automations/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"active_enrollments_count\": 0,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by_actor\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"object\": \"user\"\n  },\n  \"draft_version\": 2,\n  \"has_unpublished_changes\": false,\n  \"id\": \"ato_xxxxxxxxxxxxxx\",\n  \"name\": \"After an order\",\n  \"published_at\": \"2026-01-01T12:00:00.000Z\",\n  \"published_by_actor\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"object\": \"user\"\n  },\n  \"published_version\": 1,\n  \"secret_names\": [\n    \"SHOP_TOKEN\"\n  ],\n  \"status\": \"active\",\n  \"total_enrollments_count\": 0,\n  \"trigger_event\": \"payment.succeeded\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "cb0b036e-5d51-4f6b-bb53-c562a9beafec",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "2dca79c4-38fb-438a-b5e0-d6182089c6bc",
+      "name": "Delete Automation - default",
+      "request": {
+        "urlPathTemplate": "/automations/{id}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"active_enrollments_count\": 0,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by_actor\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"object\": \"user\"\n  },\n  \"draft_version\": 2,\n  \"has_unpublished_changes\": false,\n  \"id\": \"ato_xxxxxxxxxxxxxx\",\n  \"name\": \"After an order\",\n  \"published_at\": \"2026-01-01T12:00:00.000Z\",\n  \"published_by_actor\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"object\": \"user\"\n  },\n  \"published_version\": 1,\n  \"secret_names\": [\n    \"SHOP_TOKEN\"\n  ],\n  \"status\": \"active\",\n  \"total_enrollments_count\": 0,\n  \"trigger_event\": \"payment.succeeded\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "2dca79c4-38fb-438a-b5e0-d6182089c6bc",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "2b4bc38b-0142-4ff6-a989-d3bd68d5395c",
+      "name": "Update Automation - default",
+      "request": {
+        "urlPathTemplate": "/automations/{id}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"active_enrollments_count\": 0,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by_actor\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"object\": \"user\"\n  },\n  \"draft_version\": 2,\n  \"has_unpublished_changes\": false,\n  \"id\": \"ato_xxxxxxxxxxxxxx\",\n  \"name\": \"After an order\",\n  \"published_at\": \"2026-01-01T12:00:00.000Z\",\n  \"published_by_actor\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"object\": \"user\"\n  },\n  \"published_version\": 1,\n  \"secret_names\": [\n    \"SHOP_TOKEN\"\n  ],\n  \"status\": \"active\",\n  \"total_enrollments_count\": 0,\n  \"trigger_event\": \"payment.succeeded\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "2b4bc38b-0142-4ff6-a989-d3bd68d5395c",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "81b381ba-719a-47f4-810c-f7b998414f89",
+      "name": "Publish Automation - default",
+      "request": {
+        "urlPathTemplate": "/automations/{id}/publish",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"active_enrollments_count\": 0,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by_actor\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"object\": \"user\"\n  },\n  \"draft_version\": 2,\n  \"has_unpublished_changes\": false,\n  \"id\": \"ato_xxxxxxxxxxxxxx\",\n  \"name\": \"After an order\",\n  \"published_at\": \"2026-01-01T12:00:00.000Z\",\n  \"published_by_actor\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"object\": \"user\"\n  },\n  \"published_version\": 1,\n  \"secret_names\": [\n    \"SHOP_TOKEN\"\n  ],\n  \"status\": \"active\",\n  \"total_enrollments_count\": 0,\n  \"trigger_event\": \"payment.succeeded\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "81b381ba-719a-47f4-810c-f7b998414f89",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "2d757779-5264-47af-b676-064eb5825406",
+      "name": "Trigger Automation - default",
+      "request": {
+        "urlPathTemplate": "/automations/{id}/trigger",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"active_enrollments_count\": 0,\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by_actor\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"object\": \"user\"\n  },\n  \"draft_version\": 2,\n  \"has_unpublished_changes\": false,\n  \"id\": \"ato_xxxxxxxxxxxxxx\",\n  \"name\": \"After an order\",\n  \"published_at\": \"2026-01-01T12:00:00.000Z\",\n  \"published_by_actor\": {\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"object\": \"user\"\n  },\n  \"published_version\": 1,\n  \"secret_names\": [\n    \"SHOP_TOKEN\"\n  ],\n  \"status\": \"active\",\n  \"total_enrollments_count\": 0,\n  \"trigger_event\": \"payment.succeeded\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "2d757779-5264-47af-b676-064eb5825406",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "dcdec607-3483-4bd0-b74d-8669f886cdd0",
       "name": "List Bounties - default",
       "request": {
@@ -17733,6 +18287,6 @@
     }
   ],
   "meta": {
-    "total": 495
+    "total": 511
   }
 }

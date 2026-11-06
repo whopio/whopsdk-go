@@ -707,6 +707,27 @@ func TestEnumPermissionAction(t *testing.T) {
 		assert.Equal(t, PermissionAction("authorized_user:update"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_automation_manage", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("automation:manage")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("automation:manage"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_automation_read", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("automation:read")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("automation:read"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_automation_write", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPermissionActionFromString("automation:write")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PermissionAction("automation:write"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_bounty_basic_read", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPermissionActionFromString("bounty:basic:read")
