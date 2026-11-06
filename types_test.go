@@ -21568,7 +21568,7 @@ func TestSettersMarkExplicitCheckoutSessionPaymentMethodConfiguration(t *testing
 func TestSettersCustomerTrackingPreferences(t *testing.T) {
 	t.Run("SetAccentColor", func(t *testing.T) {
 		obj := &CustomerTrackingPreferences{}
-		var fernTestValueAccentColor *string
+		var fernTestValueAccentColor string
 		obj.SetAccentColor(fernTestValueAccentColor)
 		assert.Equal(t, fernTestValueAccentColor, obj.AccentColor)
 		assert.NotNil(t, obj.explicitFields)
@@ -21576,7 +21576,7 @@ func TestSettersCustomerTrackingPreferences(t *testing.T) {
 
 	t.Run("SetEnabled", func(t *testing.T) {
 		obj := &CustomerTrackingPreferences{}
-		var fernTestValueEnabled *bool
+		var fernTestValueEnabled bool
 		obj.SetEnabled(fernTestValueEnabled)
 		assert.Equal(t, fernTestValueEnabled, obj.Enabled)
 		assert.NotNil(t, obj.explicitFields)
@@ -21584,7 +21584,7 @@ func TestSettersCustomerTrackingPreferences(t *testing.T) {
 
 	t.Run("SetShowBusinessName", func(t *testing.T) {
 		obj := &CustomerTrackingPreferences{}
-		var fernTestValueShowBusinessName *bool
+		var fernTestValueShowBusinessName bool
 		obj.SetShowBusinessName(fernTestValueShowBusinessName)
 		assert.Equal(t, fernTestValueShowBusinessName, obj.ShowBusinessName)
 		assert.NotNil(t, obj.explicitFields)
@@ -21592,7 +21592,7 @@ func TestSettersCustomerTrackingPreferences(t *testing.T) {
 
 	t.Run("SetShowLogo", func(t *testing.T) {
 		obj := &CustomerTrackingPreferences{}
-		var fernTestValueShowLogo *bool
+		var fernTestValueShowLogo bool
 		obj.SetShowLogo(fernTestValueShowLogo)
 		assert.Equal(t, fernTestValueShowLogo, obj.ShowLogo)
 		assert.NotNil(t, obj.explicitFields)
@@ -21621,21 +21621,11 @@ func TestGettersCustomerTrackingPreferences(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CustomerTrackingPreferences{}
-		var expected *string
+		var expected string
 		obj.AccentColor = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetAccentColor(), "getter should return the property value")
-	})
-
-	t.Run("GetAccentColor_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CustomerTrackingPreferences{}
-		obj.AccentColor = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetAccentColor(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetAccentColor_NilReceiver", func(t *testing.T) {
@@ -21654,21 +21644,11 @@ func TestGettersCustomerTrackingPreferences(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CustomerTrackingPreferences{}
-		var expected *bool
+		var expected bool
 		obj.Enabled = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetEnabled(), "getter should return the property value")
-	})
-
-	t.Run("GetEnabled_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CustomerTrackingPreferences{}
-		obj.Enabled = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetEnabled(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetEnabled_NilReceiver", func(t *testing.T) {
@@ -21687,21 +21667,11 @@ func TestGettersCustomerTrackingPreferences(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CustomerTrackingPreferences{}
-		var expected *bool
+		var expected bool
 		obj.ShowBusinessName = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetShowBusinessName(), "getter should return the property value")
-	})
-
-	t.Run("GetShowBusinessName_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CustomerTrackingPreferences{}
-		obj.ShowBusinessName = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetShowBusinessName(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetShowBusinessName_NilReceiver", func(t *testing.T) {
@@ -21720,21 +21690,11 @@ func TestGettersCustomerTrackingPreferences(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CustomerTrackingPreferences{}
-		var expected *bool
+		var expected bool
 		obj.ShowLogo = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetShowLogo(), "getter should return the property value")
-	})
-
-	t.Run("GetShowLogo_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CustomerTrackingPreferences{}
-		obj.ShowLogo = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetShowLogo(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetShowLogo_NilReceiver", func(t *testing.T) {
@@ -21822,7 +21782,7 @@ func TestSettersMarkExplicitCustomerTrackingPreferences(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CustomerTrackingPreferences{}
-		var fernTestValueAccentColor *string
+		var fernTestValueAccentColor string
 
 		// Act
 		obj.SetAccentColor(fernTestValueAccentColor)
@@ -21853,7 +21813,7 @@ func TestSettersMarkExplicitCustomerTrackingPreferences(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CustomerTrackingPreferences{}
-		var fernTestValueEnabled *bool
+		var fernTestValueEnabled bool
 
 		// Act
 		obj.SetEnabled(fernTestValueEnabled)
@@ -21884,7 +21844,7 @@ func TestSettersMarkExplicitCustomerTrackingPreferences(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CustomerTrackingPreferences{}
-		var fernTestValueShowBusinessName *bool
+		var fernTestValueShowBusinessName bool
 
 		// Act
 		obj.SetShowBusinessName(fernTestValueShowBusinessName)
@@ -21915,7 +21875,7 @@ func TestSettersMarkExplicitCustomerTrackingPreferences(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CustomerTrackingPreferences{}
-		var fernTestValueShowLogo *bool
+		var fernTestValueShowLogo bool
 
 		// Act
 		obj.SetShowLogo(fernTestValueShowLogo)
@@ -76749,6 +76709,14 @@ func TestSettersPayment(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMissingTracking", func(t *testing.T) {
+		obj := &Payment{}
+		var fernTestValueMissingTracking *bool
+		obj.SetMissingTracking(fernTestValueMissingTracking)
+		assert.Equal(t, fernTestValueMissingTracking, obj.MissingTracking)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetNeedsTracking", func(t *testing.T) {
 		obj := &Payment{}
 		var fernTestValueNeedsTracking *bool
@@ -77962,6 +77930,39 @@ func TestGettersPayment(t *testing.T) {
 			}
 		}()
 		_ = obj.GetMetadata() // Should return zero value
+	})
+
+	t.Run("GetMissingTracking", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		var expected *bool
+		obj.MissingTracking = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMissingTracking(), "getter should return the property value")
+	})
+
+	t.Run("GetMissingTracking_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		obj.MissingTracking = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMissingTracking(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMissingTracking_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Payment
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMissingTracking() // Should return zero value
 	})
 
 	t.Run("GetNeedsTracking", func(t *testing.T) {
@@ -80085,6 +80086,37 @@ func TestSettersMarkExplicitPayment(t *testing.T) {
 
 		// Act
 		obj.SetMetadata(fernTestValueMetadata)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMissingTracking_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		var fernTestValueMissingTracking *bool
+
+		// Act
+		obj.SetMissingTracking(fernTestValueMissingTracking)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -159197,10 +159229,6 @@ func TestRequiredNullableRoundTripCheckoutConfigurationVariant(t *testing.T) {
 
 func TestRequiredNullableRoundTripCustomerTrackingPreferences(t *testing.T) {
 	requiredNullableKeys := []string{
-		"accent_color",
-		"enabled",
-		"show_business_name",
-		"show_logo",
 		"support_email",
 		"support_url",
 	}
@@ -159215,7 +159243,7 @@ func TestRequiredNullableRoundTripCustomerTrackingPreferences(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj CustomerTrackingPreferences
-		require.NoError(t, json.Unmarshal([]byte(`{"accent_color":null,"enabled":null,"show_business_name":null,"show_logo":null,"support_email":null,"support_url":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"support_email":null,"support_url":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -162989,6 +163017,7 @@ func TestRequiredNullableRoundTripPayment(t *testing.T) {
 		"member_id",
 		"membership_id",
 		"metadata",
+		"missing_tracking",
 		"needs_tracking",
 		"next_payment_attempt_at",
 		"paid_at",
@@ -163032,7 +163061,7 @@ func TestRequiredNullableRoundTripPayment(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Payment
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"auto_capture_at":null,"billing_address":null,"billing_reason":null,"capture_expires_at":null,"checkout_configuration_id":null,"checkout_origin":null,"checkout_surface":null,"client_secret":null,"customer_email":null,"customer_phone":null,"decline_code":null,"dispute_alerted_at":null,"dispute_created_at":null,"failure_message":null,"financing_installments_count":null,"ip_address":null,"last_payment_attempt_at":null,"member_id":null,"membership_id":null,"metadata":null,"needs_tracking":null,"next_payment_attempt_at":null,"paid_at":null,"payment_instrument":null,"payment_method_id":null,"payment_method_type":null,"presentment_refunded_amount":null,"presentment_tax_amount":null,"presentment_total":null,"product_id":null,"promo_code_id":null,"quote_id":null,"recovery_url":null,"refunded_amount":null,"refunded_at":null,"response_due_at":null,"risk_score":null,"risk_signals":null,"settlement_time_at":null,"shipment_id":null,"shipping_address":null,"subtotal":null,"tax_amount":null,"tax_behavior":null,"total":null,"usd_total":null,"user":null,"user_agent":null,"variant_id":null,"verification_checks":null,"wuid":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"auto_capture_at":null,"billing_address":null,"billing_reason":null,"capture_expires_at":null,"checkout_configuration_id":null,"checkout_origin":null,"checkout_surface":null,"client_secret":null,"customer_email":null,"customer_phone":null,"decline_code":null,"dispute_alerted_at":null,"dispute_created_at":null,"failure_message":null,"financing_installments_count":null,"ip_address":null,"last_payment_attempt_at":null,"member_id":null,"membership_id":null,"metadata":null,"missing_tracking":null,"needs_tracking":null,"next_payment_attempt_at":null,"paid_at":null,"payment_instrument":null,"payment_method_id":null,"payment_method_type":null,"presentment_refunded_amount":null,"presentment_tax_amount":null,"presentment_total":null,"product_id":null,"promo_code_id":null,"quote_id":null,"recovery_url":null,"refunded_amount":null,"refunded_at":null,"response_due_at":null,"risk_score":null,"risk_signals":null,"settlement_time_at":null,"shipment_id":null,"shipping_address":null,"subtotal":null,"tax_amount":null,"tax_behavior":null,"total":null,"usd_total":null,"user":null,"user_agent":null,"variant_id":null,"verification_checks":null,"wuid":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
