@@ -629,7 +629,8 @@ var (
 	createMethodsResponseFieldStatus                = big.NewInt(1 << 18)
 	createMethodsResponseFieldStatusReason          = big.NewInt(1 << 19)
 	createMethodsResponseFieldSupportedPayoutMethod = big.NewInt(1 << 20)
-	createMethodsResponseFieldUnavailableReason     = big.NewInt(1 << 21)
+	createMethodsResponseFieldType                  = big.NewInt(1 << 21)
+	createMethodsResponseFieldUnavailableReason     = big.NewInt(1 << 22)
 )
 
 // createMethodsResponseNullableFields maps the wire names of CreateMethodsResponse's nullable fields (required or optional) to their field bits.
@@ -684,6 +685,8 @@ type CreateMethodsResponse struct {
 	// Always `null` on create.
 	StatusReason          *string                                     `json:"status_reason,omitempty" url:"status_reason,omitempty"`
 	SupportedPayoutMethod *CreateMethodsResponseSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
+	// The kind of payout method. `external` sends funds out of Whop. `whop_card` moves funds onto the account's own Whop Card. A `whop_card` method takes standard-speed payouts only, and cannot be updated, reconnected, or deleted.
+	Type *CreateMethodsResponseType `json:"type,omitempty" url:"type,omitempty"`
 	// Why this method is unavailable: `destination_retired` means the payout provider stopped offering the destination. Whop may automatically remap an eligible method that was not linked through Plaid to a compatible replacement; otherwise, the account owner must re-add it. `null` means no unavailability reason is known.
 	UnavailableReason *CreateMethodsResponseUnavailableReason `json:"unavailable_reason,omitempty" url:"unavailable_reason,omitempty"`
 
@@ -839,6 +842,13 @@ func (c *CreateMethodsResponse) GetSupportedPayoutMethod() *CreateMethodsRespons
 		return nil
 	}
 	return c.SupportedPayoutMethod
+}
+
+func (c *CreateMethodsResponse) GetType() *CreateMethodsResponseType {
+	if c == nil {
+		return nil
+	}
+	return c.Type
 }
 
 func (c *CreateMethodsResponse) GetUnavailableReason() *CreateMethodsResponseUnavailableReason {
@@ -1009,6 +1019,13 @@ func (c *CreateMethodsResponse) SetStatusReason(statusReason *string) {
 func (c *CreateMethodsResponse) SetSupportedPayoutMethod(supportedPayoutMethod *CreateMethodsResponseSupportedPayoutMethod) {
 	c.SupportedPayoutMethod = supportedPayoutMethod
 	c.require(createMethodsResponseFieldSupportedPayoutMethod)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsResponse) SetType(type_ *CreateMethodsResponseType) {
+	c.Type = type_
+	c.require(createMethodsResponseFieldType)
 }
 
 // SetUnavailableReason sets the UnavailableReason field and marks it as non-optional;
@@ -1535,6 +1552,29 @@ func (c CreateMethodsResponseSupportedPayoutMethodDeliveryType) Ptr() *CreateMet
 	return &c
 }
 
+// The kind of payout method. `external` sends funds out of Whop. `whop_card` moves funds onto the account's own Whop Card. A `whop_card` method takes standard-speed payouts only, and cannot be updated, reconnected, or deleted.
+type CreateMethodsResponseType string
+
+const (
+	CreateMethodsResponseTypeExternal CreateMethodsResponseType = "external"
+	CreateMethodsResponseTypeWhopCard CreateMethodsResponseType = "whop_card"
+)
+
+func NewCreateMethodsResponseTypeFromString(s string) (CreateMethodsResponseType, error) {
+	switch s {
+	case "external":
+		return CreateMethodsResponseTypeExternal, nil
+	case "whop_card":
+		return CreateMethodsResponseTypeWhopCard, nil
+	}
+	var t CreateMethodsResponseType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateMethodsResponseType) Ptr() *CreateMethodsResponseType {
+	return &c
+}
+
 // Why this method is unavailable: `destination_retired` means the payout provider stopped offering the destination. Whop may automatically remap an eligible method that was not linked through Plaid to a compatible replacement; otherwise, the account owner must re-add it. `null` means no unavailability reason is known.
 type CreateMethodsResponseUnavailableReason string
 
@@ -1825,7 +1865,8 @@ var (
 	listMethodsResponseDataItemFieldStatus                = big.NewInt(1 << 18)
 	listMethodsResponseDataItemFieldStatusReason          = big.NewInt(1 << 19)
 	listMethodsResponseDataItemFieldSupportedPayoutMethod = big.NewInt(1 << 20)
-	listMethodsResponseDataItemFieldUnavailableReason     = big.NewInt(1 << 21)
+	listMethodsResponseDataItemFieldType                  = big.NewInt(1 << 21)
+	listMethodsResponseDataItemFieldUnavailableReason     = big.NewInt(1 << 22)
 )
 
 // listMethodsResponseDataItemNullableFields maps the wire names of ListMethodsResponseDataItem's nullable fields (required or optional) to their field bits.
@@ -1886,6 +1927,8 @@ type ListMethodsResponseDataItem struct {
 	StatusReason *string `json:"status_reason,omitempty" url:"status_reason,omitempty"`
 	// The supported payout method this saved method was created from.
 	SupportedPayoutMethod *ListMethodsResponseDataItemSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
+	// The kind of payout method. `external` sends funds out of Whop. `whop_card` moves funds onto the account's own Whop Card. A `whop_card` method takes standard-speed payouts only, and cannot be updated, reconnected, or deleted.
+	Type ListMethodsResponseDataItemType `json:"type" url:"type"`
 	// Why this method is unavailable: `destination_retired` means the payout provider stopped offering the destination. Whop may automatically remap an eligible method that was not linked through Plaid to a compatible replacement; otherwise, the account owner must re-add it. `null` means no unavailability reason is known.
 	UnavailableReason *ListMethodsResponseDataItemUnavailableReason `json:"unavailable_reason,omitempty" url:"unavailable_reason,omitempty"`
 
@@ -2041,6 +2084,13 @@ func (l *ListMethodsResponseDataItem) GetSupportedPayoutMethod() *ListMethodsRes
 		return nil
 	}
 	return l.SupportedPayoutMethod
+}
+
+func (l *ListMethodsResponseDataItem) GetType() ListMethodsResponseDataItemType {
+	if l == nil {
+		return ""
+	}
+	return l.Type
 }
 
 func (l *ListMethodsResponseDataItem) GetUnavailableReason() *ListMethodsResponseDataItemUnavailableReason {
@@ -2211,6 +2261,13 @@ func (l *ListMethodsResponseDataItem) SetStatusReason(statusReason *string) {
 func (l *ListMethodsResponseDataItem) SetSupportedPayoutMethod(supportedPayoutMethod *ListMethodsResponseDataItemSupportedPayoutMethod) {
 	l.SupportedPayoutMethod = supportedPayoutMethod
 	l.require(listMethodsResponseDataItemFieldSupportedPayoutMethod)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMethodsResponseDataItem) SetType(type_ ListMethodsResponseDataItemType) {
+	l.Type = type_
+	l.require(listMethodsResponseDataItemFieldType)
 }
 
 // SetUnavailableReason sets the UnavailableReason field and marks it as non-optional;
@@ -3444,6 +3501,29 @@ func (l ListMethodsResponseDataItemSupportedPayoutMethodDeliveryType) Ptr() *Lis
 	return &l
 }
 
+// The kind of payout method. `external` sends funds out of Whop. `whop_card` moves funds onto the account's own Whop Card. A `whop_card` method takes standard-speed payouts only, and cannot be updated, reconnected, or deleted.
+type ListMethodsResponseDataItemType string
+
+const (
+	ListMethodsResponseDataItemTypeExternal ListMethodsResponseDataItemType = "external"
+	ListMethodsResponseDataItemTypeWhopCard ListMethodsResponseDataItemType = "whop_card"
+)
+
+func NewListMethodsResponseDataItemTypeFromString(s string) (ListMethodsResponseDataItemType, error) {
+	switch s {
+	case "external":
+		return ListMethodsResponseDataItemTypeExternal, nil
+	case "whop_card":
+		return ListMethodsResponseDataItemTypeWhopCard, nil
+	}
+	var t ListMethodsResponseDataItemType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListMethodsResponseDataItemType) Ptr() *ListMethodsResponseDataItemType {
+	return &l
+}
+
 // Why this method is unavailable: `destination_retired` means the payout provider stopped offering the destination. Whop may automatically remap an eligible method that was not linked through Plaid to a compatible replacement; otherwise, the account owner must re-add it. `null` means no unavailability reason is known.
 type ListMethodsResponseDataItemUnavailableReason string
 
@@ -4339,7 +4419,8 @@ var (
 	updateMethodsResponseFieldStatus                = big.NewInt(1 << 18)
 	updateMethodsResponseFieldStatusReason          = big.NewInt(1 << 19)
 	updateMethodsResponseFieldSupportedPayoutMethod = big.NewInt(1 << 20)
-	updateMethodsResponseFieldUnavailableReason     = big.NewInt(1 << 21)
+	updateMethodsResponseFieldType                  = big.NewInt(1 << 21)
+	updateMethodsResponseFieldUnavailableReason     = big.NewInt(1 << 22)
 )
 
 // updateMethodsResponseNullableFields maps the wire names of UpdateMethodsResponse's nullable fields (required or optional) to their field bits.
@@ -4394,6 +4475,8 @@ type UpdateMethodsResponse struct {
 	// Machine-readable code for why the method is `broken` — the newest failure recorded through it, whether a payout error or a pre-payout rejection. `null` unless the method is broken, or when it was disabled without a recorded failure.
 	StatusReason          *string                                     `json:"status_reason,omitempty" url:"status_reason,omitempty"`
 	SupportedPayoutMethod *UpdateMethodsResponseSupportedPayoutMethod `json:"supported_payout_method,omitempty" url:"supported_payout_method,omitempty"`
+	// The kind of payout method. `external` sends funds out of Whop. `whop_card` moves funds onto the account's own Whop Card. A `whop_card` method takes standard-speed payouts only, and cannot be updated, reconnected, or deleted.
+	Type UpdateMethodsResponseType `json:"type" url:"type"`
 	// Why this method is unavailable: `destination_retired` means the payout provider stopped offering the destination. Whop may automatically remap an eligible method that was not linked through Plaid to a compatible replacement; otherwise, the account owner must re-add it. `null` means no unavailability reason is known.
 	UnavailableReason *UpdateMethodsResponseUnavailableReason `json:"unavailable_reason,omitempty" url:"unavailable_reason,omitempty"`
 
@@ -4549,6 +4632,13 @@ func (u *UpdateMethodsResponse) GetSupportedPayoutMethod() *UpdateMethodsRespons
 		return nil
 	}
 	return u.SupportedPayoutMethod
+}
+
+func (u *UpdateMethodsResponse) GetType() UpdateMethodsResponseType {
+	if u == nil {
+		return ""
+	}
+	return u.Type
 }
 
 func (u *UpdateMethodsResponse) GetUnavailableReason() *UpdateMethodsResponseUnavailableReason {
@@ -4719,6 +4809,13 @@ func (u *UpdateMethodsResponse) SetStatusReason(statusReason *string) {
 func (u *UpdateMethodsResponse) SetSupportedPayoutMethod(supportedPayoutMethod *UpdateMethodsResponseSupportedPayoutMethod) {
 	u.SupportedPayoutMethod = supportedPayoutMethod
 	u.require(updateMethodsResponseFieldSupportedPayoutMethod)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMethodsResponse) SetType(type_ UpdateMethodsResponseType) {
+	u.Type = type_
+	u.require(updateMethodsResponseFieldType)
 }
 
 // SetUnavailableReason sets the UnavailableReason field and marks it as non-optional;
@@ -5242,6 +5339,29 @@ func NewUpdateMethodsResponseSupportedPayoutMethodDeliveryTypeFromString(s strin
 }
 
 func (u UpdateMethodsResponseSupportedPayoutMethodDeliveryType) Ptr() *UpdateMethodsResponseSupportedPayoutMethodDeliveryType {
+	return &u
+}
+
+// The kind of payout method. `external` sends funds out of Whop. `whop_card` moves funds onto the account's own Whop Card. A `whop_card` method takes standard-speed payouts only, and cannot be updated, reconnected, or deleted.
+type UpdateMethodsResponseType string
+
+const (
+	UpdateMethodsResponseTypeExternal UpdateMethodsResponseType = "external"
+	UpdateMethodsResponseTypeWhopCard UpdateMethodsResponseType = "whop_card"
+)
+
+func NewUpdateMethodsResponseTypeFromString(s string) (UpdateMethodsResponseType, error) {
+	switch s {
+	case "external":
+		return UpdateMethodsResponseTypeExternal, nil
+	case "whop_card":
+		return UpdateMethodsResponseTypeWhopCard, nil
+	}
+	var t UpdateMethodsResponseType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateMethodsResponseType) Ptr() *UpdateMethodsResponseType {
 	return &u
 }
 

@@ -3632,6 +3632,14 @@ func TestSettersCancelPayoutsResponsePayoutMethod(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetType", func(t *testing.T) {
+		obj := &CancelPayoutsResponsePayoutMethod{}
+		var fernTestValueType CancelPayoutsResponsePayoutMethodType
+		obj.SetType(fernTestValueType)
+		assert.Equal(t, fernTestValueType, obj.Type)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersCancelPayoutsResponsePayoutMethod(t *testing.T) {
@@ -3701,6 +3709,29 @@ func TestGettersCancelPayoutsResponsePayoutMethod(t *testing.T) {
 		_ = obj.GetSupportedPayoutMethod() // Should return zero value
 	})
 
+	t.Run("GetType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CancelPayoutsResponsePayoutMethod{}
+		var expected CancelPayoutsResponsePayoutMethodType
+		obj.Type = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetType(), "getter should return the property value")
+	})
+
+	t.Run("GetType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CancelPayoutsResponsePayoutMethod
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetType() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitCancelPayoutsResponsePayoutMethod(t *testing.T) {
@@ -3743,6 +3774,37 @@ func TestSettersMarkExplicitCancelPayoutsResponsePayoutMethod(t *testing.T) {
 
 		// Act
 		obj.SetSupportedPayoutMethod(fernTestValueSupportedPayoutMethod)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CancelPayoutsResponsePayoutMethod{}
+		var fernTestValueType CancelPayoutsResponsePayoutMethodType
+
+		// Act
+		obj.SetType(fernTestValueType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5976,6 +6038,14 @@ func TestSettersCreatePayoutsResponsePayoutMethod(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetType", func(t *testing.T) {
+		obj := &CreatePayoutsResponsePayoutMethod{}
+		var fernTestValueType CreatePayoutsResponsePayoutMethodType
+		obj.SetType(fernTestValueType)
+		assert.Equal(t, fernTestValueType, obj.Type)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersCreatePayoutsResponsePayoutMethod(t *testing.T) {
@@ -6045,6 +6115,29 @@ func TestGettersCreatePayoutsResponsePayoutMethod(t *testing.T) {
 		_ = obj.GetSupportedPayoutMethod() // Should return zero value
 	})
 
+	t.Run("GetType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreatePayoutsResponsePayoutMethod{}
+		var expected CreatePayoutsResponsePayoutMethodType
+		obj.Type = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetType(), "getter should return the property value")
+	})
+
+	t.Run("GetType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreatePayoutsResponsePayoutMethod
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetType() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitCreatePayoutsResponsePayoutMethod(t *testing.T) {
@@ -6087,6 +6180,37 @@ func TestSettersMarkExplicitCreatePayoutsResponsePayoutMethod(t *testing.T) {
 
 		// Act
 		obj.SetSupportedPayoutMethod(fernTestValueSupportedPayoutMethod)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreatePayoutsResponsePayoutMethod{}
+		var fernTestValueType CreatePayoutsResponsePayoutMethodType
+
+		// Act
+		obj.SetType(fernTestValueType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9687,6 +9811,14 @@ func TestSettersListPayoutsResponseDataItemPayoutMethod(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetType", func(t *testing.T) {
+		obj := &ListPayoutsResponseDataItemPayoutMethod{}
+		var fernTestValueType ListPayoutsResponseDataItemPayoutMethodType
+		obj.SetType(fernTestValueType)
+		assert.Equal(t, fernTestValueType, obj.Type)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersListPayoutsResponseDataItemPayoutMethod(t *testing.T) {
@@ -9756,6 +9888,29 @@ func TestGettersListPayoutsResponseDataItemPayoutMethod(t *testing.T) {
 		_ = obj.GetSupportedPayoutMethod() // Should return zero value
 	})
 
+	t.Run("GetType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListPayoutsResponseDataItemPayoutMethod{}
+		var expected ListPayoutsResponseDataItemPayoutMethodType
+		obj.Type = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetType(), "getter should return the property value")
+	})
+
+	t.Run("GetType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListPayoutsResponseDataItemPayoutMethod
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetType() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitListPayoutsResponseDataItemPayoutMethod(t *testing.T) {
@@ -9798,6 +9953,37 @@ func TestSettersMarkExplicitListPayoutsResponseDataItemPayoutMethod(t *testing.T
 
 		// Act
 		obj.SetSupportedPayoutMethod(fernTestValueSupportedPayoutMethod)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListPayoutsResponseDataItemPayoutMethod{}
+		var fernTestValueType ListPayoutsResponseDataItemPayoutMethodType
+
+		// Act
+		obj.SetType(fernTestValueType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -12853,6 +13039,14 @@ func TestSettersPostPayoutCreatedPayloadDataPayoutMethod(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetType", func(t *testing.T) {
+		obj := &PostPayoutCreatedPayloadDataPayoutMethod{}
+		var fernTestValueType PostPayoutCreatedPayloadDataPayoutMethodType
+		obj.SetType(fernTestValueType)
+		assert.Equal(t, fernTestValueType, obj.Type)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersPostPayoutCreatedPayloadDataPayoutMethod(t *testing.T) {
@@ -12922,6 +13116,29 @@ func TestGettersPostPayoutCreatedPayloadDataPayoutMethod(t *testing.T) {
 		_ = obj.GetSupportedPayoutMethod() // Should return zero value
 	})
 
+	t.Run("GetType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutCreatedPayloadDataPayoutMethod{}
+		var expected PostPayoutCreatedPayloadDataPayoutMethodType
+		obj.Type = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetType(), "getter should return the property value")
+	})
+
+	t.Run("GetType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PostPayoutCreatedPayloadDataPayoutMethod
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetType() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitPostPayoutCreatedPayloadDataPayoutMethod(t *testing.T) {
@@ -12964,6 +13181,37 @@ func TestSettersMarkExplicitPostPayoutCreatedPayloadDataPayoutMethod(t *testing.
 
 		// Act
 		obj.SetSupportedPayoutMethod(fernTestValueSupportedPayoutMethod)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutCreatedPayloadDataPayoutMethod{}
+		var fernTestValueType PostPayoutCreatedPayloadDataPayoutMethodType
+
+		// Act
+		obj.SetType(fernTestValueType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -13918,6 +14166,14 @@ func TestSettersPostPayoutMethodCreatedPayloadData(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetType", func(t *testing.T) {
+		obj := &PostPayoutMethodCreatedPayloadData{}
+		var fernTestValueType PostPayoutMethodCreatedPayloadDataType
+		obj.SetType(fernTestValueType)
+		assert.Equal(t, fernTestValueType, obj.Type)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetUnavailableReason", func(t *testing.T) {
 		obj := &PostPayoutMethodCreatedPayloadData{}
 		var fernTestValueUnavailableReason *PostPayoutMethodCreatedPayloadDataUnavailableReason
@@ -14530,6 +14786,29 @@ func TestGettersPostPayoutMethodCreatedPayloadData(t *testing.T) {
 			}
 		}()
 		_ = obj.GetSupportedPayoutMethod() // Should return zero value
+	})
+
+	t.Run("GetType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutMethodCreatedPayloadData{}
+		var expected PostPayoutMethodCreatedPayloadDataType
+		obj.Type = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetType(), "getter should return the property value")
+	})
+
+	t.Run("GetType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PostPayoutMethodCreatedPayloadData
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetType() // Should return zero value
 	})
 
 	t.Run("GetUnavailableReason", func(t *testing.T) {
@@ -15196,6 +15475,37 @@ func TestSettersMarkExplicitPostPayoutMethodCreatedPayloadData(t *testing.T) {
 
 		// Act
 		obj.SetSupportedPayoutMethod(fernTestValueSupportedPayoutMethod)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutMethodCreatedPayloadData{}
+		var fernTestValueType PostPayoutMethodCreatedPayloadDataType
+
+		// Act
+		obj.SetType(fernTestValueType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -19679,6 +19989,14 @@ func TestSettersPostPayoutReversedPayloadDataPayoutMethod(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetType", func(t *testing.T) {
+		obj := &PostPayoutReversedPayloadDataPayoutMethod{}
+		var fernTestValueType PostPayoutReversedPayloadDataPayoutMethodType
+		obj.SetType(fernTestValueType)
+		assert.Equal(t, fernTestValueType, obj.Type)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersPostPayoutReversedPayloadDataPayoutMethod(t *testing.T) {
@@ -19748,6 +20066,29 @@ func TestGettersPostPayoutReversedPayloadDataPayoutMethod(t *testing.T) {
 		_ = obj.GetSupportedPayoutMethod() // Should return zero value
 	})
 
+	t.Run("GetType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutReversedPayloadDataPayoutMethod{}
+		var expected PostPayoutReversedPayloadDataPayoutMethodType
+		obj.Type = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetType(), "getter should return the property value")
+	})
+
+	t.Run("GetType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PostPayoutReversedPayloadDataPayoutMethod
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetType() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitPostPayoutReversedPayloadDataPayoutMethod(t *testing.T) {
@@ -19790,6 +20131,37 @@ func TestSettersMarkExplicitPostPayoutReversedPayloadDataPayoutMethod(t *testing
 
 		// Act
 		obj.SetSupportedPayoutMethod(fernTestValueSupportedPayoutMethod)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutReversedPayloadDataPayoutMethod{}
+		var fernTestValueType PostPayoutReversedPayloadDataPayoutMethodType
+
+		// Act
+		obj.SetType(fernTestValueType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -22568,6 +22940,14 @@ func TestSettersPostPayoutUpdatedPayloadDataPayoutMethod(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetType", func(t *testing.T) {
+		obj := &PostPayoutUpdatedPayloadDataPayoutMethod{}
+		var fernTestValueType PostPayoutUpdatedPayloadDataPayoutMethodType
+		obj.SetType(fernTestValueType)
+		assert.Equal(t, fernTestValueType, obj.Type)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersPostPayoutUpdatedPayloadDataPayoutMethod(t *testing.T) {
@@ -22637,6 +23017,29 @@ func TestGettersPostPayoutUpdatedPayloadDataPayoutMethod(t *testing.T) {
 		_ = obj.GetSupportedPayoutMethod() // Should return zero value
 	})
 
+	t.Run("GetType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutUpdatedPayloadDataPayoutMethod{}
+		var expected PostPayoutUpdatedPayloadDataPayoutMethodType
+		obj.Type = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetType(), "getter should return the property value")
+	})
+
+	t.Run("GetType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PostPayoutUpdatedPayloadDataPayoutMethod
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetType() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitPostPayoutUpdatedPayloadDataPayoutMethod(t *testing.T) {
@@ -22679,6 +23082,37 @@ func TestSettersMarkExplicitPostPayoutUpdatedPayloadDataPayoutMethod(t *testing.
 
 		// Act
 		obj.SetSupportedPayoutMethod(fernTestValueSupportedPayoutMethod)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutUpdatedPayloadDataPayoutMethod{}
+		var fernTestValueType PostPayoutUpdatedPayloadDataPayoutMethodType
+
+		// Act
+		obj.SetType(fernTestValueType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -25322,6 +25756,14 @@ func TestSettersRetrievePayoutsResponsePayoutMethod(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetType", func(t *testing.T) {
+		obj := &RetrievePayoutsResponsePayoutMethod{}
+		var fernTestValueType RetrievePayoutsResponsePayoutMethodType
+		obj.SetType(fernTestValueType)
+		assert.Equal(t, fernTestValueType, obj.Type)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersRetrievePayoutsResponsePayoutMethod(t *testing.T) {
@@ -25391,6 +25833,29 @@ func TestGettersRetrievePayoutsResponsePayoutMethod(t *testing.T) {
 		_ = obj.GetSupportedPayoutMethod() // Should return zero value
 	})
 
+	t.Run("GetType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePayoutsResponsePayoutMethod{}
+		var expected RetrievePayoutsResponsePayoutMethodType
+		obj.Type = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetType(), "getter should return the property value")
+	})
+
+	t.Run("GetType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrievePayoutsResponsePayoutMethod
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetType() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitRetrievePayoutsResponsePayoutMethod(t *testing.T) {
@@ -25433,6 +25898,37 @@ func TestSettersMarkExplicitRetrievePayoutsResponsePayoutMethod(t *testing.T) {
 
 		// Act
 		obj.SetSupportedPayoutMethod(fernTestValueSupportedPayoutMethod)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePayoutsResponsePayoutMethod{}
+		var fernTestValueType RetrievePayoutsResponsePayoutMethodType
+
+		// Act
+		obj.SetType(fernTestValueType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -30429,6 +30925,35 @@ func TestEnumCancelPayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType(
 	})
 }
 
+func TestEnumCancelPayoutsResponsePayoutMethodType(t *testing.T) {
+	t.Run("NewFromString_external", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCancelPayoutsResponsePayoutMethodTypeFromString("external")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CancelPayoutsResponsePayoutMethodType("external"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_whop_card", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCancelPayoutsResponsePayoutMethodTypeFromString("whop_card")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CancelPayoutsResponsePayoutMethodType("whop_card"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCancelPayoutsResponsePayoutMethodTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCancelPayoutsResponsePayoutMethodTypeFromString("external")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumCancelPayoutsResponseSource(t *testing.T) {
 	t.Run("NewFromString_api", func(t *testing.T) {
 		t.Parallel()
@@ -30716,6 +31241,35 @@ func TestEnumCreatePayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryType(
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewCreatePayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeFromString("cash_pickup")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreatePayoutsResponsePayoutMethodType(t *testing.T) {
+	t.Run("NewFromString_external", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreatePayoutsResponsePayoutMethodTypeFromString("external")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreatePayoutsResponsePayoutMethodType("external"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_whop_card", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreatePayoutsResponsePayoutMethodTypeFromString("whop_card")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreatePayoutsResponsePayoutMethodType("whop_card"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreatePayoutsResponsePayoutMethodTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreatePayoutsResponsePayoutMethodTypeFromString("external")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -31146,6 +31700,35 @@ func TestEnumListPayoutsResponseDataItemPayoutMethodSupportedPayoutMethodDeliver
 	})
 }
 
+func TestEnumListPayoutsResponseDataItemPayoutMethodType(t *testing.T) {
+	t.Run("NewFromString_external", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPayoutsResponseDataItemPayoutMethodTypeFromString("external")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPayoutsResponseDataItemPayoutMethodType("external"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_whop_card", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPayoutsResponseDataItemPayoutMethodTypeFromString("whop_card")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPayoutsResponseDataItemPayoutMethodType("whop_card"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListPayoutsResponseDataItemPayoutMethodTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListPayoutsResponseDataItemPayoutMethodTypeFromString("external")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumListPayoutsResponseDataItemSource(t *testing.T) {
 	t.Run("NewFromString_api", func(t *testing.T) {
 		t.Parallel()
@@ -31426,6 +32009,35 @@ func TestEnumPostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDelive
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewPostPayoutCreatedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeFromString("cash_pickup")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumPostPayoutCreatedPayloadDataPayoutMethodType(t *testing.T) {
+	t.Run("NewFromString_external", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutCreatedPayloadDataPayoutMethodTypeFromString("external")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutCreatedPayloadDataPayoutMethodType("external"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_whop_card", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutCreatedPayloadDataPayoutMethodTypeFromString("whop_card")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutCreatedPayloadDataPayoutMethodType("whop_card"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPostPayoutCreatedPayloadDataPayoutMethodTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPostPayoutCreatedPayloadDataPayoutMethodTypeFromString("external")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -31821,6 +32433,35 @@ func TestEnumPostPayoutMethodCreatedPayloadDataSupportedPayoutMethodDeliveryType
 	})
 }
 
+func TestEnumPostPayoutMethodCreatedPayloadDataType(t *testing.T) {
+	t.Run("NewFromString_external", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutMethodCreatedPayloadDataTypeFromString("external")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutMethodCreatedPayloadDataType("external"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_whop_card", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutMethodCreatedPayloadDataTypeFromString("whop_card")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutMethodCreatedPayloadDataType("whop_card"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPostPayoutMethodCreatedPayloadDataTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPostPayoutMethodCreatedPayloadDataTypeFromString("external")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumPostPayoutMethodCreatedPayloadDataUnavailableReason(t *testing.T) {
 	t.Run("NewFromString_destination_retired", func(t *testing.T) {
 		t.Parallel()
@@ -32009,6 +32650,35 @@ func TestEnumPostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliv
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewPostPayoutReversedPayloadDataPayoutMethodSupportedPayoutMethodDeliveryTypeFromString("cash_pickup")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumPostPayoutReversedPayloadDataPayoutMethodType(t *testing.T) {
+	t.Run("NewFromString_external", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutReversedPayloadDataPayoutMethodTypeFromString("external")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutReversedPayloadDataPayoutMethodType("external"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_whop_card", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutReversedPayloadDataPayoutMethodTypeFromString("whop_card")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutReversedPayloadDataPayoutMethodType("whop_card"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPostPayoutReversedPayloadDataPayoutMethodTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPostPayoutReversedPayloadDataPayoutMethodTypeFromString("external")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -32325,6 +32995,35 @@ func TestEnumPostPayoutUpdatedPayloadDataPayoutMethodSupportedPayoutMethodDelive
 	})
 }
 
+func TestEnumPostPayoutUpdatedPayloadDataPayoutMethodType(t *testing.T) {
+	t.Run("NewFromString_external", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutUpdatedPayloadDataPayoutMethodTypeFromString("external")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutUpdatedPayloadDataPayoutMethodType("external"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_whop_card", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutUpdatedPayloadDataPayoutMethodTypeFromString("whop_card")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutUpdatedPayloadDataPayoutMethodType("whop_card"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPostPayoutUpdatedPayloadDataPayoutMethodTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPostPayoutUpdatedPayloadDataPayoutMethodTypeFromString("external")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumPostPayoutUpdatedPayloadDataSource(t *testing.T) {
 	t.Run("NewFromString_api", func(t *testing.T) {
 		t.Parallel()
@@ -32605,6 +33304,35 @@ func TestEnumRetrievePayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTyp
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewRetrievePayoutsResponsePayoutMethodSupportedPayoutMethodDeliveryTypeFromString("cash_pickup")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumRetrievePayoutsResponsePayoutMethodType(t *testing.T) {
+	t.Run("NewFromString_external", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePayoutsResponsePayoutMethodTypeFromString("external")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePayoutsResponsePayoutMethodType("external"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_whop_card", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePayoutsResponsePayoutMethodTypeFromString("whop_card")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePayoutsResponsePayoutMethodType("whop_card"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRetrievePayoutsResponsePayoutMethodTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRetrievePayoutsResponsePayoutMethodTypeFromString("external")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
