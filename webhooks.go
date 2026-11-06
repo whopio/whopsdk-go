@@ -1433,6 +1433,7 @@ const (
 	WebhookEventsItemAppPaymentPending                     WebhookEventsItem = "app_payment.pending"
 	WebhookEventsItemAppPaymentRequiresAction              WebhookEventsItem = "app_payment.requires_action"
 	WebhookEventsItemAppMembershipCancelAtPeriodEndChanged WebhookEventsItem = "app_membership.cancel_at_period_end_changed"
+	WebhookEventsItemShippingAddressChanged                WebhookEventsItem = "shipping_address.changed"
 )
 
 func NewWebhookEventsItemFromString(s string) (WebhookEventsItem, error) {
@@ -1669,6 +1670,8 @@ func NewWebhookEventsItemFromString(s string) (WebhookEventsItem, error) {
 		return WebhookEventsItemAppPaymentRequiresAction, nil
 	case "app_membership.cancel_at_period_end_changed":
 		return WebhookEventsItemAppMembershipCancelAtPeriodEndChanged, nil
+	case "shipping_address.changed":
+		return WebhookEventsItemShippingAddressChanged, nil
 	}
 	var t WebhookEventsItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2203,6 +2206,7 @@ const (
 	WebhookListItemEventsItemAppPaymentPending                     WebhookListItemEventsItem = "app_payment.pending"
 	WebhookListItemEventsItemAppPaymentRequiresAction              WebhookListItemEventsItem = "app_payment.requires_action"
 	WebhookListItemEventsItemAppMembershipCancelAtPeriodEndChanged WebhookListItemEventsItem = "app_membership.cancel_at_period_end_changed"
+	WebhookListItemEventsItemShippingAddressChanged                WebhookListItemEventsItem = "shipping_address.changed"
 )
 
 func NewWebhookListItemEventsItemFromString(s string) (WebhookListItemEventsItem, error) {
@@ -2439,6 +2443,8 @@ func NewWebhookListItemEventsItemFromString(s string) (WebhookListItemEventsItem
 		return WebhookListItemEventsItemAppPaymentRequiresAction, nil
 	case "app_membership.cancel_at_period_end_changed":
 		return WebhookListItemEventsItemAppMembershipCancelAtPeriodEndChanged, nil
+	case "shipping_address.changed":
+		return WebhookListItemEventsItemShippingAddressChanged, nil
 	}
 	var t WebhookListItemEventsItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2568,6 +2574,7 @@ const (
 	WebhookTestableEventsItemAppPaymentPending                     WebhookTestableEventsItem = "app_payment.pending"
 	WebhookTestableEventsItemAppPaymentRequiresAction              WebhookTestableEventsItem = "app_payment.requires_action"
 	WebhookTestableEventsItemAppMembershipCancelAtPeriodEndChanged WebhookTestableEventsItem = "app_membership.cancel_at_period_end_changed"
+	WebhookTestableEventsItemShippingAddressChanged                WebhookTestableEventsItem = "shipping_address.changed"
 )
 
 func NewWebhookTestableEventsItemFromString(s string) (WebhookTestableEventsItem, error) {
@@ -2804,6 +2811,8 @@ func NewWebhookTestableEventsItemFromString(s string) (WebhookTestableEventsItem
 		return WebhookTestableEventsItemAppPaymentRequiresAction, nil
 	case "app_membership.cancel_at_period_end_changed":
 		return WebhookTestableEventsItemAppMembershipCancelAtPeriodEndChanged, nil
+	case "shipping_address.changed":
+		return WebhookTestableEventsItemShippingAddressChanged, nil
 	}
 	var t WebhookTestableEventsItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2913,6 +2922,7 @@ const (
 	CreateWebhooksRequestEventsItemRefundUpdated                      CreateWebhooksRequestEventsItem = "refund.updated"
 	CreateWebhooksRequestEventsItemDisputeAlertCreated                CreateWebhooksRequestEventsItem = "dispute_alert.created"
 	CreateWebhooksRequestEventsItemMembershipCancelAtPeriodEndChanged CreateWebhooksRequestEventsItem = "membership.cancel_at_period_end_changed"
+	CreateWebhooksRequestEventsItemShippingAddressChanged             CreateWebhooksRequestEventsItem = "shipping_address.changed"
 )
 
 func NewCreateWebhooksRequestEventsItemFromString(s string) (CreateWebhooksRequestEventsItem, error) {
@@ -3111,6 +3121,8 @@ func NewCreateWebhooksRequestEventsItemFromString(s string) (CreateWebhooksReque
 		return CreateWebhooksRequestEventsItemDisputeAlertCreated, nil
 	case "membership.cancel_at_period_end_changed":
 		return CreateWebhooksRequestEventsItemMembershipCancelAtPeriodEndChanged, nil
+	case "shipping_address.changed":
+		return CreateWebhooksRequestEventsItemShippingAddressChanged, nil
 	}
 	var t CreateWebhooksRequestEventsItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -3343,6 +3355,7 @@ const (
 	ListDeliveriesWebhooksRequestEventsItemAppPaymentPending                     ListDeliveriesWebhooksRequestEventsItem = "app_payment.pending"
 	ListDeliveriesWebhooksRequestEventsItemAppPaymentRequiresAction              ListDeliveriesWebhooksRequestEventsItem = "app_payment.requires_action"
 	ListDeliveriesWebhooksRequestEventsItemAppMembershipCancelAtPeriodEndChanged ListDeliveriesWebhooksRequestEventsItem = "app_membership.cancel_at_period_end_changed"
+	ListDeliveriesWebhooksRequestEventsItemShippingAddressChanged                ListDeliveriesWebhooksRequestEventsItem = "shipping_address.changed"
 )
 
 func NewListDeliveriesWebhooksRequestEventsItemFromString(s string) (ListDeliveriesWebhooksRequestEventsItem, error) {
@@ -3579,6 +3592,8 @@ func NewListDeliveriesWebhooksRequestEventsItemFromString(s string) (ListDeliver
 		return ListDeliveriesWebhooksRequestEventsItemAppPaymentRequiresAction, nil
 	case "app_membership.cancel_at_period_end_changed":
 		return ListDeliveriesWebhooksRequestEventsItemAppMembershipCancelAtPeriodEndChanged, nil
+	case "shipping_address.changed":
+		return ListDeliveriesWebhooksRequestEventsItemShippingAddressChanged, nil
 	}
 	var t ListDeliveriesWebhooksRequestEventsItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -4536,6 +4551,7 @@ const (
 	UpdateWebhooksRequestEventsItemRefundUpdated                      UpdateWebhooksRequestEventsItem = "refund.updated"
 	UpdateWebhooksRequestEventsItemDisputeAlertCreated                UpdateWebhooksRequestEventsItem = "dispute_alert.created"
 	UpdateWebhooksRequestEventsItemMembershipCancelAtPeriodEndChanged UpdateWebhooksRequestEventsItem = "membership.cancel_at_period_end_changed"
+	UpdateWebhooksRequestEventsItemShippingAddressChanged             UpdateWebhooksRequestEventsItem = "shipping_address.changed"
 )
 
 func NewUpdateWebhooksRequestEventsItemFromString(s string) (UpdateWebhooksRequestEventsItem, error) {
@@ -4734,6 +4750,8 @@ func NewUpdateWebhooksRequestEventsItemFromString(s string) (UpdateWebhooksReque
 		return UpdateWebhooksRequestEventsItemDisputeAlertCreated, nil
 	case "membership.cancel_at_period_end_changed":
 		return UpdateWebhooksRequestEventsItemMembershipCancelAtPeriodEndChanged, nil
+	case "shipping_address.changed":
+		return UpdateWebhooksRequestEventsItemShippingAddressChanged, nil
 	}
 	var t UpdateWebhooksRequestEventsItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

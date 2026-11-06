@@ -7775,6 +7775,453 @@ func (p PostPaymentSucceededPayloadType) Ptr() *PostPaymentSucceededPayloadType 
 	return &p
 }
 
+var (
+	postShippingAddressChangedPayloadFieldAccountID          = big.NewInt(1 << 0)
+	postShippingAddressChangedPayloadFieldAPIVersion         = big.NewInt(1 << 1)
+	postShippingAddressChangedPayloadFieldAPIVersionDate     = big.NewInt(1 << 2)
+	postShippingAddressChangedPayloadFieldData               = big.NewInt(1 << 3)
+	postShippingAddressChangedPayloadFieldID                 = big.NewInt(1 << 4)
+	postShippingAddressChangedPayloadFieldPreviousAttributes = big.NewInt(1 << 5)
+	postShippingAddressChangedPayloadFieldTimestamp          = big.NewInt(1 << 6)
+	postShippingAddressChangedPayloadFieldType               = big.NewInt(1 << 7)
+)
+
+// postShippingAddressChangedPayloadNullableFields maps the wire names of PostShippingAddressChangedPayload's nullable fields (required or optional) to their field bits.
+var postShippingAddressChangedPayloadNullableFields = map[string]*big.Int{
+	"account_id":       postShippingAddressChangedPayloadFieldAccountID,
+	"api_version_date": postShippingAddressChangedPayloadFieldAPIVersionDate,
+}
+
+type PostShippingAddressChangedPayload struct {
+	// The account ID that this webhook event is associated with
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The API version for this webhook
+	APIVersion PostShippingAddressChangedPayloadAPIVersion `json:"api_version" url:"api_version"`
+	// The dated API version (Api-Version-Date) the payload is serialized to
+	APIVersionDate *string                            `json:"api_version_date,omitempty" url:"api_version_date,omitempty"`
+	Data           *ShippingAddressChangedWebhookData `json:"data" url:"data"`
+	// A unique ID for every single webhook request
+	ID string `json:"id" url:"id"`
+	// For some `.updated` events, the old values of the payload fields that changed, keyed by field name. Omitted when no capture is available for the event
+	PreviousAttributes map[string]any `json:"previous_attributes,omitempty" url:"previous_attributes,omitempty"`
+	// The timestamp in ISO 8601 format that the webhook was sent at on the server
+	Timestamp time.Time `json:"timestamp" url:"timestamp"`
+	// The webhook event type
+	Type PostShippingAddressChangedPayloadType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostShippingAddressChangedPayload) GetAccountID() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AccountID
+}
+
+func (p *PostShippingAddressChangedPayload) GetAPIVersion() PostShippingAddressChangedPayloadAPIVersion {
+	if p == nil {
+		return ""
+	}
+	return p.APIVersion
+}
+
+func (p *PostShippingAddressChangedPayload) GetAPIVersionDate() *string {
+	if p == nil {
+		return nil
+	}
+	return p.APIVersionDate
+}
+
+func (p *PostShippingAddressChangedPayload) GetData() *ShippingAddressChangedWebhookData {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PostShippingAddressChangedPayload) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PostShippingAddressChangedPayload) GetPreviousAttributes() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.PreviousAttributes
+}
+
+func (p *PostShippingAddressChangedPayload) GetTimestamp() time.Time {
+	if p == nil {
+		return time.Time{}
+	}
+	return p.Timestamp
+}
+
+func (p *PostShippingAddressChangedPayload) GetType() PostShippingAddressChangedPayloadType {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PostShippingAddressChangedPayload) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostShippingAddressChangedPayload) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostShippingAddressChangedPayload) SetAccountID(accountID *string) {
+	p.AccountID = accountID
+	p.require(postShippingAddressChangedPayloadFieldAccountID)
+}
+
+// SetAPIVersion sets the APIVersion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostShippingAddressChangedPayload) SetAPIVersion(apiVersion PostShippingAddressChangedPayloadAPIVersion) {
+	p.APIVersion = apiVersion
+	p.require(postShippingAddressChangedPayloadFieldAPIVersion)
+}
+
+// SetAPIVersionDate sets the APIVersionDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostShippingAddressChangedPayload) SetAPIVersionDate(apiVersionDate *string) {
+	p.APIVersionDate = apiVersionDate
+	p.require(postShippingAddressChangedPayloadFieldAPIVersionDate)
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostShippingAddressChangedPayload) SetData(data *ShippingAddressChangedWebhookData) {
+	p.Data = data
+	p.require(postShippingAddressChangedPayloadFieldData)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostShippingAddressChangedPayload) SetID(id string) {
+	p.ID = id
+	p.require(postShippingAddressChangedPayloadFieldID)
+}
+
+// SetPreviousAttributes sets the PreviousAttributes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostShippingAddressChangedPayload) SetPreviousAttributes(previousAttributes map[string]any) {
+	p.PreviousAttributes = previousAttributes
+	p.require(postShippingAddressChangedPayloadFieldPreviousAttributes)
+}
+
+// SetTimestamp sets the Timestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostShippingAddressChangedPayload) SetTimestamp(timestamp time.Time) {
+	p.Timestamp = timestamp
+	p.require(postShippingAddressChangedPayloadFieldTimestamp)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostShippingAddressChangedPayload) SetType(type_ PostShippingAddressChangedPayloadType) {
+	p.Type = type_
+	p.require(postShippingAddressChangedPayloadFieldType)
+}
+
+func (p *PostShippingAddressChangedPayload) UnmarshalJSON(data []byte) error {
+	type embed PostShippingAddressChangedPayload
+	var unmarshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed: embed(*p),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*p = PostShippingAddressChangedPayload(unmarshaler.embed)
+	p.Timestamp = unmarshaler.Timestamp.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, postShippingAddressChangedPayloadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostShippingAddressChangedPayload) MarshalJSON() ([]byte, error) {
+	type embed PostShippingAddressChangedPayload
+	var marshaler = struct {
+		embed
+		Timestamp *internal.DateTime `json:"timestamp"`
+	}{
+		embed:     embed(*p),
+		Timestamp: internal.NewDateTime(p.Timestamp),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostShippingAddressChangedPayload) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The API version for this webhook
+type PostShippingAddressChangedPayloadAPIVersion string
+
+const (
+	PostShippingAddressChangedPayloadAPIVersionV1 PostShippingAddressChangedPayloadAPIVersion = "v1"
+)
+
+func NewPostShippingAddressChangedPayloadAPIVersionFromString(s string) (PostShippingAddressChangedPayloadAPIVersion, error) {
+	switch s {
+	case "v1":
+		return PostShippingAddressChangedPayloadAPIVersionV1, nil
+	}
+	var t PostShippingAddressChangedPayloadAPIVersion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostShippingAddressChangedPayloadAPIVersion) Ptr() *PostShippingAddressChangedPayloadAPIVersion {
+	return &p
+}
+
+// The webhook event type
+type PostShippingAddressChangedPayloadType string
+
+const (
+	PostShippingAddressChangedPayloadTypeShippingAddressChanged PostShippingAddressChangedPayloadType = "shipping_address.changed"
+)
+
+func NewPostShippingAddressChangedPayloadTypeFromString(s string) (PostShippingAddressChangedPayloadType, error) {
+	switch s {
+	case "shipping_address.changed":
+		return PostShippingAddressChangedPayloadTypeShippingAddressChanged, nil
+	}
+	var t PostShippingAddressChangedPayloadType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostShippingAddressChangedPayloadType) Ptr() *PostShippingAddressChangedPayloadType {
+	return &p
+}
+
+type PostShippingAddressChangedResponse struct {
+	ShippingAddressChangedWebhookReply        *ShippingAddressChangedWebhookReply
+	PostShippingAddressChangedResponseDecline *PostShippingAddressChangedResponseDecline
+
+	typ string
+}
+
+func (p *PostShippingAddressChangedResponse) GetShippingAddressChangedWebhookReply() *ShippingAddressChangedWebhookReply {
+	if p == nil {
+		return nil
+	}
+	return p.ShippingAddressChangedWebhookReply
+}
+
+func (p *PostShippingAddressChangedResponse) GetPostShippingAddressChangedResponseDecline() *PostShippingAddressChangedResponseDecline {
+	if p == nil {
+		return nil
+	}
+	return p.PostShippingAddressChangedResponseDecline
+}
+
+func (p *PostShippingAddressChangedResponse) UnmarshalJSON(data []byte) error {
+	if internal.MatchesObjectKeys(data, []string{"line_items"}, []string{"line_items"}) {
+		valueShippingAddressChangedWebhookReply := new(ShippingAddressChangedWebhookReply)
+		if err := json.Unmarshal(data, &valueShippingAddressChangedWebhookReply); err == nil {
+			p.typ = "ShippingAddressChangedWebhookReply"
+			p.ShippingAddressChangedWebhookReply = valueShippingAddressChangedWebhookReply
+			return nil
+		}
+	}
+	if internal.MatchesObjectKeys(data, []string{"decline"}, []string{"decline"}) {
+		valuePostShippingAddressChangedResponseDecline := new(PostShippingAddressChangedResponseDecline)
+		if err := json.Unmarshal(data, &valuePostShippingAddressChangedResponseDecline); err == nil {
+			p.typ = "PostShippingAddressChangedResponseDecline"
+			p.PostShippingAddressChangedResponseDecline = valuePostShippingAddressChangedResponseDecline
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"line_items"}) {
+		valueShippingAddressChangedWebhookReply := new(ShippingAddressChangedWebhookReply)
+		if err := json.Unmarshal(data, &valueShippingAddressChangedWebhookReply); err == nil {
+			p.typ = "ShippingAddressChangedWebhookReply"
+			p.ShippingAddressChangedWebhookReply = valueShippingAddressChangedWebhookReply
+			return nil
+		}
+	}
+	if internal.HasObjectKeys(data, []string{"decline"}) {
+		valuePostShippingAddressChangedResponseDecline := new(PostShippingAddressChangedResponseDecline)
+		if err := json.Unmarshal(data, &valuePostShippingAddressChangedResponseDecline); err == nil {
+			p.typ = "PostShippingAddressChangedResponseDecline"
+			p.PostShippingAddressChangedResponseDecline = valuePostShippingAddressChangedResponseDecline
+			return nil
+		}
+	}
+	valueShippingAddressChangedWebhookReply := new(ShippingAddressChangedWebhookReply)
+	if err := json.Unmarshal(data, &valueShippingAddressChangedWebhookReply); err == nil {
+		p.typ = "ShippingAddressChangedWebhookReply"
+		p.ShippingAddressChangedWebhookReply = valueShippingAddressChangedWebhookReply
+		return nil
+	}
+	valuePostShippingAddressChangedResponseDecline := new(PostShippingAddressChangedResponseDecline)
+	if err := json.Unmarshal(data, &valuePostShippingAddressChangedResponseDecline); err == nil {
+		p.typ = "PostShippingAddressChangedResponseDecline"
+		p.PostShippingAddressChangedResponseDecline = valuePostShippingAddressChangedResponseDecline
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, p)
+}
+
+func (p PostShippingAddressChangedResponse) MarshalJSON() ([]byte, error) {
+	if p.typ == "ShippingAddressChangedWebhookReply" || p.ShippingAddressChangedWebhookReply != nil {
+		return json.Marshal(p.ShippingAddressChangedWebhookReply)
+	}
+	if p.typ == "PostShippingAddressChangedResponseDecline" || p.PostShippingAddressChangedResponseDecline != nil {
+		return json.Marshal(p.PostShippingAddressChangedResponseDecline)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", p)
+}
+
+type PostShippingAddressChangedResponseVisitor interface {
+	VisitShippingAddressChangedWebhookReply(*ShippingAddressChangedWebhookReply) error
+	VisitPostShippingAddressChangedResponseDecline(*PostShippingAddressChangedResponseDecline) error
+}
+
+func (p *PostShippingAddressChangedResponse) Accept(visitor PostShippingAddressChangedResponseVisitor) error {
+	if p.typ == "ShippingAddressChangedWebhookReply" || p.ShippingAddressChangedWebhookReply != nil {
+		return visitor.VisitShippingAddressChangedWebhookReply(p.ShippingAddressChangedWebhookReply)
+	}
+	if p.typ == "PostShippingAddressChangedResponseDecline" || p.PostShippingAddressChangedResponseDecline != nil {
+		return visitor.VisitPostShippingAddressChangedResponseDecline(p.PostShippingAddressChangedResponseDecline)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", p)
+}
+
+var (
+	postShippingAddressChangedResponseDeclineFieldDecline = big.NewInt(1 << 0)
+)
+
+type PostShippingAddressChangedResponseDecline struct {
+	// Refuses this address; the buyer picks another.
+	Decline bool `json:"decline" url:"decline"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostShippingAddressChangedResponseDecline) GetDecline() bool {
+	if p == nil {
+		return false
+	}
+	return p.Decline
+}
+
+func (p *PostShippingAddressChangedResponseDecline) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostShippingAddressChangedResponseDecline) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetDecline sets the Decline field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostShippingAddressChangedResponseDecline) SetDecline(decline bool) {
+	p.Decline = decline
+	p.require(postShippingAddressChangedResponseDeclineFieldDecline)
+}
+
+func (p *PostShippingAddressChangedResponseDecline) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostShippingAddressChangedResponseDecline
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PostShippingAddressChangedResponseDecline(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostShippingAddressChangedResponseDecline) MarshalJSON() ([]byte, error) {
+	type embed PostShippingAddressChangedResponseDecline
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostShippingAddressChangedResponseDecline) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
 type SummaryPaymentsRequestBillingReasonsItem string
 
 const (
