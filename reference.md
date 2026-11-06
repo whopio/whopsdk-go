@@ -45843,6 +45843,14 @@ client.Partners.Businesses.List(
 <dl>
 <dd>
 
+**includeTotalCount:** `*bool` — Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **order:** `*partners.ListBusinessesRequestOrder` — The field to sort partner businesses by.
     
 </dd>
