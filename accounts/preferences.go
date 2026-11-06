@@ -93,7 +93,7 @@ type RetrievePreferencesResponse struct {
 	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
 	// Whether this account covers its subaccounts' negative balances. When a subaccount's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Refunds on its subaccounts may also take them negative by up to this account's available balance. `null` when the account has no subaccounts.
 	CoversSubaccountNegativeBalances *bool `json:"covers_subaccount_negative_balances,omitempty" url:"covers_subaccount_negative_balances,omitempty"`
-	// The saved customer tracking settings for the hosted tracking page and Element, exactly as saved. `null` until set; tracking is off unless `enabled` is `true`.
+	// The saved customer tracking settings for the hosted tracking page and Element, with defaults applied. `null` until set; tracking is off unless `enabled` is `true`.
 	CustomerTracking *v2.CustomerTrackingPreferences `json:"customer_tracking,omitempty" url:"customer_tracking,omitempty"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
@@ -2490,13 +2490,13 @@ var updatePreferencesRequestCustomerTrackingNullableFields = map[string]*big.Int
 
 // Customer tracking settings for the hosted tracking page and Element, replaced as a whole: fields left out are reset to their defaults. Pass null to clear them, which turns tracking off. Requires the `company:manage_checkout` scope on your API key.
 type UpdatePreferencesRequestCustomerTracking struct {
-	// Accent color, as a `#rrggbb` hex color. Unset uses the default.
+	// Accent color, as a `#rrggbb` hex color. Omitted or null resets to `#1d4ed8`.
 	AccentColor *string `json:"accent_color,omitempty" url:"accent_color,omitempty"`
-	// Turns the public tracking page and guest lookup on. Unset is off.
+	// Turns the public tracking page and guest lookup on. Omitted or null resets to false.
 	Enabled *bool `json:"enabled,omitempty" url:"enabled,omitempty"`
-	// Show the business name on the tracking page and Element. Unset shows it.
+	// Show the business name on the tracking page and Element. Omitted or null resets to true.
 	ShowBusinessName *bool `json:"show_business_name,omitempty" url:"show_business_name,omitempty"`
-	// Show the account logo on the tracking page and Element. Unset shows it.
+	// Show the account logo on the tracking page and Element. Omitted or null resets to true.
 	ShowLogo *bool `json:"show_logo,omitempty" url:"show_logo,omitempty"`
 	// Customer support email address.
 	SupportEmail *string `json:"support_email,omitempty" url:"support_email,omitempty"`
@@ -2957,7 +2957,7 @@ type UpdatePreferencesResponse struct {
 	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
 	// Whether this account covers its subaccounts' negative balances. When a subaccount's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Refunds on its subaccounts may also take them negative by up to this account's available balance. `null` when the account has no subaccounts.
 	CoversSubaccountNegativeBalances *bool `json:"covers_subaccount_negative_balances,omitempty" url:"covers_subaccount_negative_balances,omitempty"`
-	// The saved customer tracking settings for the hosted tracking page and Element, exactly as saved. `null` until set; tracking is off unless `enabled` is `true`.
+	// The saved customer tracking settings for the hosted tracking page and Element, with defaults applied. `null` until set; tracking is off unless `enabled` is `true`.
 	CustomerTracking *v2.CustomerTrackingPreferences `json:"customer_tracking,omitempty" url:"customer_tracking,omitempty"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`

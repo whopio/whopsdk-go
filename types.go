@@ -4313,7 +4313,7 @@ type AccountPreferences struct {
 	CardsNotifications bool `json:"cards_notifications" url:"cards_notifications"`
 	// Whether this account covers its subaccounts' negative balances. When a subaccount's balance drops below zero (from refunds, disputes, or fees), this account's available balance in the same currency pays it back, up to what is available. Refunds on its subaccounts may also take them negative by up to this account's available balance. `null` when the account has no subaccounts.
 	CoversSubaccountNegativeBalances *bool `json:"covers_subaccount_negative_balances,omitempty" url:"covers_subaccount_negative_balances,omitempty"`
-	// The saved customer tracking settings for the hosted tracking page and Element, exactly as saved. `null` until set; tracking is off unless `enabled` is `true`.
+	// Customer tracking settings for the hosted tracking page and Element, with defaults applied. `null` until set; tracking is off unless `enabled` is `true`.
 	CustomerTracking *CustomerTrackingPreferences `json:"customer_tracking,omitempty" url:"customer_tracking,omitempty"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
@@ -11395,23 +11395,19 @@ var (
 
 // customerTrackingPreferencesNullableFields maps the wire names of CustomerTrackingPreferences's nullable fields (required or optional) to their field bits.
 var customerTrackingPreferencesNullableFields = map[string]*big.Int{
-	"accent_color":       customerTrackingPreferencesFieldAccentColor,
-	"enabled":            customerTrackingPreferencesFieldEnabled,
-	"show_business_name": customerTrackingPreferencesFieldShowBusinessName,
-	"show_logo":          customerTrackingPreferencesFieldShowLogo,
-	"support_email":      customerTrackingPreferencesFieldSupportEmail,
-	"support_url":        customerTrackingPreferencesFieldSupportURL,
+	"support_email": customerTrackingPreferencesFieldSupportEmail,
+	"support_url":   customerTrackingPreferencesFieldSupportURL,
 }
 
 type CustomerTrackingPreferences struct {
-	// Accent color, as a `#rrggbb` hex color. `null` uses the default.
-	AccentColor *string `json:"accent_color,omitempty" url:"accent_color,omitempty"`
-	// Whether the public tracking page and guest lookup are available. `null` is off.
-	Enabled *bool `json:"enabled,omitempty" url:"enabled,omitempty"`
-	// Whether to display the business name on the tracking page and Element. `null` shows it.
-	ShowBusinessName *bool `json:"show_business_name,omitempty" url:"show_business_name,omitempty"`
-	// Whether to display the logo on the tracking page and Element. `null` shows it.
-	ShowLogo *bool `json:"show_logo,omitempty" url:"show_logo,omitempty"`
+	// Accent color, as a `#rrggbb` hex color. Defaults to `#1d4ed8`.
+	AccentColor string `json:"accent_color" url:"accent_color"`
+	// Whether the public tracking page and guest lookup are available. Defaults to false.
+	Enabled bool `json:"enabled" url:"enabled"`
+	// Whether to display the business name on the tracking page and Element. Defaults to true.
+	ShowBusinessName bool `json:"show_business_name" url:"show_business_name"`
+	// Whether to display the logo on the tracking page and Element. Defaults to true.
+	ShowLogo bool `json:"show_logo" url:"show_logo"`
 	// Customer support email address.
 	SupportEmail *string `json:"support_email,omitempty" url:"support_email,omitempty"`
 	// HTTPS customer support URL.
@@ -11424,30 +11420,30 @@ type CustomerTrackingPreferences struct {
 	rawJSON         json.RawMessage
 }
 
-func (c *CustomerTrackingPreferences) GetAccentColor() *string {
+func (c *CustomerTrackingPreferences) GetAccentColor() string {
 	if c == nil {
-		return nil
+		return ""
 	}
 	return c.AccentColor
 }
 
-func (c *CustomerTrackingPreferences) GetEnabled() *bool {
+func (c *CustomerTrackingPreferences) GetEnabled() bool {
 	if c == nil {
-		return nil
+		return false
 	}
 	return c.Enabled
 }
 
-func (c *CustomerTrackingPreferences) GetShowBusinessName() *bool {
+func (c *CustomerTrackingPreferences) GetShowBusinessName() bool {
 	if c == nil {
-		return nil
+		return false
 	}
 	return c.ShowBusinessName
 }
 
-func (c *CustomerTrackingPreferences) GetShowLogo() *bool {
+func (c *CustomerTrackingPreferences) GetShowLogo() bool {
 	if c == nil {
-		return nil
+		return false
 	}
 	return c.ShowLogo
 }
@@ -11484,28 +11480,28 @@ func (c *CustomerTrackingPreferences) require(field *big.Int) {
 
 // SetAccentColor sets the AccentColor field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CustomerTrackingPreferences) SetAccentColor(accentColor *string) {
+func (c *CustomerTrackingPreferences) SetAccentColor(accentColor string) {
 	c.AccentColor = accentColor
 	c.require(customerTrackingPreferencesFieldAccentColor)
 }
 
 // SetEnabled sets the Enabled field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CustomerTrackingPreferences) SetEnabled(enabled *bool) {
+func (c *CustomerTrackingPreferences) SetEnabled(enabled bool) {
 	c.Enabled = enabled
 	c.require(customerTrackingPreferencesFieldEnabled)
 }
 
 // SetShowBusinessName sets the ShowBusinessName field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CustomerTrackingPreferences) SetShowBusinessName(showBusinessName *bool) {
+func (c *CustomerTrackingPreferences) SetShowBusinessName(showBusinessName bool) {
 	c.ShowBusinessName = showBusinessName
 	c.require(customerTrackingPreferencesFieldShowBusinessName)
 }
 
 // SetShowLogo sets the ShowLogo field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CustomerTrackingPreferences) SetShowLogo(showLogo *bool) {
+func (c *CustomerTrackingPreferences) SetShowLogo(showLogo bool) {
 	c.ShowLogo = showLogo
 	c.require(customerTrackingPreferencesFieldShowLogo)
 }
@@ -40416,47 +40412,48 @@ var (
 	paymentFieldMemberID                   = big.NewInt(1 << 25)
 	paymentFieldMembershipID               = big.NewInt(1 << 26)
 	paymentFieldMetadata                   = big.NewInt(1 << 27)
-	paymentFieldNeedsTracking              = big.NewInt(1 << 28)
-	paymentFieldNextPaymentAttemptAt       = big.NewInt(1 << 29)
-	paymentFieldPaidAt                     = big.NewInt(1 << 30)
-	paymentFieldPaymentInstrument          = big.NewInt(1 << 31)
-	paymentFieldPaymentMethodID            = big.NewInt(1 << 32)
-	paymentFieldPaymentMethodType          = big.NewInt(1 << 33)
-	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 34)
-	paymentFieldPaymentsFailed             = big.NewInt(1 << 35)
-	paymentFieldPresentmentRefundedAmount  = big.NewInt(1 << 36)
-	paymentFieldPresentmentTaxAmount       = big.NewInt(1 << 37)
-	paymentFieldPresentmentTotal           = big.NewInt(1 << 38)
-	paymentFieldProductID                  = big.NewInt(1 << 39)
-	paymentFieldPromoCodeID                = big.NewInt(1 << 40)
-	paymentFieldQuoteID                    = big.NewInt(1 << 41)
-	paymentFieldRecoveryURL                = big.NewInt(1 << 42)
-	paymentFieldRefundable                 = big.NewInt(1 << 43)
-	paymentFieldRefundedAmount             = big.NewInt(1 << 44)
-	paymentFieldRefundedAt                 = big.NewInt(1 << 45)
-	paymentFieldResponseDueAt              = big.NewInt(1 << 46)
-	paymentFieldRetryable                  = big.NewInt(1 << 47)
-	paymentFieldRiskScore                  = big.NewInt(1 << 48)
-	paymentFieldRiskSignals                = big.NewInt(1 << 49)
-	paymentFieldSettlementTimeAt           = big.NewInt(1 << 50)
-	paymentFieldShipmentID                 = big.NewInt(1 << 51)
-	paymentFieldShippingAddress            = big.NewInt(1 << 52)
-	paymentFieldStatus                     = big.NewInt(1 << 53)
-	paymentFieldSubstatus                  = big.NewInt(1 << 54)
-	paymentFieldSubtotal                   = big.NewInt(1 << 55)
-	paymentFieldTaxAmount                  = big.NewInt(1 << 56)
-	paymentFieldTaxBehavior                = big.NewInt(1 << 57)
-	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 58)
-	paymentFieldThreeDsVerified            = big.NewInt(1 << 59)
-	paymentFieldTotal                      = big.NewInt(1 << 60)
-	paymentFieldUpdatedAt                  = big.NewInt(1 << 61)
-	paymentFieldUsdTotal                   = big.NewInt(1 << 62)
-	paymentFieldUser                       = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	paymentFieldUserAgent                  = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	paymentFieldVariantID                  = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	paymentFieldVerificationChecks         = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	paymentFieldVoidable                   = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	paymentFieldWuid                       = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	paymentFieldMissingTracking            = big.NewInt(1 << 28)
+	paymentFieldNeedsTracking              = big.NewInt(1 << 29)
+	paymentFieldNextPaymentAttemptAt       = big.NewInt(1 << 30)
+	paymentFieldPaidAt                     = big.NewInt(1 << 31)
+	paymentFieldPaymentInstrument          = big.NewInt(1 << 32)
+	paymentFieldPaymentMethodID            = big.NewInt(1 << 33)
+	paymentFieldPaymentMethodType          = big.NewInt(1 << 34)
+	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 35)
+	paymentFieldPaymentsFailed             = big.NewInt(1 << 36)
+	paymentFieldPresentmentRefundedAmount  = big.NewInt(1 << 37)
+	paymentFieldPresentmentTaxAmount       = big.NewInt(1 << 38)
+	paymentFieldPresentmentTotal           = big.NewInt(1 << 39)
+	paymentFieldProductID                  = big.NewInt(1 << 40)
+	paymentFieldPromoCodeID                = big.NewInt(1 << 41)
+	paymentFieldQuoteID                    = big.NewInt(1 << 42)
+	paymentFieldRecoveryURL                = big.NewInt(1 << 43)
+	paymentFieldRefundable                 = big.NewInt(1 << 44)
+	paymentFieldRefundedAmount             = big.NewInt(1 << 45)
+	paymentFieldRefundedAt                 = big.NewInt(1 << 46)
+	paymentFieldResponseDueAt              = big.NewInt(1 << 47)
+	paymentFieldRetryable                  = big.NewInt(1 << 48)
+	paymentFieldRiskScore                  = big.NewInt(1 << 49)
+	paymentFieldRiskSignals                = big.NewInt(1 << 50)
+	paymentFieldSettlementTimeAt           = big.NewInt(1 << 51)
+	paymentFieldShipmentID                 = big.NewInt(1 << 52)
+	paymentFieldShippingAddress            = big.NewInt(1 << 53)
+	paymentFieldStatus                     = big.NewInt(1 << 54)
+	paymentFieldSubstatus                  = big.NewInt(1 << 55)
+	paymentFieldSubtotal                   = big.NewInt(1 << 56)
+	paymentFieldTaxAmount                  = big.NewInt(1 << 57)
+	paymentFieldTaxBehavior                = big.NewInt(1 << 58)
+	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 59)
+	paymentFieldThreeDsVerified            = big.NewInt(1 << 60)
+	paymentFieldTotal                      = big.NewInt(1 << 61)
+	paymentFieldUpdatedAt                  = big.NewInt(1 << 62)
+	paymentFieldUsdTotal                   = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	paymentFieldUser                       = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	paymentFieldUserAgent                  = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	paymentFieldVariantID                  = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	paymentFieldVerificationChecks         = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	paymentFieldVoidable                   = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	paymentFieldWuid                       = big.NewInt(0).Lsh(big.NewInt(1), 69)
 )
 
 // paymentNullableFields maps the wire names of Payment's nullable fields (required or optional) to their field bits.
@@ -40482,6 +40479,7 @@ var paymentNullableFields = map[string]*big.Int{
 	"member_id":                    paymentFieldMemberID,
 	"membership_id":                paymentFieldMembershipID,
 	"metadata":                     paymentFieldMetadata,
+	"missing_tracking":             paymentFieldMissingTracking,
 	"needs_tracking":               paymentFieldNeedsTracking,
 	"next_payment_attempt_at":      paymentFieldNextPaymentAttemptAt,
 	"paid_at":                      paymentFieldPaidAt,
@@ -40570,6 +40568,8 @@ type Payment struct {
 	MembershipID *string `json:"membership_id,omitempty" url:"membership_id,omitempty"`
 	// Your own key-value data attached when the payment was created.
 	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
+	// True for a paid payment with a shipping address, no shipment, and no full refund. Null without the shipment:basic:read permission.
+	MissingTracking *bool `json:"missing_tracking,omitempty" url:"missing_tracking,omitempty"`
 	// True when funds are held until the order ships and no tracking number has been added yet. Null without the shipment:basic:read permission.
 	NeedsTracking *bool `json:"needs_tracking,omitempty" url:"needs_tracking,omitempty"`
 	// When the next automatic retry is scheduled, or null.
@@ -40854,6 +40854,13 @@ func (p *Payment) GetMetadata() map[string]any {
 		return nil
 	}
 	return p.Metadata
+}
+
+func (p *Payment) GetMissingTracking() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.MissingTracking
 }
 
 func (p *Payment) GetNeedsTracking() *bool {
@@ -41353,6 +41360,13 @@ func (p *Payment) SetMembershipID(membershipID *string) {
 func (p *Payment) SetMetadata(metadata map[string]any) {
 	p.Metadata = metadata
 	p.require(paymentFieldMetadata)
+}
+
+// SetMissingTracking sets the MissingTracking field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetMissingTracking(missingTracking *bool) {
+	p.MissingTracking = missingTracking
+	p.require(paymentFieldMissingTracking)
 }
 
 // SetNeedsTracking sets the NeedsTracking field and marks it as non-optional;
