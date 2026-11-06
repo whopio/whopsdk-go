@@ -94,6 +94,9 @@ const (
 	PermissionActionAuthorizedUserCreate              PermissionAction = "authorized_user:create"
 	PermissionActionAuthorizedUserDelete              PermissionAction = "authorized_user:delete"
 	PermissionActionAuthorizedUserUpdate              PermissionAction = "authorized_user:update"
+	PermissionActionAutomationManage                  PermissionAction = "automation:manage"
+	PermissionActionAutomationRead                    PermissionAction = "automation:read"
+	PermissionActionAutomationWrite                   PermissionAction = "automation:write"
 	PermissionActionBountyBasicRead                   PermissionAction = "bounty:basic:read"
 	PermissionActionBountyCaptureClipComplete         PermissionAction = "bounty:capture_clip:complete"
 	PermissionActionBountyCaptureClipCreate           PermissionAction = "bounty:capture_clip:create"
@@ -433,6 +436,12 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionAuthorizedUserDelete, nil
 	case "authorized_user:update":
 		return PermissionActionAuthorizedUserUpdate, nil
+	case "automation:manage":
+		return PermissionActionAutomationManage, nil
+	case "automation:read":
+		return PermissionActionAutomationRead, nil
+	case "automation:write":
+		return PermissionActionAutomationWrite, nil
 	case "bounty:basic:read":
 		return PermissionActionBountyBasicRead, nil
 	case "bounty:capture_clip:complete":

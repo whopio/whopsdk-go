@@ -19,6 +19,9 @@ import (
 	apps "github.com/whopio/whopsdk-go/v2/apps"
 	audiences "github.com/whopio/whopsdk-go/v2/audiences"
 	authorizedusers "github.com/whopio/whopsdk-go/v2/authorizedusers"
+	automationenrollments "github.com/whopio/whopsdk-go/v2/automationenrollments"
+	automations "github.com/whopio/whopsdk-go/v2/automations"
+	automationsteps "github.com/whopio/whopsdk-go/v2/automationsteps"
 	bountiesclient "github.com/whopio/whopsdk-go/v2/bounties/client"
 	bountysubmissions "github.com/whopio/whopsdk-go/v2/bountysubmissions"
 	cards "github.com/whopio/whopsdk-go/v2/cards"
@@ -123,6 +126,9 @@ type Whop struct {
 	Apps                     *apps.Client
 	Audiences                *audiences.Client
 	AuthorizedUsers          *authorizedusers.Client
+	AutomationEnrollments    *automationenrollments.Client
+	AutomationSteps          *automationsteps.Client
+	Automations              *automations.Client
 	Bounties                 *bountiesclient.Client
 	BountySubmissions        *bountysubmissions.Client
 	CardTransactions         *cardtransactions.Client
@@ -234,6 +240,9 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Apps:                     apps.NewClient(options),
 		Audiences:                audiences.NewClient(options),
 		AuthorizedUsers:          authorizedusers.NewClient(options),
+		AutomationEnrollments:    automationenrollments.NewClient(options),
+		AutomationSteps:          automationsteps.NewClient(options),
+		Automations:              automations.NewClient(options),
 		Bounties:                 bountiesclient.NewClient(options),
 		BountySubmissions:        bountysubmissions.NewClient(options),
 		CardTransactions:         cardtransactions.NewClient(options),
