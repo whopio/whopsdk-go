@@ -54449,6 +54449,14 @@ func TestSettersLedgerActivitySourcePayoutDestination(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSecurityAnswer", func(t *testing.T) {
+		obj := &LedgerActivitySourcePayoutDestination{}
+		var fernTestValueSecurityAnswer *string
+		obj.SetSecurityAnswer(fernTestValueSecurityAnswer)
+		assert.Equal(t, fernTestValueSecurityAnswer, obj.SecurityAnswer)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersLedgerActivitySourcePayoutDestination(t *testing.T) {
@@ -54518,6 +54526,39 @@ func TestGettersLedgerActivitySourcePayoutDestination(t *testing.T) {
 		_ = obj.GetPayerName() // Should return zero value
 	})
 
+	t.Run("GetSecurityAnswer", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &LedgerActivitySourcePayoutDestination{}
+		var expected *string
+		obj.SecurityAnswer = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSecurityAnswer(), "getter should return the property value")
+	})
+
+	t.Run("GetSecurityAnswer_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &LedgerActivitySourcePayoutDestination{}
+		obj.SecurityAnswer = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSecurityAnswer(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSecurityAnswer_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *LedgerActivitySourcePayoutDestination
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSecurityAnswer() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitLedgerActivitySourcePayoutDestination(t *testing.T) {
@@ -54560,6 +54601,37 @@ func TestSettersMarkExplicitLedgerActivitySourcePayoutDestination(t *testing.T) 
 
 		// Act
 		obj.SetPayerName(fernTestValuePayerName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSecurityAnswer_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &LedgerActivitySourcePayoutDestination{}
+		var fernTestValueSecurityAnswer *string
+
+		// Act
+		obj.SetSecurityAnswer(fernTestValueSecurityAnswer)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -167513,6 +167585,7 @@ func TestOptionalNullableRoundTripLedgerActivitySourcePayoutDestination(t *testi
 	optionalNullableKeys := []string{
 		"icon_url",
 		"payer_name",
+		"security_answer",
 	}
 	marshalToMap := func(t *testing.T, obj *LedgerActivitySourcePayoutDestination) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -167525,7 +167598,7 @@ func TestOptionalNullableRoundTripLedgerActivitySourcePayoutDestination(t *testi
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj LedgerActivitySourcePayoutDestination
-		require.NoError(t, json.Unmarshal([]byte(`{"icon_url":null,"payer_name":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"icon_url":null,"payer_name":null,"security_answer":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
