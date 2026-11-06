@@ -1144,14 +1144,15 @@ func (r RetrieveTimeSeriesRequestEventType) Ptr() *RetrieveTimeSeriesRequestEven
 type RetrieveTimeSeriesRequestInterval string
 
 const (
-	RetrieveTimeSeriesRequestIntervalMinute        RetrieveTimeSeriesRequestInterval = "minute"
-	RetrieveTimeSeriesRequestIntervalFiveMinutes   RetrieveTimeSeriesRequestInterval = "five_minutes"
-	RetrieveTimeSeriesRequestIntervalThirtyMinutes RetrieveTimeSeriesRequestInterval = "thirty_minutes"
-	RetrieveTimeSeriesRequestIntervalHour          RetrieveTimeSeriesRequestInterval = "hour"
-	RetrieveTimeSeriesRequestIntervalDay           RetrieveTimeSeriesRequestInterval = "day"
-	RetrieveTimeSeriesRequestIntervalWeek          RetrieveTimeSeriesRequestInterval = "week"
-	RetrieveTimeSeriesRequestIntervalMonth         RetrieveTimeSeriesRequestInterval = "month"
-	RetrieveTimeSeriesRequestIntervalYear          RetrieveTimeSeriesRequestInterval = "year"
+	RetrieveTimeSeriesRequestIntervalMinute         RetrieveTimeSeriesRequestInterval = "minute"
+	RetrieveTimeSeriesRequestIntervalFiveMinutes    RetrieveTimeSeriesRequestInterval = "five_minutes"
+	RetrieveTimeSeriesRequestIntervalFifteenMinutes RetrieveTimeSeriesRequestInterval = "fifteen_minutes"
+	RetrieveTimeSeriesRequestIntervalThirtyMinutes  RetrieveTimeSeriesRequestInterval = "thirty_minutes"
+	RetrieveTimeSeriesRequestIntervalHour           RetrieveTimeSeriesRequestInterval = "hour"
+	RetrieveTimeSeriesRequestIntervalDay            RetrieveTimeSeriesRequestInterval = "day"
+	RetrieveTimeSeriesRequestIntervalWeek           RetrieveTimeSeriesRequestInterval = "week"
+	RetrieveTimeSeriesRequestIntervalMonth          RetrieveTimeSeriesRequestInterval = "month"
+	RetrieveTimeSeriesRequestIntervalYear           RetrieveTimeSeriesRequestInterval = "year"
 )
 
 func NewRetrieveTimeSeriesRequestIntervalFromString(s string) (RetrieveTimeSeriesRequestInterval, error) {
@@ -1160,6 +1161,8 @@ func NewRetrieveTimeSeriesRequestIntervalFromString(s string) (RetrieveTimeSerie
 		return RetrieveTimeSeriesRequestIntervalMinute, nil
 	case "five_minutes":
 		return RetrieveTimeSeriesRequestIntervalFiveMinutes, nil
+	case "fifteen_minutes":
+		return RetrieveTimeSeriesRequestIntervalFifteenMinutes, nil
 	case "thirty_minutes":
 		return RetrieveTimeSeriesRequestIntervalThirtyMinutes, nil
 	case "hour":
