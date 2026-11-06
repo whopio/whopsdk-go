@@ -29345,20 +29345,24 @@ func (l LedgerActivitySourceFeeType) Ptr() *LedgerActivitySourceFeeType {
 }
 
 var (
-	ledgerActivitySourcePayoutDestinationFieldIconURL   = big.NewInt(1 << 0)
-	ledgerActivitySourcePayoutDestinationFieldPayerName = big.NewInt(1 << 1)
+	ledgerActivitySourcePayoutDestinationFieldIconURL        = big.NewInt(1 << 0)
+	ledgerActivitySourcePayoutDestinationFieldPayerName      = big.NewInt(1 << 1)
+	ledgerActivitySourcePayoutDestinationFieldSecurityAnswer = big.NewInt(1 << 2)
 )
 
 // ledgerActivitySourcePayoutDestinationNullableFields maps the wire names of LedgerActivitySourcePayoutDestination's nullable fields (required or optional) to their field bits.
 var ledgerActivitySourcePayoutDestinationNullableFields = map[string]*big.Int{
-	"icon_url":   ledgerActivitySourcePayoutDestinationFieldIconURL,
-	"payer_name": ledgerActivitySourcePayoutDestinationFieldPayerName,
+	"icon_url":        ledgerActivitySourcePayoutDestinationFieldIconURL,
+	"payer_name":      ledgerActivitySourcePayoutDestinationFieldPayerName,
+	"security_answer": ledgerActivitySourcePayoutDestinationFieldSecurityAnswer,
 }
 
 // Payout destination display info (payout sources only).
 type LedgerActivitySourcePayoutDestination struct {
 	IconURL   *string `json:"icon_url,omitempty" url:"icon_url,omitempty"`
 	PayerName *string `json:"payer_name,omitempty" url:"payer_name,omitempty"`
+	// The security answer the merchant set when adding this payout method (for example an Interac e-Transfer), needed to claim the payout. null when the destination has no custom answer. Requires payout:destination:read.
+	SecurityAnswer *string `json:"security_answer,omitempty" url:"security_answer,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -29379,6 +29383,13 @@ func (l *LedgerActivitySourcePayoutDestination) GetPayerName() *string {
 		return nil
 	}
 	return l.PayerName
+}
+
+func (l *LedgerActivitySourcePayoutDestination) GetSecurityAnswer() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SecurityAnswer
 }
 
 func (l *LedgerActivitySourcePayoutDestination) GetExtraProperties() map[string]interface{} {
@@ -29409,6 +29420,13 @@ func (l *LedgerActivitySourcePayoutDestination) SetIconURL(iconURL *string) {
 func (l *LedgerActivitySourcePayoutDestination) SetPayerName(payerName *string) {
 	l.PayerName = payerName
 	l.require(ledgerActivitySourcePayoutDestinationFieldPayerName)
+}
+
+// SetSecurityAnswer sets the SecurityAnswer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySourcePayoutDestination) SetSecurityAnswer(securityAnswer *string) {
+	l.SecurityAnswer = securityAnswer
+	l.require(ledgerActivitySourcePayoutDestinationFieldSecurityAnswer)
 }
 
 func (l *LedgerActivitySourcePayoutDestination) UnmarshalJSON(data []byte) error {
