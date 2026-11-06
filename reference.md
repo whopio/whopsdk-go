@@ -39186,7 +39186,7 @@ client.TeamMembers.List(
 <dl>
 <dd>
 
-**hasReferredBusinesses:** `*bool` — When true, only members who referred at least one business for their account, the reps the `partner_reps` stats metric counts; when false, only members who referred none. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
+**hasReferredBusinesses:** `*bool` — When true, only members who referred at least one business for their account; when false, only members who referred none. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
     
 </dd>
 </dl>

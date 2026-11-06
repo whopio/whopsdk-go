@@ -156,7 +156,7 @@ type ListTeamMembersRequest struct {
 	DirectReportsMax *int `json:"-" url:"direct_reports_max,omitempty"`
 	// Only return this user, prefixed `user_`, and everyone under them in today's org chart: the same team the stats API's `team_lead_id` reads. With `account_id=global`, their line in every partner account where they hold a role. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
 	TeamLeadID *string `json:"-" url:"team_lead_id,omitempty"`
-	// When true, only members who referred at least one business for their account, the reps the `partner_reps` stats metric counts; when false, only members who referred none. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
+	// When true, only members who referred at least one business for their account; when false, only members who referred none. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
 	HasReferredBusinesses *bool `json:"-" url:"has_referred_businesses,omitempty"`
 	// Only return members added before this ISO 8601 timestamp.
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
