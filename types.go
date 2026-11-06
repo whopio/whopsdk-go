@@ -20145,7 +20145,6 @@ const (
 	FinancingProviderReasonProcessorConnectionRequired     FinancingProviderReason = "processor_connection_required"
 	FinancingProviderReasonMinimumVolumeNotMet             FinancingProviderReason = "minimum_volume_not_met"
 	FinancingProviderReasonTurnedOffInCheckoutSettings     FinancingProviderReason = "turned_off_in_checkout_settings"
-	FinancingProviderReasonBillingAddressHidden            FinancingProviderReason = "billing_address_hidden"
 	FinancingProviderReasonProviderReview                  FinancingProviderReason = "provider_review"
 	FinancingProviderReasonDisputeRateNearLimit            FinancingProviderReason = "dispute_rate_near_limit"
 	FinancingProviderReasonDisputeRateExceeded             FinancingProviderReason = "dispute_rate_exceeded"
@@ -20179,8 +20178,6 @@ func NewFinancingProviderReasonFromString(s string) (FinancingProviderReason, er
 		return FinancingProviderReasonMinimumVolumeNotMet, nil
 	case "turned_off_in_checkout_settings":
 		return FinancingProviderReasonTurnedOffInCheckoutSettings, nil
-	case "billing_address_hidden":
-		return FinancingProviderReasonBillingAddressHidden, nil
 	case "provider_review":
 		return FinancingProviderReasonProviderReview, nil
 	case "dispute_rate_near_limit":
