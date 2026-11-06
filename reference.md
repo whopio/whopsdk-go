@@ -18483,6 +18483,14 @@ client.Experiments.Create(
 <dl>
 <dd>
 
+**metadata:** `map[string]string` — Up to 20 key-value pairs you can attach to the experiment for your own use, such as which pages it changes. Keys are at most 40 characters and values at most 500.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **name:** `*string` — Human-readable display name. Defaults to `flag_key` when omitted.
     
 </dd>

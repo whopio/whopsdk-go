@@ -85,10 +85,11 @@ var (
 	createExperimentsRequestFieldFeatureFlagOnly = big.NewInt(1 << 3)
 	createExperimentsRequestFieldFlagKey         = big.NewInt(1 << 4)
 	createExperimentsRequestFieldHypothesis      = big.NewInt(1 << 5)
-	createExperimentsRequestFieldName            = big.NewInt(1 << 6)
-	createExperimentsRequestFieldRelatedResource = big.NewInt(1 << 7)
-	createExperimentsRequestFieldTargetingRules  = big.NewInt(1 << 8)
-	createExperimentsRequestFieldVariants        = big.NewInt(1 << 9)
+	createExperimentsRequestFieldMetadata        = big.NewInt(1 << 6)
+	createExperimentsRequestFieldName            = big.NewInt(1 << 7)
+	createExperimentsRequestFieldRelatedResource = big.NewInt(1 << 8)
+	createExperimentsRequestFieldTargetingRules  = big.NewInt(1 << 9)
+	createExperimentsRequestFieldVariants        = big.NewInt(1 << 10)
 )
 
 type CreateExperimentsRequest struct {
@@ -103,6 +104,8 @@ type CreateExperimentsRequest struct {
 	FlagKey string `json:"flag_key" url:"-"`
 	// Required for full experiments; rejected on feature flags. Structure it as "If we [change] for [cohort], then [measurable behavior] will [increase/decrease], resulting in [business outcome], because [evidence]. Created by [name]." Evidence should be something real — a baseline number, a funnel breakdown — not a guess, and [name] is you, not something to leave blank.
 	Hypothesis *string `json:"hypothesis,omitempty" url:"-"`
+	// Up to 20 key-value pairs you can attach to the experiment for your own use, such as which pages it changes. Keys are at most 40 characters and values at most 500.
+	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
 	// Human-readable display name. Defaults to `flag_key` when omitted.
 	Name *string `json:"name,omitempty" url:"-"`
 	// Resource owned by the account that this experiment is bound to, such as an app or product. `null` when unbound. Fixed once the experiment first activates.
@@ -165,6 +168,13 @@ func (c *CreateExperimentsRequest) SetFlagKey(flagKey string) {
 func (c *CreateExperimentsRequest) SetHypothesis(hypothesis *string) {
 	c.Hypothesis = hypothesis
 	c.require(createExperimentsRequestFieldHypothesis)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateExperimentsRequest) SetMetadata(metadata map[string]string) {
+	c.Metadata = metadata
+	c.require(createExperimentsRequestFieldMetadata)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -571,14 +581,15 @@ var (
 	experimentFieldFlagKey               = big.NewInt(1 << 10)
 	experimentFieldHypothesis            = big.NewInt(1 << 11)
 	experimentFieldID                    = big.NewInt(1 << 12)
-	experimentFieldName                  = big.NewInt(1 << 13)
-	experimentFieldRelatedResource       = big.NewInt(1 << 14)
-	experimentFieldStartedAt             = big.NewInt(1 << 15)
-	experimentFieldStatus                = big.NewInt(1 << 16)
-	experimentFieldTargetingRules        = big.NewInt(1 << 17)
-	experimentFieldUpdatedAt             = big.NewInt(1 << 18)
-	experimentFieldVariants              = big.NewInt(1 << 19)
-	experimentFieldWinningArm            = big.NewInt(1 << 20)
+	experimentFieldMetadata              = big.NewInt(1 << 13)
+	experimentFieldName                  = big.NewInt(1 << 14)
+	experimentFieldRelatedResource       = big.NewInt(1 << 15)
+	experimentFieldStartedAt             = big.NewInt(1 << 16)
+	experimentFieldStatus                = big.NewInt(1 << 17)
+	experimentFieldTargetingRules        = big.NewInt(1 << 18)
+	experimentFieldUpdatedAt             = big.NewInt(1 << 19)
+	experimentFieldVariants              = big.NewInt(1 << 20)
+	experimentFieldWinningArm            = big.NewInt(1 << 21)
 )
 
 // experimentNullableFields maps the wire names of Experiment's nullable fields (required or optional) to their field bits.
@@ -621,6 +632,8 @@ type Experiment struct {
 	Hypothesis *string `json:"hypothesis,omitempty" url:"hypothesis,omitempty"`
 	// Unique identifier for the experiment, prefixed `expt_`.
 	ID string `json:"id" url:"id"`
+	// Key-value pairs attached when the experiment was created. Empty when none were set.
+	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// Human-readable display name.
 	Name string `json:"name" url:"name"`
 	// Resource owned by the account that this experiment is bound to, such as an app or product. `null` when unbound. Fixed once the experiment first activates.
@@ -733,6 +746,13 @@ func (e *Experiment) GetID() string {
 		return ""
 	}
 	return e.ID
+}
+
+func (e *Experiment) GetMetadata() map[string]string {
+	if e == nil {
+		return nil
+	}
+	return e.Metadata
 }
 
 func (e *Experiment) GetName() string {
@@ -896,6 +916,13 @@ func (e *Experiment) SetHypothesis(hypothesis *string) {
 func (e *Experiment) SetID(id string) {
 	e.ID = id
 	e.require(experimentFieldID)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *Experiment) SetMetadata(metadata map[string]string) {
+	e.Metadata = metadata
+	e.require(experimentFieldMetadata)
 }
 
 // SetName sets the Name field and marks it as non-optional;
