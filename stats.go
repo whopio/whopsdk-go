@@ -1373,14 +1373,15 @@ func (r RetrieveStatsRequestEventType) Ptr() *RetrieveStatsRequestEventType {
 type RetrieveStatsRequestInterval string
 
 const (
-	RetrieveStatsRequestIntervalMinute        RetrieveStatsRequestInterval = "minute"
-	RetrieveStatsRequestIntervalFiveMinutes   RetrieveStatsRequestInterval = "five_minutes"
-	RetrieveStatsRequestIntervalThirtyMinutes RetrieveStatsRequestInterval = "thirty_minutes"
-	RetrieveStatsRequestIntervalHour          RetrieveStatsRequestInterval = "hour"
-	RetrieveStatsRequestIntervalDay           RetrieveStatsRequestInterval = "day"
-	RetrieveStatsRequestIntervalWeek          RetrieveStatsRequestInterval = "week"
-	RetrieveStatsRequestIntervalMonth         RetrieveStatsRequestInterval = "month"
-	RetrieveStatsRequestIntervalYear          RetrieveStatsRequestInterval = "year"
+	RetrieveStatsRequestIntervalMinute         RetrieveStatsRequestInterval = "minute"
+	RetrieveStatsRequestIntervalFiveMinutes    RetrieveStatsRequestInterval = "five_minutes"
+	RetrieveStatsRequestIntervalFifteenMinutes RetrieveStatsRequestInterval = "fifteen_minutes"
+	RetrieveStatsRequestIntervalThirtyMinutes  RetrieveStatsRequestInterval = "thirty_minutes"
+	RetrieveStatsRequestIntervalHour           RetrieveStatsRequestInterval = "hour"
+	RetrieveStatsRequestIntervalDay            RetrieveStatsRequestInterval = "day"
+	RetrieveStatsRequestIntervalWeek           RetrieveStatsRequestInterval = "week"
+	RetrieveStatsRequestIntervalMonth          RetrieveStatsRequestInterval = "month"
+	RetrieveStatsRequestIntervalYear           RetrieveStatsRequestInterval = "year"
 )
 
 func NewRetrieveStatsRequestIntervalFromString(s string) (RetrieveStatsRequestInterval, error) {
@@ -1389,6 +1390,8 @@ func NewRetrieveStatsRequestIntervalFromString(s string) (RetrieveStatsRequestIn
 		return RetrieveStatsRequestIntervalMinute, nil
 	case "five_minutes":
 		return RetrieveStatsRequestIntervalFiveMinutes, nil
+	case "fifteen_minutes":
+		return RetrieveStatsRequestIntervalFifteenMinutes, nil
 	case "thirty_minutes":
 		return RetrieveStatsRequestIntervalThirtyMinutes, nil
 	case "hour":

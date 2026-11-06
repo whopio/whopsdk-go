@@ -5385,6 +5385,13 @@ func TestEnumRetrieveTimeSeriesRequestInterval(t *testing.T) {
 		assert.Equal(t, RetrieveTimeSeriesRequestInterval("five_minutes"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_fifteen_minutes", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveTimeSeriesRequestIntervalFromString("fifteen_minutes")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveTimeSeriesRequestInterval("fifteen_minutes"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_thirty_minutes", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveTimeSeriesRequestIntervalFromString("thirty_minutes")
