@@ -133736,6 +133736,14 @@ func TestSettersShippingAddressChangedWebhookData(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetCheckoutSessionID", func(t *testing.T) {
+		obj := &ShippingAddressChangedWebhookData{}
+		var fernTestValueCheckoutSessionID *string
+		obj.SetCheckoutSessionID(fernTestValueCheckoutSessionID)
+		assert.Equal(t, fernTestValueCheckoutSessionID, obj.CheckoutSessionID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetLineItems", func(t *testing.T) {
 		obj := &ShippingAddressChangedWebhookData{}
 		var fernTestValueLineItems []*ShippingAddressChangedWebhookLineItem
@@ -133746,7 +133754,7 @@ func TestSettersShippingAddressChangedWebhookData(t *testing.T) {
 
 	t.Run("SetPaymentID", func(t *testing.T) {
 		obj := &ShippingAddressChangedWebhookData{}
-		var fernTestValuePaymentID string
+		var fernTestValuePaymentID *string
 		obj.SetPaymentID(fernTestValuePaymentID)
 		assert.Equal(t, fernTestValuePaymentID, obj.PaymentID)
 		assert.NotNil(t, obj.explicitFields)
@@ -133796,6 +133804,39 @@ func TestGettersShippingAddressChangedWebhookData(t *testing.T) {
 		_ = obj.GetAmount() // Should return zero value
 	})
 
+	t.Run("GetCheckoutSessionID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookData{}
+		var expected *string
+		obj.CheckoutSessionID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCheckoutSessionID(), "getter should return the property value")
+	})
+
+	t.Run("GetCheckoutSessionID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookData{}
+		obj.CheckoutSessionID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCheckoutSessionID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCheckoutSessionID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ShippingAddressChangedWebhookData
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCheckoutSessionID() // Should return zero value
+	})
+
 	t.Run("GetLineItems", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -133833,11 +133874,21 @@ func TestGettersShippingAddressChangedWebhookData(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ShippingAddressChangedWebhookData{}
-		var expected string
+		var expected *string
 		obj.PaymentID = expected
 
 		// Act & Assert
 		assert.Equal(t, expected, obj.GetPaymentID(), "getter should return the property value")
+	})
+
+	t.Run("GetPaymentID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookData{}
+		obj.PaymentID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPaymentID(), "getter should return nil when property is nil")
 	})
 
 	t.Run("GetPaymentID_NilReceiver", func(t *testing.T) {
@@ -133919,6 +133970,37 @@ func TestSettersMarkExplicitShippingAddressChangedWebhookData(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetCheckoutSessionID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookData{}
+		var fernTestValueCheckoutSessionID *string
+
+		// Act
+		obj.SetCheckoutSessionID(fernTestValueCheckoutSessionID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetLineItems_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -133954,7 +134036,7 @@ func TestSettersMarkExplicitShippingAddressChangedWebhookData(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ShippingAddressChangedWebhookData{}
-		var fernTestValuePaymentID string
+		var fernTestValuePaymentID *string
 
 		// Act
 		obj.SetPaymentID(fernTestValuePaymentID)
@@ -166409,6 +166491,50 @@ func TestRequiredNullableRoundTripShippingAddressChangedWebhookAddress(t *testin
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
 		result := marshalToMap(t, &ShippingAddressChangedWebhookAddress{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripShippingAddressChangedWebhookData(t *testing.T) {
+	requiredNullableKeys := []string{
+		"checkout_session_id",
+		"payment_id",
+	}
+	marshalToMap := func(t *testing.T, obj *ShippingAddressChangedWebhookData) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj ShippingAddressChangedWebhookData
+		require.NoError(t, json.Unmarshal([]byte(`{"checkout_session_id":null,"payment_id":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj ShippingAddressChangedWebhookData
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &ShippingAddressChangedWebhookData{})
 		for _, key := range requiredNullableKeys {
 			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
 		}

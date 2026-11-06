@@ -67904,18 +67904,27 @@ func (s *ShippingAddressChangedWebhookAddress) String() string {
 }
 
 var (
-	shippingAddressChangedWebhookDataFieldAmount          = big.NewInt(1 << 0)
-	shippingAddressChangedWebhookDataFieldLineItems       = big.NewInt(1 << 1)
-	shippingAddressChangedWebhookDataFieldPaymentID       = big.NewInt(1 << 2)
-	shippingAddressChangedWebhookDataFieldShippingAddress = big.NewInt(1 << 3)
+	shippingAddressChangedWebhookDataFieldAmount            = big.NewInt(1 << 0)
+	shippingAddressChangedWebhookDataFieldCheckoutSessionID = big.NewInt(1 << 1)
+	shippingAddressChangedWebhookDataFieldLineItems         = big.NewInt(1 << 2)
+	shippingAddressChangedWebhookDataFieldPaymentID         = big.NewInt(1 << 3)
+	shippingAddressChangedWebhookDataFieldShippingAddress   = big.NewInt(1 << 4)
 )
 
+// shippingAddressChangedWebhookDataNullableFields maps the wire names of ShippingAddressChangedWebhookData's nullable fields (required or optional) to their field bits.
+var shippingAddressChangedWebhookDataNullableFields = map[string]*big.Int{
+	"checkout_session_id": shippingAddressChangedWebhookDataFieldCheckoutSessionID,
+	"payment_id":          shippingAddressChangedWebhookDataFieldPaymentID,
+}
+
 type ShippingAddressChangedWebhookData struct {
-	// The payment's original total, before your price for this address.
-	Amount    *Money                                   `json:"amount" url:"amount"`
-	LineItems []*ShippingAddressChangedWebhookLineItem `json:"line_items" url:"line_items"`
-	// The payment being priced, prefixed `pay_`.
-	PaymentID string `json:"payment_id" url:"payment_id"`
+	// The original total, before your price for this address.
+	Amount *Money `json:"amount" url:"amount"`
+	// The checkout session being priced, prefixed `chs_`, when the buyer is paying through one. `null` for a payment.
+	CheckoutSessionID *string                                  `json:"checkout_session_id,omitempty" url:"checkout_session_id,omitempty"`
+	LineItems         []*ShippingAddressChangedWebhookLineItem `json:"line_items" url:"line_items"`
+	// The payment being priced, prefixed `pay_`. `null` when the buyer is paying through a checkout session: the payment is created only after they approve, at your price.
+	PaymentID *string `json:"payment_id,omitempty" url:"payment_id,omitempty"`
 	// The address the buyer picked. PayPal shares only these fields until the buyer approves.
 	ShippingAddress *ShippingAddressChangedWebhookAddress `json:"shipping_address" url:"shipping_address"`
 
@@ -67933,6 +67942,13 @@ func (s *ShippingAddressChangedWebhookData) GetAmount() *Money {
 	return s.Amount
 }
 
+func (s *ShippingAddressChangedWebhookData) GetCheckoutSessionID() *string {
+	if s == nil {
+		return nil
+	}
+	return s.CheckoutSessionID
+}
+
 func (s *ShippingAddressChangedWebhookData) GetLineItems() []*ShippingAddressChangedWebhookLineItem {
 	if s == nil {
 		return nil
@@ -67940,9 +67956,9 @@ func (s *ShippingAddressChangedWebhookData) GetLineItems() []*ShippingAddressCha
 	return s.LineItems
 }
 
-func (s *ShippingAddressChangedWebhookData) GetPaymentID() string {
+func (s *ShippingAddressChangedWebhookData) GetPaymentID() *string {
 	if s == nil {
-		return ""
+		return nil
 	}
 	return s.PaymentID
 }
@@ -67977,6 +67993,13 @@ func (s *ShippingAddressChangedWebhookData) SetAmount(amount *Money) {
 	s.require(shippingAddressChangedWebhookDataFieldAmount)
 }
 
+// SetCheckoutSessionID sets the CheckoutSessionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *ShippingAddressChangedWebhookData) SetCheckoutSessionID(checkoutSessionID *string) {
+	s.CheckoutSessionID = checkoutSessionID
+	s.require(shippingAddressChangedWebhookDataFieldCheckoutSessionID)
+}
+
 // SetLineItems sets the LineItems field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (s *ShippingAddressChangedWebhookData) SetLineItems(lineItems []*ShippingAddressChangedWebhookLineItem) {
@@ -67986,7 +68009,7 @@ func (s *ShippingAddressChangedWebhookData) SetLineItems(lineItems []*ShippingAd
 
 // SetPaymentID sets the PaymentID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (s *ShippingAddressChangedWebhookData) SetPaymentID(paymentID string) {
+func (s *ShippingAddressChangedWebhookData) SetPaymentID(paymentID *string) {
 	s.PaymentID = paymentID
 	s.require(shippingAddressChangedWebhookDataFieldPaymentID)
 }
@@ -68010,6 +68033,13 @@ func (s *ShippingAddressChangedWebhookData) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	s.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, shippingAddressChangedWebhookDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		s.require(presentFields)
+	}
 	s.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -68053,9 +68083,9 @@ var shippingAddressChangedWebhookLineItemNullableFields = map[string]*big.Int{
 }
 
 type ShippingAddressChangedWebhookLineItem struct {
-	// The line's original total, the same on every call for this payment.
+	// The line's original total, the same on every call for this purchase.
 	Amount *Money `json:"amount" url:"amount"`
-	// The line item, prefixed `li_`. Your reply names each line by this id.
+	// Identifies the line. Your reply names each line by this id, so send it back unchanged.
 	ID string `json:"id" url:"id"`
 	// How many of the variant this line holds.
 	Quantity float64 `json:"quantity" url:"quantity"`
@@ -68282,9 +68312,9 @@ var (
 )
 
 type ShippingAddressChangedWebhookReplyLineItem struct {
-	// The line's total at this address, tax and shipping included, in the payment's currency.
+	// The line's total at this address, tax and shipping included, in the currency of `data.amount`.
 	Amount *Money `json:"amount" url:"amount"`
-	// The line item, prefixed `li_`, from `data.line_items`.
+	// The line's `id` from `data.line_items`, unchanged.
 	ID string `json:"id" url:"id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
