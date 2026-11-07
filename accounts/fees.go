@@ -1576,7 +1576,7 @@ type UpdateFeesRequestChildMarkups struct {
 	Deposits map[string]*UpdateFeesRequestChildMarkupsDepositsValue `json:"deposits,omitempty" url:"deposits,omitempty"`
 	// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 	Payments *UpdateFeesRequestChildMarkupsPayments `json:"payments,omitempty" url:"payments,omitempty"`
-	// Markups on withdrawals, keyed by payout method.
+	// Markups on withdrawals, keyed by payout method. Percentage and fixed components may be negative, down to negative 100, to subsidize Whop's fee from the platform's balance in the withdrawal currency. The creator's total fee cannot go below zero. An unfunded subsidy keeps the payout pending until funded or failed by the creation deadline.
 	Payouts map[string]*UpdateFeesRequestChildMarkupsPayoutsValue `json:"payouts,omitempty" url:"payouts,omitempty"`
 	// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 	Transfers *UpdateFeesRequestChildMarkupsTransfers `json:"transfers,omitempty" url:"transfers,omitempty"`
@@ -5333,7 +5333,7 @@ type UpdateFeesRequestMarkups struct {
 	Deposits map[string]*UpdateFeesRequestMarkupsDepositsValue `json:"deposits,omitempty" url:"deposits,omitempty"`
 	// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 	Payments *UpdateFeesRequestMarkupsPayments `json:"payments,omitempty" url:"payments,omitempty"`
-	// Markups on withdrawals, keyed by payout method.
+	// Markups on withdrawals, keyed by payout method. Percentage and fixed components may be negative, down to negative 100, to subsidize Whop's fee from the platform's balance in the withdrawal currency. The creator's total fee cannot go below zero. An unfunded subsidy keeps the payout pending until funded or failed by the creation deadline.
 	Payouts map[string]*UpdateFeesRequestMarkupsPayoutsValue `json:"payouts,omitempty" url:"payouts,omitempty"`
 	// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
 	Transfers *UpdateFeesRequestMarkupsTransfers `json:"transfers,omitempty" url:"transfers,omitempty"`
