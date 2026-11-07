@@ -4864,6 +4864,7 @@ const (
 	ListPaymentsRequestPaymentMethodsItemClaritypay             ListPaymentsRequestPaymentMethodsItem = "claritypay"
 	ListPaymentsRequestPaymentMethodsItemCoinbase               ListPaymentsRequestPaymentMethodsItem = "coinbase"
 	ListPaymentsRequestPaymentMethodsItemCrypto                 ListPaymentsRequestPaymentMethodsItem = "crypto"
+	ListPaymentsRequestPaymentMethodsItemCryptoSubscription     ListPaymentsRequestPaymentMethodsItem = "crypto_subscription"
 	ListPaymentsRequestPaymentMethodsItemCustom                 ListPaymentsRequestPaymentMethodsItem = "custom"
 	ListPaymentsRequestPaymentMethodsItemCustomerBalance        ListPaymentsRequestPaymentMethodsItem = "customer_balance"
 	ListPaymentsRequestPaymentMethodsItemDemoPay                ListPaymentsRequestPaymentMethodsItem = "demo_pay"
@@ -5134,6 +5135,8 @@ func NewListPaymentsRequestPaymentMethodsItemFromString(s string) (ListPaymentsR
 		return ListPaymentsRequestPaymentMethodsItemCoinbase, nil
 	case "crypto":
 		return ListPaymentsRequestPaymentMethodsItemCrypto, nil
+	case "crypto_subscription":
+		return ListPaymentsRequestPaymentMethodsItemCryptoSubscription, nil
 	case "custom":
 		return ListPaymentsRequestPaymentMethodsItemCustom, nil
 	case "customer_balance":
@@ -8362,6 +8365,7 @@ const (
 	SummaryPaymentsRequestPaymentMethodsItemClaritypay             SummaryPaymentsRequestPaymentMethodsItem = "claritypay"
 	SummaryPaymentsRequestPaymentMethodsItemCoinbase               SummaryPaymentsRequestPaymentMethodsItem = "coinbase"
 	SummaryPaymentsRequestPaymentMethodsItemCrypto                 SummaryPaymentsRequestPaymentMethodsItem = "crypto"
+	SummaryPaymentsRequestPaymentMethodsItemCryptoSubscription     SummaryPaymentsRequestPaymentMethodsItem = "crypto_subscription"
 	SummaryPaymentsRequestPaymentMethodsItemCustom                 SummaryPaymentsRequestPaymentMethodsItem = "custom"
 	SummaryPaymentsRequestPaymentMethodsItemCustomerBalance        SummaryPaymentsRequestPaymentMethodsItem = "customer_balance"
 	SummaryPaymentsRequestPaymentMethodsItemDemoPay                SummaryPaymentsRequestPaymentMethodsItem = "demo_pay"
@@ -8632,6 +8636,8 @@ func NewSummaryPaymentsRequestPaymentMethodsItemFromString(s string) (SummaryPay
 		return SummaryPaymentsRequestPaymentMethodsItemCoinbase, nil
 	case "crypto":
 		return SummaryPaymentsRequestPaymentMethodsItemCrypto, nil
+	case "crypto_subscription":
+		return SummaryPaymentsRequestPaymentMethodsItemCryptoSubscription, nil
 	case "custom":
 		return SummaryPaymentsRequestPaymentMethodsItemCustom, nil
 	case "customer_balance":
