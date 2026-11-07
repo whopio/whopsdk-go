@@ -2441,13 +2441,6 @@ func TestEnumRetrieveFinancialReportsRequestLineTypesItem(t *testing.T) {
 		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("balance_reservation_reversal"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_bank_transfer", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("bank_transfer")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("bank_transfer"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_billing_percentage_fee", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("billing_percentage_fee")

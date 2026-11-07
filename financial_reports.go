@@ -238,7 +238,6 @@ const (
 	RetrieveFinancialReportsRequestLineTypesItemApplicationFeePayout                      RetrieveFinancialReportsRequestLineTypesItem = "application_fee_payout"
 	RetrieveFinancialReportsRequestLineTypesItemBalanceReservation                        RetrieveFinancialReportsRequestLineTypesItem = "balance_reservation"
 	RetrieveFinancialReportsRequestLineTypesItemBalanceReservationReversal                RetrieveFinancialReportsRequestLineTypesItem = "balance_reservation_reversal"
-	RetrieveFinancialReportsRequestLineTypesItemBankTransfer                              RetrieveFinancialReportsRequestLineTypesItem = "bank_transfer"
 	RetrieveFinancialReportsRequestLineTypesItemBillingPercentageFee                      RetrieveFinancialReportsRequestLineTypesItem = "billing_percentage_fee"
 	RetrieveFinancialReportsRequestLineTypesItemBuyerFee                                  RetrieveFinancialReportsRequestLineTypesItem = "buyer_fee"
 	RetrieveFinancialReportsRequestLineTypesItemCardInterchange                           RetrieveFinancialReportsRequestLineTypesItem = "card_interchange"
@@ -405,8 +404,6 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 		return RetrieveFinancialReportsRequestLineTypesItemBalanceReservation, nil
 	case "balance_reservation_reversal":
 		return RetrieveFinancialReportsRequestLineTypesItemBalanceReservationReversal, nil
-	case "bank_transfer":
-		return RetrieveFinancialReportsRequestLineTypesItemBankTransfer, nil
 	case "billing_percentage_fee":
 		return RetrieveFinancialReportsRequestLineTypesItemBillingPercentageFee, nil
 	case "buyer_fee":
