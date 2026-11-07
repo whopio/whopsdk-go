@@ -15,22 +15,24 @@ var (
 	createMessagesRequestFieldAutoDetectLinks     = big.NewInt(1 << 1)
 	createMessagesRequestFieldChannelID           = big.NewInt(1 << 2)
 	createMessagesRequestFieldContent             = big.NewInt(1 << 3)
-	createMessagesRequestFieldPoll                = big.NewInt(1 << 4)
-	createMessagesRequestFieldReplyingToMessageID = big.NewInt(1 << 5)
+	createMessagesRequestFieldLinkPreviews        = big.NewInt(1 << 4)
+	createMessagesRequestFieldPoll                = big.NewInt(1 << 5)
+	createMessagesRequestFieldReplyingToMessageID = big.NewInt(1 << 6)
 )
 
 type CreateMessagesRequest struct {
-	// A list of file attachments to include with the message, such as images or videos.
+	// Files to attach to the message.
 	Attachments []*CreateMessagesRequestAttachmentsItem `json:"attachments,omitempty" url:"-"`
-	// Automatically detect URLs in the message and generate link previews.
+	// Generate previews for URLs in content. Mutually exclusive with link_previews.
 	AutoDetectLinks *bool `json:"auto_detect_links,omitempty" url:"-"`
-	// The unique identifier of the channel or experience to send the message in. For example, 'exp_xxxxx' or 'feed_xxxxx'.
+	// Public channel ID, or an experience ID for experience chat.
 	ChannelID string `json:"channel_id" url:"-"`
-	// The body of the message in Markdown format. For example, 'Hello **world**'.
+	// Markdown content. May be empty when the message contains media or a poll.
 	Content string `json:"content" url:"-"`
-	// A poll to attach to this message, allowing recipients to vote on options.
-	Poll *CreateMessagesRequestPoll `json:"poll,omitempty" url:"-"`
-	// The unique identifier of the message this is replying to, creating a threaded reply.
+	// Explicit URLs for the server to preview.
+	LinkPreviews []*CreateMessagesRequestLinkPreviewsItem `json:"link_previews,omitempty" url:"-"`
+	Poll         *CreateMessagesRequestPoll               `json:"poll,omitempty" url:"-"`
+	// A live message in the same channel to reply to.
 	ReplyingToMessageID *string `json:"replying_to_message_id,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -74,6 +76,13 @@ func (c *CreateMessagesRequest) SetContent(content string) {
 	c.require(createMessagesRequestFieldContent)
 }
 
+// SetLinkPreviews sets the LinkPreviews field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMessagesRequest) SetLinkPreviews(linkPreviews []*CreateMessagesRequestLinkPreviewsItem) {
+	c.LinkPreviews = linkPreviews
+	c.require(createMessagesRequestFieldLinkPreviews)
+}
+
 // SetPoll sets the Poll field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateMessagesRequest) SetPoll(poll *CreateMessagesRequestPoll) {
@@ -114,7 +123,7 @@ var (
 )
 
 type DeleteMessagesRequest struct {
-	// The unique identifier of the message to delete.
+	// Existing public message ID.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -138,26 +147,60 @@ func (d *DeleteMessagesRequest) SetID(id string) {
 }
 
 var (
-	listMessagesRequestFieldAfter     = big.NewInt(1 << 0)
-	listMessagesRequestFieldBefore    = big.NewInt(1 << 1)
-	listMessagesRequestFieldFirst     = big.NewInt(1 << 2)
-	listMessagesRequestFieldLast      = big.NewInt(1 << 3)
-	listMessagesRequestFieldChannelID = big.NewInt(1 << 4)
-	listMessagesRequestFieldDirection = big.NewInt(1 << 5)
+	listMessagesRequestFieldChannelID           = big.NewInt(1 << 0)
+	listMessagesRequestFieldReplyingToMessageID = big.NewInt(1 << 1)
+	listMessagesRequestFieldPinned              = big.NewInt(1 << 2)
+	listMessagesRequestFieldIncludeDeleted      = big.NewInt(1 << 3)
+	listMessagesRequestFieldCreatedAfter        = big.NewInt(1 << 4)
+	listMessagesRequestFieldCreatedBefore       = big.NewInt(1 << 5)
+	listMessagesRequestFieldUpdatedAfter        = big.NewInt(1 << 6)
+	listMessagesRequestFieldBeforeMessageID     = big.NewInt(1 << 7)
+	listMessagesRequestFieldAfterMessageID      = big.NewInt(1 << 8)
+	listMessagesRequestFieldAroundMessageID     = big.NewInt(1 << 9)
+	listMessagesRequestFieldAroundTimestamp     = big.NewInt(1 << 10)
+	listMessagesRequestFieldOrder               = big.NewInt(1 << 11)
+	listMessagesRequestFieldDirection           = big.NewInt(1 << 12)
+	listMessagesRequestFieldFirst               = big.NewInt(1 << 13)
+	listMessagesRequestFieldAfter               = big.NewInt(1 << 14)
+	listMessagesRequestFieldLast                = big.NewInt(1 << 15)
+	listMessagesRequestFieldBefore              = big.NewInt(1 << 16)
 )
 
 type ListMessagesRequest struct {
-	// Returns the elements in the list that come after the specified cursor.
-	After *string `json:"-" url:"after,omitempty"`
-	// Returns the elements in the list that come before the specified cursor.
-	Before *string `json:"-" url:"before,omitempty"`
-	// Returns the first _n_ elements from the list.
+	// Filter by public channel ID. An experience ID is also accepted for experience chat.
+	ChannelID string `json:"-" url:"channel_id"`
+	// Return replies to this message.
+	ReplyingToMessageID *string `json:"-" url:"replying_to_message_id,omitempty"`
+	// Filter by message pin state.
+	Pinned *bool `json:"-" url:"pinned,omitempty"`
+	// Include redacted deletion entries for cache synchronization.
+	IncludeDeleted *bool `json:"-" url:"include_deleted,omitempty"`
+	// Return messages created strictly after this ISO 8601 timestamp.
+	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
+	// Return messages created strictly before this ISO 8601 timestamp.
+	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
+	// Return messages changed at or after this ISO 8601 timestamp in ascending change order. Cannot be combined with history filters, around anchors, order, or direction.
+	UpdatedAfter *string `json:"-" url:"updated_after,omitempty"`
+	// Filter messages strictly before this message in channel_id by creation time and message ID. Deleted anchors are accepted; missing or other-channel IDs return 404. Cannot be combined with around anchors or updated_after.
+	BeforeMessageID *string `json:"-" url:"before_message_id,omitempty"`
+	// Filter messages strictly after this message in channel_id by creation time and message ID. Deleted anchors are accepted; missing or other-channel IDs return 404. Cannot be combined with around anchors or updated_after.
+	AfterMessageID *string `json:"-" url:"after_message_id,omitempty"`
+	// Center the first page around this live message in the selected channel.
+	AroundMessageID *string `json:"-" url:"around_message_id,omitempty"`
+	// Center the first page around this ISO 8601 timestamp in the selected channel.
+	AroundTimestamp *string `json:"-" url:"around_timestamp,omitempty"`
+	// History sort field. Defaults to created_at. Cannot be supplied with updated_after or around anchors.
+	Order *ListMessagesRequestOrder `json:"-" url:"order,omitempty"`
+	// History sort direction. Defaults to desc. Cannot be supplied with updated_after or around anchors.
+	Direction *ListMessagesRequestDirection `json:"-" url:"direction,omitempty"`
+	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
-	// Returns the last _n_ elements from the list.
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+	After *string `json:"-" url:"after,omitempty"`
+	// Number of results to return from the end of the range.
 	Last *int `json:"-" url:"last,omitempty"`
-	// The unique identifier of the channel or experience to list messages for.
-	ChannelID string     `json:"-" url:"channel_id"`
-	Direction *Direction `json:"-" url:"direction,omitempty"`
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+	Before *string `json:"-" url:"before,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -172,18 +215,95 @@ func (l *ListMessagesRequest) require(field *big.Int) {
 	l.explicitFields = next
 }
 
-// SetAfter sets the After field and marks it as non-optional;
+// SetChannelID sets the ChannelID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListMessagesRequest) SetAfter(after *string) {
-	l.After = after
-	l.require(listMessagesRequestFieldAfter)
+func (l *ListMessagesRequest) SetChannelID(channelID string) {
+	l.ChannelID = channelID
+	l.require(listMessagesRequestFieldChannelID)
 }
 
-// SetBefore sets the Before field and marks it as non-optional;
+// SetReplyingToMessageID sets the ReplyingToMessageID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListMessagesRequest) SetBefore(before *string) {
-	l.Before = before
-	l.require(listMessagesRequestFieldBefore)
+func (l *ListMessagesRequest) SetReplyingToMessageID(replyingToMessageID *string) {
+	l.ReplyingToMessageID = replyingToMessageID
+	l.require(listMessagesRequestFieldReplyingToMessageID)
+}
+
+// SetPinned sets the Pinned field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMessagesRequest) SetPinned(pinned *bool) {
+	l.Pinned = pinned
+	l.require(listMessagesRequestFieldPinned)
+}
+
+// SetIncludeDeleted sets the IncludeDeleted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMessagesRequest) SetIncludeDeleted(includeDeleted *bool) {
+	l.IncludeDeleted = includeDeleted
+	l.require(listMessagesRequestFieldIncludeDeleted)
+}
+
+// SetCreatedAfter sets the CreatedAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMessagesRequest) SetCreatedAfter(createdAfter *string) {
+	l.CreatedAfter = createdAfter
+	l.require(listMessagesRequestFieldCreatedAfter)
+}
+
+// SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMessagesRequest) SetCreatedBefore(createdBefore *string) {
+	l.CreatedBefore = createdBefore
+	l.require(listMessagesRequestFieldCreatedBefore)
+}
+
+// SetUpdatedAfter sets the UpdatedAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMessagesRequest) SetUpdatedAfter(updatedAfter *string) {
+	l.UpdatedAfter = updatedAfter
+	l.require(listMessagesRequestFieldUpdatedAfter)
+}
+
+// SetBeforeMessageID sets the BeforeMessageID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMessagesRequest) SetBeforeMessageID(beforeMessageID *string) {
+	l.BeforeMessageID = beforeMessageID
+	l.require(listMessagesRequestFieldBeforeMessageID)
+}
+
+// SetAfterMessageID sets the AfterMessageID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMessagesRequest) SetAfterMessageID(afterMessageID *string) {
+	l.AfterMessageID = afterMessageID
+	l.require(listMessagesRequestFieldAfterMessageID)
+}
+
+// SetAroundMessageID sets the AroundMessageID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMessagesRequest) SetAroundMessageID(aroundMessageID *string) {
+	l.AroundMessageID = aroundMessageID
+	l.require(listMessagesRequestFieldAroundMessageID)
+}
+
+// SetAroundTimestamp sets the AroundTimestamp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMessagesRequest) SetAroundTimestamp(aroundTimestamp *string) {
+	l.AroundTimestamp = aroundTimestamp
+	l.require(listMessagesRequestFieldAroundTimestamp)
+}
+
+// SetOrder sets the Order field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMessagesRequest) SetOrder(order *ListMessagesRequestOrder) {
+	l.Order = order
+	l.require(listMessagesRequestFieldOrder)
+}
+
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMessagesRequest) SetDirection(direction *ListMessagesRequestDirection) {
+	l.Direction = direction
+	l.require(listMessagesRequestFieldDirection)
 }
 
 // SetFirst sets the First field and marks it as non-optional;
@@ -193,6 +313,13 @@ func (l *ListMessagesRequest) SetFirst(first *int) {
 	l.require(listMessagesRequestFieldFirst)
 }
 
+// SetAfter sets the After field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMessagesRequest) SetAfter(after *string) {
+	l.After = after
+	l.require(listMessagesRequestFieldAfter)
+}
+
 // SetLast sets the Last field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListMessagesRequest) SetLast(last *int) {
@@ -200,18 +327,176 @@ func (l *ListMessagesRequest) SetLast(last *int) {
 	l.require(listMessagesRequestFieldLast)
 }
 
-// SetChannelID sets the ChannelID field and marks it as non-optional;
+// SetBefore sets the Before field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListMessagesRequest) SetChannelID(channelID string) {
-	l.ChannelID = channelID
-	l.require(listMessagesRequestFieldChannelID)
+func (l *ListMessagesRequest) SetBefore(before *string) {
+	l.Before = before
+	l.require(listMessagesRequestFieldBefore)
 }
 
-// SetDirection sets the Direction field and marks it as non-optional;
+var (
+	listReactionsMessagesRequestFieldID     = big.NewInt(1 << 0)
+	listReactionsMessagesRequestFieldFirst  = big.NewInt(1 << 1)
+	listReactionsMessagesRequestFieldAfter  = big.NewInt(1 << 2)
+	listReactionsMessagesRequestFieldLast   = big.NewInt(1 << 3)
+	listReactionsMessagesRequestFieldBefore = big.NewInt(1 << 4)
+	listReactionsMessagesRequestFieldEmoji  = big.NewInt(1 << 5)
+)
+
+type ListReactionsMessagesRequest struct {
+	// The ID of the message.
+	ID string `json:"-" url:"-"`
+	// Number of results to return from the start of the range.
+	First *int `json:"-" url:"first,omitempty"`
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+	After *string `json:"-" url:"after,omitempty"`
+	// Number of results to return from the end of the range.
+	Last *int `json:"-" url:"last,omitempty"`
+	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+	Before *string `json:"-" url:"before,omitempty"`
+	// Only return reactions with this emoji, as a Unicode emoji or a supported shortcode.
+	Emoji *string `json:"-" url:"emoji,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (l *ListReactionsMessagesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListMessagesRequest) SetDirection(direction *Direction) {
-	l.Direction = direction
-	l.require(listMessagesRequestFieldDirection)
+func (l *ListReactionsMessagesRequest) SetID(id string) {
+	l.ID = id
+	l.require(listReactionsMessagesRequestFieldID)
+}
+
+// SetFirst sets the First field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReactionsMessagesRequest) SetFirst(first *int) {
+	l.First = first
+	l.require(listReactionsMessagesRequestFieldFirst)
+}
+
+// SetAfter sets the After field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReactionsMessagesRequest) SetAfter(after *string) {
+	l.After = after
+	l.require(listReactionsMessagesRequestFieldAfter)
+}
+
+// SetLast sets the Last field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReactionsMessagesRequest) SetLast(last *int) {
+	l.Last = last
+	l.require(listReactionsMessagesRequestFieldLast)
+}
+
+// SetBefore sets the Before field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReactionsMessagesRequest) SetBefore(before *string) {
+	l.Before = before
+	l.require(listReactionsMessagesRequestFieldBefore)
+}
+
+// SetEmoji sets the Emoji field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReactionsMessagesRequest) SetEmoji(emoji *string) {
+	l.Emoji = emoji
+	l.require(listReactionsMessagesRequestFieldEmoji)
+}
+
+var (
+	pinMessagesRequestFieldID = big.NewInt(1 << 0)
+)
+
+type PinMessagesRequest struct {
+	// The message to pin.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (p *PinMessagesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PinMessagesRequest) SetID(id string) {
+	p.ID = id
+	p.require(pinMessagesRequestFieldID)
+}
+
+var (
+	reactMessagesRequestFieldID    = big.NewInt(1 << 0)
+	reactMessagesRequestFieldEmoji = big.NewInt(1 << 1)
+)
+
+type ReactMessagesRequest struct {
+	// The ID of the message to react to.
+	ID string `json:"-" url:"-"`
+	// A single Unicode emoji or a supported shortcode such as `:heart:`.
+	Emoji string `json:"emoji" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *ReactMessagesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReactMessagesRequest) SetID(id string) {
+	r.ID = id
+	r.require(reactMessagesRequestFieldID)
+}
+
+// SetEmoji sets the Emoji field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReactMessagesRequest) SetEmoji(emoji string) {
+	r.Emoji = emoji
+	r.require(reactMessagesRequestFieldEmoji)
+}
+
+func (r *ReactMessagesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler ReactMessagesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*r = ReactMessagesRequest(body)
+	return nil
+}
+
+func (r *ReactMessagesRequest) MarshalJSON() ([]byte, error) {
+	type embed ReactMessagesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 var (
@@ -219,7 +504,7 @@ var (
 )
 
 type RetrieveMessagesRequest struct {
-	// The unique identifier of the message to retrieve.
+	// Existing public message ID.
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -242,90 +527,22 @@ func (r *RetrieveMessagesRequest) SetID(id string) {
 	r.require(retrieveMessagesRequestFieldID)
 }
 
-// The types of post
-type DmsPostTypes string
-
-const (
-	DmsPostTypesRegular   DmsPostTypes = "regular"
-	DmsPostTypesSystem    DmsPostTypes = "system"
-	DmsPostTypesAutomated DmsPostTypes = "automated"
-)
-
-func NewDmsPostTypesFromString(s string) (DmsPostTypes, error) {
-	switch s {
-	case "regular":
-		return DmsPostTypesRegular, nil
-	case "system":
-		return DmsPostTypesSystem, nil
-	case "automated":
-		return DmsPostTypesAutomated, nil
-	}
-	var t DmsPostTypes
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (d DmsPostTypes) Ptr() *DmsPostTypes {
-	return &d
-}
-
 var (
-	messageFieldContent             = big.NewInt(1 << 0)
-	messageFieldCreatedAt           = big.NewInt(1 << 1)
-	messageFieldID                  = big.NewInt(1 << 2)
-	messageFieldIsEdited            = big.NewInt(1 << 3)
-	messageFieldIsPinned            = big.NewInt(1 << 4)
-	messageFieldMentions            = big.NewInt(1 << 5)
-	messageFieldMentionsEveryone    = big.NewInt(1 << 6)
-	messageFieldMessageType         = big.NewInt(1 << 7)
-	messageFieldPoll                = big.NewInt(1 << 8)
-	messageFieldPollVotes           = big.NewInt(1 << 9)
-	messageFieldReactionCounts      = big.NewInt(1 << 10)
-	messageFieldReplyingToMessageID = big.NewInt(1 << 11)
-	messageFieldUpdatedAt           = big.NewInt(1 << 12)
-	messageFieldUser                = big.NewInt(1 << 13)
-	messageFieldViewCount           = big.NewInt(1 << 14)
+	chatReactionFieldCreatedAt = big.NewInt(1 << 0)
+	chatReactionFieldEmoji     = big.NewInt(1 << 1)
+	chatReactionFieldUser      = big.NewInt(1 << 2)
+	chatReactionFieldUserID    = big.NewInt(1 << 3)
 )
 
-// messageNullableFields maps the wire names of Message's nullable fields (required or optional) to their field bits.
-var messageNullableFields = map[string]*big.Int{
-	"content":                messageFieldContent,
-	"poll":                   messageFieldPoll,
-	"replying_to_message_id": messageFieldReplyingToMessageID,
-	"view_count":             messageFieldViewCount,
-}
-
-// A message sent within an experience chat, direct message, or group chat.
-type Message struct {
-	// The message content formatted as Markdown. Null if the message has no text content.
-	Content *string `json:"content,omitempty" url:"content,omitempty"`
-	// The timestamp when this message was originally created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"VXNlci0xMA=="`) or integer (such as `4`) input value will be accepted as an ID.
-	ID string `json:"id" url:"id"`
-	// Whether the message content has been edited after it was originally sent.
-	IsEdited bool `json:"is_edited" url:"is_edited"`
-	// Whether this message is pinned to the top of the channel for easy access.
-	IsPinned bool `json:"is_pinned" url:"is_pinned"`
-	// A list of user IDs that are explicitly mentioned in this message.
-	Mentions []string `json:"mentions" url:"mentions"`
-	// Whether the message includes an @everyone mention that notifies all channel members.
-	MentionsEveryone bool `json:"mentions_everyone" url:"mentions_everyone"`
-	// The classification of this message: regular, system, or automated.
-	MessageType DmsPostTypes `json:"message_type" url:"message_type"`
-	// A poll attached to this message. Null if the message does not contain a poll.
-	Poll *MessagePoll `json:"poll,omitempty" url:"poll,omitempty"`
-	// Aggregated reaction counts on this message, filtered to a specific reaction type.
-	PollVotes []*MessagePollVotesItem `json:"poll_votes" url:"poll_votes"`
-	// Aggregated reaction counts on this message, filtered to a specific reaction type.
-	ReactionCounts []*MessageReactionCountsItem `json:"reaction_counts" url:"reaction_counts"`
-	// The unique identifier of the message this post is replying to. Null if this is not a reply.
-	ReplyingToMessageID *string `json:"replying_to_message_id,omitempty" url:"replying_to_message_id,omitempty"`
-	// The timestamp when this message was last modified.
-	UpdatedAt time.Time `json:"updated_at" url:"updated_at"`
-	// The user who authored this message.
-	User *MessageUser `json:"user" url:"user"`
-	// The number of unique views this message has received. Null if view tracking is not enabled for this channel.
-	ViewCount *int `json:"view_count,omitempty" url:"view_count,omitempty"`
+type ChatReaction struct {
+	// When the user reacted, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
+	// The Unicode emoji, including any skin tone or variation selectors.
+	Emoji string `json:"emoji" url:"emoji"`
+	// Public profile of the user who reacted.
+	User *UserSummary `json:"user" url:"user"`
+	// ID of the user who reacted, prefixed `user_`.
+	UserID string `json:"user_id" url:"user_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -334,1799 +551,126 @@ type Message struct {
 	rawJSON         json.RawMessage
 }
 
-func (m *Message) GetContent() *string {
-	if m == nil {
-		return nil
-	}
-	return m.Content
-}
-
-func (m *Message) GetCreatedAt() time.Time {
-	if m == nil {
-		return time.Time{}
-	}
-	return m.CreatedAt
-}
-
-func (m *Message) GetID() string {
-	if m == nil {
+func (c *ChatReaction) GetCreatedAt() string {
+	if c == nil {
 		return ""
 	}
-	return m.ID
+	return c.CreatedAt
 }
 
-func (m *Message) GetIsEdited() bool {
-	if m == nil {
-		return false
-	}
-	return m.IsEdited
-}
-
-func (m *Message) GetIsPinned() bool {
-	if m == nil {
-		return false
-	}
-	return m.IsPinned
-}
-
-func (m *Message) GetMentions() []string {
-	if m == nil {
-		return nil
-	}
-	return m.Mentions
-}
-
-func (m *Message) GetMentionsEveryone() bool {
-	if m == nil {
-		return false
-	}
-	return m.MentionsEveryone
-}
-
-func (m *Message) GetMessageType() DmsPostTypes {
-	if m == nil {
+func (c *ChatReaction) GetEmoji() string {
+	if c == nil {
 		return ""
 	}
-	return m.MessageType
+	return c.Emoji
 }
 
-func (m *Message) GetPoll() *MessagePoll {
-	if m == nil {
+func (c *ChatReaction) GetUser() *UserSummary {
+	if c == nil {
 		return nil
 	}
-	return m.Poll
+	return c.User
 }
 
-func (m *Message) GetPollVotes() []*MessagePollVotesItem {
-	if m == nil {
+func (c *ChatReaction) GetUserID() string {
+	if c == nil {
+		return ""
+	}
+	return c.UserID
+}
+
+func (c *ChatReaction) GetExtraProperties() map[string]interface{} {
+	if c == nil {
 		return nil
 	}
-	return m.PollVotes
+	return c.extraProperties
 }
 
-func (m *Message) GetReactionCounts() []*MessageReactionCountsItem {
-	if m == nil {
-		return nil
-	}
-	return m.ReactionCounts
-}
-
-func (m *Message) GetReplyingToMessageID() *string {
-	if m == nil {
-		return nil
-	}
-	return m.ReplyingToMessageID
-}
-
-func (m *Message) GetUpdatedAt() time.Time {
-	if m == nil {
-		return time.Time{}
-	}
-	return m.UpdatedAt
-}
-
-func (m *Message) GetUser() *MessageUser {
-	if m == nil {
-		return nil
-	}
-	return m.User
-}
-
-func (m *Message) GetViewCount() *int {
-	if m == nil {
-		return nil
-	}
-	return m.ViewCount
-}
-
-func (m *Message) GetExtraProperties() map[string]interface{} {
-	if m == nil {
-		return nil
-	}
-	return m.extraProperties
-}
-
-func (m *Message) require(field *big.Int) {
+func (c *ChatReaction) require(field *big.Int) {
 	next := new(big.Int)
-	if m.explicitFields != nil {
-		next.Set(m.explicitFields)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
 	}
 	next.Or(next, field)
-	m.explicitFields = next
-}
-
-// SetContent sets the Content field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Message) SetContent(content *string) {
-	m.Content = content
-	m.require(messageFieldContent)
+	c.explicitFields = next
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Message) SetCreatedAt(createdAt time.Time) {
-	m.CreatedAt = createdAt
-	m.require(messageFieldCreatedAt)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Message) SetID(id string) {
-	m.ID = id
-	m.require(messageFieldID)
-}
-
-// SetIsEdited sets the IsEdited field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Message) SetIsEdited(isEdited bool) {
-	m.IsEdited = isEdited
-	m.require(messageFieldIsEdited)
-}
-
-// SetIsPinned sets the IsPinned field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Message) SetIsPinned(isPinned bool) {
-	m.IsPinned = isPinned
-	m.require(messageFieldIsPinned)
-}
-
-// SetMentions sets the Mentions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Message) SetMentions(mentions []string) {
-	m.Mentions = mentions
-	m.require(messageFieldMentions)
-}
-
-// SetMentionsEveryone sets the MentionsEveryone field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Message) SetMentionsEveryone(mentionsEveryone bool) {
-	m.MentionsEveryone = mentionsEveryone
-	m.require(messageFieldMentionsEveryone)
-}
-
-// SetMessageType sets the MessageType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Message) SetMessageType(messageType DmsPostTypes) {
-	m.MessageType = messageType
-	m.require(messageFieldMessageType)
-}
-
-// SetPoll sets the Poll field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Message) SetPoll(poll *MessagePoll) {
-	m.Poll = poll
-	m.require(messageFieldPoll)
-}
-
-// SetPollVotes sets the PollVotes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Message) SetPollVotes(pollVotes []*MessagePollVotesItem) {
-	m.PollVotes = pollVotes
-	m.require(messageFieldPollVotes)
-}
-
-// SetReactionCounts sets the ReactionCounts field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Message) SetReactionCounts(reactionCounts []*MessageReactionCountsItem) {
-	m.ReactionCounts = reactionCounts
-	m.require(messageFieldReactionCounts)
-}
-
-// SetReplyingToMessageID sets the ReplyingToMessageID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Message) SetReplyingToMessageID(replyingToMessageID *string) {
-	m.ReplyingToMessageID = replyingToMessageID
-	m.require(messageFieldReplyingToMessageID)
-}
-
-// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Message) SetUpdatedAt(updatedAt time.Time) {
-	m.UpdatedAt = updatedAt
-	m.require(messageFieldUpdatedAt)
-}
-
-// SetUser sets the User field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Message) SetUser(user *MessageUser) {
-	m.User = user
-	m.require(messageFieldUser)
-}
-
-// SetViewCount sets the ViewCount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Message) SetViewCount(viewCount *int) {
-	m.ViewCount = viewCount
-	m.require(messageFieldViewCount)
-}
-
-func (m *Message) UnmarshalJSON(data []byte) error {
-	type embed Message
-	var unmarshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		UpdatedAt *internal.DateTime `json:"updated_at"`
-	}{
-		embed: embed(*m),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*m = Message(unmarshaler.embed)
-	m.CreatedAt = unmarshaler.CreatedAt.Time()
-	m.UpdatedAt = unmarshaler.UpdatedAt.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *m)
-	if err != nil {
-		return err
-	}
-	m.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, messageNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		m.require(presentFields)
-	}
-	m.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (m *Message) MarshalJSON() ([]byte, error) {
-	type embed Message
-	var marshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		UpdatedAt *internal.DateTime `json:"updated_at"`
-	}{
-		embed:     embed(*m),
-		CreatedAt: internal.NewDateTime(m.CreatedAt),
-		UpdatedAt: internal.NewDateTime(m.UpdatedAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (m *Message) String() string {
-	if m == nil {
-		return "<nil>"
-	}
-	if len(m.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(m); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", m)
-}
-
-var (
-	messageListItemFieldContent             = big.NewInt(1 << 0)
-	messageListItemFieldCreatedAt           = big.NewInt(1 << 1)
-	messageListItemFieldID                  = big.NewInt(1 << 2)
-	messageListItemFieldIsEdited            = big.NewInt(1 << 3)
-	messageListItemFieldIsPinned            = big.NewInt(1 << 4)
-	messageListItemFieldMentions            = big.NewInt(1 << 5)
-	messageListItemFieldMentionsEveryone    = big.NewInt(1 << 6)
-	messageListItemFieldMessageType         = big.NewInt(1 << 7)
-	messageListItemFieldPoll                = big.NewInt(1 << 8)
-	messageListItemFieldPollVotes           = big.NewInt(1 << 9)
-	messageListItemFieldReactionCounts      = big.NewInt(1 << 10)
-	messageListItemFieldReplyingToMessageID = big.NewInt(1 << 11)
-	messageListItemFieldUpdatedAt           = big.NewInt(1 << 12)
-	messageListItemFieldUser                = big.NewInt(1 << 13)
-	messageListItemFieldViewCount           = big.NewInt(1 << 14)
-)
-
-// messageListItemNullableFields maps the wire names of MessageListItem's nullable fields (required or optional) to their field bits.
-var messageListItemNullableFields = map[string]*big.Int{
-	"content":                messageListItemFieldContent,
-	"poll":                   messageListItemFieldPoll,
-	"replying_to_message_id": messageListItemFieldReplyingToMessageID,
-	"view_count":             messageListItemFieldViewCount,
-}
-
-// A message sent within an experience chat, direct message, or group chat.
-type MessageListItem struct {
-	// The message content formatted as Markdown. Null if the message has no text content.
-	Content *string `json:"content,omitempty" url:"content,omitempty"`
-	// The timestamp when this message was originally created.
-	CreatedAt time.Time `json:"created_at" url:"created_at"`
-	// Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"VXNlci0xMA=="`) or integer (such as `4`) input value will be accepted as an ID.
-	ID string `json:"id" url:"id"`
-	// Whether the message content has been edited after it was originally sent.
-	IsEdited bool `json:"is_edited" url:"is_edited"`
-	// Whether this message is pinned to the top of the channel for easy access.
-	IsPinned bool `json:"is_pinned" url:"is_pinned"`
-	// A list of user IDs that are explicitly mentioned in this message.
-	Mentions []string `json:"mentions" url:"mentions"`
-	// Whether the message includes an @everyone mention that notifies all channel members.
-	MentionsEveryone bool `json:"mentions_everyone" url:"mentions_everyone"`
-	// The classification of this message: regular, system, or automated.
-	MessageType DmsPostTypes `json:"message_type" url:"message_type"`
-	// A poll attached to this message. Null if the message does not contain a poll.
-	Poll *MessageListItemPoll `json:"poll,omitempty" url:"poll,omitempty"`
-	// Aggregated reaction counts on this message, filtered to a specific reaction type.
-	PollVotes []*MessageListItemPollVotesItem `json:"poll_votes" url:"poll_votes"`
-	// Aggregated reaction counts on this message, filtered to a specific reaction type.
-	ReactionCounts []*MessageListItemReactionCountsItem `json:"reaction_counts" url:"reaction_counts"`
-	// The unique identifier of the message this post is replying to. Null if this is not a reply.
-	ReplyingToMessageID *string `json:"replying_to_message_id,omitempty" url:"replying_to_message_id,omitempty"`
-	// The timestamp when this message was last modified.
-	UpdatedAt time.Time `json:"updated_at" url:"updated_at"`
-	// The user who authored this message.
-	User *MessageListItemUser `json:"user" url:"user"`
-	// The number of unique views this message has received. Null if view tracking is not enabled for this channel.
-	ViewCount *int `json:"view_count,omitempty" url:"view_count,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (m *MessageListItem) GetContent() *string {
-	if m == nil {
-		return nil
-	}
-	return m.Content
-}
-
-func (m *MessageListItem) GetCreatedAt() time.Time {
-	if m == nil {
-		return time.Time{}
-	}
-	return m.CreatedAt
-}
-
-func (m *MessageListItem) GetID() string {
-	if m == nil {
-		return ""
-	}
-	return m.ID
-}
-
-func (m *MessageListItem) GetIsEdited() bool {
-	if m == nil {
-		return false
-	}
-	return m.IsEdited
-}
-
-func (m *MessageListItem) GetIsPinned() bool {
-	if m == nil {
-		return false
-	}
-	return m.IsPinned
-}
-
-func (m *MessageListItem) GetMentions() []string {
-	if m == nil {
-		return nil
-	}
-	return m.Mentions
-}
-
-func (m *MessageListItem) GetMentionsEveryone() bool {
-	if m == nil {
-		return false
-	}
-	return m.MentionsEveryone
-}
-
-func (m *MessageListItem) GetMessageType() DmsPostTypes {
-	if m == nil {
-		return ""
-	}
-	return m.MessageType
-}
-
-func (m *MessageListItem) GetPoll() *MessageListItemPoll {
-	if m == nil {
-		return nil
-	}
-	return m.Poll
-}
-
-func (m *MessageListItem) GetPollVotes() []*MessageListItemPollVotesItem {
-	if m == nil {
-		return nil
-	}
-	return m.PollVotes
-}
-
-func (m *MessageListItem) GetReactionCounts() []*MessageListItemReactionCountsItem {
-	if m == nil {
-		return nil
-	}
-	return m.ReactionCounts
-}
-
-func (m *MessageListItem) GetReplyingToMessageID() *string {
-	if m == nil {
-		return nil
-	}
-	return m.ReplyingToMessageID
-}
-
-func (m *MessageListItem) GetUpdatedAt() time.Time {
-	if m == nil {
-		return time.Time{}
-	}
-	return m.UpdatedAt
-}
-
-func (m *MessageListItem) GetUser() *MessageListItemUser {
-	if m == nil {
-		return nil
-	}
-	return m.User
-}
-
-func (m *MessageListItem) GetViewCount() *int {
-	if m == nil {
-		return nil
-	}
-	return m.ViewCount
-}
-
-func (m *MessageListItem) GetExtraProperties() map[string]interface{} {
-	if m == nil {
-		return nil
-	}
-	return m.extraProperties
-}
-
-func (m *MessageListItem) require(field *big.Int) {
-	next := new(big.Int)
-	if m.explicitFields != nil {
-		next.Set(m.explicitFields)
-	}
-	next.Or(next, field)
-	m.explicitFields = next
-}
-
-// SetContent sets the Content field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItem) SetContent(content *string) {
-	m.Content = content
-	m.require(messageListItemFieldContent)
-}
-
-// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItem) SetCreatedAt(createdAt time.Time) {
-	m.CreatedAt = createdAt
-	m.require(messageListItemFieldCreatedAt)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItem) SetID(id string) {
-	m.ID = id
-	m.require(messageListItemFieldID)
-}
-
-// SetIsEdited sets the IsEdited field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItem) SetIsEdited(isEdited bool) {
-	m.IsEdited = isEdited
-	m.require(messageListItemFieldIsEdited)
-}
-
-// SetIsPinned sets the IsPinned field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItem) SetIsPinned(isPinned bool) {
-	m.IsPinned = isPinned
-	m.require(messageListItemFieldIsPinned)
-}
-
-// SetMentions sets the Mentions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItem) SetMentions(mentions []string) {
-	m.Mentions = mentions
-	m.require(messageListItemFieldMentions)
-}
-
-// SetMentionsEveryone sets the MentionsEveryone field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItem) SetMentionsEveryone(mentionsEveryone bool) {
-	m.MentionsEveryone = mentionsEveryone
-	m.require(messageListItemFieldMentionsEveryone)
-}
-
-// SetMessageType sets the MessageType field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItem) SetMessageType(messageType DmsPostTypes) {
-	m.MessageType = messageType
-	m.require(messageListItemFieldMessageType)
-}
-
-// SetPoll sets the Poll field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItem) SetPoll(poll *MessageListItemPoll) {
-	m.Poll = poll
-	m.require(messageListItemFieldPoll)
-}
-
-// SetPollVotes sets the PollVotes field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItem) SetPollVotes(pollVotes []*MessageListItemPollVotesItem) {
-	m.PollVotes = pollVotes
-	m.require(messageListItemFieldPollVotes)
-}
-
-// SetReactionCounts sets the ReactionCounts field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItem) SetReactionCounts(reactionCounts []*MessageListItemReactionCountsItem) {
-	m.ReactionCounts = reactionCounts
-	m.require(messageListItemFieldReactionCounts)
-}
-
-// SetReplyingToMessageID sets the ReplyingToMessageID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItem) SetReplyingToMessageID(replyingToMessageID *string) {
-	m.ReplyingToMessageID = replyingToMessageID
-	m.require(messageListItemFieldReplyingToMessageID)
-}
-
-// SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItem) SetUpdatedAt(updatedAt time.Time) {
-	m.UpdatedAt = updatedAt
-	m.require(messageListItemFieldUpdatedAt)
-}
-
-// SetUser sets the User field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItem) SetUser(user *MessageListItemUser) {
-	m.User = user
-	m.require(messageListItemFieldUser)
-}
-
-// SetViewCount sets the ViewCount field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItem) SetViewCount(viewCount *int) {
-	m.ViewCount = viewCount
-	m.require(messageListItemFieldViewCount)
-}
-
-func (m *MessageListItem) UnmarshalJSON(data []byte) error {
-	type embed MessageListItem
-	var unmarshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		UpdatedAt *internal.DateTime `json:"updated_at"`
-	}{
-		embed: embed(*m),
-	}
-	if err := json.Unmarshal(data, &unmarshaler); err != nil {
-		return err
-	}
-	*m = MessageListItem(unmarshaler.embed)
-	m.CreatedAt = unmarshaler.CreatedAt.Time()
-	m.UpdatedAt = unmarshaler.UpdatedAt.Time()
-	extraProperties, err := internal.ExtractExtraProperties(data, *m)
-	if err != nil {
-		return err
-	}
-	m.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, messageListItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		m.require(presentFields)
-	}
-	m.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (m *MessageListItem) MarshalJSON() ([]byte, error) {
-	type embed MessageListItem
-	var marshaler = struct {
-		embed
-		CreatedAt *internal.DateTime `json:"created_at"`
-		UpdatedAt *internal.DateTime `json:"updated_at"`
-	}{
-		embed:     embed(*m),
-		CreatedAt: internal.NewDateTime(m.CreatedAt),
-		UpdatedAt: internal.NewDateTime(m.UpdatedAt),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (m *MessageListItem) String() string {
-	if m == nil {
-		return "<nil>"
-	}
-	if len(m.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(m); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", m)
-}
-
-var (
-	messageListItemPollFieldOptions = big.NewInt(1 << 0)
-)
-
-// messageListItemPollNullableFields maps the wire names of MessageListItemPoll's nullable fields (required or optional) to their field bits.
-var messageListItemPollNullableFields = map[string]*big.Int{
-	"options": messageListItemPollFieldOptions,
-}
-
-// A poll attached to this message. Null if the message does not contain a poll.
-type MessageListItemPoll struct {
-	// The options for the poll
-	Options []*MessageListItemPollOptionsItem `json:"options,omitempty" url:"options,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (m *MessageListItemPoll) GetOptions() []*MessageListItemPollOptionsItem {
-	if m == nil {
-		return nil
-	}
-	return m.Options
-}
-
-func (m *MessageListItemPoll) GetExtraProperties() map[string]interface{} {
-	if m == nil {
-		return nil
-	}
-	return m.extraProperties
-}
-
-func (m *MessageListItemPoll) require(field *big.Int) {
-	next := new(big.Int)
-	if m.explicitFields != nil {
-		next.Set(m.explicitFields)
-	}
-	next.Or(next, field)
-	m.explicitFields = next
-}
-
-// SetOptions sets the Options field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItemPoll) SetOptions(options []*MessageListItemPollOptionsItem) {
-	m.Options = options
-	m.require(messageListItemPollFieldOptions)
-}
-
-func (m *MessageListItemPoll) UnmarshalJSON(data []byte) error {
-	type unmarshaler MessageListItemPoll
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*m = MessageListItemPoll(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *m)
-	if err != nil {
-		return err
-	}
-	m.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, messageListItemPollNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		m.require(presentFields)
-	}
-	m.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (m *MessageListItemPoll) MarshalJSON() ([]byte, error) {
-	type embed MessageListItemPoll
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*m),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (m *MessageListItemPoll) String() string {
-	if m == nil {
-		return "<nil>"
-	}
-	if len(m.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(m); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", m)
-}
-
-var (
-	messageListItemPollOptionsItemFieldID   = big.NewInt(1 << 0)
-	messageListItemPollOptionsItemFieldText = big.NewInt(1 << 1)
-)
-
-// Represents a single poll option
-type MessageListItemPollOptionsItem struct {
-	// The unique identifier for the poll option.
-	ID string `json:"id" url:"id"`
-	// The text of the poll option
-	Text string `json:"text" url:"text"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (m *MessageListItemPollOptionsItem) GetID() string {
-	if m == nil {
-		return ""
-	}
-	return m.ID
-}
-
-func (m *MessageListItemPollOptionsItem) GetText() string {
-	if m == nil {
-		return ""
-	}
-	return m.Text
-}
-
-func (m *MessageListItemPollOptionsItem) GetExtraProperties() map[string]interface{} {
-	if m == nil {
-		return nil
-	}
-	return m.extraProperties
-}
-
-func (m *MessageListItemPollOptionsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if m.explicitFields != nil {
-		next.Set(m.explicitFields)
-	}
-	next.Or(next, field)
-	m.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItemPollOptionsItem) SetID(id string) {
-	m.ID = id
-	m.require(messageListItemPollOptionsItemFieldID)
-}
-
-// SetText sets the Text field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItemPollOptionsItem) SetText(text string) {
-	m.Text = text
-	m.require(messageListItemPollOptionsItemFieldText)
-}
-
-func (m *MessageListItemPollOptionsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler MessageListItemPollOptionsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*m = MessageListItemPollOptionsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *m)
-	if err != nil {
-		return err
-	}
-	m.extraProperties = extraProperties
-	m.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (m *MessageListItemPollOptionsItem) MarshalJSON() ([]byte, error) {
-	type embed MessageListItemPollOptionsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*m),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (m *MessageListItemPollOptionsItem) String() string {
-	if m == nil {
-		return "<nil>"
-	}
-	if len(m.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(m); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", m)
-}
-
-var (
-	messageListItemPollVotesItemFieldCount    = big.NewInt(1 << 0)
-	messageListItemPollVotesItemFieldOptionID = big.NewInt(1 << 1)
-)
-
-// messageListItemPollVotesItemNullableFields maps the wire names of MessageListItemPollVotesItem's nullable fields (required or optional) to their field bits.
-var messageListItemPollVotesItemNullableFields = map[string]*big.Int{
-	"option_id": messageListItemPollVotesItemFieldOptionID,
-}
-
-// Represents a reaction count for a feed post
-type MessageListItemPollVotesItem struct {
-	// The number of users who reacted
-	Count int `json:"count" url:"count"`
-	// The reaction that was used
-	OptionID *string `json:"option_id,omitempty" url:"option_id,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (m *MessageListItemPollVotesItem) GetCount() int {
-	if m == nil {
-		return 0
-	}
-	return m.Count
-}
-
-func (m *MessageListItemPollVotesItem) GetOptionID() *string {
-	if m == nil {
-		return nil
-	}
-	return m.OptionID
-}
-
-func (m *MessageListItemPollVotesItem) GetExtraProperties() map[string]interface{} {
-	if m == nil {
-		return nil
-	}
-	return m.extraProperties
-}
-
-func (m *MessageListItemPollVotesItem) require(field *big.Int) {
-	next := new(big.Int)
-	if m.explicitFields != nil {
-		next.Set(m.explicitFields)
-	}
-	next.Or(next, field)
-	m.explicitFields = next
-}
-
-// SetCount sets the Count field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItemPollVotesItem) SetCount(count int) {
-	m.Count = count
-	m.require(messageListItemPollVotesItemFieldCount)
-}
-
-// SetOptionID sets the OptionID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItemPollVotesItem) SetOptionID(optionID *string) {
-	m.OptionID = optionID
-	m.require(messageListItemPollVotesItemFieldOptionID)
-}
-
-func (m *MessageListItemPollVotesItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler MessageListItemPollVotesItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*m = MessageListItemPollVotesItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *m)
-	if err != nil {
-		return err
-	}
-	m.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, messageListItemPollVotesItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		m.require(presentFields)
-	}
-	m.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (m *MessageListItemPollVotesItem) MarshalJSON() ([]byte, error) {
-	type embed MessageListItemPollVotesItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*m),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (m *MessageListItemPollVotesItem) String() string {
-	if m == nil {
-		return "<nil>"
-	}
-	if len(m.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(m); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", m)
-}
-
-var (
-	messageListItemReactionCountsItemFieldCount = big.NewInt(1 << 0)
-	messageListItemReactionCountsItemFieldEmoji = big.NewInt(1 << 1)
-)
-
-// messageListItemReactionCountsItemNullableFields maps the wire names of MessageListItemReactionCountsItem's nullable fields (required or optional) to their field bits.
-var messageListItemReactionCountsItemNullableFields = map[string]*big.Int{
-	"emoji": messageListItemReactionCountsItemFieldEmoji,
-}
-
-// Represents a reaction count for a feed post
-type MessageListItemReactionCountsItem struct {
-	// The number of users who reacted
-	Count int `json:"count" url:"count"`
-	// The emoji that was used in shortcode format (:heart:)
-	Emoji *string `json:"emoji,omitempty" url:"emoji,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (m *MessageListItemReactionCountsItem) GetCount() int {
-	if m == nil {
-		return 0
-	}
-	return m.Count
-}
-
-func (m *MessageListItemReactionCountsItem) GetEmoji() *string {
-	if m == nil {
-		return nil
-	}
-	return m.Emoji
-}
-
-func (m *MessageListItemReactionCountsItem) GetExtraProperties() map[string]interface{} {
-	if m == nil {
-		return nil
-	}
-	return m.extraProperties
-}
-
-func (m *MessageListItemReactionCountsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if m.explicitFields != nil {
-		next.Set(m.explicitFields)
-	}
-	next.Or(next, field)
-	m.explicitFields = next
-}
-
-// SetCount sets the Count field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItemReactionCountsItem) SetCount(count int) {
-	m.Count = count
-	m.require(messageListItemReactionCountsItemFieldCount)
+func (c *ChatReaction) SetCreatedAt(createdAt string) {
+	c.CreatedAt = createdAt
+	c.require(chatReactionFieldCreatedAt)
 }
 
 // SetEmoji sets the Emoji field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItemReactionCountsItem) SetEmoji(emoji *string) {
-	m.Emoji = emoji
-	m.require(messageListItemReactionCountsItemFieldEmoji)
+func (c *ChatReaction) SetEmoji(emoji string) {
+	c.Emoji = emoji
+	c.require(chatReactionFieldEmoji)
 }
 
-func (m *MessageListItemReactionCountsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler MessageListItemReactionCountsItem
+// SetUser sets the User field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ChatReaction) SetUser(user *UserSummary) {
+	c.User = user
+	c.require(chatReactionFieldUser)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ChatReaction) SetUserID(userID string) {
+	c.UserID = userID
+	c.require(chatReactionFieldUserID)
+}
+
+func (c *ChatReaction) UnmarshalJSON(data []byte) error {
+	type unmarshaler ChatReaction
 	var value unmarshaler
 	if err := json.Unmarshal(data, &value); err != nil {
 		return err
 	}
-	*m = MessageListItemReactionCountsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	*c = ChatReaction(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
 		return err
 	}
-	m.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, messageListItemReactionCountsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		m.require(presentFields)
-	}
-	m.rawJSON = json.RawMessage(data)
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
 	return nil
 }
 
-func (m *MessageListItemReactionCountsItem) MarshalJSON() ([]byte, error) {
-	type embed MessageListItemReactionCountsItem
+func (c *ChatReaction) MarshalJSON() ([]byte, error) {
+	type embed ChatReaction
 	var marshaler = struct {
 		embed
 	}{
-		embed: embed(*m),
+		embed: embed(*c),
 	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
 	return json.Marshal(explicitMarshaler)
 }
 
-func (m *MessageListItemReactionCountsItem) String() string {
-	if m == nil {
+func (c *ChatReaction) String() string {
+	if c == nil {
 		return "<nil>"
 	}
-	if len(m.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
 			return value
 		}
 	}
-	if value, err := internal.StringifyJSON(m); err == nil {
+	if value, err := internal.StringifyJSON(c); err == nil {
 		return value
 	}
-	return fmt.Sprintf("%#v", m)
-}
-
-var (
-	messageListItemUserFieldID       = big.NewInt(1 << 0)
-	messageListItemUserFieldName     = big.NewInt(1 << 1)
-	messageListItemUserFieldUsername = big.NewInt(1 << 2)
-)
-
-// messageListItemUserNullableFields maps the wire names of MessageListItemUser's nullable fields (required or optional) to their field bits.
-var messageListItemUserNullableFields = map[string]*big.Int{
-	"name": messageListItemUserFieldName,
-}
-
-// The user who authored this message.
-type MessageListItemUser struct {
-	// The unique identifier for the user.
-	ID string `json:"id" url:"id"`
-	// The user's display name shown on their public profile.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The user's unique username shown on their public profile.
-	Username string `json:"username" url:"username"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (m *MessageListItemUser) GetID() string {
-	if m == nil {
-		return ""
-	}
-	return m.ID
-}
-
-func (m *MessageListItemUser) GetName() *string {
-	if m == nil {
-		return nil
-	}
-	return m.Name
-}
-
-func (m *MessageListItemUser) GetUsername() string {
-	if m == nil {
-		return ""
-	}
-	return m.Username
-}
-
-func (m *MessageListItemUser) GetExtraProperties() map[string]interface{} {
-	if m == nil {
-		return nil
-	}
-	return m.extraProperties
-}
-
-func (m *MessageListItemUser) require(field *big.Int) {
-	next := new(big.Int)
-	if m.explicitFields != nil {
-		next.Set(m.explicitFields)
-	}
-	next.Or(next, field)
-	m.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItemUser) SetID(id string) {
-	m.ID = id
-	m.require(messageListItemUserFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItemUser) SetName(name *string) {
-	m.Name = name
-	m.require(messageListItemUserFieldName)
-}
-
-// SetUsername sets the Username field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageListItemUser) SetUsername(username string) {
-	m.Username = username
-	m.require(messageListItemUserFieldUsername)
-}
-
-func (m *MessageListItemUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler MessageListItemUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*m = MessageListItemUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *m)
-	if err != nil {
-		return err
-	}
-	m.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, messageListItemUserNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		m.require(presentFields)
-	}
-	m.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (m *MessageListItemUser) MarshalJSON() ([]byte, error) {
-	type embed MessageListItemUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*m),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (m *MessageListItemUser) String() string {
-	if m == nil {
-		return "<nil>"
-	}
-	if len(m.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(m); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", m)
-}
-
-var (
-	messagePollFieldOptions = big.NewInt(1 << 0)
-)
-
-// messagePollNullableFields maps the wire names of MessagePoll's nullable fields (required or optional) to their field bits.
-var messagePollNullableFields = map[string]*big.Int{
-	"options": messagePollFieldOptions,
-}
-
-// A poll attached to this message. Null if the message does not contain a poll.
-type MessagePoll struct {
-	// The options for the poll
-	Options []*MessagePollOptionsItem `json:"options,omitempty" url:"options,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (m *MessagePoll) GetOptions() []*MessagePollOptionsItem {
-	if m == nil {
-		return nil
-	}
-	return m.Options
-}
-
-func (m *MessagePoll) GetExtraProperties() map[string]interface{} {
-	if m == nil {
-		return nil
-	}
-	return m.extraProperties
-}
-
-func (m *MessagePoll) require(field *big.Int) {
-	next := new(big.Int)
-	if m.explicitFields != nil {
-		next.Set(m.explicitFields)
-	}
-	next.Or(next, field)
-	m.explicitFields = next
-}
-
-// SetOptions sets the Options field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessagePoll) SetOptions(options []*MessagePollOptionsItem) {
-	m.Options = options
-	m.require(messagePollFieldOptions)
-}
-
-func (m *MessagePoll) UnmarshalJSON(data []byte) error {
-	type unmarshaler MessagePoll
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*m = MessagePoll(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *m)
-	if err != nil {
-		return err
-	}
-	m.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, messagePollNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		m.require(presentFields)
-	}
-	m.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (m *MessagePoll) MarshalJSON() ([]byte, error) {
-	type embed MessagePoll
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*m),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (m *MessagePoll) String() string {
-	if m == nil {
-		return "<nil>"
-	}
-	if len(m.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(m); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", m)
-}
-
-var (
-	messagePollOptionsItemFieldID   = big.NewInt(1 << 0)
-	messagePollOptionsItemFieldText = big.NewInt(1 << 1)
-)
-
-// Represents a single poll option
-type MessagePollOptionsItem struct {
-	// The unique identifier for the poll option.
-	ID string `json:"id" url:"id"`
-	// The text of the poll option
-	Text string `json:"text" url:"text"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (m *MessagePollOptionsItem) GetID() string {
-	if m == nil {
-		return ""
-	}
-	return m.ID
-}
-
-func (m *MessagePollOptionsItem) GetText() string {
-	if m == nil {
-		return ""
-	}
-	return m.Text
-}
-
-func (m *MessagePollOptionsItem) GetExtraProperties() map[string]interface{} {
-	if m == nil {
-		return nil
-	}
-	return m.extraProperties
-}
-
-func (m *MessagePollOptionsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if m.explicitFields != nil {
-		next.Set(m.explicitFields)
-	}
-	next.Or(next, field)
-	m.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessagePollOptionsItem) SetID(id string) {
-	m.ID = id
-	m.require(messagePollOptionsItemFieldID)
-}
-
-// SetText sets the Text field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessagePollOptionsItem) SetText(text string) {
-	m.Text = text
-	m.require(messagePollOptionsItemFieldText)
-}
-
-func (m *MessagePollOptionsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler MessagePollOptionsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*m = MessagePollOptionsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *m)
-	if err != nil {
-		return err
-	}
-	m.extraProperties = extraProperties
-	m.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (m *MessagePollOptionsItem) MarshalJSON() ([]byte, error) {
-	type embed MessagePollOptionsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*m),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (m *MessagePollOptionsItem) String() string {
-	if m == nil {
-		return "<nil>"
-	}
-	if len(m.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(m); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", m)
-}
-
-var (
-	messagePollVotesItemFieldCount    = big.NewInt(1 << 0)
-	messagePollVotesItemFieldOptionID = big.NewInt(1 << 1)
-)
-
-// messagePollVotesItemNullableFields maps the wire names of MessagePollVotesItem's nullable fields (required or optional) to their field bits.
-var messagePollVotesItemNullableFields = map[string]*big.Int{
-	"option_id": messagePollVotesItemFieldOptionID,
-}
-
-// Represents a reaction count for a feed post
-type MessagePollVotesItem struct {
-	// The number of users who reacted
-	Count int `json:"count" url:"count"`
-	// The reaction that was used
-	OptionID *string `json:"option_id,omitempty" url:"option_id,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (m *MessagePollVotesItem) GetCount() int {
-	if m == nil {
-		return 0
-	}
-	return m.Count
-}
-
-func (m *MessagePollVotesItem) GetOptionID() *string {
-	if m == nil {
-		return nil
-	}
-	return m.OptionID
-}
-
-func (m *MessagePollVotesItem) GetExtraProperties() map[string]interface{} {
-	if m == nil {
-		return nil
-	}
-	return m.extraProperties
-}
-
-func (m *MessagePollVotesItem) require(field *big.Int) {
-	next := new(big.Int)
-	if m.explicitFields != nil {
-		next.Set(m.explicitFields)
-	}
-	next.Or(next, field)
-	m.explicitFields = next
-}
-
-// SetCount sets the Count field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessagePollVotesItem) SetCount(count int) {
-	m.Count = count
-	m.require(messagePollVotesItemFieldCount)
-}
-
-// SetOptionID sets the OptionID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessagePollVotesItem) SetOptionID(optionID *string) {
-	m.OptionID = optionID
-	m.require(messagePollVotesItemFieldOptionID)
-}
-
-func (m *MessagePollVotesItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler MessagePollVotesItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*m = MessagePollVotesItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *m)
-	if err != nil {
-		return err
-	}
-	m.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, messagePollVotesItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		m.require(presentFields)
-	}
-	m.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (m *MessagePollVotesItem) MarshalJSON() ([]byte, error) {
-	type embed MessagePollVotesItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*m),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (m *MessagePollVotesItem) String() string {
-	if m == nil {
-		return "<nil>"
-	}
-	if len(m.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(m); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", m)
-}
-
-var (
-	messageReactionCountsItemFieldCount = big.NewInt(1 << 0)
-	messageReactionCountsItemFieldEmoji = big.NewInt(1 << 1)
-)
-
-// messageReactionCountsItemNullableFields maps the wire names of MessageReactionCountsItem's nullable fields (required or optional) to their field bits.
-var messageReactionCountsItemNullableFields = map[string]*big.Int{
-	"emoji": messageReactionCountsItemFieldEmoji,
-}
-
-// Represents a reaction count for a feed post
-type MessageReactionCountsItem struct {
-	// The number of users who reacted
-	Count int `json:"count" url:"count"`
-	// The emoji that was used in shortcode format (:heart:)
-	Emoji *string `json:"emoji,omitempty" url:"emoji,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (m *MessageReactionCountsItem) GetCount() int {
-	if m == nil {
-		return 0
-	}
-	return m.Count
-}
-
-func (m *MessageReactionCountsItem) GetEmoji() *string {
-	if m == nil {
-		return nil
-	}
-	return m.Emoji
-}
-
-func (m *MessageReactionCountsItem) GetExtraProperties() map[string]interface{} {
-	if m == nil {
-		return nil
-	}
-	return m.extraProperties
-}
-
-func (m *MessageReactionCountsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if m.explicitFields != nil {
-		next.Set(m.explicitFields)
-	}
-	next.Or(next, field)
-	m.explicitFields = next
-}
-
-// SetCount sets the Count field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageReactionCountsItem) SetCount(count int) {
-	m.Count = count
-	m.require(messageReactionCountsItemFieldCount)
-}
-
-// SetEmoji sets the Emoji field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageReactionCountsItem) SetEmoji(emoji *string) {
-	m.Emoji = emoji
-	m.require(messageReactionCountsItemFieldEmoji)
-}
-
-func (m *MessageReactionCountsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler MessageReactionCountsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*m = MessageReactionCountsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *m)
-	if err != nil {
-		return err
-	}
-	m.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, messageReactionCountsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		m.require(presentFields)
-	}
-	m.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (m *MessageReactionCountsItem) MarshalJSON() ([]byte, error) {
-	type embed MessageReactionCountsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*m),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (m *MessageReactionCountsItem) String() string {
-	if m == nil {
-		return "<nil>"
-	}
-	if len(m.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(m); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", m)
-}
-
-var (
-	messageUserFieldID       = big.NewInt(1 << 0)
-	messageUserFieldName     = big.NewInt(1 << 1)
-	messageUserFieldUsername = big.NewInt(1 << 2)
-)
-
-// messageUserNullableFields maps the wire names of MessageUser's nullable fields (required or optional) to their field bits.
-var messageUserNullableFields = map[string]*big.Int{
-	"name": messageUserFieldName,
-}
-
-// The user who authored this message.
-type MessageUser struct {
-	// The unique identifier for the user.
-	ID string `json:"id" url:"id"`
-	// The user's display name shown on their public profile.
-	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// The user's unique username shown on their public profile.
-	Username string `json:"username" url:"username"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (m *MessageUser) GetID() string {
-	if m == nil {
-		return ""
-	}
-	return m.ID
-}
-
-func (m *MessageUser) GetName() *string {
-	if m == nil {
-		return nil
-	}
-	return m.Name
-}
-
-func (m *MessageUser) GetUsername() string {
-	if m == nil {
-		return ""
-	}
-	return m.Username
-}
-
-func (m *MessageUser) GetExtraProperties() map[string]interface{} {
-	if m == nil {
-		return nil
-	}
-	return m.extraProperties
-}
-
-func (m *MessageUser) require(field *big.Int) {
-	next := new(big.Int)
-	if m.explicitFields != nil {
-		next.Set(m.explicitFields)
-	}
-	next.Or(next, field)
-	m.explicitFields = next
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageUser) SetID(id string) {
-	m.ID = id
-	m.require(messageUserFieldID)
-}
-
-// SetName sets the Name field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageUser) SetName(name *string) {
-	m.Name = name
-	m.require(messageUserFieldName)
-}
-
-// SetUsername sets the Username field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (m *MessageUser) SetUsername(username string) {
-	m.Username = username
-	m.require(messageUserFieldUsername)
-}
-
-func (m *MessageUser) UnmarshalJSON(data []byte) error {
-	type unmarshaler MessageUser
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*m = MessageUser(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *m)
-	if err != nil {
-		return err
-	}
-	m.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, messageUserNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		m.require(presentFields)
-	}
-	m.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (m *MessageUser) MarshalJSON() ([]byte, error) {
-	type embed MessageUser
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*m),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (m *MessageUser) String() string {
-	if m == nil {
-		return "<nil>"
-	}
-	if len(m.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(m); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", m)
+	return fmt.Sprintf("%#v", c)
 }
 
 var (
 	createMessagesRequestAttachmentsItemFieldID = big.NewInt(1 << 0)
 )
 
-// Input for an attachment
 type CreateMessagesRequestAttachmentsItem struct {
-	// The ID of an existing file object.
+	// Uploaded file ID.
 	ID string `json:"id" url:"id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2209,12 +753,97 @@ func (c *CreateMessagesRequestAttachmentsItem) String() string {
 }
 
 var (
+	createMessagesRequestLinkPreviewsItemFieldURL = big.NewInt(1 << 0)
+)
+
+type CreateMessagesRequestLinkPreviewsItem struct {
+	// URL to preview.
+	URL string `json:"url" url:"url"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateMessagesRequestLinkPreviewsItem) GetURL() string {
+	if c == nil {
+		return ""
+	}
+	return c.URL
+}
+
+func (c *CreateMessagesRequestLinkPreviewsItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateMessagesRequestLinkPreviewsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMessagesRequestLinkPreviewsItem) SetURL(url string) {
+	c.URL = url
+	c.require(createMessagesRequestLinkPreviewsItemFieldURL)
+}
+
+func (c *CreateMessagesRequestLinkPreviewsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateMessagesRequestLinkPreviewsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateMessagesRequestLinkPreviewsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateMessagesRequestLinkPreviewsItem) MarshalJSON() ([]byte, error) {
+	type embed CreateMessagesRequestLinkPreviewsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateMessagesRequestLinkPreviewsItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
 	createMessagesRequestPollFieldOptions = big.NewInt(1 << 0)
 )
 
-// A poll to attach to this message, allowing recipients to vote on options.
 type CreateMessagesRequestPoll struct {
-	// The options for the poll. Must have sequential IDs starting from 1
 	Options []*CreateMessagesRequestPollOptionsItem `json:"options" url:"options"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2301,11 +930,8 @@ var (
 	createMessagesRequestPollOptionsItemFieldText = big.NewInt(1 << 1)
 )
 
-// Input type for a single poll option
 type CreateMessagesRequestPollOptionsItem struct {
-	// Sequential ID for the poll option (starting from '1')
-	ID string `json:"id" url:"id"`
-	// The text of the poll option
+	ID   string `json:"id" url:"id"`
 	Text string `json:"text" url:"text"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2401,17 +1027,58 @@ func (c *CreateMessagesRequestPollOptionsItem) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
+type ListMessagesRequestDirection string
+
+const (
+	ListMessagesRequestDirectionAsc  ListMessagesRequestDirection = "asc"
+	ListMessagesRequestDirectionDesc ListMessagesRequestDirection = "desc"
+)
+
+func NewListMessagesRequestDirectionFromString(s string) (ListMessagesRequestDirection, error) {
+	switch s {
+	case "asc":
+		return ListMessagesRequestDirectionAsc, nil
+	case "desc":
+		return ListMessagesRequestDirectionDesc, nil
+	}
+	var t ListMessagesRequestDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListMessagesRequestDirection) Ptr() *ListMessagesRequestDirection {
+	return &l
+}
+
+type ListMessagesRequestOrder string
+
+const (
+	ListMessagesRequestOrderCreatedAt ListMessagesRequestOrder = "created_at"
+	ListMessagesRequestOrderUpdatedAt ListMessagesRequestOrder = "updated_at"
+)
+
+func NewListMessagesRequestOrderFromString(s string) (ListMessagesRequestOrder, error) {
+	switch s {
+	case "created_at":
+		return ListMessagesRequestOrderCreatedAt, nil
+	case "updated_at":
+		return ListMessagesRequestOrderUpdatedAt, nil
+	}
+	var t ListMessagesRequestOrder
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListMessagesRequestOrder) Ptr() *ListMessagesRequestOrder {
+	return &l
+}
+
 var (
 	listMessagesResponseFieldData     = big.NewInt(1 << 0)
 	listMessagesResponseFieldPageInfo = big.NewInt(1 << 1)
 )
 
-// The connection type for DmsPost.
 type ListMessagesResponse struct {
-	// A list of nodes.
-	Data []*MessageListItem `json:"data" url:"data"`
-	// Information to aid in pagination.
-	PageInfo *PageInfo `json:"page_info" url:"page_info"`
+	Data     []*ChatMessage                `json:"data" url:"data"`
+	PageInfo *ListMessagesResponsePageInfo `json:"page_info" url:"page_info"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2420,14 +1087,14 @@ type ListMessagesResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListMessagesResponse) GetData() []*MessageListItem {
+func (l *ListMessagesResponse) GetData() []*ChatMessage {
 	if l == nil {
 		return nil
 	}
 	return l.Data
 }
 
-func (l *ListMessagesResponse) GetPageInfo() *PageInfo {
+func (l *ListMessagesResponse) GetPageInfo() *ListMessagesResponsePageInfo {
 	if l == nil {
 		return nil
 	}
@@ -2452,14 +1119,14 @@ func (l *ListMessagesResponse) require(field *big.Int) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListMessagesResponse) SetData(data []*MessageListItem) {
+func (l *ListMessagesResponse) SetData(data []*ChatMessage) {
 	l.Data = data
 	l.require(listMessagesResponseFieldData)
 }
 
 // SetPageInfo sets the PageInfo field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListMessagesResponse) SetPageInfo(pageInfo *PageInfo) {
+func (l *ListMessagesResponse) SetPageInfo(pageInfo *ListMessagesResponsePageInfo) {
 	l.PageInfo = pageInfo
 	l.require(listMessagesResponseFieldPageInfo)
 }
@@ -2492,6 +1159,402 @@ func (l *ListMessagesResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (l *ListMessagesResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listMessagesResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
+	listMessagesResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
+	listMessagesResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
+	listMessagesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+)
+
+// listMessagesResponsePageInfoNullableFields maps the wire names of ListMessagesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listMessagesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listMessagesResponsePageInfoFieldEndCursor,
+	"start_cursor": listMessagesResponsePageInfoFieldStartCursor,
+}
+
+type ListMessagesResponsePageInfo struct {
+	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
+	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
+	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
+	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListMessagesResponsePageInfo) GetEndCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.EndCursor
+}
+
+func (l *ListMessagesResponsePageInfo) GetHasNextPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasNextPage
+}
+
+func (l *ListMessagesResponsePageInfo) GetHasPreviousPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasPreviousPage
+}
+
+func (l *ListMessagesResponsePageInfo) GetStartCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.StartCursor
+}
+
+func (l *ListMessagesResponsePageInfo) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListMessagesResponsePageInfo) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetEndCursor sets the EndCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMessagesResponsePageInfo) SetEndCursor(endCursor *string) {
+	l.EndCursor = endCursor
+	l.require(listMessagesResponsePageInfoFieldEndCursor)
+}
+
+// SetHasNextPage sets the HasNextPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMessagesResponsePageInfo) SetHasNextPage(hasNextPage bool) {
+	l.HasNextPage = hasNextPage
+	l.require(listMessagesResponsePageInfoFieldHasNextPage)
+}
+
+// SetHasPreviousPage sets the HasPreviousPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMessagesResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
+	l.HasPreviousPage = hasPreviousPage
+	l.require(listMessagesResponsePageInfoFieldHasPreviousPage)
+}
+
+// SetStartCursor sets the StartCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMessagesResponsePageInfo) SetStartCursor(startCursor *string) {
+	l.StartCursor = startCursor
+	l.require(listMessagesResponsePageInfoFieldStartCursor)
+}
+
+func (l *ListMessagesResponsePageInfo) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListMessagesResponsePageInfo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListMessagesResponsePageInfo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listMessagesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListMessagesResponsePageInfo) MarshalJSON() ([]byte, error) {
+	type embed ListMessagesResponsePageInfo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListMessagesResponsePageInfo) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listReactionsMessagesResponseFieldData     = big.NewInt(1 << 0)
+	listReactionsMessagesResponseFieldPageInfo = big.NewInt(1 << 1)
+)
+
+type ListReactionsMessagesResponse struct {
+	Data     []*ChatReaction                        `json:"data" url:"data"`
+	PageInfo *ListReactionsMessagesResponsePageInfo `json:"page_info" url:"page_info"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListReactionsMessagesResponse) GetData() []*ChatReaction {
+	if l == nil {
+		return nil
+	}
+	return l.Data
+}
+
+func (l *ListReactionsMessagesResponse) GetPageInfo() *ListReactionsMessagesResponsePageInfo {
+	if l == nil {
+		return nil
+	}
+	return l.PageInfo
+}
+
+func (l *ListReactionsMessagesResponse) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListReactionsMessagesResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReactionsMessagesResponse) SetData(data []*ChatReaction) {
+	l.Data = data
+	l.require(listReactionsMessagesResponseFieldData)
+}
+
+// SetPageInfo sets the PageInfo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReactionsMessagesResponse) SetPageInfo(pageInfo *ListReactionsMessagesResponsePageInfo) {
+	l.PageInfo = pageInfo
+	l.require(listReactionsMessagesResponseFieldPageInfo)
+}
+
+func (l *ListReactionsMessagesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListReactionsMessagesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListReactionsMessagesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListReactionsMessagesResponse) MarshalJSON() ([]byte, error) {
+	type embed ListReactionsMessagesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListReactionsMessagesResponse) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listReactionsMessagesResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
+	listReactionsMessagesResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
+	listReactionsMessagesResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
+	listReactionsMessagesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+)
+
+// listReactionsMessagesResponsePageInfoNullableFields maps the wire names of ListReactionsMessagesResponsePageInfo's nullable fields (required or optional) to their field bits.
+var listReactionsMessagesResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   listReactionsMessagesResponsePageInfoFieldEndCursor,
+	"start_cursor": listReactionsMessagesResponsePageInfoFieldStartCursor,
+}
+
+type ListReactionsMessagesResponsePageInfo struct {
+	EndCursor       *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
+	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
+	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
+	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListReactionsMessagesResponsePageInfo) GetEndCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.EndCursor
+}
+
+func (l *ListReactionsMessagesResponsePageInfo) GetHasNextPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasNextPage
+}
+
+func (l *ListReactionsMessagesResponsePageInfo) GetHasPreviousPage() bool {
+	if l == nil {
+		return false
+	}
+	return l.HasPreviousPage
+}
+
+func (l *ListReactionsMessagesResponsePageInfo) GetStartCursor() *string {
+	if l == nil {
+		return nil
+	}
+	return l.StartCursor
+}
+
+func (l *ListReactionsMessagesResponsePageInfo) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListReactionsMessagesResponsePageInfo) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetEndCursor sets the EndCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReactionsMessagesResponsePageInfo) SetEndCursor(endCursor *string) {
+	l.EndCursor = endCursor
+	l.require(listReactionsMessagesResponsePageInfoFieldEndCursor)
+}
+
+// SetHasNextPage sets the HasNextPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReactionsMessagesResponsePageInfo) SetHasNextPage(hasNextPage bool) {
+	l.HasNextPage = hasNextPage
+	l.require(listReactionsMessagesResponsePageInfoFieldHasNextPage)
+}
+
+// SetHasPreviousPage sets the HasPreviousPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReactionsMessagesResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
+	l.HasPreviousPage = hasPreviousPage
+	l.require(listReactionsMessagesResponsePageInfoFieldHasPreviousPage)
+}
+
+// SetStartCursor sets the StartCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListReactionsMessagesResponsePageInfo) SetStartCursor(startCursor *string) {
+	l.StartCursor = startCursor
+	l.require(listReactionsMessagesResponsePageInfoFieldStartCursor)
+}
+
+func (l *ListReactionsMessagesResponsePageInfo) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListReactionsMessagesResponsePageInfo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListReactionsMessagesResponsePageInfo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listReactionsMessagesResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListReactionsMessagesResponsePageInfo) MarshalJSON() ([]byte, error) {
+	type embed ListReactionsMessagesResponsePageInfo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListReactionsMessagesResponsePageInfo) String() string {
 	if l == nil {
 		return "<nil>"
 	}
@@ -3201,9 +2264,8 @@ var (
 	updateMessagesRequestAttachmentsItemFieldID = big.NewInt(1 << 0)
 )
 
-// Input for an attachment
 type UpdateMessagesRequestAttachmentsItem struct {
-	// The ID of an existing file object.
+	// Uploaded file ID.
 	ID string `json:"id" url:"id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3286,21 +2348,195 @@ func (u *UpdateMessagesRequestAttachmentsItem) String() string {
 }
 
 var (
-	updateMessagesRequestFieldID          = big.NewInt(1 << 0)
-	updateMessagesRequestFieldAttachments = big.NewInt(1 << 1)
-	updateMessagesRequestFieldContent     = big.NewInt(1 << 2)
-	updateMessagesRequestFieldIsPinned    = big.NewInt(1 << 3)
+	updateMessagesRequestLinkPreviewsItemFieldURL = big.NewInt(1 << 0)
+)
+
+type UpdateMessagesRequestLinkPreviewsItem struct {
+	// URL to preview.
+	URL string `json:"url" url:"url"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateMessagesRequestLinkPreviewsItem) GetURL() string {
+	if u == nil {
+		return ""
+	}
+	return u.URL
+}
+
+func (u *UpdateMessagesRequestLinkPreviewsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateMessagesRequestLinkPreviewsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMessagesRequestLinkPreviewsItem) SetURL(url string) {
+	u.URL = url
+	u.require(updateMessagesRequestLinkPreviewsItemFieldURL)
+}
+
+func (u *UpdateMessagesRequestLinkPreviewsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateMessagesRequestLinkPreviewsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateMessagesRequestLinkPreviewsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateMessagesRequestLinkPreviewsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateMessagesRequestLinkPreviewsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateMessagesRequestLinkPreviewsItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	unpinMessagesRequestFieldID = big.NewInt(1 << 0)
+)
+
+type UnpinMessagesRequest struct {
+	// The message to unpin.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UnpinMessagesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UnpinMessagesRequest) SetID(id string) {
+	u.ID = id
+	u.require(unpinMessagesRequestFieldID)
+}
+
+var (
+	unreactMessagesRequestFieldID    = big.NewInt(1 << 0)
+	unreactMessagesRequestFieldEmoji = big.NewInt(1 << 1)
+)
+
+type UnreactMessagesRequest struct {
+	// The ID of the message to remove your reaction from.
+	ID string `json:"-" url:"-"`
+	// The emoji to remove, as a Unicode emoji or a supported shortcode.
+	Emoji string `json:"emoji" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UnreactMessagesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UnreactMessagesRequest) SetID(id string) {
+	u.ID = id
+	u.require(unreactMessagesRequestFieldID)
+}
+
+// SetEmoji sets the Emoji field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UnreactMessagesRequest) SetEmoji(emoji string) {
+	u.Emoji = emoji
+	u.require(unreactMessagesRequestFieldEmoji)
+}
+
+func (u *UnreactMessagesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UnreactMessagesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*u = UnreactMessagesRequest(body)
+	return nil
+}
+
+func (u *UnreactMessagesRequest) MarshalJSON() ([]byte, error) {
+	type embed UnreactMessagesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	updateMessagesRequestFieldID           = big.NewInt(1 << 0)
+	updateMessagesRequestFieldAttachments  = big.NewInt(1 << 1)
+	updateMessagesRequestFieldContent      = big.NewInt(1 << 2)
+	updateMessagesRequestFieldLinkPreviews = big.NewInt(1 << 3)
 )
 
 type UpdateMessagesRequest struct {
-	// The unique identifier of the message to update.
+	// Existing public message ID.
 	ID string `json:"-" url:"-"`
-	// A replacement list of file attachments for this message, such as images or videos.
+	// Replacement attachment list; pass an empty list to remove attachments.
 	Attachments []*UpdateMessagesRequestAttachmentsItem `json:"attachments,omitempty" url:"-"`
-	// The updated body of the message in Markdown format. For example, 'Hello **world**'.
+	// Replacement Markdown content.
 	Content *string `json:"content,omitempty" url:"-"`
-	// Whether this message should be pinned to the top of the channel.
-	IsPinned *bool `json:"is_pinned,omitempty" url:"-"`
+	// Replacement preview URLs; pass an empty list to remove previews.
+	LinkPreviews []*UpdateMessagesRequestLinkPreviewsItem `json:"link_previews,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3336,11 +2572,11 @@ func (u *UpdateMessagesRequest) SetContent(content *string) {
 	u.require(updateMessagesRequestFieldContent)
 }
 
-// SetIsPinned sets the IsPinned field and marks it as non-optional;
+// SetLinkPreviews sets the LinkPreviews field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateMessagesRequest) SetIsPinned(isPinned *bool) {
-	u.IsPinned = isPinned
-	u.require(updateMessagesRequestFieldIsPinned)
+func (u *UpdateMessagesRequest) SetLinkPreviews(linkPreviews []*UpdateMessagesRequestLinkPreviewsItem) {
+	u.LinkPreviews = linkPreviews
+	u.require(updateMessagesRequestFieldLinkPreviews)
 }
 
 func (u *UpdateMessagesRequest) UnmarshalJSON(data []byte) error {
@@ -3361,5 +2597,64 @@ func (u *UpdateMessagesRequest) MarshalJSON() ([]byte, error) {
 		embed: embed(*u),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	voteMessagesRequestFieldID           = big.NewInt(1 << 0)
+	voteMessagesRequestFieldPollOptionID = big.NewInt(1 << 1)
+)
+
+type VoteMessagesRequest struct {
+	// The ID of the message containing the poll.
+	ID string `json:"-" url:"-"`
+	// The option ID from the poll, not its display text.
+	PollOptionID string `json:"poll_option_id" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (v *VoteMessagesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if v.explicitFields != nil {
+		next.Set(v.explicitFields)
+	}
+	next.Or(next, field)
+	v.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *VoteMessagesRequest) SetID(id string) {
+	v.ID = id
+	v.require(voteMessagesRequestFieldID)
+}
+
+// SetPollOptionID sets the PollOptionID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *VoteMessagesRequest) SetPollOptionID(pollOptionID string) {
+	v.PollOptionID = pollOptionID
+	v.require(voteMessagesRequestFieldPollOptionID)
+}
+
+func (v *VoteMessagesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler VoteMessagesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*v = VoteMessagesRequest(body)
+	return nil
+}
+
+func (v *VoteMessagesRequest) MarshalJSON() ([]byte, error) {
+	type embed VoteMessagesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*v),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, v.explicitFields)
 	return json.Marshal(explicitMarshaler)
 }

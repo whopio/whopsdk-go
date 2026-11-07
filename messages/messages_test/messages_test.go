@@ -89,12 +89,6 @@ func TestMessagesListWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.ListMessagesRequest{
-		First: whopsdk.Int(
-			42,
-		),
-		Last: whopsdk.Int(
-			42,
-		),
 		ChannelID: "channel_id",
 	}
 	_, invocationErr := client.Messages.List(
@@ -106,7 +100,7 @@ func TestMessagesListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestMessagesListWithWireMock", "GET", "/messages", map[string]interface{}{"first": "42", "last": "42", "channel_id": "channel_id"}, 1)
+	VerifyRequestCount(t, "TestMessagesListWithWireMock", "GET", "/messages", map[string]interface{}{"channel_id": "channel_id"}, 1)
 }
 
 func TestMessagesCreateWithWireMock(
@@ -121,8 +115,8 @@ func TestMessagesCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateMessagesRequest{
-		ChannelID: "channel_id",
-		Content:   "content",
+		ChannelID: "feed_xxxxxxxxxxxxxxxxxxxxxx",
+		Content:   "New **message**",
 	}
 	_, invocationErr := client.Messages.Create(
 		context.TODO(),
@@ -176,7 +170,7 @@ func TestMessagesDeleteWithWireMock(
 	request := &whopsdk.DeleteMessagesRequest{
 		ID: "id",
 	}
-	_, invocationErr := client.Messages.Delete(
+	invocationErr := client.Messages.Delete(
 		context.TODO(),
 		request,
 		option.WithHTTPHeader(
@@ -212,4 +206,163 @@ func TestMessagesUpdateWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestMessagesUpdateWithWireMock", "PATCH", "/messages/id", nil, 1)
+}
+
+func TestMessagesPinWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.PinMessagesRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Messages.Pin(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestMessagesPinWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestMessagesPinWithWireMock", "POST", "/messages/id/pin", nil, 1)
+}
+
+func TestMessagesReactWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.ReactMessagesRequest{
+		ID:    "id",
+		Emoji: "❤️",
+	}
+	_, invocationErr := client.Messages.React(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestMessagesReactWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestMessagesReactWithWireMock", "POST", "/messages/id/react", nil, 1)
+}
+
+func TestMessagesListReactionsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.ListReactionsMessagesRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Messages.ListReactions(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestMessagesListReactionsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestMessagesListReactionsWithWireMock", "GET", "/messages/id/reactions", nil, 1)
+}
+
+func TestMessagesUnpinWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.UnpinMessagesRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Messages.Unpin(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestMessagesUnpinWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestMessagesUnpinWithWireMock", "POST", "/messages/id/unpin", nil, 1)
+}
+
+func TestMessagesUnreactWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.UnreactMessagesRequest{
+		ID:    "id",
+		Emoji: "❤️",
+	}
+	_, invocationErr := client.Messages.Unreact(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestMessagesUnreactWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestMessagesUnreactWithWireMock", "POST", "/messages/id/unreact", nil, 1)
+}
+
+func TestMessagesVoteWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.VoteMessagesRequest{
+		ID:           "id",
+		PollOptionID: "2",
+	}
+	_, invocationErr := client.Messages.Vote(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestMessagesVoteWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestMessagesVoteWithWireMock", "POST", "/messages/id/vote", nil, 1)
 }

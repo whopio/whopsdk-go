@@ -4293,6 +4293,650 @@
       }
     },
     {
+      "id": "1bfca32e-56fb-4d40-94a8-3bd06f694c27",
+      "name": "List Channel Members - default",
+      "request": {
+        "urlPathTemplate": "/channel_members",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "queryParameters": {
+          "channel_id": {
+            "equalTo": "channel_id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"memb_1_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"inbox_status\": \"requested\",\n      \"last_viewed_at\": \"2026-01-01T12:00:00.000Z\",\n      \"notification_preference\": \"all\",\n      \"pinned_position\": 1,\n      \"unread\": false,\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"user\": {\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Dana Whitfield\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"username\": \"danawhitfield\"\n      },\n      \"user_id\": \"user_xxxxxxxxxxxxxx\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "1bfca32e-56fb-4d40-94a8-3bd06f694c27",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "e5bb3c91-9be0-454d-b310-201a60dacc55",
+      "name": "Add Channel Member - default",
+      "request": {
+        "urlPathTemplate": "/channel_members",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"memb_1_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"inbox_status\": \"requested\",\n  \"last_viewed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"notification_preference\": \"all\",\n  \"pinned_position\": 1,\n  \"unread\": false,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "e5bb3c91-9be0-454d-b310-201a60dacc55",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "2d6bda52-0b1c-4038-a230-83336e1e9b0f",
+      "name": "Retrieve Channel Member - default",
+      "request": {
+        "urlPathTemplate": "/channel_members/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"memb_1_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"inbox_status\": \"requested\",\n  \"last_viewed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"notification_preference\": \"all\",\n  \"pinned_position\": 1,\n  \"unread\": false,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "2d6bda52-0b1c-4038-a230-83336e1e9b0f",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "e4985a9a-1c93-4e59-9259-fdaa7265c643",
+      "name": "Remove Channel Member - default",
+      "request": {
+        "urlPathTemplate": "/channel_members/{id}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "\"\"",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "e4985a9a-1c93-4e59-9259-fdaa7265c643",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "2c4030c3-778a-4d36-b82f-3a0463c44164",
+      "name": "Update Channel Member - default",
+      "request": {
+        "urlPathTemplate": "/channel_members/{id}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"memb_1_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"inbox_status\": \"requested\",\n  \"last_viewed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"notification_preference\": \"all\",\n  \"pinned_position\": 1,\n  \"unread\": false,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "2c4030c3-778a-4d36-b82f-3a0463c44164",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "016c3116-4371-46ae-bdfb-bdc266d40a07",
+      "name": "List Channels - default",
+      "request": {
+        "urlPathTemplate": "/channels",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "queryParameters": {
+          "kind": {
+            "hasExactly": [
+              {
+                "equalTo": "private"
+              }
+            ]
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"account_id\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"experience_id\": \"experience_id\",\n      \"icon\": {\n        \"blurhash\": null,\n        \"content_type\": \"application/pdf\",\n        \"created_at\": \"2026-01-01T12:00:00.000Z\",\n        \"duration_seconds\": null,\n        \"filename\": \"evidence.pdf\",\n        \"height\": null,\n        \"id\": \"file_xxxxxxxxxxxxxx\",\n        \"multipart_chunk_size\": 5242880,\n        \"multipart_upload_id\": \"upload-id\",\n        \"multipart_upload_urls\": [\n          {\n            \"part_number\": 1,\n            \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n          }\n        ],\n        \"object\": \"file\",\n        \"removed_by_moderation\": false,\n        \"size\": 9670,\n        \"upload_headers\": {\n          \"key\": \"value\"\n        },\n        \"upload_status\": \"pending\",\n        \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n        \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n        \"visibility\": \"public\",\n        \"waveform_url\": null,\n        \"width\": null\n      },\n      \"id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n      \"kind\": \"private\",\n      \"last_message\": {\n        \"attachments\": [\n          {\n            \"blurhash\": null,\n            \"content_type\": \"application/pdf\",\n            \"created_at\": \"2026-01-01T12:00:00.000Z\",\n            \"duration_seconds\": null,\n            \"filename\": \"evidence.pdf\",\n            \"height\": null,\n            \"id\": \"file_xxxxxxxxxxxxxx\",\n            \"multipart_chunk_size\": 5242880,\n            \"multipart_upload_id\": \"upload-id\",\n            \"multipart_upload_urls\": [\n              {\n                \"part_number\": 1,\n                \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n              }\n            ],\n            \"object\": \"file\",\n            \"removed_by_moderation\": false,\n            \"size\": 9670,\n            \"upload_headers\": {\n              \"key\": \"value\"\n            },\n            \"upload_status\": \"pending\",\n            \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n            \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n            \"visibility\": \"public\",\n            \"waveform_url\": null,\n            \"width\": null\n          }\n        ],\n        \"author\": {\n          \"id\": \"user_xxxxxxxxxxxxxx\",\n          \"name\": \"Dana Whitfield\",\n          \"profile_picture\": {\n            \"url\": \"https://ui-avatars.com/api/\"\n          },\n          \"username\": \"danawhitfield\"\n        },\n        \"author_is_team_member\": false,\n        \"author_user_id\": \"user_xxxxxxxxxxxxxx\",\n        \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n        \"content\": \"Content 1\",\n        \"created_at\": \"2026-01-01T12:00:00.000Z\",\n        \"custom_author\": {\n          \"display_name\": null,\n          \"profile_picture\": {\n            \"blurhash\": null,\n            \"content_type\": \"application/pdf\",\n            \"created_at\": \"2026-01-01T12:00:00.000Z\",\n            \"duration_seconds\": null,\n            \"filename\": \"evidence.pdf\",\n            \"height\": null,\n            \"id\": \"file_xxxxxxxxxxxxxx\",\n            \"multipart_chunk_size\": 5242880,\n            \"multipart_upload_id\": \"upload-id\",\n            \"multipart_upload_urls\": [\n              {\n                \"part_number\": 1,\n                \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n              }\n            ],\n            \"object\": \"file\",\n            \"removed_by_moderation\": false,\n            \"size\": 9670,\n            \"upload_headers\": {\n              \"key\": \"value\"\n            },\n            \"upload_status\": \"pending\",\n            \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n            \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n            \"visibility\": \"public\",\n            \"waveform_url\": null,\n            \"width\": null\n          }\n        },\n        \"deleted_at\": null,\n        \"edited\": false,\n        \"embeds\": [\n          {\n            \"color\": null,\n            \"description\": null,\n            \"fields\": [\n              {\n                \"inline\": true,\n                \"name\": \"name\",\n                \"value\": \"value\"\n              }\n            ],\n            \"footer\": null,\n            \"image\": null,\n            \"thumbnail\": null,\n            \"timestamp_at\": null,\n            \"title\": null,\n            \"url\": null\n          }\n        ],\n        \"gifs\": [\n          {\n            \"height\": 1,\n            \"original_url\": \"original_url\",\n            \"preview_url\": \"preview_url\",\n            \"slug\": \"slug\",\n            \"title\": \"title\",\n            \"url\": \"url\",\n            \"width\": 1\n          }\n        ],\n        \"id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n        \"link_previews\": [\n          {\n            \"description\": null,\n            \"favicon_url\": null,\n            \"footer\": null,\n            \"image_url\": null,\n            \"processing\": true,\n            \"title\": null,\n            \"url\": \"url\"\n          }\n        ],\n        \"mentioned_user_ids\": [\n          \"mentioned_user_ids\"\n        ],\n        \"message_type\": \"regular\",\n        \"pinned\": false,\n        \"plain_content\": \"Content 1\",\n        \"poll\": {\n          \"options\": [\n            {\n              \"id\": \"1\",\n              \"text\": \"A\",\n              \"vote_count\": 0,\n              \"voted\": false\n            }\n          ]\n        },\n        \"reaction_counts\": [\n          {\n            \"kind\": \"like\",\n            \"reacted\": true,\n            \"total_score\": 1,\n            \"user_count\": 1,\n            \"value\": \"❤️\"\n          }\n        ],\n        \"replying_to_message_id\": null,\n        \"replying_to_user_id\": null,\n        \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n        \"view_count\": null\n      },\n      \"last_message_at\": \"2026-01-01T12:00:00.000Z\",\n      \"last_message_id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n      \"members\": [\n        {\n          \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n          \"created_at\": \"2026-01-01T12:00:00.000Z\",\n          \"id\": \"memb_1_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n          \"inbox_status\": null,\n          \"last_viewed_at\": \"2026-01-01T12:00:00.000Z\",\n          \"notification_preference\": null,\n          \"pinned_position\": null,\n          \"unread\": false,\n          \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n          \"user\": {\n            \"id\": \"user_xxxxxxxxxxxxxx\",\n            \"name\": \"Dana Whitfield\",\n            \"profile_picture\": {\n              \"url\": \"https://ui-avatars.com/api/\"\n            },\n            \"username\": \"danawhitfield\"\n          },\n          \"user_id\": \"user_xxxxxxxxxxxxxx\"\n        }\n      ],\n      \"membership\": {\n        \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n        \"created_at\": \"2026-01-01T12:00:00.000Z\",\n        \"id\": \"memb_1_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n        \"inbox_status\": null,\n        \"last_viewed_at\": \"2026-01-01T12:00:00.000Z\",\n        \"notification_preference\": null,\n        \"pinned_position\": null,\n        \"unread\": false,\n        \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n        \"user\": {\n          \"id\": \"user_xxxxxxxxxxxxxx\",\n          \"name\": \"Dana Whitfield\",\n          \"profile_picture\": {\n            \"url\": \"https://ui-avatars.com/api/\"\n          },\n          \"username\": \"danawhitfield\"\n        },\n        \"user_id\": \"user_xxxxxxxxxxxxxx\"\n      },\n      \"moderation\": {\n        \"ban_media\": true,\n        \"ban_urls\": true,\n        \"banned_words\": null,\n        \"user_posts_cooldown_seconds\": null,\n        \"who_can_post\": \"everyone\",\n        \"who_can_react\": \"everyone\"\n      },\n      \"name\": \"name\",\n      \"notifications_enabled\": true,\n      \"support\": {\n        \"awaiting_reply\": false,\n        \"customer_user_id\": \"user_xxxxxxxxxxxxxx\",\n        \"last_message_by\": null,\n        \"resolved_at\": \"2026-01-01T12:00:00.000Z\",\n        \"status\": \"unresolved\"\n      },\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\",\n    \"total_count\": 1,\n    \"total_count_capped\": true\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "016c3116-4371-46ae-bdfb-bdc266d40a07",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "47764611-cb89-424f-8cb2-8f2085457369",
+      "name": "Create Channel - default",
+      "request": {
+        "urlPathTemplate": "/channels",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"experience_id\": \"experience_id\",\n  \"icon\": {\n    \"blurhash\": \"blurhash\",\n    \"content_type\": \"application/pdf\",\n    \"created_at\": \"2026-01-01T12:00:00.000Z\",\n    \"duration_seconds\": 1.1,\n    \"filename\": \"evidence.pdf\",\n    \"height\": 1,\n    \"id\": \"file_xxxxxxxxxxxxxx\",\n    \"multipart_chunk_size\": 5242880,\n    \"multipart_upload_id\": \"upload-id\",\n    \"multipart_upload_urls\": [\n      {\n        \"part_number\": 1,\n        \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n      }\n    ],\n    \"object\": \"file\",\n    \"removed_by_moderation\": false,\n    \"size\": 9670,\n    \"upload_headers\": {\n      \"key\": \"value\"\n    },\n    \"upload_status\": \"pending\",\n    \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n    \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n    \"visibility\": \"public\",\n    \"waveform_url\": \"waveform_url\",\n    \"width\": 1\n  },\n  \"id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"kind\": \"private\",\n  \"last_message_at\": \"2026-01-01T12:00:00.000Z\",\n  \"last_message_id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"membership\": {\n    \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n    \"created_at\": \"2026-01-01T12:00:00.000Z\",\n    \"id\": \"memb_1_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n    \"inbox_status\": \"requested\",\n    \"last_viewed_at\": \"2026-01-01T12:00:00.000Z\",\n    \"notification_preference\": \"all\",\n    \"pinned_position\": 1,\n    \"unread\": false,\n    \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n    \"user\": {\n      \"id\": \"user_xxxxxxxxxxxxxx\",\n      \"name\": \"Dana Whitfield\",\n      \"profile_picture\": {\n        \"url\": \"https://ui-avatars.com/api/\"\n      },\n      \"username\": \"danawhitfield\"\n    },\n    \"user_id\": \"user_xxxxxxxxxxxxxx\"\n  },\n  \"moderation\": {\n    \"ban_media\": true,\n    \"ban_urls\": true,\n    \"banned_words\": [\n      \"banned_words\"\n    ],\n    \"user_posts_cooldown_seconds\": 1,\n    \"who_can_post\": \"everyone\",\n    \"who_can_react\": \"everyone\"\n  },\n  \"name\": \"Renamed\",\n  \"notifications_enabled\": true,\n  \"support\": {\n    \"awaiting_reply\": false,\n    \"customer_user_id\": \"user_xxxxxxxxxxxxxx\",\n    \"last_message_by\": \"customer\",\n    \"resolved_at\": \"2026-01-01T12:00:00.000Z\",\n    \"status\": \"unresolved\"\n  },\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "47764611-cb89-424f-8cb2-8f2085457369",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "83a879c8-5a95-4b23-b08a-4054f27e5cd1",
+      "name": "Retrieve Channel - default",
+      "request": {
+        "urlPathTemplate": "/channels/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"experience_id\": \"experience_id\",\n  \"icon\": {\n    \"blurhash\": \"blurhash\",\n    \"content_type\": \"application/pdf\",\n    \"created_at\": \"2026-01-01T12:00:00.000Z\",\n    \"duration_seconds\": 1.1,\n    \"filename\": \"evidence.pdf\",\n    \"height\": 1,\n    \"id\": \"file_xxxxxxxxxxxxxx\",\n    \"multipart_chunk_size\": 5242880,\n    \"multipart_upload_id\": \"upload-id\",\n    \"multipart_upload_urls\": [\n      {\n        \"part_number\": 1,\n        \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n      }\n    ],\n    \"object\": \"file\",\n    \"removed_by_moderation\": false,\n    \"size\": 9670,\n    \"upload_headers\": {\n      \"key\": \"value\"\n    },\n    \"upload_status\": \"pending\",\n    \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n    \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n    \"visibility\": \"public\",\n    \"waveform_url\": \"waveform_url\",\n    \"width\": 1\n  },\n  \"id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"kind\": \"private\",\n  \"last_message_at\": \"2026-01-01T12:00:00.000Z\",\n  \"last_message_id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"membership\": {\n    \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n    \"created_at\": \"2026-01-01T12:00:00.000Z\",\n    \"id\": \"memb_1_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n    \"inbox_status\": \"requested\",\n    \"last_viewed_at\": \"2026-01-01T12:00:00.000Z\",\n    \"notification_preference\": \"all\",\n    \"pinned_position\": 1,\n    \"unread\": false,\n    \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n    \"user\": {\n      \"id\": \"user_xxxxxxxxxxxxxx\",\n      \"name\": \"Dana Whitfield\",\n      \"profile_picture\": {\n        \"url\": \"https://ui-avatars.com/api/\"\n      },\n      \"username\": \"danawhitfield\"\n    },\n    \"user_id\": \"user_xxxxxxxxxxxxxx\"\n  },\n  \"moderation\": {\n    \"ban_media\": true,\n    \"ban_urls\": true,\n    \"banned_words\": [\n      \"banned_words\"\n    ],\n    \"user_posts_cooldown_seconds\": 1,\n    \"who_can_post\": \"everyone\",\n    \"who_can_react\": \"everyone\"\n  },\n  \"name\": \"Renamed\",\n  \"notifications_enabled\": true,\n  \"support\": {\n    \"awaiting_reply\": false,\n    \"customer_user_id\": \"user_xxxxxxxxxxxxxx\",\n    \"last_message_by\": \"customer\",\n    \"resolved_at\": \"2026-01-01T12:00:00.000Z\",\n    \"status\": \"unresolved\"\n  },\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "83a879c8-5a95-4b23-b08a-4054f27e5cd1",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "35e5372e-d369-42fb-9380-73c844ef9f98",
+      "name": "Delete Channel - default",
+      "request": {
+        "urlPathTemplate": "/channels/{id}",
+        "method": "DELETE",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "\"\"",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "35e5372e-d369-42fb-9380-73c844ef9f98",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "81e68bb2-cee5-4798-af65-3d1fcef473f1",
+      "name": "Update Channel - default",
+      "request": {
+        "urlPathTemplate": "/channels/{id}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"experience_id\": \"experience_id\",\n  \"icon\": {\n    \"blurhash\": \"blurhash\",\n    \"content_type\": \"application/pdf\",\n    \"created_at\": \"2026-01-01T12:00:00.000Z\",\n    \"duration_seconds\": 1.1,\n    \"filename\": \"evidence.pdf\",\n    \"height\": 1,\n    \"id\": \"file_xxxxxxxxxxxxxx\",\n    \"multipart_chunk_size\": 5242880,\n    \"multipart_upload_id\": \"upload-id\",\n    \"multipart_upload_urls\": [\n      {\n        \"part_number\": 1,\n        \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n      }\n    ],\n    \"object\": \"file\",\n    \"removed_by_moderation\": false,\n    \"size\": 9670,\n    \"upload_headers\": {\n      \"key\": \"value\"\n    },\n    \"upload_status\": \"pending\",\n    \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n    \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n    \"visibility\": \"public\",\n    \"waveform_url\": \"waveform_url\",\n    \"width\": 1\n  },\n  \"id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"kind\": \"private\",\n  \"last_message_at\": \"2026-01-01T12:00:00.000Z\",\n  \"last_message_id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"membership\": {\n    \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n    \"created_at\": \"2026-01-01T12:00:00.000Z\",\n    \"id\": \"memb_1_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n    \"inbox_status\": \"requested\",\n    \"last_viewed_at\": \"2026-01-01T12:00:00.000Z\",\n    \"notification_preference\": \"all\",\n    \"pinned_position\": 1,\n    \"unread\": false,\n    \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n    \"user\": {\n      \"id\": \"user_xxxxxxxxxxxxxx\",\n      \"name\": \"Dana Whitfield\",\n      \"profile_picture\": {\n        \"url\": \"https://ui-avatars.com/api/\"\n      },\n      \"username\": \"danawhitfield\"\n    },\n    \"user_id\": \"user_xxxxxxxxxxxxxx\"\n  },\n  \"moderation\": {\n    \"ban_media\": true,\n    \"ban_urls\": true,\n    \"banned_words\": [\n      \"banned_words\"\n    ],\n    \"user_posts_cooldown_seconds\": 1,\n    \"who_can_post\": \"everyone\",\n    \"who_can_react\": \"everyone\"\n  },\n  \"name\": \"Renamed\",\n  \"notifications_enabled\": true,\n  \"support\": {\n    \"awaiting_reply\": false,\n    \"customer_user_id\": \"user_xxxxxxxxxxxxxx\",\n    \"last_message_by\": \"customer\",\n    \"resolved_at\": \"2026-01-01T12:00:00.000Z\",\n    \"status\": \"unresolved\"\n  },\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "81e68bb2-cee5-4798-af65-3d1fcef473f1",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "e014cd7d-d2ee-4398-b798-0e116f6affda",
+      "name": "Accept DM Request - default",
+      "request": {
+        "urlPathTemplate": "/channels/{id}/accept",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"memb_1_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"inbox_status\": \"requested\",\n  \"last_viewed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"notification_preference\": \"all\",\n  \"pinned_position\": 1,\n  \"unread\": false,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "e014cd7d-d2ee-4398-b798-0e116f6affda",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "f3fdb146-0fad-4ab4-84c3-0d68608ee0f2",
+      "name": "Decline DM Request - default",
+      "request": {
+        "urlPathTemplate": "/channels/{id}/hide",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"memb_1_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"inbox_status\": \"requested\",\n  \"last_viewed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"notification_preference\": \"all\",\n  \"pinned_position\": 1,\n  \"unread\": false,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "f3fdb146-0fad-4ab4-84c3-0d68608ee0f2",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "d0b58d27-0a0e-4d7c-b195-e0560c91fb90",
+      "name": "Mark Channel Read - default",
+      "request": {
+        "urlPathTemplate": "/channels/{id}/mark_read",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"memb_1_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"inbox_status\": \"requested\",\n  \"last_viewed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"notification_preference\": \"all\",\n  \"pinned_position\": 1,\n  \"unread\": false,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "d0b58d27-0a0e-4d7c-b195-e0560c91fb90",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "7f2dbdf6-ddc9-4704-90ba-efbebe06e46f",
+      "name": "Mark Channel Unread - default",
+      "request": {
+        "urlPathTemplate": "/channels/{id}/mark_unread",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"memb_1_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n  \"inbox_status\": \"requested\",\n  \"last_viewed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"notification_preference\": \"all\",\n  \"pinned_position\": 1,\n  \"unread\": false,\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"user_id\": \"user_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "7f2dbdf6-ddc9-4704-90ba-efbebe06e46f",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "33fe5e57-28f7-435f-a8ef-e99bad23ed29",
+      "name": "Pin Channel - default",
+      "request": {
+        "urlPathTemplate": "/channels/{id}/pin",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "\"\"",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "33fe5e57-28f7-435f-a8ef-e99bad23ed29",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "413dbb4a-6a3b-4981-bcd6-6a97a977c9c2",
+      "name": "Reopen Support Channel - default",
+      "request": {
+        "urlPathTemplate": "/channels/{id}/reopen",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"experience_id\": \"experience_id\",\n  \"icon\": {\n    \"blurhash\": \"blurhash\",\n    \"content_type\": \"application/pdf\",\n    \"created_at\": \"2026-01-01T12:00:00.000Z\",\n    \"duration_seconds\": 1.1,\n    \"filename\": \"evidence.pdf\",\n    \"height\": 1,\n    \"id\": \"file_xxxxxxxxxxxxxx\",\n    \"multipart_chunk_size\": 5242880,\n    \"multipart_upload_id\": \"upload-id\",\n    \"multipart_upload_urls\": [\n      {\n        \"part_number\": 1,\n        \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n      }\n    ],\n    \"object\": \"file\",\n    \"removed_by_moderation\": false,\n    \"size\": 9670,\n    \"upload_headers\": {\n      \"key\": \"value\"\n    },\n    \"upload_status\": \"pending\",\n    \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n    \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n    \"visibility\": \"public\",\n    \"waveform_url\": \"waveform_url\",\n    \"width\": 1\n  },\n  \"id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"kind\": \"private\",\n  \"last_message_at\": \"2026-01-01T12:00:00.000Z\",\n  \"last_message_id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"membership\": {\n    \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n    \"created_at\": \"2026-01-01T12:00:00.000Z\",\n    \"id\": \"memb_1_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n    \"inbox_status\": \"requested\",\n    \"last_viewed_at\": \"2026-01-01T12:00:00.000Z\",\n    \"notification_preference\": \"all\",\n    \"pinned_position\": 1,\n    \"unread\": false,\n    \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n    \"user\": {\n      \"id\": \"user_xxxxxxxxxxxxxx\",\n      \"name\": \"Dana Whitfield\",\n      \"profile_picture\": {\n        \"url\": \"https://ui-avatars.com/api/\"\n      },\n      \"username\": \"danawhitfield\"\n    },\n    \"user_id\": \"user_xxxxxxxxxxxxxx\"\n  },\n  \"moderation\": {\n    \"ban_media\": true,\n    \"ban_urls\": true,\n    \"banned_words\": [\n      \"banned_words\"\n    ],\n    \"user_posts_cooldown_seconds\": 1,\n    \"who_can_post\": \"everyone\",\n    \"who_can_react\": \"everyone\"\n  },\n  \"name\": \"Renamed\",\n  \"notifications_enabled\": true,\n  \"support\": {\n    \"awaiting_reply\": false,\n    \"customer_user_id\": \"user_xxxxxxxxxxxxxx\",\n    \"last_message_by\": \"customer\",\n    \"resolved_at\": \"2026-01-01T12:00:00.000Z\",\n    \"status\": \"unresolved\"\n  },\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "413dbb4a-6a3b-4981-bcd6-6a97a977c9c2",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "ac0cd023-4c01-4101-b08c-887c0c5e50f0",
+      "name": "Resolve Support Channel - default",
+      "request": {
+        "urlPathTemplate": "/channels/{id}/resolve",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"experience_id\": \"experience_id\",\n  \"icon\": {\n    \"blurhash\": \"blurhash\",\n    \"content_type\": \"application/pdf\",\n    \"created_at\": \"2026-01-01T12:00:00.000Z\",\n    \"duration_seconds\": 1.1,\n    \"filename\": \"evidence.pdf\",\n    \"height\": 1,\n    \"id\": \"file_xxxxxxxxxxxxxx\",\n    \"multipart_chunk_size\": 5242880,\n    \"multipart_upload_id\": \"upload-id\",\n    \"multipart_upload_urls\": [\n      {\n        \"part_number\": 1,\n        \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n      }\n    ],\n    \"object\": \"file\",\n    \"removed_by_moderation\": false,\n    \"size\": 9670,\n    \"upload_headers\": {\n      \"key\": \"value\"\n    },\n    \"upload_status\": \"pending\",\n    \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n    \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n    \"visibility\": \"public\",\n    \"waveform_url\": \"waveform_url\",\n    \"width\": 1\n  },\n  \"id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"kind\": \"private\",\n  \"last_message_at\": \"2026-01-01T12:00:00.000Z\",\n  \"last_message_id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"membership\": {\n    \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n    \"created_at\": \"2026-01-01T12:00:00.000Z\",\n    \"id\": \"memb_1_xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n    \"inbox_status\": \"requested\",\n    \"last_viewed_at\": \"2026-01-01T12:00:00.000Z\",\n    \"notification_preference\": \"all\",\n    \"pinned_position\": 1,\n    \"unread\": false,\n    \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n    \"user\": {\n      \"id\": \"user_xxxxxxxxxxxxxx\",\n      \"name\": \"Dana Whitfield\",\n      \"profile_picture\": {\n        \"url\": \"https://ui-avatars.com/api/\"\n      },\n      \"username\": \"danawhitfield\"\n    },\n    \"user_id\": \"user_xxxxxxxxxxxxxx\"\n  },\n  \"moderation\": {\n    \"ban_media\": true,\n    \"ban_urls\": true,\n    \"banned_words\": [\n      \"banned_words\"\n    ],\n    \"user_posts_cooldown_seconds\": 1,\n    \"who_can_post\": \"everyone\",\n    \"who_can_react\": \"everyone\"\n  },\n  \"name\": \"Renamed\",\n  \"notifications_enabled\": true,\n  \"support\": {\n    \"awaiting_reply\": false,\n    \"customer_user_id\": \"user_xxxxxxxxxxxxxx\",\n    \"last_message_by\": \"customer\",\n    \"resolved_at\": \"2026-01-01T12:00:00.000Z\",\n    \"status\": \"unresolved\"\n  },\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "ac0cd023-4c01-4101-b08c-887c0c5e50f0",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "26b37f6d-388b-47fe-8316-bc74475eaf7b",
+      "name": "Unpin Channel - default",
+      "request": {
+        "urlPathTemplate": "/channels/{id}/unpin",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "\"\"",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "26b37f6d-388b-47fe-8316-bc74475eaf7b",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "d4c9b0cf-5095-4a6e-9f01-b04ed4241678",
       "name": "List chat channels - default",
       "request": {
@@ -10196,8 +10840,8 @@
       }
     },
     {
-      "id": "4d8b0556-c108-4bef-a2ce-6070e540cc66",
-      "name": "List messages - default",
+      "id": "aee281c4-bf57-465f-985d-53b07877c7c5",
+      "name": "List Messages - default",
       "request": {
         "urlPathTemplate": "/messages",
         "method": "GET",
@@ -10207,12 +10851,6 @@
           }
         },
         "queryParameters": {
-          "first": {
-            "equalTo": "42"
-          },
-          "last": {
-            "equalTo": "42"
-          },
           "channel_id": {
             "equalTo": "channel_id"
           }
@@ -10220,12 +10858,12 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"content\": \"Hey, are you available for a **quick call**?\",\n      \"created_at\": \"2023-12-01T05:00:00Z\",\n      \"id\": \"id\",\n      \"is_edited\": true,\n      \"is_pinned\": true,\n      \"mentions\": [\n        \"mentions\"\n      ],\n      \"mentions_everyone\": true,\n      \"message_type\": \"regular\",\n      \"poll\": {\n        \"options\": null\n      },\n      \"poll_votes\": [\n        {\n          \"count\": 42,\n          \"option_id\": null\n        }\n      ],\n      \"reaction_counts\": [\n        {\n          \"count\": 42,\n          \"emoji\": null\n        }\n      ],\n      \"replying_to_message_id\": \"replying_to_message_id\",\n      \"updated_at\": \"2023-12-01T05:00:00Z\",\n      \"user\": {\n        \"id\": \"user_xxxxxxxxxxxxx\",\n        \"name\": \"John Doe\",\n        \"username\": \"johndoe42\"\n      },\n      \"view_count\": 42\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": true,\n    \"has_previous_page\": true,\n    \"start_cursor\": \"start_cursor\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"attachments\": [\n        {\n          \"blurhash\": null,\n          \"content_type\": \"application/pdf\",\n          \"created_at\": \"2026-01-01T12:00:00.000Z\",\n          \"duration_seconds\": null,\n          \"filename\": \"evidence.pdf\",\n          \"height\": null,\n          \"id\": \"file_xxxxxxxxxxxxxx\",\n          \"multipart_chunk_size\": 5242880,\n          \"multipart_upload_id\": \"upload-id\",\n          \"multipart_upload_urls\": [\n            {\n              \"part_number\": 1,\n              \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n            }\n          ],\n          \"object\": \"file\",\n          \"removed_by_moderation\": false,\n          \"size\": 9670,\n          \"upload_headers\": {\n            \"key\": \"value\"\n          },\n          \"upload_status\": \"pending\",\n          \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n          \"visibility\": \"public\",\n          \"waveform_url\": null,\n          \"width\": null\n        }\n      ],\n      \"author\": {\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Dana Whitfield\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"username\": \"danawhitfield\"\n      },\n      \"author_is_team_member\": false,\n      \"author_user_id\": \"user_xxxxxxxxxxxxxx\",\n      \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n      \"content\": \"Content 1\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"custom_author\": {\n        \"display_name\": null,\n        \"profile_picture\": {\n          \"blurhash\": null,\n          \"content_type\": \"application/pdf\",\n          \"created_at\": \"2026-01-01T12:00:00.000Z\",\n          \"duration_seconds\": null,\n          \"filename\": \"evidence.pdf\",\n          \"height\": null,\n          \"id\": \"file_xxxxxxxxxxxxxx\",\n          \"multipart_chunk_size\": 5242880,\n          \"multipart_upload_id\": \"upload-id\",\n          \"multipart_upload_urls\": [\n            {\n              \"part_number\": 1,\n              \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n            }\n          ],\n          \"object\": \"file\",\n          \"removed_by_moderation\": false,\n          \"size\": 9670,\n          \"upload_headers\": {\n            \"key\": \"value\"\n          },\n          \"upload_status\": \"pending\",\n          \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n          \"visibility\": \"public\",\n          \"waveform_url\": null,\n          \"width\": null\n        }\n      },\n      \"deleted_at\": \"deleted_at\",\n      \"edited\": false,\n      \"embeds\": [\n        {\n          \"color\": null,\n          \"description\": null,\n          \"fields\": [\n            {\n              \"inline\": true,\n              \"name\": \"name\",\n              \"value\": \"value\"\n            }\n          ],\n          \"footer\": null,\n          \"image\": null,\n          \"thumbnail\": null,\n          \"timestamp_at\": null,\n          \"title\": null,\n          \"url\": null\n        }\n      ],\n      \"gifs\": [\n        {\n          \"height\": 1,\n          \"original_url\": \"original_url\",\n          \"preview_url\": \"preview_url\",\n          \"slug\": \"slug\",\n          \"title\": \"title\",\n          \"url\": \"url\",\n          \"width\": 1\n        }\n      ],\n      \"id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n      \"link_previews\": [\n        {\n          \"description\": null,\n          \"favicon_url\": null,\n          \"footer\": null,\n          \"image_url\": null,\n          \"processing\": true,\n          \"title\": null,\n          \"url\": \"url\"\n        }\n      ],\n      \"mentioned_user_ids\": [\n        \"mentioned_user_ids\"\n      ],\n      \"message_type\": \"regular\",\n      \"pinned\": false,\n      \"plain_content\": \"Content 1\",\n      \"poll\": {\n        \"options\": [\n          {\n            \"id\": \"1\",\n            \"text\": \"A\",\n            \"vote_count\": 0,\n            \"voted\": false\n          }\n        ]\n      },\n      \"reaction_counts\": [\n        {\n          \"kind\": \"like\",\n          \"reacted\": true,\n          \"total_score\": 1,\n          \"user_count\": 1,\n          \"value\": \"❤️\"\n        }\n      ],\n      \"replying_to_message_id\": \"replying_to_message_id\",\n      \"replying_to_user_id\": \"replying_to_user_id\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"view_count\": 1\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
-      "uuid": "4d8b0556-c108-4bef-a2ce-6070e540cc66",
+      "uuid": "aee281c4-bf57-465f-985d-53b07877c7c5",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -10239,8 +10877,8 @@
       "postServeActions": []
     },
     {
-      "id": "c0d2d88e-0e3a-4182-8294-1b12825d7254",
-      "name": "Create message - default",
+      "id": "31882ec2-71e2-46b4-80f1-0fafd0f0183f",
+      "name": "Send Message - default",
       "request": {
         "urlPathTemplate": "/messages",
         "method": "POST",
@@ -10251,13 +10889,13 @@
         }
       },
       "response": {
-        "status": 200,
-        "body": "{\n  \"content\": \"Hey, are you available for a **quick call**?\",\n  \"created_at\": \"2023-12-01T05:00:00Z\",\n  \"id\": \"id\",\n  \"is_edited\": true,\n  \"is_pinned\": true,\n  \"mentions\": [\n    \"mentions\"\n  ],\n  \"mentions_everyone\": true,\n  \"message_type\": \"regular\",\n  \"poll\": {\n    \"options\": [\n      {\n        \"id\": \"id\",\n        \"text\": \"text\"\n      }\n    ]\n  },\n  \"poll_votes\": [\n    {\n      \"count\": 42,\n      \"option_id\": \"option_id\"\n    }\n  ],\n  \"reaction_counts\": [\n    {\n      \"count\": 42,\n      \"emoji\": \"emoji\"\n    }\n  ],\n  \"replying_to_message_id\": \"replying_to_message_id\",\n  \"updated_at\": \"2023-12-01T05:00:00Z\",\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxx\",\n    \"name\": \"John Doe\",\n    \"username\": \"johndoe42\"\n  },\n  \"view_count\": 42\n}",
+        "status": 201,
+        "body": "{\n  \"attachments\": [\n    {\n      \"blurhash\": \"blurhash\",\n      \"content_type\": \"application/pdf\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"duration_seconds\": 1.1,\n      \"filename\": \"evidence.pdf\",\n      \"height\": 1,\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"multipart_chunk_size\": 5242880,\n      \"multipart_upload_id\": \"upload-id\",\n      \"multipart_upload_urls\": [\n        {\n          \"part_number\": 1,\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n        }\n      ],\n      \"object\": \"file\",\n      \"removed_by_moderation\": false,\n      \"size\": 9670,\n      \"upload_headers\": {\n        \"key\": \"value\"\n      },\n      \"upload_status\": \"pending\",\n      \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"visibility\": \"public\",\n      \"waveform_url\": \"waveform_url\",\n      \"width\": 1\n    }\n  ],\n  \"author\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"author_is_team_member\": false,\n  \"author_user_id\": \"user_xxxxxxxxxxxxxx\",\n  \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"content\": \"Content 1\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"custom_author\": {\n    \"display_name\": \"display_name\",\n    \"profile_picture\": {\n      \"blurhash\": \"blurhash\",\n      \"content_type\": \"application/pdf\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"duration_seconds\": 1.1,\n      \"filename\": \"evidence.pdf\",\n      \"height\": 1,\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"multipart_chunk_size\": 5242880,\n      \"multipart_upload_id\": \"upload-id\",\n      \"multipart_upload_urls\": [\n        {\n          \"part_number\": 1,\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n        }\n      ],\n      \"object\": \"file\",\n      \"removed_by_moderation\": false,\n      \"size\": 9670,\n      \"upload_headers\": {\n        \"key\": \"value\"\n      },\n      \"upload_status\": \"pending\",\n      \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"visibility\": \"public\",\n      \"waveform_url\": \"waveform_url\",\n      \"width\": 1\n    }\n  },\n  \"deleted_at\": \"deleted_at\",\n  \"edited\": false,\n  \"embeds\": [\n    {\n      \"color\": 1,\n      \"description\": \"description\",\n      \"fields\": [\n        {\n          \"inline\": true,\n          \"name\": \"name\",\n          \"value\": \"value\"\n        }\n      ],\n      \"footer\": {\n        \"icon\": null,\n        \"text\": \"text\"\n      },\n      \"image\": {\n        \"blurhash\": null,\n        \"height\": null,\n        \"url\": \"url\",\n        \"width\": null\n      },\n      \"thumbnail\": {\n        \"blurhash\": null,\n        \"height\": null,\n        \"url\": \"url\",\n        \"width\": null\n      },\n      \"timestamp_at\": \"timestamp_at\",\n      \"title\": \"title\",\n      \"url\": \"url\"\n    }\n  ],\n  \"gifs\": [\n    {\n      \"height\": 1,\n      \"original_url\": \"original_url\",\n      \"preview_url\": \"preview_url\",\n      \"slug\": \"slug\",\n      \"title\": \"title\",\n      \"url\": \"url\",\n      \"width\": 1\n    }\n  ],\n  \"id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"link_previews\": [\n    {\n      \"description\": \"description\",\n      \"favicon_url\": \"favicon_url\",\n      \"footer\": {\n        \"description\": null,\n        \"icon_url\": \"icon_url\",\n        \"title\": \"title\"\n      },\n      \"image_url\": \"image_url\",\n      \"processing\": true,\n      \"title\": \"title\",\n      \"url\": \"url\"\n    }\n  ],\n  \"mentioned_user_ids\": [\n    \"mentioned_user_ids\"\n  ],\n  \"message_type\": \"regular\",\n  \"pinned\": false,\n  \"plain_content\": \"Content 1\",\n  \"poll\": {\n    \"options\": [\n      {\n        \"id\": \"1\",\n        \"text\": \"A\",\n        \"vote_count\": 0,\n        \"voted\": false\n      }\n    ]\n  },\n  \"reaction_counts\": [\n    {\n      \"kind\": \"like\",\n      \"reacted\": true,\n      \"total_score\": 1,\n      \"user_count\": 1,\n      \"value\": \"❤️\"\n    }\n  ],\n  \"replying_to_message_id\": \"replying_to_message_id\",\n  \"replying_to_user_id\": \"replying_to_user_id\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"view_count\": 1\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
-      "uuid": "c0d2d88e-0e3a-4182-8294-1b12825d7254",
+      "uuid": "31882ec2-71e2-46b4-80f1-0fafd0f0183f",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -10270,8 +10908,8 @@
       }
     },
     {
-      "id": "e28b1790-69b5-441a-907c-7a9dec2990e4",
-      "name": "Retrieve message - default",
+      "id": "6ee13a93-a6f5-41c8-b3c8-513ed6f23f72",
+      "name": "Retrieve Message - default",
       "request": {
         "urlPathTemplate": "/messages/{id}",
         "method": "GET",
@@ -10288,12 +10926,12 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"content\": \"Hey, are you available for a **quick call**?\",\n  \"created_at\": \"2023-12-01T05:00:00Z\",\n  \"id\": \"id\",\n  \"is_edited\": true,\n  \"is_pinned\": true,\n  \"mentions\": [\n    \"mentions\"\n  ],\n  \"mentions_everyone\": true,\n  \"message_type\": \"regular\",\n  \"poll\": {\n    \"options\": [\n      {\n        \"id\": \"id\",\n        \"text\": \"text\"\n      }\n    ]\n  },\n  \"poll_votes\": [\n    {\n      \"count\": 42,\n      \"option_id\": \"option_id\"\n    }\n  ],\n  \"reaction_counts\": [\n    {\n      \"count\": 42,\n      \"emoji\": \"emoji\"\n    }\n  ],\n  \"replying_to_message_id\": \"replying_to_message_id\",\n  \"updated_at\": \"2023-12-01T05:00:00Z\",\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxx\",\n    \"name\": \"John Doe\",\n    \"username\": \"johndoe42\"\n  },\n  \"view_count\": 42\n}",
+        "body": "{\n  \"attachments\": [\n    {\n      \"blurhash\": \"blurhash\",\n      \"content_type\": \"application/pdf\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"duration_seconds\": 1.1,\n      \"filename\": \"evidence.pdf\",\n      \"height\": 1,\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"multipart_chunk_size\": 5242880,\n      \"multipart_upload_id\": \"upload-id\",\n      \"multipart_upload_urls\": [\n        {\n          \"part_number\": 1,\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n        }\n      ],\n      \"object\": \"file\",\n      \"removed_by_moderation\": false,\n      \"size\": 9670,\n      \"upload_headers\": {\n        \"key\": \"value\"\n      },\n      \"upload_status\": \"pending\",\n      \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"visibility\": \"public\",\n      \"waveform_url\": \"waveform_url\",\n      \"width\": 1\n    }\n  ],\n  \"author\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"author_is_team_member\": false,\n  \"author_user_id\": \"user_xxxxxxxxxxxxxx\",\n  \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"content\": \"Content 1\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"custom_author\": {\n    \"display_name\": \"display_name\",\n    \"profile_picture\": {\n      \"blurhash\": \"blurhash\",\n      \"content_type\": \"application/pdf\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"duration_seconds\": 1.1,\n      \"filename\": \"evidence.pdf\",\n      \"height\": 1,\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"multipart_chunk_size\": 5242880,\n      \"multipart_upload_id\": \"upload-id\",\n      \"multipart_upload_urls\": [\n        {\n          \"part_number\": 1,\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n        }\n      ],\n      \"object\": \"file\",\n      \"removed_by_moderation\": false,\n      \"size\": 9670,\n      \"upload_headers\": {\n        \"key\": \"value\"\n      },\n      \"upload_status\": \"pending\",\n      \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"visibility\": \"public\",\n      \"waveform_url\": \"waveform_url\",\n      \"width\": 1\n    }\n  },\n  \"deleted_at\": \"deleted_at\",\n  \"edited\": false,\n  \"embeds\": [\n    {\n      \"color\": 1,\n      \"description\": \"description\",\n      \"fields\": [\n        {\n          \"inline\": true,\n          \"name\": \"name\",\n          \"value\": \"value\"\n        }\n      ],\n      \"footer\": {\n        \"icon\": null,\n        \"text\": \"text\"\n      },\n      \"image\": {\n        \"blurhash\": null,\n        \"height\": null,\n        \"url\": \"url\",\n        \"width\": null\n      },\n      \"thumbnail\": {\n        \"blurhash\": null,\n        \"height\": null,\n        \"url\": \"url\",\n        \"width\": null\n      },\n      \"timestamp_at\": \"timestamp_at\",\n      \"title\": \"title\",\n      \"url\": \"url\"\n    }\n  ],\n  \"gifs\": [\n    {\n      \"height\": 1,\n      \"original_url\": \"original_url\",\n      \"preview_url\": \"preview_url\",\n      \"slug\": \"slug\",\n      \"title\": \"title\",\n      \"url\": \"url\",\n      \"width\": 1\n    }\n  ],\n  \"id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"link_previews\": [\n    {\n      \"description\": \"description\",\n      \"favicon_url\": \"favicon_url\",\n      \"footer\": {\n        \"description\": null,\n        \"icon_url\": \"icon_url\",\n        \"title\": \"title\"\n      },\n      \"image_url\": \"image_url\",\n      \"processing\": true,\n      \"title\": \"title\",\n      \"url\": \"url\"\n    }\n  ],\n  \"mentioned_user_ids\": [\n    \"mentioned_user_ids\"\n  ],\n  \"message_type\": \"regular\",\n  \"pinned\": false,\n  \"plain_content\": \"Content 1\",\n  \"poll\": {\n    \"options\": [\n      {\n        \"id\": \"1\",\n        \"text\": \"A\",\n        \"vote_count\": 0,\n        \"voted\": false\n      }\n    ]\n  },\n  \"reaction_counts\": [\n    {\n      \"kind\": \"like\",\n      \"reacted\": true,\n      \"total_score\": 1,\n      \"user_count\": 1,\n      \"value\": \"❤️\"\n    }\n  ],\n  \"replying_to_message_id\": \"replying_to_message_id\",\n  \"replying_to_user_id\": \"replying_to_user_id\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"view_count\": 1\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
-      "uuid": "e28b1790-69b5-441a-907c-7a9dec2990e4",
+      "uuid": "6ee13a93-a6f5-41c8-b3c8-513ed6f23f72",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -10306,8 +10944,8 @@
       }
     },
     {
-      "id": "bbcc1389-dafa-44d1-97d5-4758f411b430",
-      "name": "Delete message - default",
+      "id": "54b40b94-a770-4dbb-91d9-1dc072a2d19d",
+      "name": "Delete Message - default",
       "request": {
         "urlPathTemplate": "/messages/{id}",
         "method": "DELETE",
@@ -10324,12 +10962,12 @@
       },
       "response": {
         "status": 200,
-        "body": "true",
+        "body": "\"\"",
         "headers": {
           "Content-Type": "application/json"
         }
       },
-      "uuid": "bbcc1389-dafa-44d1-97d5-4758f411b430",
+      "uuid": "54b40b94-a770-4dbb-91d9-1dc072a2d19d",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -10342,8 +10980,8 @@
       }
     },
     {
-      "id": "f26bd0e1-a514-4edb-8396-6932bf4c90c3",
-      "name": "Update message - default",
+      "id": "6b13d2e1-110a-4136-9423-7215dd8d4e40",
+      "name": "Update Message - default",
       "request": {
         "urlPathTemplate": "/messages/{id}",
         "method": "PATCH",
@@ -10360,12 +10998,228 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"content\": \"Hey, are you available for a **quick call**?\",\n  \"created_at\": \"2023-12-01T05:00:00Z\",\n  \"id\": \"id\",\n  \"is_edited\": true,\n  \"is_pinned\": true,\n  \"mentions\": [\n    \"mentions\"\n  ],\n  \"mentions_everyone\": true,\n  \"message_type\": \"regular\",\n  \"poll\": {\n    \"options\": [\n      {\n        \"id\": \"id\",\n        \"text\": \"text\"\n      }\n    ]\n  },\n  \"poll_votes\": [\n    {\n      \"count\": 42,\n      \"option_id\": \"option_id\"\n    }\n  ],\n  \"reaction_counts\": [\n    {\n      \"count\": 42,\n      \"emoji\": \"emoji\"\n    }\n  ],\n  \"replying_to_message_id\": \"replying_to_message_id\",\n  \"updated_at\": \"2023-12-01T05:00:00Z\",\n  \"user\": {\n    \"id\": \"user_xxxxxxxxxxxxx\",\n    \"name\": \"John Doe\",\n    \"username\": \"johndoe42\"\n  },\n  \"view_count\": 42\n}",
+        "body": "{\n  \"attachments\": [\n    {\n      \"blurhash\": \"blurhash\",\n      \"content_type\": \"application/pdf\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"duration_seconds\": 1.1,\n      \"filename\": \"evidence.pdf\",\n      \"height\": 1,\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"multipart_chunk_size\": 5242880,\n      \"multipart_upload_id\": \"upload-id\",\n      \"multipart_upload_urls\": [\n        {\n          \"part_number\": 1,\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n        }\n      ],\n      \"object\": \"file\",\n      \"removed_by_moderation\": false,\n      \"size\": 9670,\n      \"upload_headers\": {\n        \"key\": \"value\"\n      },\n      \"upload_status\": \"pending\",\n      \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"visibility\": \"public\",\n      \"waveform_url\": \"waveform_url\",\n      \"width\": 1\n    }\n  ],\n  \"author\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"author_is_team_member\": false,\n  \"author_user_id\": \"user_xxxxxxxxxxxxxx\",\n  \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"content\": \"Content 1\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"custom_author\": {\n    \"display_name\": \"display_name\",\n    \"profile_picture\": {\n      \"blurhash\": \"blurhash\",\n      \"content_type\": \"application/pdf\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"duration_seconds\": 1.1,\n      \"filename\": \"evidence.pdf\",\n      \"height\": 1,\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"multipart_chunk_size\": 5242880,\n      \"multipart_upload_id\": \"upload-id\",\n      \"multipart_upload_urls\": [\n        {\n          \"part_number\": 1,\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n        }\n      ],\n      \"object\": \"file\",\n      \"removed_by_moderation\": false,\n      \"size\": 9670,\n      \"upload_headers\": {\n        \"key\": \"value\"\n      },\n      \"upload_status\": \"pending\",\n      \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"visibility\": \"public\",\n      \"waveform_url\": \"waveform_url\",\n      \"width\": 1\n    }\n  },\n  \"deleted_at\": \"deleted_at\",\n  \"edited\": false,\n  \"embeds\": [\n    {\n      \"color\": 1,\n      \"description\": \"description\",\n      \"fields\": [\n        {\n          \"inline\": true,\n          \"name\": \"name\",\n          \"value\": \"value\"\n        }\n      ],\n      \"footer\": {\n        \"icon\": null,\n        \"text\": \"text\"\n      },\n      \"image\": {\n        \"blurhash\": null,\n        \"height\": null,\n        \"url\": \"url\",\n        \"width\": null\n      },\n      \"thumbnail\": {\n        \"blurhash\": null,\n        \"height\": null,\n        \"url\": \"url\",\n        \"width\": null\n      },\n      \"timestamp_at\": \"timestamp_at\",\n      \"title\": \"title\",\n      \"url\": \"url\"\n    }\n  ],\n  \"gifs\": [\n    {\n      \"height\": 1,\n      \"original_url\": \"original_url\",\n      \"preview_url\": \"preview_url\",\n      \"slug\": \"slug\",\n      \"title\": \"title\",\n      \"url\": \"url\",\n      \"width\": 1\n    }\n  ],\n  \"id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"link_previews\": [\n    {\n      \"description\": \"description\",\n      \"favicon_url\": \"favicon_url\",\n      \"footer\": {\n        \"description\": null,\n        \"icon_url\": \"icon_url\",\n        \"title\": \"title\"\n      },\n      \"image_url\": \"image_url\",\n      \"processing\": true,\n      \"title\": \"title\",\n      \"url\": \"url\"\n    }\n  ],\n  \"mentioned_user_ids\": [\n    \"mentioned_user_ids\"\n  ],\n  \"message_type\": \"regular\",\n  \"pinned\": false,\n  \"plain_content\": \"Content 1\",\n  \"poll\": {\n    \"options\": [\n      {\n        \"id\": \"1\",\n        \"text\": \"A\",\n        \"vote_count\": 0,\n        \"voted\": false\n      }\n    ]\n  },\n  \"reaction_counts\": [\n    {\n      \"kind\": \"like\",\n      \"reacted\": true,\n      \"total_score\": 1,\n      \"user_count\": 1,\n      \"value\": \"❤️\"\n    }\n  ],\n  \"replying_to_message_id\": \"replying_to_message_id\",\n  \"replying_to_user_id\": \"replying_to_user_id\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"view_count\": 1\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
-      "uuid": "f26bd0e1-a514-4edb-8396-6932bf4c90c3",
+      "uuid": "6b13d2e1-110a-4136-9423-7215dd8d4e40",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "6fe9b047-6abb-42d5-ac3e-d4e3b724f963",
+      "name": "Pin Message - default",
+      "request": {
+        "urlPathTemplate": "/messages/{id}/pin",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"attachments\": [\n    {\n      \"blurhash\": \"blurhash\",\n      \"content_type\": \"application/pdf\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"duration_seconds\": 1.1,\n      \"filename\": \"evidence.pdf\",\n      \"height\": 1,\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"multipart_chunk_size\": 5242880,\n      \"multipart_upload_id\": \"upload-id\",\n      \"multipart_upload_urls\": [\n        {\n          \"part_number\": 1,\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n        }\n      ],\n      \"object\": \"file\",\n      \"removed_by_moderation\": false,\n      \"size\": 9670,\n      \"upload_headers\": {\n        \"key\": \"value\"\n      },\n      \"upload_status\": \"pending\",\n      \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"visibility\": \"public\",\n      \"waveform_url\": \"waveform_url\",\n      \"width\": 1\n    }\n  ],\n  \"author\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"author_is_team_member\": false,\n  \"author_user_id\": \"user_xxxxxxxxxxxxxx\",\n  \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"content\": \"Content 1\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"custom_author\": {\n    \"display_name\": \"display_name\",\n    \"profile_picture\": {\n      \"blurhash\": \"blurhash\",\n      \"content_type\": \"application/pdf\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"duration_seconds\": 1.1,\n      \"filename\": \"evidence.pdf\",\n      \"height\": 1,\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"multipart_chunk_size\": 5242880,\n      \"multipart_upload_id\": \"upload-id\",\n      \"multipart_upload_urls\": [\n        {\n          \"part_number\": 1,\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n        }\n      ],\n      \"object\": \"file\",\n      \"removed_by_moderation\": false,\n      \"size\": 9670,\n      \"upload_headers\": {\n        \"key\": \"value\"\n      },\n      \"upload_status\": \"pending\",\n      \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"visibility\": \"public\",\n      \"waveform_url\": \"waveform_url\",\n      \"width\": 1\n    }\n  },\n  \"deleted_at\": \"deleted_at\",\n  \"edited\": false,\n  \"embeds\": [\n    {\n      \"color\": 1,\n      \"description\": \"description\",\n      \"fields\": [\n        {\n          \"inline\": true,\n          \"name\": \"name\",\n          \"value\": \"value\"\n        }\n      ],\n      \"footer\": {\n        \"icon\": null,\n        \"text\": \"text\"\n      },\n      \"image\": {\n        \"blurhash\": null,\n        \"height\": null,\n        \"url\": \"url\",\n        \"width\": null\n      },\n      \"thumbnail\": {\n        \"blurhash\": null,\n        \"height\": null,\n        \"url\": \"url\",\n        \"width\": null\n      },\n      \"timestamp_at\": \"timestamp_at\",\n      \"title\": \"title\",\n      \"url\": \"url\"\n    }\n  ],\n  \"gifs\": [\n    {\n      \"height\": 1,\n      \"original_url\": \"original_url\",\n      \"preview_url\": \"preview_url\",\n      \"slug\": \"slug\",\n      \"title\": \"title\",\n      \"url\": \"url\",\n      \"width\": 1\n    }\n  ],\n  \"id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"link_previews\": [\n    {\n      \"description\": \"description\",\n      \"favicon_url\": \"favicon_url\",\n      \"footer\": {\n        \"description\": null,\n        \"icon_url\": \"icon_url\",\n        \"title\": \"title\"\n      },\n      \"image_url\": \"image_url\",\n      \"processing\": true,\n      \"title\": \"title\",\n      \"url\": \"url\"\n    }\n  ],\n  \"mentioned_user_ids\": [\n    \"mentioned_user_ids\"\n  ],\n  \"message_type\": \"regular\",\n  \"pinned\": false,\n  \"plain_content\": \"Content 1\",\n  \"poll\": {\n    \"options\": [\n      {\n        \"id\": \"1\",\n        \"text\": \"A\",\n        \"vote_count\": 0,\n        \"voted\": false\n      }\n    ]\n  },\n  \"reaction_counts\": [\n    {\n      \"kind\": \"like\",\n      \"reacted\": true,\n      \"total_score\": 1,\n      \"user_count\": 1,\n      \"value\": \"❤️\"\n    }\n  ],\n  \"replying_to_message_id\": \"replying_to_message_id\",\n  \"replying_to_user_id\": \"replying_to_user_id\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"view_count\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "6fe9b047-6abb-42d5-ac3e-d4e3b724f963",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "f6de4422-71d7-43d9-90f8-1dcc9d0cd1ac",
+      "name": "React to Message - default",
+      "request": {
+        "urlPathTemplate": "/messages/{id}/react",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"attachments\": [\n    {\n      \"blurhash\": \"blurhash\",\n      \"content_type\": \"application/pdf\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"duration_seconds\": 1.1,\n      \"filename\": \"evidence.pdf\",\n      \"height\": 1,\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"multipart_chunk_size\": 5242880,\n      \"multipart_upload_id\": \"upload-id\",\n      \"multipart_upload_urls\": [\n        {\n          \"part_number\": 1,\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n        }\n      ],\n      \"object\": \"file\",\n      \"removed_by_moderation\": false,\n      \"size\": 9670,\n      \"upload_headers\": {\n        \"key\": \"value\"\n      },\n      \"upload_status\": \"pending\",\n      \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"visibility\": \"public\",\n      \"waveform_url\": \"waveform_url\",\n      \"width\": 1\n    }\n  ],\n  \"author\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"author_is_team_member\": false,\n  \"author_user_id\": \"user_xxxxxxxxxxxxxx\",\n  \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"content\": \"Content 1\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"custom_author\": {\n    \"display_name\": \"display_name\",\n    \"profile_picture\": {\n      \"blurhash\": \"blurhash\",\n      \"content_type\": \"application/pdf\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"duration_seconds\": 1.1,\n      \"filename\": \"evidence.pdf\",\n      \"height\": 1,\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"multipart_chunk_size\": 5242880,\n      \"multipart_upload_id\": \"upload-id\",\n      \"multipart_upload_urls\": [\n        {\n          \"part_number\": 1,\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n        }\n      ],\n      \"object\": \"file\",\n      \"removed_by_moderation\": false,\n      \"size\": 9670,\n      \"upload_headers\": {\n        \"key\": \"value\"\n      },\n      \"upload_status\": \"pending\",\n      \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"visibility\": \"public\",\n      \"waveform_url\": \"waveform_url\",\n      \"width\": 1\n    }\n  },\n  \"deleted_at\": \"deleted_at\",\n  \"edited\": false,\n  \"embeds\": [\n    {\n      \"color\": 1,\n      \"description\": \"description\",\n      \"fields\": [\n        {\n          \"inline\": true,\n          \"name\": \"name\",\n          \"value\": \"value\"\n        }\n      ],\n      \"footer\": {\n        \"icon\": null,\n        \"text\": \"text\"\n      },\n      \"image\": {\n        \"blurhash\": null,\n        \"height\": null,\n        \"url\": \"url\",\n        \"width\": null\n      },\n      \"thumbnail\": {\n        \"blurhash\": null,\n        \"height\": null,\n        \"url\": \"url\",\n        \"width\": null\n      },\n      \"timestamp_at\": \"timestamp_at\",\n      \"title\": \"title\",\n      \"url\": \"url\"\n    }\n  ],\n  \"gifs\": [\n    {\n      \"height\": 1,\n      \"original_url\": \"original_url\",\n      \"preview_url\": \"preview_url\",\n      \"slug\": \"slug\",\n      \"title\": \"title\",\n      \"url\": \"url\",\n      \"width\": 1\n    }\n  ],\n  \"id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"link_previews\": [\n    {\n      \"description\": \"description\",\n      \"favicon_url\": \"favicon_url\",\n      \"footer\": {\n        \"description\": null,\n        \"icon_url\": \"icon_url\",\n        \"title\": \"title\"\n      },\n      \"image_url\": \"image_url\",\n      \"processing\": true,\n      \"title\": \"title\",\n      \"url\": \"url\"\n    }\n  ],\n  \"mentioned_user_ids\": [\n    \"mentioned_user_ids\"\n  ],\n  \"message_type\": \"regular\",\n  \"pinned\": false,\n  \"plain_content\": \"Content 1\",\n  \"poll\": {\n    \"options\": [\n      {\n        \"id\": \"1\",\n        \"text\": \"A\",\n        \"vote_count\": 0,\n        \"voted\": false\n      }\n    ]\n  },\n  \"reaction_counts\": [\n    {\n      \"kind\": \"like\",\n      \"reacted\": true,\n      \"total_score\": 1,\n      \"user_count\": 1,\n      \"value\": \"❤️\"\n    }\n  ],\n  \"replying_to_message_id\": \"replying_to_message_id\",\n  \"replying_to_user_id\": \"replying_to_user_id\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"view_count\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "f6de4422-71d7-43d9-90f8-1dcc9d0cd1ac",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "bcfbe7d9-a921-429c-8b1b-550230b4af43",
+      "name": "List Message Reactions - default",
+      "request": {
+        "urlPathTemplate": "/messages/{id}/reactions",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"emoji\": \"👍\",\n      \"user\": {\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Dana Whitfield\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"username\": \"danawhitfield\"\n      },\n      \"user_id\": \"user_xxxxxxxxxxxxxx\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "bcfbe7d9-a921-429c-8b1b-550230b4af43",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "548e8d57-7629-4aba-82a0-328e9bc64c64",
+      "name": "Unpin Message - default",
+      "request": {
+        "urlPathTemplate": "/messages/{id}/unpin",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"attachments\": [\n    {\n      \"blurhash\": \"blurhash\",\n      \"content_type\": \"application/pdf\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"duration_seconds\": 1.1,\n      \"filename\": \"evidence.pdf\",\n      \"height\": 1,\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"multipart_chunk_size\": 5242880,\n      \"multipart_upload_id\": \"upload-id\",\n      \"multipart_upload_urls\": [\n        {\n          \"part_number\": 1,\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n        }\n      ],\n      \"object\": \"file\",\n      \"removed_by_moderation\": false,\n      \"size\": 9670,\n      \"upload_headers\": {\n        \"key\": \"value\"\n      },\n      \"upload_status\": \"pending\",\n      \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"visibility\": \"public\",\n      \"waveform_url\": \"waveform_url\",\n      \"width\": 1\n    }\n  ],\n  \"author\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"author_is_team_member\": false,\n  \"author_user_id\": \"user_xxxxxxxxxxxxxx\",\n  \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"content\": \"Content 1\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"custom_author\": {\n    \"display_name\": \"display_name\",\n    \"profile_picture\": {\n      \"blurhash\": \"blurhash\",\n      \"content_type\": \"application/pdf\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"duration_seconds\": 1.1,\n      \"filename\": \"evidence.pdf\",\n      \"height\": 1,\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"multipart_chunk_size\": 5242880,\n      \"multipart_upload_id\": \"upload-id\",\n      \"multipart_upload_urls\": [\n        {\n          \"part_number\": 1,\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n        }\n      ],\n      \"object\": \"file\",\n      \"removed_by_moderation\": false,\n      \"size\": 9670,\n      \"upload_headers\": {\n        \"key\": \"value\"\n      },\n      \"upload_status\": \"pending\",\n      \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"visibility\": \"public\",\n      \"waveform_url\": \"waveform_url\",\n      \"width\": 1\n    }\n  },\n  \"deleted_at\": \"deleted_at\",\n  \"edited\": false,\n  \"embeds\": [\n    {\n      \"color\": 1,\n      \"description\": \"description\",\n      \"fields\": [\n        {\n          \"inline\": true,\n          \"name\": \"name\",\n          \"value\": \"value\"\n        }\n      ],\n      \"footer\": {\n        \"icon\": null,\n        \"text\": \"text\"\n      },\n      \"image\": {\n        \"blurhash\": null,\n        \"height\": null,\n        \"url\": \"url\",\n        \"width\": null\n      },\n      \"thumbnail\": {\n        \"blurhash\": null,\n        \"height\": null,\n        \"url\": \"url\",\n        \"width\": null\n      },\n      \"timestamp_at\": \"timestamp_at\",\n      \"title\": \"title\",\n      \"url\": \"url\"\n    }\n  ],\n  \"gifs\": [\n    {\n      \"height\": 1,\n      \"original_url\": \"original_url\",\n      \"preview_url\": \"preview_url\",\n      \"slug\": \"slug\",\n      \"title\": \"title\",\n      \"url\": \"url\",\n      \"width\": 1\n    }\n  ],\n  \"id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"link_previews\": [\n    {\n      \"description\": \"description\",\n      \"favicon_url\": \"favicon_url\",\n      \"footer\": {\n        \"description\": null,\n        \"icon_url\": \"icon_url\",\n        \"title\": \"title\"\n      },\n      \"image_url\": \"image_url\",\n      \"processing\": true,\n      \"title\": \"title\",\n      \"url\": \"url\"\n    }\n  ],\n  \"mentioned_user_ids\": [\n    \"mentioned_user_ids\"\n  ],\n  \"message_type\": \"regular\",\n  \"pinned\": false,\n  \"plain_content\": \"Content 1\",\n  \"poll\": {\n    \"options\": [\n      {\n        \"id\": \"1\",\n        \"text\": \"A\",\n        \"vote_count\": 0,\n        \"voted\": false\n      }\n    ]\n  },\n  \"reaction_counts\": [\n    {\n      \"kind\": \"like\",\n      \"reacted\": true,\n      \"total_score\": 1,\n      \"user_count\": 1,\n      \"value\": \"❤️\"\n    }\n  ],\n  \"replying_to_message_id\": \"replying_to_message_id\",\n  \"replying_to_user_id\": \"replying_to_user_id\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"view_count\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "548e8d57-7629-4aba-82a0-328e9bc64c64",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "ae2ff206-8707-4d45-874e-1819b8a891b4",
+      "name": "Remove Reaction from Message - default",
+      "request": {
+        "urlPathTemplate": "/messages/{id}/unreact",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"attachments\": [\n    {\n      \"blurhash\": \"blurhash\",\n      \"content_type\": \"application/pdf\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"duration_seconds\": 1.1,\n      \"filename\": \"evidence.pdf\",\n      \"height\": 1,\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"multipart_chunk_size\": 5242880,\n      \"multipart_upload_id\": \"upload-id\",\n      \"multipart_upload_urls\": [\n        {\n          \"part_number\": 1,\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n        }\n      ],\n      \"object\": \"file\",\n      \"removed_by_moderation\": false,\n      \"size\": 9670,\n      \"upload_headers\": {\n        \"key\": \"value\"\n      },\n      \"upload_status\": \"pending\",\n      \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"visibility\": \"public\",\n      \"waveform_url\": \"waveform_url\",\n      \"width\": 1\n    }\n  ],\n  \"author\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"author_is_team_member\": false,\n  \"author_user_id\": \"user_xxxxxxxxxxxxxx\",\n  \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"content\": \"Content 1\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"custom_author\": {\n    \"display_name\": \"display_name\",\n    \"profile_picture\": {\n      \"blurhash\": \"blurhash\",\n      \"content_type\": \"application/pdf\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"duration_seconds\": 1.1,\n      \"filename\": \"evidence.pdf\",\n      \"height\": 1,\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"multipart_chunk_size\": 5242880,\n      \"multipart_upload_id\": \"upload-id\",\n      \"multipart_upload_urls\": [\n        {\n          \"part_number\": 1,\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n        }\n      ],\n      \"object\": \"file\",\n      \"removed_by_moderation\": false,\n      \"size\": 9670,\n      \"upload_headers\": {\n        \"key\": \"value\"\n      },\n      \"upload_status\": \"pending\",\n      \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"visibility\": \"public\",\n      \"waveform_url\": \"waveform_url\",\n      \"width\": 1\n    }\n  },\n  \"deleted_at\": \"deleted_at\",\n  \"edited\": false,\n  \"embeds\": [\n    {\n      \"color\": 1,\n      \"description\": \"description\",\n      \"fields\": [\n        {\n          \"inline\": true,\n          \"name\": \"name\",\n          \"value\": \"value\"\n        }\n      ],\n      \"footer\": {\n        \"icon\": null,\n        \"text\": \"text\"\n      },\n      \"image\": {\n        \"blurhash\": null,\n        \"height\": null,\n        \"url\": \"url\",\n        \"width\": null\n      },\n      \"thumbnail\": {\n        \"blurhash\": null,\n        \"height\": null,\n        \"url\": \"url\",\n        \"width\": null\n      },\n      \"timestamp_at\": \"timestamp_at\",\n      \"title\": \"title\",\n      \"url\": \"url\"\n    }\n  ],\n  \"gifs\": [\n    {\n      \"height\": 1,\n      \"original_url\": \"original_url\",\n      \"preview_url\": \"preview_url\",\n      \"slug\": \"slug\",\n      \"title\": \"title\",\n      \"url\": \"url\",\n      \"width\": 1\n    }\n  ],\n  \"id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"link_previews\": [\n    {\n      \"description\": \"description\",\n      \"favicon_url\": \"favicon_url\",\n      \"footer\": {\n        \"description\": null,\n        \"icon_url\": \"icon_url\",\n        \"title\": \"title\"\n      },\n      \"image_url\": \"image_url\",\n      \"processing\": true,\n      \"title\": \"title\",\n      \"url\": \"url\"\n    }\n  ],\n  \"mentioned_user_ids\": [\n    \"mentioned_user_ids\"\n  ],\n  \"message_type\": \"regular\",\n  \"pinned\": false,\n  \"plain_content\": \"Content 1\",\n  \"poll\": {\n    \"options\": [\n      {\n        \"id\": \"1\",\n        \"text\": \"A\",\n        \"vote_count\": 0,\n        \"voted\": false\n      }\n    ]\n  },\n  \"reaction_counts\": [\n    {\n      \"kind\": \"like\",\n      \"reacted\": true,\n      \"total_score\": 1,\n      \"user_count\": 1,\n      \"value\": \"❤️\"\n    }\n  ],\n  \"replying_to_message_id\": \"replying_to_message_id\",\n  \"replying_to_user_id\": \"replying_to_user_id\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"view_count\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "ae2ff206-8707-4d45-874e-1819b8a891b4",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "85473611-9b2a-4ed5-9f18-18a72f59676d",
+      "name": "Vote on Message - default",
+      "request": {
+        "urlPathTemplate": "/messages/{id}/vote",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"attachments\": [\n    {\n      \"blurhash\": \"blurhash\",\n      \"content_type\": \"application/pdf\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"duration_seconds\": 1.1,\n      \"filename\": \"evidence.pdf\",\n      \"height\": 1,\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"multipart_chunk_size\": 5242880,\n      \"multipart_upload_id\": \"upload-id\",\n      \"multipart_upload_urls\": [\n        {\n          \"part_number\": 1,\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n        }\n      ],\n      \"object\": \"file\",\n      \"removed_by_moderation\": false,\n      \"size\": 9670,\n      \"upload_headers\": {\n        \"key\": \"value\"\n      },\n      \"upload_status\": \"pending\",\n      \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"visibility\": \"public\",\n      \"waveform_url\": \"waveform_url\",\n      \"width\": 1\n    }\n  ],\n  \"author\": {\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"username\": \"danawhitfield\"\n  },\n  \"author_is_team_member\": false,\n  \"author_user_id\": \"user_xxxxxxxxxxxxxx\",\n  \"channel_id\": \"feed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"content\": \"Content 1\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"custom_author\": {\n    \"display_name\": \"display_name\",\n    \"profile_picture\": {\n      \"blurhash\": \"blurhash\",\n      \"content_type\": \"application/pdf\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"duration_seconds\": 1.1,\n      \"filename\": \"evidence.pdf\",\n      \"height\": 1,\n      \"id\": \"file_xxxxxxxxxxxxxx\",\n      \"multipart_chunk_size\": 5242880,\n      \"multipart_upload_id\": \"upload-id\",\n      \"multipart_upload_urls\": [\n        {\n          \"part_number\": 1,\n          \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\"\n        }\n      ],\n      \"object\": \"file\",\n      \"removed_by_moderation\": false,\n      \"size\": 9670,\n      \"upload_headers\": {\n        \"key\": \"value\"\n      },\n      \"upload_status\": \"pending\",\n      \"upload_url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/application.pdf\",\n      \"url\": \"https://whop-assets-example.s3.amazonaws.com/uploads/audio/2026-01-01/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\",\n      \"visibility\": \"public\",\n      \"waveform_url\": \"waveform_url\",\n      \"width\": 1\n    }\n  },\n  \"deleted_at\": \"deleted_at\",\n  \"edited\": false,\n  \"embeds\": [\n    {\n      \"color\": 1,\n      \"description\": \"description\",\n      \"fields\": [\n        {\n          \"inline\": true,\n          \"name\": \"name\",\n          \"value\": \"value\"\n        }\n      ],\n      \"footer\": {\n        \"icon\": null,\n        \"text\": \"text\"\n      },\n      \"image\": {\n        \"blurhash\": null,\n        \"height\": null,\n        \"url\": \"url\",\n        \"width\": null\n      },\n      \"thumbnail\": {\n        \"blurhash\": null,\n        \"height\": null,\n        \"url\": \"url\",\n        \"width\": null\n      },\n      \"timestamp_at\": \"timestamp_at\",\n      \"title\": \"title\",\n      \"url\": \"url\"\n    }\n  ],\n  \"gifs\": [\n    {\n      \"height\": 1,\n      \"original_url\": \"original_url\",\n      \"preview_url\": \"preview_url\",\n      \"slug\": \"slug\",\n      \"title\": \"title\",\n      \"url\": \"url\",\n      \"width\": 1\n    }\n  ],\n  \"id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"link_previews\": [\n    {\n      \"description\": \"description\",\n      \"favicon_url\": \"favicon_url\",\n      \"footer\": {\n        \"description\": null,\n        \"icon_url\": \"icon_url\",\n        \"title\": \"title\"\n      },\n      \"image_url\": \"image_url\",\n      \"processing\": true,\n      \"title\": \"title\",\n      \"url\": \"url\"\n    }\n  ],\n  \"mentioned_user_ids\": [\n    \"mentioned_user_ids\"\n  ],\n  \"message_type\": \"regular\",\n  \"pinned\": false,\n  \"plain_content\": \"Content 1\",\n  \"poll\": {\n    \"options\": [\n      {\n        \"id\": \"1\",\n        \"text\": \"A\",\n        \"vote_count\": 0,\n        \"voted\": false\n      }\n    ]\n  },\n  \"reaction_counts\": [\n    {\n      \"kind\": \"like\",\n      \"reacted\": true,\n      \"total_score\": 1,\n      \"user_count\": 1,\n      \"value\": \"❤️\"\n    }\n  ],\n  \"replying_to_message_id\": \"replying_to_message_id\",\n  \"replying_to_user_id\": \"replying_to_user_id\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"view_count\": 1\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "85473611-9b2a-4ed5-9f18-18a72f59676d",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -18287,6 +19141,6 @@
     }
   ],
   "meta": {
-    "total": 511
+    "total": 535
   }
 }

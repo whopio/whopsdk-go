@@ -27,6 +27,8 @@ import (
 	cards "github.com/whopio/whopsdk-go/v2/cards"
 	cardtransactions "github.com/whopio/whopsdk-go/v2/cardtransactions"
 	cashbackrules "github.com/whopio/whopsdk-go/v2/cashbackrules"
+	channelmembers "github.com/whopio/whopsdk-go/v2/channelmembers"
+	channels "github.com/whopio/whopsdk-go/v2/channels"
 	chatchannels "github.com/whopio/whopsdk-go/v2/chatchannels"
 	checkoutconfigurations "github.com/whopio/whopsdk-go/v2/checkoutconfigurations"
 	claimlinks "github.com/whopio/whopsdk-go/v2/claimlinks"
@@ -134,6 +136,8 @@ type Whop struct {
 	CardTransactions         *cardtransactions.Client
 	Cards                    *cards.Client
 	CashbackRules            *cashbackrules.Client
+	ChannelMembers           *channelmembers.Client
+	Channels                 *channels.Client
 	ChatChannels             *chatchannels.Client
 	CheckoutConfigurations   *checkoutconfigurations.Client
 	ClaimLinks               *claimlinks.Client
@@ -220,7 +224,7 @@ type Whop struct {
 func NewWhop(opts ...option.RequestOption) *Whop {
 	options := core.NewRequestOptions(opts...)
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-06"
+		apiVersionDateDefault := "2026-11-07"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Whop{
@@ -248,6 +252,8 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		CardTransactions:         cardtransactions.NewClient(options),
 		Cards:                    cards.NewClient(options),
 		CashbackRules:            cashbackrules.NewClient(options),
+		ChannelMembers:           channelmembers.NewClient(options),
+		Channels:                 channels.NewClient(options),
 		ChatChannels:             chatchannels.NewClient(options),
 		CheckoutConfigurations:   checkoutconfigurations.NewClient(options),
 		ClaimLinks:               claimlinks.NewClient(options),
