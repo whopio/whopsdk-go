@@ -54956,6 +54956,7 @@ const (
 	PaymentMethodTypesClaritypay             PaymentMethodTypes = "claritypay"
 	PaymentMethodTypesCoinbase               PaymentMethodTypes = "coinbase"
 	PaymentMethodTypesCrypto                 PaymentMethodTypes = "crypto"
+	PaymentMethodTypesCryptoSubscription     PaymentMethodTypes = "crypto_subscription"
 	PaymentMethodTypesCustom                 PaymentMethodTypes = "custom"
 	PaymentMethodTypesCustomerBalance        PaymentMethodTypes = "customer_balance"
 	PaymentMethodTypesDemoPay                PaymentMethodTypes = "demo_pay"
@@ -55128,6 +55129,8 @@ func NewPaymentMethodTypesFromString(s string) (PaymentMethodTypes, error) {
 		return PaymentMethodTypesCoinbase, nil
 	case "crypto":
 		return PaymentMethodTypesCrypto, nil
+	case "crypto_subscription":
+		return PaymentMethodTypesCryptoSubscription, nil
 	case "custom":
 		return PaymentMethodTypesCustom, nil
 	case "customer_balance":
