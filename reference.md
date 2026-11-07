@@ -39491,7 +39491,7 @@ client.Search.List(
 <dl>
 <dd>
 
-**accountID:** `string` — The account to search, prefixed `biz_`. Records other than accounts belong to it, or with `include_subaccounts` to its subaccounts. Your credential needs read access to it; an account you can't read is a 404.
+**accountID:** `string` — The account to search, prefixed `biz_`. Records other than accounts belong to it, or with `include_subaccounts` to its subaccounts. Your credential needs read access to at least one kind of record on it that search returns, or the account is a 404.
     
 </dd>
 </dl>
