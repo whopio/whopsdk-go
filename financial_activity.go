@@ -282,7 +282,6 @@ const (
 	ListFinancialActivityRequestLineTypesItemApplicationFeePayout                      ListFinancialActivityRequestLineTypesItem = "application_fee_payout"
 	ListFinancialActivityRequestLineTypesItemBalanceReservation                        ListFinancialActivityRequestLineTypesItem = "balance_reservation"
 	ListFinancialActivityRequestLineTypesItemBalanceReservationReversal                ListFinancialActivityRequestLineTypesItem = "balance_reservation_reversal"
-	ListFinancialActivityRequestLineTypesItemBankTransfer                              ListFinancialActivityRequestLineTypesItem = "bank_transfer"
 	ListFinancialActivityRequestLineTypesItemBillingPercentageFee                      ListFinancialActivityRequestLineTypesItem = "billing_percentage_fee"
 	ListFinancialActivityRequestLineTypesItemBuyerFee                                  ListFinancialActivityRequestLineTypesItem = "buyer_fee"
 	ListFinancialActivityRequestLineTypesItemCardInterchange                           ListFinancialActivityRequestLineTypesItem = "card_interchange"
@@ -449,8 +448,6 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemBalanceReservation, nil
 	case "balance_reservation_reversal":
 		return ListFinancialActivityRequestLineTypesItemBalanceReservationReversal, nil
-	case "bank_transfer":
-		return ListFinancialActivityRequestLineTypesItemBankTransfer, nil
 	case "billing_percentage_fee":
 		return ListFinancialActivityRequestLineTypesItemBillingPercentageFee, nil
 	case "buyer_fee":

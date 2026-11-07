@@ -24791,7 +24791,6 @@ const (
 	LedgerActivityLineTypeClawbackReceivableSettlementReversal      LedgerActivityLineType = "clawback_receivable_settlement_reversal"
 	LedgerActivityLineTypeClawbackFee                               LedgerActivityLineType = "clawback_fee"
 	LedgerActivityLineTypePspClawbackFee                            LedgerActivityLineType = "psp_clawback_fee"
-	LedgerActivityLineTypeBankTransfer                              LedgerActivityLineType = "bank_transfer"
 	LedgerActivityLineTypeDeposit                                   LedgerActivityLineType = "deposit"
 	LedgerActivityLineTypeWalletTransferIncoming                    LedgerActivityLineType = "wallet_transfer_incoming"
 	LedgerActivityLineTypeWalletTransferOutgoing                    LedgerActivityLineType = "wallet_transfer_outgoing"
@@ -25421,8 +25420,6 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeClawbackFee, nil
 	case "psp_clawback_fee":
 		return LedgerActivityLineTypePspClawbackFee, nil
-	case "bank_transfer":
-		return LedgerActivityLineTypeBankTransfer, nil
 	case "deposit":
 		return LedgerActivityLineTypeDeposit, nil
 	case "wallet_transfer_incoming":
