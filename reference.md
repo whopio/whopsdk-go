@@ -12010,6 +12010,1420 @@ client.CashbackRules.Update(
 </dl>
 </details>
 
+## Channel Members
+<details><summary><code>client.ChannelMembers.List() -> *whopsdk.ListChannelMembersResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+List or search the people in a channel.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ListChannelMembersRequest{
+    ChannelID: "channel_id",
+}
+client.ChannelMembers.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**channelID:** `string` — The channel whose members to list.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**query:** `*string` — Search by name or username.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ChannelMembers.Create(request) -> *whopsdk.ChannelMember</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Add a member to a direct or support channel.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CreateChannelMembersRequest{
+    ChannelID: "feed_xxxxxxxxxxxxxxxxxxxxxx",
+    UserID: "user_xxxxxxxxxxxxxx",
+}
+client.ChannelMembers.Create(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**channelID:** `string` — The channel to add the user to.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userID:** `string` — The user to add.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ChannelMembers.Retrieve(ID) -> *whopsdk.ChannelMember</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a channel member and their read position.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RetrieveChannelMembersRequest{
+    ID: "id",
+}
+client.ChannelMembers.Retrieve(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Public resource ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ChannelMembers.Delete(ID) -> error</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Remove a channel member, or leave the channel yourself. Requires dms:channel:manage and access to the channel. Removing someone else also requires permission to manage its members.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.DeleteChannelMembersRequest{
+    ID: "id",
+}
+client.ChannelMembers.Delete(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Public resource ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.ChannelMembers.Update(ID, request) -> *whopsdk.ChannelMember</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update your notification preference using your stored membership ID in a private or support channel.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UpdateChannelMembersRequest{
+    ID: "id",
+    NotificationPreference: whopsdk.UpdateChannelMembersRequestNotificationPreferenceAll,
+}
+client.ChannelMembers.Update(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Public resource ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**notificationPreference:** `whopsdk.UpdateChannelMembersRequestNotificationPreference` 
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Channels
+<details><summary><code>client.Channels.List() -> *whopsdk.ListChannelsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+List channels you can access.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ListChannelsRequest{
+    Kind: []*whopsdk.ListChannelsRequestKindItem{
+        whopsdk.ListChannelsRequestKindItemPrivate.Ptr(),
+    },
+}
+client.Channels.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeTotalCount:** `*bool` — Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**kind:** `*whopsdk.ListChannelsRequestKindItem` — Channel kinds to return. Combine `private` and `support`, or pass `community` alone. `private` includes one-to-one and group direct messages.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**supportRole:** `*whopsdk.ListChannelsRequestSupportRole` — Which support channels to return. `customer` returns support chats you opened, including when `account_id` is set. `staff` returns the support inbox of the account in `account_id`, and requires permission to read that account's support chats. Applies only to `support` channels.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — Filter channels by their owning account, prefixed `biz_`. Applies to private, community and support channels.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**query:** `*string` — Return only channels whose name contains this text. Private and support channels also match a member's username or name. `%` and `_` match literally.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**status:** `*whopsdk.ListChannelsRequestStatus` — Return only support channels with this resolution. Requires `kind` to be `support` alone.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**awaitingReply:** `*bool` — `true` returns unresolved support channels whose last message came from the customer; `false` returns the other support channels. Other channel kinds are returned either way.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**unread:** `*bool` — `true` returns channels with messages you have not read; `false` returns the rest. Requires authenticating as a user.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**pinned:** `*bool` — `true` returns private and support channels you have pinned; `false` returns those you have not. Requires authenticating as a user.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**viewed:** `*bool` — `true` returns community channels you have opened; `false` returns those you never have. Requires authenticating as a user.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**requested:** `*bool` — `true` returns your pending direct-message requests; `false` returns your accepted private channels. Requires `private` in `kind` and authenticating as a user. With `support` also in `kind`, `false` keeps support channels and `true` returns only pending requests.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `*whopsdk.ListChannelsRequestOrder` — The field to sort by. Defaults to `last_viewed_at` for community channels and `last_message_at` for private and support channels. Ties sort in a stable order.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeMembers:** `*bool` — Include the current members of private and support channels, including you, with their public profiles.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeLastMessage:** `*bool` — Include the most recent message you can see, with its author.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `*whopsdk.ListChannelsRequestDirection` — The sort direction. Defaults to `desc`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdBefore:** `*string` — Return only channels created before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**createdAfter:** `*string` — Return only channels created after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Channels.Create(request) -> *whopsdk.Channel</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Create a private, community or support channel. Returns an existing private or support channel unchanged with `200`, or a new channel with `201`.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CreateChannelsRequest{
+    Kind: whopsdk.CreateChannelsRequestKindPrivate,
+}
+client.Channels.Create(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — Owning account ID, prefixed `biz_`. Accepted for all channel kinds. Required for community and support channels unless supplied by the credential's account context.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**customerUserID:** `*string` — Customer ID, prefixed `user_`. Support channels only; requires support management permission. Omit to open your own support conversation.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**kind:** `whopsdk.CreateChannelsRequestKind` — Channel kind. `private` is a one-to-one or group conversation, `community` creates a Chat experience on the account, and `support` opens a conversation between the account and a customer.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `*string` — Channel display name, accepted for all channel kinds. Used only when a channel is created. For community channels, names the new Chat experience; defaults to the Chat app's name.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**notificationsEnabled:** `*bool` — Whether app notifications are on for any channel kind. Webhooks fire either way. Defaults to `true`. Used only when a channel is created; change an existing channel with `PATCH /channels/:id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**participantUserIDs:** `[]string` — Other participant IDs, prefixed `user_`, excluding the sender. Required for private channels and accepted only for them. One ID creates a one-to-one conversation; more create a group.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**productID:** `*string` — Product ID, prefixed `prod_`, to attach the new community channel to. Accepted only for community channels. Must belong to the owning account and requires the `experience:attach` permission on it. Omit to leave the channel unattached.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**senderUserID:** `*string` — Sender ID, prefixed `user_`. Private channels only. Required for account API keys; omit when authenticating as a user. Requires channel management permission on the account.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Channels.Retrieve(ID) -> *whopsdk.Channel</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Retrieve a channel.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RetrieveChannelsRequest{
+    ID: "id",
+}
+client.Channels.Retrieve(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Public resource ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Channels.Delete(ID) -> error</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Delete a channel. Deleting a support channel requires `support_chat:create` on the account. Community channels delete their backing experience and accept account API keys with the `experience:delete` permission. Private and support channels require a user identity with channel management permission; account API keys cannot act as a channel participant.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.DeleteChannelsRequest{
+    ID: "id",
+}
+client.Channels.Delete(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Public resource ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Channels.Update(ID, request) -> *whopsdk.Channel</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Update a channel. Community icon changes update the experience logo and require `experience:update`. Support rename and notification changes require `support_chat:create`. Private and support writes require a user identity with channel management permission; account API keys can update community channels only.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UpdateChannelsRequest{
+    ID: "id",
+}
+client.Channels.Update(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Public resource ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**icon:** `*whopsdk.UpdateChannelsRequestIcon` — Community channels only. File reference for the experience logo; `null` clears it and restores the app icon fallback. Omit to preserve the current logo.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**moderation:** `*whopsdk.UpdateChannelsRequestModeration` — Moderation settings, accepted only for community channels. Requires chat moderation permission. Omitted settings are preserved.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `*string` — Replacement display name for any channel kind. Send `null` to clear a private or support channel name. Community channels require a name and also rename the experience.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**notificationsEnabled:** `*bool` — Whether app notifications are on for any channel kind. Webhooks fire either way. Omit to preserve the current setting.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Channels.Accept(ID, request) -> *whopsdk.ChannelMember</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Accept a direct-message request.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.AcceptChannelsRequest{
+    ID: "id",
+}
+client.Channels.Accept(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Public resource ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Channels.Hide(ID, request) -> *whopsdk.ChannelMember</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Decline a DM request by hiding the channel from your inbox.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.HideChannelsRequest{
+    ID: "id",
+}
+client.Channels.Hide(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Public resource ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Channels.MarkRead(ID, request) -> *whopsdk.ChannelMember</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Mark a channel as read and optionally record viewed messages.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.MarkReadChannelsRequest{
+    ID: "id",
+}
+client.Channels.MarkRead(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Public resource ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**lastViewedAt:** `*time.Time` — Required for DM-backed kinds; not accepted for experience.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**viewedMessageIDs:** `[]string` — Messages actually seen in this channel. Optional for all channel kinds; up to 100 IDs. Omitted or empty records no message views. Experience view counts update asynchronously.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Channels.MarkUnread(ID, request) -> *whopsdk.ChannelMember</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Mark a channel as unread for the authenticated user. Experience channels are unchanged.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.MarkUnreadChannelsRequest{
+    ID: "id",
+}
+client.Channels.MarkUnread(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Public resource ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Channels.Pin(ID, request) -> error</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Pin a private or support channel for yourself. Omit position to append a new pin or keep an existing pin in place. An explicit zero-based position inserts or moves the pin and shifts the rest. At most 12 channels can be pinned.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.PinChannelsRequest{
+    ID: "id",
+}
+client.Channels.Pin(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The channel ID, prefixed `feed_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**position:** `*int` — Zero-based position in the resulting list. Must not exceed the last index after insertion. Omit to append a new pin or preserve an existing position.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Channels.Reopen(ID, request) -> *whopsdk.Channel</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Reopen a resolved support channel.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ReopenChannelsRequest{
+    ID: "id",
+}
+client.Channels.Reopen(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Public resource ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Channels.Resolve(ID, request) -> *whopsdk.Channel</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Resolve a support channel.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ResolveChannelsRequest{
+    ID: "id",
+}
+client.Channels.Resolve(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Public resource ID.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Channels.Unpin(ID) -> error</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Remove a channel from your pins and compact the remaining order. Your discarded memberships and inaccessible channels can be unpinned. Does not return channel data or grant read access.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UnpinChannelsRequest{
+    ID: "id",
+}
+client.Channels.Unpin(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The channel ID, prefixed `feed_`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## ChatChannels
 <details><summary><code>client.ChatChannels.List() -> *whopsdk.ListChatChannelsResponse</code></summary>
 <dl>
@@ -26911,12 +28325,7 @@ client.Memberships.Transfer(
 <dl>
 <dd>
 
-Lists messages in an experience chat, DM, or group chat channel, sorted by creation time.
-
-Required permissions (one of):
- - `chat:read`
- - `dms:read`
- - `support_chat:read`
+Lists messages in a channel. Existing public message and channel IDs are preserved. For reconnect synchronization, use inclusive updated_after with include_deleted=true; results use ascending change order. Follow the returned cursors and replace cached messages by ID, including when updated_at is unchanged. The returned updated_at is the stored message update time; reaction changes only affect synchronization ordering. Deleted entries contain identity and timestamps with their content redacted. To jump into history, specify channel_id and one around anchor; results use ascending creation-time order. For older messages in chronological order, use before_message_id with last and direction=asc; for newer messages, use after_message_id with first and direction=asc. Do not supply order or direction with updated_after or an around anchor. Keep message-ID filters when continuing with cursors. For around queries, omit the around anchor and continue with direction=asc.
 </dd>
 </dl>
 </dd>
@@ -26932,12 +28341,6 @@ Required permissions (one of):
 
 ```go
 request := &whopsdk.ListMessagesRequest{
-    First: whopsdk.Int(
-        42,
-    ),
-    Last: whopsdk.Int(
-        42,
-    ),
     ChannelID: "channel_id",
 }
 client.Messages.List(
@@ -26958,7 +28361,7 @@ client.Messages.List(
 <dl>
 <dd>
 
-**after:** `*string` — Returns the elements in the list that come after the specified cursor.
+**channelID:** `string` — Filter by public channel ID. An experience ID is also accepted for experience chat.
     
 </dd>
 </dl>
@@ -26966,7 +28369,7 @@ client.Messages.List(
 <dl>
 <dd>
 
-**before:** `*string` — Returns the elements in the list that come before the specified cursor.
+**replyingToMessageID:** `*string` — Return replies to this message.
     
 </dd>
 </dl>
@@ -26974,7 +28377,7 @@ client.Messages.List(
 <dl>
 <dd>
 
-**first:** `*int` — Returns the first _n_ elements from the list.
+**pinned:** `*bool` — Filter by message pin state.
     
 </dd>
 </dl>
@@ -26982,7 +28385,7 @@ client.Messages.List(
 <dl>
 <dd>
 
-**last:** `*int` — Returns the last _n_ elements from the list.
+**includeDeleted:** `*bool` — Include redacted deletion entries for cache synchronization.
     
 </dd>
 </dl>
@@ -26990,7 +28393,7 @@ client.Messages.List(
 <dl>
 <dd>
 
-**channelID:** `string` — The unique identifier of the channel or experience to list messages for.
+**createdAfter:** `*string` — Return messages created strictly after this ISO 8601 timestamp.
     
 </dd>
 </dl>
@@ -26998,7 +28401,95 @@ client.Messages.List(
 <dl>
 <dd>
 
-**direction:** `*whopsdk.Direction` 
+**createdBefore:** `*string` — Return messages created strictly before this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**updatedAfter:** `*string` — Return messages changed at or after this ISO 8601 timestamp in ascending change order. Cannot be combined with history filters, around anchors, order, or direction.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**beforeMessageID:** `*string` — Filter messages strictly before this message in channel_id by creation time and message ID. Deleted anchors are accepted; missing or other-channel IDs return 404. Cannot be combined with around anchors or updated_after.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**afterMessageID:** `*string` — Filter messages strictly after this message in channel_id by creation time and message ID. Deleted anchors are accepted; missing or other-channel IDs return 404. Cannot be combined with around anchors or updated_after.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aroundMessageID:** `*string` — Center the first page around this live message in the selected channel.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**aroundTimestamp:** `*string` — Center the first page around this ISO 8601 timestamp in the selected channel.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `*whopsdk.ListMessagesRequestOrder` — History sort field. Defaults to created_at. Cannot be supplied with updated_after or around anchors.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `*whopsdk.ListMessagesRequestDirection` — History sort direction. Defaults to desc. Cannot be supplied with updated_after or around anchors.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
@@ -27010,7 +28501,7 @@ client.Messages.List(
 </dl>
 </details>
 
-<details><summary><code>client.Messages.Create(request) -> *whopsdk.Message</code></summary>
+<details><summary><code>client.Messages.Create(request) -> *whopsdk.ChatMessage</code></summary>
 <dl>
 <dd>
 
@@ -27022,13 +28513,7 @@ client.Messages.List(
 <dl>
 <dd>
 
-Sends a message in an experience chat, DM, or group chat channel. Supports text content, attachments, polls, and replies.
-
-Required permissions (one of):
- - `chat:message:create`
- - `dms:message:manage`
- - `livestream:chat:write`
- - `support_chat:message:create`
+Sends a Markdown message as the authenticated user or app agent. Channel access, posting restrictions, moderation, and delivery follow the existing chat services. Use Idempotency-Key to safely retry a send. The response and realtime message use the same message ID. Custom author presentation and embeds are read-only.
 </dd>
 </dl>
 </dd>
@@ -27044,8 +28529,8 @@ Required permissions (one of):
 
 ```go
 request := &whopsdk.CreateMessagesRequest{
-    ChannelID: "channel_id",
-    Content: "content",
+    ChannelID: "feed_xxxxxxxxxxxxxxxxxxxxxx",
+    Content: "New **message**",
 }
 client.Messages.Create(
     context.TODO(),
@@ -27065,7 +28550,7 @@ client.Messages.Create(
 <dl>
 <dd>
 
-**attachments:** `[]*whopsdk.CreateMessagesRequestAttachmentsItem` — A list of file attachments to include with the message, such as images or videos.
+**attachments:** `[]*whopsdk.CreateMessagesRequestAttachmentsItem` — Files to attach to the message.
     
 </dd>
 </dl>
@@ -27073,7 +28558,7 @@ client.Messages.Create(
 <dl>
 <dd>
 
-**autoDetectLinks:** `*bool` — Automatically detect URLs in the message and generate link previews.
+**autoDetectLinks:** `*bool` — Generate previews for URLs in content. Mutually exclusive with link_previews.
     
 </dd>
 </dl>
@@ -27081,7 +28566,7 @@ client.Messages.Create(
 <dl>
 <dd>
 
-**channelID:** `string` — The unique identifier of the channel or experience to send the message in. For example, 'exp_xxxxx' or 'feed_xxxxx'.
+**channelID:** `string` — Public channel ID, or an experience ID for experience chat.
     
 </dd>
 </dl>
@@ -27089,7 +28574,7 @@ client.Messages.Create(
 <dl>
 <dd>
 
-**content:** `string` — The body of the message in Markdown format. For example, 'Hello **world**'.
+**content:** `string` — Markdown content. May be empty when the message contains media or a poll.
     
 </dd>
 </dl>
@@ -27097,7 +28582,7 @@ client.Messages.Create(
 <dl>
 <dd>
 
-**poll:** `*whopsdk.CreateMessagesRequestPoll` — A poll to attach to this message, allowing recipients to vote on options.
+**linkPreviews:** `[]*whopsdk.CreateMessagesRequestLinkPreviewsItem` — Explicit URLs for the server to preview.
     
 </dd>
 </dl>
@@ -27105,7 +28590,15 @@ client.Messages.Create(
 <dl>
 <dd>
 
-**replyingToMessageID:** `*string` — The unique identifier of the message this is replying to, creating a threaded reply.
+**poll:** `*whopsdk.CreateMessagesRequestPoll` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**replyingToMessageID:** `*string` — A live message in the same channel to reply to.
     
 </dd>
 </dl>
@@ -27117,7 +28610,7 @@ client.Messages.Create(
 </dl>
 </details>
 
-<details><summary><code>client.Messages.Retrieve(ID) -> *whopsdk.Message</code></summary>
+<details><summary><code>client.Messages.Retrieve(ID) -> *whopsdk.ChatMessage</code></summary>
 <dl>
 <dd>
 
@@ -27129,13 +28622,7 @@ client.Messages.Create(
 <dl>
 <dd>
 
-Retrieves the details of an existing message.
-
-Required permissions (one of):
- - `chat:read`
- - `dms:read`
- - `livestream:chat:read`
- - `support_chat:read`
+Retrieves a live message from an accessible channel. Use list synchronization to retrieve deletion entries.
 </dd>
 </dl>
 </dd>
@@ -27171,7 +28658,7 @@ client.Messages.Retrieve(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the message to retrieve.
+**id:** `string` — Existing public message ID.
     
 </dd>
 </dl>
@@ -27183,7 +28670,7 @@ client.Messages.Retrieve(
 </dl>
 </details>
 
-<details><summary><code>client.Messages.Delete(ID) -> bool</code></summary>
+<details><summary><code>client.Messages.Delete(ID) -> error</code></summary>
 <dl>
 <dd>
 
@@ -27195,13 +28682,7 @@ client.Messages.Retrieve(
 <dl>
 <dd>
 
-Permanently deletes a message from an experience chat, DM, or group chat channel. Only the message author or a channel admin can delete a message.
-
-Required permissions (one of):
- - `chat:message:create` and `chat:read`
- - `dms:message:manage` and `dms:read`
- - `livestream:chat:write` and `livestream:chat:read`
- - `support_chat:message:create` and `support_chat:read`
+Deletes a message as its author or a permitted moderator. Deleted messages remain available as redacted entries through list synchronization.
 </dd>
 </dl>
 </dd>
@@ -27237,7 +28718,7 @@ client.Messages.Delete(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the message to delete.
+**id:** `string` — Existing public message ID.
     
 </dd>
 </dl>
@@ -27249,7 +28730,7 @@ client.Messages.Delete(
 </dl>
 </details>
 
-<details><summary><code>client.Messages.Update(ID, request) -> *whopsdk.Message</code></summary>
+<details><summary><code>client.Messages.Update(ID, request) -> *whopsdk.ChatMessage</code></summary>
 <dl>
 <dd>
 
@@ -27261,13 +28742,7 @@ client.Messages.Delete(
 <dl>
 <dd>
 
-Edits the content, attachments, or pinned status of a message in an experience chat, DM, or group chat channel.
-
-Required permissions (one of):
- - `chat:message:create`
- - `dms:message:manage`
- - `livestream:chat:write`
- - `support_chat:message:create`
+Updates the author's message. Use the pin and unpin actions to change its pin state. Omitted fields are preserved; attachment and preview collections replace their previous values.
 </dd>
 </dl>
 </dd>
@@ -27303,7 +28778,7 @@ client.Messages.Update(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the message to update.
+**id:** `string` — Existing public message ID.
     
 </dd>
 </dl>
@@ -27311,7 +28786,7 @@ client.Messages.Update(
 <dl>
 <dd>
 
-**attachments:** `[]*whopsdk.UpdateMessagesRequestAttachmentsItem` — A replacement list of file attachments for this message, such as images or videos.
+**attachments:** `[]*whopsdk.UpdateMessagesRequestAttachmentsItem` — Replacement attachment list; pass an empty list to remove attachments.
     
 </dd>
 </dl>
@@ -27319,7 +28794,7 @@ client.Messages.Update(
 <dl>
 <dd>
 
-**content:** `*string` — The updated body of the message in Markdown format. For example, 'Hello **world**'.
+**content:** `*string` — Replacement Markdown content.
     
 </dd>
 </dl>
@@ -27327,7 +28802,434 @@ client.Messages.Update(
 <dl>
 <dd>
 
-**isPinned:** `*bool` — Whether this message should be pinned to the top of the channel.
+**linkPreviews:** `[]*whopsdk.UpdateMessagesRequestLinkPreviewsItem` — Replacement preview URLs; pass an empty list to remove previews.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Messages.Pin(ID) -> *whopsdk.ChatMessage</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Pins a message in its channel. Requires the channel's pin permission.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.PinMessagesRequest{
+    ID: "id",
+}
+client.Messages.Pin(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The message to pin.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Messages.React(ID, request) -> *whopsdk.ChatMessage</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Add your emoji reaction to a message. Reacting again with the same emoji changes nothing.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ReactMessagesRequest{
+    ID: "id",
+    Emoji: "❤️",
+}
+client.Messages.React(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The ID of the message to react to.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**emoji:** `string` — A single Unicode emoji or a supported shortcode such as `:heart:`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Messages.ListReactions(ID) -> *whopsdk.ListReactionsMessagesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+List who reacted to a message, newest first. Optionally filter by emoji.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.ListReactionsMessagesRequest{
+    ID: "id",
+}
+client.Messages.ListReactions(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The ID of the message.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**emoji:** `*string` — Only return reactions with this emoji, as a Unicode emoji or a supported shortcode.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Messages.Unpin(ID) -> *whopsdk.ChatMessage</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Unpins a message in its channel. Requires the channel's pin permission.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UnpinMessagesRequest{
+    ID: "id",
+}
+client.Messages.Unpin(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The message to unpin.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Messages.Unreact(ID, request) -> *whopsdk.ChatMessage</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Remove your emoji reaction from a message. Removing a reaction you have not added changes nothing.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UnreactMessagesRequest{
+    ID: "id",
+    Emoji: "❤️",
+}
+client.Messages.Unreact(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The ID of the message to remove your reaction from.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**emoji:** `string` — The emoji to remove, as a Unicode emoji or a supported shortcode.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Messages.Vote(ID, request) -> *whopsdk.ChatMessage</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Vote for one option on a message poll. Each user can vote once per poll.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.VoteMessagesRequest{
+    ID: "id",
+    PollOptionID: "2",
+}
+client.Messages.Vote(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The ID of the message containing the poll.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**pollOptionID:** `string` — The option ID from the poll, not its display text.
     
 </dd>
 </dl>
@@ -41677,6 +43579,14 @@ client.Users.List(
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**contextChannelID:** `*string` — Prioritize people relevant to this channel for mentions. Results remain global; channel access is required.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>

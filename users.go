@@ -49,14 +49,17 @@ func (c *CheckAccessUsersRequest) SetResourceID(resourceID string) {
 }
 
 var (
-	listUsersRequestFieldQuery  = big.NewInt(1 << 0)
-	listUsersRequestFieldFirst  = big.NewInt(1 << 1)
-	listUsersRequestFieldAfter  = big.NewInt(1 << 2)
-	listUsersRequestFieldLast   = big.NewInt(1 << 3)
-	listUsersRequestFieldBefore = big.NewInt(1 << 4)
+	listUsersRequestFieldContextChannelID = big.NewInt(1 << 0)
+	listUsersRequestFieldQuery            = big.NewInt(1 << 1)
+	listUsersRequestFieldFirst            = big.NewInt(1 << 2)
+	listUsersRequestFieldAfter            = big.NewInt(1 << 3)
+	listUsersRequestFieldLast             = big.NewInt(1 << 4)
+	listUsersRequestFieldBefore           = big.NewInt(1 << 5)
 )
 
 type ListUsersRequest struct {
+	// Prioritize people relevant to this channel for mentions. Results remain global; channel access is required.
+	ContextChannelID *string `json:"-" url:"context_channel_id,omitempty"`
 	// A search term to filter users by name or username.
 	Query *string `json:"-" url:"query,omitempty"`
 	// Number of results to return from the start of the range.
@@ -79,6 +82,13 @@ func (l *ListUsersRequest) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	l.explicitFields = next
+}
+
+// SetContextChannelID sets the ContextChannelID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListUsersRequest) SetContextChannelID(contextChannelID *string) {
+	l.ContextChannelID = contextChannelID
+	l.require(listUsersRequestFieldContextChannelID)
 }
 
 // SetQuery sets the Query field and marks it as non-optional;

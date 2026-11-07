@@ -36,7 +36,7 @@ func (r *RawClient) Create(
 	ctx context.Context,
 	request *whopsdk.CreateMessagesRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.Message], error) {
+) (*core.Response[*whopsdk.ChatMessage], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -57,7 +57,7 @@ func (r *RawClient) Create(
 		options.ToHeader(),
 	)
 	headers.Add("Content-Type", "application/json")
-	var response *whopsdk.Message
+	var response *whopsdk.ChatMessage
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -77,7 +77,7 @@ func (r *RawClient) Create(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*whopsdk.Message]{
+	return &core.Response[*whopsdk.ChatMessage]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -88,7 +88,7 @@ func (r *RawClient) Retrieve(
 	ctx context.Context,
 	request *whopsdk.RetrieveMessagesRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.Message], error) {
+) (*core.Response[*whopsdk.ChatMessage], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -111,7 +111,7 @@ func (r *RawClient) Retrieve(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response *whopsdk.Message
+	var response *whopsdk.ChatMessage
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -130,7 +130,7 @@ func (r *RawClient) Retrieve(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*whopsdk.Message]{
+	return &core.Response[*whopsdk.ChatMessage]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,
@@ -141,7 +141,7 @@ func (r *RawClient) Delete(
 	ctx context.Context,
 	request *whopsdk.DeleteMessagesRequest,
 	opts ...option.RequestOption,
-) (*core.Response[bool], error) {
+) (*core.Response[any], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -164,7 +164,6 @@ func (r *RawClient) Delete(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
-	var response bool
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -176,17 +175,16 @@ func (r *RawClient) Delete(
 			BodyProperties:  options.BodyProperties,
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
-			Response:        &response,
 			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		},
 	)
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[bool]{
+	return &core.Response[any]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
-		Body:       response,
+		Body:       nil,
 	}, nil
 }
 
@@ -194,7 +192,7 @@ func (r *RawClient) Update(
 	ctx context.Context,
 	request *whopsdk.UpdateMessagesRequest,
 	opts ...option.RequestOption,
-) (*core.Response[*whopsdk.Message], error) {
+) (*core.Response[*whopsdk.ChatMessage], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -218,7 +216,7 @@ func (r *RawClient) Update(
 		options.ToHeader(),
 	)
 	headers.Add("Content-Type", "application/json")
-	var response *whopsdk.Message
+	var response *whopsdk.ChatMessage
 	raw, err := r.caller.Call(
 		ctx,
 		&internal.CallParams{
@@ -238,7 +236,278 @@ func (r *RawClient) Update(
 	if err != nil {
 		return nil, err
 	}
-	return &core.Response[*whopsdk.Message]{
+	return &core.Response[*whopsdk.ChatMessage]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
+func (r *RawClient) Pin(
+	ctx context.Context,
+	request *whopsdk.PinMessagesRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*whopsdk.ChatMessage], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
+		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/messages/%v/pin",
+		request.ID,
+	)
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	var response *whopsdk.ChatMessage
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*whopsdk.ChatMessage]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
+func (r *RawClient) React(
+	ctx context.Context,
+	request *whopsdk.ReactMessagesRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*whopsdk.ChatMessage], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
+		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/messages/%v/react",
+		request.ID,
+	)
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	headers.Add("Content-Type", "application/json")
+	var response *whopsdk.ChatMessage
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Request:         request,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*whopsdk.ChatMessage]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
+func (r *RawClient) Unpin(
+	ctx context.Context,
+	request *whopsdk.UnpinMessagesRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*whopsdk.ChatMessage], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
+		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/messages/%v/unpin",
+		request.ID,
+	)
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	var response *whopsdk.ChatMessage
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*whopsdk.ChatMessage]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
+func (r *RawClient) Unreact(
+	ctx context.Context,
+	request *whopsdk.UnreactMessagesRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*whopsdk.ChatMessage], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
+		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/messages/%v/unreact",
+		request.ID,
+	)
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	headers.Add("Content-Type", "application/json")
+	var response *whopsdk.ChatMessage
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Request:         request,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*whopsdk.ChatMessage]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
+func (r *RawClient) Vote(
+	ctx context.Context,
+	request *whopsdk.VoteMessagesRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*whopsdk.ChatMessage], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
+		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/messages/%v/vote",
+		request.ID,
+	)
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	headers.Add("Content-Type", "application/json")
+	var response *whopsdk.ChatMessage
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Request:         request,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*whopsdk.ChatMessage]{
 		StatusCode: raw.StatusCode,
 		Header:     raw.Header,
 		Body:       response,

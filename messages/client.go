@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-06"
+		apiVersionDateDefault := "2026-11-07"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -39,22 +39,11 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists messages in an experience chat, DM, or group chat channel, sorted by creation time.
-//
-// Required permissions (one of):
-//   - `chat:read`
-//   - `dms:read`
-//   - `support_chat:read`
+// Lists messages in a channel. Existing public message and channel IDs are preserved. For reconnect synchronization, use inclusive updated_after with include_deleted=true; results use ascending change order. Follow the returned cursors and replace cached messages by ID, including when updated_at is unchanged. The returned updated_at is the stored message update time; reaction changes only affect synchronization ordering. Deleted entries contain identity and timestamps with their content redacted. To jump into history, specify channel_id and one around anchor; results use ascending creation-time order. For older messages in chronological order, use before_message_id with last and direction=asc; for newer messages, use after_message_id with first and direction=asc. Do not supply order or direction with updated_after or an around anchor. Keep message-ID filters when continuing with cursors. For around queries, omit the around anchor and continue with direction=asc.
 //
 // Example:
 //
 //	request := &whopsdk.ListMessagesRequest{
-//	    First: whopsdk.Int(
-//	        42,
-//	    ),
-//	    Last: whopsdk.Int(
-//	        42,
-//	    ),
 //	    ChannelID: "channel_id",
 //	}
 //	client.Messages.List(
@@ -65,7 +54,7 @@ func (c *Client) List(
 	ctx context.Context,
 	request *whopsdk.ListMessagesRequest,
 	opts ...option.RequestOption,
-) (*core.Page[*string, *whopsdk.MessageListItem, *whopsdk.ListMessagesResponse], error) {
+) (*core.Page[*string, *whopsdk.ChatMessage, *whopsdk.ListMessagesResponse], error) {
 	options := core.NewRequestOptions(opts...)
 	baseURL := internal.ResolveBaseURL(
 		options.BaseURL,
@@ -110,14 +99,14 @@ func (c *Client) List(
 			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		}
 	}
-	readPageResponse := func(response *whopsdk.ListMessagesResponse) *core.PageResponse[*string, *whopsdk.MessageListItem, *whopsdk.ListMessagesResponse] {
+	readPageResponse := func(response *whopsdk.ListMessagesResponse) *core.PageResponse[*string, *whopsdk.ChatMessage, *whopsdk.ListMessagesResponse] {
 		var zeroValue *string
 		var next *string
 		if response.PageInfo != nil {
 			next = response.PageInfo.EndCursor
 		}
 		results := response.GetData()
-		return &core.PageResponse[*string, *whopsdk.MessageListItem, *whopsdk.ListMessagesResponse]{
+		return &core.PageResponse[*string, *whopsdk.ChatMessage, *whopsdk.ListMessagesResponse]{
 			Results:  results,
 			Response: response,
 			Next:     next,
@@ -132,19 +121,13 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Sends a message in an experience chat, DM, or group chat channel. Supports text content, attachments, polls, and replies.
-//
-// Required permissions (one of):
-//   - `chat:message:create`
-//   - `dms:message:manage`
-//   - `livestream:chat:write`
-//   - `support_chat:message:create`
+// Sends a Markdown message as the authenticated user or app agent. Channel access, posting restrictions, moderation, and delivery follow the existing chat services. Use Idempotency-Key to safely retry a send. The response and realtime message use the same message ID. Custom author presentation and embeds are read-only.
 //
 // Example:
 //
 //	request := &whopsdk.CreateMessagesRequest{
-//	    ChannelID: "channel_id",
-//	    Content: "content",
+//	    ChannelID: "feed_xxxxxxxxxxxxxxxxxxxxxx",
+//	    Content: "New **message**",
 //	}
 //	client.Messages.Create(
 //	    context.TODO(),
@@ -154,7 +137,7 @@ func (c *Client) Create(
 	ctx context.Context,
 	request *whopsdk.CreateMessagesRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.Message, error) {
+) (*whopsdk.ChatMessage, error) {
 	response, err := c.WithRawResponse.Create(
 		ctx,
 		request,
@@ -166,13 +149,7 @@ func (c *Client) Create(
 	return response.Body, nil
 }
 
-// Retrieves the details of an existing message.
-//
-// Required permissions (one of):
-//   - `chat:read`
-//   - `dms:read`
-//   - `livestream:chat:read`
-//   - `support_chat:read`
+// Retrieves a live message from an accessible channel. Use list synchronization to retrieve deletion entries.
 //
 // Example:
 //
@@ -187,7 +164,7 @@ func (c *Client) Retrieve(
 	ctx context.Context,
 	request *whopsdk.RetrieveMessagesRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.Message, error) {
+) (*whopsdk.ChatMessage, error) {
 	response, err := c.WithRawResponse.Retrieve(
 		ctx,
 		request,
@@ -199,13 +176,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Permanently deletes a message from an experience chat, DM, or group chat channel. Only the message author or a channel admin can delete a message.
-//
-// Required permissions (one of):
-//   - `chat:message:create` and `chat:read`
-//   - `dms:message:manage` and `dms:read`
-//   - `livestream:chat:write` and `livestream:chat:read`
-//   - `support_chat:message:create` and `support_chat:read`
+// Deletes a message as its author or a permitted moderator. Deleted messages remain available as redacted entries through list synchronization.
 //
 // Example:
 //
@@ -220,25 +191,19 @@ func (c *Client) Delete(
 	ctx context.Context,
 	request *whopsdk.DeleteMessagesRequest,
 	opts ...option.RequestOption,
-) (bool, error) {
-	response, err := c.WithRawResponse.Delete(
+) error {
+	_, err := c.WithRawResponse.Delete(
 		ctx,
 		request,
 		opts...,
 	)
 	if err != nil {
-		return false, err
+		return err
 	}
-	return response.Body, nil
+	return nil
 }
 
-// Edits the content, attachments, or pinned status of a message in an experience chat, DM, or group chat channel.
-//
-// Required permissions (one of):
-//   - `chat:message:create`
-//   - `dms:message:manage`
-//   - `livestream:chat:write`
-//   - `support_chat:message:create`
+// Updates the author's message. Use the pin and unpin actions to change its pin state. Omitted fields are preserved; attachment and preview collections replace their previous values.
 //
 // Example:
 //
@@ -253,8 +218,231 @@ func (c *Client) Update(
 	ctx context.Context,
 	request *whopsdk.UpdateMessagesRequest,
 	opts ...option.RequestOption,
-) (*whopsdk.Message, error) {
+) (*whopsdk.ChatMessage, error) {
 	response, err := c.WithRawResponse.Update(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Pins a message in its channel. Requires the channel's pin permission.
+//
+// Example:
+//
+//	request := &whopsdk.PinMessagesRequest{
+//	    ID: "id",
+//	}
+//	client.Messages.Pin(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Pin(
+	ctx context.Context,
+	request *whopsdk.PinMessagesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.ChatMessage, error) {
+	response, err := c.WithRawResponse.Pin(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Add your emoji reaction to a message. Reacting again with the same emoji changes nothing.
+//
+// Example:
+//
+//	request := &whopsdk.ReactMessagesRequest{
+//	    ID: "id",
+//	    Emoji: "❤️",
+//	}
+//	client.Messages.React(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) React(
+	ctx context.Context,
+	request *whopsdk.ReactMessagesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.ChatMessage, error) {
+	response, err := c.WithRawResponse.React(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// List who reacted to a message, newest first. Optionally filter by emoji.
+//
+// Example:
+//
+//	request := &whopsdk.ListReactionsMessagesRequest{
+//	    ID: "id",
+//	}
+//	client.Messages.ListReactions(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) ListReactions(
+	ctx context.Context,
+	request *whopsdk.ListReactionsMessagesRequest,
+	opts ...option.RequestOption,
+) (*core.Page[*string, *whopsdk.ChatReaction, *whopsdk.ListReactionsMessagesResponse], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
+		c.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			c.options.Environment,
+			"API",
+		),
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/messages/%v/reactions",
+		request.ID,
+	)
+	queryParams, err := internal.QueryValues(request)
+	if err != nil {
+		return nil, err
+	}
+	headers := internal.MergeHeaders(
+		c.options.ToHeader(),
+		options.ToHeader(),
+	)
+	prepareCall := func(pageRequest *core.PageRequest[*string]) *internal.CallParams {
+		if pageRequest.Cursor != nil {
+			queryParams.Set("after", *pageRequest.Cursor)
+		}
+		nextURL := endpointURL
+		if len(queryParams) > 0 {
+			nextURL += "?" + queryParams.Encode()
+		}
+		return &internal.CallParams{
+			URL:             nextURL,
+			Method:          http.MethodGet,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Response:        pageRequest.Response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		}
+	}
+	readPageResponse := func(response *whopsdk.ListReactionsMessagesResponse) *core.PageResponse[*string, *whopsdk.ChatReaction, *whopsdk.ListReactionsMessagesResponse] {
+		var zeroValue *string
+		var next *string
+		if response.PageInfo != nil {
+			next = response.PageInfo.EndCursor
+		}
+		results := response.GetData()
+		return &core.PageResponse[*string, *whopsdk.ChatReaction, *whopsdk.ListReactionsMessagesResponse]{
+			Results:  results,
+			Response: response,
+			Next:     next,
+			Done:     next == zeroValue || *next == "",
+		}
+	}
+	pager := internal.NewCursorPager(
+		c.caller,
+		prepareCall,
+		readPageResponse,
+	)
+	return pager.GetPage(ctx, request.After)
+}
+
+// Unpins a message in its channel. Requires the channel's pin permission.
+//
+// Example:
+//
+//	request := &whopsdk.UnpinMessagesRequest{
+//	    ID: "id",
+//	}
+//	client.Messages.Unpin(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Unpin(
+	ctx context.Context,
+	request *whopsdk.UnpinMessagesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.ChatMessage, error) {
+	response, err := c.WithRawResponse.Unpin(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Remove your emoji reaction from a message. Removing a reaction you have not added changes nothing.
+//
+// Example:
+//
+//	request := &whopsdk.UnreactMessagesRequest{
+//	    ID: "id",
+//	    Emoji: "❤️",
+//	}
+//	client.Messages.Unreact(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Unreact(
+	ctx context.Context,
+	request *whopsdk.UnreactMessagesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.ChatMessage, error) {
+	response, err := c.WithRawResponse.Unreact(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Vote for one option on a message poll. Each user can vote once per poll.
+//
+// Example:
+//
+//	request := &whopsdk.VoteMessagesRequest{
+//	    ID: "id",
+//	    PollOptionID: "2",
+//	}
+//	client.Messages.Vote(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Vote(
+	ctx context.Context,
+	request *whopsdk.VoteMessagesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.ChatMessage, error) {
+	response, err := c.WithRawResponse.Vote(
 		ctx,
 		request,
 		opts...,
