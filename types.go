@@ -7171,6 +7171,127 @@ func (a AppBuildStatuses) Ptr() *AppBuildStatuses {
 }
 
 var (
+	appCategoryFieldID    = big.NewInt(1 << 0)
+	appCategoryFieldName  = big.NewInt(1 << 1)
+	appCategoryFieldRoute = big.NewInt(1 << 2)
+)
+
+type AppCategory struct {
+	// App Store category ID, prefixed `mcat_`. Pass this as `category_id` when updating an app.
+	ID string `json:"id" url:"id"`
+	// Display name of the App Store category, such as `Business & Productivity`.
+	Name string `json:"name" url:"name"`
+	// Category slug, such as `business-productivity`. Pass this as `marketplace_category_route` when listing apps.
+	Route string `json:"route" url:"route"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AppCategory) GetID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ID
+}
+
+func (a *AppCategory) GetName() string {
+	if a == nil {
+		return ""
+	}
+	return a.Name
+}
+
+func (a *AppCategory) GetRoute() string {
+	if a == nil {
+		return ""
+	}
+	return a.Route
+}
+
+func (a *AppCategory) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AppCategory) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppCategory) SetID(id string) {
+	a.ID = id
+	a.require(appCategoryFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppCategory) SetName(name string) {
+	a.Name = name
+	a.require(appCategoryFieldName)
+}
+
+// SetRoute sets the Route field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppCategory) SetRoute(route string) {
+	a.Route = route
+	a.require(appCategoryFieldRoute)
+}
+
+func (a *AppCategory) UnmarshalJSON(data []byte) error {
+	type unmarshaler AppCategory
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AppCategory(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AppCategory) MarshalJSON() ([]byte, error) {
+	type embed AppCategory
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AppCategory) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
 	appIconFieldURL = big.NewInt(1 << 0)
 )
 

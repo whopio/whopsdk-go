@@ -16,7 +16,7 @@ import (
 	apilogs "github.com/whopio/whopsdk-go/v2/apilogs"
 	appbuilds "github.com/whopio/whopsdk-go/v2/appbuilds"
 	appinstallations "github.com/whopio/whopsdk-go/v2/appinstallations"
-	apps "github.com/whopio/whopsdk-go/v2/apps"
+	appsclient "github.com/whopio/whopsdk-go/v2/apps/client"
 	audiences "github.com/whopio/whopsdk-go/v2/audiences"
 	authorizedusers "github.com/whopio/whopsdk-go/v2/authorizedusers"
 	automationenrollments "github.com/whopio/whopsdk-go/v2/automationenrollments"
@@ -125,7 +125,7 @@ type Whop struct {
 	APILogs                  *apilogs.Client
 	AppBuilds                *appbuilds.Client
 	AppInstallations         *appinstallations.Client
-	Apps                     *apps.Client
+	Apps                     *appsclient.Client
 	Audiences                *audiences.Client
 	AuthorizedUsers          *authorizedusers.Client
 	AutomationEnrollments    *automationenrollments.Client
@@ -241,7 +241,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		APILogs:                  apilogs.NewClient(options),
 		AppBuilds:                appbuilds.NewClient(options),
 		AppInstallations:         appinstallations.NewClient(options),
-		Apps:                     apps.NewClient(options),
+		Apps:                     appsclient.NewClient(options),
 		Audiences:                audiences.NewClient(options),
 		AuthorizedUsers:          authorizedusers.NewClient(options),
 		AutomationEnrollments:    automationenrollments.NewClient(options),

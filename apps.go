@@ -227,20 +227,21 @@ func (d *DeployAppsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	listAppsRequestFieldAccountID        = big.NewInt(1 << 0)
-	listAppsRequestFieldAppType          = big.NewInt(1 << 1)
-	listAppsRequestFieldViewType         = big.NewInt(1 << 2)
-	listAppsRequestFieldVerified         = big.NewInt(1 << 3)
-	listAppsRequestFieldVerifiedAppsOnly = big.NewInt(1 << 4)
-	listAppsRequestFieldRecommended      = big.NewInt(1 << 5)
-	listAppsRequestFieldQuery            = big.NewInt(1 << 6)
-	listAppsRequestFieldProductCategory  = big.NewInt(1 << 7)
-	listAppsRequestFieldOrder            = big.NewInt(1 << 8)
-	listAppsRequestFieldDirection        = big.NewInt(1 << 9)
-	listAppsRequestFieldFirst            = big.NewInt(1 << 10)
-	listAppsRequestFieldAfter            = big.NewInt(1 << 11)
-	listAppsRequestFieldLast             = big.NewInt(1 << 12)
-	listAppsRequestFieldBefore           = big.NewInt(1 << 13)
+	listAppsRequestFieldAccountID                = big.NewInt(1 << 0)
+	listAppsRequestFieldAppType                  = big.NewInt(1 << 1)
+	listAppsRequestFieldViewType                 = big.NewInt(1 << 2)
+	listAppsRequestFieldVerified                 = big.NewInt(1 << 3)
+	listAppsRequestFieldVerifiedAppsOnly         = big.NewInt(1 << 4)
+	listAppsRequestFieldRecommended              = big.NewInt(1 << 5)
+	listAppsRequestFieldQuery                    = big.NewInt(1 << 6)
+	listAppsRequestFieldProductCategory          = big.NewInt(1 << 7)
+	listAppsRequestFieldMarketplaceCategoryRoute = big.NewInt(1 << 8)
+	listAppsRequestFieldOrder                    = big.NewInt(1 << 9)
+	listAppsRequestFieldDirection                = big.NewInt(1 << 10)
+	listAppsRequestFieldFirst                    = big.NewInt(1 << 11)
+	listAppsRequestFieldAfter                    = big.NewInt(1 << 12)
+	listAppsRequestFieldLast                     = big.NewInt(1 << 13)
+	listAppsRequestFieldBefore                   = big.NewInt(1 << 14)
 )
 
 type ListAppsRequest struct {
@@ -260,6 +261,8 @@ type ListAppsRequest struct {
 	Query *string `json:"-" url:"query,omitempty"`
 	// Only return apps whose `product_category` is this product category, such as `pressure_washing`. An unknown product category is rejected.
 	ProductCategory *string `json:"-" url:"product_category,omitempty"`
+	// Only return apps in this app store category. Use a `route` from `GET /apps/categories`, such as `business-productivity`. An unknown route is rejected.
+	MarketplaceCategoryRoute *string `json:"-" url:"marketplace_category_route,omitempty"`
 	// The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then by how many businesses created apps from each app as a template. `template_recent_sales` ranks them by how many of those businesses processed a payment in the last 24 hours, recounted hourly, breaking ties by `template_usage`.
 	Order *ListAppsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
@@ -340,6 +343,13 @@ func (l *ListAppsRequest) SetQuery(query *string) {
 func (l *ListAppsRequest) SetProductCategory(productCategory *string) {
 	l.ProductCategory = productCategory
 	l.require(listAppsRequestFieldProductCategory)
+}
+
+// SetMarketplaceCategoryRoute sets the MarketplaceCategoryRoute field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAppsRequest) SetMarketplaceCategoryRoute(marketplaceCategoryRoute *string) {
+	l.MarketplaceCategoryRoute = marketplaceCategoryRoute
+	l.require(listAppsRequestFieldMarketplaceCategoryRoute)
 }
 
 // SetOrder sets the Order field and marks it as non-optional;
@@ -530,41 +540,42 @@ var (
 	appFieldBusinessesCreatedCount         = big.NewInt(1 << 6)
 	appFieldBusinessesCreatedLogoURLs      = big.NewInt(1 << 7)
 	appFieldBusinessesWithRecentSalesCount = big.NewInt(1 << 8)
-	appFieldCreator                        = big.NewInt(1 << 9)
-	appFieldDashboardPath                  = big.NewInt(1 << 10)
-	appFieldDefaultAPIKey                  = big.NewInt(1 << 11)
-	appFieldDeployment                     = big.NewInt(1 << 12)
-	appFieldDescription                    = big.NewInt(1 << 13)
-	appFieldDiscoverPath                   = big.NewInt(1 << 14)
-	appFieldDomainID                       = big.NewInt(1 << 15)
-	appFieldDomains                        = big.NewInt(1 << 16)
-	appFieldElementsUsed                   = big.NewInt(1 << 17)
-	appFieldExperiencePath                 = big.NewInt(1 << 18)
-	appFieldHostedURL                      = big.NewInt(1 << 19)
-	appFieldIcon                           = big.NewInt(1 << 20)
-	appFieldID                             = big.NewInt(1 << 21)
-	appFieldImportedFromURL                = big.NewInt(1 << 22)
-	appFieldMarketplaceStatus              = big.NewInt(1 << 23)
-	appFieldName                           = big.NewInt(1 << 24)
-	appFieldOauthClientType                = big.NewInt(1 << 25)
-	appFieldOpenapiPath                    = big.NewInt(1 << 26)
-	appFieldOrigin                         = big.NewInt(1 << 27)
-	appFieldPerInstallSchedule             = big.NewInt(1 << 28)
-	appFieldPreviewToken                   = big.NewInt(1 << 29)
-	appFieldProductCategory                = big.NewInt(1 << 30)
-	appFieldProductID                      = big.NewInt(1 << 31)
-	appFieldProductionAndroidBuild         = big.NewInt(1 << 32)
-	appFieldProductionIosBuild             = big.NewInt(1 << 33)
-	appFieldProductionWebBuild             = big.NewInt(1 << 34)
-	appFieldRedirectURIs                   = big.NewInt(1 << 35)
-	appFieldRequestedPermissions           = big.NewInt(1 << 36)
-	appFieldRequiredScopes                 = big.NewInt(1 << 37)
-	appFieldRoute                          = big.NewInt(1 << 38)
-	appFieldSchedule                       = big.NewInt(1 << 39)
-	appFieldSecrets                        = big.NewInt(1 << 40)
-	appFieldSkillsPath                     = big.NewInt(1 << 41)
-	appFieldStatus                         = big.NewInt(1 << 42)
-	appFieldVerified                       = big.NewInt(1 << 43)
+	appFieldCategory                       = big.NewInt(1 << 9)
+	appFieldCreator                        = big.NewInt(1 << 10)
+	appFieldDashboardPath                  = big.NewInt(1 << 11)
+	appFieldDefaultAPIKey                  = big.NewInt(1 << 12)
+	appFieldDeployment                     = big.NewInt(1 << 13)
+	appFieldDescription                    = big.NewInt(1 << 14)
+	appFieldDiscoverPath                   = big.NewInt(1 << 15)
+	appFieldDomainID                       = big.NewInt(1 << 16)
+	appFieldDomains                        = big.NewInt(1 << 17)
+	appFieldElementsUsed                   = big.NewInt(1 << 18)
+	appFieldExperiencePath                 = big.NewInt(1 << 19)
+	appFieldHostedURL                      = big.NewInt(1 << 20)
+	appFieldIcon                           = big.NewInt(1 << 21)
+	appFieldID                             = big.NewInt(1 << 22)
+	appFieldImportedFromURL                = big.NewInt(1 << 23)
+	appFieldMarketplaceStatus              = big.NewInt(1 << 24)
+	appFieldName                           = big.NewInt(1 << 25)
+	appFieldOauthClientType                = big.NewInt(1 << 26)
+	appFieldOpenapiPath                    = big.NewInt(1 << 27)
+	appFieldOrigin                         = big.NewInt(1 << 28)
+	appFieldPerInstallSchedule             = big.NewInt(1 << 29)
+	appFieldPreviewToken                   = big.NewInt(1 << 30)
+	appFieldProductCategory                = big.NewInt(1 << 31)
+	appFieldProductID                      = big.NewInt(1 << 32)
+	appFieldProductionAndroidBuild         = big.NewInt(1 << 33)
+	appFieldProductionIosBuild             = big.NewInt(1 << 34)
+	appFieldProductionWebBuild             = big.NewInt(1 << 35)
+	appFieldRedirectURIs                   = big.NewInt(1 << 36)
+	appFieldRequestedPermissions           = big.NewInt(1 << 37)
+	appFieldRequiredScopes                 = big.NewInt(1 << 38)
+	appFieldRoute                          = big.NewInt(1 << 39)
+	appFieldSchedule                       = big.NewInt(1 << 40)
+	appFieldSecrets                        = big.NewInt(1 << 41)
+	appFieldSkillsPath                     = big.NewInt(1 << 42)
+	appFieldStatus                         = big.NewInt(1 << 43)
+	appFieldVerified                       = big.NewInt(1 << 44)
 )
 
 // appNullableFields maps the wire names of App's nullable fields (required or optional) to their field bits.
@@ -573,6 +584,7 @@ var appNullableFields = map[string]*big.Int{
 	"app_store_description":    appFieldAppStoreDescription,
 	"banner_image":             appFieldBannerImage,
 	"base_url":                 appFieldBaseURL,
+	"category":                 appFieldCategory,
 	"dashboard_path":           appFieldDashboardPath,
 	"default_api_key":          appFieldDefaultAPIKey,
 	"deployment":               appFieldDeployment,
@@ -615,6 +627,8 @@ type App struct {
 	BusinessesCreatedLogoURLs []string `json:"businesses_created_logo_urls" url:"businesses_created_logo_urls"`
 	// Website businesses created from this app as a template that processed a payment in the last 24 hours. Recounted hourly, so it can be up to an hour behind.
 	BusinessesWithRecentSalesCount int `json:"businesses_with_recent_sales_count" url:"businesses_with_recent_sales_count"`
+	// The app's App Store category, or `null` when none has been set. An app can show a category that `GET /apps/categories` does not list, if it was categorized before the current store categories.
+	Category *AppCategory `json:"category,omitempty" url:"category,omitempty"`
 	// The user who owns the publishing account.
 	Creator *AppCreator `json:"creator" url:"creator"`
 	// URL path for the account dashboard view, or `null` when not configured.
@@ -751,6 +765,13 @@ func (a *App) GetBusinessesWithRecentSalesCount() int {
 		return 0
 	}
 	return a.BusinessesWithRecentSalesCount
+}
+
+func (a *App) GetCategory() *AppCategory {
+	if a == nil {
+		return nil
+	}
+	return a.Category
 }
 
 func (a *App) GetCreator() *AppCreator {
@@ -1075,6 +1096,13 @@ func (a *App) SetBusinessesCreatedLogoURLs(businessesCreatedLogoURLs []string) {
 func (a *App) SetBusinessesWithRecentSalesCount(businessesWithRecentSalesCount int) {
 	a.BusinessesWithRecentSalesCount = businessesWithRecentSalesCount
 	a.require(appFieldBusinessesWithRecentSalesCount)
+}
+
+// SetCategory sets the Category field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetCategory(category *AppCategory) {
+	a.Category = category
+	a.require(appFieldCategory)
 }
 
 // SetCreator sets the Creator field and marks it as non-optional;
@@ -2545,30 +2573,32 @@ var (
 	appListItemFieldBusinessesCreatedCount         = big.NewInt(1 << 4)
 	appListItemFieldBusinessesCreatedLogoURLs      = big.NewInt(1 << 5)
 	appListItemFieldBusinessesWithRecentSalesCount = big.NewInt(1 << 6)
-	appListItemFieldCreator                        = big.NewInt(1 << 7)
-	appListItemFieldDashboardPath                  = big.NewInt(1 << 8)
-	appListItemFieldDescription                    = big.NewInt(1 << 9)
-	appListItemFieldDiscoverPath                   = big.NewInt(1 << 10)
-	appListItemFieldDomainID                       = big.NewInt(1 << 11)
-	appListItemFieldDomains                        = big.NewInt(1 << 12)
-	appListItemFieldExperiencePath                 = big.NewInt(1 << 13)
-	appListItemFieldHostedURL                      = big.NewInt(1 << 14)
-	appListItemFieldIcon                           = big.NewInt(1 << 15)
-	appListItemFieldID                             = big.NewInt(1 << 16)
-	appListItemFieldName                           = big.NewInt(1 << 17)
-	appListItemFieldOpenapiPath                    = big.NewInt(1 << 18)
-	appListItemFieldOrigin                         = big.NewInt(1 << 19)
-	appListItemFieldProductCategory                = big.NewInt(1 << 20)
-	appListItemFieldRoute                          = big.NewInt(1 << 21)
-	appListItemFieldSkillsPath                     = big.NewInt(1 << 22)
-	appListItemFieldStatus                         = big.NewInt(1 << 23)
-	appListItemFieldVerified                       = big.NewInt(1 << 24)
+	appListItemFieldCategory                       = big.NewInt(1 << 7)
+	appListItemFieldCreator                        = big.NewInt(1 << 8)
+	appListItemFieldDashboardPath                  = big.NewInt(1 << 9)
+	appListItemFieldDescription                    = big.NewInt(1 << 10)
+	appListItemFieldDiscoverPath                   = big.NewInt(1 << 11)
+	appListItemFieldDomainID                       = big.NewInt(1 << 12)
+	appListItemFieldDomains                        = big.NewInt(1 << 13)
+	appListItemFieldExperiencePath                 = big.NewInt(1 << 14)
+	appListItemFieldHostedURL                      = big.NewInt(1 << 15)
+	appListItemFieldIcon                           = big.NewInt(1 << 16)
+	appListItemFieldID                             = big.NewInt(1 << 17)
+	appListItemFieldName                           = big.NewInt(1 << 18)
+	appListItemFieldOpenapiPath                    = big.NewInt(1 << 19)
+	appListItemFieldOrigin                         = big.NewInt(1 << 20)
+	appListItemFieldProductCategory                = big.NewInt(1 << 21)
+	appListItemFieldRoute                          = big.NewInt(1 << 22)
+	appListItemFieldSkillsPath                     = big.NewInt(1 << 23)
+	appListItemFieldStatus                         = big.NewInt(1 << 24)
+	appListItemFieldVerified                       = big.NewInt(1 << 25)
 )
 
 // appListItemNullableFields maps the wire names of AppListItem's nullable fields (required or optional) to their field bits.
 var appListItemNullableFields = map[string]*big.Int{
 	"banner_image":     appListItemFieldBannerImage,
 	"base_url":         appListItemFieldBaseURL,
+	"category":         appListItemFieldCategory,
 	"dashboard_path":   appListItemFieldDashboardPath,
 	"description":      appListItemFieldDescription,
 	"discover_path":    appListItemFieldDiscoverPath,
@@ -2595,6 +2625,8 @@ type AppListItem struct {
 	BusinessesCreatedLogoURLs []string `json:"businesses_created_logo_urls" url:"businesses_created_logo_urls"`
 	// Number of businesses created from this app as a template that processed a payment in the last 24 hours. Recounted hourly, so it can be up to an hour behind.
 	BusinessesWithRecentSalesCount int `json:"businesses_with_recent_sales_count" url:"businesses_with_recent_sales_count"`
+	// The app's App Store category, or `null` when none has been set. An app can show a category that `GET /apps/categories` does not list, if it was categorized before the current store categories.
+	Category *AppCategory `json:"category,omitempty" url:"category,omitempty"`
 	// The user who owns the publishing account.
 	Creator *AppCreator `json:"creator" url:"creator"`
 	// URL path for the account dashboard view, or `null` when not configured.
@@ -2687,6 +2719,13 @@ func (a *AppListItem) GetBusinessesWithRecentSalesCount() int {
 		return 0
 	}
 	return a.BusinessesWithRecentSalesCount
+}
+
+func (a *AppListItem) GetCategory() *AppCategory {
+	if a == nil {
+		return nil
+	}
+	return a.Category
 }
 
 func (a *AppListItem) GetCreator() *AppCreator {
@@ -2878,6 +2917,13 @@ func (a *AppListItem) SetBusinessesCreatedLogoURLs(businessesCreatedLogoURLs []s
 func (a *AppListItem) SetBusinessesWithRecentSalesCount(businessesWithRecentSalesCount int) {
 	a.BusinessesWithRecentSalesCount = businessesWithRecentSalesCount
 	a.require(appListItemFieldBusinessesWithRecentSalesCount)
+}
+
+// SetCategory sets the Category field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppListItem) SetCategory(category *AppCategory) {
+	a.Category = category
+	a.require(appListItemFieldCategory)
 }
 
 // SetCreator sets the Creator field and marks it as non-optional;
@@ -5239,26 +5285,27 @@ var (
 	updateAppsRequestFieldAppStoreDescription      = big.NewInt(1 << 1)
 	updateAppsRequestFieldAppType                  = big.NewInt(1 << 2)
 	updateAppsRequestFieldBaseURL                  = big.NewInt(1 << 3)
-	updateAppsRequestFieldDashboardPath            = big.NewInt(1 << 4)
-	updateAppsRequestFieldDescription              = big.NewInt(1 << 5)
-	updateAppsRequestFieldDiscoverPath             = big.NewInt(1 << 6)
-	updateAppsRequestFieldExperiencePath           = big.NewInt(1 << 7)
-	updateAppsRequestFieldIcon                     = big.NewInt(1 << 8)
-	updateAppsRequestFieldImportedFromURL          = big.NewInt(1 << 9)
-	updateAppsRequestFieldName                     = big.NewInt(1 << 10)
-	updateAppsRequestFieldOauthClientType          = big.NewInt(1 << 11)
-	updateAppsRequestFieldOpenapiPath              = big.NewInt(1 << 12)
-	updateAppsRequestFieldPerInstallSchedule       = big.NewInt(1 << 13)
-	updateAppsRequestFieldProductionAndroidBuildID = big.NewInt(1 << 14)
-	updateAppsRequestFieldProductionIosBuildID     = big.NewInt(1 << 15)
-	updateAppsRequestFieldProductionWebBuildID     = big.NewInt(1 << 16)
-	updateAppsRequestFieldRedirectURIs             = big.NewInt(1 << 17)
-	updateAppsRequestFieldRequiredScopes           = big.NewInt(1 << 18)
-	updateAppsRequestFieldRoute                    = big.NewInt(1 << 19)
-	updateAppsRequestFieldSchedule                 = big.NewInt(1 << 20)
-	updateAppsRequestFieldSecrets                  = big.NewInt(1 << 21)
-	updateAppsRequestFieldSkillsPath               = big.NewInt(1 << 22)
-	updateAppsRequestFieldStatus                   = big.NewInt(1 << 23)
+	updateAppsRequestFieldCategoryID               = big.NewInt(1 << 4)
+	updateAppsRequestFieldDashboardPath            = big.NewInt(1 << 5)
+	updateAppsRequestFieldDescription              = big.NewInt(1 << 6)
+	updateAppsRequestFieldDiscoverPath             = big.NewInt(1 << 7)
+	updateAppsRequestFieldExperiencePath           = big.NewInt(1 << 8)
+	updateAppsRequestFieldIcon                     = big.NewInt(1 << 9)
+	updateAppsRequestFieldImportedFromURL          = big.NewInt(1 << 10)
+	updateAppsRequestFieldName                     = big.NewInt(1 << 11)
+	updateAppsRequestFieldOauthClientType          = big.NewInt(1 << 12)
+	updateAppsRequestFieldOpenapiPath              = big.NewInt(1 << 13)
+	updateAppsRequestFieldPerInstallSchedule       = big.NewInt(1 << 14)
+	updateAppsRequestFieldProductionAndroidBuildID = big.NewInt(1 << 15)
+	updateAppsRequestFieldProductionIosBuildID     = big.NewInt(1 << 16)
+	updateAppsRequestFieldProductionWebBuildID     = big.NewInt(1 << 17)
+	updateAppsRequestFieldRedirectURIs             = big.NewInt(1 << 18)
+	updateAppsRequestFieldRequiredScopes           = big.NewInt(1 << 19)
+	updateAppsRequestFieldRoute                    = big.NewInt(1 << 20)
+	updateAppsRequestFieldSchedule                 = big.NewInt(1 << 21)
+	updateAppsRequestFieldSecrets                  = big.NewInt(1 << 22)
+	updateAppsRequestFieldSkillsPath               = big.NewInt(1 << 23)
+	updateAppsRequestFieldStatus                   = big.NewInt(1 << 24)
 )
 
 type UpdateAppsRequest struct {
@@ -5270,6 +5317,8 @@ type UpdateAppsRequest struct {
 	AppType *UpdateAppsRequestAppType `json:"app_type,omitempty" url:"-"`
 	// The base production URL where the app is hosted. Set to `null` to take the app proxy offline.
 	BaseURL *string `json:"base_url,omitempty" url:"-"`
+	// The App Store category of a business app. Pass an `mcat_` ID from `GET /apps/categories?app_type=b2b_app`, or `null` to clear it. Omit it to keep the current category. Setting a category needs the app to have an App Store product.
+	CategoryID *string `json:"category_id,omitempty" url:"-"`
 	// The URL path for the account dashboard view.
 	DashboardPath *string `json:"dashboard_path,omitempty" url:"-"`
 	// A short description of the app shown in listings and search results.
@@ -5350,6 +5399,13 @@ func (u *UpdateAppsRequest) SetAppType(appType *UpdateAppsRequestAppType) {
 func (u *UpdateAppsRequest) SetBaseURL(baseURL *string) {
 	u.BaseURL = baseURL
 	u.require(updateAppsRequestFieldBaseURL)
+}
+
+// SetCategoryID sets the CategoryID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAppsRequest) SetCategoryID(categoryID *string) {
+	u.CategoryID = categoryID
+	u.require(updateAppsRequestFieldCategoryID)
 }
 
 // SetDashboardPath sets the DashboardPath field and marks it as non-optional;
