@@ -4,5 +4,7 @@
 //
 // Use the Apps API to manage app configuration, deploy an app's working copy and follow the run on the app's `deployment` field, and, for hosted apps, read server runtime logs for console output, uncaught exceptions, and failed requests.
 //
+// Business apps have one App Store category. List the categories with `GET /apps/categories`, then set the app's `category_id` to the chosen category's ID. Use a category's `route` as `marketplace_category_route` when listing apps.
+//
 // Apps are also reusable blueprints. List official blueprints with `app_type=website&verified=true&order=template_usage`, or community blueprints with `app_type=website&verified=false&recommended=true&order=template_usage`. Pass the returned App `id` as `blueprint_id` when creating an Account.
 package apps

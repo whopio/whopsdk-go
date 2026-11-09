@@ -57,7 +57,7 @@ type ListMembersRequest struct {
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
 	// Only members who joined before this ISO 8601 timestamp.
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
-	// Sort field. `most_recent_action_at` places members without one first when ascending and last when descending.
+	// Sort field. `most_recent_action_at` and `last_activity_at` place members without one first when ascending and last when descending.
 	Order *ListMembersRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
 	Direction *ListMembersRequestDirection `json:"-" url:"direction,omitempty"`
@@ -256,14 +256,15 @@ var (
 	memberFieldID                 = big.NewInt(1 << 6)
 	memberFieldJoinedAt           = big.NewInt(1 << 7)
 	memberFieldLastAccessedAt     = big.NewInt(1 << 8)
-	memberFieldMostRecentAction   = big.NewInt(1 << 9)
-	memberFieldMostRecentActionAt = big.NewInt(1 << 10)
-	memberFieldName               = big.NewInt(1 << 11)
-	memberFieldPhoneNumber        = big.NewInt(1 << 12)
-	memberFieldStatus             = big.NewInt(1 << 13)
-	memberFieldTokenBalance       = big.NewInt(1 << 14)
-	memberFieldUsdTotalSpent      = big.NewInt(1 << 15)
-	memberFieldUser               = big.NewInt(1 << 16)
+	memberFieldLastActivityAt     = big.NewInt(1 << 9)
+	memberFieldMostRecentAction   = big.NewInt(1 << 10)
+	memberFieldMostRecentActionAt = big.NewInt(1 << 11)
+	memberFieldName               = big.NewInt(1 << 12)
+	memberFieldPhoneNumber        = big.NewInt(1 << 13)
+	memberFieldStatus             = big.NewInt(1 << 14)
+	memberFieldTokenBalance       = big.NewInt(1 << 15)
+	memberFieldUsdTotalSpent      = big.NewInt(1 << 16)
+	memberFieldUser               = big.NewInt(1 << 17)
 )
 
 // memberNullableFields maps the wire names of Member's nullable fields (required or optional) to their field bits.
@@ -271,6 +272,7 @@ var memberNullableFields = map[string]*big.Int{
 	"earnings_usd":          memberFieldEarningsUsd,
 	"email":                 memberFieldEmail,
 	"last_accessed_at":      memberFieldLastAccessedAt,
+	"last_activity_at":      memberFieldLastActivityAt,
 	"most_recent_action":    memberFieldMostRecentAction,
 	"most_recent_action_at": memberFieldMostRecentActionAt,
 	"name":                  memberFieldName,
@@ -297,6 +299,8 @@ type Member struct {
 	JoinedAt string `json:"joined_at" url:"joined_at"`
 	// When the member last opened the account's content, as an ISO 8601 timestamp. `null` if they never have.
 	LastAccessedAt *string `json:"last_accessed_at,omitempty" url:"last_accessed_at,omitempty"`
+	// When the member and the account last interacted, as an ISO 8601 timestamp. For example, a message in the member's support chat.
+	LastActivityAt *string `json:"last_activity_at,omitempty" url:"last_activity_at,omitempty"`
 	// The member's latest lifecycle state on the account, derived from their memberships, such as `paid_subscriber`, `canceling`, or `churned`. `null` until it is first computed.
 	MostRecentAction *MemberMostRecentAction `json:"most_recent_action,omitempty" url:"most_recent_action,omitempty"`
 	// When `most_recent_action` took effect, as an ISO 8601 timestamp. `null` when `most_recent_action` is `null`.
@@ -382,6 +386,13 @@ func (m *Member) GetLastAccessedAt() *string {
 		return nil
 	}
 	return m.LastAccessedAt
+}
+
+func (m *Member) GetLastActivityAt() *string {
+	if m == nil {
+		return nil
+	}
+	return m.LastActivityAt
 }
 
 func (m *Member) GetMostRecentAction() *MemberMostRecentAction {
@@ -517,6 +528,13 @@ func (m *Member) SetJoinedAt(joinedAt string) {
 func (m *Member) SetLastAccessedAt(lastAccessedAt *string) {
 	m.LastAccessedAt = lastAccessedAt
 	m.require(memberFieldLastAccessedAt)
+}
+
+// SetLastActivityAt sets the LastActivityAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetLastActivityAt(lastActivityAt *string) {
+	m.LastActivityAt = lastActivityAt
+	m.require(memberFieldLastActivityAt)
 }
 
 // SetMostRecentAction sets the MostRecentAction field and marks it as non-optional;
@@ -859,6 +877,7 @@ const (
 	ListMembersRequestOrderCreatedAt          ListMembersRequestOrder = "created_at"
 	ListMembersRequestOrderJoinedAt           ListMembersRequestOrder = "joined_at"
 	ListMembersRequestOrderLastAccessedAt     ListMembersRequestOrder = "last_accessed_at"
+	ListMembersRequestOrderLastActivityAt     ListMembersRequestOrder = "last_activity_at"
 	ListMembersRequestOrderMostRecentActionAt ListMembersRequestOrder = "most_recent_action_at"
 	ListMembersRequestOrderUsdTotalSpent      ListMembersRequestOrder = "usd_total_spent"
 )
@@ -871,6 +890,8 @@ func NewListMembersRequestOrderFromString(s string) (ListMembersRequestOrder, er
 		return ListMembersRequestOrderJoinedAt, nil
 	case "last_accessed_at":
 		return ListMembersRequestOrderLastAccessedAt, nil
+	case "last_activity_at":
+		return ListMembersRequestOrderLastActivityAt, nil
 	case "most_recent_action_at":
 		return ListMembersRequestOrderMostRecentActionAt, nil
 	case "usd_total_spent":

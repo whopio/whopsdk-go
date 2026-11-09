@@ -7003,6 +7003,14 @@ client.Apps.List(
 <dl>
 <dd>
 
+**marketplaceCategoryRoute:** `*string` — Only return apps in this app store category. Use a `route` from `GET /apps/categories`, such as `business-productivity`. An unknown route is rejected.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **order:** `*whopsdk.ListAppsRequestOrder` — The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then by how many businesses created apps from each app as a template. `template_recent_sales` ranks them by how many of those businesses processed a payment in the last 24 hours, recounted hourly, breaking ties by `template_usage`.
     
 </dd>
@@ -7372,6 +7380,14 @@ client.Apps.Update(
 <dd>
 
 **baseURL:** `*string` — The base production URL where the app is hosted. Set to `null` to take the app proxy offline.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**categoryID:** `*string` — The App Store category of a business app. Pass an `mcat_` ID from `GET /apps/categories?app_type=b2b_app`, or `null` to clear it. Omit it to keep the current category. Setting a category needs the app to have an App Store product.
     
 </dd>
 </dl>
@@ -27025,7 +27041,7 @@ client.Members.List(
 <dl>
 <dd>
 
-**order:** `*whopsdk.ListMembersRequestOrder` — Sort field. `most_recent_action_at` places members without one first when ascending and last when descending.
+**order:** `*whopsdk.ListMembersRequestOrder` — Sort field. `most_recent_action_at` and `last_activity_at` place members without one first when ascending and last when descending.
     
 </dd>
 </dl>
@@ -48273,6 +48289,97 @@ client.Affiliates.Overrides.Update(
 <dd>
 
 **revenueBasis:** `*whopsdk.AffiliateRevenueBases` — The revenue calculation basis (rev-share only).
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+## Apps Categories
+<details><summary><code>client.Apps.Categories.List() -> *apps.ListCategoriesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Lists the App Store's categories. Pass `app_type` for one store's categories in the order that store shows them; without it, every category either store shows is listed. Use a business category's ID as an app's `category_id`, or any category's `route` to filter apps. This endpoint is public and does not require authentication.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &apps.ListCategoriesRequest{}
+client.Apps.Categories.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**appType:** `*apps.ListCategoriesRequestAppType` — Only return the categories of this app type's store, in that store's order: `b2b_app` for the business App Store, `b2c_app` for the community App Store.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
     
 </dd>
 </dl>
