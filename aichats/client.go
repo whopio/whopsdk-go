@@ -41,6 +41,9 @@ func NewClient(options *core.RequestOptions) *Client {
 
 // Returns a paginated list of AI chat threads for the current authenticated user.
 //
+// Required permissions:
+//   - `ai_chat:read`
+//
 // Example:
 //
 //	request := &whopsdk.ListAiChatsRequest{
@@ -157,6 +160,9 @@ func (c *Client) Create(
 }
 
 // Retrieves the details of an existing AI chat.
+//
+// Required permissions:
+//   - `ai_chat:read`
 //
 // Example:
 //
