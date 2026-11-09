@@ -4262,13 +4262,6 @@ func TestEnumAudienceStatus(t *testing.T) {
 		assert.Equal(t, AudienceStatus("processing"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_syncing", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewAudienceStatusFromString("syncing")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AudienceStatus("syncing"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_ready", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewAudienceStatusFromString("ready")
