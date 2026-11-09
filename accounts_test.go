@@ -10656,6 +10656,14 @@ func TestSettersAccountPaymentControls(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPaymentMethodWarnings", func(t *testing.T) {
+		obj := &AccountPaymentControls{}
+		var fernTestValuePaymentMethodWarnings []map[string]any
+		obj.SetPaymentMethodWarnings(fernTestValuePaymentMethodWarnings)
+		assert.Equal(t, fernTestValuePaymentMethodWarnings, obj.PaymentMethodWarnings)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPendingAutoTopupFeePercentage", func(t *testing.T) {
 		obj := &AccountPaymentControls{}
 		var fernTestValuePendingAutoTopupFeePercentage float64
@@ -10848,6 +10856,39 @@ func TestGettersAccountPaymentControls(t *testing.T) {
 			}
 		}()
 		_ = obj.GetHighRiskProcessingFeePercentage() // Should return zero value
+	})
+
+	t.Run("GetPaymentMethodWarnings", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPaymentControls{}
+		var expected []map[string]any
+		obj.PaymentMethodWarnings = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPaymentMethodWarnings(), "getter should return the property value")
+	})
+
+	t.Run("GetPaymentMethodWarnings_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPaymentControls{}
+		obj.PaymentMethodWarnings = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPaymentMethodWarnings(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPaymentMethodWarnings_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountPaymentControls
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPaymentMethodWarnings() // Should return zero value
 	})
 
 	t.Run("GetPendingAutoTopupFeePercentage", func(t *testing.T) {
@@ -11196,6 +11237,37 @@ func TestSettersMarkExplicitAccountPaymentControls(t *testing.T) {
 
 		// Act
 		obj.SetHighRiskProcessingFeePercentage(fernTestValueHighRiskProcessingFeePercentage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPaymentMethodWarnings_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPaymentControls{}
+		var fernTestValuePaymentMethodWarnings []map[string]any
+
+		// Act
+		obj.SetPaymentMethodWarnings(fernTestValuePaymentMethodWarnings)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
