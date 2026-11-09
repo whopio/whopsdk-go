@@ -3874,13 +3874,14 @@ var (
 	accountPaymentControlsFieldEnforce3Ds                      = big.NewInt(1 << 2)
 	accountPaymentControlsFieldFinancingDisabled               = big.NewInt(1 << 3)
 	accountPaymentControlsFieldHighRiskProcessingFeePercentage = big.NewInt(1 << 4)
-	accountPaymentControlsFieldPendingAutoTopupFeePercentage   = big.NewInt(1 << 5)
-	accountPaymentControlsFieldPendingBalanceDelayDays         = big.NewInt(1 << 6)
-	accountPaymentControlsFieldReserve                         = big.NewInt(1 << 7)
-	accountPaymentControlsFieldResolutionCenterAutoRefund      = big.NewInt(1 << 8)
-	accountPaymentControlsFieldRestrictedPaymentMethods        = big.NewInt(1 << 9)
-	accountPaymentControlsFieldUndatedPendingReason            = big.NewInt(1 << 10)
-	accountPaymentControlsFieldWithdrawalSchedule              = big.NewInt(1 << 11)
+	accountPaymentControlsFieldPaymentMethodWarnings           = big.NewInt(1 << 5)
+	accountPaymentControlsFieldPendingAutoTopupFeePercentage   = big.NewInt(1 << 6)
+	accountPaymentControlsFieldPendingBalanceDelayDays         = big.NewInt(1 << 7)
+	accountPaymentControlsFieldReserve                         = big.NewInt(1 << 8)
+	accountPaymentControlsFieldResolutionCenterAutoRefund      = big.NewInt(1 << 9)
+	accountPaymentControlsFieldRestrictedPaymentMethods        = big.NewInt(1 << 10)
+	accountPaymentControlsFieldUndatedPendingReason            = big.NewInt(1 << 11)
+	accountPaymentControlsFieldWithdrawalSchedule              = big.NewInt(1 << 12)
 )
 
 // accountPaymentControlsNullableFields maps the wire names of AccountPaymentControls's nullable fields (required or optional) to their field bits.
@@ -3899,7 +3900,8 @@ type AccountPaymentControls struct {
 	// Whether payment health controls explicitly disable financing. This is independent of financing approval in `capabilities.accept_bnpl_payments`.
 	FinancingDisabled bool `json:"financing_disabled" url:"financing_disabled"`
 	// Additional processing fee percentage for high-risk processing.
-	HighRiskProcessingFeePercentage float64 `json:"high_risk_processing_fee_percentage" url:"high_risk_processing_fee_percentage"`
+	HighRiskProcessingFeePercentage float64          `json:"high_risk_processing_fee_percentage" url:"high_risk_processing_fee_percentage"`
+	PaymentMethodWarnings           []map[string]any `json:"payment_method_warnings" url:"payment_method_warnings"`
 	// Percentage fee charged when pending, not-yet-settled balance is advanced to fund the account's cards balance, where `2` means 2%. `0` when the account is exempt.
 	PendingAutoTopupFeePercentage float64 `json:"pending_auto_topup_fee_percentage" url:"pending_auto_topup_fee_percentage"`
 	// Additional days payments remain pending before becoming available.
@@ -3954,6 +3956,13 @@ func (a *AccountPaymentControls) GetHighRiskProcessingFeePercentage() float64 {
 		return 0
 	}
 	return a.HighRiskProcessingFeePercentage
+}
+
+func (a *AccountPaymentControls) GetPaymentMethodWarnings() []map[string]any {
+	if a == nil {
+		return nil
+	}
+	return a.PaymentMethodWarnings
 }
 
 func (a *AccountPaymentControls) GetPendingAutoTopupFeePercentage() float64 {
@@ -4054,6 +4063,13 @@ func (a *AccountPaymentControls) SetFinancingDisabled(financingDisabled bool) {
 func (a *AccountPaymentControls) SetHighRiskProcessingFeePercentage(highRiskProcessingFeePercentage float64) {
 	a.HighRiskProcessingFeePercentage = highRiskProcessingFeePercentage
 	a.require(accountPaymentControlsFieldHighRiskProcessingFeePercentage)
+}
+
+// SetPaymentMethodWarnings sets the PaymentMethodWarnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPaymentControls) SetPaymentMethodWarnings(paymentMethodWarnings []map[string]any) {
+	a.PaymentMethodWarnings = paymentMethodWarnings
+	a.require(accountPaymentControlsFieldPaymentMethodWarnings)
 }
 
 // SetPendingAutoTopupFeePercentage sets the PendingAutoTopupFeePercentage field and marks it as non-optional;

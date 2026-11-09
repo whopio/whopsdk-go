@@ -647,7 +647,7 @@ type CancelPayoutsResponse struct {
 	Status CancelPayoutsResponseStatus `json:"status" url:"status"`
 	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
 	StatusDetail string `json:"status_detail" url:"status_detail"`
-	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
+	// Payment network reference for this payout, such as an ACH trace number, an RTP or FedNow end-to-end ID, a wire IMAD, or a SWIFT UETR. `null` until the reference is available, and on payouts that have none.
 	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1829,7 +1829,7 @@ type CreatePayoutsResponse struct {
 	Status CreatePayoutsResponseStatus `json:"status" url:"status"`
 	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
 	StatusDetail string `json:"status_detail" url:"status_detail"`
-	// ACH trace number the recipient's bank can use to locate this payout. Always `null` here — it is assigned when the payout is submitted to the bank, and appears on the payout in GET /payouts once it has been sent; payouts not sent over ACH never get one.
+	// Payment network reference for this payout, such as an ACH trace number, an RTP or FedNow end-to-end ID, a wire IMAD, or a SWIFT UETR. Always `null` here. It appears on the payout in GET /payouts once the reference is available, and stays `null` on payouts that have none.
 	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3727,7 +3727,7 @@ type ListPayoutsResponseDataItem struct {
 	Status ListPayoutsResponseDataItemStatus `json:"status" url:"status"`
 	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
 	StatusDetail string `json:"status_detail" url:"status_detail"`
-	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
+	// Payment network reference for this payout, such as an ACH trace number, an RTP or FedNow end-to-end ID, a wire IMAD, or a SWIFT UETR. `null` until the reference is available, and on payouts that have none.
 	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -5279,7 +5279,7 @@ type PostPayoutCreatedPayloadData struct {
 	Status PostPayoutCreatedPayloadDataStatus `json:"status" url:"status"`
 	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
 	StatusDetail string `json:"status_detail" url:"status_detail"`
-	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
+	// Payment network reference for this payout, such as an ACH trace number, an RTP or FedNow end-to-end ID, a wire IMAD, or a SWIFT UETR. `null` until the reference is available, and on payouts that have none.
 	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -8671,7 +8671,7 @@ type PostPayoutReversedPayloadData struct {
 	Status PostPayoutReversedPayloadDataStatus `json:"status" url:"status"`
 	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
 	StatusDetail string `json:"status_detail" url:"status_detail"`
-	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
+	// Payment network reference for this payout, such as an ACH trace number, an RTP or FedNow end-to-end ID, a wire IMAD, or a SWIFT UETR. `null` until the reference is available, and on payouts that have none.
 	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -10096,7 +10096,7 @@ type PostPayoutUpdatedPayloadData struct {
 	Status PostPayoutUpdatedPayloadDataStatus `json:"status" url:"status"`
 	// The finest machine phase under `status` — for example `awaiting_provider_acceptance` vs `in_transit` under `processing`, or the conversion phase under `requested`. Informational vocabulary: values can be added without a version bump; `status` is the versioned contract.
 	StatusDetail string `json:"status_detail" url:"status_detail"`
-	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
+	// Payment network reference for this payout, such as an ACH trace number, an RTP or FedNow end-to-end ID, a wire IMAD, or a SWIFT UETR. `null` until the reference is available, and on payouts that have none.
 	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -11293,7 +11293,7 @@ type RetrievePayoutsResponse struct {
 	StatusDetail string `json:"status_detail" url:"status_detail"`
 	// Completed lifecycle events in chronological order. Present once the payout has a withdrawal record.
 	Timeline []*RetrievePayoutsResponseTimelineItem `json:"timeline,omitempty" url:"timeline,omitempty"`
-	// ACH trace number the recipient's bank can use to locate this payout. Assigned when the payout is submitted to the bank, so it is `null` before then and on payouts not sent over ACH.
+	// Payment network reference for this payout, such as an ACH trace number, an RTP or FedNow end-to-end ID, a wire IMAD, or a SWIFT UETR. `null` until the reference is available, and on payouts that have none.
 	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
