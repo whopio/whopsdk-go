@@ -2007,14 +2007,8 @@ const (
 	AdCampaignStatusActive        AdCampaignStatus = "active"
 	AdCampaignStatusPaused        AdCampaignStatus = "paused"
 	AdCampaignStatusInactive      AdCampaignStatus = "inactive"
-	AdCampaignStatusStale         AdCampaignStatus = "stale"
-	AdCampaignStatusPendingRefund AdCampaignStatus = "pending_refund"
 	AdCampaignStatusPaymentFailed AdCampaignStatus = "payment_failed"
 	AdCampaignStatusDraft         AdCampaignStatus = "draft"
-	AdCampaignStatusInReview      AdCampaignStatus = "in_review"
-	AdCampaignStatusFlagged       AdCampaignStatus = "flagged"
-	AdCampaignStatusImporting     AdCampaignStatus = "importing"
-	AdCampaignStatusImported      AdCampaignStatus = "imported"
 	AdCampaignStatusDuplicating   AdCampaignStatus = "duplicating"
 )
 
@@ -2026,22 +2020,10 @@ func NewAdCampaignStatusFromString(s string) (AdCampaignStatus, error) {
 		return AdCampaignStatusPaused, nil
 	case "inactive":
 		return AdCampaignStatusInactive, nil
-	case "stale":
-		return AdCampaignStatusStale, nil
-	case "pending_refund":
-		return AdCampaignStatusPendingRefund, nil
 	case "payment_failed":
 		return AdCampaignStatusPaymentFailed, nil
 	case "draft":
 		return AdCampaignStatusDraft, nil
-	case "in_review":
-		return AdCampaignStatusInReview, nil
-	case "flagged":
-		return AdCampaignStatusFlagged, nil
-	case "importing":
-		return AdCampaignStatusImporting, nil
-	case "imported":
-		return AdCampaignStatusImported, nil
 	case "duplicating":
 		return AdCampaignStatusDuplicating, nil
 	}
@@ -3668,14 +3650,8 @@ const (
 	PostAdCampaignPaymentFailedPayloadDataStatusActive        PostAdCampaignPaymentFailedPayloadDataStatus = "active"
 	PostAdCampaignPaymentFailedPayloadDataStatusPaused        PostAdCampaignPaymentFailedPayloadDataStatus = "paused"
 	PostAdCampaignPaymentFailedPayloadDataStatusInactive      PostAdCampaignPaymentFailedPayloadDataStatus = "inactive"
-	PostAdCampaignPaymentFailedPayloadDataStatusStale         PostAdCampaignPaymentFailedPayloadDataStatus = "stale"
-	PostAdCampaignPaymentFailedPayloadDataStatusPendingRefund PostAdCampaignPaymentFailedPayloadDataStatus = "pending_refund"
 	PostAdCampaignPaymentFailedPayloadDataStatusPaymentFailed PostAdCampaignPaymentFailedPayloadDataStatus = "payment_failed"
 	PostAdCampaignPaymentFailedPayloadDataStatusDraft         PostAdCampaignPaymentFailedPayloadDataStatus = "draft"
-	PostAdCampaignPaymentFailedPayloadDataStatusInReview      PostAdCampaignPaymentFailedPayloadDataStatus = "in_review"
-	PostAdCampaignPaymentFailedPayloadDataStatusFlagged       PostAdCampaignPaymentFailedPayloadDataStatus = "flagged"
-	PostAdCampaignPaymentFailedPayloadDataStatusImporting     PostAdCampaignPaymentFailedPayloadDataStatus = "importing"
-	PostAdCampaignPaymentFailedPayloadDataStatusImported      PostAdCampaignPaymentFailedPayloadDataStatus = "imported"
 	PostAdCampaignPaymentFailedPayloadDataStatusDuplicating   PostAdCampaignPaymentFailedPayloadDataStatus = "duplicating"
 )
 
@@ -3687,22 +3663,10 @@ func NewPostAdCampaignPaymentFailedPayloadDataStatusFromString(s string) (PostAd
 		return PostAdCampaignPaymentFailedPayloadDataStatusPaused, nil
 	case "inactive":
 		return PostAdCampaignPaymentFailedPayloadDataStatusInactive, nil
-	case "stale":
-		return PostAdCampaignPaymentFailedPayloadDataStatusStale, nil
-	case "pending_refund":
-		return PostAdCampaignPaymentFailedPayloadDataStatusPendingRefund, nil
 	case "payment_failed":
 		return PostAdCampaignPaymentFailedPayloadDataStatusPaymentFailed, nil
 	case "draft":
 		return PostAdCampaignPaymentFailedPayloadDataStatusDraft, nil
-	case "in_review":
-		return PostAdCampaignPaymentFailedPayloadDataStatusInReview, nil
-	case "flagged":
-		return PostAdCampaignPaymentFailedPayloadDataStatusFlagged, nil
-	case "importing":
-		return PostAdCampaignPaymentFailedPayloadDataStatusImporting, nil
-	case "imported":
-		return PostAdCampaignPaymentFailedPayloadDataStatusImported, nil
 	case "duplicating":
 		return PostAdCampaignPaymentFailedPayloadDataStatusDuplicating, nil
 	}
@@ -4629,14 +4593,8 @@ const (
 	PostAdCampaignUpdatedPayloadDataStatusActive        PostAdCampaignUpdatedPayloadDataStatus = "active"
 	PostAdCampaignUpdatedPayloadDataStatusPaused        PostAdCampaignUpdatedPayloadDataStatus = "paused"
 	PostAdCampaignUpdatedPayloadDataStatusInactive      PostAdCampaignUpdatedPayloadDataStatus = "inactive"
-	PostAdCampaignUpdatedPayloadDataStatusStale         PostAdCampaignUpdatedPayloadDataStatus = "stale"
-	PostAdCampaignUpdatedPayloadDataStatusPendingRefund PostAdCampaignUpdatedPayloadDataStatus = "pending_refund"
 	PostAdCampaignUpdatedPayloadDataStatusPaymentFailed PostAdCampaignUpdatedPayloadDataStatus = "payment_failed"
 	PostAdCampaignUpdatedPayloadDataStatusDraft         PostAdCampaignUpdatedPayloadDataStatus = "draft"
-	PostAdCampaignUpdatedPayloadDataStatusInReview      PostAdCampaignUpdatedPayloadDataStatus = "in_review"
-	PostAdCampaignUpdatedPayloadDataStatusFlagged       PostAdCampaignUpdatedPayloadDataStatus = "flagged"
-	PostAdCampaignUpdatedPayloadDataStatusImporting     PostAdCampaignUpdatedPayloadDataStatus = "importing"
-	PostAdCampaignUpdatedPayloadDataStatusImported      PostAdCampaignUpdatedPayloadDataStatus = "imported"
 	PostAdCampaignUpdatedPayloadDataStatusDuplicating   PostAdCampaignUpdatedPayloadDataStatus = "duplicating"
 )
 
@@ -4648,22 +4606,10 @@ func NewPostAdCampaignUpdatedPayloadDataStatusFromString(s string) (PostAdCampai
 		return PostAdCampaignUpdatedPayloadDataStatusPaused, nil
 	case "inactive":
 		return PostAdCampaignUpdatedPayloadDataStatusInactive, nil
-	case "stale":
-		return PostAdCampaignUpdatedPayloadDataStatusStale, nil
-	case "pending_refund":
-		return PostAdCampaignUpdatedPayloadDataStatusPendingRefund, nil
 	case "payment_failed":
 		return PostAdCampaignUpdatedPayloadDataStatusPaymentFailed, nil
 	case "draft":
 		return PostAdCampaignUpdatedPayloadDataStatusDraft, nil
-	case "in_review":
-		return PostAdCampaignUpdatedPayloadDataStatusInReview, nil
-	case "flagged":
-		return PostAdCampaignUpdatedPayloadDataStatusFlagged, nil
-	case "importing":
-		return PostAdCampaignUpdatedPayloadDataStatusImporting, nil
-	case "imported":
-		return PostAdCampaignUpdatedPayloadDataStatusImported, nil
 	case "duplicating":
 		return PostAdCampaignUpdatedPayloadDataStatusDuplicating, nil
 	}
