@@ -52814,6 +52814,14 @@ func TestSettersLedgerActivityResourceAuthorizedAt(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetLevelsPoints", func(t *testing.T) {
+		obj := &LedgerActivityResourceAuthorizedAt{}
+		var fernTestValueLevelsPoints *string
+		obj.SetLevelsPoints(fernTestValueLevelsPoints)
+		assert.Equal(t, fernTestValueLevelsPoints, obj.LevelsPoints)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetLocalAmount", func(t *testing.T) {
 		obj := &LedgerActivityResourceAuthorizedAt{}
 		var fernTestValueLocalAmount *string
@@ -53042,6 +53050,39 @@ func TestGettersLedgerActivityResourceAuthorizedAt(t *testing.T) {
 			}
 		}()
 		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetLevelsPoints", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &LedgerActivityResourceAuthorizedAt{}
+		var expected *string
+		obj.LevelsPoints = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetLevelsPoints(), "getter should return the property value")
+	})
+
+	t.Run("GetLevelsPoints_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &LedgerActivityResourceAuthorizedAt{}
+		obj.LevelsPoints = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetLevelsPoints(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetLevelsPoints_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *LedgerActivityResourceAuthorizedAt
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetLevelsPoints() // Should return zero value
 	})
 
 	t.Run("GetLocalAmount", func(t *testing.T) {
@@ -53466,6 +53507,37 @@ func TestSettersMarkExplicitLedgerActivityResourceAuthorizedAt(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetLevelsPoints_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &LedgerActivityResourceAuthorizedAt{}
+		var fernTestValueLevelsPoints *string
+
+		// Act
+		obj.SetLevelsPoints(fernTestValueLevelsPoints)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -171343,6 +171415,7 @@ func TestRequiredNullableRoundTripLedgerActivityResourceAuthorizedAt(t *testing.
 		"card_id",
 		"cashback_usd",
 		"declined_reason",
+		"levels_points",
 		"local_amount",
 		"local_currency",
 		"merchant_category",
@@ -171363,7 +171436,7 @@ func TestRequiredNullableRoundTripLedgerActivityResourceAuthorizedAt(t *testing.
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj LedgerActivityResourceAuthorizedAt
-		require.NoError(t, json.Unmarshal([]byte(`{"authorized_at":null,"card_id":null,"cashback_usd":null,"declined_reason":null,"local_amount":null,"local_currency":null,"merchant_category":null,"merchant_icon_url":null,"merchant_name":null,"posted_at":null,"status":null,"usd_amount":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"authorized_at":null,"card_id":null,"cashback_usd":null,"declined_reason":null,"levels_points":null,"local_amount":null,"local_currency":null,"merchant_category":null,"merchant_icon_url":null,"merchant_name":null,"posted_at":null,"status":null,"usd_amount":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

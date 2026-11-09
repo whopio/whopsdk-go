@@ -224,15 +224,16 @@ var (
 	cardTransactionFieldDeclinedReason       = big.NewInt(1 << 5)
 	cardTransactionFieldID                   = big.NewInt(1 << 6)
 	cardTransactionFieldInternational        = big.NewInt(1 << 7)
-	cardTransactionFieldLocalAmount          = big.NewInt(1 << 8)
-	cardTransactionFieldMerchantCategory     = big.NewInt(1 << 9)
-	cardTransactionFieldMerchantCategoryCode = big.NewInt(1 << 10)
-	cardTransactionFieldMerchantIconURL      = big.NewInt(1 << 11)
-	cardTransactionFieldMerchantName         = big.NewInt(1 << 12)
-	cardTransactionFieldPostedAt             = big.NewInt(1 << 13)
-	cardTransactionFieldStatus               = big.NewInt(1 << 14)
-	cardTransactionFieldTransactionType      = big.NewInt(1 << 15)
-	cardTransactionFieldUsdAmount            = big.NewInt(1 << 16)
+	cardTransactionFieldLevelsPoints         = big.NewInt(1 << 8)
+	cardTransactionFieldLocalAmount          = big.NewInt(1 << 9)
+	cardTransactionFieldMerchantCategory     = big.NewInt(1 << 10)
+	cardTransactionFieldMerchantCategoryCode = big.NewInt(1 << 11)
+	cardTransactionFieldMerchantIconURL      = big.NewInt(1 << 12)
+	cardTransactionFieldMerchantName         = big.NewInt(1 << 13)
+	cardTransactionFieldPostedAt             = big.NewInt(1 << 14)
+	cardTransactionFieldStatus               = big.NewInt(1 << 15)
+	cardTransactionFieldTransactionType      = big.NewInt(1 << 16)
+	cardTransactionFieldUsdAmount            = big.NewInt(1 << 17)
 )
 
 // cardTransactionNullableFields maps the wire names of CardTransaction's nullable fields (required or optional) to their field bits.
@@ -241,6 +242,7 @@ var cardTransactionNullableFields = map[string]*big.Int{
 	"cashback_usd_amount":    cardTransactionFieldCashbackUsdAmount,
 	"currency":               cardTransactionFieldCurrency,
 	"declined_reason":        cardTransactionFieldDeclinedReason,
+	"levels_points":          cardTransactionFieldLevelsPoints,
 	"local_amount":           cardTransactionFieldLocalAmount,
 	"merchant_category":      cardTransactionFieldMerchantCategory,
 	"merchant_category_code": cardTransactionFieldMerchantCategoryCode,
@@ -267,6 +269,8 @@ type CardTransaction struct {
 	ID string `json:"id" url:"id"`
 	// True when the merchant is outside the card's home country.
 	International bool `json:"international" url:"international"`
+	// Whop Levels points this transaction earned for the business. Negative for a refund that takes them back. Null when it earns none: a transaction that hasn't settled, was declined, or was made on a personal card.
+	LevelsPoints *float64 `json:"levels_points,omitempty" url:"levels_points,omitempty"`
 	// Amount the merchant charged in their own currency. Pair with `currency`.
 	LocalAmount *float64 `json:"local_amount,omitempty" url:"local_amount,omitempty"`
 	// Merchant category label, enriched where available and otherwise as the card network reported it.
@@ -347,6 +351,13 @@ func (c *CardTransaction) GetInternational() bool {
 		return false
 	}
 	return c.International
+}
+
+func (c *CardTransaction) GetLevelsPoints() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.LevelsPoints
 }
 
 func (c *CardTransaction) GetLocalAmount() *float64 {
@@ -482,6 +493,13 @@ func (c *CardTransaction) SetID(id string) {
 func (c *CardTransaction) SetInternational(international bool) {
 	c.International = international
 	c.require(cardTransactionFieldInternational)
+}
+
+// SetLevelsPoints sets the LevelsPoints field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CardTransaction) SetLevelsPoints(levelsPoints *float64) {
+	c.LevelsPoints = levelsPoints
+	c.require(cardTransactionFieldLevelsPoints)
 }
 
 // SetLocalAmount sets the LocalAmount field and marks it as non-optional;
