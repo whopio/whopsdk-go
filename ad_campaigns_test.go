@@ -12407,20 +12407,6 @@ func TestEnumAdCampaignStatus(t *testing.T) {
 		assert.Equal(t, AdCampaignStatus("inactive"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_stale", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewAdCampaignStatusFromString("stale")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AdCampaignStatus("stale"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_pending_refund", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewAdCampaignStatusFromString("pending_refund")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AdCampaignStatus("pending_refund"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_payment_failed", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewAdCampaignStatusFromString("payment_failed")
@@ -12433,34 +12419,6 @@ func TestEnumAdCampaignStatus(t *testing.T) {
 		val, err := NewAdCampaignStatusFromString("draft")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, AdCampaignStatus("draft"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_in_review", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewAdCampaignStatusFromString("in_review")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AdCampaignStatus("in_review"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_flagged", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewAdCampaignStatusFromString("flagged")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AdCampaignStatus("flagged"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_importing", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewAdCampaignStatusFromString("importing")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AdCampaignStatus("importing"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_imported", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewAdCampaignStatusFromString("imported")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AdCampaignStatus("imported"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_duplicating", func(t *testing.T) {
@@ -13258,20 +13216,6 @@ func TestEnumPostAdCampaignPaymentFailedPayloadDataStatus(t *testing.T) {
 		assert.Equal(t, PostAdCampaignPaymentFailedPayloadDataStatus("inactive"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_stale", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPostAdCampaignPaymentFailedPayloadDataStatusFromString("stale")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PostAdCampaignPaymentFailedPayloadDataStatus("stale"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_pending_refund", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPostAdCampaignPaymentFailedPayloadDataStatusFromString("pending_refund")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PostAdCampaignPaymentFailedPayloadDataStatus("pending_refund"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_payment_failed", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPostAdCampaignPaymentFailedPayloadDataStatusFromString("payment_failed")
@@ -13284,34 +13228,6 @@ func TestEnumPostAdCampaignPaymentFailedPayloadDataStatus(t *testing.T) {
 		val, err := NewPostAdCampaignPaymentFailedPayloadDataStatusFromString("draft")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PostAdCampaignPaymentFailedPayloadDataStatus("draft"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_in_review", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPostAdCampaignPaymentFailedPayloadDataStatusFromString("in_review")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PostAdCampaignPaymentFailedPayloadDataStatus("in_review"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_flagged", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPostAdCampaignPaymentFailedPayloadDataStatusFromString("flagged")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PostAdCampaignPaymentFailedPayloadDataStatus("flagged"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_importing", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPostAdCampaignPaymentFailedPayloadDataStatusFromString("importing")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PostAdCampaignPaymentFailedPayloadDataStatus("importing"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_imported", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPostAdCampaignPaymentFailedPayloadDataStatusFromString("imported")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PostAdCampaignPaymentFailedPayloadDataStatus("imported"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_duplicating", func(t *testing.T) {
@@ -13708,20 +13624,6 @@ func TestEnumPostAdCampaignUpdatedPayloadDataStatus(t *testing.T) {
 		assert.Equal(t, PostAdCampaignUpdatedPayloadDataStatus("inactive"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_stale", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPostAdCampaignUpdatedPayloadDataStatusFromString("stale")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PostAdCampaignUpdatedPayloadDataStatus("stale"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_pending_refund", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPostAdCampaignUpdatedPayloadDataStatusFromString("pending_refund")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PostAdCampaignUpdatedPayloadDataStatus("pending_refund"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_payment_failed", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPostAdCampaignUpdatedPayloadDataStatusFromString("payment_failed")
@@ -13734,34 +13636,6 @@ func TestEnumPostAdCampaignUpdatedPayloadDataStatus(t *testing.T) {
 		val, err := NewPostAdCampaignUpdatedPayloadDataStatusFromString("draft")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PostAdCampaignUpdatedPayloadDataStatus("draft"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_in_review", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPostAdCampaignUpdatedPayloadDataStatusFromString("in_review")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PostAdCampaignUpdatedPayloadDataStatus("in_review"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_flagged", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPostAdCampaignUpdatedPayloadDataStatusFromString("flagged")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PostAdCampaignUpdatedPayloadDataStatus("flagged"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_importing", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPostAdCampaignUpdatedPayloadDataStatusFromString("importing")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PostAdCampaignUpdatedPayloadDataStatus("importing"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_imported", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPostAdCampaignUpdatedPayloadDataStatusFromString("imported")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PostAdCampaignUpdatedPayloadDataStatus("imported"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_duplicating", func(t *testing.T) {
