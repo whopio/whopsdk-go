@@ -6500,6 +6500,22 @@ func TestSettersCreateQuotePayoutsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMarketExchangeRate", func(t *testing.T) {
+		obj := &CreateQuotePayoutsResponse{}
+		var fernTestValueMarketExchangeRate *float64
+		obj.SetMarketExchangeRate(fernTestValueMarketExchangeRate)
+		assert.Equal(t, fernTestValueMarketExchangeRate, obj.MarketExchangeRate)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetMarketExchangeRateAt", func(t *testing.T) {
+		obj := &CreateQuotePayoutsResponse{}
+		var fernTestValueMarketExchangeRateAt *time.Time
+		obj.SetMarketExchangeRateAt(fernTestValueMarketExchangeRateAt)
+		assert.Equal(t, fernTestValueMarketExchangeRateAt, obj.MarketExchangeRateAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetNetAmount", func(t *testing.T) {
 		obj := &CreateQuotePayoutsResponse{}
 		var fernTestValueNetAmount *Money
@@ -6709,6 +6725,72 @@ func TestGettersCreateQuotePayoutsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetMarketExchangeRate", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateQuotePayoutsResponse{}
+		var expected *float64
+		obj.MarketExchangeRate = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMarketExchangeRate(), "getter should return the property value")
+	})
+
+	t.Run("GetMarketExchangeRate_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateQuotePayoutsResponse{}
+		obj.MarketExchangeRate = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMarketExchangeRate(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMarketExchangeRate_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateQuotePayoutsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMarketExchangeRate() // Should return zero value
+	})
+
+	t.Run("GetMarketExchangeRateAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateQuotePayoutsResponse{}
+		var expected *time.Time
+		obj.MarketExchangeRateAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMarketExchangeRateAt(), "getter should return the property value")
+	})
+
+	t.Run("GetMarketExchangeRateAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateQuotePayoutsResponse{}
+		obj.MarketExchangeRateAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMarketExchangeRateAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMarketExchangeRateAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateQuotePayoutsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMarketExchangeRateAt() // Should return zero value
 	})
 
 	t.Run("GetNetAmount", func(t *testing.T) {
@@ -7012,6 +7094,68 @@ func TestSettersMarkExplicitCreateQuotePayoutsResponse(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMarketExchangeRate_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateQuotePayoutsResponse{}
+		var fernTestValueMarketExchangeRate *float64
+
+		// Act
+		obj.SetMarketExchangeRate(fernTestValueMarketExchangeRate)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMarketExchangeRateAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateQuotePayoutsResponse{}
+		var fernTestValueMarketExchangeRateAt *time.Time
+
+		// Act
+		obj.SetMarketExchangeRateAt(fernTestValueMarketExchangeRateAt)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -28389,6 +28533,8 @@ func TestRequiredNullableRoundTripCreatePayoutsResponsePayoutMethodSupportedPayo
 
 func TestRequiredNullableRoundTripCreateQuotePayoutsResponse(t *testing.T) {
 	requiredNullableKeys := []string{
+		"market_exchange_rate",
+		"market_exchange_rate_at",
 		"recommended_method",
 	}
 	marshalToMap := func(t *testing.T, obj *CreateQuotePayoutsResponse) map[string]json.RawMessage {
@@ -28402,7 +28548,7 @@ func TestRequiredNullableRoundTripCreateQuotePayoutsResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj CreateQuotePayoutsResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"recommended_method":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"market_exchange_rate":null,"market_exchange_rate_at":null,"recommended_method":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

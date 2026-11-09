@@ -2917,22 +2917,26 @@ func (c CreateQuotePayoutsRequestSpeed) Ptr() *CreateQuotePayoutsRequestSpeed {
 }
 
 var (
-	createQuotePayoutsResponseFieldAmount            = big.NewInt(1 << 0)
-	createQuotePayoutsResponseFieldDestinationAmount = big.NewInt(1 << 1)
-	createQuotePayoutsResponseFieldExchangeRate      = big.NewInt(1 << 2)
-	createQuotePayoutsResponseFieldExpiresAt         = big.NewInt(1 << 3)
-	createQuotePayoutsResponseFieldFee               = big.NewInt(1 << 4)
-	createQuotePayoutsResponseFieldID                = big.NewInt(1 << 5)
-	createQuotePayoutsResponseFieldNetAmount         = big.NewInt(1 << 6)
-	createQuotePayoutsResponseFieldObject            = big.NewInt(1 << 7)
-	createQuotePayoutsResponseFieldQuoteToken        = big.NewInt(1 << 8)
-	createQuotePayoutsResponseFieldRecommendedMethod = big.NewInt(1 << 9)
-	createQuotePayoutsResponseFieldServerTime        = big.NewInt(1 << 10)
+	createQuotePayoutsResponseFieldAmount               = big.NewInt(1 << 0)
+	createQuotePayoutsResponseFieldDestinationAmount    = big.NewInt(1 << 1)
+	createQuotePayoutsResponseFieldExchangeRate         = big.NewInt(1 << 2)
+	createQuotePayoutsResponseFieldExpiresAt            = big.NewInt(1 << 3)
+	createQuotePayoutsResponseFieldFee                  = big.NewInt(1 << 4)
+	createQuotePayoutsResponseFieldID                   = big.NewInt(1 << 5)
+	createQuotePayoutsResponseFieldMarketExchangeRate   = big.NewInt(1 << 6)
+	createQuotePayoutsResponseFieldMarketExchangeRateAt = big.NewInt(1 << 7)
+	createQuotePayoutsResponseFieldNetAmount            = big.NewInt(1 << 8)
+	createQuotePayoutsResponseFieldObject               = big.NewInt(1 << 9)
+	createQuotePayoutsResponseFieldQuoteToken           = big.NewInt(1 << 10)
+	createQuotePayoutsResponseFieldRecommendedMethod    = big.NewInt(1 << 11)
+	createQuotePayoutsResponseFieldServerTime           = big.NewInt(1 << 12)
 )
 
 // createQuotePayoutsResponseNullableFields maps the wire names of CreateQuotePayoutsResponse's nullable fields (required or optional) to their field bits.
 var createQuotePayoutsResponseNullableFields = map[string]*big.Int{
-	"recommended_method": createQuotePayoutsResponseFieldRecommendedMethod,
+	"market_exchange_rate":    createQuotePayoutsResponseFieldMarketExchangeRate,
+	"market_exchange_rate_at": createQuotePayoutsResponseFieldMarketExchangeRateAt,
+	"recommended_method":      createQuotePayoutsResponseFieldRecommendedMethod,
 }
 
 type CreateQuotePayoutsResponse struct {
@@ -2948,6 +2952,10 @@ type CreateQuotePayoutsResponse struct {
 	Fee *Money `json:"fee" url:"fee"`
 	// Provider-backed payout quote ID, prefixed `pout_`.
 	ID string `json:"id" url:"id"`
+	// Interbank mid-market rate, with no spread, for the same conversion as `exchange_rate`. The gap between the two is the cost of the conversion. `null` when the payout provider does no foreign exchange for this payout, such as USD to a USD bank account or to a USD stablecoin, when no market rate from the last 15 minutes is available, and on card-funded quotes.
+	MarketExchangeRate *float64 `json:"market_exchange_rate,omitempty" url:"market_exchange_rate,omitempty"`
+	// When `market_exchange_rate` was taken from the market feed, as an ISO 8601 timestamp. `null` when `market_exchange_rate` is `null`.
+	MarketExchangeRateAt *time.Time `json:"market_exchange_rate_at,omitempty" url:"market_exchange_rate_at,omitempty"`
 	// Amount remaining after fees.
 	NetAmount *Money                           `json:"net_amount" url:"net_amount"`
 	Object    CreateQuotePayoutsResponseObject `json:"object" url:"object"`
@@ -3005,6 +3013,20 @@ func (c *CreateQuotePayoutsResponse) GetID() string {
 		return ""
 	}
 	return c.ID
+}
+
+func (c *CreateQuotePayoutsResponse) GetMarketExchangeRate() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.MarketExchangeRate
+}
+
+func (c *CreateQuotePayoutsResponse) GetMarketExchangeRateAt() *time.Time {
+	if c == nil {
+		return nil
+	}
+	return c.MarketExchangeRateAt
 }
 
 func (c *CreateQuotePayoutsResponse) GetNetAmount() *Money {
@@ -3100,6 +3122,20 @@ func (c *CreateQuotePayoutsResponse) SetID(id string) {
 	c.require(createQuotePayoutsResponseFieldID)
 }
 
+// SetMarketExchangeRate sets the MarketExchangeRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponse) SetMarketExchangeRate(marketExchangeRate *float64) {
+	c.MarketExchangeRate = marketExchangeRate
+	c.require(createQuotePayoutsResponseFieldMarketExchangeRate)
+}
+
+// SetMarketExchangeRateAt sets the MarketExchangeRateAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponse) SetMarketExchangeRateAt(marketExchangeRateAt *time.Time) {
+	c.MarketExchangeRateAt = marketExchangeRateAt
+	c.require(createQuotePayoutsResponseFieldMarketExchangeRateAt)
+}
+
 // SetNetAmount sets the NetAmount field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateQuotePayoutsResponse) SetNetAmount(netAmount *Money) {
@@ -3139,8 +3175,9 @@ func (c *CreateQuotePayoutsResponse) UnmarshalJSON(data []byte) error {
 	type embed CreateQuotePayoutsResponse
 	var unmarshaler = struct {
 		embed
-		ExpiresAt  *internal.DateTime `json:"expires_at"`
-		ServerTime *internal.DateTime `json:"server_time"`
+		ExpiresAt            *internal.DateTime `json:"expires_at"`
+		MarketExchangeRateAt *internal.DateTime `json:"market_exchange_rate_at,omitempty"`
+		ServerTime           *internal.DateTime `json:"server_time"`
 	}{
 		embed: embed(*c),
 	}
@@ -3149,6 +3186,7 @@ func (c *CreateQuotePayoutsResponse) UnmarshalJSON(data []byte) error {
 	}
 	*c = CreateQuotePayoutsResponse(unmarshaler.embed)
 	c.ExpiresAt = unmarshaler.ExpiresAt.Time()
+	c.MarketExchangeRateAt = unmarshaler.MarketExchangeRateAt.TimePtr()
 	c.ServerTime = unmarshaler.ServerTime.Time()
 	extraProperties, err := internal.ExtractExtraProperties(data, *c)
 	if err != nil {
@@ -3170,12 +3208,14 @@ func (c *CreateQuotePayoutsResponse) MarshalJSON() ([]byte, error) {
 	type embed CreateQuotePayoutsResponse
 	var marshaler = struct {
 		embed
-		ExpiresAt  *internal.DateTime `json:"expires_at"`
-		ServerTime *internal.DateTime `json:"server_time"`
+		ExpiresAt            *internal.DateTime `json:"expires_at"`
+		MarketExchangeRateAt *internal.DateTime `json:"market_exchange_rate_at,omitempty"`
+		ServerTime           *internal.DateTime `json:"server_time"`
 	}{
-		embed:      embed(*c),
-		ExpiresAt:  internal.NewDateTime(c.ExpiresAt),
-		ServerTime: internal.NewDateTime(c.ServerTime),
+		embed:                embed(*c),
+		ExpiresAt:            internal.NewDateTime(c.ExpiresAt),
+		MarketExchangeRateAt: internal.NewOptionalDateTime(c.MarketExchangeRateAt),
+		ServerTime:           internal.NewDateTime(c.ServerTime),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
 	return json.Marshal(explicitMarshaler)
