@@ -28103,7 +28103,7 @@ func (l *LedgerActivityResource) UnmarshalJSON(data []byte) error {
 			return nil
 		}
 	}
-	if internal.MatchesObjectKeys(data, []string{"authorized_at", "card_id", "cashback_usd", "declined_reason", "id", "local_amount", "local_currency", "merchant_category", "merchant_icon_url", "merchant_name", "object", "posted_at", "status", "usd_amount"}, []string{"id", "object"}) {
+	if internal.MatchesObjectKeys(data, []string{"authorized_at", "card_id", "cashback_usd", "declined_reason", "id", "levels_points", "local_amount", "local_currency", "merchant_category", "merchant_icon_url", "merchant_name", "object", "posted_at", "status", "usd_amount"}, []string{"id", "object"}) {
 		valueLedgerActivityResourceAuthorizedAt := new(LedgerActivityResourceAuthorizedAt)
 		if err := json.Unmarshal(data, &valueLedgerActivityResourceAuthorizedAt); err == nil {
 			l.typ = "LedgerActivityResourceAuthorizedAt"
@@ -28501,15 +28501,16 @@ var (
 	ledgerActivityResourceAuthorizedAtFieldCashbackUsd      = big.NewInt(1 << 2)
 	ledgerActivityResourceAuthorizedAtFieldDeclinedReason   = big.NewInt(1 << 3)
 	ledgerActivityResourceAuthorizedAtFieldID               = big.NewInt(1 << 4)
-	ledgerActivityResourceAuthorizedAtFieldLocalAmount      = big.NewInt(1 << 5)
-	ledgerActivityResourceAuthorizedAtFieldLocalCurrency    = big.NewInt(1 << 6)
-	ledgerActivityResourceAuthorizedAtFieldMerchantCategory = big.NewInt(1 << 7)
-	ledgerActivityResourceAuthorizedAtFieldMerchantIconURL  = big.NewInt(1 << 8)
-	ledgerActivityResourceAuthorizedAtFieldMerchantName     = big.NewInt(1 << 9)
-	ledgerActivityResourceAuthorizedAtFieldObject           = big.NewInt(1 << 10)
-	ledgerActivityResourceAuthorizedAtFieldPostedAt         = big.NewInt(1 << 11)
-	ledgerActivityResourceAuthorizedAtFieldStatus           = big.NewInt(1 << 12)
-	ledgerActivityResourceAuthorizedAtFieldUsdAmount        = big.NewInt(1 << 13)
+	ledgerActivityResourceAuthorizedAtFieldLevelsPoints     = big.NewInt(1 << 5)
+	ledgerActivityResourceAuthorizedAtFieldLocalAmount      = big.NewInt(1 << 6)
+	ledgerActivityResourceAuthorizedAtFieldLocalCurrency    = big.NewInt(1 << 7)
+	ledgerActivityResourceAuthorizedAtFieldMerchantCategory = big.NewInt(1 << 8)
+	ledgerActivityResourceAuthorizedAtFieldMerchantIconURL  = big.NewInt(1 << 9)
+	ledgerActivityResourceAuthorizedAtFieldMerchantName     = big.NewInt(1 << 10)
+	ledgerActivityResourceAuthorizedAtFieldObject           = big.NewInt(1 << 11)
+	ledgerActivityResourceAuthorizedAtFieldPostedAt         = big.NewInt(1 << 12)
+	ledgerActivityResourceAuthorizedAtFieldStatus           = big.NewInt(1 << 13)
+	ledgerActivityResourceAuthorizedAtFieldUsdAmount        = big.NewInt(1 << 14)
 )
 
 // ledgerActivityResourceAuthorizedAtNullableFields maps the wire names of LedgerActivityResourceAuthorizedAt's nullable fields (required or optional) to their field bits.
@@ -28518,6 +28519,7 @@ var ledgerActivityResourceAuthorizedAtNullableFields = map[string]*big.Int{
 	"card_id":           ledgerActivityResourceAuthorizedAtFieldCardID,
 	"cashback_usd":      ledgerActivityResourceAuthorizedAtFieldCashbackUsd,
 	"declined_reason":   ledgerActivityResourceAuthorizedAtFieldDeclinedReason,
+	"levels_points":     ledgerActivityResourceAuthorizedAtFieldLevelsPoints,
 	"local_amount":      ledgerActivityResourceAuthorizedAtFieldLocalAmount,
 	"local_currency":    ledgerActivityResourceAuthorizedAtFieldLocalCurrency,
 	"merchant_category": ledgerActivityResourceAuthorizedAtFieldMerchantCategory,
@@ -28539,6 +28541,8 @@ type LedgerActivityResourceAuthorizedAt struct {
 	DeclinedReason *string `json:"declined_reason,omitempty" url:"declined_reason,omitempty"`
 	// Card transaction ID.
 	ID string `json:"id" url:"id"`
+	// Whop Levels points this transaction earned for the business, as a decimal string. Negative for a refund that takes them back. Null when it earns none: a transaction that hasn't settled, was declined, or was made on a personal card.
+	LevelsPoints *string `json:"levels_points,omitempty" url:"levels_points,omitempty"`
 	// Amount the merchant charged in their local currency, as a decimal string. Pair with local_currency.
 	LocalAmount *string `json:"local_amount,omitempty" url:"local_amount,omitempty"`
 	// ISO 4217 currency code of the merchant-charged amount in local_amount.
@@ -28597,6 +28601,13 @@ func (l *LedgerActivityResourceAuthorizedAt) GetID() string {
 		return ""
 	}
 	return l.ID
+}
+
+func (l *LedgerActivityResourceAuthorizedAt) GetLevelsPoints() *string {
+	if l == nil {
+		return nil
+	}
+	return l.LevelsPoints
 }
 
 func (l *LedgerActivityResourceAuthorizedAt) GetLocalAmount() *string {
@@ -28711,6 +28722,13 @@ func (l *LedgerActivityResourceAuthorizedAt) SetDeclinedReason(declinedReason *s
 func (l *LedgerActivityResourceAuthorizedAt) SetID(id string) {
 	l.ID = id
 	l.require(ledgerActivityResourceAuthorizedAtFieldID)
+}
+
+// SetLevelsPoints sets the LevelsPoints field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivityResourceAuthorizedAt) SetLevelsPoints(levelsPoints *string) {
+	l.LevelsPoints = levelsPoints
+	l.require(ledgerActivityResourceAuthorizedAtFieldLevelsPoints)
 }
 
 // SetLocalAmount sets the LocalAmount field and marks it as non-optional;
