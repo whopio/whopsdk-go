@@ -256,15 +256,16 @@ var (
 	memberFieldID                 = big.NewInt(1 << 6)
 	memberFieldJoinedAt           = big.NewInt(1 << 7)
 	memberFieldLastAccessedAt     = big.NewInt(1 << 8)
-	memberFieldLastActivityAt     = big.NewInt(1 << 9)
-	memberFieldMostRecentAction   = big.NewInt(1 << 10)
-	memberFieldMostRecentActionAt = big.NewInt(1 << 11)
-	memberFieldName               = big.NewInt(1 << 12)
-	memberFieldPhoneNumber        = big.NewInt(1 << 13)
-	memberFieldStatus             = big.NewInt(1 << 14)
-	memberFieldTokenBalance       = big.NewInt(1 << 15)
-	memberFieldUsdTotalSpent      = big.NewInt(1 << 16)
-	memberFieldUser               = big.NewInt(1 << 17)
+	memberFieldLastActivity       = big.NewInt(1 << 9)
+	memberFieldLastActivityAt     = big.NewInt(1 << 10)
+	memberFieldMostRecentAction   = big.NewInt(1 << 11)
+	memberFieldMostRecentActionAt = big.NewInt(1 << 12)
+	memberFieldName               = big.NewInt(1 << 13)
+	memberFieldPhoneNumber        = big.NewInt(1 << 14)
+	memberFieldStatus             = big.NewInt(1 << 15)
+	memberFieldTokenBalance       = big.NewInt(1 << 16)
+	memberFieldUsdTotalSpent      = big.NewInt(1 << 17)
+	memberFieldUser               = big.NewInt(1 << 18)
 )
 
 // memberNullableFields maps the wire names of Member's nullable fields (required or optional) to their field bits.
@@ -272,6 +273,7 @@ var memberNullableFields = map[string]*big.Int{
 	"earnings_usd":          memberFieldEarningsUsd,
 	"email":                 memberFieldEmail,
 	"last_accessed_at":      memberFieldLastAccessedAt,
+	"last_activity":         memberFieldLastActivity,
 	"last_activity_at":      memberFieldLastActivityAt,
 	"most_recent_action":    memberFieldMostRecentAction,
 	"most_recent_action_at": memberFieldMostRecentActionAt,
@@ -299,6 +301,8 @@ type Member struct {
 	JoinedAt string `json:"joined_at" url:"joined_at"`
 	// When the member last opened the account's content, as an ISO 8601 timestamp. `null` if they never have.
 	LastAccessedAt *string `json:"last_accessed_at,omitempty" url:"last_accessed_at,omitempty"`
+	// What happened at `last_activity_at`. `object` says which kind of activity it is. `null` without `support_chat:read` on the account, or when `last_activity_at` is `null`.
+	LastActivity *MemberLastActivity `json:"last_activity,omitempty" url:"last_activity,omitempty"`
 	// When the member and the account last interacted, as an ISO 8601 timestamp. For example, a message in the member's support chat.
 	LastActivityAt *string `json:"last_activity_at,omitempty" url:"last_activity_at,omitempty"`
 	// The member's latest lifecycle state on the account, derived from their memberships, such as `paid_subscriber`, `canceling`, or `churned`. `null` until it is first computed.
@@ -386,6 +390,13 @@ func (m *Member) GetLastAccessedAt() *string {
 		return nil
 	}
 	return m.LastAccessedAt
+}
+
+func (m *Member) GetLastActivity() *MemberLastActivity {
+	if m == nil {
+		return nil
+	}
+	return m.LastActivity
 }
 
 func (m *Member) GetLastActivityAt() *string {
@@ -530,6 +541,13 @@ func (m *Member) SetLastAccessedAt(lastAccessedAt *string) {
 	m.require(memberFieldLastAccessedAt)
 }
 
+// SetLastActivity sets the LastActivity field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetLastActivity(lastActivity *MemberLastActivity) {
+	m.LastActivity = lastActivity
+	m.require(memberFieldLastActivity)
+}
+
 // SetLastActivityAt sets the LastActivityAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (m *Member) SetLastActivityAt(lastActivityAt *string) {
@@ -665,6 +683,214 @@ func NewMemberAccessLevelFromString(s string) (MemberAccessLevel, error) {
 }
 
 func (m MemberAccessLevel) Ptr() *MemberAccessLevel {
+	return &m
+}
+
+// What happened at the member's `last_activity_at`. `object` picks the shape: a `message` in their support chat.
+type MemberLastActivity = *MemberLastActivityMessage
+
+var (
+	memberLastActivityMessageFieldAuthor       = big.NewInt(1 << 0)
+	memberLastActivityMessageFieldChannelID    = big.NewInt(1 << 1)
+	memberLastActivityMessageFieldCreatedAt    = big.NewInt(1 << 2)
+	memberLastActivityMessageFieldID           = big.NewInt(1 << 3)
+	memberLastActivityMessageFieldObject       = big.NewInt(1 << 4)
+	memberLastActivityMessageFieldPlainContent = big.NewInt(1 << 5)
+)
+
+// memberLastActivityMessageNullableFields maps the wire names of MemberLastActivityMessage's nullable fields (required or optional) to their field bits.
+var memberLastActivityMessageNullableFields = map[string]*big.Int{
+	"author":        memberLastActivityMessageFieldAuthor,
+	"plain_content": memberLastActivityMessageFieldPlainContent,
+}
+
+type MemberLastActivityMessage struct {
+	// Who sent the message: the member, or someone on the account's team. `null` when the sender's account no longer exists.
+	Author *UserSummary `json:"author,omitempty" url:"author,omitempty"`
+	// The support chat the message was sent in.
+	ChannelID string `json:"channel_id" url:"channel_id"`
+	// When the message was sent, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
+	// The message ID.
+	ID string `json:"id" url:"id"`
+	// Always `message`.
+	Object MemberLastActivityMessageObject `json:"object" url:"object"`
+	// The message text without formatting. `null` when the message has no text, such as an attachment on its own.
+	PlainContent *string `json:"plain_content,omitempty" url:"plain_content,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MemberLastActivityMessage) GetAuthor() *UserSummary {
+	if m == nil {
+		return nil
+	}
+	return m.Author
+}
+
+func (m *MemberLastActivityMessage) GetChannelID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ChannelID
+}
+
+func (m *MemberLastActivityMessage) GetCreatedAt() string {
+	if m == nil {
+		return ""
+	}
+	return m.CreatedAt
+}
+
+func (m *MemberLastActivityMessage) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MemberLastActivityMessage) GetObject() MemberLastActivityMessageObject {
+	if m == nil {
+		return ""
+	}
+	return m.Object
+}
+
+func (m *MemberLastActivityMessage) GetPlainContent() *string {
+	if m == nil {
+		return nil
+	}
+	return m.PlainContent
+}
+
+func (m *MemberLastActivityMessage) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MemberLastActivityMessage) require(field *big.Int) {
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
+	}
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetAuthor sets the Author field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberLastActivityMessage) SetAuthor(author *UserSummary) {
+	m.Author = author
+	m.require(memberLastActivityMessageFieldAuthor)
+}
+
+// SetChannelID sets the ChannelID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberLastActivityMessage) SetChannelID(channelID string) {
+	m.ChannelID = channelID
+	m.require(memberLastActivityMessageFieldChannelID)
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberLastActivityMessage) SetCreatedAt(createdAt string) {
+	m.CreatedAt = createdAt
+	m.require(memberLastActivityMessageFieldCreatedAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberLastActivityMessage) SetID(id string) {
+	m.ID = id
+	m.require(memberLastActivityMessageFieldID)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberLastActivityMessage) SetObject(object MemberLastActivityMessageObject) {
+	m.Object = object
+	m.require(memberLastActivityMessageFieldObject)
+}
+
+// SetPlainContent sets the PlainContent field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberLastActivityMessage) SetPlainContent(plainContent *string) {
+	m.PlainContent = plainContent
+	m.require(memberLastActivityMessageFieldPlainContent)
+}
+
+func (m *MemberLastActivityMessage) UnmarshalJSON(data []byte) error {
+	type unmarshaler MemberLastActivityMessage
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MemberLastActivityMessage(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, memberLastActivityMessageNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MemberLastActivityMessage) MarshalJSON() ([]byte, error) {
+	type embed MemberLastActivityMessage
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MemberLastActivityMessage) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+// Always `message`.
+type MemberLastActivityMessageObject string
+
+const (
+	MemberLastActivityMessageObjectMessage MemberLastActivityMessageObject = "message"
+)
+
+func NewMemberLastActivityMessageObjectFromString(s string) (MemberLastActivityMessageObject, error) {
+	switch s {
+	case "message":
+		return MemberLastActivityMessageObjectMessage, nil
+	}
+	var t MemberLastActivityMessageObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MemberLastActivityMessageObject) Ptr() *MemberLastActivityMessageObject {
 	return &m
 }
 
