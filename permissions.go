@@ -212,6 +212,7 @@ const (
 	PermissionActionMemberPaymentMethodsRead          PermissionAction = "member:payment_methods:read"
 	PermissionActionMemberPaymentMethodsUse           PermissionAction = "member:payment_methods:use"
 	PermissionActionMemberPhoneRead                   PermissionAction = "member:phone:read"
+	PermissionActionMemberReportingLineUpdate         PermissionAction = "member:reporting_line:update"
 	PermissionActionMemberStatsExport                 PermissionAction = "member:stats:export"
 	PermissionActionMemberStatsRead                   PermissionAction = "member:stats:read"
 	PermissionActionMembershipCancel                  PermissionAction = "membership:cancel"
@@ -672,6 +673,8 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionMemberPaymentMethodsUse, nil
 	case "member:phone:read":
 		return PermissionActionMemberPhoneRead, nil
+	case "member:reporting_line:update":
+		return PermissionActionMemberReportingLineUpdate, nil
 	case "member:stats:export":
 		return PermissionActionMemberStatsExport, nil
 	case "member:stats:read":

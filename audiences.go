@@ -389,7 +389,7 @@ type Audience struct {
 	SourceAudienceID *string `json:"source_audience_id,omitempty" url:"source_audience_id,omitempty"`
 	// Membership source: an uploaded CSV, Whop People filters, or social engagement. Engagement audiences can no longer be created.
 	SourceType AudienceSourceType `json:"source_type" url:"source_type"`
-	// Current state of audience creation. `syncing` means Whop is sending matched rows to connected ad accounts. When a `pending` audience is waiting on something, such as an ad account to upload to, `error_message` says what. When status is `partial` or `failed`, `error_message` explains what went wrong.
+	// Current state of audience creation. When a `pending` audience is waiting on something, such as an ad account to upload to, `error_message` says what. When status is `partial` or `failed`, `error_message` explains what went wrong.
 	Status AudienceStatus `json:"status" url:"status"`
 	// Total members detected in the source — CSV rows for uploaded lists, matching people for automatic audiences. Always 0 for lookalikes and engagement audiences.
 	TotalRows float64 `json:"total_rows" url:"total_rows"`
@@ -995,13 +995,12 @@ func (a AudienceSourceType) Ptr() *AudienceSourceType {
 	return &a
 }
 
-// Current state of audience creation. `syncing` means Whop is sending matched rows to connected ad accounts. When a `pending` audience is waiting on something, such as an ad account to upload to, `error_message` says what. When status is `partial` or `failed`, `error_message` explains what went wrong.
+// Current state of audience creation. When a `pending` audience is waiting on something, such as an ad account to upload to, `error_message` says what. When status is `partial` or `failed`, `error_message` explains what went wrong.
 type AudienceStatus string
 
 const (
 	AudienceStatusPending    AudienceStatus = "pending"
 	AudienceStatusProcessing AudienceStatus = "processing"
-	AudienceStatusSyncing    AudienceStatus = "syncing"
 	AudienceStatusReady      AudienceStatus = "ready"
 	AudienceStatusPartial    AudienceStatus = "partial"
 	AudienceStatusFailed     AudienceStatus = "failed"
@@ -1013,8 +1012,6 @@ func NewAudienceStatusFromString(s string) (AudienceStatus, error) {
 		return AudienceStatusPending, nil
 	case "processing":
 		return AudienceStatusProcessing, nil
-	case "syncing":
-		return AudienceStatusSyncing, nil
 	case "ready":
 		return AudienceStatusReady, nil
 	case "partial":
