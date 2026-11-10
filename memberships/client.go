@@ -195,7 +195,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Updates a membership's metadata, scheduled cancellation, renewal payment method, renewal cadence, or next renewal date.
+// Updates a membership's metadata, scheduled cancellation, renewal payment method, renewal cadence, next renewal date, or renewal price.
 //
 // Example:
 //

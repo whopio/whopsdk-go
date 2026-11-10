@@ -4155,6 +4155,7 @@ var (
 	updateMembershipsRequestFieldCurrentPeriodEnd  = big.NewInt(1 << 3)
 	updateMembershipsRequestFieldMetadata          = big.NewInt(1 << 4)
 	updateMembershipsRequestFieldPaymentMethodID   = big.NewInt(1 << 5)
+	updateMembershipsRequestFieldRenewalPrice      = big.NewInt(1 << 6)
 )
 
 type UpdateMembershipsRequest struct {
@@ -4170,6 +4171,8 @@ type UpdateMembershipsRequest struct {
 	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
 	// The ID of a payment method the customer has saved with your account. Future renewals charge it, and an open past-due payment is retried on it right away. Requires the `member:payment_methods:manage` permission.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
+	// The amount future renewals charge, in the membership's renewal currency. Can only lower the current renewal price; raising a price is not supported here. Moves only this membership to the new price and emails the customer the change. Only for active or trialing renewing memberships billed by Whop whose payments are not paused. Cannot be combined with other fields.
+	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4224,6 +4227,13 @@ func (u *UpdateMembershipsRequest) SetMetadata(metadata map[string]any) {
 func (u *UpdateMembershipsRequest) SetPaymentMethodID(paymentMethodID *string) {
 	u.PaymentMethodID = paymentMethodID
 	u.require(updateMembershipsRequestFieldPaymentMethodID)
+}
+
+// SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMembershipsRequest) SetRenewalPrice(renewalPrice *float64) {
+	u.RenewalPrice = renewalPrice
+	u.require(updateMembershipsRequestFieldRenewalPrice)
 }
 
 func (u *UpdateMembershipsRequest) UnmarshalJSON(data []byte) error {
