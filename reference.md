@@ -41400,7 +41400,7 @@ client.Stats.Retrieve(
 <dl>
 <dd>
 
-**confidenceLevel:** `*float64` — Funnel only. Confidence level for whole-window final conversion intervals, for example 0.95. Requires mature_only=true. Exposure steps must each filter one user-randomized experiment.
+**confidenceLevel:** `*float64` — Funnel only. Confidence level for whole-window final conversion intervals, for example 0.95. Requires mature_only=true. Exposure steps must each filter one user- or visitor-randomized experiment.
     
 </dd>
 </dl>
@@ -51302,7 +51302,7 @@ client.Stats.TimeSeries.Retrieve(
 <dl>
 <dd>
 
-**confidenceLevel:** `*float64` — Funnel only. Confidence level for whole-window final conversion intervals, for example 0.95. Requires mature_only=true. Exposure steps must each filter one user-randomized experiment.
+**confidenceLevel:** `*float64` — Funnel only. Confidence level for whole-window final conversion intervals, for example 0.95. Requires mature_only=true. Exposure steps must each filter one user- or visitor-randomized experiment.
     
 </dd>
 </dl>
