@@ -9252,7 +9252,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"email_notification_preference\": \"all_admin_posts\",\n  \"experience\": {\n    \"id\": \"exp_xxxxxxxxxxxxxx\",\n    \"is_public\": true,\n    \"name\": \"Trading Signals Chat\"\n  },\n  \"id\": \"id\",\n  \"who_can_comment\": \"everyone\",\n  \"who_can_post\": \"everyone\"\n}",
+        "body": "{\n  \"banned_words\": [\n    \"banned_words\"\n  ],\n  \"banner_image\": {\n    \"content_type\": \"image/jpeg\",\n    \"filename\": \"document.pdf\",\n    \"id\": \"id\",\n    \"url\": \"https://media.whop.com/abc123/optimized.jpg\"\n  },\n  \"email_notification_preference\": \"all_admin_posts\",\n  \"experience\": {\n    \"id\": \"exp_xxxxxxxxxxxxxx\",\n    \"is_public\": true,\n    \"name\": \"Trading Signals Chat\"\n  },\n  \"id\": \"id\",\n  \"who_can_comment\": \"everyone\",\n  \"who_can_post\": \"everyone\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -9288,7 +9288,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"email_notification_preference\": \"all_admin_posts\",\n  \"experience\": {\n    \"id\": \"exp_xxxxxxxxxxxxxx\",\n    \"is_public\": true,\n    \"name\": \"Trading Signals Chat\"\n  },\n  \"id\": \"id\",\n  \"who_can_comment\": \"everyone\",\n  \"who_can_post\": \"everyone\"\n}",
+        "body": "{\n  \"banned_words\": [\n    \"banned_words\"\n  ],\n  \"banner_image\": {\n    \"content_type\": \"image/jpeg\",\n    \"filename\": \"document.pdf\",\n    \"id\": \"id\",\n    \"url\": \"https://media.whop.com/abc123/optimized.jpg\"\n  },\n  \"email_notification_preference\": \"all_admin_posts\",\n  \"experience\": {\n    \"id\": \"exp_xxxxxxxxxxxxxx\",\n    \"is_public\": true,\n    \"name\": \"Trading Signals Chat\"\n  },\n  \"id\": \"id\",\n  \"who_can_comment\": \"everyone\",\n  \"who_can_post\": \"everyone\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }

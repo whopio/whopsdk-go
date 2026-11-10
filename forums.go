@@ -116,15 +116,26 @@ func (r *RetrieveForumsRequest) SetID(id string) {
 }
 
 var (
-	forumFieldEmailNotificationPreference = big.NewInt(1 << 0)
-	forumFieldExperience                  = big.NewInt(1 << 1)
-	forumFieldID                          = big.NewInt(1 << 2)
-	forumFieldWhoCanComment               = big.NewInt(1 << 3)
-	forumFieldWhoCanPost                  = big.NewInt(1 << 4)
+	forumFieldBannedWords                 = big.NewInt(1 << 0)
+	forumFieldBannerImage                 = big.NewInt(1 << 1)
+	forumFieldEmailNotificationPreference = big.NewInt(1 << 2)
+	forumFieldExperience                  = big.NewInt(1 << 3)
+	forumFieldID                          = big.NewInt(1 << 4)
+	forumFieldWhoCanComment               = big.NewInt(1 << 5)
+	forumFieldWhoCanPost                  = big.NewInt(1 << 6)
 )
+
+// forumNullableFields maps the wire names of Forum's nullable fields (required or optional) to their field bits.
+var forumNullableFields = map[string]*big.Int{
+	"banner_image": forumFieldBannerImage,
+}
 
 // A discussion forum where members can create posts, comment, and react, belonging to an experience.
 type Forum struct {
+	// A list of words that are automatically filtered from posts in this forum.
+	BannedWords []string `json:"banned_words" url:"banned_words"`
+	// The banner image displayed at the top of the forum page. Null if no banner has been uploaded.
+	BannerImage *ForumBannerImage `json:"banner_image,omitempty" url:"banner_image,omitempty"`
 	// The email notification setting that controls which posts trigger email alerts. One of: all_admin_posts, only_weekly_summary, none.
 	EmailNotificationPreference ForumEmailNotificationPreferences `json:"email_notification_preference" url:"email_notification_preference"`
 	// The parent experience that this forum belongs to.
@@ -141,6 +152,20 @@ type Forum struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (f *Forum) GetBannedWords() []string {
+	if f == nil {
+		return nil
+	}
+	return f.BannedWords
+}
+
+func (f *Forum) GetBannerImage() *ForumBannerImage {
+	if f == nil {
+		return nil
+	}
+	return f.BannerImage
 }
 
 func (f *Forum) GetEmailNotificationPreference() ForumEmailNotificationPreferences {
@@ -194,6 +219,20 @@ func (f *Forum) require(field *big.Int) {
 	f.explicitFields = next
 }
 
+// SetBannedWords sets the BannedWords field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *Forum) SetBannedWords(bannedWords []string) {
+	f.BannedWords = bannedWords
+	f.require(forumFieldBannedWords)
+}
+
+// SetBannerImage sets the BannerImage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *Forum) SetBannerImage(bannerImage *ForumBannerImage) {
+	f.BannerImage = bannerImage
+	f.require(forumFieldBannerImage)
+}
+
 // SetEmailNotificationPreference sets the EmailNotificationPreference field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (f *Forum) SetEmailNotificationPreference(emailNotificationPreference ForumEmailNotificationPreferences) {
@@ -241,6 +280,13 @@ func (f *Forum) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, forumNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
 	f.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -257,6 +303,159 @@ func (f *Forum) MarshalJSON() ([]byte, error) {
 }
 
 func (f *Forum) String() string {
+	if f == nil {
+		return "<nil>"
+	}
+	if len(f.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(f.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(f); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", f)
+}
+
+var (
+	forumBannerImageFieldContentType = big.NewInt(1 << 0)
+	forumBannerImageFieldFilename    = big.NewInt(1 << 1)
+	forumBannerImageFieldID          = big.NewInt(1 << 2)
+	forumBannerImageFieldURL         = big.NewInt(1 << 3)
+)
+
+// forumBannerImageNullableFields maps the wire names of ForumBannerImage's nullable fields (required or optional) to their field bits.
+var forumBannerImageNullableFields = map[string]*big.Int{
+	"content_type": forumBannerImageFieldContentType,
+	"filename":     forumBannerImageFieldFilename,
+	"url":          forumBannerImageFieldURL,
+}
+
+// The banner image displayed at the top of the forum page. Null if no banner has been uploaded.
+type ForumBannerImage struct {
+	// Uploaded file MIME type, such as image/jpeg, video/mp4, or audio/mpeg.
+	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
+	// The original filename of the uploaded attachment, including its file extension.
+	Filename *string `json:"filename,omitempty" url:"filename,omitempty"`
+	// Represents a unique identifier that is Base64 obfuscated. It is often used to refetch an object or as key for a cache. The ID type appears in a JSON response as a String; however, it is not intended to be human-readable. When expected as an input type, any string (such as `"VXNlci0xMA=="`) or integer (such as `4`) input value will be accepted as an ID.
+	ID string `json:"id" url:"id"`
+	// A pre-optimized URL for rendering this attachment on the client. This should be used for displaying attachments in apps.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (f *ForumBannerImage) GetContentType() *string {
+	if f == nil {
+		return nil
+	}
+	return f.ContentType
+}
+
+func (f *ForumBannerImage) GetFilename() *string {
+	if f == nil {
+		return nil
+	}
+	return f.Filename
+}
+
+func (f *ForumBannerImage) GetID() string {
+	if f == nil {
+		return ""
+	}
+	return f.ID
+}
+
+func (f *ForumBannerImage) GetURL() *string {
+	if f == nil {
+		return nil
+	}
+	return f.URL
+}
+
+func (f *ForumBannerImage) GetExtraProperties() map[string]interface{} {
+	if f == nil {
+		return nil
+	}
+	return f.extraProperties
+}
+
+func (f *ForumBannerImage) require(field *big.Int) {
+	next := new(big.Int)
+	if f.explicitFields != nil {
+		next.Set(f.explicitFields)
+	}
+	next.Or(next, field)
+	f.explicitFields = next
+}
+
+// SetContentType sets the ContentType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForumBannerImage) SetContentType(contentType *string) {
+	f.ContentType = contentType
+	f.require(forumBannerImageFieldContentType)
+}
+
+// SetFilename sets the Filename field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForumBannerImage) SetFilename(filename *string) {
+	f.Filename = filename
+	f.require(forumBannerImageFieldFilename)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForumBannerImage) SetID(id string) {
+	f.ID = id
+	f.require(forumBannerImageFieldID)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *ForumBannerImage) SetURL(url *string) {
+	f.URL = url
+	f.require(forumBannerImageFieldURL)
+}
+
+func (f *ForumBannerImage) UnmarshalJSON(data []byte) error {
+	type unmarshaler ForumBannerImage
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*f = ForumBannerImage(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *f)
+	if err != nil {
+		return err
+	}
+	f.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, forumBannerImageNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		f.require(presentFields)
+	}
+	f.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (f *ForumBannerImage) MarshalJSON() ([]byte, error) {
+	type embed ForumBannerImage
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*f),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, f.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (f *ForumBannerImage) String() string {
 	if f == nil {
 		return "<nil>"
 	}
