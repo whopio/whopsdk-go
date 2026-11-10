@@ -618,22 +618,25 @@ var (
 	userFieldBanner                            = big.NewInt(1 << 3)
 	userFieldBio                               = big.NewInt(1 << 4)
 	userFieldCards                             = big.NewInt(1 << 5)
-	userFieldCreatedAt                         = big.NewInt(1 << 6)
-	userFieldDateOfBirth                       = big.NewInt(1 << 7)
-	userFieldEarningsUsd                       = big.NewInt(1 << 8)
-	userFieldEmail                             = big.NewInt(1 << 9)
-	userFieldID                                = big.NewInt(1 << 10)
-	userFieldLevel                             = big.NewInt(1 << 11)
-	userFieldName                              = big.NewInt(1 << 12)
-	userFieldProfilePicture                    = big.NewInt(1 << 13)
-	userFieldSocialLinks                       = big.NewInt(1 << 14)
-	userFieldTotalUsd                          = big.NewInt(1 << 15)
-	userFieldTrading                           = big.NewInt(1 << 16)
-	userFieldUsername                          = big.NewInt(1 << 17)
-	userFieldVerification                      = big.NewInt(1 << 18)
-	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 19)
-	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 20)
-	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 21)
+	userFieldCity                              = big.NewInt(1 << 6)
+	userFieldCountry                           = big.NewInt(1 << 7)
+	userFieldCreatedAt                         = big.NewInt(1 << 8)
+	userFieldDateOfBirth                       = big.NewInt(1 << 9)
+	userFieldEarningsUsd                       = big.NewInt(1 << 10)
+	userFieldEmail                             = big.NewInt(1 << 11)
+	userFieldID                                = big.NewInt(1 << 12)
+	userFieldLevel                             = big.NewInt(1 << 13)
+	userFieldName                              = big.NewInt(1 << 14)
+	userFieldProfilePicture                    = big.NewInt(1 << 15)
+	userFieldSocialLinks                       = big.NewInt(1 << 16)
+	userFieldState                             = big.NewInt(1 << 17)
+	userFieldTotalUsd                          = big.NewInt(1 << 18)
+	userFieldTrading                           = big.NewInt(1 << 19)
+	userFieldUsername                          = big.NewInt(1 << 20)
+	userFieldVerification                      = big.NewInt(1 << 21)
+	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 22)
+	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 23)
+	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 24)
 )
 
 // userNullableFields maps the wire names of User's nullable fields (required or optional) to their field bits.
@@ -643,11 +646,14 @@ var userNullableFields = map[string]*big.Int{
 	"banner":                                userFieldBanner,
 	"bio":                                   userFieldBio,
 	"cards":                                 userFieldCards,
+	"city":                                  userFieldCity,
+	"country":                               userFieldCountry,
 	"date_of_birth":                         userFieldDateOfBirth,
 	"earnings_usd":                          userFieldEarningsUsd,
 	"email":                                 userFieldEmail,
 	"level":                                 userFieldLevel,
 	"name":                                  userFieldName,
+	"state":                                 userFieldState,
 	"total_usd":                             userFieldTotalUsd,
 	"trading":                               userFieldTrading,
 	"whop_partner_enabled_at":               userFieldWhopPartnerEnabledAt,
@@ -667,6 +673,10 @@ type User struct {
 	Bio *string `json:"bio,omitempty" url:"bio,omitempty"`
 	// Where the user's personal card application stands. Populated only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise, or when the user has never applied for a card.
 	Cards *AccountCards `json:"cards,omitempty" url:"cards,omitempty"`
+	// The user's city, derived from their IP address. `null` when unknown or the user turned off location sharing.
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// The user's country as an ISO 3166-1 alpha-2 code, derived from their IP address. `null` when unknown or the user turned off location sharing.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
 	// When the user was created, as an ISO 8601 timestamp
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// The user's date of birth as an ISO 8601 date, like `1998-04-23`. Populated only on the self view (retrieved with the reserved id `me`) for callers with email-read scope; `null` otherwise, or when the user has not set one.
@@ -684,6 +694,8 @@ type User struct {
 	// Avatar wrapper; its `url` is always present, using a generated placeholder when the user set no picture.
 	ProfilePicture *UserProfilePicture `json:"profile_picture" url:"profile_picture"`
 	SocialLinks    []*UserSocialLink   `json:"social_links" url:"social_links"`
+	// The user's state or region, derived from their IP address. `null` when unknown or the user turned off location sharing.
+	State *string `json:"state,omitempty" url:"state,omitempty"`
 	// Total USD value of the user's personal holdings in `balances`, across those with known exchange rates. Computed only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise, when `include_balance=false`, or when the balance source is unavailable.
 	TotalUsd *string `json:"total_usd,omitempty" url:"total_usd,omitempty"`
 	// The trading account address and its WebSocket subscriptions. Opt in with `include_trading=true` when retrieving `me`. `null` otherwise, without trading permission, or without an Ethereum wallet.
@@ -748,6 +760,20 @@ func (u *User) GetCards() *AccountCards {
 	return u.Cards
 }
 
+func (u *User) GetCity() *string {
+	if u == nil {
+		return nil
+	}
+	return u.City
+}
+
+func (u *User) GetCountry() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Country
+}
+
 func (u *User) GetCreatedAt() string {
 	if u == nil {
 		return ""
@@ -809,6 +835,13 @@ func (u *User) GetSocialLinks() []*UserSocialLink {
 		return nil
 	}
 	return u.SocialLinks
+}
+
+func (u *User) GetState() *string {
+	if u == nil {
+		return nil
+	}
+	return u.State
 }
 
 func (u *User) GetTotalUsd() *string {
@@ -918,6 +951,20 @@ func (u *User) SetCards(cards *AccountCards) {
 	u.require(userFieldCards)
 }
 
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetCity(city *string) {
+	u.City = city
+	u.require(userFieldCity)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetCountry(country *string) {
+	u.Country = country
+	u.require(userFieldCountry)
+}
+
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *User) SetCreatedAt(createdAt string) {
@@ -979,6 +1026,13 @@ func (u *User) SetProfilePicture(profilePicture *UserProfilePicture) {
 func (u *User) SetSocialLinks(socialLinks []*UserSocialLink) {
 	u.SocialLinks = socialLinks
 	u.require(userFieldSocialLinks)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetState(state *string) {
+	u.State = state
+	u.require(userFieldState)
 }
 
 // SetTotalUsd sets the TotalUsd field and marks it as non-optional;
