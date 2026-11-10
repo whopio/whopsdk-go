@@ -11,11 +11,13 @@ import (
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	option "github.com/whopio/whopsdk-go/v2/option"
 	direct "github.com/whopio/whopsdk-go/v2/payments/direct"
+	levelsrebate "github.com/whopio/whopsdk-go/v2/payments/levelsrebate"
 )
 
 type Client struct {
 	WithRawResponse *RawClient
 	Direct          *direct.Client
+	LevelsRebate    *levelsrebate.Client
 
 	options *core.RequestOptions
 	baseURL string
@@ -29,6 +31,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 	return &Client{
 		Direct:          direct.NewClient(options),
+		LevelsRebate:    levelsrebate.NewClient(options),
 		WithRawResponse: NewRawClient(options),
 		options:         options,
 		baseURL:         options.BaseURL,

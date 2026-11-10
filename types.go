@@ -54864,6 +54864,361 @@ func (p *PaymentLegacyVerificationChecks) String() string {
 }
 
 var (
+	paymentLevelsRebateFieldAmount                   = big.NewInt(1 << 0)
+	paymentLevelsRebateFieldCoveredShare             = big.NewInt(1 << 1)
+	paymentLevelsRebateFieldEffectiveRatePercentage  = big.NewInt(1 << 2)
+	paymentLevelsRebateFieldIneligibleReason         = big.NewInt(1 << 3)
+	paymentLevelsRebateFieldLevel                    = big.NewInt(1 << 4)
+	paymentLevelsRebateFieldMonthStartedAt           = big.NewInt(1 << 5)
+	paymentLevelsRebateFieldPaymentID                = big.NewInt(1 << 6)
+	paymentLevelsRebateFieldProcessingRatePercentage = big.NewInt(1 << 7)
+	paymentLevelsRebateFieldRegion                   = big.NewInt(1 << 8)
+	paymentLevelsRebateFieldStatus                   = big.NewInt(1 << 9)
+)
+
+// paymentLevelsRebateNullableFields maps the wire names of PaymentLevelsRebate's nullable fields (required or optional) to their field bits.
+var paymentLevelsRebateNullableFields = map[string]*big.Int{
+	"amount":                     paymentLevelsRebateFieldAmount,
+	"covered_share":              paymentLevelsRebateFieldCoveredShare,
+	"effective_rate_percentage":  paymentLevelsRebateFieldEffectiveRatePercentage,
+	"ineligible_reason":          paymentLevelsRebateFieldIneligibleReason,
+	"level":                      paymentLevelsRebateFieldLevel,
+	"month_started_at":           paymentLevelsRebateFieldMonthStartedAt,
+	"processing_rate_percentage": paymentLevelsRebateFieldProcessingRatePercentage,
+	"region":                     paymentLevelsRebateFieldRegion,
+}
+
+type PaymentLevelsRebate struct {
+	// Part of the account's monthly rebate this payment earned, in the currency it settled in. The rebate is paid to the account as one sum, so the payment's own amounts and fees don't change. `null` unless `status` is `rebated`.
+	Amount *Money `json:"amount,omitempty" url:"amount,omitempty"`
+	// How much of the payment the month's spend covered, from `0` to `1`: `1` for every rebated payment but the month's last, which can be covered in part, so its rebate is that share of the fee above the level's rate. `null` unless `status` is `rebated`.
+	CoveredShare *float64 `json:"covered_share,omitempty" url:"covered_share,omitempty"`
+	// Processing fee as a percentage of the amount it was charged on, before the rebate, where `2.7` means 2.7%. `null` unless `status` is `rebated`.
+	EffectiveRatePercentage *float64 `json:"effective_rate_percentage,omitempty" url:"effective_rate_percentage,omitempty"`
+	// Why the payment can't earn a rebate: `not_card_payment`, `before_levels` (made before Whop Levels started), `not_in_levels` (its account wasn't in Whop Levels that month), `fee_not_posted`, `fee_at_level_rate` (its fee was already at or below the level's rate) or `no_level_rate` (its fee matched no level rate). `null` unless `status` is `ineligible`.
+	IneligibleReason *PaymentLevelsRebateIneligibleReason `json:"ineligible_reason,omitempty" url:"ineligible_reason,omitempty"`
+	// Level the account's month closed at, from `0` up to `10`. `null` until that month's close has applied to the payment, and for a payment that can't earn a rebate before then, such as a non-card payment.
+	Level *int `json:"level,omitempty" url:"level,omitempty"`
+	// Start of the UTC month whose close covers this payment, as an ISO 8601 timestamp. `null` before the processing fee has posted, and for a payment that can't earn a rebate before then, such as a non-card payment.
+	MonthStartedAt *string `json:"month_started_at,omitempty" url:"month_started_at,omitempty"`
+	// Payment ID, prefixed `pay_`.
+	PaymentID string `json:"payment_id" url:"payment_id"`
+	// Card processing percentage at `level` for cards from `region`, where `2.1` means 2.1%. The rebate is the fee above it. `null` unless `status` is `rebated`.
+	ProcessingRatePercentage *float64 `json:"processing_rate_percentage,omitempty" url:"processing_rate_percentage,omitempty"`
+	// Card region the processing fee was charged in, which sets `processing_rate_percentage`. `null` unless `status` is `rebated`.
+	Region *PaymentLevelsRebateRegion `json:"region,omitempty" url:"region,omitempty"`
+	// `rebated` when the payment earned part of its account's monthly Whop Levels rebate. `pending` until the month its processing fee posted in has closed. `not_covered` when the account's spend that month ran out before this payment. `ineligible` when it can't earn one; `ineligible_reason` says why.
+	Status PaymentLevelsRebateStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentLevelsRebate) GetAmount() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.Amount
+}
+
+func (p *PaymentLevelsRebate) GetCoveredShare() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.CoveredShare
+}
+
+func (p *PaymentLevelsRebate) GetEffectiveRatePercentage() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.EffectiveRatePercentage
+}
+
+func (p *PaymentLevelsRebate) GetIneligibleReason() *PaymentLevelsRebateIneligibleReason {
+	if p == nil {
+		return nil
+	}
+	return p.IneligibleReason
+}
+
+func (p *PaymentLevelsRebate) GetLevel() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Level
+}
+
+func (p *PaymentLevelsRebate) GetMonthStartedAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.MonthStartedAt
+}
+
+func (p *PaymentLevelsRebate) GetPaymentID() string {
+	if p == nil {
+		return ""
+	}
+	return p.PaymentID
+}
+
+func (p *PaymentLevelsRebate) GetProcessingRatePercentage() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.ProcessingRatePercentage
+}
+
+func (p *PaymentLevelsRebate) GetRegion() *PaymentLevelsRebateRegion {
+	if p == nil {
+		return nil
+	}
+	return p.Region
+}
+
+func (p *PaymentLevelsRebate) GetStatus() PaymentLevelsRebateStatus {
+	if p == nil {
+		return ""
+	}
+	return p.Status
+}
+
+func (p *PaymentLevelsRebate) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaymentLevelsRebate) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLevelsRebate) SetAmount(amount *Money) {
+	p.Amount = amount
+	p.require(paymentLevelsRebateFieldAmount)
+}
+
+// SetCoveredShare sets the CoveredShare field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLevelsRebate) SetCoveredShare(coveredShare *float64) {
+	p.CoveredShare = coveredShare
+	p.require(paymentLevelsRebateFieldCoveredShare)
+}
+
+// SetEffectiveRatePercentage sets the EffectiveRatePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLevelsRebate) SetEffectiveRatePercentage(effectiveRatePercentage *float64) {
+	p.EffectiveRatePercentage = effectiveRatePercentage
+	p.require(paymentLevelsRebateFieldEffectiveRatePercentage)
+}
+
+// SetIneligibleReason sets the IneligibleReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLevelsRebate) SetIneligibleReason(ineligibleReason *PaymentLevelsRebateIneligibleReason) {
+	p.IneligibleReason = ineligibleReason
+	p.require(paymentLevelsRebateFieldIneligibleReason)
+}
+
+// SetLevel sets the Level field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLevelsRebate) SetLevel(level *int) {
+	p.Level = level
+	p.require(paymentLevelsRebateFieldLevel)
+}
+
+// SetMonthStartedAt sets the MonthStartedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLevelsRebate) SetMonthStartedAt(monthStartedAt *string) {
+	p.MonthStartedAt = monthStartedAt
+	p.require(paymentLevelsRebateFieldMonthStartedAt)
+}
+
+// SetPaymentID sets the PaymentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLevelsRebate) SetPaymentID(paymentID string) {
+	p.PaymentID = paymentID
+	p.require(paymentLevelsRebateFieldPaymentID)
+}
+
+// SetProcessingRatePercentage sets the ProcessingRatePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLevelsRebate) SetProcessingRatePercentage(processingRatePercentage *float64) {
+	p.ProcessingRatePercentage = processingRatePercentage
+	p.require(paymentLevelsRebateFieldProcessingRatePercentage)
+}
+
+// SetRegion sets the Region field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLevelsRebate) SetRegion(region *PaymentLevelsRebateRegion) {
+	p.Region = region
+	p.require(paymentLevelsRebateFieldRegion)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLevelsRebate) SetStatus(status PaymentLevelsRebateStatus) {
+	p.Status = status
+	p.require(paymentLevelsRebateFieldStatus)
+}
+
+func (p *PaymentLevelsRebate) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentLevelsRebate
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentLevelsRebate(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentLevelsRebateNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentLevelsRebate) MarshalJSON() ([]byte, error) {
+	type embed PaymentLevelsRebate
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaymentLevelsRebate) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Why the payment can't earn a rebate: `not_card_payment`, `before_levels` (made before Whop Levels started), `not_in_levels` (its account wasn't in Whop Levels that month), `fee_not_posted`, `fee_at_level_rate` (its fee was already at or below the level's rate) or `no_level_rate` (its fee matched no level rate). `null` unless `status` is `ineligible`.
+type PaymentLevelsRebateIneligibleReason string
+
+const (
+	PaymentLevelsRebateIneligibleReasonNotCardPayment PaymentLevelsRebateIneligibleReason = "not_card_payment"
+	PaymentLevelsRebateIneligibleReasonBeforeLevels   PaymentLevelsRebateIneligibleReason = "before_levels"
+	PaymentLevelsRebateIneligibleReasonNotInLevels    PaymentLevelsRebateIneligibleReason = "not_in_levels"
+	PaymentLevelsRebateIneligibleReasonFeeNotPosted   PaymentLevelsRebateIneligibleReason = "fee_not_posted"
+	PaymentLevelsRebateIneligibleReasonFeeAtLevelRate PaymentLevelsRebateIneligibleReason = "fee_at_level_rate"
+	PaymentLevelsRebateIneligibleReasonNoLevelRate    PaymentLevelsRebateIneligibleReason = "no_level_rate"
+)
+
+func NewPaymentLevelsRebateIneligibleReasonFromString(s string) (PaymentLevelsRebateIneligibleReason, error) {
+	switch s {
+	case "not_card_payment":
+		return PaymentLevelsRebateIneligibleReasonNotCardPayment, nil
+	case "before_levels":
+		return PaymentLevelsRebateIneligibleReasonBeforeLevels, nil
+	case "not_in_levels":
+		return PaymentLevelsRebateIneligibleReasonNotInLevels, nil
+	case "fee_not_posted":
+		return PaymentLevelsRebateIneligibleReasonFeeNotPosted, nil
+	case "fee_at_level_rate":
+		return PaymentLevelsRebateIneligibleReasonFeeAtLevelRate, nil
+	case "no_level_rate":
+		return PaymentLevelsRebateIneligibleReasonNoLevelRate, nil
+	}
+	var t PaymentLevelsRebateIneligibleReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentLevelsRebateIneligibleReason) Ptr() *PaymentLevelsRebateIneligibleReason {
+	return &p
+}
+
+// Card region the processing fee was charged in, which sets `processing_rate_percentage`. `null` unless `status` is `rebated`.
+type PaymentLevelsRebateRegion string
+
+const (
+	PaymentLevelsRebateRegionUsAndCanada          PaymentLevelsRebateRegion = "us_and_canada"
+	PaymentLevelsRebateRegionEuropeUkAndAustralia PaymentLevelsRebateRegion = "europe_uk_and_australia"
+	PaymentLevelsRebateRegionLatinAmerica         PaymentLevelsRebateRegion = "latin_america"
+	PaymentLevelsRebateRegionPeru                 PaymentLevelsRebateRegion = "peru"
+	PaymentLevelsRebateRegionBrazil               PaymentLevelsRebateRegion = "brazil"
+)
+
+func NewPaymentLevelsRebateRegionFromString(s string) (PaymentLevelsRebateRegion, error) {
+	switch s {
+	case "us_and_canada":
+		return PaymentLevelsRebateRegionUsAndCanada, nil
+	case "europe_uk_and_australia":
+		return PaymentLevelsRebateRegionEuropeUkAndAustralia, nil
+	case "latin_america":
+		return PaymentLevelsRebateRegionLatinAmerica, nil
+	case "peru":
+		return PaymentLevelsRebateRegionPeru, nil
+	case "brazil":
+		return PaymentLevelsRebateRegionBrazil, nil
+	}
+	var t PaymentLevelsRebateRegion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentLevelsRebateRegion) Ptr() *PaymentLevelsRebateRegion {
+	return &p
+}
+
+// `rebated` when the payment earned part of its account's monthly Whop Levels rebate. `pending` until the month its processing fee posted in has closed. `not_covered` when the account's spend that month ran out before this payment. `ineligible` when it can't earn one; `ineligible_reason` says why.
+type PaymentLevelsRebateStatus string
+
+const (
+	PaymentLevelsRebateStatusRebated    PaymentLevelsRebateStatus = "rebated"
+	PaymentLevelsRebateStatusPending    PaymentLevelsRebateStatus = "pending"
+	PaymentLevelsRebateStatusNotCovered PaymentLevelsRebateStatus = "not_covered"
+	PaymentLevelsRebateStatusIneligible PaymentLevelsRebateStatus = "ineligible"
+)
+
+func NewPaymentLevelsRebateStatusFromString(s string) (PaymentLevelsRebateStatus, error) {
+	switch s {
+	case "rebated":
+		return PaymentLevelsRebateStatusRebated, nil
+	case "pending":
+		return PaymentLevelsRebateStatusPending, nil
+	case "not_covered":
+		return PaymentLevelsRebateStatusNotCovered, nil
+	case "ineligible":
+		return PaymentLevelsRebateStatusIneligible, nil
+	}
+	var t PaymentLevelsRebateStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentLevelsRebateStatus) Ptr() *PaymentLevelsRebateStatus {
+	return &p
+}
+
+var (
 	paymentListItemFieldAmountAfterFees         = big.NewInt(1 << 0)
 	paymentListItemFieldApplicationFee          = big.NewInt(1 << 1)
 	paymentListItemFieldAutoRefunded            = big.NewInt(1 << 2)
