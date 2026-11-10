@@ -564,7 +564,7 @@ type ReportStatsAdsRequest struct {
 	AdID string `json:"ad_id" url:"-"`
 	// The ad's clicks in the hour so far, at most `impressions`. Zero when left out.
 	Clicks *ReportStatsAdsRequestClicks `json:"clicks,omitempty" url:"-"`
-	// Start of the hour, on the hour, within the last 24 hours.
+	// Start of the hour, on the hour, for an hour that has already started.
 	HourStartedAt time.Time `json:"hour_started_at" url:"-"`
 	// The ad's impressions in the hour so far. Zero when left out.
 	Impressions *ReportStatsAdsRequestImpressions `json:"impressions,omitempty" url:"-"`
