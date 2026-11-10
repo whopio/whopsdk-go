@@ -228,6 +228,33 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
+// Attributes the whole campaign and its daily budget to the calling user as its runner. One runner holds a campaign at a time. Takes the runner's Whop session, or a user API key with `ad_campaign:update`, plus active advertiser-supplier program access; everyone else gets a 404. Returns 403 until the caller has verified their identity and added a phone number and a social account, 409 when another user holds the campaign, and changes nothing when the caller already holds it.
+//
+// Example:
+//
+//	request := &whopsdk.ClaimAdCampaignsRequest{
+//	    ID: "id",
+//	}
+//	client.AdCampaigns.Claim(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Claim(
+	ctx context.Context,
+	request *whopsdk.ClaimAdCampaignsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.AdCampaign, error) {
+	response, err := c.WithRawResponse.Claim(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Creates copies of the campaign in `duplicating` status and returns them; each copy transitions to `draft` once duplication completes. Poll each returned campaign until it leaves `duplicating` — a copy that could not be completed is deleted and returns 404.
 //
 // Example:

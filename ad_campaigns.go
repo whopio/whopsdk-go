@@ -11,6 +11,34 @@ import (
 )
 
 var (
+	claimAdCampaignsRequestFieldID = big.NewInt(1 << 0)
+)
+
+type ClaimAdCampaignsRequest struct {
+	// The ad campaign ID.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *ClaimAdCampaignsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ClaimAdCampaignsRequest) SetID(id string) {
+	c.ID = id
+	c.require(claimAdCampaignsRequestFieldID)
+}
+
+var (
 	createAdCampaignsRequestFieldAccountID            = big.NewInt(1 << 0)
 	createAdCampaignsRequestFieldBudgetAmount         = big.NewInt(1 << 1)
 	createAdCampaignsRequestFieldBudgetAmountLocal    = big.NewInt(1 << 2)
