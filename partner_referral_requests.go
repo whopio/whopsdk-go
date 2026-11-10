@@ -298,11 +298,12 @@ var (
 	partnerReferralRequestFieldMaxRedemptions   = big.NewInt(1 << 5)
 	partnerReferralRequestFieldMemberID         = big.NewInt(1 << 6)
 	partnerReferralRequestFieldPartner          = big.NewInt(1 << 7)
-	partnerReferralRequestFieldRequestType      = big.NewInt(1 << 8)
-	partnerReferralRequestFieldRewards          = big.NewInt(1 << 9)
-	partnerReferralRequestFieldStatus           = big.NewInt(1 << 10)
-	partnerReferralRequestFieldUpdatedAt        = big.NewInt(1 << 11)
-	partnerReferralRequestFieldUser             = big.NewInt(1 << 12)
+	partnerReferralRequestFieldReferringAccount = big.NewInt(1 << 8)
+	partnerReferralRequestFieldRequestType      = big.NewInt(1 << 9)
+	partnerReferralRequestFieldRewards          = big.NewInt(1 << 10)
+	partnerReferralRequestFieldStatus           = big.NewInt(1 << 11)
+	partnerReferralRequestFieldUpdatedAt        = big.NewInt(1 << 12)
+	partnerReferralRequestFieldUser             = big.NewInt(1 << 13)
 )
 
 // partnerReferralRequestNullableFields maps the wire names of PartnerReferralRequest's nullable fields (required or optional) to their field bits.
@@ -312,6 +313,7 @@ var partnerReferralRequestNullableFields = map[string]*big.Int{
 	"code":               partnerReferralRequestFieldCode,
 	"max_redemptions":    partnerReferralRequestFieldMaxRedemptions,
 	"member_id":          partnerReferralRequestFieldMemberID,
+	"referring_account":  partnerReferralRequestFieldReferringAccount,
 	"status":             partnerReferralRequestFieldStatus,
 	"user":               partnerReferralRequestFieldUser,
 }
@@ -333,6 +335,8 @@ type PartnerReferralRequest struct {
 	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
 	// Public profile of the requesting partner.
 	Partner *UserSummary `json:"partner" url:"partner"`
+	// Business the partner sent this request on behalf of, when the referral belongs to their team. `null` for a personal referral.
+	ReferringAccount *AccountSummary `json:"referring_account,omitempty" url:"referring_account,omitempty"`
 	// How the referral request was initiated.
 	RequestType PartnerReferralRequestRequestType `json:"request_type" url:"request_type"`
 	Rewards     []*PartnerReferralReward          `json:"rewards" url:"rewards"`
@@ -404,6 +408,13 @@ func (p *PartnerReferralRequest) GetPartner() *UserSummary {
 		return nil
 	}
 	return p.Partner
+}
+
+func (p *PartnerReferralRequest) GetReferringAccount() *AccountSummary {
+	if p == nil {
+		return nil
+	}
+	return p.ReferringAccount
 }
 
 func (p *PartnerReferralRequest) GetRequestType() PartnerReferralRequestRequestType {
@@ -511,6 +522,13 @@ func (p *PartnerReferralRequest) SetMemberID(memberID *string) {
 func (p *PartnerReferralRequest) SetPartner(partner *UserSummary) {
 	p.Partner = partner
 	p.require(partnerReferralRequestFieldPartner)
+}
+
+// SetReferringAccount sets the ReferringAccount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralRequest) SetReferringAccount(referringAccount *AccountSummary) {
+	p.ReferringAccount = referringAccount
+	p.require(partnerReferralRequestFieldReferringAccount)
 }
 
 // SetRequestType sets the RequestType field and marks it as non-optional;

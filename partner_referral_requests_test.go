@@ -845,6 +845,14 @@ func TestSettersPartnerReferralRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetReferringAccount", func(t *testing.T) {
+		obj := &PartnerReferralRequest{}
+		var fernTestValueReferringAccount *AccountSummary
+		obj.SetReferringAccount(fernTestValueReferringAccount)
+		assert.Equal(t, fernTestValueReferringAccount, obj.ReferringAccount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetRequestType", func(t *testing.T) {
 		obj := &PartnerReferralRequest{}
 		var fernTestValueRequestType PartnerReferralRequestRequestType
@@ -1130,6 +1138,39 @@ func TestGettersPartnerReferralRequest(t *testing.T) {
 			}
 		}()
 		_ = obj.GetPartner() // Should return zero value
+	})
+
+	t.Run("GetReferringAccount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerReferralRequest{}
+		var expected *AccountSummary
+		obj.ReferringAccount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetReferringAccount(), "getter should return the property value")
+	})
+
+	t.Run("GetReferringAccount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerReferralRequest{}
+		obj.ReferringAccount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetReferringAccount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetReferringAccount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PartnerReferralRequest
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetReferringAccount() // Should return zero value
 	})
 
 	t.Run("GetRequestType", func(t *testing.T) {
@@ -1505,6 +1546,37 @@ func TestSettersMarkExplicitPartnerReferralRequest(t *testing.T) {
 
 		// Act
 		obj.SetPartner(fernTestValuePartner)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetReferringAccount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerReferralRequest{}
+		var fernTestValueReferringAccount *AccountSummary
+
+		// Act
+		obj.SetReferringAccount(fernTestValueReferringAccount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4634,6 +4706,7 @@ func TestRequiredNullableRoundTripPartnerReferralRequest(t *testing.T) {
 		"code",
 		"max_redemptions",
 		"member_id",
+		"referring_account",
 		"status",
 		"user",
 	}
@@ -4648,7 +4721,7 @@ func TestRequiredNullableRoundTripPartnerReferralRequest(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PartnerReferralRequest
-		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"authorized_user_id":null,"code":null,"max_redemptions":null,"member_id":null,"status":null,"user":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"authorized_user_id":null,"code":null,"max_redemptions":null,"member_id":null,"referring_account":null,"status":null,"user":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
