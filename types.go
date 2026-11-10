@@ -34016,27 +34016,35 @@ func (l LessonTypes) Ptr() *LessonTypes {
 }
 
 var (
-	marketFieldID             = big.NewInt(1 << 0)
-	marketFieldInstrumentType = big.NewInt(1 << 1)
-	marketFieldMaxLeverage    = big.NewInt(1 << 2)
-	marketFieldPrice          = big.NewInt(1 << 3)
-	marketFieldSizeDecimals   = big.NewInt(1 << 4)
+	marketFieldChange24HPercentage = big.NewInt(1 << 0)
+	marketFieldID                  = big.NewInt(1 << 1)
+	marketFieldInstrumentType      = big.NewInt(1 << 2)
+	marketFieldLogoURL             = big.NewInt(1 << 3)
+	marketFieldMaxLeverage         = big.NewInt(1 << 4)
+	marketFieldPrice               = big.NewInt(1 << 5)
+	marketFieldSizeDecimals        = big.NewInt(1 << 6)
 )
 
 // marketNullableFields maps the wire names of Market's nullable fields (required or optional) to their field bits.
 var marketNullableFields = map[string]*big.Int{
-	"max_leverage": marketFieldMaxLeverage,
-	"price":        marketFieldPrice,
+	"change_24h_percentage": marketFieldChange24HPercentage,
+	"logo_url":              marketFieldLogoURL,
+	"max_leverage":          marketFieldMaxLeverage,
+	"price":                 marketFieldPrice,
 }
 
 type Market struct {
-	// The market's name: a perpetual's Hyperliquid name such as `BTC` or `xyz:TSLA`, which you send as `market` when you create a trade, or a spot asset's symbol such as `BTC` or `XAUT`. A perpetual and a spot market can share an `id`, so `id` and `instrument_type` together identify a market.
+	// How much the price moved over the last 24 hours, as a percentage where `2` means up 2%. Set for tokenized stocks; `null` when it is not available.
+	Change24HPercentage *float64 `json:"change_24h_percentage,omitempty" url:"change_24h_percentage,omitempty"`
+	// The market's name: a perpetual's Hyperliquid name such as `BTC` or `xyz:TSLA`, which you send as `market` when you create a trade, or a spot asset's symbol such as `BTC`, `XAUT`, or a tokenized stock's ticker such as `AAPL`. A perpetual and a spot market can share an `id`, so `id` and `instrument_type` together identify a market.
 	ID string `json:"id" url:"id"`
 	// Whether this is a perpetual or a spot market. With `id`, it identifies the market.
 	InstrumentType MarketInstrumentType `json:"instrument_type" url:"instrument_type"`
+	// A logo image URL for the asset. Set for tokenized stocks; `null` when there is no logo.
+	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
 	// The highest cross leverage an order on this perpetual can use. `null` for a spot market, which trades without leverage.
 	MaxLeverage *int `json:"max_leverage,omitempty" url:"max_leverage,omitempty"`
-	// The current price in USD: the midpoint between the best bid and ask. `null` when no price is available.
+	// The current price in USD: the midpoint between the best bid and ask, or a tokenized stock's latest market price. `null` when no price is available.
 	Price *Money `json:"price,omitempty" url:"price,omitempty"`
 	// The most decimals an order's `size` can have on this market.
 	SizeDecimals int `json:"size_decimals" url:"size_decimals"`
@@ -34046,6 +34054,13 @@ type Market struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (m *Market) GetChange24HPercentage() *float64 {
+	if m == nil {
+		return nil
+	}
+	return m.Change24HPercentage
 }
 
 func (m *Market) GetID() string {
@@ -34060,6 +34075,13 @@ func (m *Market) GetInstrumentType() MarketInstrumentType {
 		return ""
 	}
 	return m.InstrumentType
+}
+
+func (m *Market) GetLogoURL() *string {
+	if m == nil {
+		return nil
+	}
+	return m.LogoURL
 }
 
 func (m *Market) GetMaxLeverage() *int {
@@ -34099,6 +34121,13 @@ func (m *Market) require(field *big.Int) {
 	m.explicitFields = next
 }
 
+// SetChange24HPercentage sets the Change24HPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Market) SetChange24HPercentage(change24HPercentage *float64) {
+	m.Change24HPercentage = change24HPercentage
+	m.require(marketFieldChange24HPercentage)
+}
+
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (m *Market) SetID(id string) {
@@ -34111,6 +34140,13 @@ func (m *Market) SetID(id string) {
 func (m *Market) SetInstrumentType(instrumentType MarketInstrumentType) {
 	m.InstrumentType = instrumentType
 	m.require(marketFieldInstrumentType)
+}
+
+// SetLogoURL sets the LogoURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Market) SetLogoURL(logoURL *string) {
+	m.LogoURL = logoURL
+	m.require(marketFieldLogoURL)
 }
 
 // SetMaxLeverage sets the MaxLeverage field and marks it as non-optional;

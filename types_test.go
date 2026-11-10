@@ -64800,6 +64800,14 @@ func TestSettersMarkExplicitLegacyInvoiceUser(t *testing.T) {
 }
 
 func TestSettersMarket(t *testing.T) {
+	t.Run("SetChange24HPercentage", func(t *testing.T) {
+		obj := &Market{}
+		var fernTestValueChange24HPercentage *float64
+		obj.SetChange24HPercentage(fernTestValueChange24HPercentage)
+		assert.Equal(t, fernTestValueChange24HPercentage, obj.Change24HPercentage)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetID", func(t *testing.T) {
 		obj := &Market{}
 		var fernTestValueID string
@@ -64813,6 +64821,14 @@ func TestSettersMarket(t *testing.T) {
 		var fernTestValueInstrumentType MarketInstrumentType
 		obj.SetInstrumentType(fernTestValueInstrumentType)
 		assert.Equal(t, fernTestValueInstrumentType, obj.InstrumentType)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetLogoURL", func(t *testing.T) {
+		obj := &Market{}
+		var fernTestValueLogoURL *string
+		obj.SetLogoURL(fernTestValueLogoURL)
+		assert.Equal(t, fernTestValueLogoURL, obj.LogoURL)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -64843,6 +64859,39 @@ func TestSettersMarket(t *testing.T) {
 }
 
 func TestGettersMarket(t *testing.T) {
+	t.Run("GetChange24HPercentage", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Market{}
+		var expected *float64
+		obj.Change24HPercentage = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetChange24HPercentage(), "getter should return the property value")
+	})
+
+	t.Run("GetChange24HPercentage_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Market{}
+		obj.Change24HPercentage = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetChange24HPercentage(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetChange24HPercentage_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Market
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetChange24HPercentage() // Should return zero value
+	})
+
 	t.Run("GetID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -64887,6 +64936,39 @@ func TestGettersMarket(t *testing.T) {
 			}
 		}()
 		_ = obj.GetInstrumentType() // Should return zero value
+	})
+
+	t.Run("GetLogoURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Market{}
+		var expected *string
+		obj.LogoURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetLogoURL(), "getter should return the property value")
+	})
+
+	t.Run("GetLogoURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Market{}
+		obj.LogoURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetLogoURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetLogoURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Market
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetLogoURL() // Should return zero value
 	})
 
 	t.Run("GetMaxLeverage", func(t *testing.T) {
@@ -64981,6 +65063,37 @@ func TestGettersMarket(t *testing.T) {
 }
 
 func TestSettersMarkExplicitMarket(t *testing.T) {
+	t.Run("SetChange24HPercentage_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Market{}
+		var fernTestValueChange24HPercentage *float64
+
+		// Act
+		obj.SetChange24HPercentage(fernTestValueChange24HPercentage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -65020,6 +65133,37 @@ func TestSettersMarkExplicitMarket(t *testing.T) {
 
 		// Act
 		obj.SetInstrumentType(fernTestValueInstrumentType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetLogoURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Market{}
+		var fernTestValueLogoURL *string
+
+		// Act
+		obj.SetLogoURL(fernTestValueLogoURL)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -173163,6 +173307,8 @@ func TestRequiredNullableRoundTripLegacyInvoiceUser(t *testing.T) {
 
 func TestRequiredNullableRoundTripMarket(t *testing.T) {
 	requiredNullableKeys := []string{
+		"change_24h_percentage",
+		"logo_url",
 		"max_leverage",
 		"price",
 	}
@@ -173177,7 +173323,7 @@ func TestRequiredNullableRoundTripMarket(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Market
-		require.NoError(t, json.Unmarshal([]byte(`{"max_leverage":null,"price":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"change_24h_percentage":null,"logo_url":null,"max_leverage":null,"price":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
