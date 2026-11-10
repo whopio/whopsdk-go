@@ -320,7 +320,7 @@ type Member struct {
 	// How much the member has spent on the account's products, in USD.
 	UsdTotalSpent *Money `json:"usd_total_spent" url:"usd_total_spent"`
 	// The user behind this member. `null` when the buyer is another business rather than a person.
-	User *UserSummary `json:"user,omitempty" url:"user,omitempty"`
+	User *MemberUser `json:"user,omitempty" url:"user,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -455,7 +455,7 @@ func (m *Member) GetUsdTotalSpent() *Money {
 	return m.UsdTotalSpent
 }
 
-func (m *Member) GetUser() *UserSummary {
+func (m *Member) GetUser() *MemberUser {
 	if m == nil {
 		return nil
 	}
@@ -606,7 +606,7 @@ func (m *Member) SetUsdTotalSpent(usdTotalSpent *Money) {
 
 // SetUser sets the User field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (m *Member) SetUser(user *UserSummary) {
+func (m *Member) SetUser(user *MemberUser) {
 	m.User = user
 	m.require(memberFieldUser)
 }
@@ -971,6 +971,210 @@ func NewMemberStatusFromString(s string) (MemberStatus, error) {
 
 func (m MemberStatus) Ptr() *MemberStatus {
 	return &m
+}
+
+var (
+	memberUserFieldCity           = big.NewInt(1 << 0)
+	memberUserFieldCountry        = big.NewInt(1 << 1)
+	memberUserFieldID             = big.NewInt(1 << 2)
+	memberUserFieldName           = big.NewInt(1 << 3)
+	memberUserFieldProfilePicture = big.NewInt(1 << 4)
+	memberUserFieldState          = big.NewInt(1 << 5)
+	memberUserFieldUsername       = big.NewInt(1 << 6)
+)
+
+// memberUserNullableFields maps the wire names of MemberUser's nullable fields (required or optional) to their field bits.
+var memberUserNullableFields = map[string]*big.Int{
+	"city":    memberUserFieldCity,
+	"country": memberUserFieldCountry,
+	"name":    memberUserFieldName,
+	"state":   memberUserFieldState,
+}
+
+type MemberUser struct {
+	// The user's city, derived from their IP address. `null` when unknown or the user turned off location sharing.
+	City *string `json:"city,omitempty" url:"city,omitempty"`
+	// The user's country as an ISO 3166-1 alpha-2 code, like `US`, derived from their IP address. `null` when unknown or the user turned off location sharing.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// User ID, prefixed `user_`.
+	ID string `json:"id" url:"id"`
+	// Display name.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// Avatar wrapper; its `url` is always present, using a generated placeholder when the user set no picture.
+	ProfilePicture *UserProfilePicture `json:"profile_picture" url:"profile_picture"`
+	// The user's state or region code, like `CA`, derived from their IP address. `null` when unknown or the user turned off location sharing.
+	State *string `json:"state,omitempty" url:"state,omitempty"`
+	// Public username.
+	Username string `json:"username" url:"username"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MemberUser) GetCity() *string {
+	if m == nil {
+		return nil
+	}
+	return m.City
+}
+
+func (m *MemberUser) GetCountry() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Country
+}
+
+func (m *MemberUser) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MemberUser) GetName() *string {
+	if m == nil {
+		return nil
+	}
+	return m.Name
+}
+
+func (m *MemberUser) GetProfilePicture() *UserProfilePicture {
+	if m == nil {
+		return nil
+	}
+	return m.ProfilePicture
+}
+
+func (m *MemberUser) GetState() *string {
+	if m == nil {
+		return nil
+	}
+	return m.State
+}
+
+func (m *MemberUser) GetUsername() string {
+	if m == nil {
+		return ""
+	}
+	return m.Username
+}
+
+func (m *MemberUser) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MemberUser) require(field *big.Int) {
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
+	}
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetCity sets the City field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberUser) SetCity(city *string) {
+	m.City = city
+	m.require(memberUserFieldCity)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberUser) SetCountry(country *string) {
+	m.Country = country
+	m.require(memberUserFieldCountry)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberUser) SetID(id string) {
+	m.ID = id
+	m.require(memberUserFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberUser) SetName(name *string) {
+	m.Name = name
+	m.require(memberUserFieldName)
+}
+
+// SetProfilePicture sets the ProfilePicture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberUser) SetProfilePicture(profilePicture *UserProfilePicture) {
+	m.ProfilePicture = profilePicture
+	m.require(memberUserFieldProfilePicture)
+}
+
+// SetState sets the State field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberUser) SetState(state *string) {
+	m.State = state
+	m.require(memberUserFieldState)
+}
+
+// SetUsername sets the Username field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberUser) SetUsername(username string) {
+	m.Username = username
+	m.require(memberUserFieldUsername)
+}
+
+func (m *MemberUser) UnmarshalJSON(data []byte) error {
+	type unmarshaler MemberUser
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MemberUser(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, memberUserNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MemberUser) MarshalJSON() ([]byte, error) {
+	type embed MemberUser
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MemberUser) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
 }
 
 type ListMembersRequestAccessLevel string
