@@ -179,7 +179,7 @@ type RetrieveTimeSeriesRequest struct {
 	Steps *v2.RetrieveTimeSeriesRequestSteps `json:"-" url:"steps,omitempty"`
 	// Funnel only. The breakdown value to use as baseline for whole-window final conversion. Requires breakdown_by and mature_only=true; defaults confidence_level to 0.95.
 	CompareTo *string `json:"-" url:"compare_to,omitempty"`
-	// Funnel only. Confidence level for whole-window final conversion intervals, for example 0.95. Requires mature_only=true. Exposure steps must each filter one user-randomized experiment.
+	// Funnel only. Confidence level for whole-window final conversion intervals, for example 0.95. Requires mature_only=true. Exposure steps must each filter one user- or visitor-randomized experiment.
 	ConfidenceLevel *float64 `json:"-" url:"confidence_level,omitempty"`
 	// People metric only: contactable equals this value. Applies to the current person profile for every time bucket. LTV and AOV are in USD. Not accepted by the Events metric.
 	Contactable *bool `json:"-" url:"contactable,omitempty"`
