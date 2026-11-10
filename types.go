@@ -9592,7 +9592,7 @@ type ChatMessage struct {
 	Edited    bool     `json:"edited" url:"edited"`
 	Embeds    []*Embed `json:"embeds" url:"embeds"`
 	Gifs      []*Gif   `json:"gifs" url:"gifs"`
-	// Existing public message ID, preserved across REST and chat clients.
+	// Message ID, prefixed `post_`. Matches the `id` sent on create, when one was sent.
 	ID               string                 `json:"id" url:"id"`
 	LinkPreviews     []*MessageLinkPreview  `json:"link_previews" url:"link_previews"`
 	MentionedUserIDs []string               `json:"mentioned_user_ids" url:"mentioned_user_ids"`
@@ -23168,13 +23168,20 @@ var (
 )
 
 type Gif struct {
-	Height      int    `json:"height" url:"height"`
+	// Height of `original_url`, in pixels.
+	Height int `json:"height" url:"height"`
+	// Full-size GIF. HTTPS on a Klipy media host.
 	OriginalURL string `json:"original_url" url:"original_url"`
-	PreviewURL  string `json:"preview_url" url:"preview_url"`
-	Slug        string `json:"slug" url:"slug"`
-	Title       string `json:"title" url:"title"`
-	URL         string `json:"url" url:"url"`
-	Width       int    `json:"width" url:"width"`
+	// Smaller version for previews and placeholders. HTTPS on a Klipy media host.
+	PreviewURL string `json:"preview_url" url:"preview_url"`
+	// Identifier for the GIF.
+	Slug string `json:"slug" url:"slug"`
+	// GIF title.
+	Title string `json:"title" url:"title"`
+	// URL the message renders the GIF from. HTTPS on a Klipy media host.
+	URL string `json:"url" url:"url"`
+	// Width of `original_url`, in pixels.
+	Width int `json:"width" url:"width"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`

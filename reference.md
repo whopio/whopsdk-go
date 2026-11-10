@@ -28672,6 +28672,22 @@ client.Messages.Create(
 <dl>
 <dd>
 
+**gifs:** `[]*whopsdk.CreateMessagesRequestGifsItem` — Up to 10 GIFs to attach. URLs must use HTTPS on static.klipy.com, static1.klipy.com, or static2.klipy.com. Omit to preserve on edit; an empty list clears them.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**id:** `*string` — Optional, for clients that show a message before the server confirms it. Use `post_` followed by 22 Base58 characters. Omit to generate an ID. Reuse the same ID and `Idempotency-Key` when retrying a send.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **linkPreviews:** `[]*whopsdk.CreateMessagesRequestLinkPreviewsItem` — Explicit URLs for the server to preview.
     
 </dd>
@@ -28885,6 +28901,14 @@ client.Messages.Update(
 <dd>
 
 **content:** `*string` — Replacement Markdown content.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**gifs:** `[]*whopsdk.UpdateMessagesRequestGifsItem` — Up to 10 GIFs to attach. URLs must use HTTPS on static.klipy.com, static1.klipy.com, or static2.klipy.com. Omit to preserve on edit; an empty list clears them.
     
 </dd>
 </dl>

@@ -15,9 +15,11 @@ var (
 	createMessagesRequestFieldAutoDetectLinks     = big.NewInt(1 << 1)
 	createMessagesRequestFieldChannelID           = big.NewInt(1 << 2)
 	createMessagesRequestFieldContent             = big.NewInt(1 << 3)
-	createMessagesRequestFieldLinkPreviews        = big.NewInt(1 << 4)
-	createMessagesRequestFieldPoll                = big.NewInt(1 << 5)
-	createMessagesRequestFieldReplyingToMessageID = big.NewInt(1 << 6)
+	createMessagesRequestFieldGifs                = big.NewInt(1 << 4)
+	createMessagesRequestFieldID                  = big.NewInt(1 << 5)
+	createMessagesRequestFieldLinkPreviews        = big.NewInt(1 << 6)
+	createMessagesRequestFieldPoll                = big.NewInt(1 << 7)
+	createMessagesRequestFieldReplyingToMessageID = big.NewInt(1 << 8)
 )
 
 type CreateMessagesRequest struct {
@@ -29,6 +31,10 @@ type CreateMessagesRequest struct {
 	ChannelID string `json:"channel_id" url:"-"`
 	// Markdown content. May be empty when the message contains media or a poll.
 	Content string `json:"content" url:"-"`
+	// Up to 10 GIFs to attach. URLs must use HTTPS on static.klipy.com, static1.klipy.com, or static2.klipy.com. Omit to preserve on edit; an empty list clears them.
+	Gifs []*CreateMessagesRequestGifsItem `json:"gifs,omitempty" url:"-"`
+	// Optional, for clients that show a message before the server confirms it. Use `post_` followed by 22 Base58 characters. Omit to generate an ID. Reuse the same ID and `Idempotency-Key` when retrying a send.
+	ID *string `json:"id,omitempty" url:"-"`
 	// Explicit URLs for the server to preview.
 	LinkPreviews []*CreateMessagesRequestLinkPreviewsItem `json:"link_previews,omitempty" url:"-"`
 	Poll         *CreateMessagesRequestPoll               `json:"poll,omitempty" url:"-"`
@@ -74,6 +80,20 @@ func (c *CreateMessagesRequest) SetChannelID(channelID string) {
 func (c *CreateMessagesRequest) SetContent(content string) {
 	c.Content = content
 	c.require(createMessagesRequestFieldContent)
+}
+
+// SetGifs sets the Gifs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMessagesRequest) SetGifs(gifs []*CreateMessagesRequestGifsItem) {
+	c.Gifs = gifs
+	c.require(createMessagesRequestFieldGifs)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMessagesRequest) SetID(id *string) {
+	c.ID = id
+	c.require(createMessagesRequestFieldID)
 }
 
 // SetLinkPreviews sets the LinkPreviews field and marks it as non-optional;
@@ -738,6 +758,195 @@ func (c *CreateMessagesRequestAttachmentsItem) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CreateMessagesRequestAttachmentsItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createMessagesRequestGifsItemFieldHeight      = big.NewInt(1 << 0)
+	createMessagesRequestGifsItemFieldOriginalURL = big.NewInt(1 << 1)
+	createMessagesRequestGifsItemFieldPreviewURL  = big.NewInt(1 << 2)
+	createMessagesRequestGifsItemFieldSlug        = big.NewInt(1 << 3)
+	createMessagesRequestGifsItemFieldTitle       = big.NewInt(1 << 4)
+	createMessagesRequestGifsItemFieldURL         = big.NewInt(1 << 5)
+	createMessagesRequestGifsItemFieldWidth       = big.NewInt(1 << 6)
+)
+
+type CreateMessagesRequestGifsItem struct {
+	// Height of `original_url`, in pixels.
+	Height int `json:"height" url:"height"`
+	// Full-size GIF. HTTPS on a Klipy media host.
+	OriginalURL string `json:"original_url" url:"original_url"`
+	// Smaller version for previews and placeholders. HTTPS on a Klipy media host.
+	PreviewURL string `json:"preview_url" url:"preview_url"`
+	// Client-provided GIF identifier. Whop generates the stored identifier from the GIF metadata.
+	Slug string `json:"slug" url:"slug"`
+	// GIF title.
+	Title string `json:"title" url:"title"`
+	// URL the message renders the GIF from. HTTPS on a Klipy media host.
+	URL string `json:"url" url:"url"`
+	// Width of `original_url`, in pixels.
+	Width int `json:"width" url:"width"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateMessagesRequestGifsItem) GetHeight() int {
+	if c == nil {
+		return 0
+	}
+	return c.Height
+}
+
+func (c *CreateMessagesRequestGifsItem) GetOriginalURL() string {
+	if c == nil {
+		return ""
+	}
+	return c.OriginalURL
+}
+
+func (c *CreateMessagesRequestGifsItem) GetPreviewURL() string {
+	if c == nil {
+		return ""
+	}
+	return c.PreviewURL
+}
+
+func (c *CreateMessagesRequestGifsItem) GetSlug() string {
+	if c == nil {
+		return ""
+	}
+	return c.Slug
+}
+
+func (c *CreateMessagesRequestGifsItem) GetTitle() string {
+	if c == nil {
+		return ""
+	}
+	return c.Title
+}
+
+func (c *CreateMessagesRequestGifsItem) GetURL() string {
+	if c == nil {
+		return ""
+	}
+	return c.URL
+}
+
+func (c *CreateMessagesRequestGifsItem) GetWidth() int {
+	if c == nil {
+		return 0
+	}
+	return c.Width
+}
+
+func (c *CreateMessagesRequestGifsItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateMessagesRequestGifsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetHeight sets the Height field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMessagesRequestGifsItem) SetHeight(height int) {
+	c.Height = height
+	c.require(createMessagesRequestGifsItemFieldHeight)
+}
+
+// SetOriginalURL sets the OriginalURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMessagesRequestGifsItem) SetOriginalURL(originalURL string) {
+	c.OriginalURL = originalURL
+	c.require(createMessagesRequestGifsItemFieldOriginalURL)
+}
+
+// SetPreviewURL sets the PreviewURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMessagesRequestGifsItem) SetPreviewURL(previewURL string) {
+	c.PreviewURL = previewURL
+	c.require(createMessagesRequestGifsItemFieldPreviewURL)
+}
+
+// SetSlug sets the Slug field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMessagesRequestGifsItem) SetSlug(slug string) {
+	c.Slug = slug
+	c.require(createMessagesRequestGifsItemFieldSlug)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMessagesRequestGifsItem) SetTitle(title string) {
+	c.Title = title
+	c.require(createMessagesRequestGifsItemFieldTitle)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMessagesRequestGifsItem) SetURL(url string) {
+	c.URL = url
+	c.require(createMessagesRequestGifsItemFieldURL)
+}
+
+// SetWidth sets the Width field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMessagesRequestGifsItem) SetWidth(width int) {
+	c.Width = width
+	c.require(createMessagesRequestGifsItemFieldWidth)
+}
+
+func (c *CreateMessagesRequestGifsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateMessagesRequestGifsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateMessagesRequestGifsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateMessagesRequestGifsItem) MarshalJSON() ([]byte, error) {
+	type embed CreateMessagesRequestGifsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateMessagesRequestGifsItem) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -2348,6 +2557,195 @@ func (u *UpdateMessagesRequestAttachmentsItem) String() string {
 }
 
 var (
+	updateMessagesRequestGifsItemFieldHeight      = big.NewInt(1 << 0)
+	updateMessagesRequestGifsItemFieldOriginalURL = big.NewInt(1 << 1)
+	updateMessagesRequestGifsItemFieldPreviewURL  = big.NewInt(1 << 2)
+	updateMessagesRequestGifsItemFieldSlug        = big.NewInt(1 << 3)
+	updateMessagesRequestGifsItemFieldTitle       = big.NewInt(1 << 4)
+	updateMessagesRequestGifsItemFieldURL         = big.NewInt(1 << 5)
+	updateMessagesRequestGifsItemFieldWidth       = big.NewInt(1 << 6)
+)
+
+type UpdateMessagesRequestGifsItem struct {
+	// Height of `original_url`, in pixels.
+	Height int `json:"height" url:"height"`
+	// Full-size GIF. HTTPS on a Klipy media host.
+	OriginalURL string `json:"original_url" url:"original_url"`
+	// Smaller version for previews and placeholders. HTTPS on a Klipy media host.
+	PreviewURL string `json:"preview_url" url:"preview_url"`
+	// Client-provided GIF identifier. Whop generates the stored identifier from the GIF metadata.
+	Slug string `json:"slug" url:"slug"`
+	// GIF title.
+	Title string `json:"title" url:"title"`
+	// URL the message renders the GIF from. HTTPS on a Klipy media host.
+	URL string `json:"url" url:"url"`
+	// Width of `original_url`, in pixels.
+	Width int `json:"width" url:"width"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateMessagesRequestGifsItem) GetHeight() int {
+	if u == nil {
+		return 0
+	}
+	return u.Height
+}
+
+func (u *UpdateMessagesRequestGifsItem) GetOriginalURL() string {
+	if u == nil {
+		return ""
+	}
+	return u.OriginalURL
+}
+
+func (u *UpdateMessagesRequestGifsItem) GetPreviewURL() string {
+	if u == nil {
+		return ""
+	}
+	return u.PreviewURL
+}
+
+func (u *UpdateMessagesRequestGifsItem) GetSlug() string {
+	if u == nil {
+		return ""
+	}
+	return u.Slug
+}
+
+func (u *UpdateMessagesRequestGifsItem) GetTitle() string {
+	if u == nil {
+		return ""
+	}
+	return u.Title
+}
+
+func (u *UpdateMessagesRequestGifsItem) GetURL() string {
+	if u == nil {
+		return ""
+	}
+	return u.URL
+}
+
+func (u *UpdateMessagesRequestGifsItem) GetWidth() int {
+	if u == nil {
+		return 0
+	}
+	return u.Width
+}
+
+func (u *UpdateMessagesRequestGifsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateMessagesRequestGifsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetHeight sets the Height field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMessagesRequestGifsItem) SetHeight(height int) {
+	u.Height = height
+	u.require(updateMessagesRequestGifsItemFieldHeight)
+}
+
+// SetOriginalURL sets the OriginalURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMessagesRequestGifsItem) SetOriginalURL(originalURL string) {
+	u.OriginalURL = originalURL
+	u.require(updateMessagesRequestGifsItemFieldOriginalURL)
+}
+
+// SetPreviewURL sets the PreviewURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMessagesRequestGifsItem) SetPreviewURL(previewURL string) {
+	u.PreviewURL = previewURL
+	u.require(updateMessagesRequestGifsItemFieldPreviewURL)
+}
+
+// SetSlug sets the Slug field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMessagesRequestGifsItem) SetSlug(slug string) {
+	u.Slug = slug
+	u.require(updateMessagesRequestGifsItemFieldSlug)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMessagesRequestGifsItem) SetTitle(title string) {
+	u.Title = title
+	u.require(updateMessagesRequestGifsItemFieldTitle)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMessagesRequestGifsItem) SetURL(url string) {
+	u.URL = url
+	u.require(updateMessagesRequestGifsItemFieldURL)
+}
+
+// SetWidth sets the Width field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMessagesRequestGifsItem) SetWidth(width int) {
+	u.Width = width
+	u.require(updateMessagesRequestGifsItemFieldWidth)
+}
+
+func (u *UpdateMessagesRequestGifsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateMessagesRequestGifsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateMessagesRequestGifsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateMessagesRequestGifsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateMessagesRequestGifsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateMessagesRequestGifsItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
 	updateMessagesRequestLinkPreviewsItemFieldURL = big.NewInt(1 << 0)
 )
 
@@ -2525,7 +2923,8 @@ var (
 	updateMessagesRequestFieldID           = big.NewInt(1 << 0)
 	updateMessagesRequestFieldAttachments  = big.NewInt(1 << 1)
 	updateMessagesRequestFieldContent      = big.NewInt(1 << 2)
-	updateMessagesRequestFieldLinkPreviews = big.NewInt(1 << 3)
+	updateMessagesRequestFieldGifs         = big.NewInt(1 << 3)
+	updateMessagesRequestFieldLinkPreviews = big.NewInt(1 << 4)
 )
 
 type UpdateMessagesRequest struct {
@@ -2535,6 +2934,8 @@ type UpdateMessagesRequest struct {
 	Attachments []*UpdateMessagesRequestAttachmentsItem `json:"attachments,omitempty" url:"-"`
 	// Replacement Markdown content.
 	Content *string `json:"content,omitempty" url:"-"`
+	// Up to 10 GIFs to attach. URLs must use HTTPS on static.klipy.com, static1.klipy.com, or static2.klipy.com. Omit to preserve on edit; an empty list clears them.
+	Gifs []*UpdateMessagesRequestGifsItem `json:"gifs,omitempty" url:"-"`
 	// Replacement preview URLs; pass an empty list to remove previews.
 	LinkPreviews []*UpdateMessagesRequestLinkPreviewsItem `json:"link_previews,omitempty" url:"-"`
 
@@ -2570,6 +2971,13 @@ func (u *UpdateMessagesRequest) SetAttachments(attachments []*UpdateMessagesRequ
 func (u *UpdateMessagesRequest) SetContent(content *string) {
 	u.Content = content
 	u.require(updateMessagesRequestFieldContent)
+}
+
+// SetGifs sets the Gifs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMessagesRequest) SetGifs(gifs []*UpdateMessagesRequestGifsItem) {
+	u.Gifs = gifs
+	u.require(updateMessagesRequestFieldGifs)
 }
 
 // SetLinkPreviews sets the LinkPreviews field and marks it as non-optional;
