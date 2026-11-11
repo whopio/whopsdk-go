@@ -17,11 +17,11 @@ var (
 )
 
 type CreateAdPixelsRequest struct {
-	// A credential that can send events to the pixel on the ad platform: a Meta Conversions API access token, a TikTok Events API access token, or for `google`, the JSON key of a Google Cloud service account. The service account needs Standard access to the Google Ads account, and its project needs the Google Ads API and the Data Manager API turned on and Explorer access or higher to the Google Ads API. Use a service account made only for Whop, with no roles in its project. Whop never returns it.
+	// A credential that can send events to the pixel on the ad platform. For `meta`, a Conversions API access token. For `tiktok`, an Events API access token. For `thrad`, an API key with `events:write` for the tag. For `google`, the JSON key of a Google Cloud service account. Give the service account Standard access to the Google Ads account. In its project, turn on the Google Ads API and the Data Manager API. The project also needs Explorer access or higher to the Google Ads API. Use a service account made only for Whop, with no roles in its project. Whop never returns it.
 	AccessToken string `json:"access_token" url:"-"`
 	// The business whose claimed campaigns send conversions to this pixel, prefixed `biz_`. You must have claimed at least one of its campaigns.
 	AccountID string `json:"account_id" url:"-"`
-	// The pixel's ID on the ad platform: the Meta pixel or dataset ID, the TikTok pixel code, or the Google Ads customer ID.
+	// The pixel's ID on the ad platform: a Meta pixel or dataset ID, TikTok pixel code, Google Ads customer ID, or Thrad tag ID.
 	ExternalID string `json:"external_id" url:"-"`
 	// The ad platform the pixel belongs to.
 	Platform CreateAdPixelsRequestPlatform `json:"platform" url:"-"`
@@ -255,7 +255,7 @@ type AdPixel struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Why the ad platform rejected the last delivery. Null unless `status` is `errored`.
 	ErrorMessage *string `json:"error_message,omitempty" url:"error_message,omitempty"`
-	// The pixel's ID on the ad platform: the Meta pixel or dataset ID, the TikTok pixel code, or the Google Ads customer ID.
+	// The pixel's ID on the ad platform: a Meta pixel or dataset ID, TikTok pixel code, Google Ads customer ID, or Thrad tag ID.
 	ExternalID string `json:"external_id" url:"external_id"`
 	// Ad pixel ID, prefixed `adpx_`.
 	ID string `json:"id" url:"id"`
@@ -473,6 +473,7 @@ const (
 	AdPixelPlatformMeta   AdPixelPlatform = "meta"
 	AdPixelPlatformTiktok AdPixelPlatform = "tiktok"
 	AdPixelPlatformGoogle AdPixelPlatform = "google"
+	AdPixelPlatformThrad  AdPixelPlatform = "thrad"
 )
 
 func NewAdPixelPlatformFromString(s string) (AdPixelPlatform, error) {
@@ -483,6 +484,8 @@ func NewAdPixelPlatformFromString(s string) (AdPixelPlatform, error) {
 		return AdPixelPlatformTiktok, nil
 	case "google":
 		return AdPixelPlatformGoogle, nil
+	case "thrad":
+		return AdPixelPlatformThrad, nil
 	}
 	var t AdPixelPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -525,6 +528,7 @@ const (
 	CreateAdPixelsRequestPlatformMeta   CreateAdPixelsRequestPlatform = "meta"
 	CreateAdPixelsRequestPlatformTiktok CreateAdPixelsRequestPlatform = "tiktok"
 	CreateAdPixelsRequestPlatformGoogle CreateAdPixelsRequestPlatform = "google"
+	CreateAdPixelsRequestPlatformThrad  CreateAdPixelsRequestPlatform = "thrad"
 )
 
 func NewCreateAdPixelsRequestPlatformFromString(s string) (CreateAdPixelsRequestPlatform, error) {
@@ -535,6 +539,8 @@ func NewCreateAdPixelsRequestPlatformFromString(s string) (CreateAdPixelsRequest
 		return CreateAdPixelsRequestPlatformTiktok, nil
 	case "google":
 		return CreateAdPixelsRequestPlatformGoogle, nil
+	case "thrad":
+		return CreateAdPixelsRequestPlatformThrad, nil
 	}
 	var t CreateAdPixelsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -944,7 +950,7 @@ var (
 type UpdateAdPixelsRequest struct {
 	// Ad pixel ID, prefixed `adpx_`.
 	ID string `json:"-" url:"-"`
-	// A credential that can send events to the pixel on the ad platform: a Meta Conversions API access token, a TikTok Events API access token, or for `google`, the JSON key of a Google Cloud service account. The service account needs Standard access to the Google Ads account, and its project needs the Google Ads API and the Data Manager API turned on and Explorer access or higher to the Google Ads API. Use a service account made only for Whop, with no roles in its project. Whop never returns it.
+	// A credential that can send events to the pixel on the ad platform. For `meta`, a Conversions API access token. For `tiktok`, an Events API access token. For `thrad`, an API key with `events:write` for the tag. For `google`, the JSON key of a Google Cloud service account. Give the service account Standard access to the Google Ads account. In its project, turn on the Google Ads API and the Data Manager API. The project also needs Explorer access or higher to the Google Ads API. Use a service account made only for Whop, with no roles in its project. Whop never returns it.
 	AccessToken string `json:"access_token" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
