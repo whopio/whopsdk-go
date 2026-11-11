@@ -3362,9 +3362,9 @@ var accountFeesNullableFields = map[string]*big.Int{
 type AccountFees struct {
 	// The account these fees are charged to, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"account_id"`
-	// Charged when the account holder disputes an ACH payment.
+	// A flat fee in US dollars (USD), charged when the account holder disputes an ACH payment. Replaces the `dispute` fee for that payment.
 	AchDispute *AccountFee `json:"ach_dispute" url:"ach_dispute"`
-	// Charged when an ACH payment is returned by the buyer's bank.
+	// A flat fee in US dollars (USD), charged when the buyer's bank returns an ACH payment unpaid.
 	AchReturn *AccountFee `json:"ach_return" url:"ach_return"`
 	// Charged on bank deposits into the account's balance.
 	BankDeposit *AccountFee `json:"bank_deposit" url:"bank_deposit"`
@@ -3418,9 +3418,9 @@ type AccountFees struct {
 	PoolPayout *AccountFee `json:"pool_payout" url:"pool_payout"`
 	// Charged on payments where the account shares revenue with revshare affiliates.
 	Revshare *AccountFee `json:"revshare" url:"revshare"`
-	// Charged when the account holder disputes a SEPA Direct Debit payment.
+	// A flat fee in euros (EUR), charged when the account holder disputes a SEPA Direct Debit payment. Replaces the `dispute` fee for that payment.
 	SepaDispute *AccountFee `json:"sepa_dispute" url:"sepa_dispute"`
-	// Charged when a SEPA Direct Debit payment is returned by the buyer's bank.
+	// A flat fee in euros (EUR), charged when the buyer's bank returns a SEPA Direct Debit payment unpaid.
 	SepaReturn *AccountFee `json:"sepa_return" url:"sepa_return"`
 	// Charged when tax is calculated on a payment.
 	TaxCalculation *AccountFee `json:"tax_calculation" url:"tax_calculation"`
