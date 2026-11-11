@@ -9816,6 +9816,14 @@ func TestSettersAccountPartner(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetReferringAccount", func(t *testing.T) {
+		obj := &AccountPartner{}
+		var fernTestValueReferringAccount *AccountSummary
+		obj.SetReferringAccount(fernTestValueReferringAccount)
+		assert.Equal(t, fernTestValueReferringAccount, obj.ReferringAccount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetUsername", func(t *testing.T) {
 		obj := &AccountPartner{}
 		var fernTestValueUsername string
@@ -9955,6 +9963,39 @@ func TestGettersAccountPartner(t *testing.T) {
 			}
 		}()
 		_ = obj.GetProfilePicture() // Should return zero value
+	})
+
+	t.Run("GetReferringAccount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPartner{}
+		var expected *AccountSummary
+		obj.ReferringAccount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetReferringAccount(), "getter should return the property value")
+	})
+
+	t.Run("GetReferringAccount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPartner{}
+		obj.ReferringAccount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetReferringAccount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetReferringAccount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountPartner
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetReferringAccount() // Should return zero value
 	})
 
 	t.Run("GetUsername", func(t *testing.T) {
@@ -10117,6 +10158,37 @@ func TestSettersMarkExplicitAccountPartner(t *testing.T) {
 
 		// Act
 		obj.SetProfilePicture(fernTestValueProfilePicture)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetReferringAccount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPartner{}
+		var fernTestValueReferringAccount *AccountSummary
+
+		// Act
+		obj.SetReferringAccount(fernTestValueReferringAccount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -22019,6 +22091,7 @@ func TestRequiredNullableRoundTripAccountPartner(t *testing.T) {
 	requiredNullableKeys := []string{
 		"email",
 		"name",
+		"referring_account",
 		"whop_partner_verified_at",
 	}
 	marshalToMap := func(t *testing.T, obj *AccountPartner) map[string]json.RawMessage {
@@ -22032,7 +22105,7 @@ func TestRequiredNullableRoundTripAccountPartner(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj AccountPartner
-		require.NoError(t, json.Unmarshal([]byte(`{"email":null,"name":null,"whop_partner_verified_at":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"email":null,"name":null,"referring_account":null,"whop_partner_verified_at":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

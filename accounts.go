@@ -3457,14 +3457,16 @@ var (
 	accountPartnerFieldID                    = big.NewInt(1 << 1)
 	accountPartnerFieldName                  = big.NewInt(1 << 2)
 	accountPartnerFieldProfilePicture        = big.NewInt(1 << 3)
-	accountPartnerFieldUsername              = big.NewInt(1 << 4)
-	accountPartnerFieldWhopPartnerVerifiedAt = big.NewInt(1 << 5)
+	accountPartnerFieldReferringAccount      = big.NewInt(1 << 4)
+	accountPartnerFieldUsername              = big.NewInt(1 << 5)
+	accountPartnerFieldWhopPartnerVerifiedAt = big.NewInt(1 << 6)
 )
 
 // accountPartnerNullableFields maps the wire names of AccountPartner's nullable fields (required or optional) to their field bits.
 var accountPartnerNullableFields = map[string]*big.Int{
 	"email":                    accountPartnerFieldEmail,
 	"name":                     accountPartnerFieldName,
+	"referring_account":        accountPartnerFieldReferringAccount,
 	"whop_partner_verified_at": accountPartnerFieldWhopPartnerVerifiedAt,
 }
 
@@ -3477,6 +3479,8 @@ type AccountPartner struct {
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
 	// Avatar wrapper; its `url` is always present, using a generated placeholder when the user set no picture.
 	ProfilePicture *UserProfilePicture `json:"profile_picture" url:"profile_picture"`
+	// Business the partner referred this account on behalf of, when the referral belongs to their team. `null` for a personal referral.
+	ReferringAccount *AccountSummary `json:"referring_account,omitempty" url:"referring_account,omitempty"`
 	// Public username.
 	Username string `json:"username" url:"username"`
 	// When the user became a verified Whop Partner, as an ISO 8601 timestamp. Null if not verified.
@@ -3515,6 +3519,13 @@ func (a *AccountPartner) GetProfilePicture() *UserProfilePicture {
 		return nil
 	}
 	return a.ProfilePicture
+}
+
+func (a *AccountPartner) GetReferringAccount() *AccountSummary {
+	if a == nil {
+		return nil
+	}
+	return a.ReferringAccount
 }
 
 func (a *AccountPartner) GetUsername() string {
@@ -3573,6 +3584,13 @@ func (a *AccountPartner) SetName(name *string) {
 func (a *AccountPartner) SetProfilePicture(profilePicture *UserProfilePicture) {
 	a.ProfilePicture = profilePicture
 	a.require(accountPartnerFieldProfilePicture)
+}
+
+// SetReferringAccount sets the ReferringAccount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartner) SetReferringAccount(referringAccount *AccountSummary) {
+	a.ReferringAccount = referringAccount
+	a.require(accountPartnerFieldReferringAccount)
 }
 
 // SetUsername sets the Username field and marks it as non-optional;

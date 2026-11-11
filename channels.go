@@ -62,12 +62,13 @@ func (a *AcceptChannelsRequest) MarshalJSON() ([]byte, error) {
 var (
 	createChannelsRequestFieldAccountID            = big.NewInt(1 << 0)
 	createChannelsRequestFieldCustomerUserID       = big.NewInt(1 << 1)
-	createChannelsRequestFieldKind                 = big.NewInt(1 << 2)
-	createChannelsRequestFieldName                 = big.NewInt(1 << 3)
-	createChannelsRequestFieldNotificationsEnabled = big.NewInt(1 << 4)
-	createChannelsRequestFieldParticipantUserIDs   = big.NewInt(1 << 5)
-	createChannelsRequestFieldProductID            = big.NewInt(1 << 6)
-	createChannelsRequestFieldSenderUserID         = big.NewInt(1 << 7)
+	createChannelsRequestFieldIcon                 = big.NewInt(1 << 2)
+	createChannelsRequestFieldKind                 = big.NewInt(1 << 3)
+	createChannelsRequestFieldName                 = big.NewInt(1 << 4)
+	createChannelsRequestFieldNotificationsEnabled = big.NewInt(1 << 5)
+	createChannelsRequestFieldParticipantUserIDs   = big.NewInt(1 << 6)
+	createChannelsRequestFieldProductID            = big.NewInt(1 << 7)
+	createChannelsRequestFieldSenderUserID         = big.NewInt(1 << 8)
 )
 
 type CreateChannelsRequest struct {
@@ -75,6 +76,8 @@ type CreateChannelsRequest struct {
 	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// Customer ID, prefixed `user_`. Support channels only; requires support management permission. Omit to open your own support conversation.
 	CustomerUserID *string `json:"customer_user_id,omitempty" url:"-"`
+	// Channel icon as a file reference, for community channels and private channels with two or more participant IDs. Image files only. Group icons can be up to 5 MB. For community channels it sets the experience logo. Used only when a channel is created.
+	Icon *CreateChannelsRequestIcon `json:"icon,omitempty" url:"-"`
 	// Channel kind. `private` is a one-to-one or group conversation, `community` creates a Chat experience on the account, and `support` opens a conversation between the account and a customer.
 	Kind CreateChannelsRequestKind `json:"kind" url:"-"`
 	// Channel display name, accepted for all channel kinds. Used only when a channel is created. For community channels, names the new Chat experience; defaults to the Chat app's name.
@@ -113,6 +116,13 @@ func (c *CreateChannelsRequest) SetAccountID(accountID *string) {
 func (c *CreateChannelsRequest) SetCustomerUserID(customerUserID *string) {
 	c.CustomerUserID = customerUserID
 	c.require(createChannelsRequestFieldCustomerUserID)
+}
+
+// SetIcon sets the Icon field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateChannelsRequest) SetIcon(icon *CreateChannelsRequestIcon) {
+	c.Icon = icon
+	c.require(createChannelsRequestFieldIcon)
 }
 
 // SetKind sets the Kind field and marks it as non-optional;
@@ -829,7 +839,7 @@ type Channel struct {
 	// Creation time as an ISO 8601 timestamp.
 	CreatedAt    string  `json:"created_at" url:"created_at"`
 	ExperienceID *string `json:"experience_id,omitempty" url:"experience_id,omitempty"`
-	// Experience logo, falling back to the app icon for community channels. Null for other channel kinds or when neither image exists.
+	// The channel icon. Community channels show the experience logo, falling back to the app icon. Support channels show the account logo. Group private channels show their own icon. Null for one-to-one private channels or when no image is set.
 	Icon *File `json:"icon,omitempty" url:"icon,omitempty"`
 	// Existing public channel ID, preserved across REST and chat clients.
 	ID   string      `json:"id" url:"id"`
@@ -1177,7 +1187,7 @@ type ChannelListItem struct {
 	// Creation time as an ISO 8601 timestamp.
 	CreatedAt    string  `json:"created_at" url:"created_at"`
 	ExperienceID *string `json:"experience_id,omitempty" url:"experience_id,omitempty"`
-	// Experience logo, falling back to the app icon for community channels. Null for other channel kinds or when neither image exists.
+	// The channel icon. Community channels show the experience logo, falling back to the app icon. Support channels show the account logo. Group private channels show their own icon. Null for one-to-one private channels or when no image is set.
 	Icon *File `json:"icon,omitempty" url:"icon,omitempty"`
 	// Existing public channel ID, preserved across REST and chat clients.
 	ID   string              `json:"id" url:"id"`
@@ -1956,6 +1966,94 @@ func (c ChannelSupportStateStatus) Ptr() *ChannelSupportStateStatus {
 	return &c
 }
 
+var (
+	createChannelsRequestIconFieldID = big.NewInt(1 << 0)
+)
+
+// Channel icon as a file reference, for community channels and private channels with two or more participant IDs. Image files only. Group icons can be up to 5 MB. For community channels it sets the experience logo. Used only when a channel is created.
+type CreateChannelsRequestIcon struct {
+	// File ID, prefixed `file_`.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateChannelsRequestIcon) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CreateChannelsRequestIcon) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateChannelsRequestIcon) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateChannelsRequestIcon) SetID(id string) {
+	c.ID = id
+	c.require(createChannelsRequestIconFieldID)
+}
+
+func (c *CreateChannelsRequestIcon) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateChannelsRequestIcon
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateChannelsRequestIcon(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateChannelsRequestIcon) MarshalJSON() ([]byte, error) {
+	type embed CreateChannelsRequestIcon
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateChannelsRequestIcon) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 // Channel kind. `private` is a one-to-one or group conversation, `community` creates a Chat experience on the account, and `support` opens a conversation between the account and a customer.
 type CreateChannelsRequestKind string
 
@@ -2386,8 +2484,9 @@ var (
 	updateChannelsRequestIconFieldID = big.NewInt(1 << 0)
 )
 
-// Community channels only. File reference for the experience logo; `null` clears it and restores the app icon fallback. Omit to preserve the current logo.
+// Channel icon as a file reference, for community channels and group private channels. Image files only. Group icons can be up to 5 MB. For community channels it sets the experience logo, and `null` restores the app icon. For group private channels it sets the channel's own icon, and `null` clears it. Omit to keep the current icon.
 type UpdateChannelsRequestIcon struct {
+	// File ID, prefixed `file_`.
 	ID string `json:"id" url:"id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2739,7 +2838,7 @@ var (
 type UpdateChannelsRequest struct {
 	// Public resource ID.
 	ID string `json:"-" url:"-"`
-	// Community channels only. File reference for the experience logo; `null` clears it and restores the app icon fallback. Omit to preserve the current logo.
+	// Channel icon as a file reference, for community channels and group private channels. Image files only. Group icons can be up to 5 MB. For community channels it sets the experience logo, and `null` restores the app icon. For group private channels it sets the channel's own icon, and `null` clears it. Omit to keep the current icon.
 	Icon *UpdateChannelsRequestIcon `json:"icon,omitempty" url:"-"`
 	// Moderation settings, accepted only for community channels. Requires chat moderation permission. Omitted settings are preserved.
 	Moderation *UpdateChannelsRequestModeration `json:"moderation,omitempty" url:"-"`
