@@ -21,14 +21,12 @@ var (
 	retrieveFinancialReportsRequestFieldTimezone                   = big.NewInt(1 << 7)
 	retrieveFinancialReportsRequestFieldLineTypes                  = big.NewInt(1 << 8)
 	retrieveFinancialReportsRequestFieldDirection                  = big.NewInt(1 << 9)
-	retrieveFinancialReportsRequestFieldCumulative                 = big.NewInt(1 << 10)
-	retrieveFinancialReportsRequestFieldScopeAccountID             = big.NewInt(1 << 11)
-	retrieveFinancialReportsRequestFieldIncludePaymentFeeBreakdown = big.NewInt(1 << 12)
-	retrieveFinancialReportsRequestFieldPeriodOnlyCurrencies       = big.NewInt(1 << 13)
+	retrieveFinancialReportsRequestFieldIncludePaymentFeeBreakdown = big.NewInt(1 << 10)
+	retrieveFinancialReportsRequestFieldPeriodOnlyCurrencies       = big.NewInt(1 << 11)
 )
 
 type RetrieveFinancialReportsRequest struct {
-	// The owning account ID (a biz_ identifier), or `global` for a platform-wide report across all ledger accounts (requires internal admin access).
+	// The account that owns the report, prefixed `biz_`.
 	AccountID string `json:"-" url:"account_id"`
 	// The type of financial report to generate.
 	ReportType RetrieveFinancialReportsRequestReportType `json:"-" url:"report_type"`
@@ -36,9 +34,9 @@ type RetrieveFinancialReportsRequest struct {
 	Currency *string `json:"-" url:"currency,omitempty"`
 	// Aggregate all activity into this display currency via FX conversion.
 	InCurrency *string `json:"-" url:"in_currency,omitempty"`
-	// Start of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
+	// Start of the report window as an ISO 8601 timestamp.
 	From *time.Time `json:"-" url:"from,omitempty"`
-	// Exclusive end of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
+	// Exclusive end of the report window as an ISO 8601 timestamp.
 	To *time.Time `json:"-" url:"to,omitempty"`
 	// Grouping granularity for report rows. Hourly grouping is supported for account-level balance activity reports only; hourly periods are timestamps in the requested timezone.
 	GroupBy *RetrieveFinancialReportsRequestGroupBy `json:"-" url:"group_by,omitempty"`
@@ -48,10 +46,6 @@ type RetrieveFinancialReportsRequest struct {
 	LineTypes []*RetrieveFinancialReportsRequestLineTypesItem `json:"-" url:"line_types,omitempty"`
 	// Account-level balance activity only: include money moving in or money moving out.
 	Direction *RetrieveFinancialReportsRequestDirection `json:"-" url:"direction,omitempty"`
-	// Platform-wide (global) reports only: when true, return cumulative balances as of to (all history, no lower bound) instead of activity within the period.
-	Cumulative *bool `json:"-" url:"cumulative,omitempty"`
-	// Platform-wide (global) reports only: narrow the report to ledger lines on the ledger account owned by this account ID (a biz_ identifier). Ignored unless account_id is `global`.
-	ScopeAccountID *string `json:"-" url:"scope_account_id,omitempty"`
 	// Balance activity only: include payment costs grouped by payment method and provider.
 	IncludePaymentFeeBreakdown *bool `json:"-" url:"include_payment_fee_breakdown,omitempty"`
 	// Account-level balance activity only: return only currencies with cashflow in the exact requested window. Requires `from` and `to`.
@@ -138,20 +132,6 @@ func (r *RetrieveFinancialReportsRequest) SetLineTypes(lineTypes []*RetrieveFina
 func (r *RetrieveFinancialReportsRequest) SetDirection(direction *RetrieveFinancialReportsRequestDirection) {
 	r.Direction = direction
 	r.require(retrieveFinancialReportsRequestFieldDirection)
-}
-
-// SetCumulative sets the Cumulative field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveFinancialReportsRequest) SetCumulative(cumulative *bool) {
-	r.Cumulative = cumulative
-	r.require(retrieveFinancialReportsRequestFieldCumulative)
-}
-
-// SetScopeAccountID sets the ScopeAccountID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RetrieveFinancialReportsRequest) SetScopeAccountID(scopeAccountID *string) {
-	r.ScopeAccountID = scopeAccountID
-	r.require(retrieveFinancialReportsRequestFieldScopeAccountID)
 }
 
 // SetIncludePaymentFeeBreakdown sets the IncludePaymentFeeBreakdown field and marks it as non-optional;
