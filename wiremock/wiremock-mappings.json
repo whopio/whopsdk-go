@@ -15786,7 +15786,12 @@
       "name": "Create Swap Quote - default",
       "request": {
         "urlPathTemplate": "/swaps/quote",
-        "method": "POST"
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
       },
       "response": {
         "status": 200,
