@@ -1094,7 +1094,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"ad_campaign_id\": \"adcamp_xxxxxxxxxxxxxx\",\n  \"ad_group_id\": \"adgrp_xxxxxxxxxxxxxx\",\n  \"ad_id\": \"ad_xxxxxxxxxxxxxx\",\n  \"clicks\": 150,\n  \"hour_started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"impressions\": 6000,\n  \"spend\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  }\n}",
+        "body": "{\n  \"ad_campaign_id\": \"adcamp_xxxxxxxxxxxxxx\",\n  \"ad_group_id\": \"adgrp_xxxxxxxxxxxxxx\",\n  \"ad_id\": \"ad_xxxxxxxxxxxxxx\",\n  \"clicks\": 0,\n  \"hour_started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"impressions\": 6000,\n  \"spend\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
