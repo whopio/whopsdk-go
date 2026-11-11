@@ -51,7 +51,7 @@ var updateFeesRequestAchDisputeNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestAchDispute struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -184,7 +184,7 @@ var updateFeesRequestAchDisputeRegionsValueNullableFields = map[string]*big.Int{
 }
 
 type UpdateFeesRequestAchDisputeRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -303,7 +303,7 @@ var updateFeesRequestAchReturnNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestAchReturn struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -436,7 +436,7 @@ var updateFeesRequestAchReturnRegionsValueNullableFields = map[string]*big.Int{
 }
 
 type UpdateFeesRequestAchReturnRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -555,7 +555,7 @@ var updateFeesRequestBankDepositNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestBankDeposit struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -688,7 +688,7 @@ var updateFeesRequestBankDepositRegionsValueNullableFields = map[string]*big.Int
 }
 
 type UpdateFeesRequestBankDepositRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -807,7 +807,7 @@ var updateFeesRequestBillingNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestBilling struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -940,7 +940,7 @@ var updateFeesRequestBillingRegionsValueNullableFields = map[string]*big.Int{
 }
 
 type UpdateFeesRequestBillingRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -1059,7 +1059,7 @@ var updateFeesRequestBuyerNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestBuyer struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -1192,7 +1192,7 @@ var updateFeesRequestBuyerRegionsValueNullableFields = map[string]*big.Int{
 }
 
 type UpdateFeesRequestBuyerRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -1311,7 +1311,7 @@ var updateFeesRequestCardProcessingNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestCardProcessing struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -1444,7 +1444,7 @@ var updateFeesRequestCardProcessingRegionsValueNullableFields = map[string]*big.
 }
 
 type UpdateFeesRequestCardProcessingRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -2548,7 +2548,7 @@ var updateFeesRequestCrossBorderNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestCrossBorder struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -2681,7 +2681,7 @@ var updateFeesRequestCrossBorderRegionsValueNullableFields = map[string]*big.Int
 }
 
 type UpdateFeesRequestCrossBorderRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -2800,7 +2800,7 @@ var updateFeesRequestDisputeNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestDispute struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -2935,7 +2935,7 @@ var updateFeesRequestDisputeAlertNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestDisputeAlert struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -3070,7 +3070,7 @@ var updateFeesRequestDisputeAlertCdrnNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestDisputeAlertCdrn struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -3203,7 +3203,7 @@ var updateFeesRequestDisputeAlertCdrnRegionsValueNullableFields = map[string]*bi
 }
 
 type UpdateFeesRequestDisputeAlertCdrnRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -3322,7 +3322,7 @@ var updateFeesRequestDisputeAlertEthocaNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestDisputeAlertEthoca struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -3455,7 +3455,7 @@ var updateFeesRequestDisputeAlertEthocaRegionsValueNullableFields = map[string]*
 }
 
 type UpdateFeesRequestDisputeAlertEthocaRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -3574,7 +3574,7 @@ var updateFeesRequestDisputeAlertRdrNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestDisputeAlertRdr struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -3707,7 +3707,7 @@ var updateFeesRequestDisputeAlertRdrRegionsValueNullableFields = map[string]*big
 }
 
 type UpdateFeesRequestDisputeAlertRdrRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -3824,7 +3824,7 @@ var updateFeesRequestDisputeAlertRegionsValueNullableFields = map[string]*big.In
 }
 
 type UpdateFeesRequestDisputeAlertRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -3941,7 +3941,7 @@ var updateFeesRequestDisputeRegionsValueNullableFields = map[string]*big.Int{
 }
 
 type UpdateFeesRequestDisputeRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -4060,7 +4060,7 @@ var updateFeesRequestDisputeRepresentmentNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestDisputeRepresentment struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -4193,7 +4193,7 @@ var updateFeesRequestDisputeRepresentmentRegionsValueNullableFields = map[string
 }
 
 type UpdateFeesRequestDisputeRepresentmentRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -4312,7 +4312,7 @@ var updateFeesRequestForeignExchangeNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestForeignExchange struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -4445,7 +4445,7 @@ var updateFeesRequestForeignExchangeRegionsValueNullableFields = map[string]*big
 }
 
 type UpdateFeesRequestForeignExchangeRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -4564,7 +4564,7 @@ var updateFeesRequestFraudScreeningNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestFraudScreening struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -4697,7 +4697,7 @@ var updateFeesRequestFraudScreeningRegionsValueNullableFields = map[string]*big.
 }
 
 type UpdateFeesRequestFraudScreeningRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -4816,7 +4816,7 @@ var updateFeesRequestHighRiskNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestHighRisk struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -4949,7 +4949,7 @@ var updateFeesRequestHighRiskRegionsValueNullableFields = map[string]*big.Int{
 }
 
 type UpdateFeesRequestHighRiskRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -5068,7 +5068,7 @@ var updateFeesRequestMarketplaceNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestMarketplace struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -5201,7 +5201,7 @@ var updateFeesRequestMarketplaceRegionsValueNullableFields = map[string]*big.Int
 }
 
 type UpdateFeesRequestMarketplaceRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -6138,7 +6138,7 @@ var updateFeesRequestOrchestrationNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestOrchestration struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -6271,7 +6271,7 @@ var updateFeesRequestOrchestrationRegionsValueNullableFields = map[string]*big.I
 }
 
 type UpdateFeesRequestOrchestrationRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -6390,7 +6390,7 @@ var updateFeesRequestPaymentMethodsValueNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestPaymentMethodsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -6523,7 +6523,7 @@ var updateFeesRequestPaymentMethodsValueRegionsValueNullableFields = map[string]
 }
 
 type UpdateFeesRequestPaymentMethodsValueRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -6642,7 +6642,7 @@ var updateFeesRequestPayoutsValueNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestPayoutsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -6775,7 +6775,7 @@ var updateFeesRequestPayoutsValueRegionsValueNullableFields = map[string]*big.In
 }
 
 type UpdateFeesRequestPayoutsValueRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -6894,7 +6894,7 @@ var updateFeesRequestPendingAutoTopupNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestPendingAutoTopup struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -7027,7 +7027,7 @@ var updateFeesRequestPendingAutoTopupRegionsValueNullableFields = map[string]*bi
 }
 
 type UpdateFeesRequestPendingAutoTopupRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -7146,7 +7146,7 @@ var updateFeesRequestPlatformProcessingNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestPlatformProcessing struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -7279,7 +7279,7 @@ var updateFeesRequestPlatformProcessingRegionsValueNullableFields = map[string]*
 }
 
 type UpdateFeesRequestPlatformProcessingRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -7398,7 +7398,7 @@ var updateFeesRequestPoolPayoutNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestPoolPayout struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -7531,7 +7531,7 @@ var updateFeesRequestPoolPayoutRegionsValueNullableFields = map[string]*big.Int{
 }
 
 type UpdateFeesRequestPoolPayoutRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -7650,7 +7650,7 @@ var updateFeesRequestRevshareNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestRevshare struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -7783,7 +7783,7 @@ var updateFeesRequestRevshareRegionsValueNullableFields = map[string]*big.Int{
 }
 
 type UpdateFeesRequestRevshareRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -7902,7 +7902,7 @@ var updateFeesRequestSepaDisputeNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestSepaDispute struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in euros (EUR). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -8035,7 +8035,7 @@ var updateFeesRequestSepaDisputeRegionsValueNullableFields = map[string]*big.Int
 }
 
 type UpdateFeesRequestSepaDisputeRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in euros (EUR). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -8154,7 +8154,7 @@ var updateFeesRequestSepaReturnNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestSepaReturn struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in euros (EUR). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -8287,7 +8287,7 @@ var updateFeesRequestSepaReturnRegionsValueNullableFields = map[string]*big.Int{
 }
 
 type UpdateFeesRequestSepaReturnRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in euros (EUR). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -8406,7 +8406,7 @@ var updateFeesRequestTaxCalculationNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestTaxCalculation struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -8539,7 +8539,7 @@ var updateFeesRequestTaxCalculationRegionsValueNullableFields = map[string]*big.
 }
 
 type UpdateFeesRequestTaxCalculationRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -8658,7 +8658,7 @@ var updateFeesRequestTaxServiceNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestTaxService struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -8791,7 +8791,7 @@ var updateFeesRequestTaxServiceRegionsValueNullableFields = map[string]*big.Int{
 }
 
 type UpdateFeesRequestTaxServiceRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -8910,7 +8910,7 @@ var updateFeesRequestThreeDsNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestThreeDs struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -9043,7 +9043,7 @@ var updateFeesRequestThreeDsRegionsValueNullableFields = map[string]*big.Int{
 }
 
 type UpdateFeesRequestThreeDsRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -9162,7 +9162,7 @@ var updateFeesRequestTransfersNullableFields = map[string]*big.Int{
 
 // The fields of a fee the caller may change. Only the keys sent are replaced.
 type UpdateFeesRequestTransfers struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
@@ -9295,7 +9295,7 @@ var updateFeesRequestTransfersRegionsValueNullableFields = map[string]*big.Int{
 }
 
 type UpdateFeesRequestTransfersRegionsValue struct {
-	// The new amount per event in US dollars. `null` clears the custom amount.
+	// The new amount per event, in US dollars (USD). `null` clears the custom amount.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
 	// The new percentage, where `2` means 2%. `null` clears the custom rate so the fee returns to its default or inherited rate.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
