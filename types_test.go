@@ -186927,6 +186927,13 @@ func TestEnumAccountEconomicIntelligenceOfferDurationUnit(t *testing.T) {
 }
 
 func TestEnumAccountEconomicIntelligenceOfferKey(t *testing.T) {
+	t.Run("NewFromString_3_days", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountEconomicIntelligenceOfferKeyFromString("3_days")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountEconomicIntelligenceOfferKey("3_days"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_weekly", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewAccountEconomicIntelligenceOfferKeyFromString("weekly")
@@ -186961,7 +186968,7 @@ func TestEnumAccountEconomicIntelligenceOfferKey(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewAccountEconomicIntelligenceOfferKeyFromString("weekly")
+		val, err := NewAccountEconomicIntelligenceOfferKeyFromString("3_days")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

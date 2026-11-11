@@ -11904,6 +11904,13 @@ func TestEnumRetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUn
 }
 
 func TestEnumRetrievePreferencesResponseEconomicIntelligenceOffersItemKey(t *testing.T) {
+	t.Run("NewFromString_3_days", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePreferencesResponseEconomicIntelligenceOffersItemKeyFromString("3_days")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePreferencesResponseEconomicIntelligenceOffersItemKey("3_days"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_weekly", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrievePreferencesResponseEconomicIntelligenceOffersItemKeyFromString("weekly")
@@ -11938,7 +11945,7 @@ func TestEnumRetrievePreferencesResponseEconomicIntelligenceOffersItemKey(t *tes
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewRetrievePreferencesResponseEconomicIntelligenceOffersItemKeyFromString("weekly")
+		val, err := NewRetrievePreferencesResponseEconomicIntelligenceOffersItemKeyFromString("3_days")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -12148,6 +12155,13 @@ func TestEnumUpdatePreferencesRequestAdsPaymentMethodsPrimaryType(t *testing.T) 
 }
 
 func TestEnumUpdatePreferencesRequestEconomicIntelligenceDurationKey(t *testing.T) {
+	t.Run("NewFromString_3_days", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesRequestEconomicIntelligenceDurationKeyFromString("3_days")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesRequestEconomicIntelligenceDurationKey("3_days"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_weekly", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewUpdatePreferencesRequestEconomicIntelligenceDurationKeyFromString("weekly")
@@ -12182,7 +12196,7 @@ func TestEnumUpdatePreferencesRequestEconomicIntelligenceDurationKey(t *testing.
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewUpdatePreferencesRequestEconomicIntelligenceDurationKeyFromString("weekly")
+		val, err := NewUpdatePreferencesRequestEconomicIntelligenceDurationKeyFromString("3_days")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -12493,6 +12507,13 @@ func TestEnumUpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit
 }
 
 func TestEnumUpdatePreferencesResponseEconomicIntelligenceOffersItemKey(t *testing.T) {
+	t.Run("NewFromString_3_days", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesResponseEconomicIntelligenceOffersItemKeyFromString("3_days")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesResponseEconomicIntelligenceOffersItemKey("3_days"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_weekly", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewUpdatePreferencesResponseEconomicIntelligenceOffersItemKeyFromString("weekly")
@@ -12527,7 +12548,7 @@ func TestEnumUpdatePreferencesResponseEconomicIntelligenceOffersItemKey(t *testi
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewUpdatePreferencesResponseEconomicIntelligenceOffersItemKeyFromString("weekly")
+		val, err := NewUpdatePreferencesResponseEconomicIntelligenceOffersItemKeyFromString("3_days")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

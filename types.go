@@ -1765,13 +1765,13 @@ var (
 type AccountEconomicIntelligenceOffer struct {
 	// Whether this offer renews every period until auto-renew is turned off, rather than ending after one.
 	AutoRenew bool `json:"auto_renew" url:"auto_renew"`
-	// What period of time Economic Intelligence stays on. For an auto-renew offer, the length of each period it renews for.
+	// The length of each period Economic Intelligence renews for, in `duration_unit`, such as `3` for 3 days.
 	Duration int `json:"duration" url:"duration"`
 	// The unit of time the duration is in (hours or days)
 	DurationUnit AccountEconomicIntelligenceOfferDurationUnit `json:"duration_unit" url:"duration_unit"`
-	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%.
+	// Percentage of payment volume charged while Economic Intelligence is on, such as `3` for 3%.
 	FeePercentage float64 `json:"fee_percentage" url:"fee_percentage"`
-	// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on.
+	// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on. Only `3_days`, the auto-renew offer, is offered. The other keys identify periods bought before it became the only plan.
 	Key AccountEconomicIntelligenceOfferKey `json:"key" url:"key"`
 	// Whether Whop recommends this offer. At most one offer is recommended.
 	Recommended bool `json:"recommended" url:"recommended"`
@@ -1948,10 +1948,11 @@ func (a AccountEconomicIntelligenceOfferDurationUnit) Ptr() *AccountEconomicInte
 	return &a
 }
 
-// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on.
+// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on. Only `3_days`, the auto-renew offer, is offered. The other keys identify periods bought before it became the only plan.
 type AccountEconomicIntelligenceOfferKey string
 
 const (
+	AccountEconomicIntelligenceOfferKeyThreeDays AccountEconomicIntelligenceOfferKey = "3_days"
 	AccountEconomicIntelligenceOfferKeyWeekly    AccountEconomicIntelligenceOfferKey = "weekly"
 	AccountEconomicIntelligenceOfferKeySevenDays AccountEconomicIntelligenceOfferKey = "7_days"
 	AccountEconomicIntelligenceOfferKeyOneDay    AccountEconomicIntelligenceOfferKey = "1_day"
@@ -1960,6 +1961,8 @@ const (
 
 func NewAccountEconomicIntelligenceOfferKeyFromString(s string) (AccountEconomicIntelligenceOfferKey, error) {
 	switch s {
+	case "3_days":
+		return AccountEconomicIntelligenceOfferKeyThreeDays, nil
 	case "weekly":
 		return AccountEconomicIntelligenceOfferKeyWeekly, nil
 	case "7_days":
@@ -4320,15 +4323,15 @@ type AccountPreferences struct {
 	CustomerTracking *CustomerTrackingPreferences `json:"customer_tracking,omitempty" url:"customer_tracking,omitempty"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
-	// Whether Economic Intelligence is on for the account. It turns off automatically at `economic_intelligence_ends_at`.
+	// Whether Economic Intelligence is on for the account. It turns off automatically at `economic_intelligence_ends_at`. While it is off, the account can't activate an experiment or run a recommendation.
 	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
-	// Whether Economic Intelligence renews itself every week, with no end date. Turn it on with the `weekly` offer. Set it to `false` to stop renewing, which keeps Economic Intelligence on until the end of the current week, shown in `economic_intelligence_ends_at`; stopping before the first renewal charges the rest of that week at the `7_days` offer's fee. Set it back to `true` before then to keep renewing at the weekly fee.
+	// Whether Economic Intelligence renews itself every period, with no end date. Set it to `true` to turn Economic Intelligence on. Set it to `false` to stop renewing: Economic Intelligence stays on, and its fee is charged, until the end of the current period, shown in `economic_intelligence_ends_at`. Set it back to `true` before then to keep renewing.
 	EconomicIntelligenceAutoRenew bool `json:"economic_intelligence_auto_renew" url:"economic_intelligence_auto_renew"`
-	// When the account's committed Economic Intelligence period ends, as an ISO 8601 timestamp. Economic Intelligence can't be turned off before then. `null` when Economic Intelligence is off or renews automatically.
+	// When Economic Intelligence turns off, as an ISO 8601 timestamp: the end of the current period once auto-renew is turned off. `null` when Economic Intelligence is off or renews automatically.
 	EconomicIntelligenceEndsAt *string `json:"economic_intelligence_ends_at,omitempty" url:"economic_intelligence_ends_at,omitempty"`
-	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%. `null` when Economic Intelligence is off.
+	// Percentage of payment volume charged while Economic Intelligence is on, such as `3` for 3%. `null` when Economic Intelligence is off.
 	EconomicIntelligenceFeePercentage *float64 `json:"economic_intelligence_fee_percentage,omitempty" url:"economic_intelligence_fee_percentage,omitempty"`
-	// When auto-renew first renews, as an ISO 8601 timestamp. Turning auto-renew off before then charges the rest of that week at the `7_days` offer's fee. `null` when auto-renew is off.
+	// When auto-renew first renews, as an ISO 8601 timestamp: one period after it was turned on. `null` when auto-renew is off.
 	EconomicIntelligenceFirstRenewalAt *string                             `json:"economic_intelligence_first_renewal_at,omitempty" url:"economic_intelligence_first_renewal_at,omitempty"`
 	EconomicIntelligenceOffers         []*AccountEconomicIntelligenceOffer `json:"economic_intelligence_offers" url:"economic_intelligence_offers"`
 	// The account's last Economic Intelligence period, once it has ended. `null` while Economic Intelligence is on, or when it has never been on.
