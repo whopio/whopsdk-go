@@ -23445,7 +23445,7 @@ client.FinancialReports.Retrieve(
 <dl>
 <dd>
 
-**accountID:** `string` — The owning account ID (a biz_ identifier), or `global` for a platform-wide report across all ledger accounts (requires internal admin access).
+**accountID:** `string` — The account that owns the report, prefixed `biz_`.
     
 </dd>
 </dl>
@@ -23477,7 +23477,7 @@ client.FinancialReports.Retrieve(
 <dl>
 <dd>
 
-**from:** `*time.Time` — Start of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
+**from:** `*time.Time` — Start of the report window as an ISO 8601 timestamp.
     
 </dd>
 </dl>
@@ -23485,7 +23485,7 @@ client.FinancialReports.Retrieve(
 <dl>
 <dd>
 
-**to:** `*time.Time` — Exclusive end of the report window as an ISO 8601 timestamp. Required for platform-wide (global) reports.
+**to:** `*time.Time` — Exclusive end of the report window as an ISO 8601 timestamp.
     
 </dd>
 </dl>
@@ -23518,22 +23518,6 @@ client.FinancialReports.Retrieve(
 <dd>
 
 **direction:** `*whopsdk.RetrieveFinancialReportsRequestDirection` — Account-level balance activity only: include money moving in or money moving out.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**cumulative:** `*bool` — Platform-wide (global) reports only: when true, return cumulative balances as of to (all history, no lower bound) instead of activity within the period.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**scopeAccountID:** `*string` — Platform-wide (global) reports only: narrow the report to ledger lines on the ledger account owned by this account ID (a biz_ identifier). Ignored unless account_id is `global`.
     
 </dd>
 </dl>
@@ -34139,7 +34123,7 @@ client.Payouts.List(
 <dl>
 <dd>
 
-**source:** `*whopsdk.ListPayoutsRequestSource` — Filter by how the payout was created. Payouts created before source tracking or through internal tooling carry no source and never match.
+**source:** `*whopsdk.ListPayoutsRequestSource` — Filter by how the payout was created. A payout with no recorded source never matches.
     
 </dd>
 </dl>
@@ -42531,7 +42515,7 @@ client.TeamMembers.List(
 <dl>
 <dd>
 
-**accountID:** `string` — Account ID, prefixed `biz_`. A global admin query passes `global` to list the joined members of every partner account, in `created_at` order; of the reporting line filters, only `team_lead_id` and `has_referred_businesses` apply.
+**accountID:** `string` — Account ID, prefixed `biz_`.
     
 </dd>
 </dl>
@@ -52499,14 +52483,6 @@ client.Users.Preferences.Update(
 <dd>
 
 **cardsAutoTopUp:** `*bool` — Whether incoming funds, including pending balance, are automatically moved to the user's personal cards balance. Requires a cards balance and the `payout:account:update` permission.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
-**investigationEnabled:** `*bool` — Whether investigation mode is enabled for the user. Only meaningful for staff users with investigation access.
     
 </dd>
 </dl>

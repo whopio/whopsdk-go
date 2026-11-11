@@ -390,7 +390,7 @@ type ListPayoutsRequest struct {
 	Currency *string `json:"-" url:"currency,omitempty"`
 	// Filter to payouts whose `status` reads this word, matching exactly what this version displays — `reversed` finds settled payouts the bank later returned. Requires Api-Version-Date 2026-08-21 or later.
 	Status *ListPayoutsRequestStatus `json:"-" url:"status,omitempty"`
-	// Filter by how the payout was created. Payouts created before source tracking or through internal tooling carry no source and never match.
+	// Filter by how the payout was created. A payout with no recorded source never matches.
 	Source *ListPayoutsRequestSource `json:"-" url:"source,omitempty"`
 	// Filter to payouts sent to one saved payout method (a pytk_ identifier). An unknown id matches nothing.
 	PayoutMethodID *string `json:"-" url:"payout_method_id,omitempty"`
@@ -637,7 +637,7 @@ type CancelPayoutsResponse struct {
 	PayoutMethod *CancelPayoutsResponsePayoutMethod `json:"payout_method,omitempty" url:"payout_method,omitempty"`
 	// Payout request ID, prefixed `cofr_`, returned by `POST /payouts`. For a request retrieved by its own `cofr_` ID, this equals `id`. Returns `null` for payouts not created by `POST /payouts`.
 	PayoutRequestID *string `json:"payout_request_id,omitempty" url:"payout_request_id,omitempty"`
-	// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+	// How the payout was created. `automatic` means a scheduled auto-payout. `null` when the payout has no recorded source.
 	Source *CancelPayoutsResponseSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed CancelPayoutsResponseSpeed `json:"speed" url:"speed"`
@@ -1621,7 +1621,7 @@ func (c CancelPayoutsResponsePayoutMethodType) Ptr() *CancelPayoutsResponsePayou
 	return &c
 }
 
-// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+// How the payout was created. `automatic` means a scheduled auto-payout. `null` when the payout has no recorded source.
 type CancelPayoutsResponseSource string
 
 const (
@@ -1819,7 +1819,7 @@ type CreatePayoutsResponse struct {
 	PayoutMethod *CreatePayoutsResponsePayoutMethod `json:"payout_method,omitempty" url:"payout_method,omitempty"`
 	// The id of the conversion request that funds this payout, prefixed `cofr_`; `null` when the payout has none.
 	PayoutRequestID *string `json:"payout_request_id,omitempty" url:"payout_request_id,omitempty"`
-	// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+	// How the payout was created. `automatic` means a scheduled auto-payout. `null` when the payout has no recorded source.
 	Source *CreatePayoutsResponseSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed CreatePayoutsResponseSpeed `json:"speed" url:"speed"`
@@ -2803,7 +2803,7 @@ func (c CreatePayoutsResponsePayoutMethodType) Ptr() *CreatePayoutsResponsePayou
 	return &c
 }
 
-// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+// How the payout was created. `automatic` means a scheduled auto-payout. `null` when the payout has no recorded source.
 type CreatePayoutsResponseSource string
 
 const (
@@ -3869,7 +3869,7 @@ type ListPayoutsResponseDataItem struct {
 	PayoutMethod *ListPayoutsResponseDataItemPayoutMethod `json:"payout_method,omitempty" url:"payout_method,omitempty"`
 	// Payout request ID, prefixed `cofr_`, returned by `POST /payouts`. Match it to the settled payout in `GET /payouts`. Returns `null` for payouts not created by `POST /payouts`.
 	PayoutRequestID *string `json:"payout_request_id,omitempty" url:"payout_request_id,omitempty"`
-	// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+	// How the payout was created. `automatic` means a scheduled auto-payout. `null` when the payout has no recorded source.
 	Source *ListPayoutsResponseDataItemSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed ListPayoutsResponseDataItemSpeed `json:"speed" url:"speed"`
@@ -4853,7 +4853,7 @@ func (l ListPayoutsResponseDataItemPayoutMethodType) Ptr() *ListPayoutsResponseD
 	return &l
 }
 
-// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+// How the payout was created. `automatic` means a scheduled auto-payout. `null` when the payout has no recorded source.
 type ListPayoutsResponseDataItemSource string
 
 const (
@@ -5421,7 +5421,7 @@ type PostPayoutCreatedPayloadData struct {
 	PayoutMethod *PostPayoutCreatedPayloadDataPayoutMethod `json:"payout_method,omitempty" url:"payout_method,omitempty"`
 	// Payout request ID, prefixed `cofr_`, returned by `POST /payouts`. Match it to the settled payout in `GET /payouts`. Returns `null` for payouts not created by `POST /payouts`.
 	PayoutRequestID *string `json:"payout_request_id,omitempty" url:"payout_request_id,omitempty"`
-	// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+	// How the payout was created. `automatic` means a scheduled auto-payout. `null` when the payout has no recorded source.
 	Source *PostPayoutCreatedPayloadDataSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed PostPayoutCreatedPayloadDataSpeed `json:"speed" url:"speed"`
@@ -6405,7 +6405,7 @@ func (p PostPayoutCreatedPayloadDataPayoutMethodType) Ptr() *PostPayoutCreatedPa
 	return &p
 }
 
-// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+// How the payout was created. `automatic` means a scheduled auto-payout. `null` when the payout has no recorded source.
 type PostPayoutCreatedPayloadDataSource string
 
 const (
@@ -8813,7 +8813,7 @@ type PostPayoutReversedPayloadData struct {
 	PayoutMethod *PostPayoutReversedPayloadDataPayoutMethod `json:"payout_method,omitempty" url:"payout_method,omitempty"`
 	// Payout request ID, prefixed `cofr_`, returned by `POST /payouts`. Match it to the settled payout in `GET /payouts`. Returns `null` for payouts not created by `POST /payouts`.
 	PayoutRequestID *string `json:"payout_request_id,omitempty" url:"payout_request_id,omitempty"`
-	// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+	// How the payout was created. `automatic` means a scheduled auto-payout. `null` when the payout has no recorded source.
 	Source *PostPayoutReversedPayloadDataSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed PostPayoutReversedPayloadDataSpeed `json:"speed" url:"speed"`
@@ -9797,7 +9797,7 @@ func (p PostPayoutReversedPayloadDataPayoutMethodType) Ptr() *PostPayoutReversed
 	return &p
 }
 
-// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+// How the payout was created. `automatic` means a scheduled auto-payout. `null` when the payout has no recorded source.
 type PostPayoutReversedPayloadDataSource string
 
 const (
@@ -10238,7 +10238,7 @@ type PostPayoutUpdatedPayloadData struct {
 	PayoutMethod *PostPayoutUpdatedPayloadDataPayoutMethod `json:"payout_method,omitempty" url:"payout_method,omitempty"`
 	// Payout request ID, prefixed `cofr_`, returned by `POST /payouts`. Match it to the settled payout in `GET /payouts`. Returns `null` for payouts not created by `POST /payouts`.
 	PayoutRequestID *string `json:"payout_request_id,omitempty" url:"payout_request_id,omitempty"`
-	// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+	// How the payout was created. `automatic` means a scheduled auto-payout. `null` when the payout has no recorded source.
 	Source *PostPayoutUpdatedPayloadDataSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed PostPayoutUpdatedPayloadDataSpeed `json:"speed" url:"speed"`
@@ -11222,7 +11222,7 @@ func (p PostPayoutUpdatedPayloadDataPayoutMethodType) Ptr() *PostPayoutUpdatedPa
 	return &p
 }
 
-// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling.
+// How the payout was created. `automatic` means a scheduled auto-payout. `null` when the payout has no recorded source.
 type PostPayoutUpdatedPayloadDataSource string
 
 const (
@@ -11433,7 +11433,7 @@ type RetrievePayoutsResponse struct {
 	RecipientName *string `json:"recipient_name,omitempty" url:"recipient_name,omitempty"`
 	// The sending business's display name, or a personal sender's first name and last initial.
 	SenderName *string `json:"sender_name,omitempty" url:"sender_name,omitempty"`
-	// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling. Only returned to callers with payout:withdrawal:read on the owning ledger.
+	// How the payout was created. `automatic` means a scheduled auto-payout. `null` when the payout has no recorded source. Only returned to callers with payout:withdrawal:read on the owning ledger.
 	Source *RetrievePayoutsResponseSource `json:"source,omitempty" url:"source,omitempty"`
 	// Payout delivery speed.
 	Speed RetrievePayoutsResponseSpeed `json:"speed" url:"speed"`
@@ -12493,7 +12493,7 @@ func (r RetrievePayoutsResponsePayoutMethodType) Ptr() *RetrievePayoutsResponseP
 	return &r
 }
 
-// How the payout was created. `automatic` means a scheduled auto-payout; `null` on payouts created before source tracking or through internal tooling. Only returned to callers with payout:withdrawal:read on the owning ledger.
+// How the payout was created. `automatic` means a scheduled auto-payout. `null` when the payout has no recorded source. Only returned to callers with payout:withdrawal:read on the owning ledger.
 type RetrievePayoutsResponseSource string
 
 const (

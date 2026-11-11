@@ -19099,7 +19099,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"bounty_worker_onboarding_dismissed\": false,\n  \"cards_auto_top_up\": false,\n  \"investigation_enabled\": true,\n  \"terms_accepted\": true,\n  \"terms_accepted_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"bounty_worker_onboarding_dismissed\": false,\n  \"cards_auto_top_up\": false,\n  \"terms_accepted\": true,\n  \"terms_accepted_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -19131,7 +19131,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"bounty_worker_onboarding_dismissed\": false,\n  \"cards_auto_top_up\": false,\n  \"investigation_enabled\": true,\n  \"terms_accepted\": true,\n  \"terms_accepted_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"bounty_worker_onboarding_dismissed\": false,\n  \"cards_auto_top_up\": false,\n  \"terms_accepted\": true,\n  \"terms_accepted_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }

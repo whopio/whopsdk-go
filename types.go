@@ -77244,9 +77244,8 @@ func (u UserNotificationPreferenceObject) Ptr() *UserNotificationPreferenceObjec
 var (
 	userPreferencesFieldBountyWorkerOnboardingDismissed = big.NewInt(1 << 0)
 	userPreferencesFieldCardsAutoTopUp                  = big.NewInt(1 << 1)
-	userPreferencesFieldInvestigationEnabled            = big.NewInt(1 << 2)
-	userPreferencesFieldTermsAccepted                   = big.NewInt(1 << 3)
-	userPreferencesFieldTermsAcceptedAt                 = big.NewInt(1 << 4)
+	userPreferencesFieldTermsAccepted                   = big.NewInt(1 << 2)
+	userPreferencesFieldTermsAcceptedAt                 = big.NewInt(1 << 3)
 )
 
 // userPreferencesNullableFields maps the wire names of UserPreferences's nullable fields (required or optional) to their field bits.
@@ -77259,8 +77258,6 @@ type UserPreferences struct {
 	BountyWorkerOnboardingDismissed bool `json:"bounty_worker_onboarding_dismissed" url:"bounty_worker_onboarding_dismissed"`
 	// Whether incoming funds, including pending balance, are automatically moved to the user's personal cards balance. `false` when the user has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
-	// Whether investigation mode is enabled for the user. Only meaningful for staff users with investigation access.
-	InvestigationEnabled bool `json:"investigation_enabled" url:"investigation_enabled"`
 	// Whether the user has accepted Whop's terms and policies. `false` until recorded via `PATCH` with `terms_accepted: true`.
 	TermsAccepted bool `json:"terms_accepted" url:"terms_accepted"`
 	// When the user most recently accepted Whop's terms and policies, as an ISO 8601 timestamp. `null` until accepted.
@@ -77285,13 +77282,6 @@ func (u *UserPreferences) GetCardsAutoTopUp() bool {
 		return false
 	}
 	return u.CardsAutoTopUp
-}
-
-func (u *UserPreferences) GetInvestigationEnabled() bool {
-	if u == nil {
-		return false
-	}
-	return u.InvestigationEnabled
 }
 
 func (u *UserPreferences) GetTermsAccepted() bool {
@@ -77336,13 +77326,6 @@ func (u *UserPreferences) SetBountyWorkerOnboardingDismissed(bountyWorkerOnboard
 func (u *UserPreferences) SetCardsAutoTopUp(cardsAutoTopUp bool) {
 	u.CardsAutoTopUp = cardsAutoTopUp
 	u.require(userPreferencesFieldCardsAutoTopUp)
-}
-
-// SetInvestigationEnabled sets the InvestigationEnabled field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserPreferences) SetInvestigationEnabled(investigationEnabled bool) {
-	u.InvestigationEnabled = investigationEnabled
-	u.require(userPreferencesFieldInvestigationEnabled)
 }
 
 // SetTermsAccepted sets the TermsAccepted field and marks it as non-optional;

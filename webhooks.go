@@ -660,7 +660,7 @@ type Webhook struct {
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
 	// Destination URL where webhook payloads are delivered via HTTP POST.
 	URL string `json:"url" url:"url"`
-	// Secret key used to sign webhook payloads for verification. Include this in your HMAC validation logic. Returned on the create response and to interactive dashboard sessions; `null` for API-key and OAuth callers on later reads.
+	// Secret key used to sign webhook payloads. Use it to verify the HMAC signature of each delivery. Returned in the create response. `null` on later reads by API keys and OAuth apps.
 	WebhookSecret *string `json:"webhook_secret,omitempty" url:"webhook_secret,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1750,7 +1750,7 @@ type WebhookListItem struct {
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
 	// Destination URL where webhook payloads are delivered via HTTP POST.
 	URL string `json:"url" url:"url"`
-	// Secret key used to sign webhook payloads for verification. Include this in your HMAC validation logic. Returned on the create response and to interactive dashboard sessions; `null` for API-key and OAuth callers on later reads.
+	// Secret key used to sign webhook payloads. Use it to verify the HMAC signature of each delivery. Returned in the create response. `null` on later reads by API keys and OAuth apps.
 	WebhookSecret *string `json:"webhook_secret,omitempty" url:"webhook_secret,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
