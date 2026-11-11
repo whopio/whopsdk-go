@@ -3567,14 +3567,6 @@ client.Ads.ReportStats(
 <dl>
 <dd>
 
-**clicks:** `*whopsdk.ReportStatsAdsRequestClicks` — Ignored. An ad's clicks are its Whop pixel page views, which Whop counts when it shows the ad's stats.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **hourStartedAt:** `time.Time` — Start of the hour, on the hour, for an hour that has already started.
     
 </dd>

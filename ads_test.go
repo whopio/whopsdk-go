@@ -1498,14 +1498,6 @@ func TestSettersReportStatsAdsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetClicks", func(t *testing.T) {
-		obj := &ReportStatsAdsRequest{}
-		var fernTestValueClicks *ReportStatsAdsRequestClicks
-		obj.SetClicks(fernTestValueClicks)
-		assert.Equal(t, fernTestValueClicks, obj.Clicks)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetHourStartedAt", func(t *testing.T) {
 		obj := &ReportStatsAdsRequest{}
 		var fernTestValueHourStartedAt time.Time
@@ -1541,37 +1533,6 @@ func TestSettersMarkExplicitReportStatsAdsRequest(t *testing.T) {
 
 		// Act
 		obj.SetAdID(fernTestValueAdID)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetClicks_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ReportStatsAdsRequest{}
-		var fernTestValueClicks *ReportStatsAdsRequestClicks
-
-		// Act
-		obj.SetClicks(fernTestValueClicks)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -11661,55 +11622,6 @@ func TestSettersMarkExplicitReportIssuesAdsResponse(t *testing.T) {
 
 		// Note: This does not explicitly assert the presence of a specific JSON field
 		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-}
-
-func TestGettersReportStatsAdsRequestClicks(t *testing.T) {
-	t.Run("GetInteger", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ReportStatsAdsRequestClicks{}
-		var expected int
-		obj.Integer = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetInteger(), "getter should return the property value")
-	})
-
-	t.Run("GetInteger_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *ReportStatsAdsRequestClicks
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetInteger() // Should return zero value
-	})
-
-	t.Run("GetString", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ReportStatsAdsRequestClicks{}
-		var expected string
-		obj.String = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetString(), "getter should return the property value")
-	})
-
-	t.Run("GetString_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *ReportStatsAdsRequestClicks
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetString() // Should return zero value
 	})
 
 }
