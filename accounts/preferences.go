@@ -99,15 +99,15 @@ type RetrievePreferencesResponse struct {
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
 	// Whether Economic Intelligence is on for the account. It turns off automatically at `economic_intelligence_ends_at`.
 	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
-	// Whether Economic Intelligence renews itself every week, with no end date. Turn it on with the `weekly` offer. Set it to `false` to stop renewing, which keeps Economic Intelligence on until the end of the current week, shown in `economic_intelligence_ends_at`; stopping before the first renewal charges the rest of that week at the `7_days` offer's fee. Set it back to `true` before then to keep renewing at the weekly fee.
+	// Whether Economic Intelligence renews itself every period, with no end date. Turn it on by setting this to `true`, or by passing the `3_days` offer's key as `economic_intelligence_duration_key`. Set it to `false` to stop renewing: Economic Intelligence stays on until the end of the current period, shown in `economic_intelligence_ends_at`, and the fee is charged until then. Set it back to `true` before then to keep renewing.
 	EconomicIntelligenceAutoRenew bool `json:"economic_intelligence_auto_renew" url:"economic_intelligence_auto_renew"`
-	// When the account's committed Economic Intelligence period ends, as an ISO 8601 timestamp. Economic Intelligence can't be turned off before then. `null` when Economic Intelligence is off or renews automatically.
+	// When Economic Intelligence turns off, as an ISO 8601 timestamp: the end of the current period once auto-renew is turned off. `null` when Economic Intelligence is off or renews automatically.
 	EconomicIntelligenceEndsAt *string `json:"economic_intelligence_ends_at,omitempty" url:"economic_intelligence_ends_at,omitempty"`
-	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%. `null` when Economic Intelligence is off.
+	// Percentage of payment volume charged while Economic Intelligence is on, such as `3` for 3%. `null` when Economic Intelligence is off.
 	EconomicIntelligenceFeePercentage *float64 `json:"economic_intelligence_fee_percentage,omitempty" url:"economic_intelligence_fee_percentage,omitempty"`
-	// When auto-renew first renews, as an ISO 8601 timestamp. Turning auto-renew off before then charges the rest of that week at the `7_days` offer's fee. `null` when auto-renew is off.
+	// When auto-renew first renews, as an ISO 8601 timestamp: one period after it was turned on. `null` when auto-renew is off.
 	EconomicIntelligenceFirstRenewalAt *string `json:"economic_intelligence_first_renewal_at,omitempty" url:"economic_intelligence_first_renewal_at,omitempty"`
-	// What the account can choose now to turn on Economic Intelligence, each with its fee. Every offer while Economic Intelligence is off; only the `weekly` auto-renew offer while a committed period is running, as an upgrade; empty while it renews automatically.
+	// What the account can choose now to turn on Economic Intelligence. Auto-renew is the only plan: one offer, with its fee and the length of each period, while auto-renew is off, and empty while Economic Intelligence renews automatically.
 	EconomicIntelligenceOffers []*RetrievePreferencesResponseEconomicIntelligenceOffersItem `json:"economic_intelligence_offers" url:"economic_intelligence_offers"`
 	// The account's last Economic Intelligence period, once it has ended. `null` while Economic Intelligence is on, or when it has never been on.
 	EconomicIntelligencePreviousPeriod *RetrievePreferencesResponseEconomicIntelligencePreviousPeriod `json:"economic_intelligence_previous_period,omitempty" url:"economic_intelligence_previous_period,omitempty"`
@@ -1462,13 +1462,13 @@ var (
 type RetrievePreferencesResponseEconomicIntelligenceOffersItem struct {
 	// Whether this offer renews every period until auto-renew is turned off, rather than ending after one.
 	AutoRenew bool `json:"auto_renew" url:"auto_renew"`
-	// What period of time Economic Intelligence stays on. For an auto-renew offer, the length of each period it renews for.
+	// The length of each period Economic Intelligence renews for, in `duration_unit`, such as `3` for 3 days.
 	Duration int `json:"duration" url:"duration"`
 	// The unit of time the duration is in (hours or days)
 	DurationUnit RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit `json:"duration_unit" url:"duration_unit"`
-	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%.
+	// Percentage of payment volume charged while Economic Intelligence is on, such as `3` for 3%.
 	FeePercentage float64 `json:"fee_percentage" url:"fee_percentage"`
-	// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on.
+	// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on. Only `3_days`, the auto-renew offer, is offered. The other keys identify periods bought before it became the only plan.
 	Key RetrievePreferencesResponseEconomicIntelligenceOffersItemKey `json:"key" url:"key"`
 	// Whether Whop recommends this offer. At most one offer is recommended.
 	Recommended bool `json:"recommended" url:"recommended"`
@@ -1645,10 +1645,11 @@ func (r RetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit) P
 	return &r
 }
 
-// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on.
+// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on. Only `3_days`, the auto-renew offer, is offered. The other keys identify periods bought before it became the only plan.
 type RetrievePreferencesResponseEconomicIntelligenceOffersItemKey string
 
 const (
+	RetrievePreferencesResponseEconomicIntelligenceOffersItemKeyThreeDays RetrievePreferencesResponseEconomicIntelligenceOffersItemKey = "3_days"
 	RetrievePreferencesResponseEconomicIntelligenceOffersItemKeyWeekly    RetrievePreferencesResponseEconomicIntelligenceOffersItemKey = "weekly"
 	RetrievePreferencesResponseEconomicIntelligenceOffersItemKeySevenDays RetrievePreferencesResponseEconomicIntelligenceOffersItemKey = "7_days"
 	RetrievePreferencesResponseEconomicIntelligenceOffersItemKeyOneDay    RetrievePreferencesResponseEconomicIntelligenceOffersItemKey = "1_day"
@@ -1657,6 +1658,8 @@ const (
 
 func NewRetrievePreferencesResponseEconomicIntelligenceOffersItemKeyFromString(s string) (RetrievePreferencesResponseEconomicIntelligenceOffersItemKey, error) {
 	switch s {
+	case "3_days":
+		return RetrievePreferencesResponseEconomicIntelligenceOffersItemKeyThreeDays, nil
 	case "weekly":
 		return RetrievePreferencesResponseEconomicIntelligenceOffersItemKeyWeekly, nil
 	case "7_days":
@@ -2659,10 +2662,11 @@ func (u *UpdatePreferencesRequestCustomerTracking) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Turns on Economic Intelligence with the offer that has this `key` in `economic_intelligence_offers`, at that offer's fee. A committed duration can't be changed or turned off until `economic_intelligence_ends_at`, except to upgrade to `weekly`, which switches to auto-renew right away. Requires the `company:update` scope on your API key.
+// Turns on Economic Intelligence with the offer that has this `key` in `economic_intelligence_offers`, at that offer's fee. Only `3_days`, the auto-renew offer, is accepted; any other key is rejected. Requires the `company:update` scope on your API key.
 type UpdatePreferencesRequestEconomicIntelligenceDurationKey string
 
 const (
+	UpdatePreferencesRequestEconomicIntelligenceDurationKeyThreeDays UpdatePreferencesRequestEconomicIntelligenceDurationKey = "3_days"
 	UpdatePreferencesRequestEconomicIntelligenceDurationKeyWeekly    UpdatePreferencesRequestEconomicIntelligenceDurationKey = "weekly"
 	UpdatePreferencesRequestEconomicIntelligenceDurationKeySevenDays UpdatePreferencesRequestEconomicIntelligenceDurationKey = "7_days"
 	UpdatePreferencesRequestEconomicIntelligenceDurationKeyOneDay    UpdatePreferencesRequestEconomicIntelligenceDurationKey = "1_day"
@@ -2671,6 +2675,8 @@ const (
 
 func NewUpdatePreferencesRequestEconomicIntelligenceDurationKeyFromString(s string) (UpdatePreferencesRequestEconomicIntelligenceDurationKey, error) {
 	switch s {
+	case "3_days":
+		return UpdatePreferencesRequestEconomicIntelligenceDurationKeyThreeDays, nil
 	case "weekly":
 		return UpdatePreferencesRequestEconomicIntelligenceDurationKeyWeekly, nil
 	case "7_days":
@@ -2963,15 +2969,15 @@ type UpdatePreferencesResponse struct {
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
 	// Whether Economic Intelligence is on for the account. It turns off automatically at `economic_intelligence_ends_at`.
 	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
-	// Whether Economic Intelligence renews itself every week, with no end date. Turn it on with the `weekly` offer. Set it to `false` to stop renewing, which keeps Economic Intelligence on until the end of the current week, shown in `economic_intelligence_ends_at`; stopping before the first renewal charges the rest of that week at the `7_days` offer's fee. Set it back to `true` before then to keep renewing at the weekly fee.
+	// Whether Economic Intelligence renews itself every period, with no end date. Turn it on by setting this to `true`, or by passing the `3_days` offer's key as `economic_intelligence_duration_key`. Set it to `false` to stop renewing: Economic Intelligence stays on until the end of the current period, shown in `economic_intelligence_ends_at`, and the fee is charged until then. Set it back to `true` before then to keep renewing.
 	EconomicIntelligenceAutoRenew bool `json:"economic_intelligence_auto_renew" url:"economic_intelligence_auto_renew"`
-	// When the account's committed Economic Intelligence period ends, as an ISO 8601 timestamp. Economic Intelligence can't be turned off before then. `null` when Economic Intelligence is off or renews automatically.
+	// When Economic Intelligence turns off, as an ISO 8601 timestamp: the end of the current period once auto-renew is turned off. `null` when Economic Intelligence is off or renews automatically.
 	EconomicIntelligenceEndsAt *string `json:"economic_intelligence_ends_at,omitempty" url:"economic_intelligence_ends_at,omitempty"`
-	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%. `null` when Economic Intelligence is off.
+	// Percentage of payment volume charged while Economic Intelligence is on, such as `3` for 3%. `null` when Economic Intelligence is off.
 	EconomicIntelligenceFeePercentage *float64 `json:"economic_intelligence_fee_percentage,omitempty" url:"economic_intelligence_fee_percentage,omitempty"`
-	// When auto-renew first renews, as an ISO 8601 timestamp. Turning auto-renew off before then charges the rest of that week at the `7_days` offer's fee. `null` when auto-renew is off.
+	// When auto-renew first renews, as an ISO 8601 timestamp: one period after it was turned on. `null` when auto-renew is off.
 	EconomicIntelligenceFirstRenewalAt *string `json:"economic_intelligence_first_renewal_at,omitempty" url:"economic_intelligence_first_renewal_at,omitempty"`
-	// What the account can choose now to turn on Economic Intelligence, each with its fee. Every offer while Economic Intelligence is off; only the `weekly` auto-renew offer while a committed period is running, as an upgrade; empty while it renews automatically.
+	// What the account can choose now to turn on Economic Intelligence. Auto-renew is the only plan: one offer, with its fee and the length of each period, while auto-renew is off, and empty while Economic Intelligence renews automatically.
 	EconomicIntelligenceOffers []*UpdatePreferencesResponseEconomicIntelligenceOffersItem `json:"economic_intelligence_offers" url:"economic_intelligence_offers"`
 	// The account's last Economic Intelligence period, once it has ended. `null` while Economic Intelligence is on, or when it has never been on.
 	EconomicIntelligencePreviousPeriod *UpdatePreferencesResponseEconomicIntelligencePreviousPeriod `json:"economic_intelligence_previous_period,omitempty" url:"economic_intelligence_previous_period,omitempty"`
@@ -4326,13 +4332,13 @@ var (
 type UpdatePreferencesResponseEconomicIntelligenceOffersItem struct {
 	// Whether this offer renews every period until auto-renew is turned off, rather than ending after one.
 	AutoRenew bool `json:"auto_renew" url:"auto_renew"`
-	// What period of time Economic Intelligence stays on. For an auto-renew offer, the length of each period it renews for.
+	// The length of each period Economic Intelligence renews for, in `duration_unit`, such as `3` for 3 days.
 	Duration int `json:"duration" url:"duration"`
 	// The unit of time the duration is in (hours or days)
 	DurationUnit UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit `json:"duration_unit" url:"duration_unit"`
-	// Percentage of volume charged while Economic Intelligence is on, such as `1.5` for 1.5%.
+	// Percentage of payment volume charged while Economic Intelligence is on, such as `3` for 3%.
 	FeePercentage float64 `json:"fee_percentage" url:"fee_percentage"`
-	// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on.
+	// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on. Only `3_days`, the auto-renew offer, is offered. The other keys identify periods bought before it became the only plan.
 	Key UpdatePreferencesResponseEconomicIntelligenceOffersItemKey `json:"key" url:"key"`
 	// Whether Whop recommends this offer. At most one offer is recommended.
 	Recommended bool `json:"recommended" url:"recommended"`
@@ -4509,10 +4515,11 @@ func (u UpdatePreferencesResponseEconomicIntelligenceOffersItemDurationUnit) Ptr
 	return &u
 }
 
-// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on.
+// The unique identifier for this offer. Pass this value as `economic_intelligence_duration_key` to turn it on. Only `3_days`, the auto-renew offer, is offered. The other keys identify periods bought before it became the only plan.
 type UpdatePreferencesResponseEconomicIntelligenceOffersItemKey string
 
 const (
+	UpdatePreferencesResponseEconomicIntelligenceOffersItemKeyThreeDays UpdatePreferencesResponseEconomicIntelligenceOffersItemKey = "3_days"
 	UpdatePreferencesResponseEconomicIntelligenceOffersItemKeyWeekly    UpdatePreferencesResponseEconomicIntelligenceOffersItemKey = "weekly"
 	UpdatePreferencesResponseEconomicIntelligenceOffersItemKeySevenDays UpdatePreferencesResponseEconomicIntelligenceOffersItemKey = "7_days"
 	UpdatePreferencesResponseEconomicIntelligenceOffersItemKeyOneDay    UpdatePreferencesResponseEconomicIntelligenceOffersItemKey = "1_day"
@@ -4521,6 +4528,8 @@ const (
 
 func NewUpdatePreferencesResponseEconomicIntelligenceOffersItemKeyFromString(s string) (UpdatePreferencesResponseEconomicIntelligenceOffersItemKey, error) {
 	switch s {
+	case "3_days":
+		return UpdatePreferencesResponseEconomicIntelligenceOffersItemKeyThreeDays, nil
 	case "weekly":
 		return UpdatePreferencesResponseEconomicIntelligenceOffersItemKeyWeekly, nil
 	case "7_days":
@@ -4897,9 +4906,9 @@ type UpdatePreferencesRequest struct {
 	CustomerTracking *UpdatePreferencesRequestCustomerTracking `json:"customer_tracking,omitempty" url:"-"`
 	// Whether Whop assembles and files the evidence response when this account's payments are disputed. Off by default; enabling it also opts the account into the success fee charged only on disputes it wins. Requires the `payment:dispute` scope on your API key.
 	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
-	// `false` stops renewing: Economic Intelligence stays on until the end of the current week, and stopping before the first renewal charges the rest of that week at the `7_days` offer's fee. `true` keeps it renewing again before then, or turns it on like the `weekly` offer. Can't be combined with `economic_intelligence_duration_key`. Requires the `company:update` scope on your API key.
+	// `false` stops renewing: Economic Intelligence stays on until the end of the current period, and the fee is charged until then. `true` keeps it renewing again before then, or turns it on like the `3_days` offer. Can't be combined with `economic_intelligence_duration_key`. Requires the `company:update` scope on your API key.
 	EconomicIntelligenceAutoRenew *bool `json:"economic_intelligence_auto_renew,omitempty" url:"-"`
-	// Turns on Economic Intelligence with the offer that has this `key` in `economic_intelligence_offers`, at that offer's fee. A committed duration can't be changed or turned off until `economic_intelligence_ends_at`, except to upgrade to `weekly`, which switches to auto-renew right away. Requires the `company:update` scope on your API key.
+	// Turns on Economic Intelligence with the offer that has this `key` in `economic_intelligence_offers`, at that offer's fee. Only `3_days`, the auto-renew offer, is accepted; any other key is rejected. Requires the `company:update` scope on your API key.
 	EconomicIntelligenceDurationKey *UpdatePreferencesRequestEconomicIntelligenceDurationKey `json:"economic_intelligence_duration_key,omitempty" url:"-"`
 	// Replaces the account's own cancel reasons, shown to members in this order when they cancel. Pass an option's `id` to keep it, for example when renaming it; options without an `id` are added, and options left out are removed. Pass an empty array to go back to Whop's default reasons. Members who already picked an option keep the label they saw. Requires the `company:manage_checkout` scope on your API key.
 	FeedbackOptions []*UpdatePreferencesRequestFeedbackOptionsItem `json:"feedback_options,omitempty" url:"-"`

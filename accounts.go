@@ -972,7 +972,7 @@ type Account struct {
 	DirectReportsCount *int `json:"direct_reports_count,omitempty" url:"direct_reports_count,omitempty"`
 	// Whether Whop assembles and files dispute evidence for this account. Enabling it opts the account into the success fee charged on disputes it wins.
 	DisputeFighterEnabled bool `json:"dispute_fighter_enabled" url:"dispute_fighter_enabled"`
-	// Whether Economic Intelligence is on for the account. It turns off automatically when its committed period ends.
+	// Whether Economic Intelligence is on for the account. It turns off automatically when its committed period ends. While it is off, the account can't activate an experiment or run a recommendation.
 	EconomicIntelligence bool `json:"economic_intelligence" url:"economic_intelligence"`
 	// Account owner email address.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
