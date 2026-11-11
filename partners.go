@@ -1784,7 +1784,7 @@ type LeaderboardPartnersResponseLeadersItem struct {
 	FirstReferralStartedAt time.Time `json:"first_referral_started_at" url:"first_referral_started_at"`
 	// 1-based leaderboard position.
 	Rank int `json:"rank" url:"rank"`
-	// The referrer's pending + completed earnings across all referred businesses, in USD.
+	// The referrer's pending + completed earnings across all referred businesses, in USD, without commission advances. Whop Sales commission counts only the share that reaches its people.
 	TotalEarningsUsd string `json:"total_earnings_usd" url:"total_earnings_usd"`
 	// Credited GMV across all the referrer's referred businesses, in USD.
 	TotalVolumeUsd string `json:"total_volume_usd" url:"total_volume_usd"`
@@ -2235,7 +2235,7 @@ type LeaderboardPartnersResponseMe struct {
 	FirstReferralStartedAt time.Time `json:"first_referral_started_at" url:"first_referral_started_at"`
 	// 1-based leaderboard position.
 	Rank int `json:"rank" url:"rank"`
-	// The referrer's pending + completed earnings across all referred businesses, in USD.
+	// The referrer's pending + completed earnings across all referred businesses, in USD, without commission advances. Whop Sales commission counts only the share that reaches its people.
 	TotalEarningsUsd string `json:"total_earnings_usd" url:"total_earnings_usd"`
 	// Credited GMV across all the referrer's referred businesses, in USD.
 	TotalVolumeUsd string `json:"total_volume_usd" url:"total_volume_usd"`
@@ -2685,7 +2685,7 @@ type LeaderboardPartnersResponseNearbyItem struct {
 	FirstReferralStartedAt time.Time `json:"first_referral_started_at" url:"first_referral_started_at"`
 	// 1-based leaderboard position.
 	Rank int `json:"rank" url:"rank"`
-	// The referrer's pending + completed earnings across all referred businesses, in USD.
+	// The referrer's pending + completed earnings across all referred businesses, in USD, without commission advances. Whop Sales commission counts only the share that reaches its people.
 	TotalEarningsUsd string `json:"total_earnings_usd" url:"total_earnings_usd"`
 	// Credited GMV across all the referrer's referred businesses, in USD.
 	TotalVolumeUsd string `json:"total_volume_usd" url:"total_volume_usd"`
