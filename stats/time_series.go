@@ -52,42 +52,43 @@ var (
 	retrieveTimeSeriesRequestFieldProductCategory     = big.NewInt(1 << 37)
 	retrieveTimeSeriesRequestFieldAccountCountry      = big.NewInt(1 << 38)
 	retrieveTimeSeriesRequestFieldIssuer              = big.NewInt(1 << 39)
-	retrieveTimeSeriesRequestFieldConversionWindow    = big.NewInt(1 << 40)
-	retrieveTimeSeriesRequestFieldMatureOnly          = big.NewInt(1 << 41)
-	retrieveTimeSeriesRequestFieldSteps               = big.NewInt(1 << 42)
-	retrieveTimeSeriesRequestFieldCompareTo           = big.NewInt(1 << 43)
-	retrieveTimeSeriesRequestFieldConfidenceLevel     = big.NewInt(1 << 44)
-	retrieveTimeSeriesRequestFieldContactable         = big.NewInt(1 << 45)
-	retrieveTimeSeriesRequestFieldHasPurchased        = big.NewInt(1 << 46)
-	retrieveTimeSeriesRequestFieldFirstSeenAfter      = big.NewInt(1 << 47)
-	retrieveTimeSeriesRequestFieldFirstSeenBefore     = big.NewInt(1 << 48)
-	retrieveTimeSeriesRequestFieldLastSeenAfter       = big.NewInt(1 << 49)
-	retrieveTimeSeriesRequestFieldLastSeenBefore      = big.NewInt(1 << 50)
-	retrieveTimeSeriesRequestFieldFirstSeenWithinDays = big.NewInt(1 << 51)
-	retrieveTimeSeriesRequestFieldLastSeenWithinDays  = big.NewInt(1 << 52)
-	retrieveTimeSeriesRequestFieldKnown               = big.NewInt(1 << 53)
-	retrieveTimeSeriesRequestFieldHasEmail            = big.NewInt(1 << 54)
-	retrieveTimeSeriesRequestFieldHasPhone            = big.NewInt(1 << 55)
-	retrieveTimeSeriesRequestFieldLtvGt               = big.NewInt(1 << 56)
-	retrieveTimeSeriesRequestFieldLtvGte              = big.NewInt(1 << 57)
-	retrieveTimeSeriesRequestFieldLtvLt               = big.NewInt(1 << 58)
-	retrieveTimeSeriesRequestFieldLtvLte              = big.NewInt(1 << 59)
-	retrieveTimeSeriesRequestFieldAovGt               = big.NewInt(1 << 60)
-	retrieveTimeSeriesRequestFieldAovGte              = big.NewInt(1 << 61)
-	retrieveTimeSeriesRequestFieldAovLt               = big.NewInt(1 << 62)
-	retrieveTimeSeriesRequestFieldAovLte              = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	retrieveTimeSeriesRequestFieldPurchaseCountGt     = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	retrieveTimeSeriesRequestFieldPurchaseCountGte    = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	retrieveTimeSeriesRequestFieldPurchaseCountLt     = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	retrieveTimeSeriesRequestFieldPurchaseCountLte    = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	retrieveTimeSeriesRequestFieldEventCountGt        = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	retrieveTimeSeriesRequestFieldEventCountGte       = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	retrieveTimeSeriesRequestFieldEventCountLt        = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	retrieveTimeSeriesRequestFieldEventCountLte       = big.NewInt(0).Lsh(big.NewInt(1), 71)
-	retrieveTimeSeriesRequestFieldReferringAccountID  = big.NewInt(0).Lsh(big.NewInt(1), 72)
-	retrieveTimeSeriesRequestFieldTeamLeadID          = big.NewInt(0).Lsh(big.NewInt(1), 73)
-	retrieveTimeSeriesRequestFieldActivity            = big.NewInt(0).Lsh(big.NewInt(1), 74)
-	retrieveTimeSeriesRequestFieldBreakdownLimit      = big.NewInt(0).Lsh(big.NewInt(1), 75)
+	retrieveTimeSeriesRequestFieldWebhookID           = big.NewInt(1 << 40)
+	retrieveTimeSeriesRequestFieldConversionWindow    = big.NewInt(1 << 41)
+	retrieveTimeSeriesRequestFieldMatureOnly          = big.NewInt(1 << 42)
+	retrieveTimeSeriesRequestFieldSteps               = big.NewInt(1 << 43)
+	retrieveTimeSeriesRequestFieldCompareTo           = big.NewInt(1 << 44)
+	retrieveTimeSeriesRequestFieldConfidenceLevel     = big.NewInt(1 << 45)
+	retrieveTimeSeriesRequestFieldContactable         = big.NewInt(1 << 46)
+	retrieveTimeSeriesRequestFieldHasPurchased        = big.NewInt(1 << 47)
+	retrieveTimeSeriesRequestFieldFirstSeenAfter      = big.NewInt(1 << 48)
+	retrieveTimeSeriesRequestFieldFirstSeenBefore     = big.NewInt(1 << 49)
+	retrieveTimeSeriesRequestFieldLastSeenAfter       = big.NewInt(1 << 50)
+	retrieveTimeSeriesRequestFieldLastSeenBefore      = big.NewInt(1 << 51)
+	retrieveTimeSeriesRequestFieldFirstSeenWithinDays = big.NewInt(1 << 52)
+	retrieveTimeSeriesRequestFieldLastSeenWithinDays  = big.NewInt(1 << 53)
+	retrieveTimeSeriesRequestFieldKnown               = big.NewInt(1 << 54)
+	retrieveTimeSeriesRequestFieldHasEmail            = big.NewInt(1 << 55)
+	retrieveTimeSeriesRequestFieldHasPhone            = big.NewInt(1 << 56)
+	retrieveTimeSeriesRequestFieldLtvGt               = big.NewInt(1 << 57)
+	retrieveTimeSeriesRequestFieldLtvGte              = big.NewInt(1 << 58)
+	retrieveTimeSeriesRequestFieldLtvLt               = big.NewInt(1 << 59)
+	retrieveTimeSeriesRequestFieldLtvLte              = big.NewInt(1 << 60)
+	retrieveTimeSeriesRequestFieldAovGt               = big.NewInt(1 << 61)
+	retrieveTimeSeriesRequestFieldAovGte              = big.NewInt(1 << 62)
+	retrieveTimeSeriesRequestFieldAovLt               = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	retrieveTimeSeriesRequestFieldAovLte              = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	retrieveTimeSeriesRequestFieldPurchaseCountGt     = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	retrieveTimeSeriesRequestFieldPurchaseCountGte    = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	retrieveTimeSeriesRequestFieldPurchaseCountLt     = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	retrieveTimeSeriesRequestFieldPurchaseCountLte    = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	retrieveTimeSeriesRequestFieldEventCountGt        = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	retrieveTimeSeriesRequestFieldEventCountGte       = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	retrieveTimeSeriesRequestFieldEventCountLt        = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	retrieveTimeSeriesRequestFieldEventCountLte       = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	retrieveTimeSeriesRequestFieldReferringAccountID  = big.NewInt(0).Lsh(big.NewInt(1), 73)
+	retrieveTimeSeriesRequestFieldTeamLeadID          = big.NewInt(0).Lsh(big.NewInt(1), 74)
+	retrieveTimeSeriesRequestFieldActivity            = big.NewInt(0).Lsh(big.NewInt(1), 75)
+	retrieveTimeSeriesRequestFieldBreakdownLimit      = big.NewInt(0).Lsh(big.NewInt(1), 76)
 )
 
 type RetrieveTimeSeriesRequest struct {
@@ -171,6 +172,8 @@ type RetrieveTimeSeriesRequest struct {
 	AccountCountry *string `json:"-" url:"account_country,omitempty"`
 	// Filter to one card-issuing bank, named as the processor reports it, for example JPMORGAN CHASE BANK N A, or unknown for payments with no reported bank. Available on metrics that list issuer.
 	Issuer *string `json:"-" url:"issuer,omitempty"`
+	// The webhook to count deliveries for, for example hook_AbC123. Required by webhook_deliveries, and must belong to account_id or one of its apps.
+	WebhookID *string `json:"-" url:"webhook_id,omitempty"`
 	// Funnel only. Time allowed from the first event to the final event: integer minutes, hours, or days, up to 30d.
 	ConversionWindow *string `json:"-" url:"conversion_window,omitempty"`
 	// Funnel only. Include only entrants whose full conversion window has elapsed. Required for confidence intervals and comparisons.
@@ -535,6 +538,13 @@ func (r *RetrieveTimeSeriesRequest) SetAccountCountry(accountCountry *string) {
 func (r *RetrieveTimeSeriesRequest) SetIssuer(issuer *string) {
 	r.Issuer = issuer
 	r.require(retrieveTimeSeriesRequestFieldIssuer)
+}
+
+// SetWebhookID sets the WebhookID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesRequest) SetWebhookID(webhookID *string) {
+	r.WebhookID = webhookID
+	r.require(retrieveTimeSeriesRequestFieldWebhookID)
 }
 
 // SetConversionWindow sets the ConversionWindow field and marks it as non-optional;
@@ -1302,18 +1312,22 @@ func (r *RetrieveTimeSeriesResponse) String() string {
 }
 
 var (
-	retrieveTimeSeriesResponseDataFieldCurrency = big.NewInt(1 << 0)
-	retrieveTimeSeriesResponseDataFieldPoints   = big.NewInt(1 << 1)
-	retrieveTimeSeriesResponseDataFieldTotals   = big.NewInt(1 << 2)
+	retrieveTimeSeriesResponseDataFieldComplete = big.NewInt(1 << 0)
+	retrieveTimeSeriesResponseDataFieldCurrency = big.NewInt(1 << 1)
+	retrieveTimeSeriesResponseDataFieldPoints   = big.NewInt(1 << 2)
+	retrieveTimeSeriesResponseDataFieldTotals   = big.NewInt(1 << 3)
 )
 
 // retrieveTimeSeriesResponseDataNullableFields maps the wire names of RetrieveTimeSeriesResponseData's nullable fields (required or optional) to their field bits.
 var retrieveTimeSeriesResponseDataNullableFields = map[string]*big.Int{
+	"complete": retrieveTimeSeriesResponseDataFieldComplete,
 	"currency": retrieveTimeSeriesResponseDataFieldCurrency,
 	"totals":   retrieveTimeSeriesResponseDataFieldTotals,
 }
 
 type RetrieveTimeSeriesResponseData struct {
+	// Present for webhook_deliveries. False while older deliveries are still being counted in the background: the points cover what is counted so far. Responses are cached for up to a minute, so wait a minute before requesting the same range again.
+	Complete *bool `json:"complete,omitempty" url:"complete,omitempty"`
 	// ISO currency the values are denominated in. Present for currency-unit metrics: the convert_to currency, or usd.
 	Currency *string `json:"currency,omitempty" url:"currency,omitempty"`
 	// One entry per period, oldest first.
@@ -1326,6 +1340,13 @@ type RetrieveTimeSeriesResponseData struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveTimeSeriesResponseData) GetComplete() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.Complete
 }
 
 func (r *RetrieveTimeSeriesResponseData) GetCurrency() *string {
@@ -1363,6 +1384,13 @@ func (r *RetrieveTimeSeriesResponseData) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	r.explicitFields = next
+}
+
+// SetComplete sets the Complete field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesResponseData) SetComplete(complete *bool) {
+	r.Complete = complete
+	r.require(retrieveTimeSeriesResponseDataFieldComplete)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;

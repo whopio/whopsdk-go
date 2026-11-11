@@ -51,42 +51,43 @@ var (
 	retrieveStatsRequestFieldProductCategory     = big.NewInt(1 << 37)
 	retrieveStatsRequestFieldAccountCountry      = big.NewInt(1 << 38)
 	retrieveStatsRequestFieldIssuer              = big.NewInt(1 << 39)
-	retrieveStatsRequestFieldConversionWindow    = big.NewInt(1 << 40)
-	retrieveStatsRequestFieldMatureOnly          = big.NewInt(1 << 41)
-	retrieveStatsRequestFieldSteps               = big.NewInt(1 << 42)
-	retrieveStatsRequestFieldCompareTo           = big.NewInt(1 << 43)
-	retrieveStatsRequestFieldConfidenceLevel     = big.NewInt(1 << 44)
-	retrieveStatsRequestFieldContactable         = big.NewInt(1 << 45)
-	retrieveStatsRequestFieldHasPurchased        = big.NewInt(1 << 46)
-	retrieveStatsRequestFieldFirstSeenAfter      = big.NewInt(1 << 47)
-	retrieveStatsRequestFieldFirstSeenBefore     = big.NewInt(1 << 48)
-	retrieveStatsRequestFieldLastSeenAfter       = big.NewInt(1 << 49)
-	retrieveStatsRequestFieldLastSeenBefore      = big.NewInt(1 << 50)
-	retrieveStatsRequestFieldFirstSeenWithinDays = big.NewInt(1 << 51)
-	retrieveStatsRequestFieldLastSeenWithinDays  = big.NewInt(1 << 52)
-	retrieveStatsRequestFieldKnown               = big.NewInt(1 << 53)
-	retrieveStatsRequestFieldHasEmail            = big.NewInt(1 << 54)
-	retrieveStatsRequestFieldHasPhone            = big.NewInt(1 << 55)
-	retrieveStatsRequestFieldLtvGt               = big.NewInt(1 << 56)
-	retrieveStatsRequestFieldLtvGte              = big.NewInt(1 << 57)
-	retrieveStatsRequestFieldLtvLt               = big.NewInt(1 << 58)
-	retrieveStatsRequestFieldLtvLte              = big.NewInt(1 << 59)
-	retrieveStatsRequestFieldAovGt               = big.NewInt(1 << 60)
-	retrieveStatsRequestFieldAovGte              = big.NewInt(1 << 61)
-	retrieveStatsRequestFieldAovLt               = big.NewInt(1 << 62)
-	retrieveStatsRequestFieldAovLte              = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	retrieveStatsRequestFieldPurchaseCountGt     = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	retrieveStatsRequestFieldPurchaseCountGte    = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	retrieveStatsRequestFieldPurchaseCountLt     = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	retrieveStatsRequestFieldPurchaseCountLte    = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	retrieveStatsRequestFieldEventCountGt        = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	retrieveStatsRequestFieldEventCountGte       = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	retrieveStatsRequestFieldEventCountLt        = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	retrieveStatsRequestFieldEventCountLte       = big.NewInt(0).Lsh(big.NewInt(1), 71)
-	retrieveStatsRequestFieldReferringAccountID  = big.NewInt(0).Lsh(big.NewInt(1), 72)
-	retrieveStatsRequestFieldTeamLeadID          = big.NewInt(0).Lsh(big.NewInt(1), 73)
-	retrieveStatsRequestFieldActivity            = big.NewInt(0).Lsh(big.NewInt(1), 74)
-	retrieveStatsRequestFieldBreakdownLimit      = big.NewInt(0).Lsh(big.NewInt(1), 75)
+	retrieveStatsRequestFieldWebhookID           = big.NewInt(1 << 40)
+	retrieveStatsRequestFieldConversionWindow    = big.NewInt(1 << 41)
+	retrieveStatsRequestFieldMatureOnly          = big.NewInt(1 << 42)
+	retrieveStatsRequestFieldSteps               = big.NewInt(1 << 43)
+	retrieveStatsRequestFieldCompareTo           = big.NewInt(1 << 44)
+	retrieveStatsRequestFieldConfidenceLevel     = big.NewInt(1 << 45)
+	retrieveStatsRequestFieldContactable         = big.NewInt(1 << 46)
+	retrieveStatsRequestFieldHasPurchased        = big.NewInt(1 << 47)
+	retrieveStatsRequestFieldFirstSeenAfter      = big.NewInt(1 << 48)
+	retrieveStatsRequestFieldFirstSeenBefore     = big.NewInt(1 << 49)
+	retrieveStatsRequestFieldLastSeenAfter       = big.NewInt(1 << 50)
+	retrieveStatsRequestFieldLastSeenBefore      = big.NewInt(1 << 51)
+	retrieveStatsRequestFieldFirstSeenWithinDays = big.NewInt(1 << 52)
+	retrieveStatsRequestFieldLastSeenWithinDays  = big.NewInt(1 << 53)
+	retrieveStatsRequestFieldKnown               = big.NewInt(1 << 54)
+	retrieveStatsRequestFieldHasEmail            = big.NewInt(1 << 55)
+	retrieveStatsRequestFieldHasPhone            = big.NewInt(1 << 56)
+	retrieveStatsRequestFieldLtvGt               = big.NewInt(1 << 57)
+	retrieveStatsRequestFieldLtvGte              = big.NewInt(1 << 58)
+	retrieveStatsRequestFieldLtvLt               = big.NewInt(1 << 59)
+	retrieveStatsRequestFieldLtvLte              = big.NewInt(1 << 60)
+	retrieveStatsRequestFieldAovGt               = big.NewInt(1 << 61)
+	retrieveStatsRequestFieldAovGte              = big.NewInt(1 << 62)
+	retrieveStatsRequestFieldAovLt               = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	retrieveStatsRequestFieldAovLte              = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	retrieveStatsRequestFieldPurchaseCountGt     = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	retrieveStatsRequestFieldPurchaseCountGte    = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	retrieveStatsRequestFieldPurchaseCountLt     = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	retrieveStatsRequestFieldPurchaseCountLte    = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	retrieveStatsRequestFieldEventCountGt        = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	retrieveStatsRequestFieldEventCountGte       = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	retrieveStatsRequestFieldEventCountLt        = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	retrieveStatsRequestFieldEventCountLte       = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	retrieveStatsRequestFieldReferringAccountID  = big.NewInt(0).Lsh(big.NewInt(1), 73)
+	retrieveStatsRequestFieldTeamLeadID          = big.NewInt(0).Lsh(big.NewInt(1), 74)
+	retrieveStatsRequestFieldActivity            = big.NewInt(0).Lsh(big.NewInt(1), 75)
+	retrieveStatsRequestFieldBreakdownLimit      = big.NewInt(0).Lsh(big.NewInt(1), 76)
 )
 
 type RetrieveStatsRequest struct {
@@ -170,6 +171,8 @@ type RetrieveStatsRequest struct {
 	AccountCountry *string `json:"-" url:"account_country,omitempty"`
 	// Filter to one card-issuing bank, named as the processor reports it, for example JPMORGAN CHASE BANK N A, or unknown for payments with no reported bank. Available on metrics that list issuer.
 	Issuer *string `json:"-" url:"issuer,omitempty"`
+	// The webhook to count deliveries for, for example hook_AbC123. Required by webhook_deliveries, and must belong to account_id or one of its apps.
+	WebhookID *string `json:"-" url:"webhook_id,omitempty"`
 	// Funnel only. Time allowed from the first event to the final event: integer minutes, hours, or days, up to 30d.
 	ConversionWindow *string `json:"-" url:"conversion_window,omitempty"`
 	// Funnel only. Include only entrants whose full conversion window has elapsed. Required for confidence intervals and comparisons.
@@ -534,6 +537,13 @@ func (r *RetrieveStatsRequest) SetAccountCountry(accountCountry *string) {
 func (r *RetrieveStatsRequest) SetIssuer(issuer *string) {
 	r.Issuer = issuer
 	r.require(retrieveStatsRequestFieldIssuer)
+}
+
+// SetWebhookID sets the WebhookID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsRequest) SetWebhookID(webhookID *string) {
+	r.WebhookID = webhookID
+	r.require(retrieveStatsRequestFieldWebhookID)
 }
 
 // SetConversionWindow sets the ConversionWindow field and marks it as non-optional;
@@ -1531,18 +1541,22 @@ func (r *RetrieveStatsResponse) String() string {
 }
 
 var (
-	retrieveStatsResponseDataFieldCurrency = big.NewInt(1 << 0)
-	retrieveStatsResponseDataFieldPoints   = big.NewInt(1 << 1)
-	retrieveStatsResponseDataFieldTotals   = big.NewInt(1 << 2)
+	retrieveStatsResponseDataFieldComplete = big.NewInt(1 << 0)
+	retrieveStatsResponseDataFieldCurrency = big.NewInt(1 << 1)
+	retrieveStatsResponseDataFieldPoints   = big.NewInt(1 << 2)
+	retrieveStatsResponseDataFieldTotals   = big.NewInt(1 << 3)
 )
 
 // retrieveStatsResponseDataNullableFields maps the wire names of RetrieveStatsResponseData's nullable fields (required or optional) to their field bits.
 var retrieveStatsResponseDataNullableFields = map[string]*big.Int{
+	"complete": retrieveStatsResponseDataFieldComplete,
 	"currency": retrieveStatsResponseDataFieldCurrency,
 	"totals":   retrieveStatsResponseDataFieldTotals,
 }
 
 type RetrieveStatsResponseData struct {
+	// Present for webhook_deliveries. False while older deliveries are still being counted in the background: the points cover what is counted so far. Responses are cached for up to a minute, so wait a minute before requesting the same range again.
+	Complete *bool `json:"complete,omitempty" url:"complete,omitempty"`
 	// ISO currency the values are denominated in. Present for currency-unit metrics: the convert_to currency, or usd.
 	Currency *string `json:"currency,omitempty" url:"currency,omitempty"`
 	// One entry per period, oldest first.
@@ -1555,6 +1569,13 @@ type RetrieveStatsResponseData struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveStatsResponseData) GetComplete() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.Complete
 }
 
 func (r *RetrieveStatsResponseData) GetCurrency() *string {
@@ -1592,6 +1613,13 @@ func (r *RetrieveStatsResponseData) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	r.explicitFields = next
+}
+
+// SetComplete sets the Complete field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsResponseData) SetComplete(complete *bool) {
+	r.Complete = complete
+	r.require(retrieveStatsResponseDataFieldComplete)
 }
 
 // SetCurrency sets the Currency field and marks it as non-optional;
