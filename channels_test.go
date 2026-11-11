@@ -655,6 +655,22 @@ func TestSettersListChannelsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIncludeDeleted", func(t *testing.T) {
+		obj := &ListChannelsRequest{}
+		var fernTestValueIncludeDeleted *bool
+		obj.SetIncludeDeleted(fernTestValueIncludeDeleted)
+		assert.Equal(t, fernTestValueIncludeDeleted, obj.IncludeDeleted)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetUpdatedAfter", func(t *testing.T) {
+		obj := &ListChannelsRequest{}
+		var fernTestValueUpdatedAfter *string
+		obj.SetUpdatedAfter(fernTestValueUpdatedAfter)
+		assert.Equal(t, fernTestValueUpdatedAfter, obj.UpdatedAfter)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCreatedBefore", func(t *testing.T) {
 		obj := &ListChannelsRequest{}
 		var fernTestValueCreatedBefore *string
@@ -1263,6 +1279,68 @@ func TestSettersMarkExplicitListChannelsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetIncludeDeleted_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListChannelsRequest{}
+		var fernTestValueIncludeDeleted *bool
+
+		// Act
+		obj.SetIncludeDeleted(fernTestValueIncludeDeleted)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetUpdatedAfter_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListChannelsRequest{}
+		var fernTestValueUpdatedAfter *string
+
+		// Act
+		obj.SetUpdatedAfter(fernTestValueUpdatedAfter)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetCreatedBefore_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1731,6 +1809,14 @@ func TestSettersChannel(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDeletedAt", func(t *testing.T) {
+		obj := &Channel{}
+		var fernTestValueDeletedAt *string
+		obj.SetDeletedAt(fernTestValueDeletedAt)
+		assert.Equal(t, fernTestValueDeletedAt, obj.DeletedAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetExperienceID", func(t *testing.T) {
 		obj := &Channel{}
 		var fernTestValueExperienceID *string
@@ -1884,6 +1970,39 @@ func TestGettersChannel(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCreatedAt() // Should return zero value
+	})
+
+	t.Run("GetDeletedAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Channel{}
+		var expected *string
+		obj.DeletedAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDeletedAt(), "getter should return the property value")
+	})
+
+	t.Run("GetDeletedAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Channel{}
+		obj.DeletedAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDeletedAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDeletedAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Channel
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDeletedAt() // Should return zero value
 	})
 
 	t.Run("GetExperienceID", func(t *testing.T) {
@@ -2307,6 +2426,37 @@ func TestSettersMarkExplicitChannel(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetDeletedAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Channel{}
+		var fernTestValueDeletedAt *string
+
+		// Act
+		obj.SetDeletedAt(fernTestValueDeletedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetExperienceID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2698,6 +2848,14 @@ func TestSettersChannelListItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDeletedAt", func(t *testing.T) {
+		obj := &ChannelListItem{}
+		var fernTestValueDeletedAt *string
+		obj.SetDeletedAt(fernTestValueDeletedAt)
+		assert.Equal(t, fernTestValueDeletedAt, obj.DeletedAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetExperienceID", func(t *testing.T) {
 		obj := &ChannelListItem{}
 		var fernTestValueExperienceID *string
@@ -2802,6 +2960,14 @@ func TestSettersChannelListItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSynchronizedAt", func(t *testing.T) {
+		obj := &ChannelListItem{}
+		var fernTestValueSynchronizedAt *string
+		obj.SetSynchronizedAt(fernTestValueSynchronizedAt)
+		assert.Equal(t, fernTestValueSynchronizedAt, obj.SynchronizedAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetUpdatedAt", func(t *testing.T) {
 		obj := &ChannelListItem{}
 		var fernTestValueUpdatedAt string
@@ -2867,6 +3033,39 @@ func TestGettersChannelListItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCreatedAt() // Should return zero value
+	})
+
+	t.Run("GetDeletedAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ChannelListItem{}
+		var expected *string
+		obj.DeletedAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDeletedAt(), "getter should return the property value")
+	})
+
+	t.Run("GetDeletedAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ChannelListItem{}
+		obj.DeletedAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDeletedAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDeletedAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ChannelListItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDeletedAt() // Should return zero value
 	})
 
 	t.Run("GetExperienceID", func(t *testing.T) {
@@ -3268,6 +3467,39 @@ func TestGettersChannelListItem(t *testing.T) {
 		_ = obj.GetSupport() // Should return zero value
 	})
 
+	t.Run("GetSynchronizedAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ChannelListItem{}
+		var expected *string
+		obj.SynchronizedAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSynchronizedAt(), "getter should return the property value")
+	})
+
+	t.Run("GetSynchronizedAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ChannelListItem{}
+		obj.SynchronizedAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSynchronizedAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSynchronizedAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ChannelListItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSynchronizedAt() // Should return zero value
+	})
+
 	t.Run("GetUpdatedAt", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3333,6 +3565,37 @@ func TestSettersMarkExplicitChannelListItem(t *testing.T) {
 
 		// Act
 		obj.SetCreatedAt(fernTestValueCreatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDeletedAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ChannelListItem{}
+		var fernTestValueDeletedAt *string
+
+		// Act
+		obj.SetDeletedAt(fernTestValueDeletedAt)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3736,6 +3999,37 @@ func TestSettersMarkExplicitChannelListItem(t *testing.T) {
 
 		// Act
 		obj.SetSupport(fernTestValueSupport)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSynchronizedAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ChannelListItem{}
+		var fernTestValueSynchronizedAt *string
+
+		// Act
+		obj.SetSynchronizedAt(fernTestValueSynchronizedAt)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -6225,6 +6519,7 @@ func TestJSONMarshalingUpdateChannelsRequestModeration(t *testing.T) {
 func TestRequiredNullableRoundTripChannel(t *testing.T) {
 	requiredNullableKeys := []string{
 		"account_id",
+		"deleted_at",
 		"experience_id",
 		"icon",
 		"last_message_at",
@@ -6245,7 +6540,7 @@ func TestRequiredNullableRoundTripChannel(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Channel
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"experience_id":null,"icon":null,"last_message_at":null,"last_message_id":null,"membership":null,"moderation":null,"name":null,"support":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"deleted_at":null,"experience_id":null,"icon":null,"last_message_at":null,"last_message_id":null,"membership":null,"moderation":null,"name":null,"support":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -6276,6 +6571,7 @@ func TestRequiredNullableRoundTripChannel(t *testing.T) {
 func TestRequiredNullableRoundTripChannelListItem(t *testing.T) {
 	requiredNullableKeys := []string{
 		"account_id",
+		"deleted_at",
 		"experience_id",
 		"icon",
 		"last_message_at",
@@ -6296,7 +6592,7 @@ func TestRequiredNullableRoundTripChannelListItem(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ChannelListItem
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"experience_id":null,"icon":null,"last_message_at":null,"last_message_id":null,"membership":null,"moderation":null,"name":null,"support":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"deleted_at":null,"experience_id":null,"icon":null,"last_message_at":null,"last_message_id":null,"membership":null,"moderation":null,"name":null,"support":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

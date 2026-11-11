@@ -285,8 +285,10 @@ var (
 	listChannelsRequestFieldIncludeMembers     = big.NewInt(1 << 16)
 	listChannelsRequestFieldIncludeLastMessage = big.NewInt(1 << 17)
 	listChannelsRequestFieldDirection          = big.NewInt(1 << 18)
-	listChannelsRequestFieldCreatedBefore      = big.NewInt(1 << 19)
-	listChannelsRequestFieldCreatedAfter       = big.NewInt(1 << 20)
+	listChannelsRequestFieldIncludeDeleted     = big.NewInt(1 << 19)
+	listChannelsRequestFieldUpdatedAfter       = big.NewInt(1 << 20)
+	listChannelsRequestFieldCreatedBefore      = big.NewInt(1 << 21)
+	listChannelsRequestFieldCreatedAfter       = big.NewInt(1 << 22)
 )
 
 type ListChannelsRequest struct {
@@ -320,14 +322,18 @@ type ListChannelsRequest struct {
 	Viewed *bool `json:"-" url:"viewed,omitempty"`
 	// `true` returns your pending direct-message requests; `false` returns your accepted private channels. Requires `private` in `kind` and authenticating as a user. With `support` also in `kind`, `false` keeps support channels and `true` returns only pending requests.
 	Requested *bool `json:"-" url:"requested,omitempty"`
-	// The field to sort by. Defaults to `last_viewed_at` for community channels and `last_message_at` for private and support channels. Ties sort in a stable order.
+	// The field to sort by. Defaults to `last_viewed_at` for community channels and `last_message_at` for private and support channels. Ties sort in a stable order. Cannot be supplied with updated_after.
 	Order *ListChannelsRequestOrder `json:"-" url:"order,omitempty"`
 	// Include the current members of private and support channels, including you, with their public profiles.
 	IncludeMembers *bool `json:"-" url:"include_members,omitempty"`
 	// Include the most recent message you can see, with its author.
 	IncludeLastMessage *bool `json:"-" url:"include_last_message,omitempty"`
-	// The sort direction. Defaults to `desc`.
+	// The sort direction. Defaults to `desc`. Cannot be supplied with updated_after.
 	Direction *ListChannelsRequestDirection `json:"-" url:"direction,omitempty"`
+	// Include redacted entries for deleted channels and your removed memberships. Use deleted_at to remove these channels from your cache.
+	IncludeDeleted *bool `json:"-" url:"include_deleted,omitempty"`
+	// Return channels where the channel or your membership changed at or after this ISO 8601 timestamp. Cannot be more than one hour old, including on subsequent pages. For older changes, reload channels without updated_after. Results use ascending synchronized_at order. Cannot be combined with order, direction, query, status, awaiting_reply, unread, pinned, viewed, requested, created_before, or created_after.
+	UpdatedAfter *string `json:"-" url:"updated_after,omitempty"`
 	// Return only channels created before this ISO 8601 timestamp.
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Return only channels created after this ISO 8601 timestamp.
@@ -477,6 +483,20 @@ func (l *ListChannelsRequest) SetIncludeLastMessage(includeLastMessage *bool) {
 func (l *ListChannelsRequest) SetDirection(direction *ListChannelsRequestDirection) {
 	l.Direction = direction
 	l.require(listChannelsRequestFieldDirection)
+}
+
+// SetIncludeDeleted sets the IncludeDeleted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListChannelsRequest) SetIncludeDeleted(includeDeleted *bool) {
+	l.IncludeDeleted = includeDeleted
+	l.require(listChannelsRequestFieldIncludeDeleted)
+}
+
+// SetUpdatedAfter sets the UpdatedAfter field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListChannelsRequest) SetUpdatedAfter(updatedAfter *string) {
+	l.UpdatedAfter = updatedAfter
+	l.require(listChannelsRequestFieldUpdatedAfter)
 }
 
 // SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;
@@ -807,23 +827,25 @@ func (r *RetrieveChannelsRequest) SetID(id string) {
 var (
 	channelFieldAccountID            = big.NewInt(1 << 0)
 	channelFieldCreatedAt            = big.NewInt(1 << 1)
-	channelFieldExperienceID         = big.NewInt(1 << 2)
-	channelFieldIcon                 = big.NewInt(1 << 3)
-	channelFieldID                   = big.NewInt(1 << 4)
-	channelFieldKind                 = big.NewInt(1 << 5)
-	channelFieldLastMessageAt        = big.NewInt(1 << 6)
-	channelFieldLastMessageID        = big.NewInt(1 << 7)
-	channelFieldMembership           = big.NewInt(1 << 8)
-	channelFieldModeration           = big.NewInt(1 << 9)
-	channelFieldName                 = big.NewInt(1 << 10)
-	channelFieldNotificationsEnabled = big.NewInt(1 << 11)
-	channelFieldSupport              = big.NewInt(1 << 12)
-	channelFieldUpdatedAt            = big.NewInt(1 << 13)
+	channelFieldDeletedAt            = big.NewInt(1 << 2)
+	channelFieldExperienceID         = big.NewInt(1 << 3)
+	channelFieldIcon                 = big.NewInt(1 << 4)
+	channelFieldID                   = big.NewInt(1 << 5)
+	channelFieldKind                 = big.NewInt(1 << 6)
+	channelFieldLastMessageAt        = big.NewInt(1 << 7)
+	channelFieldLastMessageID        = big.NewInt(1 << 8)
+	channelFieldMembership           = big.NewInt(1 << 9)
+	channelFieldModeration           = big.NewInt(1 << 10)
+	channelFieldName                 = big.NewInt(1 << 11)
+	channelFieldNotificationsEnabled = big.NewInt(1 << 12)
+	channelFieldSupport              = big.NewInt(1 << 13)
+	channelFieldUpdatedAt            = big.NewInt(1 << 14)
 )
 
 // channelNullableFields maps the wire names of Channel's nullable fields (required or optional) to their field bits.
 var channelNullableFields = map[string]*big.Int{
 	"account_id":      channelFieldAccountID,
+	"deleted_at":      channelFieldDeletedAt,
 	"experience_id":   channelFieldExperienceID,
 	"icon":            channelFieldIcon,
 	"last_message_at": channelFieldLastMessageAt,
@@ -837,7 +859,9 @@ var channelNullableFields = map[string]*big.Int{
 type Channel struct {
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
 	// Creation time as an ISO 8601 timestamp.
-	CreatedAt    string  `json:"created_at" url:"created_at"`
+	CreatedAt string `json:"created_at" url:"created_at"`
+	// When the channel was deleted or removed from your channel list, as an ISO 8601 timestamp. Null for a live channel.
+	DeletedAt    *string `json:"deleted_at,omitempty" url:"deleted_at,omitempty"`
 	ExperienceID *string `json:"experience_id,omitempty" url:"experience_id,omitempty"`
 	// The channel icon. Community channels show the experience logo, falling back to the app icon. Support channels show the account logo. Group private channels show their own icon. Null for one-to-one private channels or when no image is set.
 	Icon *File `json:"icon,omitempty" url:"icon,omitempty"`
@@ -875,6 +899,13 @@ func (c *Channel) GetCreatedAt() string {
 		return ""
 	}
 	return c.CreatedAt
+}
+
+func (c *Channel) GetDeletedAt() *string {
+	if c == nil {
+		return nil
+	}
+	return c.DeletedAt
 }
 
 func (c *Channel) GetExperienceID() *string {
@@ -989,6 +1020,13 @@ func (c *Channel) SetAccountID(accountID *string) {
 func (c *Channel) SetCreatedAt(createdAt string) {
 	c.CreatedAt = createdAt
 	c.require(channelFieldCreatedAt)
+}
+
+// SetDeletedAt sets the DeletedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Channel) SetDeletedAt(deletedAt *string) {
+	c.DeletedAt = deletedAt
+	c.require(channelFieldDeletedAt)
 }
 
 // SetExperienceID sets the ExperienceID field and marks it as non-optional;
@@ -1152,25 +1190,28 @@ func (c ChannelKind) Ptr() *ChannelKind {
 var (
 	channelListItemFieldAccountID            = big.NewInt(1 << 0)
 	channelListItemFieldCreatedAt            = big.NewInt(1 << 1)
-	channelListItemFieldExperienceID         = big.NewInt(1 << 2)
-	channelListItemFieldIcon                 = big.NewInt(1 << 3)
-	channelListItemFieldID                   = big.NewInt(1 << 4)
-	channelListItemFieldKind                 = big.NewInt(1 << 5)
-	channelListItemFieldLastMessage          = big.NewInt(1 << 6)
-	channelListItemFieldLastMessageAt        = big.NewInt(1 << 7)
-	channelListItemFieldLastMessageID        = big.NewInt(1 << 8)
-	channelListItemFieldMembers              = big.NewInt(1 << 9)
-	channelListItemFieldMembership           = big.NewInt(1 << 10)
-	channelListItemFieldModeration           = big.NewInt(1 << 11)
-	channelListItemFieldName                 = big.NewInt(1 << 12)
-	channelListItemFieldNotificationsEnabled = big.NewInt(1 << 13)
-	channelListItemFieldSupport              = big.NewInt(1 << 14)
-	channelListItemFieldUpdatedAt            = big.NewInt(1 << 15)
+	channelListItemFieldDeletedAt            = big.NewInt(1 << 2)
+	channelListItemFieldExperienceID         = big.NewInt(1 << 3)
+	channelListItemFieldIcon                 = big.NewInt(1 << 4)
+	channelListItemFieldID                   = big.NewInt(1 << 5)
+	channelListItemFieldKind                 = big.NewInt(1 << 6)
+	channelListItemFieldLastMessage          = big.NewInt(1 << 7)
+	channelListItemFieldLastMessageAt        = big.NewInt(1 << 8)
+	channelListItemFieldLastMessageID        = big.NewInt(1 << 9)
+	channelListItemFieldMembers              = big.NewInt(1 << 10)
+	channelListItemFieldMembership           = big.NewInt(1 << 11)
+	channelListItemFieldModeration           = big.NewInt(1 << 12)
+	channelListItemFieldName                 = big.NewInt(1 << 13)
+	channelListItemFieldNotificationsEnabled = big.NewInt(1 << 14)
+	channelListItemFieldSupport              = big.NewInt(1 << 15)
+	channelListItemFieldSynchronizedAt       = big.NewInt(1 << 16)
+	channelListItemFieldUpdatedAt            = big.NewInt(1 << 17)
 )
 
 // channelListItemNullableFields maps the wire names of ChannelListItem's nullable fields (required or optional) to their field bits.
 var channelListItemNullableFields = map[string]*big.Int{
 	"account_id":      channelListItemFieldAccountID,
+	"deleted_at":      channelListItemFieldDeletedAt,
 	"experience_id":   channelListItemFieldExperienceID,
 	"icon":            channelListItemFieldIcon,
 	"last_message":    channelListItemFieldLastMessage,
@@ -1185,7 +1226,9 @@ var channelListItemNullableFields = map[string]*big.Int{
 type ChannelListItem struct {
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
 	// Creation time as an ISO 8601 timestamp.
-	CreatedAt    string  `json:"created_at" url:"created_at"`
+	CreatedAt string `json:"created_at" url:"created_at"`
+	// When the channel was deleted or removed from your channel list, as an ISO 8601 timestamp. Null for a live channel.
+	DeletedAt    *string `json:"deleted_at,omitempty" url:"deleted_at,omitempty"`
 	ExperienceID *string `json:"experience_id,omitempty" url:"experience_id,omitempty"`
 	// The channel icon. Community channels show the experience logo, falling back to the app icon. Support channels show the account logo. Group private channels show their own icon. Null for one-to-one private channels or when no image is set.
 	Icon *File `json:"icon,omitempty" url:"icon,omitempty"`
@@ -1204,6 +1247,8 @@ type ChannelListItem struct {
 	// Whether app notifications are on. Webhooks fire either way.
 	NotificationsEnabled bool                 `json:"notifications_enabled" url:"notifications_enabled"`
 	Support              *ChannelSupportState `json:"support,omitempty" url:"support,omitempty"`
+	// Latest change to the channel or your membership, as an ISO 8601 timestamp. Use this value as updated_after for synchronization.
+	SynchronizedAt *string `json:"synchronized_at,omitempty" url:"synchronized_at,omitempty"`
 	// Last channel change as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
 
@@ -1226,6 +1271,13 @@ func (c *ChannelListItem) GetCreatedAt() string {
 		return ""
 	}
 	return c.CreatedAt
+}
+
+func (c *ChannelListItem) GetDeletedAt() *string {
+	if c == nil {
+		return nil
+	}
+	return c.DeletedAt
 }
 
 func (c *ChannelListItem) GetExperienceID() *string {
@@ -1319,6 +1371,13 @@ func (c *ChannelListItem) GetSupport() *ChannelSupportState {
 	return c.Support
 }
 
+func (c *ChannelListItem) GetSynchronizedAt() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SynchronizedAt
+}
+
 func (c *ChannelListItem) GetUpdatedAt() string {
 	if c == nil {
 		return ""
@@ -1354,6 +1413,13 @@ func (c *ChannelListItem) SetAccountID(accountID *string) {
 func (c *ChannelListItem) SetCreatedAt(createdAt string) {
 	c.CreatedAt = createdAt
 	c.require(channelListItemFieldCreatedAt)
+}
+
+// SetDeletedAt sets the DeletedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ChannelListItem) SetDeletedAt(deletedAt *string) {
+	c.DeletedAt = deletedAt
+	c.require(channelListItemFieldDeletedAt)
 }
 
 // SetExperienceID sets the ExperienceID field and marks it as non-optional;
@@ -1445,6 +1511,13 @@ func (c *ChannelListItem) SetNotificationsEnabled(notificationsEnabled bool) {
 func (c *ChannelListItem) SetSupport(support *ChannelSupportState) {
 	c.Support = support
 	c.require(channelListItemFieldSupport)
+}
+
+// SetSynchronizedAt sets the SynchronizedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ChannelListItem) SetSynchronizedAt(synchronizedAt *string) {
+	c.SynchronizedAt = synchronizedAt
+	c.require(channelListItemFieldSynchronizedAt)
 }
 
 // SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
