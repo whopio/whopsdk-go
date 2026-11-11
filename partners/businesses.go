@@ -119,6 +119,7 @@ var (
 	listBusinessesRequestFieldReferredUsername    = big.NewInt(1 << 16)
 	listBusinessesRequestFieldTier                = big.NewInt(1 << 17)
 	listBusinessesRequestFieldBusinessPrefixQuery = big.NewInt(1 << 18)
+	listBusinessesRequestFieldEarningPartnerID    = big.NewInt(1 << 19)
 )
 
 type ListBusinessesRequest struct {
@@ -160,6 +161,8 @@ type ListBusinessesRequest struct {
 	Tier *ListBusinessesRequestTier `json:"-" url:"tier,omitempty"`
 	// Case-insensitive business-name prefix, or an exact `biz_` account ID. Surrounding whitespace is ignored; blank values apply no filter.
 	BusinessPrefixQuery *string `json:"-" url:"business_prefix_query,omitempty"`
+	// Only the referrals this team member made, plus the ones they were added to as a deal participant. User ID, prefixed `user_`. Requires `referring_account_id`.
+	EarningPartnerID *string `json:"-" url:"earning_partner_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -305,6 +308,13 @@ func (l *ListBusinessesRequest) SetTier(tier *ListBusinessesRequestTier) {
 func (l *ListBusinessesRequest) SetBusinessPrefixQuery(businessPrefixQuery *string) {
 	l.BusinessPrefixQuery = businessPrefixQuery
 	l.require(listBusinessesRequestFieldBusinessPrefixQuery)
+}
+
+// SetEarningPartnerID sets the EarningPartnerID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesRequest) SetEarningPartnerID(earningPartnerID *string) {
+	l.EarningPartnerID = earningPartnerID
+	l.require(listBusinessesRequestFieldEarningPartnerID)
 }
 
 var (

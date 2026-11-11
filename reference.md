@@ -49419,6 +49419,14 @@ client.Partners.Businesses.List(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**earningPartnerID:** `*string` — Only the referrals this team member made, plus the ones they were added to as a deal participant. User ID, prefixed `user_`. Requires `referring_account_id`.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
