@@ -173,7 +173,7 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
-// Sets the name the account uses for a member. Every invoice for this member shows it as the customer name, paid invoices included, in place of the user's own name. It does not change the user's Whop profile.
+// Updates a member. The account can update `name`, the customer name its invoices show for this member; it doesn't change the user's Whop profile. The member can update `unsubscribe_status`, with a credential for their own user that holds `user:notifications:update`, to unsubscribe from the account's marketing communications or resubscribe. Each sends only its own field.
 //
 // Example:
 //
@@ -198,4 +198,32 @@ func (c *Client) Update(
 		return nil, err
 	}
 	return response.Body, nil
+}
+
+// Unsubscribes a member from the account's marketing communications with the token from their unsubscribe link. Inboxes post here directly for one-click unsubscribe (RFC 8058).
+//
+// Example:
+//
+//	request := &whopsdk.UnsubscribeMembersRequest{
+//	    ID: "id",
+//	    Token: "token",
+//	}
+//	client.Members.Unsubscribe(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Unsubscribe(
+	ctx context.Context,
+	request *whopsdk.UnsubscribeMembersRequest,
+	opts ...option.RequestOption,
+) error {
+	_, err := c.WithRawResponse.Unsubscribe(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
 }
