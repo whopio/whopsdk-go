@@ -41733,7 +41733,7 @@ client.Stats.Retrieve(
 <dl>
 <dd>
 
-**activity:** `*whopsdk.RetrieveStatsRequestActivity` — partner_reps only: all counts the period's roster, earning counts those who earned in the period, and not_earning counts the roster minus them. Defaults to all.
+**activity:** `*whopsdk.RetrieveStatsRequestActivity` — On partner_reps, all counts the period's roster, earning counts those who earned in the period, and not_earning counts the roster minus them. On the other partner metrics, earning keeps the figures of the people partner_reps counts as earning over the whole range and not_earning keeps the figures of everyone else; those need referring_account_id or a global query. Defaults to all. Available on metrics that list activity.
     
 </dd>
 </dl>
@@ -51635,7 +51635,7 @@ client.Stats.TimeSeries.Retrieve(
 <dl>
 <dd>
 
-**activity:** `*stats.RetrieveTimeSeriesRequestActivity` — partner_reps only: all counts the period's roster, earning counts those who earned in the period, and not_earning counts the roster minus them. Defaults to all.
+**activity:** `*stats.RetrieveTimeSeriesRequestActivity` — On partner_reps, all counts the period's roster, earning counts those who earned in the period, and not_earning counts the roster minus them. On the other partner metrics, earning keeps the figures of the people partner_reps counts as earning over the whole range and not_earning keeps the figures of everyone else; those need referring_account_id or a global query. Defaults to all. Available on metrics that list activity.
     
 </dd>
 </dl>
