@@ -264,8 +264,9 @@ var (
 	memberFieldPhoneNumber        = big.NewInt(1 << 14)
 	memberFieldStatus             = big.NewInt(1 << 15)
 	memberFieldTokenBalance       = big.NewInt(1 << 16)
-	memberFieldUsdTotalSpent      = big.NewInt(1 << 17)
-	memberFieldUser               = big.NewInt(1 << 18)
+	memberFieldUnsubscribeStatus  = big.NewInt(1 << 17)
+	memberFieldUsdTotalSpent      = big.NewInt(1 << 18)
+	memberFieldUser               = big.NewInt(1 << 19)
 )
 
 // memberNullableFields maps the wire names of Member's nullable fields (required or optional) to their field bits.
@@ -279,6 +280,7 @@ var memberNullableFields = map[string]*big.Int{
 	"most_recent_action_at": memberFieldMostRecentActionAt,
 	"name":                  memberFieldName,
 	"phone_number":          memberFieldPhoneNumber,
+	"unsubscribe_status":    memberFieldUnsubscribeStatus,
 	"user":                  memberFieldUser,
 }
 
@@ -317,6 +319,8 @@ type Member struct {
 	Status MemberStatus `json:"status" url:"status"`
 	// The member's current token balance for this account, computed from token transactions.
 	TokenBalance float64 `json:"token_balance" url:"token_balance"`
+	// `unsubscribed` once the member opts out of the account's marketing communications, `null` while they're subscribed. Only the member can change it.
+	UnsubscribeStatus *MemberUnsubscribeStatus `json:"unsubscribe_status,omitempty" url:"unsubscribe_status,omitempty"`
 	// How much the member has spent on the account's products, in USD.
 	UsdTotalSpent *Money `json:"usd_total_spent" url:"usd_total_spent"`
 	// The user behind this member. `null` when the buyer is another business rather than a person.
@@ -446,6 +450,13 @@ func (m *Member) GetTokenBalance() float64 {
 		return 0
 	}
 	return m.TokenBalance
+}
+
+func (m *Member) GetUnsubscribeStatus() *MemberUnsubscribeStatus {
+	if m == nil {
+		return nil
+	}
+	return m.UnsubscribeStatus
 }
 
 func (m *Member) GetUsdTotalSpent() *Money {
@@ -595,6 +606,13 @@ func (m *Member) SetStatus(status MemberStatus) {
 func (m *Member) SetTokenBalance(tokenBalance float64) {
 	m.TokenBalance = tokenBalance
 	m.require(memberFieldTokenBalance)
+}
+
+// SetUnsubscribeStatus sets the UnsubscribeStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetUnsubscribeStatus(unsubscribeStatus *MemberUnsubscribeStatus) {
+	m.UnsubscribeStatus = unsubscribeStatus
+	m.require(memberFieldUnsubscribeStatus)
 }
 
 // SetUsdTotalSpent sets the UsdTotalSpent field and marks it as non-optional;
@@ -970,6 +988,26 @@ func NewMemberStatusFromString(s string) (MemberStatus, error) {
 }
 
 func (m MemberStatus) Ptr() *MemberStatus {
+	return &m
+}
+
+// `unsubscribed` once the member opts out of the account's marketing communications, `null` while they're subscribed. Only the member can change it.
+type MemberUnsubscribeStatus string
+
+const (
+	MemberUnsubscribeStatusUnsubscribed MemberUnsubscribeStatus = "unsubscribed"
+)
+
+func NewMemberUnsubscribeStatusFromString(s string) (MemberUnsubscribeStatus, error) {
+	switch s {
+	case "unsubscribed":
+		return MemberUnsubscribeStatusUnsubscribed, nil
+	}
+	var t MemberUnsubscribeStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (m MemberUnsubscribeStatus) Ptr() *MemberUnsubscribeStatus {
 	return &m
 }
 
@@ -2173,9 +2211,68 @@ func (p PostMemberUpdatedPayloadType) Ptr() *PostMemberUpdatedPayloadType {
 	return &p
 }
 
+// `unsubscribed` to stop the account's marketing communications, or `null` to resubscribe. Only the member can set it.
+type UpdateMembersRequestUnsubscribeStatus string
+
+const (
+	UpdateMembersRequestUnsubscribeStatusUnsubscribed UpdateMembersRequestUnsubscribeStatus = "unsubscribed"
+)
+
+func NewUpdateMembersRequestUnsubscribeStatusFromString(s string) (UpdateMembersRequestUnsubscribeStatus, error) {
+	switch s {
+	case "unsubscribed":
+		return UpdateMembersRequestUnsubscribeStatusUnsubscribed, nil
+	}
+	var t UpdateMembersRequestUnsubscribeStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateMembersRequestUnsubscribeStatus) Ptr() *UpdateMembersRequestUnsubscribeStatus {
+	return &u
+}
+
 var (
-	updateMembersRequestFieldID   = big.NewInt(1 << 0)
-	updateMembersRequestFieldName = big.NewInt(1 << 1)
+	unsubscribeMembersRequestFieldID    = big.NewInt(1 << 0)
+	unsubscribeMembersRequestFieldToken = big.NewInt(1 << 1)
+)
+
+type UnsubscribeMembersRequest struct {
+	// The member to unsubscribe, prefixed `mber_`.
+	ID string `json:"-" url:"-"`
+	// The token from the member's unsubscribe link.
+	Token string `json:"-" url:"token"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UnsubscribeMembersRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UnsubscribeMembersRequest) SetID(id string) {
+	u.ID = id
+	u.require(unsubscribeMembersRequestFieldID)
+}
+
+// SetToken sets the Token field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UnsubscribeMembersRequest) SetToken(token string) {
+	u.Token = token
+	u.require(unsubscribeMembersRequestFieldToken)
+}
+
+var (
+	updateMembersRequestFieldID                = big.NewInt(1 << 0)
+	updateMembersRequestFieldName              = big.NewInt(1 << 1)
+	updateMembersRequestFieldUnsubscribeStatus = big.NewInt(1 << 2)
 )
 
 type UpdateMembersRequest struct {
@@ -2183,6 +2280,8 @@ type UpdateMembersRequest struct {
 	ID string `json:"-" url:"-"`
 	// The customer name to show on this member's invoices, at most 255 bytes. Leading and trailing spaces are trimmed. `null` or a blank string clears it, so invoices show the user's own name again.
 	Name *string `json:"name,omitempty" url:"-"`
+	// `unsubscribed` to stop the account's marketing communications, or `null` to resubscribe. Only the member can set it.
+	UnsubscribeStatus *UpdateMembersRequestUnsubscribeStatus `json:"unsubscribe_status,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2209,6 +2308,13 @@ func (u *UpdateMembersRequest) SetID(id string) {
 func (u *UpdateMembersRequest) SetName(name *string) {
 	u.Name = name
 	u.require(updateMembersRequestFieldName)
+}
+
+// SetUnsubscribeStatus sets the UnsubscribeStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMembersRequest) SetUnsubscribeStatus(unsubscribeStatus *UpdateMembersRequestUnsubscribeStatus) {
+	u.UnsubscribeStatus = unsubscribeStatus
+	u.require(updateMembersRequestFieldUnsubscribeStatus)
 }
 
 func (u *UpdateMembersRequest) UnmarshalJSON(data []byte) error {

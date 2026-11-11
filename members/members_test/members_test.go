@@ -173,3 +173,29 @@ func TestMembersUpdateWithWireMock(
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestMembersUpdateWithWireMock", "PATCH", "/members/id", nil, 1)
 }
+
+func TestMembersUnsubscribeWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+	)
+	request := &whopsdk.UnsubscribeMembersRequest{
+		ID:    "id",
+		Token: "token",
+	}
+	invocationErr := client.Members.Unsubscribe(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestMembersUnsubscribeWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestMembersUnsubscribeWithWireMock", "POST", "/members/id/unsubscribe", map[string]interface{}{"token": "token"}, 1)
+}

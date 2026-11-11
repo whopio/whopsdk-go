@@ -939,6 +939,14 @@ func TestSettersMember(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetUnsubscribeStatus", func(t *testing.T) {
+		obj := &Member{}
+		var fernTestValueUnsubscribeStatus *MemberUnsubscribeStatus
+		obj.SetUnsubscribeStatus(fernTestValueUnsubscribeStatus)
+		assert.Equal(t, fernTestValueUnsubscribeStatus, obj.UnsubscribeStatus)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetUsdTotalSpent", func(t *testing.T) {
 		obj := &Member{}
 		var fernTestValueUsdTotalSpent *Money
@@ -1437,6 +1445,39 @@ func TestGettersMember(t *testing.T) {
 			}
 		}()
 		_ = obj.GetTokenBalance() // Should return zero value
+	})
+
+	t.Run("GetUnsubscribeStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		var expected *MemberUnsubscribeStatus
+		obj.UnsubscribeStatus = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetUnsubscribeStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetUnsubscribeStatus_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		obj.UnsubscribeStatus = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetUnsubscribeStatus(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetUnsubscribeStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Member
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetUnsubscribeStatus() // Should return zero value
 	})
 
 	t.Run("GetUsdTotalSpent", func(t *testing.T) {
@@ -2012,6 +2053,37 @@ func TestSettersMarkExplicitMember(t *testing.T) {
 
 		// Act
 		obj.SetTokenBalance(fernTestValueTokenBalance)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetUnsubscribeStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		var fernTestValueUnsubscribeStatus *MemberUnsubscribeStatus
+
+		// Act
+		obj.SetUnsubscribeStatus(fernTestValueUnsubscribeStatus)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4647,6 +4719,90 @@ func TestSettersMarkExplicitPostMemberUpdatedPayload(t *testing.T) {
 
 }
 
+func TestSettersUnsubscribeMembersRequest(t *testing.T) {
+	t.Run("SetID", func(t *testing.T) {
+		obj := &UnsubscribeMembersRequest{}
+		var fernTestValueID string
+		obj.SetID(fernTestValueID)
+		assert.Equal(t, fernTestValueID, obj.ID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetToken", func(t *testing.T) {
+		obj := &UnsubscribeMembersRequest{}
+		var fernTestValueToken string
+		obj.SetToken(fernTestValueToken)
+		assert.Equal(t, fernTestValueToken, obj.Token)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestSettersMarkExplicitUnsubscribeMembersRequest(t *testing.T) {
+	t.Run("SetID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UnsubscribeMembersRequest{}
+		var fernTestValueID string
+
+		// Act
+		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetToken_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UnsubscribeMembersRequest{}
+		var fernTestValueToken string
+
+		// Act
+		obj.SetToken(fernTestValueToken)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersUpdateMembersRequest(t *testing.T) {
 	t.Run("SetID", func(t *testing.T) {
 		obj := &UpdateMembersRequest{}
@@ -4661,6 +4817,14 @@ func TestSettersUpdateMembersRequest(t *testing.T) {
 		var fernTestValueName *string
 		obj.SetName(fernTestValueName)
 		assert.Equal(t, fernTestValueName, obj.Name)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetUnsubscribeStatus", func(t *testing.T) {
+		obj := &UpdateMembersRequest{}
+		var fernTestValueUnsubscribeStatus *UpdateMembersRequestUnsubscribeStatus
+		obj.SetUnsubscribeStatus(fernTestValueUnsubscribeStatus)
+		assert.Equal(t, fernTestValueUnsubscribeStatus, obj.UnsubscribeStatus)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -4706,6 +4870,37 @@ func TestSettersMarkExplicitUpdateMembersRequest(t *testing.T) {
 
 		// Act
 		obj.SetName(fernTestValueName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetUnsubscribeStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateMembersRequest{}
+		var fernTestValueUnsubscribeStatus *UpdateMembersRequestUnsubscribeStatus
+
+		// Act
+		obj.SetUnsubscribeStatus(fernTestValueUnsubscribeStatus)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5018,6 +5213,7 @@ func TestRequiredNullableRoundTripMember(t *testing.T) {
 		"most_recent_action_at",
 		"name",
 		"phone_number",
+		"unsubscribe_status",
 		"user",
 	}
 	marshalToMap := func(t *testing.T, obj *Member) map[string]json.RawMessage {
@@ -5031,7 +5227,7 @@ func TestRequiredNullableRoundTripMember(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Member
-		require.NoError(t, json.Unmarshal([]byte(`{"earnings_usd":null,"email":null,"last_accessed_at":null,"last_activity":null,"last_activity_at":null,"most_recent_action":null,"most_recent_action_at":null,"name":null,"phone_number":null,"user":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"earnings_usd":null,"email":null,"last_accessed_at":null,"last_activity":null,"last_activity_at":null,"most_recent_action":null,"most_recent_action_at":null,"name":null,"phone_number":null,"unsubscribe_status":null,"user":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -5912,6 +6108,28 @@ func TestEnumMemberStatus(t *testing.T) {
 	})
 }
 
+func TestEnumMemberUnsubscribeStatus(t *testing.T) {
+	t.Run("NewFromString_unsubscribed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMemberUnsubscribeStatusFromString("unsubscribed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MemberUnsubscribeStatus("unsubscribed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewMemberUnsubscribeStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewMemberUnsubscribeStatusFromString("unsubscribed")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumPostMemberCreatedPayloadAPIVersion(t *testing.T) {
 	t.Run("NewFromString_v1", func(t *testing.T) {
 		t.Parallel()
@@ -5993,6 +6211,28 @@ func TestEnumPostMemberUpdatedPayloadType(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewPostMemberUpdatedPayloadTypeFromString("member.updated")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateMembersRequestUnsubscribeStatus(t *testing.T) {
+	t.Run("NewFromString_unsubscribed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateMembersRequestUnsubscribeStatusFromString("unsubscribed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateMembersRequestUnsubscribeStatus("unsubscribed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateMembersRequestUnsubscribeStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateMembersRequestUnsubscribeStatusFromString("unsubscribed")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

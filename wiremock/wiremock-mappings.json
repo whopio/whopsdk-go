@@ -3370,7 +3370,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"action_type\": \"email\",\n  \"html\": \"<html><body><p>Hi there</p><table role=\\\"presentation\\\" data-whop-footer width=\\\"100%\\\" cellpadding=\\\"0\\\" cellspacing=\\\"0\\\" style=\\\"margin:32px 0 0;border-top:1px solid #e6e6e6;\\\">\\n<tr><td style=\\\"padding:20px 16px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#6f6f6f;\\\">\\n<p style=\\\"margin:0 0 8px;\\\">You&#39;re receiving this because you bought from Batman1. <a href=\\\"{{whop_unsubscribe_url}}\\\" style=\\\"color:#6f6f6f;text-decoration:underline;\\\">Unsubscribe from Batman1 emails</a>.</p>\\n<p style=\\\"margin:0 0 8px;\\\">Problem with your order? <a href=\\\"https://whop.com/@me/settings/resolution-center/\\\" style=\\\"color:#6f6f6f;text-decoration:underline;\\\">Open a case in the Resolution Center</a>.</p>\\n<p style=\\\"margin:0;font-weight:600;color:#9a9a9a;\\\">Sent with Whop</p>\\n<!--whop:open-pixel-->\\n</td></tr>\\n</table>\\n\\n</body></html>\",\n  \"outcome\": \"sent\",\n  \"preheader\": \"preheader\",\n  \"reason\": \"reason\",\n  \"subject\": \"How's the kettle?\",\n  \"text\": \"Hi there\\n\\n--\\nYou're receiving this because you bought from Batman1. Unsubscribe from Batman1 emails: {{whop_unsubscribe_url}}\\nProblem with your order? Open a case in the Resolution Center: https://whop.com/@me/settings/resolution-center/\\nSent with Whop\"\n}",
+        "body": "{\n  \"action_type\": \"email\",\n  \"html\": \"<html><body><p>Hi there</p><table role=\\\"presentation\\\" data-whop-footer width=\\\"100%\\\" cellpadding=\\\"0\\\" cellspacing=\\\"0\\\" style=\\\"margin:32px 0 0;border-top:1px solid #e6e6e6;\\\">\\n<tr><td style=\\\"padding:20px 16px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:12px;line-height:18px;color:#6f6f6f;\\\">\\n<p style=\\\"margin:0 0 8px;\\\">You&#39;re receiving this because you bought from Batman1. <a href=\\\"{{whop_unsubscribe_url}}\\\" style=\\\"color:#6f6f6f;text-decoration:underline;\\\">Unsubscribe from Batman1 marketing communications</a>.</p>\\n<p style=\\\"margin:0 0 8px;\\\">Problem with your order? <a href=\\\"https://whop.com/@me/settings/resolution-center/\\\" style=\\\"color:#6f6f6f;text-decoration:underline;\\\">Open a case in the Resolution Center</a>.</p>\\n<p style=\\\"margin:0;font-weight:600;color:#9a9a9a;\\\">Sent with Whop</p>\\n<!--whop:open-pixel-->\\n</td></tr>\\n</table>\\n\\n</body></html>\",\n  \"outcome\": \"sent\",\n  \"preheader\": \"preheader\",\n  \"reason\": \"reason\",\n  \"subject\": \"How's the kettle?\",\n  \"text\": \"Hi there\\n\\n--\\nYou're receiving this because you bought from Batman1. Unsubscribe from Batman1 marketing communications: {{whop_unsubscribe_url}}\\nProblem with your order? Open a case in the Resolution Center: https://whop.com/@me/settings/resolution-center/\\nSent with Whop\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10300,7 +10300,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"access_level\": \"no_access\",\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"display_name\": \"Dana Whitfield\",\n      \"earnings_usd\": {\n        \"last_24_hours\": \"0.00\",\n        \"last_30_days\": \"0.00\",\n        \"last_7_days\": \"0.00\",\n        \"lifetime\": \"0.00\"\n      },\n      \"email\": \"marcus@shinetime.example\",\n      \"id\": \"mber_xxxxxxxxxxxxxx\",\n      \"joined_at\": \"2026-01-01T12:00:00.000Z\",\n      \"last_accessed_at\": \"2026-01-01T12:00:00.000Z\",\n      \"last_activity\": {\n        \"author\": {\n          \"id\": \"user_xxxxxxxxxxxxxx\",\n          \"name\": \"Dana Whitfield\",\n          \"profile_picture\": {\n            \"url\": \"https://ui-avatars.com/api/\"\n          },\n          \"username\": \"danawhitfield\"\n        },\n        \"channel_id\": \"channel_id\",\n        \"created_at\": \"created_at\",\n        \"id\": \"id\",\n        \"object\": \"message\",\n        \"plain_content\": null\n      },\n      \"last_activity_at\": \"2026-01-01T12:00:00.000Z\",\n      \"most_recent_action\": \"canceling\",\n      \"most_recent_action_at\": \"2026-01-01T12:00:00.000Z\",\n      \"name\": \"Northwind Legal LLP\",\n      \"phone_number\": \"+xxxxxxxxxxx\",\n      \"status\": \"joined\",\n      \"token_balance\": 70.25,\n      \"usd_total_spent\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"user\": {\n        \"city\": \"Austin\",\n        \"country\": \"US\",\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Dana Whitfield\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"state\": \"TX\",\n        \"username\": \"danawhitfield\"\n      }\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\",\n    \"total_count\": 1,\n    \"total_count_capped\": true\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"access_level\": \"no_access\",\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"display_name\": \"Dana Whitfield\",\n      \"earnings_usd\": {\n        \"last_24_hours\": \"0.00\",\n        \"last_30_days\": \"0.00\",\n        \"last_7_days\": \"0.00\",\n        \"lifetime\": \"0.00\"\n      },\n      \"email\": \"marcus@shinetime.example\",\n      \"id\": \"mber_xxxxxxxxxxxxxx\",\n      \"joined_at\": \"2026-01-01T12:00:00.000Z\",\n      \"last_accessed_at\": \"2026-01-01T12:00:00.000Z\",\n      \"last_activity\": {\n        \"author\": {\n          \"id\": \"user_xxxxxxxxxxxxxx\",\n          \"name\": \"Dana Whitfield\",\n          \"profile_picture\": {\n            \"url\": \"https://ui-avatars.com/api/\"\n          },\n          \"username\": \"danawhitfield\"\n        },\n        \"channel_id\": \"channel_id\",\n        \"created_at\": \"created_at\",\n        \"id\": \"id\",\n        \"object\": \"message\",\n        \"plain_content\": null\n      },\n      \"last_activity_at\": \"2026-01-01T12:00:00.000Z\",\n      \"most_recent_action\": \"canceling\",\n      \"most_recent_action_at\": \"2026-01-01T12:00:00.000Z\",\n      \"name\": \"Northwind Legal LLP\",\n      \"phone_number\": \"+xxxxxxxxxxx\",\n      \"status\": \"joined\",\n      \"token_balance\": 70.25,\n      \"unsubscribe_status\": \"unsubscribed\",\n      \"usd_total_spent\": {\n        \"amount\": \"-1234.56\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      },\n      \"user\": {\n        \"city\": \"Austin\",\n        \"country\": \"US\",\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Dana Whitfield\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"state\": \"TX\",\n        \"username\": \"danawhitfield\"\n      }\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\",\n    \"total_count\": 1,\n    \"total_count_capped\": true\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10337,7 +10337,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"access_level\": \"no_access\",\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"display_name\": \"Dana Whitfield\",\n  \"earnings_usd\": {\n    \"last_24_hours\": \"0.00\",\n    \"last_30_days\": \"0.00\",\n    \"last_7_days\": \"0.00\",\n    \"lifetime\": \"0.00\"\n  },\n  \"email\": \"marcus@shinetime.example\",\n  \"id\": \"mber_xxxxxxxxxxxxxx\",\n  \"joined_at\": \"2026-01-01T12:00:00.000Z\",\n  \"last_accessed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"last_activity\": {\n    \"author\": {\n      \"id\": \"user_xxxxxxxxxxxxxx\",\n      \"name\": \"Dana Whitfield\",\n      \"profile_picture\": {\n        \"url\": \"https://ui-avatars.com/api/\"\n      },\n      \"username\": \"danawhitfield\"\n    },\n    \"channel_id\": \"channel_id\",\n    \"created_at\": \"created_at\",\n    \"id\": \"id\",\n    \"object\": \"message\",\n    \"plain_content\": \"plain_content\"\n  },\n  \"last_activity_at\": \"2026-01-01T12:00:00.000Z\",\n  \"most_recent_action\": \"canceling\",\n  \"most_recent_action_at\": \"2026-01-01T12:00:00.000Z\",\n  \"name\": \"Northwind Legal LLP\",\n  \"phone_number\": \"+xxxxxxxxxxx\",\n  \"status\": \"joined\",\n  \"token_balance\": 70.25,\n  \"usd_total_spent\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"user\": {\n    \"city\": \"Austin\",\n    \"country\": \"US\",\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"state\": \"TX\",\n    \"username\": \"danawhitfield\"\n  }\n}",
+        "body": "{\n  \"access_level\": \"no_access\",\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"display_name\": \"Dana Whitfield\",\n  \"earnings_usd\": {\n    \"last_24_hours\": \"0.00\",\n    \"last_30_days\": \"0.00\",\n    \"last_7_days\": \"0.00\",\n    \"lifetime\": \"0.00\"\n  },\n  \"email\": \"marcus@shinetime.example\",\n  \"id\": \"mber_xxxxxxxxxxxxxx\",\n  \"joined_at\": \"2026-01-01T12:00:00.000Z\",\n  \"last_accessed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"last_activity\": {\n    \"author\": {\n      \"id\": \"user_xxxxxxxxxxxxxx\",\n      \"name\": \"Dana Whitfield\",\n      \"profile_picture\": {\n        \"url\": \"https://ui-avatars.com/api/\"\n      },\n      \"username\": \"danawhitfield\"\n    },\n    \"channel_id\": \"channel_id\",\n    \"created_at\": \"created_at\",\n    \"id\": \"id\",\n    \"object\": \"message\",\n    \"plain_content\": \"plain_content\"\n  },\n  \"last_activity_at\": \"2026-01-01T12:00:00.000Z\",\n  \"most_recent_action\": \"canceling\",\n  \"most_recent_action_at\": \"2026-01-01T12:00:00.000Z\",\n  \"name\": \"Northwind Legal LLP\",\n  \"phone_number\": \"+xxxxxxxxxxx\",\n  \"status\": \"joined\",\n  \"token_balance\": 70.25,\n  \"unsubscribe_status\": \"unsubscribed\",\n  \"usd_total_spent\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"user\": {\n    \"city\": \"Austin\",\n    \"country\": \"US\",\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"state\": \"TX\",\n    \"username\": \"danawhitfield\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10373,12 +10373,48 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"access_level\": \"no_access\",\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"display_name\": \"Dana Whitfield\",\n  \"earnings_usd\": {\n    \"last_24_hours\": \"0.00\",\n    \"last_30_days\": \"0.00\",\n    \"last_7_days\": \"0.00\",\n    \"lifetime\": \"0.00\"\n  },\n  \"email\": \"marcus@shinetime.example\",\n  \"id\": \"mber_xxxxxxxxxxxxxx\",\n  \"joined_at\": \"2026-01-01T12:00:00.000Z\",\n  \"last_accessed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"last_activity\": {\n    \"author\": {\n      \"id\": \"user_xxxxxxxxxxxxxx\",\n      \"name\": \"Dana Whitfield\",\n      \"profile_picture\": {\n        \"url\": \"https://ui-avatars.com/api/\"\n      },\n      \"username\": \"danawhitfield\"\n    },\n    \"channel_id\": \"channel_id\",\n    \"created_at\": \"created_at\",\n    \"id\": \"id\",\n    \"object\": \"message\",\n    \"plain_content\": \"plain_content\"\n  },\n  \"last_activity_at\": \"2026-01-01T12:00:00.000Z\",\n  \"most_recent_action\": \"canceling\",\n  \"most_recent_action_at\": \"2026-01-01T12:00:00.000Z\",\n  \"name\": \"Northwind Legal LLP\",\n  \"phone_number\": \"+xxxxxxxxxxx\",\n  \"status\": \"joined\",\n  \"token_balance\": 70.25,\n  \"usd_total_spent\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"user\": {\n    \"city\": \"Austin\",\n    \"country\": \"US\",\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"state\": \"TX\",\n    \"username\": \"danawhitfield\"\n  }\n}",
+        "body": "{\n  \"access_level\": \"no_access\",\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"display_name\": \"Dana Whitfield\",\n  \"earnings_usd\": {\n    \"last_24_hours\": \"0.00\",\n    \"last_30_days\": \"0.00\",\n    \"last_7_days\": \"0.00\",\n    \"lifetime\": \"0.00\"\n  },\n  \"email\": \"marcus@shinetime.example\",\n  \"id\": \"mber_xxxxxxxxxxxxxx\",\n  \"joined_at\": \"2026-01-01T12:00:00.000Z\",\n  \"last_accessed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"last_activity\": {\n    \"author\": {\n      \"id\": \"user_xxxxxxxxxxxxxx\",\n      \"name\": \"Dana Whitfield\",\n      \"profile_picture\": {\n        \"url\": \"https://ui-avatars.com/api/\"\n      },\n      \"username\": \"danawhitfield\"\n    },\n    \"channel_id\": \"channel_id\",\n    \"created_at\": \"created_at\",\n    \"id\": \"id\",\n    \"object\": \"message\",\n    \"plain_content\": \"plain_content\"\n  },\n  \"last_activity_at\": \"2026-01-01T12:00:00.000Z\",\n  \"most_recent_action\": \"canceling\",\n  \"most_recent_action_at\": \"2026-01-01T12:00:00.000Z\",\n  \"name\": \"Northwind Legal LLP\",\n  \"phone_number\": \"+xxxxxxxxxxx\",\n  \"status\": \"joined\",\n  \"token_balance\": 70.25,\n  \"unsubscribe_status\": \"unsubscribed\",\n  \"usd_total_spent\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"user\": {\n    \"city\": \"Austin\",\n    \"country\": \"US\",\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"state\": \"TX\",\n    \"username\": \"danawhitfield\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
       "uuid": "28615f88-8826-40c4-99ab-f41e05c317db",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "aa6e0727-d3e7-4085-b14f-1ceea769f29e",
+      "name": "Unsubscribe Member - default",
+      "request": {
+        "urlPathTemplate": "/members/{id}/unsubscribe",
+        "method": "POST",
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        },
+        "queryParameters": {
+          "token": {
+            "equalTo": "token"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "\"\"",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "aa6e0727-d3e7-4085-b14f-1ceea769f29e",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -19240,6 +19276,6 @@
     }
   ],
   "meta": {
-    "total": 538
+    "total": 539
   }
 }
