@@ -25,7 +25,7 @@ var (
 type CreateSwapsRequest struct {
 	// Business account that makes the swap, prefixed `biz_`. Provide this or `user_id`.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// Source token amount. Required for a crypto pair: a decimal amount, or `all` to swap the whole from_token balance in the account's wallet, read from the chain when the swap is created (any token but USDT). An amount above that balance is rejected when the balance can be read. For fiat pairs: the amount of from_token to convert at the mid-market rate; omit (along with to_amount) to repay the full negative to_token balance instead.
+	// Source token amount. Required for a crypto pair: a decimal amount, or `all` to swap the whole from_token balance in the account's wallet, read from the chain when the swap is created (any token but USDT). An amount above that balance is rejected when the balance can be read. For fiat pairs: the amount of from_token to convert; omit (along with to_amount) to repay the full negative to_token balance instead.
 	Amount *string `json:"amount,omitempty" url:"-"`
 	// Source chain name or chain ID. Defaults to the source token's chain when omitted.
 	FromChain *CreateSwapsRequestFromChain `json:"from_chain,omitempty" url:"-"`
@@ -140,18 +140,22 @@ func (c *CreateSwapsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	createQuoteSwapsRequestFieldAmount      = big.NewInt(1 << 0)
-	createQuoteSwapsRequestFieldFromAddress = big.NewInt(1 << 1)
-	createQuoteSwapsRequestFieldFromChain   = big.NewInt(1 << 2)
-	createQuoteSwapsRequestFieldFromToken   = big.NewInt(1 << 3)
-	createQuoteSwapsRequestFieldMetadata    = big.NewInt(1 << 4)
-	createQuoteSwapsRequestFieldSlippageBps = big.NewInt(1 << 5)
-	createQuoteSwapsRequestFieldToAddress   = big.NewInt(1 << 6)
-	createQuoteSwapsRequestFieldToChain     = big.NewInt(1 << 7)
-	createQuoteSwapsRequestFieldToToken     = big.NewInt(1 << 8)
+	createQuoteSwapsRequestFieldAccountID   = big.NewInt(1 << 0)
+	createQuoteSwapsRequestFieldAmount      = big.NewInt(1 << 1)
+	createQuoteSwapsRequestFieldFromAddress = big.NewInt(1 << 2)
+	createQuoteSwapsRequestFieldFromChain   = big.NewInt(1 << 3)
+	createQuoteSwapsRequestFieldFromToken   = big.NewInt(1 << 4)
+	createQuoteSwapsRequestFieldMetadata    = big.NewInt(1 << 5)
+	createQuoteSwapsRequestFieldSlippageBps = big.NewInt(1 << 6)
+	createQuoteSwapsRequestFieldToAddress   = big.NewInt(1 << 7)
+	createQuoteSwapsRequestFieldToChain     = big.NewInt(1 << 8)
+	createQuoteSwapsRequestFieldToToken     = big.NewInt(1 << 9)
+	createQuoteSwapsRequestFieldUserID      = big.NewInt(1 << 10)
 )
 
 type CreateQuoteSwapsRequest struct {
+	// Fiat pairs only: business account to quote the swap for, prefixed `biz_`. Requires a credential with `payout:transfer_funds` on that account. Provide this, `user_id`, or neither for a public quote.
+	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// Source token amount.
 	Amount string `json:"amount" url:"-"`
 	// Source wallet address used for the quote.
@@ -170,6 +174,8 @@ type CreateQuoteSwapsRequest struct {
 	ToChain *CreateQuoteSwapsRequestToChain `json:"to_chain,omitempty" url:"-"`
 	// Destination token contract address or ticker symbol, such as "XAUT".
 	ToToken string `json:"to_token" url:"-"`
+	// Fiat pairs only: the caller's own user ID, prefixed `user_`, to quote the swap for their personal account. Provide this or `account_id`.
+	UserID *string `json:"user_id,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -182,6 +188,13 @@ func (c *CreateQuoteSwapsRequest) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuoteSwapsRequest) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createQuoteSwapsRequestFieldAccountID)
 }
 
 // SetAmount sets the Amount field and marks it as non-optional;
@@ -245,6 +258,13 @@ func (c *CreateQuoteSwapsRequest) SetToChain(toChain *CreateQuoteSwapsRequestToC
 func (c *CreateQuoteSwapsRequest) SetToToken(toToken string) {
 	c.ToToken = toToken
 	c.require(createQuoteSwapsRequestFieldToToken)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuoteSwapsRequest) SetUserID(userID *string) {
+	c.UserID = userID
+	c.require(createQuoteSwapsRequestFieldUserID)
 }
 
 func (c *CreateQuoteSwapsRequest) UnmarshalJSON(data []byte) error {

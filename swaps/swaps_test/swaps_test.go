@@ -137,6 +137,7 @@ func TestSwapsCreateQuoteWithWireMock(
 	}
 	client := client.NewWhop(
 		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateQuoteSwapsRequest{
 		Amount:    "100",
