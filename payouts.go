@@ -2918,22 +2918,24 @@ func (c CreateQuotePayoutsRequestSpeed) Ptr() *CreateQuotePayoutsRequestSpeed {
 
 var (
 	createQuotePayoutsResponseFieldAmount               = big.NewInt(1 << 0)
-	createQuotePayoutsResponseFieldDestinationAmount    = big.NewInt(1 << 1)
-	createQuotePayoutsResponseFieldExchangeRate         = big.NewInt(1 << 2)
-	createQuotePayoutsResponseFieldExpiresAt            = big.NewInt(1 << 3)
-	createQuotePayoutsResponseFieldFee                  = big.NewInt(1 << 4)
-	createQuotePayoutsResponseFieldID                   = big.NewInt(1 << 5)
-	createQuotePayoutsResponseFieldMarketExchangeRate   = big.NewInt(1 << 6)
-	createQuotePayoutsResponseFieldMarketExchangeRateAt = big.NewInt(1 << 7)
-	createQuotePayoutsResponseFieldNetAmount            = big.NewInt(1 << 8)
-	createQuotePayoutsResponseFieldObject               = big.NewInt(1 << 9)
-	createQuotePayoutsResponseFieldQuoteToken           = big.NewInt(1 << 10)
-	createQuotePayoutsResponseFieldRecommendedMethod    = big.NewInt(1 << 11)
-	createQuotePayoutsResponseFieldServerTime           = big.NewInt(1 << 12)
+	createQuotePayoutsResponseFieldConversion           = big.NewInt(1 << 1)
+	createQuotePayoutsResponseFieldDestinationAmount    = big.NewInt(1 << 2)
+	createQuotePayoutsResponseFieldExchangeRate         = big.NewInt(1 << 3)
+	createQuotePayoutsResponseFieldExpiresAt            = big.NewInt(1 << 4)
+	createQuotePayoutsResponseFieldFee                  = big.NewInt(1 << 5)
+	createQuotePayoutsResponseFieldID                   = big.NewInt(1 << 6)
+	createQuotePayoutsResponseFieldMarketExchangeRate   = big.NewInt(1 << 7)
+	createQuotePayoutsResponseFieldMarketExchangeRateAt = big.NewInt(1 << 8)
+	createQuotePayoutsResponseFieldNetAmount            = big.NewInt(1 << 9)
+	createQuotePayoutsResponseFieldObject               = big.NewInt(1 << 10)
+	createQuotePayoutsResponseFieldQuoteToken           = big.NewInt(1 << 11)
+	createQuotePayoutsResponseFieldRecommendedMethod    = big.NewInt(1 << 12)
+	createQuotePayoutsResponseFieldServerTime           = big.NewInt(1 << 13)
 )
 
 // createQuotePayoutsResponseNullableFields maps the wire names of CreateQuotePayoutsResponse's nullable fields (required or optional) to their field bits.
 var createQuotePayoutsResponseNullableFields = map[string]*big.Int{
+	"conversion":              createQuotePayoutsResponseFieldConversion,
 	"market_exchange_rate":    createQuotePayoutsResponseFieldMarketExchangeRate,
 	"market_exchange_rate_at": createQuotePayoutsResponseFieldMarketExchangeRateAt,
 	"recommended_method":      createQuotePayoutsResponseFieldRecommendedMethod,
@@ -2942,6 +2944,8 @@ var createQuotePayoutsResponseNullableFields = map[string]*big.Int{
 type CreateQuotePayoutsResponse struct {
 	// Gross payout amount.
 	Amount *Money `json:"amount" url:"amount"`
+	// How a USD balance pays a bank in another currency: it converts into the payout method's currency, and the payout leaves from the balance in that currency. Null when the payout is paid from the requested balance directly.
+	Conversion *CreateQuotePayoutsResponseConversion `json:"conversion,omitempty" url:"conversion,omitempty"`
 	// Exact amount quoted for delivery.
 	DestinationAmount *Money `json:"destination_amount" url:"destination_amount"`
 	// Quoted exchange rate from the source currency to the destination currency.
@@ -2978,6 +2982,13 @@ func (c *CreateQuotePayoutsResponse) GetAmount() *Money {
 		return nil
 	}
 	return c.Amount
+}
+
+func (c *CreateQuotePayoutsResponse) GetConversion() *CreateQuotePayoutsResponseConversion {
+	if c == nil {
+		return nil
+	}
+	return c.Conversion
 }
 
 func (c *CreateQuotePayoutsResponse) GetDestinationAmount() *Money {
@@ -3085,6 +3096,13 @@ func (c *CreateQuotePayoutsResponse) require(field *big.Int) {
 func (c *CreateQuotePayoutsResponse) SetAmount(amount *Money) {
 	c.Amount = amount
 	c.require(createQuotePayoutsResponseFieldAmount)
+}
+
+// SetConversion sets the Conversion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponse) SetConversion(conversion *CreateQuotePayoutsResponseConversion) {
+	c.Conversion = conversion
+	c.require(createQuotePayoutsResponseFieldConversion)
 }
 
 // SetDestinationAmount sets the DestinationAmount field and marks it as non-optional;
@@ -3222,6 +3240,140 @@ func (c *CreateQuotePayoutsResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CreateQuotePayoutsResponse) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createQuotePayoutsResponseConversionFieldConvertedAmount  = big.NewInt(1 << 0)
+	createQuotePayoutsResponseConversionFieldEstimatedSavings = big.NewInt(1 << 1)
+	createQuotePayoutsResponseConversionFieldPayoutFee        = big.NewInt(1 << 2)
+)
+
+// createQuotePayoutsResponseConversionNullableFields maps the wire names of CreateQuotePayoutsResponseConversion's nullable fields (required or optional) to their field bits.
+var createQuotePayoutsResponseConversionNullableFields = map[string]*big.Int{
+	"estimated_savings": createQuotePayoutsResponseConversionFieldEstimatedSavings,
+}
+
+// How a USD balance pays a bank in another currency: it converts into the payout method's currency, and the payout leaves from the balance in that currency. Null when the payout is paid from the requested balance directly.
+type CreateQuotePayoutsResponseConversion struct {
+	// What the requested amount converts into, in the payout method's currency. When the account holds its USD in a stablecoin, this is an estimate: the payout is for what the conversion produces once that USD arrives, and `POST /payouts` answers with the payout request until that payout exists.
+	ConvertedAmount *Money `json:"converted_amount" url:"converted_amount"`
+	// How much more the recipient receives than if the same amount were paid out in USD and converted at the payout provider's rate. Null when the provider has no price for that route or converting first saves nothing.
+	EstimatedSavings *Money `json:"estimated_savings,omitempty" url:"estimated_savings,omitempty"`
+	// The payout fee in the converted currency, taken from the converted amount.
+	PayoutFee *Money `json:"payout_fee" url:"payout_fee"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateQuotePayoutsResponseConversion) GetConvertedAmount() *Money {
+	if c == nil {
+		return nil
+	}
+	return c.ConvertedAmount
+}
+
+func (c *CreateQuotePayoutsResponseConversion) GetEstimatedSavings() *Money {
+	if c == nil {
+		return nil
+	}
+	return c.EstimatedSavings
+}
+
+func (c *CreateQuotePayoutsResponseConversion) GetPayoutFee() *Money {
+	if c == nil {
+		return nil
+	}
+	return c.PayoutFee
+}
+
+func (c *CreateQuotePayoutsResponseConversion) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateQuotePayoutsResponseConversion) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetConvertedAmount sets the ConvertedAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponseConversion) SetConvertedAmount(convertedAmount *Money) {
+	c.ConvertedAmount = convertedAmount
+	c.require(createQuotePayoutsResponseConversionFieldConvertedAmount)
+}
+
+// SetEstimatedSavings sets the EstimatedSavings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponseConversion) SetEstimatedSavings(estimatedSavings *Money) {
+	c.EstimatedSavings = estimatedSavings
+	c.require(createQuotePayoutsResponseConversionFieldEstimatedSavings)
+}
+
+// SetPayoutFee sets the PayoutFee field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuotePayoutsResponseConversion) SetPayoutFee(payoutFee *Money) {
+	c.PayoutFee = payoutFee
+	c.require(createQuotePayoutsResponseConversionFieldPayoutFee)
+}
+
+func (c *CreateQuotePayoutsResponseConversion) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateQuotePayoutsResponseConversion
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateQuotePayoutsResponseConversion(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createQuotePayoutsResponseConversionNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateQuotePayoutsResponseConversion) MarshalJSON() ([]byte, error) {
+	type embed CreateQuotePayoutsResponseConversion
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateQuotePayoutsResponseConversion) String() string {
 	if c == nil {
 		return "<nil>"
 	}
