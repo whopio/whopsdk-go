@@ -193272,6 +193272,48 @@ func TestEnumLedgerActivityLineType(t *testing.T) {
 		assert.Equal(t, LedgerActivityLineType("clawback_receivable_reversal"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_capital_withholding", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("capital_withholding")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("capital_withholding"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_capital_withholding_reversal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("capital_withholding_reversal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("capital_withholding_reversal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_capital_hold", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("capital_hold")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("capital_hold"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_capital_hold_release", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("capital_hold_release")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("capital_hold_release"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_capital_remittance", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("capital_remittance")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("capital_remittance"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_capital_remittance_reversal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("capital_remittance_reversal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("capital_remittance_reversal"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_treasury_payin", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewLedgerActivityLineTypeFromString("treasury_payin")

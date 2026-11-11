@@ -284,6 +284,8 @@ const (
 	ListFinancialActivityRequestLineTypesItemBalanceReservationReversal                ListFinancialActivityRequestLineTypesItem = "balance_reservation_reversal"
 	ListFinancialActivityRequestLineTypesItemBillingPercentageFee                      ListFinancialActivityRequestLineTypesItem = "billing_percentage_fee"
 	ListFinancialActivityRequestLineTypesItemBuyerFee                                  ListFinancialActivityRequestLineTypesItem = "buyer_fee"
+	ListFinancialActivityRequestLineTypesItemCapitalWithholding                        ListFinancialActivityRequestLineTypesItem = "capital_withholding"
+	ListFinancialActivityRequestLineTypesItemCapitalWithholdingReversal                ListFinancialActivityRequestLineTypesItem = "capital_withholding_reversal"
 	ListFinancialActivityRequestLineTypesItemCardInterchange                           ListFinancialActivityRequestLineTypesItem = "card_interchange"
 	ListFinancialActivityRequestLineTypesItemCardLoadDeposit                           ListFinancialActivityRequestLineTypesItem = "card_load_deposit"
 	ListFinancialActivityRequestLineTypesItemCardLoadTransfer                          ListFinancialActivityRequestLineTypesItem = "card_load_transfer"
@@ -452,6 +454,10 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemBillingPercentageFee, nil
 	case "buyer_fee":
 		return ListFinancialActivityRequestLineTypesItemBuyerFee, nil
+	case "capital_withholding":
+		return ListFinancialActivityRequestLineTypesItemCapitalWithholding, nil
+	case "capital_withholding_reversal":
+		return ListFinancialActivityRequestLineTypesItemCapitalWithholdingReversal, nil
 	case "card_interchange":
 		return ListFinancialActivityRequestLineTypesItemCardInterchange, nil
 	case "card_load_deposit":

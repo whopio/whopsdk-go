@@ -240,6 +240,8 @@ const (
 	RetrieveFinancialReportsRequestLineTypesItemBalanceReservationReversal                RetrieveFinancialReportsRequestLineTypesItem = "balance_reservation_reversal"
 	RetrieveFinancialReportsRequestLineTypesItemBillingPercentageFee                      RetrieveFinancialReportsRequestLineTypesItem = "billing_percentage_fee"
 	RetrieveFinancialReportsRequestLineTypesItemBuyerFee                                  RetrieveFinancialReportsRequestLineTypesItem = "buyer_fee"
+	RetrieveFinancialReportsRequestLineTypesItemCapitalWithholding                        RetrieveFinancialReportsRequestLineTypesItem = "capital_withholding"
+	RetrieveFinancialReportsRequestLineTypesItemCapitalWithholdingReversal                RetrieveFinancialReportsRequestLineTypesItem = "capital_withholding_reversal"
 	RetrieveFinancialReportsRequestLineTypesItemCardInterchange                           RetrieveFinancialReportsRequestLineTypesItem = "card_interchange"
 	RetrieveFinancialReportsRequestLineTypesItemCardLoadDeposit                           RetrieveFinancialReportsRequestLineTypesItem = "card_load_deposit"
 	RetrieveFinancialReportsRequestLineTypesItemCardLoadTransfer                          RetrieveFinancialReportsRequestLineTypesItem = "card_load_transfer"
@@ -408,6 +410,10 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 		return RetrieveFinancialReportsRequestLineTypesItemBillingPercentageFee, nil
 	case "buyer_fee":
 		return RetrieveFinancialReportsRequestLineTypesItemBuyerFee, nil
+	case "capital_withholding":
+		return RetrieveFinancialReportsRequestLineTypesItemCapitalWithholding, nil
+	case "capital_withholding_reversal":
+		return RetrieveFinancialReportsRequestLineTypesItemCapitalWithholdingReversal, nil
 	case "card_interchange":
 		return RetrieveFinancialReportsRequestLineTypesItemCardInterchange, nil
 	case "card_load_deposit":
@@ -1368,6 +1374,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemGroupingAirdrops              RetrieveFinancialReportsResponseRowsItemGrouping = "airdrops"
 	RetrieveFinancialReportsResponseRowsItemGroupingBadDebt               RetrieveFinancialReportsResponseRowsItemGrouping = "bad_debt"
 	RetrieveFinancialReportsResponseRowsItemGroupingBalance               RetrieveFinancialReportsResponseRowsItemGrouping = "balance"
+	RetrieveFinancialReportsResponseRowsItemGroupingCapital               RetrieveFinancialReportsResponseRowsItemGrouping = "capital"
 	RetrieveFinancialReportsResponseRowsItemGroupingClawbacks             RetrieveFinancialReportsResponseRowsItemGrouping = "clawbacks"
 	RetrieveFinancialReportsResponseRowsItemGroupingCrypto                RetrieveFinancialReportsResponseRowsItemGrouping = "crypto"
 	RetrieveFinancialReportsResponseRowsItemGroupingDisputes              RetrieveFinancialReportsResponseRowsItemGrouping = "disputes"
@@ -1400,6 +1407,8 @@ func NewRetrieveFinancialReportsResponseRowsItemGroupingFromString(s string) (Re
 		return RetrieveFinancialReportsResponseRowsItemGroupingBadDebt, nil
 	case "balance":
 		return RetrieveFinancialReportsResponseRowsItemGroupingBalance, nil
+	case "capital":
+		return RetrieveFinancialReportsResponseRowsItemGroupingCapital, nil
 	case "clawbacks":
 		return RetrieveFinancialReportsResponseRowsItemGroupingClawbacks, nil
 	case "crypto":
@@ -1491,6 +1500,12 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryBalanceReservationReversal                RetrieveFinancialReportsResponseRowsItemLineCategory = "balance_reservation_reversal"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryBillingPercentageFee                      RetrieveFinancialReportsResponseRowsItemLineCategory = "billing_percentage_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryBuyerFee                                  RetrieveFinancialReportsResponseRowsItemLineCategory = "buyer_fee"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryCapitalHold                               RetrieveFinancialReportsResponseRowsItemLineCategory = "capital_hold"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryCapitalHoldRelease                        RetrieveFinancialReportsResponseRowsItemLineCategory = "capital_hold_release"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryCapitalRemittance                         RetrieveFinancialReportsResponseRowsItemLineCategory = "capital_remittance"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryCapitalRemittanceReversal                 RetrieveFinancialReportsResponseRowsItemLineCategory = "capital_remittance_reversal"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryCapitalWithholding                        RetrieveFinancialReportsResponseRowsItemLineCategory = "capital_withholding"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryCapitalWithholdingReversal                RetrieveFinancialReportsResponseRowsItemLineCategory = "capital_withholding_reversal"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryCardInterchange                           RetrieveFinancialReportsResponseRowsItemLineCategory = "card_interchange"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryCardInterchangeReceivable                 RetrieveFinancialReportsResponseRowsItemLineCategory = "card_interchange_receivable"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryCardLoadDeposit                           RetrieveFinancialReportsResponseRowsItemLineCategory = "card_load_deposit"
@@ -1852,6 +1867,18 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryBillingPercentageFee, nil
 	case "buyer_fee":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryBuyerFee, nil
+	case "capital_hold":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryCapitalHold, nil
+	case "capital_hold_release":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryCapitalHoldRelease, nil
+	case "capital_remittance":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryCapitalRemittance, nil
+	case "capital_remittance_reversal":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryCapitalRemittanceReversal, nil
+	case "capital_withholding":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryCapitalWithholding, nil
+	case "capital_withholding_reversal":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryCapitalWithholdingReversal, nil
 	case "card_interchange":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryCardInterchange, nil
 	case "card_interchange_receivable":

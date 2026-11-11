@@ -26555,6 +26555,12 @@ const (
 	LedgerActivityLineTypeWithdrawalReclassification                LedgerActivityLineType = "withdrawal_reclassification"
 	LedgerActivityLineTypeClawbackReceivable                        LedgerActivityLineType = "clawback_receivable"
 	LedgerActivityLineTypeClawbackReceivableReversal                LedgerActivityLineType = "clawback_receivable_reversal"
+	LedgerActivityLineTypeCapitalWithholding                        LedgerActivityLineType = "capital_withholding"
+	LedgerActivityLineTypeCapitalWithholdingReversal                LedgerActivityLineType = "capital_withholding_reversal"
+	LedgerActivityLineTypeCapitalHold                               LedgerActivityLineType = "capital_hold"
+	LedgerActivityLineTypeCapitalHoldRelease                        LedgerActivityLineType = "capital_hold_release"
+	LedgerActivityLineTypeCapitalRemittance                         LedgerActivityLineType = "capital_remittance"
+	LedgerActivityLineTypeCapitalRemittanceReversal                 LedgerActivityLineType = "capital_remittance_reversal"
 	LedgerActivityLineTypeTreasuryPayin                             LedgerActivityLineType = "treasury_payin"
 	LedgerActivityLineTypeTreasuryPayinReceivable                   LedgerActivityLineType = "treasury_payin_receivable"
 	LedgerActivityLineTypeOnchainDeposit                            LedgerActivityLineType = "onchain_deposit"
@@ -26944,6 +26950,18 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeClawbackReceivable, nil
 	case "clawback_receivable_reversal":
 		return LedgerActivityLineTypeClawbackReceivableReversal, nil
+	case "capital_withholding":
+		return LedgerActivityLineTypeCapitalWithholding, nil
+	case "capital_withholding_reversal":
+		return LedgerActivityLineTypeCapitalWithholdingReversal, nil
+	case "capital_hold":
+		return LedgerActivityLineTypeCapitalHold, nil
+	case "capital_hold_release":
+		return LedgerActivityLineTypeCapitalHoldRelease, nil
+	case "capital_remittance":
+		return LedgerActivityLineTypeCapitalRemittance, nil
+	case "capital_remittance_reversal":
+		return LedgerActivityLineTypeCapitalRemittanceReversal, nil
 	case "treasury_payin":
 		return LedgerActivityLineTypeTreasuryPayin, nil
 	case "treasury_payin_receivable":
