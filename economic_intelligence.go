@@ -208,7 +208,7 @@ type EconomicIntelligence struct {
 	RunStartedAt *string `json:"run_started_at,omitempty" url:"run_started_at,omitempty"`
 	// How the user rated this recommendation, or `null` if they have not rated it
 	Sentiment *EconomicIntelligenceSentiment `json:"sentiment,omitempty" url:"sentiment,omitempty"`
-	// `queued` when awaiting generation; `pending` while generating; `ready` when available to run; `running` while Whop AI or the recommendation's API calls carry it out; `executed` when carried out; `incomplete` when the run ended without carrying it out; `superseded` when rejected or replaced.
+	// `queued` when awaiting generation; `pending` while generating or preparing its work; `ready` when available to run; `running` while Whop AI or the recommendation's API calls carry it out; `executed` when carried out; `incomplete` when the run ended without carrying it out; `superseded` when rejected or replaced.
 	Status EconomicIntelligenceStatus `json:"status" url:"status"`
 	// When the recommendation was rejected or replaced, as an ISO 8601 timestamp, or `null` if neither has occurred.
 	SupersededAt *string `json:"superseded_at,omitempty" url:"superseded_at,omitempty"`
@@ -904,7 +904,7 @@ func (e EconomicIntelligenceSentiment) Ptr() *EconomicIntelligenceSentiment {
 	return &e
 }
 
-// `queued` when awaiting generation; `pending` while generating; `ready` when available to run; `running` while Whop AI or the recommendation's API calls carry it out; `executed` when carried out; `incomplete` when the run ended without carrying it out; `superseded` when rejected or replaced.
+// `queued` when awaiting generation; `pending` while generating or preparing its work; `ready` when available to run; `running` while Whop AI or the recommendation's API calls carry it out; `executed` when carried out; `incomplete` when the run ended without carrying it out; `superseded` when rejected or replaced.
 type EconomicIntelligenceStatus string
 
 const (
