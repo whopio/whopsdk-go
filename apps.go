@@ -235,13 +235,15 @@ var (
 	listAppsRequestFieldRecommended              = big.NewInt(1 << 5)
 	listAppsRequestFieldQuery                    = big.NewInt(1 << 6)
 	listAppsRequestFieldProductCategory          = big.NewInt(1 << 7)
-	listAppsRequestFieldMarketplaceCategoryRoute = big.NewInt(1 << 8)
-	listAppsRequestFieldOrder                    = big.NewInt(1 << 9)
-	listAppsRequestFieldDirection                = big.NewInt(1 << 10)
-	listAppsRequestFieldFirst                    = big.NewInt(1 << 11)
-	listAppsRequestFieldAfter                    = big.NewInt(1 << 12)
-	listAppsRequestFieldLast                     = big.NewInt(1 << 13)
-	listAppsRequestFieldBefore                   = big.NewInt(1 << 14)
+	listAppsRequestFieldBusinessType             = big.NewInt(1 << 8)
+	listAppsRequestFieldIndustryType             = big.NewInt(1 << 9)
+	listAppsRequestFieldMarketplaceCategoryRoute = big.NewInt(1 << 10)
+	listAppsRequestFieldOrder                    = big.NewInt(1 << 11)
+	listAppsRequestFieldDirection                = big.NewInt(1 << 12)
+	listAppsRequestFieldFirst                    = big.NewInt(1 << 13)
+	listAppsRequestFieldAfter                    = big.NewInt(1 << 14)
+	listAppsRequestFieldLast                     = big.NewInt(1 << 15)
+	listAppsRequestFieldBefore                   = big.NewInt(1 << 16)
 )
 
 type ListAppsRequest struct {
@@ -261,6 +263,10 @@ type ListAppsRequest struct {
 	Query *string `json:"-" url:"query,omitempty"`
 	// Only return apps whose `product_category` is this product category, such as `pressure_washing`. An unknown product category is rejected.
 	ProductCategory *string `json:"-" url:"product_category,omitempty"`
+	// Only return apps whose `product_category` sits under this business type in Whop's business taxonomy, such as `services`. An unknown business type is rejected.
+	BusinessType *string `json:"-" url:"business_type,omitempty"`
+	// Only return apps whose `product_category` sits under this industry type of `business_type`, such as `exterior_cleaning`. Requires `business_type`. An industry type outside it is rejected.
+	IndustryType *string `json:"-" url:"industry_type,omitempty"`
 	// Only return apps in this app store category. Use a `route` from `GET /apps/categories`, such as `business-productivity`. An unknown route is rejected.
 	MarketplaceCategoryRoute *string `json:"-" url:"marketplace_category_route,omitempty"`
 	// The field to sort apps by. Defaults to discoverable_at, showing the most recently published apps first. `template_usage` ranks Whop-verified apps first, then by how many businesses created apps from each app as a template. `template_recent_sales` ranks them by how many of those businesses processed a payment in the last 24 hours, recounted hourly, breaking ties by `template_usage`.
@@ -343,6 +349,20 @@ func (l *ListAppsRequest) SetQuery(query *string) {
 func (l *ListAppsRequest) SetProductCategory(productCategory *string) {
 	l.ProductCategory = productCategory
 	l.require(listAppsRequestFieldProductCategory)
+}
+
+// SetBusinessType sets the BusinessType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAppsRequest) SetBusinessType(businessType *string) {
+	l.BusinessType = businessType
+	l.require(listAppsRequestFieldBusinessType)
+}
+
+// SetIndustryType sets the IndustryType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAppsRequest) SetIndustryType(industryType *string) {
+	l.IndustryType = industryType
+	l.require(listAppsRequestFieldIndustryType)
 }
 
 // SetMarketplaceCategoryRoute sets the MarketplaceCategoryRoute field and marks it as non-optional;
