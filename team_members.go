@@ -120,21 +120,22 @@ var (
 	listTeamMembersRequestFieldAccountID             = big.NewInt(1 << 0)
 	listTeamMembersRequestFieldStatus                = big.NewInt(1 << 1)
 	listTeamMembersRequestFieldUserID                = big.NewInt(1 << 2)
-	listTeamMembersRequestFieldRole                  = big.NewInt(1 << 3)
-	listTeamMembersRequestFieldQuery                 = big.NewInt(1 << 4)
-	listTeamMembersRequestFieldReportsToID           = big.NewInt(1 << 5)
-	listTeamMembersRequestFieldDirectReportsMin      = big.NewInt(1 << 6)
-	listTeamMembersRequestFieldDirectReportsMax      = big.NewInt(1 << 7)
-	listTeamMembersRequestFieldTeamLeadID            = big.NewInt(1 << 8)
-	listTeamMembersRequestFieldHasReferredBusinesses = big.NewInt(1 << 9)
-	listTeamMembersRequestFieldCreatedBefore         = big.NewInt(1 << 10)
-	listTeamMembersRequestFieldCreatedAfter          = big.NewInt(1 << 11)
-	listTeamMembersRequestFieldOrder                 = big.NewInt(1 << 12)
-	listTeamMembersRequestFieldDirection             = big.NewInt(1 << 13)
-	listTeamMembersRequestFieldFirst                 = big.NewInt(1 << 14)
-	listTeamMembersRequestFieldAfter                 = big.NewInt(1 << 15)
-	listTeamMembersRequestFieldLast                  = big.NewInt(1 << 16)
-	listTeamMembersRequestFieldBefore                = big.NewInt(1 << 17)
+	listTeamMembersRequestFieldUserIDs               = big.NewInt(1 << 3)
+	listTeamMembersRequestFieldRole                  = big.NewInt(1 << 4)
+	listTeamMembersRequestFieldQuery                 = big.NewInt(1 << 5)
+	listTeamMembersRequestFieldReportsToID           = big.NewInt(1 << 6)
+	listTeamMembersRequestFieldDirectReportsMin      = big.NewInt(1 << 7)
+	listTeamMembersRequestFieldDirectReportsMax      = big.NewInt(1 << 8)
+	listTeamMembersRequestFieldTeamLeadID            = big.NewInt(1 << 9)
+	listTeamMembersRequestFieldHasReferredBusinesses = big.NewInt(1 << 10)
+	listTeamMembersRequestFieldCreatedBefore         = big.NewInt(1 << 11)
+	listTeamMembersRequestFieldCreatedAfter          = big.NewInt(1 << 12)
+	listTeamMembersRequestFieldOrder                 = big.NewInt(1 << 13)
+	listTeamMembersRequestFieldDirection             = big.NewInt(1 << 14)
+	listTeamMembersRequestFieldFirst                 = big.NewInt(1 << 15)
+	listTeamMembersRequestFieldAfter                 = big.NewInt(1 << 16)
+	listTeamMembersRequestFieldLast                  = big.NewInt(1 << 17)
+	listTeamMembersRequestFieldBefore                = big.NewInt(1 << 18)
 )
 
 type ListTeamMembersRequest struct {
@@ -144,6 +145,8 @@ type ListTeamMembersRequest struct {
 	Status *ListTeamMembersRequestStatus `json:"-" url:"status,omitempty"`
 	// Only return the membership for this user ID, prefixed `user_`.
 	UserID *string `json:"-" url:"user_id,omitempty"`
+	// Only return the memberships of these users, prefixed `user_`, at most 100. IDs that match no user are ignored. With `account_id=global`, a user can have one in each partner account. Can't be combined with `user_id`.
+	UserIDs []*string `json:"-" url:"user_ids,omitempty"`
 	// Only return members with this role. `custom` matches members on a dashboard-managed custom role.
 	Role *ListTeamMembersRequestRole `json:"-" url:"role,omitempty"`
 	// Only return members whose name or username contains this text, and invites whose email contains it.
@@ -207,6 +210,13 @@ func (l *ListTeamMembersRequest) SetStatus(status *ListTeamMembersRequestStatus)
 func (l *ListTeamMembersRequest) SetUserID(userID *string) {
 	l.UserID = userID
 	l.require(listTeamMembersRequestFieldUserID)
+}
+
+// SetUserIDs sets the UserIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTeamMembersRequest) SetUserIDs(userIDs []*string) {
+	l.UserIDs = userIDs
+	l.require(listTeamMembersRequestFieldUserIDs)
 }
 
 // SetRole sets the Role field and marks it as non-optional;
