@@ -553,17 +553,14 @@ func (r *ReportIssuesAdsRequest) MarshalJSON() ([]byte, error) {
 
 var (
 	reportStatsAdsRequestFieldAdID          = big.NewInt(1 << 0)
-	reportStatsAdsRequestFieldClicks        = big.NewInt(1 << 1)
-	reportStatsAdsRequestFieldHourStartedAt = big.NewInt(1 << 2)
-	reportStatsAdsRequestFieldImpressions   = big.NewInt(1 << 3)
-	reportStatsAdsRequestFieldSpend         = big.NewInt(1 << 4)
+	reportStatsAdsRequestFieldHourStartedAt = big.NewInt(1 << 1)
+	reportStatsAdsRequestFieldImpressions   = big.NewInt(1 << 2)
+	reportStatsAdsRequestFieldSpend         = big.NewInt(1 << 3)
 )
 
 type ReportStatsAdsRequest struct {
 	// The ad's ID, prefixed `ad_`: the campaign's ad or the runner's copy of it.
 	AdID string `json:"ad_id" url:"-"`
-	// Ignored. An ad's clicks are its Whop pixel page views, which Whop counts when it shows the ad's stats.
-	Clicks *ReportStatsAdsRequestClicks `json:"clicks,omitempty" url:"-"`
 	// Start of the hour, on the hour, for an hour that has already started.
 	HourStartedAt time.Time `json:"hour_started_at" url:"-"`
 	// The ad's impressions in the hour so far. Zero when left out.
@@ -589,13 +586,6 @@ func (r *ReportStatsAdsRequest) require(field *big.Int) {
 func (r *ReportStatsAdsRequest) SetAdID(adID string) {
 	r.AdID = adID
 	r.require(reportStatsAdsRequestFieldAdID)
-}
-
-// SetClicks sets the Clicks field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (r *ReportStatsAdsRequest) SetClicks(clicks *ReportStatsAdsRequestClicks) {
-	r.Clicks = clicks
-	r.require(reportStatsAdsRequestFieldClicks)
 }
 
 // SetHourStartedAt sets the HourStartedAt field and marks it as non-optional;
@@ -5780,69 +5770,6 @@ func (r *ReportIssuesAdsResponse) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", r)
-}
-
-// Ignored. An ad's clicks are its Whop pixel page views, which Whop counts when it shows the ad's stats.
-type ReportStatsAdsRequestClicks struct {
-	Integer int
-	String  string
-
-	typ string
-}
-
-func (r *ReportStatsAdsRequestClicks) GetInteger() int {
-	if r == nil {
-		return 0
-	}
-	return r.Integer
-}
-
-func (r *ReportStatsAdsRequestClicks) GetString() string {
-	if r == nil {
-		return ""
-	}
-	return r.String
-}
-
-func (r *ReportStatsAdsRequestClicks) UnmarshalJSON(data []byte) error {
-	var valueInteger int
-	if err := json.Unmarshal(data, &valueInteger); err == nil {
-		r.typ = "Integer"
-		r.Integer = valueInteger
-		return nil
-	}
-	var valueString string
-	if err := json.Unmarshal(data, &valueString); err == nil {
-		r.typ = "String"
-		r.String = valueString
-		return nil
-	}
-	return fmt.Errorf("%s cannot be deserialized as a %T", data, r)
-}
-
-func (r ReportStatsAdsRequestClicks) MarshalJSON() ([]byte, error) {
-	if r.typ == "Integer" || r.Integer != 0 {
-		return json.Marshal(r.Integer)
-	}
-	if r.typ == "String" || r.String != "" {
-		return json.Marshal(r.String)
-	}
-	return nil, fmt.Errorf("type %T does not include a non-empty union type", r)
-}
-
-type ReportStatsAdsRequestClicksVisitor interface {
-	VisitInteger(int) error
-	VisitString(string) error
-}
-
-func (r *ReportStatsAdsRequestClicks) Accept(visitor ReportStatsAdsRequestClicksVisitor) error {
-	if r.typ == "Integer" || r.Integer != 0 {
-		return visitor.VisitInteger(r.Integer)
-	}
-	if r.typ == "String" || r.String != "" {
-		return visitor.VisitString(r.String)
-	}
-	return fmt.Errorf("type %T does not include a non-empty union type", r)
 }
 
 // The ad's impressions in the hour so far. Zero when left out.
