@@ -332,6 +332,14 @@ func TestSettersRetrieveTimeSeriesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetWebhookID", func(t *testing.T) {
+		obj := &RetrieveTimeSeriesRequest{}
+		var fernTestValueWebhookID *string
+		obj.SetWebhookID(fernTestValueWebhookID)
+		assert.Equal(t, fernTestValueWebhookID, obj.WebhookID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetConversionWindow", func(t *testing.T) {
 		obj := &RetrieveTimeSeriesRequest{}
 		var fernTestValueConversionWindow *string
@@ -1840,6 +1848,37 @@ func TestSettersMarkExplicitRetrieveTimeSeriesRequest(t *testing.T) {
 
 		// Act
 		obj.SetIssuer(fernTestValueIssuer)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetWebhookID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveTimeSeriesRequest{}
+		var fernTestValueWebhookID *string
+
+		// Act
+		obj.SetWebhookID(fernTestValueWebhookID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3617,6 +3656,14 @@ func TestSettersMarkExplicitRetrieveTimeSeriesResponse(t *testing.T) {
 }
 
 func TestSettersRetrieveTimeSeriesResponseData(t *testing.T) {
+	t.Run("SetComplete", func(t *testing.T) {
+		obj := &RetrieveTimeSeriesResponseData{}
+		var fernTestValueComplete *bool
+		obj.SetComplete(fernTestValueComplete)
+		assert.Equal(t, fernTestValueComplete, obj.Complete)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCurrency", func(t *testing.T) {
 		obj := &RetrieveTimeSeriesResponseData{}
 		var fernTestValueCurrency *string
@@ -3644,6 +3691,39 @@ func TestSettersRetrieveTimeSeriesResponseData(t *testing.T) {
 }
 
 func TestGettersRetrieveTimeSeriesResponseData(t *testing.T) {
+	t.Run("GetComplete", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveTimeSeriesResponseData{}
+		var expected *bool
+		obj.Complete = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetComplete(), "getter should return the property value")
+	})
+
+	t.Run("GetComplete_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveTimeSeriesResponseData{}
+		obj.Complete = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetComplete(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetComplete_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveTimeSeriesResponseData
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetComplete() // Should return zero value
+	})
+
 	t.Run("GetCurrency", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3746,6 +3826,37 @@ func TestGettersRetrieveTimeSeriesResponseData(t *testing.T) {
 }
 
 func TestSettersMarkExplicitRetrieveTimeSeriesResponseData(t *testing.T) {
+	t.Run("SetComplete_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveTimeSeriesResponseData{}
+		var fernTestValueComplete *bool
+
+		// Act
+		obj.SetComplete(fernTestValueComplete)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetCurrency_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -5064,6 +5175,7 @@ func TestRequiredNullableRoundTripRetrieveTimeSeriesResponseDataTotalsItem(t *te
 
 func TestOptionalNullableRoundTripRetrieveTimeSeriesResponseData(t *testing.T) {
 	optionalNullableKeys := []string{
+		"complete",
 		"currency",
 		"totals",
 	}
@@ -5078,7 +5190,7 @@ func TestOptionalNullableRoundTripRetrieveTimeSeriesResponseData(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrieveTimeSeriesResponseData
-		require.NoError(t, json.Unmarshal([]byte(`{"currency":null,"totals":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"complete":null,"currency":null,"totals":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
