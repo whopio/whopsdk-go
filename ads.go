@@ -562,7 +562,7 @@ var (
 type ReportStatsAdsRequest struct {
 	// The ad's ID, prefixed `ad_`: the campaign's ad or the runner's copy of it.
 	AdID string `json:"ad_id" url:"-"`
-	// The ad's clicks in the hour so far, at most `impressions`. Zero when left out.
+	// Ignored. An ad's clicks are its Whop pixel page views, which Whop counts when it shows the ad's stats.
 	Clicks *ReportStatsAdsRequestClicks `json:"clicks,omitempty" url:"-"`
 	// Start of the hour, on the hour, for an hour that has already started.
 	HourStartedAt time.Time `json:"hour_started_at" url:"-"`
@@ -3156,7 +3156,7 @@ type AdStat struct {
 	AdGroupID string `json:"ad_group_id" url:"ad_group_id"`
 	// The ad's ID, prefixed `ad_`, as sent.
 	AdID string `json:"ad_id" url:"ad_id"`
-	// The ad's clicks in the hour.
+	// Always 0. Whop stores no clicks for a runner's hour: an ad's clicks are its Whop pixel page views, counted when its stats are shown.
 	Clicks int `json:"clicks" url:"clicks"`
 	// Start of the hour, as an ISO 8601 timestamp.
 	HourStartedAt string `json:"hour_started_at" url:"hour_started_at"`
@@ -5782,7 +5782,7 @@ func (r *ReportIssuesAdsResponse) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// The ad's clicks in the hour so far, at most `impressions`. Zero when left out.
+// Ignored. An ad's clicks are its Whop pixel page views, which Whop counts when it shows the ad's stats.
 type ReportStatsAdsRequestClicks struct {
 	Integer int
 	String  string

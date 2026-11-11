@@ -3567,7 +3567,7 @@ client.Ads.ReportStats(
 <dl>
 <dd>
 
-**clicks:** `*whopsdk.ReportStatsAdsRequestClicks` — The ad's clicks in the hour so far, at most `impressions`. Zero when left out.
+**clicks:** `*whopsdk.ReportStatsAdsRequestClicks` — Ignored. An ad's clicks are its Whop pixel page views, which Whop counts when it shows the ad's stats.
     
 </dd>
 </dl>
