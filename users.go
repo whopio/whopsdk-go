@@ -386,9 +386,9 @@ type OwnerLevel struct {
 	MonthlyAdsSpend *Money `json:"monthly_ads_spend" url:"monthly_ads_spend"`
 	// Captured Whop Card spend this calendar month across every account the owner owns, net of refunds, in USD, so it can be negative. An account whose month nets to zero or below is left out.
 	MonthlyCardSpend *Money `json:"monthly_card_spend" url:"monthly_card_spend"`
-	// Qualifying spend this calendar month across every account the owner owns, plus the owner's partner points, in USD: `points` divided by 10.
+	// Qualifying spend this calendar month across every account the owner owns, plus the owner's personal trading and partner points, in USD: `points` divided by 10.
 	MonthlyQualifyingSpend *Money `json:"monthly_qualifying_spend" url:"monthly_qualifying_spend"`
-	// Perpetual trading volume filled through Whop this calendar month across every account the owner owns, in USD. An account whose month nets to zero or below is left out.
+	// Perpetual trading volume filled through Whop this calendar month across every account the owner owns and their personal wallet, in USD. An account whose month nets to zero or below is left out.
 	MonthlyTradingVolume *Money `json:"monthly_trading_volume" url:"monthly_trading_volume"`
 	// Points earned this month across every account the owner owns, plus the owner's partner points, rounded down. An account whose month nets below zero counts as zero.
 	Points int `json:"points" url:"points"`
