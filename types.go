@@ -4270,25 +4270,28 @@ var (
 	accountPreferencesFieldAdsReportingCurrency                    = big.NewInt(1 << 2)
 	accountPreferencesFieldAdsSchedulingTimezone                   = big.NewInt(1 << 3)
 	accountPreferencesFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 4)
-	accountPreferencesFieldCardsAutoTopUp                          = big.NewInt(1 << 5)
-	accountPreferencesFieldCardsNotifications                      = big.NewInt(1 << 6)
-	accountPreferencesFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 7)
-	accountPreferencesFieldCustomerTracking                        = big.NewInt(1 << 8)
-	accountPreferencesFieldDisputeFighterEnabled                   = big.NewInt(1 << 9)
-	accountPreferencesFieldEconomicIntelligence                    = big.NewInt(1 << 10)
-	accountPreferencesFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 11)
-	accountPreferencesFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 12)
-	accountPreferencesFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 13)
-	accountPreferencesFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 14)
-	accountPreferencesFieldEconomicIntelligenceOffers              = big.NewInt(1 << 15)
-	accountPreferencesFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 16)
-	accountPreferencesFieldFeedbackOptions                         = big.NewInt(1 << 17)
-	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 18)
-	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 19)
-	accountPreferencesFieldReviewRequestEmails                     = big.NewInt(1 << 20)
-	accountPreferencesFieldSubaccountNotifications                 = big.NewInt(1 << 21)
-	accountPreferencesFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 22)
-	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 23)
+	accountPreferencesFieldCancellationEmails                      = big.NewInt(1 << 5)
+	accountPreferencesFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
+	accountPreferencesFieldCardsNotifications                      = big.NewInt(1 << 7)
+	accountPreferencesFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 8)
+	accountPreferencesFieldCustomerTracking                        = big.NewInt(1 << 9)
+	accountPreferencesFieldDisputeFighterEnabled                   = big.NewInt(1 << 10)
+	accountPreferencesFieldEconomicIntelligence                    = big.NewInt(1 << 11)
+	accountPreferencesFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 12)
+	accountPreferencesFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 13)
+	accountPreferencesFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 14)
+	accountPreferencesFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 15)
+	accountPreferencesFieldEconomicIntelligenceOffers              = big.NewInt(1 << 16)
+	accountPreferencesFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 17)
+	accountPreferencesFieldFailedPaymentEmails                     = big.NewInt(1 << 18)
+	accountPreferencesFieldFeedbackOptions                         = big.NewInt(1 << 19)
+	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 20)
+	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 21)
+	accountPreferencesFieldRenewalReminderEmails                   = big.NewInt(1 << 22)
+	accountPreferencesFieldReviewRequestEmails                     = big.NewInt(1 << 23)
+	accountPreferencesFieldSubaccountNotifications                 = big.NewInt(1 << 24)
+	accountPreferencesFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 25)
+	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 26)
 )
 
 // accountPreferencesNullableFields maps the wire names of AccountPreferences's nullable fields (required or optional) to their field bits.
@@ -4317,6 +4320,8 @@ type AccountPreferences struct {
 	AdsSchedulingTimezone string `json:"ads_scheduling_timezone" url:"ads_scheduling_timezone"`
 	// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel, and tags ad click-through URLs with `tw_source`/`tw_adid` so Triple Whale's pixel attributes conversions back to the right ad. `status` is `connected`, `not_connected`, or `requires_shop_domain` (Triple Whale keys records by shop, so spend only flows once `shop_domain` is set). `masked_api_key` shows the leading characters of the stored key; the full key is never returned. `shop_domain` is the shop spend is reported for.
 	AdsTripleWhaleIntegration map[string]any `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
+	// Whether Whop emails members when their membership is canceled or terminated. `true` by default. Set it to `false` to stop these emails while keeping the account's other customer emails. They also stop while the account's `send_customer_emails` is `false`.
+	CancellationEmails bool `json:"cancellation_emails" url:"cancellation_emails"`
 	// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
 	// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
@@ -4340,11 +4345,15 @@ type AccountPreferences struct {
 	EconomicIntelligenceOffers         []*AccountEconomicIntelligenceOffer `json:"economic_intelligence_offers" url:"economic_intelligence_offers"`
 	// The account's last Economic Intelligence period, once it has ended. `null` while Economic Intelligence is on, or when it has never been on.
 	EconomicIntelligencePreviousPeriod *AccountEconomicIntelligencePreviousPeriod `json:"economic_intelligence_previous_period,omitempty" url:"economic_intelligence_previous_period,omitempty"`
-	FeedbackOptions                    []*FeedbackOption                          `json:"feedback_options" url:"feedback_options"`
+	// Whether Whop emails members when a renewal payment fails or needs them to verify it. `true` by default. Set it to `false` to stop these emails while keeping the account's other customer emails. Subscriptions billed by invoice still get the invoice and its past-due reminders, since that is how the member pays. These emails also stop while the account's `send_customer_emails` is `false`.
+	FailedPaymentEmails bool              `json:"failed_payment_emails" url:"failed_payment_emails"`
+	FeedbackOptions     []*FeedbackOption `json:"feedback_options" url:"feedback_options"`
 	// Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
 	PreferredSettlementCurrency *AccountPreferencesPreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"preferred_settlement_currency,omitempty"`
 	// When `preferred_settlement_currency` may next be changed or turned off, as an ISO 8601 timestamp. It can change at most once a day. `null` when it may change now.
 	PreferredSettlementCurrencyChangeableAt *string `json:"preferred_settlement_currency_changeable_at,omitempty" url:"preferred_settlement_currency_changeable_at,omitempty"`
+	// Whether Whop emails members the day before their membership renews or their free trial converts. `true` by default. Set it to `false` to stop that reminder. Members still get the reminders card networks require. They go out 7 days before a trial over 7 days converts, and 30 days before a 6-month or longer plan renews. All stop while `send_customer_emails` is `false`.
+	RenewalReminderEmails bool `json:"renewal_reminder_emails" url:"renewal_reminder_emails"`
 	// Whether Whop emails customers after a purchase asking them to leave a review. `true` by default. Set it to `false` to stop these emails, including ones already scheduled. They also stop while the account's `send_customer_emails` is `false`.
 	ReviewRequestEmails bool `json:"review_request_emails" url:"review_request_emails"`
 	// Whether Whop emails and notifies the teams of this account's subaccounts. `true` by default. Set it to `false` to stop Whop's emails, push, and in-app notifications to them. These include payout, verification, dispute, and card alerts about their accounts. `null` when the account has no subaccounts.
@@ -4394,6 +4403,13 @@ func (a *AccountPreferences) GetAdsTripleWhaleIntegration() map[string]any {
 		return nil
 	}
 	return a.AdsTripleWhaleIntegration
+}
+
+func (a *AccountPreferences) GetCancellationEmails() bool {
+	if a == nil {
+		return false
+	}
+	return a.CancellationEmails
 }
 
 func (a *AccountPreferences) GetCardsAutoTopUp() bool {
@@ -4480,6 +4496,13 @@ func (a *AccountPreferences) GetEconomicIntelligencePreviousPeriod() *AccountEco
 	return a.EconomicIntelligencePreviousPeriod
 }
 
+func (a *AccountPreferences) GetFailedPaymentEmails() bool {
+	if a == nil {
+		return false
+	}
+	return a.FailedPaymentEmails
+}
+
 func (a *AccountPreferences) GetFeedbackOptions() []*FeedbackOption {
 	if a == nil {
 		return nil
@@ -4499,6 +4522,13 @@ func (a *AccountPreferences) GetPreferredSettlementCurrencyChangeableAt() *strin
 		return nil
 	}
 	return a.PreferredSettlementCurrencyChangeableAt
+}
+
+func (a *AccountPreferences) GetRenewalReminderEmails() bool {
+	if a == nil {
+		return false
+	}
+	return a.RenewalReminderEmails
 }
 
 func (a *AccountPreferences) GetReviewRequestEmails() bool {
@@ -4578,6 +4608,13 @@ func (a *AccountPreferences) SetAdsSchedulingTimezone(adsSchedulingTimezone stri
 func (a *AccountPreferences) SetAdsTripleWhaleIntegration(adsTripleWhaleIntegration map[string]any) {
 	a.AdsTripleWhaleIntegration = adsTripleWhaleIntegration
 	a.require(accountPreferencesFieldAdsTripleWhaleIntegration)
+}
+
+// SetCancellationEmails sets the CancellationEmails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetCancellationEmails(cancellationEmails bool) {
+	a.CancellationEmails = cancellationEmails
+	a.require(accountPreferencesFieldCancellationEmails)
 }
 
 // SetCardsAutoTopUp sets the CardsAutoTopUp field and marks it as non-optional;
@@ -4664,6 +4701,13 @@ func (a *AccountPreferences) SetEconomicIntelligencePreviousPeriod(economicIntel
 	a.require(accountPreferencesFieldEconomicIntelligencePreviousPeriod)
 }
 
+// SetFailedPaymentEmails sets the FailedPaymentEmails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetFailedPaymentEmails(failedPaymentEmails bool) {
+	a.FailedPaymentEmails = failedPaymentEmails
+	a.require(accountPreferencesFieldFailedPaymentEmails)
+}
+
 // SetFeedbackOptions sets the FeedbackOptions field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AccountPreferences) SetFeedbackOptions(feedbackOptions []*FeedbackOption) {
@@ -4683,6 +4727,13 @@ func (a *AccountPreferences) SetPreferredSettlementCurrency(preferredSettlementC
 func (a *AccountPreferences) SetPreferredSettlementCurrencyChangeableAt(preferredSettlementCurrencyChangeableAt *string) {
 	a.PreferredSettlementCurrencyChangeableAt = preferredSettlementCurrencyChangeableAt
 	a.require(accountPreferencesFieldPreferredSettlementCurrencyChangeableAt)
+}
+
+// SetRenewalReminderEmails sets the RenewalReminderEmails field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetRenewalReminderEmails(renewalReminderEmails bool) {
+	a.RenewalReminderEmails = renewalReminderEmails
+	a.require(accountPreferencesFieldRenewalReminderEmails)
 }
 
 // SetReviewRequestEmails sets the ReviewRequestEmails field and marks it as non-optional;
