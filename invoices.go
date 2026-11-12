@@ -70,19 +70,20 @@ func (c *ChargeInvoicesRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	createInvoicesRequestFieldAccountID          = big.NewInt(1 << 0)
-	createInvoicesRequestFieldBillingAddress     = big.NewInt(1 << 1)
-	createInvoicesRequestFieldBuyerFeePercentage = big.NewInt(1 << 2)
-	createInvoicesRequestFieldCustomerName       = big.NewInt(1 << 3)
-	createInvoicesRequestFieldDueAt              = big.NewInt(1 << 4)
-	createInvoicesRequestFieldEmailAddress       = big.NewInt(1 << 5)
-	createInvoicesRequestFieldItems              = big.NewInt(1 << 6)
-	createInvoicesRequestFieldMailingAddressID   = big.NewInt(1 << 7)
-	createInvoicesRequestFieldMemberID           = big.NewInt(1 << 8)
-	createInvoicesRequestFieldMemo               = big.NewInt(1 << 9)
-	createInvoicesRequestFieldMetadata           = big.NewInt(1 << 10)
-	createInvoicesRequestFieldPaymentMethodID    = big.NewInt(1 << 11)
-	createInvoicesRequestFieldRecipientEmails    = big.NewInt(1 << 12)
+	createInvoicesRequestFieldAccountID                  = big.NewInt(1 << 0)
+	createInvoicesRequestFieldBillingAddress             = big.NewInt(1 << 1)
+	createInvoicesRequestFieldBuyerFeePercentage         = big.NewInt(1 << 2)
+	createInvoicesRequestFieldCustomerName               = big.NewInt(1 << 3)
+	createInvoicesRequestFieldDueAt                      = big.NewInt(1 << 4)
+	createInvoicesRequestFieldEmailAddress               = big.NewInt(1 << 5)
+	createInvoicesRequestFieldItems                      = big.NewInt(1 << 6)
+	createInvoicesRequestFieldMailingAddressID           = big.NewInt(1 << 7)
+	createInvoicesRequestFieldMemberID                   = big.NewInt(1 << 8)
+	createInvoicesRequestFieldMemo                       = big.NewInt(1 << 9)
+	createInvoicesRequestFieldMetadata                   = big.NewInt(1 << 10)
+	createInvoicesRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 11)
+	createInvoicesRequestFieldPaymentMethodID            = big.NewInt(1 << 12)
+	createInvoicesRequestFieldRecipientEmails            = big.NewInt(1 << 13)
 )
 
 type CreateInvoicesRequest struct {
@@ -108,6 +109,8 @@ type CreateInvoicesRequest struct {
 	Memo *string `json:"memo,omitempty" url:"-"`
 	// Up to 50 caller-owned string key/value pairs. The `invoice_memo` key is reserved and ignored; set `memo` instead.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
+	// The payment methods the customer can choose from when paying through the invoice's checkout link, in the shape a variant or checkout configuration takes. It takes precedence over the invoice's variants and the account, and changes neither. Send both lists. `null` uses its variants' payment methods. Can be updated on drafts.
+	PaymentMethodConfiguration *CreateInvoicesRequestPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"-"`
 	// A saved payment method belonging to the member, prefixed `payt_`. Sending or issuing the invoice charges this method at the `charge_at` passed to that call, otherwise on `due_at`, or right away when there is no `due_at` or it has passed. Sending also emails the invoice now when the charge is later; issuing does not. Setting it needs `payment:charge`.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
@@ -201,6 +204,13 @@ func (c *CreateInvoicesRequest) SetMemo(memo *string) {
 func (c *CreateInvoicesRequest) SetMetadata(metadata map[string]string) {
 	c.Metadata = metadata
 	c.require(createInvoicesRequestFieldMetadata)
+}
+
+// SetPaymentMethodConfiguration sets the PaymentMethodConfiguration field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequest) SetPaymentMethodConfiguration(paymentMethodConfiguration *CreateInvoicesRequestPaymentMethodConfiguration) {
+	c.PaymentMethodConfiguration = paymentMethodConfiguration
+	c.require(createInvoicesRequestFieldPaymentMethodConfiguration)
 }
 
 // SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
@@ -679,59 +689,61 @@ func (s *SendInvoicesRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	invoiceFieldAccountID                 = big.NewInt(1 << 0)
-	invoiceFieldAmountDue                 = big.NewInt(1 << 1)
-	invoiceFieldBillingAddress            = big.NewInt(1 << 2)
-	invoiceFieldBuyerFeeAmount            = big.NewInt(1 << 3)
-	invoiceFieldBuyerFeePercentage        = big.NewInt(1 << 4)
-	invoiceFieldCheckoutLink              = big.NewInt(1 << 5)
-	invoiceFieldCreatedAt                 = big.NewInt(1 << 6)
-	invoiceFieldCustomerName              = big.NewInt(1 << 7)
-	invoiceFieldDueAt                     = big.NewInt(1 << 8)
-	invoiceFieldEmailAddress              = big.NewInt(1 << 9)
-	invoiceFieldID                        = big.NewInt(1 << 10)
-	invoiceFieldInvoicePrefix             = big.NewInt(1 << 11)
-	invoiceFieldLineItems                 = big.NewInt(1 << 12)
-	invoiceFieldMailingAddressID          = big.NewInt(1 << 13)
-	invoiceFieldMemberID                  = big.NewInt(1 << 14)
-	invoiceFieldMembershipID              = big.NewInt(1 << 15)
-	invoiceFieldMemo                      = big.NewInt(1 << 16)
-	invoiceFieldMetadata                  = big.NewInt(1 << 17)
-	invoiceFieldNumber                    = big.NewInt(1 << 18)
-	invoiceFieldObject                    = big.NewInt(1 << 19)
-	invoiceFieldOverdue                   = big.NewInt(1 << 20)
-	invoiceFieldPaidAt                    = big.NewInt(1 << 21)
-	invoiceFieldPaymentMethodID           = big.NewInt(1 << 22)
-	invoiceFieldRecipientEmails           = big.NewInt(1 << 23)
-	invoiceFieldScheduledChargeAt         = big.NewInt(1 << 24)
-	invoiceFieldScheduledCollectionMethod = big.NewInt(1 << 25)
-	invoiceFieldScheduledSendAt           = big.NewInt(1 << 26)
-	invoiceFieldStatus                    = big.NewInt(1 << 27)
-	invoiceFieldSubtotal                  = big.NewInt(1 << 28)
-	invoiceFieldTaxAmount                 = big.NewInt(1 << 29)
-	invoiceFieldTotal                     = big.NewInt(1 << 30)
-	invoiceFieldTotalsStatus              = big.NewInt(1 << 31)
-	invoiceFieldUpdatedAt                 = big.NewInt(1 << 32)
+	invoiceFieldAccountID                  = big.NewInt(1 << 0)
+	invoiceFieldAmountDue                  = big.NewInt(1 << 1)
+	invoiceFieldBillingAddress             = big.NewInt(1 << 2)
+	invoiceFieldBuyerFeeAmount             = big.NewInt(1 << 3)
+	invoiceFieldBuyerFeePercentage         = big.NewInt(1 << 4)
+	invoiceFieldCheckoutLink               = big.NewInt(1 << 5)
+	invoiceFieldCreatedAt                  = big.NewInt(1 << 6)
+	invoiceFieldCustomerName               = big.NewInt(1 << 7)
+	invoiceFieldDueAt                      = big.NewInt(1 << 8)
+	invoiceFieldEmailAddress               = big.NewInt(1 << 9)
+	invoiceFieldID                         = big.NewInt(1 << 10)
+	invoiceFieldInvoicePrefix              = big.NewInt(1 << 11)
+	invoiceFieldLineItems                  = big.NewInt(1 << 12)
+	invoiceFieldMailingAddressID           = big.NewInt(1 << 13)
+	invoiceFieldMemberID                   = big.NewInt(1 << 14)
+	invoiceFieldMembershipID               = big.NewInt(1 << 15)
+	invoiceFieldMemo                       = big.NewInt(1 << 16)
+	invoiceFieldMetadata                   = big.NewInt(1 << 17)
+	invoiceFieldNumber                     = big.NewInt(1 << 18)
+	invoiceFieldObject                     = big.NewInt(1 << 19)
+	invoiceFieldOverdue                    = big.NewInt(1 << 20)
+	invoiceFieldPaidAt                     = big.NewInt(1 << 21)
+	invoiceFieldPaymentMethodConfiguration = big.NewInt(1 << 22)
+	invoiceFieldPaymentMethodID            = big.NewInt(1 << 23)
+	invoiceFieldRecipientEmails            = big.NewInt(1 << 24)
+	invoiceFieldScheduledChargeAt          = big.NewInt(1 << 25)
+	invoiceFieldScheduledCollectionMethod  = big.NewInt(1 << 26)
+	invoiceFieldScheduledSendAt            = big.NewInt(1 << 27)
+	invoiceFieldStatus                     = big.NewInt(1 << 28)
+	invoiceFieldSubtotal                   = big.NewInt(1 << 29)
+	invoiceFieldTaxAmount                  = big.NewInt(1 << 30)
+	invoiceFieldTotal                      = big.NewInt(1 << 31)
+	invoiceFieldTotalsStatus               = big.NewInt(1 << 32)
+	invoiceFieldUpdatedAt                  = big.NewInt(1 << 33)
 )
 
 // invoiceNullableFields maps the wire names of Invoice's nullable fields (required or optional) to their field bits.
 var invoiceNullableFields = map[string]*big.Int{
-	"billing_address":             invoiceFieldBillingAddress,
-	"checkout_link":               invoiceFieldCheckoutLink,
-	"customer_name":               invoiceFieldCustomerName,
-	"due_at":                      invoiceFieldDueAt,
-	"email_address":               invoiceFieldEmailAddress,
-	"invoice_prefix":              invoiceFieldInvoicePrefix,
-	"mailing_address_id":          invoiceFieldMailingAddressID,
-	"member_id":                   invoiceFieldMemberID,
-	"membership_id":               invoiceFieldMembershipID,
-	"memo":                        invoiceFieldMemo,
-	"paid_at":                     invoiceFieldPaidAt,
-	"payment_method_id":           invoiceFieldPaymentMethodID,
-	"scheduled_charge_at":         invoiceFieldScheduledChargeAt,
-	"scheduled_collection_method": invoiceFieldScheduledCollectionMethod,
-	"scheduled_send_at":           invoiceFieldScheduledSendAt,
-	"tax_amount":                  invoiceFieldTaxAmount,
+	"billing_address":              invoiceFieldBillingAddress,
+	"checkout_link":                invoiceFieldCheckoutLink,
+	"customer_name":                invoiceFieldCustomerName,
+	"due_at":                       invoiceFieldDueAt,
+	"email_address":                invoiceFieldEmailAddress,
+	"invoice_prefix":               invoiceFieldInvoicePrefix,
+	"mailing_address_id":           invoiceFieldMailingAddressID,
+	"member_id":                    invoiceFieldMemberID,
+	"membership_id":                invoiceFieldMembershipID,
+	"memo":                         invoiceFieldMemo,
+	"paid_at":                      invoiceFieldPaidAt,
+	"payment_method_configuration": invoiceFieldPaymentMethodConfiguration,
+	"payment_method_id":            invoiceFieldPaymentMethodID,
+	"scheduled_charge_at":          invoiceFieldScheduledChargeAt,
+	"scheduled_collection_method":  invoiceFieldScheduledCollectionMethod,
+	"scheduled_send_at":            invoiceFieldScheduledSendAt,
+	"tax_amount":                   invoiceFieldTaxAmount,
 }
 
 type Invoice struct {
@@ -754,14 +766,16 @@ type Invoice struct {
 	// The membership this invoice bills, prefixed `mem_`: the subscription a renewal invoice renews, or the one created when an invoice with a recurring item is issued. Null for one-off invoices, for a draft not yet issued, and without the member:basic:read permission.
 	MembershipID *string `json:"membership_id,omitempty" url:"membership_id,omitempty"`
 	// A note to the customer, shown on the invoice email, PDF, and checkout page with its line breaks kept. `null` when none is set.
-	Memo            *string           `json:"memo,omitempty" url:"memo,omitempty"`
-	Metadata        map[string]string `json:"metadata" url:"metadata"`
-	Number          string            `json:"number" url:"number"`
-	Object          InvoiceObject     `json:"object" url:"object"`
-	Overdue         bool              `json:"overdue" url:"overdue"`
-	PaidAt          *string           `json:"paid_at,omitempty" url:"paid_at,omitempty"`
-	PaymentMethodID *string           `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
-	RecipientEmails []string          `json:"recipient_emails" url:"recipient_emails"`
+	Memo     *string           `json:"memo,omitempty" url:"memo,omitempty"`
+	Metadata map[string]string `json:"metadata" url:"metadata"`
+	Number   string            `json:"number" url:"number"`
+	Object   InvoiceObject     `json:"object" url:"object"`
+	Overdue  bool              `json:"overdue" url:"overdue"`
+	PaidAt   *string           `json:"paid_at,omitempty" url:"paid_at,omitempty"`
+	// The payment methods the customer can choose from when paying through the invoice's checkout link. It takes precedence over the invoice's variants and the account. `null` when the invoice uses its variants' payment methods.
+	PaymentMethodConfiguration *CheckoutSessionPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
+	PaymentMethodID            *string                                    `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
+	RecipientEmails            []string                                   `json:"recipient_emails" url:"recipient_emails"`
 	// When the invoice's saved payment method will be charged, as an ISO 8601 timestamp: the `charge_at` it was sent or issued with, or `due_at` when an invoice with a `payment_method_id` is sent or issued before it is due without one. On a draft, the `charge_at` of its scheduled send. `null` otherwise, once the charge starts, and once the invoice is paid, void, or uncollectible.
 	ScheduledChargeAt *string `json:"scheduled_charge_at,omitempty" url:"scheduled_charge_at,omitempty"`
 	// The `collection_method` a draft's scheduled send applies when it fires. `null` when the draft has no scheduled send or it was scheduled without one, and once the invoice is issued.
@@ -933,6 +947,13 @@ func (i *Invoice) GetPaidAt() *string {
 		return nil
 	}
 	return i.PaidAt
+}
+
+func (i *Invoice) GetPaymentMethodConfiguration() *CheckoutSessionPaymentMethodConfiguration {
+	if i == nil {
+		return nil
+	}
+	return i.PaymentMethodConfiguration
 }
 
 func (i *Invoice) GetPaymentMethodID() *string {
@@ -1180,6 +1201,13 @@ func (i *Invoice) SetOverdue(overdue bool) {
 func (i *Invoice) SetPaidAt(paidAt *string) {
 	i.PaidAt = paidAt
 	i.require(invoiceFieldPaidAt)
+}
+
+// SetPaymentMethodConfiguration sets the PaymentMethodConfiguration field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetPaymentMethodConfiguration(paymentMethodConfiguration *CheckoutSessionPaymentMethodConfiguration) {
+	i.PaymentMethodConfiguration = paymentMethodConfiguration
+	i.require(invoiceFieldPaymentMethodConfiguration)
 }
 
 // SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
@@ -3147,6 +3175,128 @@ func NewCreateInvoicesRequestItemsItemVariantVisibilityFromString(s string) (Cre
 
 func (c CreateInvoicesRequestItemsItemVariantVisibility) Ptr() *CreateInvoicesRequestItemsItemVariantVisibility {
 	return &c
+}
+
+var (
+	createInvoicesRequestPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
+	createInvoicesRequestPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
+	createInvoicesRequestPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
+)
+
+// The payment methods the customer can choose from when paying through the invoice's checkout link, in the shape a variant or checkout configuration takes. It takes precedence over the invoice's variants and the account, and changes neither. Send both lists. `null` uses its variants' payment methods. Can be updated on drafts.
+type CreateInvoicesRequestPaymentMethodConfiguration struct {
+	// Payment method types explicitly disabled for this invoice. Use the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	Disabled []PaymentMethodTypes `json:"disabled" url:"disabled"`
+	// Payment method types explicitly enabled for this invoice. Use the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	Enabled []PaymentMethodTypes `json:"enabled" url:"enabled"`
+	// Whether Whop's default set is the starting point. When `false`, only `enabled` is offered. Defaults to `true`.
+	IncludePlatformDefaults *bool `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateInvoicesRequestPaymentMethodConfiguration) GetDisabled() []PaymentMethodTypes {
+	if c == nil {
+		return nil
+	}
+	return c.Disabled
+}
+
+func (c *CreateInvoicesRequestPaymentMethodConfiguration) GetEnabled() []PaymentMethodTypes {
+	if c == nil {
+		return nil
+	}
+	return c.Enabled
+}
+
+func (c *CreateInvoicesRequestPaymentMethodConfiguration) GetIncludePlatformDefaults() *bool {
+	if c == nil {
+		return nil
+	}
+	return c.IncludePlatformDefaults
+}
+
+func (c *CreateInvoicesRequestPaymentMethodConfiguration) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateInvoicesRequestPaymentMethodConfiguration) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetDisabled sets the Disabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestPaymentMethodConfiguration) SetDisabled(disabled []PaymentMethodTypes) {
+	c.Disabled = disabled
+	c.require(createInvoicesRequestPaymentMethodConfigurationFieldDisabled)
+}
+
+// SetEnabled sets the Enabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestPaymentMethodConfiguration) SetEnabled(enabled []PaymentMethodTypes) {
+	c.Enabled = enabled
+	c.require(createInvoicesRequestPaymentMethodConfigurationFieldEnabled)
+}
+
+// SetIncludePlatformDefaults sets the IncludePlatformDefaults field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestPaymentMethodConfiguration) SetIncludePlatformDefaults(includePlatformDefaults *bool) {
+	c.IncludePlatformDefaults = includePlatformDefaults
+	c.require(createInvoicesRequestPaymentMethodConfigurationFieldIncludePlatformDefaults)
+}
+
+func (c *CreateInvoicesRequestPaymentMethodConfiguration) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateInvoicesRequestPaymentMethodConfiguration
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateInvoicesRequestPaymentMethodConfiguration(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateInvoicesRequestPaymentMethodConfiguration) MarshalJSON() ([]byte, error) {
+	type embed CreateInvoicesRequestPaymentMethodConfiguration
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateInvoicesRequestPaymentMethodConfiguration) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 // How the subscription this invoice starts collects each renewal. `charge_automatically` charges the payment method that paid the invoice each period: the draft's `payment_method_id`, or the one the customer pays the invoice link with. `send_invoice` issues a numbered invoice each period, due on the renewal date and emailed with its payment link to the latest invoice's `recipient_emails`, so it needs at least one recipient and isn't available for invoices billed to a business. Defaults to `charge_automatically`. Only for a draft with a recurring item. A scheduled send applies it when it fires (see `scheduled_collection_method`).
@@ -6267,6 +6417,128 @@ func (u UpdateInvoicesRequestItemsItemVariantVisibility) Ptr() *UpdateInvoicesRe
 }
 
 var (
+	updateInvoicesRequestPaymentMethodConfigurationFieldDisabled                = big.NewInt(1 << 0)
+	updateInvoicesRequestPaymentMethodConfigurationFieldEnabled                 = big.NewInt(1 << 1)
+	updateInvoicesRequestPaymentMethodConfigurationFieldIncludePlatformDefaults = big.NewInt(1 << 2)
+)
+
+// The payment methods the customer can choose from when paying through the invoice's checkout link, in the shape a variant or checkout configuration takes. It takes precedence over the invoice's variants and the account, and changes neither. Send both lists. `null` uses its variants' payment methods. Can be updated on drafts.
+type UpdateInvoicesRequestPaymentMethodConfiguration struct {
+	// Payment method types explicitly disabled for this invoice. Use the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	Disabled []PaymentMethodTypes `json:"disabled" url:"disabled"`
+	// Payment method types explicitly enabled for this invoice. Use the `type` values from the payment method types catalogue. Types Whop no longer offers, and the read-only `unknown` placeholder, are dropped.
+	Enabled []PaymentMethodTypes `json:"enabled" url:"enabled"`
+	// Whether Whop's default set is the starting point. When `false`, only `enabled` is offered. Defaults to `true`.
+	IncludePlatformDefaults *bool `json:"include_platform_defaults,omitempty" url:"include_platform_defaults,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateInvoicesRequestPaymentMethodConfiguration) GetDisabled() []PaymentMethodTypes {
+	if u == nil {
+		return nil
+	}
+	return u.Disabled
+}
+
+func (u *UpdateInvoicesRequestPaymentMethodConfiguration) GetEnabled() []PaymentMethodTypes {
+	if u == nil {
+		return nil
+	}
+	return u.Enabled
+}
+
+func (u *UpdateInvoicesRequestPaymentMethodConfiguration) GetIncludePlatformDefaults() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.IncludePlatformDefaults
+}
+
+func (u *UpdateInvoicesRequestPaymentMethodConfiguration) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateInvoicesRequestPaymentMethodConfiguration) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetDisabled sets the Disabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestPaymentMethodConfiguration) SetDisabled(disabled []PaymentMethodTypes) {
+	u.Disabled = disabled
+	u.require(updateInvoicesRequestPaymentMethodConfigurationFieldDisabled)
+}
+
+// SetEnabled sets the Enabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestPaymentMethodConfiguration) SetEnabled(enabled []PaymentMethodTypes) {
+	u.Enabled = enabled
+	u.require(updateInvoicesRequestPaymentMethodConfigurationFieldEnabled)
+}
+
+// SetIncludePlatformDefaults sets the IncludePlatformDefaults field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestPaymentMethodConfiguration) SetIncludePlatformDefaults(includePlatformDefaults *bool) {
+	u.IncludePlatformDefaults = includePlatformDefaults
+	u.require(updateInvoicesRequestPaymentMethodConfigurationFieldIncludePlatformDefaults)
+}
+
+func (u *UpdateInvoicesRequestPaymentMethodConfiguration) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateInvoicesRequestPaymentMethodConfiguration
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateInvoicesRequestPaymentMethodConfiguration(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateInvoicesRequestPaymentMethodConfiguration) MarshalJSON() ([]byte, error) {
+	type embed UpdateInvoicesRequestPaymentMethodConfiguration
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateInvoicesRequestPaymentMethodConfiguration) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
 	unscheduleInvoicesRequestFieldID = big.NewInt(1 << 0)
 )
 
@@ -6295,17 +6567,18 @@ func (u *UnscheduleInvoicesRequest) SetID(id string) {
 }
 
 var (
-	updateInvoicesRequestFieldID                 = big.NewInt(1 << 0)
-	updateInvoicesRequestFieldBillingAddress     = big.NewInt(1 << 1)
-	updateInvoicesRequestFieldBuyerFeePercentage = big.NewInt(1 << 2)
-	updateInvoicesRequestFieldDueAt              = big.NewInt(1 << 3)
-	updateInvoicesRequestFieldItems              = big.NewInt(1 << 4)
-	updateInvoicesRequestFieldMailingAddressID   = big.NewInt(1 << 5)
-	updateInvoicesRequestFieldMemberID           = big.NewInt(1 << 6)
-	updateInvoicesRequestFieldMemo               = big.NewInt(1 << 7)
-	updateInvoicesRequestFieldMetadata           = big.NewInt(1 << 8)
-	updateInvoicesRequestFieldPaymentMethodID    = big.NewInt(1 << 9)
-	updateInvoicesRequestFieldRecipientEmails    = big.NewInt(1 << 10)
+	updateInvoicesRequestFieldID                         = big.NewInt(1 << 0)
+	updateInvoicesRequestFieldBillingAddress             = big.NewInt(1 << 1)
+	updateInvoicesRequestFieldBuyerFeePercentage         = big.NewInt(1 << 2)
+	updateInvoicesRequestFieldDueAt                      = big.NewInt(1 << 3)
+	updateInvoicesRequestFieldItems                      = big.NewInt(1 << 4)
+	updateInvoicesRequestFieldMailingAddressID           = big.NewInt(1 << 5)
+	updateInvoicesRequestFieldMemberID                   = big.NewInt(1 << 6)
+	updateInvoicesRequestFieldMemo                       = big.NewInt(1 << 7)
+	updateInvoicesRequestFieldMetadata                   = big.NewInt(1 << 8)
+	updateInvoicesRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 9)
+	updateInvoicesRequestFieldPaymentMethodID            = big.NewInt(1 << 10)
+	updateInvoicesRequestFieldRecipientEmails            = big.NewInt(1 << 11)
 )
 
 type UpdateInvoicesRequest struct {
@@ -6327,6 +6600,8 @@ type UpdateInvoicesRequest struct {
 	Memo *string `json:"memo,omitempty" url:"-"`
 	// Up to 50 caller-owned string key/value pairs. The `invoice_memo` key is reserved and ignored; set `memo` instead.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
+	// The payment methods the customer can choose from when paying through the invoice's checkout link, in the shape a variant or checkout configuration takes. It takes precedence over the invoice's variants and the account, and changes neither. Send both lists. `null` uses its variants' payment methods. Can be updated on drafts.
+	PaymentMethodConfiguration *UpdateInvoicesRequestPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"-"`
 	// A saved payment method belonging to the member, prefixed `payt_`. Sending or issuing the invoice charges this method at the `charge_at` passed to that call, otherwise on `due_at`, or right away when there is no `due_at` or it has passed. Sending also emails the invoice now when the charge is later; issuing does not. Setting it needs `payment:charge`.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
@@ -6406,6 +6681,13 @@ func (u *UpdateInvoicesRequest) SetMemo(memo *string) {
 func (u *UpdateInvoicesRequest) SetMetadata(metadata map[string]string) {
 	u.Metadata = metadata
 	u.require(updateInvoicesRequestFieldMetadata)
+}
+
+// SetPaymentMethodConfiguration sets the PaymentMethodConfiguration field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequest) SetPaymentMethodConfiguration(paymentMethodConfiguration *UpdateInvoicesRequestPaymentMethodConfiguration) {
+	u.PaymentMethodConfiguration = paymentMethodConfiguration
+	u.require(updateInvoicesRequestFieldPaymentMethodConfiguration)
 }
 
 // SetPaymentMethodID sets the PaymentMethodID field and marks it as non-optional;
