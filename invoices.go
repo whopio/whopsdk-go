@@ -746,12 +746,13 @@ var (
 	invoiceFieldScheduledChargeAt          = big.NewInt(1 << 26)
 	invoiceFieldScheduledCollectionMethod  = big.NewInt(1 << 27)
 	invoiceFieldScheduledSendAt            = big.NewInt(1 << 28)
-	invoiceFieldStatus                     = big.NewInt(1 << 29)
-	invoiceFieldSubtotal                   = big.NewInt(1 << 30)
-	invoiceFieldTaxAmount                  = big.NewInt(1 << 31)
-	invoiceFieldTotal                      = big.NewInt(1 << 32)
-	invoiceFieldTotalsStatus               = big.NewInt(1 << 33)
-	invoiceFieldUpdatedAt                  = big.NewInt(1 << 34)
+	invoiceFieldSendsOnDueDate             = big.NewInt(1 << 29)
+	invoiceFieldStatus                     = big.NewInt(1 << 30)
+	invoiceFieldSubtotal                   = big.NewInt(1 << 31)
+	invoiceFieldTaxAmount                  = big.NewInt(1 << 32)
+	invoiceFieldTotal                      = big.NewInt(1 << 33)
+	invoiceFieldTotalsStatus               = big.NewInt(1 << 34)
+	invoiceFieldUpdatedAt                  = big.NewInt(1 << 35)
 )
 
 // invoiceNullableFields maps the wire names of Invoice's nullable fields (required or optional) to their field bits.
@@ -812,12 +813,14 @@ type Invoice struct {
 	// The `collection_method` a draft's scheduled send applies when it fires. `null` when the draft has no scheduled send or it was scheduled without one, and once the invoice is issued.
 	ScheduledCollectionMethod *InvoiceScheduledCollectionMethod `json:"scheduled_collection_method,omitempty" url:"scheduled_collection_method,omitempty"`
 	ScheduledSendAt           *string                           `json:"scheduled_send_at,omitempty" url:"scheduled_send_at,omitempty"`
-	Status                    InvoiceStatus                     `json:"status" url:"status"`
-	Subtotal                  *Money                            `json:"subtotal" url:"subtotal"`
-	TaxAmount                 *Money                            `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
-	Total                     *Money                            `json:"total" url:"total"`
-	TotalsStatus              InvoiceTotalsStatus               `json:"totals_status" url:"totals_status"`
-	UpdatedAt                 string                            `json:"updated_at" url:"updated_at"`
+	// Whether this draft is issued automatically when its `due_at` arrives. Issuing it charges its `payment_method_id`, or emails its payment link to its `recipient_emails`. `false` for an invoice that is not a draft and for a draft with a scheduled send. `false` while sending the draft would fail for missing recipients or an unavailable payment link. `false` for a draft that had no future `due_at` when it was last saved. `false` for a draft created before 2026-11-12T22:00:00Z.
+	SendsOnDueDate bool                `json:"sends_on_due_date" url:"sends_on_due_date"`
+	Status         InvoiceStatus       `json:"status" url:"status"`
+	Subtotal       *Money              `json:"subtotal" url:"subtotal"`
+	TaxAmount      *Money              `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
+	Total          *Money              `json:"total" url:"total"`
+	TotalsStatus   InvoiceTotalsStatus `json:"totals_status" url:"totals_status"`
+	UpdatedAt      string              `json:"updated_at" url:"updated_at"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1027,6 +1030,13 @@ func (i *Invoice) GetScheduledSendAt() *string {
 		return nil
 	}
 	return i.ScheduledSendAt
+}
+
+func (i *Invoice) GetSendsOnDueDate() bool {
+	if i == nil {
+		return false
+	}
+	return i.SendsOnDueDate
 }
 
 func (i *Invoice) GetStatus() InvoiceStatus {
@@ -1288,6 +1298,13 @@ func (i *Invoice) SetScheduledCollectionMethod(scheduledCollectionMethod *Invoic
 func (i *Invoice) SetScheduledSendAt(scheduledSendAt *string) {
 	i.ScheduledSendAt = scheduledSendAt
 	i.require(invoiceFieldScheduledSendAt)
+}
+
+// SetSendsOnDueDate sets the SendsOnDueDate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetSendsOnDueDate(sendsOnDueDate bool) {
+	i.SendsOnDueDate = sendsOnDueDate
+	i.require(invoiceFieldSendsOnDueDate)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
