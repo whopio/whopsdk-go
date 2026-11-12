@@ -10,11 +10,13 @@ import (
 	core "github.com/whopio/whopsdk-go/v2/core"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	option "github.com/whopio/whopsdk-go/v2/option"
+	candles "github.com/whopio/whopsdk-go/v2/trades/candles"
 	markets "github.com/whopio/whopsdk-go/v2/trades/markets"
 )
 
 type Client struct {
 	WithRawResponse *RawClient
+	Candles         *candles.Client
 	Markets         *markets.Client
 
 	options *core.RequestOptions
@@ -28,6 +30,7 @@ func NewClient(options *core.RequestOptions) *Client {
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
+		Candles:         candles.NewClient(options),
 		Markets:         markets.NewClient(options),
 		WithRawResponse: NewRawClient(options),
 		options:         options,

@@ -8397,6 +8397,190 @@ func (c CancelationStatus) Ptr() *CancelationStatus {
 	return &c
 }
 
+var (
+	candleFieldClose     = big.NewInt(1 << 0)
+	candleFieldHigh      = big.NewInt(1 << 1)
+	candleFieldLow       = big.NewInt(1 << 2)
+	candleFieldOpen      = big.NewInt(1 << 3)
+	candleFieldStartedAt = big.NewInt(1 << 4)
+	candleFieldVolume    = big.NewInt(1 << 5)
+)
+
+// candleNullableFields maps the wire names of Candle's nullable fields (required or optional) to their field bits.
+var candleNullableFields = map[string]*big.Int{
+	"volume": candleFieldVolume,
+}
+
+type Candle struct {
+	// The last price in the candle, in USD.
+	Close *Money `json:"close" url:"close"`
+	// The highest price in the candle, in USD.
+	High *Money `json:"high" url:"high"`
+	// The lowest price in the candle, in USD.
+	Low *Money `json:"low" url:"low"`
+	// The first price in the candle, in USD.
+	Open *Money `json:"open" url:"open"`
+	// When the candle starts, as an ISO 8601 timestamp. The candle covers one `interval` from this time.
+	StartedAt string `json:"started_at" url:"started_at"`
+	// The traded volume in the candle, in USD. `null` when no volume is reported.
+	Volume *Money `json:"volume,omitempty" url:"volume,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *Candle) GetClose() *Money {
+	if c == nil {
+		return nil
+	}
+	return c.Close
+}
+
+func (c *Candle) GetHigh() *Money {
+	if c == nil {
+		return nil
+	}
+	return c.High
+}
+
+func (c *Candle) GetLow() *Money {
+	if c == nil {
+		return nil
+	}
+	return c.Low
+}
+
+func (c *Candle) GetOpen() *Money {
+	if c == nil {
+		return nil
+	}
+	return c.Open
+}
+
+func (c *Candle) GetStartedAt() string {
+	if c == nil {
+		return ""
+	}
+	return c.StartedAt
+}
+
+func (c *Candle) GetVolume() *Money {
+	if c == nil {
+		return nil
+	}
+	return c.Volume
+}
+
+func (c *Candle) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *Candle) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetClose sets the Close field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Candle) SetClose(close *Money) {
+	c.Close = close
+	c.require(candleFieldClose)
+}
+
+// SetHigh sets the High field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Candle) SetHigh(high *Money) {
+	c.High = high
+	c.require(candleFieldHigh)
+}
+
+// SetLow sets the Low field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Candle) SetLow(low *Money) {
+	c.Low = low
+	c.require(candleFieldLow)
+}
+
+// SetOpen sets the Open field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Candle) SetOpen(open *Money) {
+	c.Open = open
+	c.require(candleFieldOpen)
+}
+
+// SetStartedAt sets the StartedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Candle) SetStartedAt(startedAt string) {
+	c.StartedAt = startedAt
+	c.require(candleFieldStartedAt)
+}
+
+// SetVolume sets the Volume field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Candle) SetVolume(volume *Money) {
+	c.Volume = volume
+	c.require(candleFieldVolume)
+}
+
+func (c *Candle) UnmarshalJSON(data []byte) error {
+	type unmarshaler Candle
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = Candle(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, candleNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *Candle) MarshalJSON() ([]byte, error) {
+	type embed Candle
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *Candle) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 // The lifecycle status of a card transaction.
 type CardIssuingTransactionStatus string
 
