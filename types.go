@@ -4286,7 +4286,8 @@ var (
 	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 18)
 	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 19)
 	accountPreferencesFieldReviewRequestEmails                     = big.NewInt(1 << 20)
-	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 21)
+	accountPreferencesFieldSubaccountNotifications                 = big.NewInt(1 << 21)
+	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 22)
 )
 
 // accountPreferencesNullableFields maps the wire names of AccountPreferences's nullable fields (required or optional) to their field bits.
@@ -4300,6 +4301,7 @@ var accountPreferencesNullableFields = map[string]*big.Int{
 	"economic_intelligence_previous_period":       accountPreferencesFieldEconomicIntelligencePreviousPeriod,
 	"preferred_settlement_currency":               accountPreferencesFieldPreferredSettlementCurrency,
 	"preferred_settlement_currency_changeable_at": accountPreferencesFieldPreferredSettlementCurrencyChangeableAt,
+	"subaccount_notifications":                    accountPreferencesFieldSubaccountNotifications,
 }
 
 type AccountPreferences struct {
@@ -4343,6 +4345,8 @@ type AccountPreferences struct {
 	PreferredSettlementCurrencyChangeableAt *string `json:"preferred_settlement_currency_changeable_at,omitempty" url:"preferred_settlement_currency_changeable_at,omitempty"`
 	// Whether Whop emails customers after a purchase asking them to leave a review. `true` by default. Set it to `false` to stop these emails, including ones already scheduled. They also stop while the account's `send_customer_emails` is `false`.
 	ReviewRequestEmails bool `json:"review_request_emails" url:"review_request_emails"`
+	// Whether Whop emails and notifies the teams of this account's subaccounts. `true` by default. Set it to `false` to stop Whop's emails, push, and in-app notifications to them. These include payout, verification, dispute, and card alerts about their accounts. `null` when the account has no subaccounts.
+	SubaccountNotifications *bool `json:"subaccount_notifications,omitempty" url:"subaccount_notifications,omitempty"`
 	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
 	SubscriptionFailureBehavior AccountPreferencesSubscriptionFailureBehavior `json:"subscription_failure_behavior" url:"subscription_failure_behavior"`
 
@@ -4498,6 +4502,13 @@ func (a *AccountPreferences) GetReviewRequestEmails() bool {
 		return false
 	}
 	return a.ReviewRequestEmails
+}
+
+func (a *AccountPreferences) GetSubaccountNotifications() *bool {
+	if a == nil {
+		return nil
+	}
+	return a.SubaccountNotifications
 }
 
 func (a *AccountPreferences) GetSubscriptionFailureBehavior() AccountPreferencesSubscriptionFailureBehavior {
@@ -4668,6 +4679,13 @@ func (a *AccountPreferences) SetPreferredSettlementCurrencyChangeableAt(preferre
 func (a *AccountPreferences) SetReviewRequestEmails(reviewRequestEmails bool) {
 	a.ReviewRequestEmails = reviewRequestEmails
 	a.require(accountPreferencesFieldReviewRequestEmails)
+}
+
+// SetSubaccountNotifications sets the SubaccountNotifications field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetSubaccountNotifications(subaccountNotifications *bool) {
+	a.SubaccountNotifications = subaccountNotifications
+	a.require(accountPreferencesFieldSubaccountNotifications)
 }
 
 // SetSubscriptionFailureBehavior sets the SubscriptionFailureBehavior field and marks it as non-optional;
