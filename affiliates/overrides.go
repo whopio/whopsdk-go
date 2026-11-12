@@ -715,11 +715,11 @@ type CreateOverridesResponse struct {
 	ID string `json:"id" url:"id"`
 	// The type of override (standard or rev_share).
 	OverrideType v2.AffiliateOverrideRoles `json:"override_type" url:"override_type"`
-	// The plan ID (for standard overrides).
+	// The plan ID (for standard overrides). Null for a product-wide override, which sets the terms for plans added to the product later.
 	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// The product page direct link for referrals (standard overrides only).
 	ProductDirectLink *string `json:"product_direct_link,omitempty" url:"product_direct_link,omitempty"`
-	// The product ID (for rev-share overrides).
+	// The product ID (for rev-share overrides, and for product-wide overrides that set the terms for plans added to the product later).
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The revenue calculation basis (pre_fees or post_fees).
 	RevenueBasis *v2.AffiliateRevenueBases `json:"revenue_basis,omitempty" url:"revenue_basis,omitempty"`
@@ -1113,11 +1113,11 @@ type ListOverridesResponseDataItem struct {
 	ID string `json:"id" url:"id"`
 	// The type of override (standard or rev_share).
 	OverrideType v2.AffiliateOverrideRoles `json:"override_type" url:"override_type"`
-	// The plan ID (for standard overrides).
+	// The plan ID (for standard overrides). Null for a product-wide override, which sets the terms for plans added to the product later.
 	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// The product page direct link for referrals (standard overrides only).
 	ProductDirectLink *string `json:"product_direct_link,omitempty" url:"product_direct_link,omitempty"`
-	// The product ID (for rev-share overrides).
+	// The product ID (for rev-share overrides, and for product-wide overrides that set the terms for plans added to the product later).
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The revenue calculation basis (pre_fees or post_fees).
 	RevenueBasis *v2.AffiliateRevenueBases `json:"revenue_basis,omitempty" url:"revenue_basis,omitempty"`
@@ -1406,11 +1406,11 @@ type RetrieveOverridesResponse struct {
 	ID string `json:"id" url:"id"`
 	// The type of override (standard or rev_share).
 	OverrideType v2.AffiliateOverrideRoles `json:"override_type" url:"override_type"`
-	// The plan ID (for standard overrides).
+	// The plan ID (for standard overrides). Null for a product-wide override, which sets the terms for plans added to the product later.
 	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// The product page direct link for referrals (standard overrides only).
 	ProductDirectLink *string `json:"product_direct_link,omitempty" url:"product_direct_link,omitempty"`
-	// The product ID (for rev-share overrides).
+	// The product ID (for rev-share overrides, and for product-wide overrides that set the terms for plans added to the product later).
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The revenue calculation basis (pre_fees or post_fees).
 	RevenueBasis *v2.AffiliateRevenueBases `json:"revenue_basis,omitempty" url:"revenue_basis,omitempty"`
@@ -1699,11 +1699,11 @@ type UpdateOverridesResponse struct {
 	ID string `json:"id" url:"id"`
 	// The type of override (standard or rev_share).
 	OverrideType v2.AffiliateOverrideRoles `json:"override_type" url:"override_type"`
-	// The plan ID (for standard overrides).
+	// The plan ID (for standard overrides). Null for a product-wide override, which sets the terms for plans added to the product later.
 	PlanID *string `json:"plan_id,omitempty" url:"plan_id,omitempty"`
 	// The product page direct link for referrals (standard overrides only).
 	ProductDirectLink *string `json:"product_direct_link,omitempty" url:"product_direct_link,omitempty"`
-	// The product ID (for rev-share overrides).
+	// The product ID (for rev-share overrides, and for product-wide overrides that set the terms for plans added to the product later).
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
 	// The revenue calculation basis (pre_fees or post_fees).
 	RevenueBasis *v2.AffiliateRevenueBases `json:"revenue_basis,omitempty" url:"revenue_basis,omitempty"`
