@@ -244,6 +244,7 @@ var (
 	listAppsRequestFieldAfter                    = big.NewInt(1 << 14)
 	listAppsRequestFieldLast                     = big.NewInt(1 << 15)
 	listAppsRequestFieldBefore                   = big.NewInt(1 << 16)
+	listAppsRequestFieldIncludeTotalCount        = big.NewInt(1 << 17)
 )
 
 type ListAppsRequest struct {
@@ -281,6 +282,8 @@ type ListAppsRequest struct {
 	Last *int `json:"-" url:"last,omitempty"`
 	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
+	// Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+	IncludeTotalCount *bool `json:"-" url:"include_total_count,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -412,6 +415,13 @@ func (l *ListAppsRequest) SetLast(last *int) {
 func (l *ListAppsRequest) SetBefore(before *string) {
 	l.Before = before
 	l.require(listAppsRequestFieldBefore)
+}
+
+// SetIncludeTotalCount sets the IncludeTotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAppsRequest) SetIncludeTotalCount(includeTotalCount *bool) {
+	l.IncludeTotalCount = includeTotalCount
+	l.require(listAppsRequestFieldIncludeTotalCount)
 }
 
 var (
@@ -555,47 +565,51 @@ var (
 	appFieldAPIKey                         = big.NewInt(1 << 1)
 	appFieldAppStoreDescription            = big.NewInt(1 << 2)
 	appFieldAppType                        = big.NewInt(1 << 3)
-	appFieldBannerImage                    = big.NewInt(1 << 4)
-	appFieldBaseURL                        = big.NewInt(1 << 5)
-	appFieldBusinessesCreatedCount         = big.NewInt(1 << 6)
-	appFieldBusinessesCreatedLogoURLs      = big.NewInt(1 << 7)
-	appFieldBusinessesWithRecentSalesCount = big.NewInt(1 << 8)
-	appFieldCategory                       = big.NewInt(1 << 9)
-	appFieldCreator                        = big.NewInt(1 << 10)
-	appFieldDashboardPath                  = big.NewInt(1 << 11)
-	appFieldDefaultAPIKey                  = big.NewInt(1 << 12)
-	appFieldDeployment                     = big.NewInt(1 << 13)
-	appFieldDescription                    = big.NewInt(1 << 14)
-	appFieldDiscoverPath                   = big.NewInt(1 << 15)
-	appFieldDomainID                       = big.NewInt(1 << 16)
-	appFieldDomains                        = big.NewInt(1 << 17)
-	appFieldElementsUsed                   = big.NewInt(1 << 18)
-	appFieldExperiencePath                 = big.NewInt(1 << 19)
-	appFieldHostedURL                      = big.NewInt(1 << 20)
-	appFieldIcon                           = big.NewInt(1 << 21)
-	appFieldID                             = big.NewInt(1 << 22)
-	appFieldImportedFromURL                = big.NewInt(1 << 23)
-	appFieldMarketplaceStatus              = big.NewInt(1 << 24)
-	appFieldName                           = big.NewInt(1 << 25)
-	appFieldOauthClientType                = big.NewInt(1 << 26)
-	appFieldOpenapiPath                    = big.NewInt(1 << 27)
-	appFieldOrigin                         = big.NewInt(1 << 28)
-	appFieldPerInstallSchedule             = big.NewInt(1 << 29)
-	appFieldPreviewToken                   = big.NewInt(1 << 30)
-	appFieldProductCategory                = big.NewInt(1 << 31)
-	appFieldProductID                      = big.NewInt(1 << 32)
-	appFieldProductionAndroidBuild         = big.NewInt(1 << 33)
-	appFieldProductionIosBuild             = big.NewInt(1 << 34)
-	appFieldProductionWebBuild             = big.NewInt(1 << 35)
-	appFieldRedirectURIs                   = big.NewInt(1 << 36)
-	appFieldRequestedPermissions           = big.NewInt(1 << 37)
-	appFieldRequiredScopes                 = big.NewInt(1 << 38)
-	appFieldRoute                          = big.NewInt(1 << 39)
-	appFieldSchedule                       = big.NewInt(1 << 40)
-	appFieldSecrets                        = big.NewInt(1 << 41)
-	appFieldSkillsPath                     = big.NewInt(1 << 42)
-	appFieldStatus                         = big.NewInt(1 << 43)
-	appFieldVerified                       = big.NewInt(1 << 44)
+	appFieldAverageReviewRating            = big.NewInt(1 << 4)
+	appFieldBannerImage                    = big.NewInt(1 << 5)
+	appFieldBaseURL                        = big.NewInt(1 << 6)
+	appFieldBusinessesCreatedCount         = big.NewInt(1 << 7)
+	appFieldBusinessesCreatedLogoURLs      = big.NewInt(1 << 8)
+	appFieldBusinessesWithRecentSalesCount = big.NewInt(1 << 9)
+	appFieldCategory                       = big.NewInt(1 << 10)
+	appFieldCreator                        = big.NewInt(1 << 11)
+	appFieldDashboardPath                  = big.NewInt(1 << 12)
+	appFieldDefaultAPIKey                  = big.NewInt(1 << 13)
+	appFieldDeployment                     = big.NewInt(1 << 14)
+	appFieldDescription                    = big.NewInt(1 << 15)
+	appFieldDiscoverPath                   = big.NewInt(1 << 16)
+	appFieldDomainID                       = big.NewInt(1 << 17)
+	appFieldDomains                        = big.NewInt(1 << 18)
+	appFieldElementsUsed                   = big.NewInt(1 << 19)
+	appFieldExperiencePath                 = big.NewInt(1 << 20)
+	appFieldHostedURL                      = big.NewInt(1 << 21)
+	appFieldIcon                           = big.NewInt(1 << 22)
+	appFieldID                             = big.NewInt(1 << 23)
+	appFieldImportedFromURL                = big.NewInt(1 << 24)
+	appFieldIsAppStoreListed               = big.NewInt(1 << 25)
+	appFieldIsWhopApp                      = big.NewInt(1 << 26)
+	appFieldMarketplaceStatus              = big.NewInt(1 << 27)
+	appFieldName                           = big.NewInt(1 << 28)
+	appFieldOauthClientType                = big.NewInt(1 << 29)
+	appFieldOpenapiPath                    = big.NewInt(1 << 30)
+	appFieldOrigin                         = big.NewInt(1 << 31)
+	appFieldPerInstallSchedule             = big.NewInt(1 << 32)
+	appFieldPreviewToken                   = big.NewInt(1 << 33)
+	appFieldProductCategory                = big.NewInt(1 << 34)
+	appFieldProductID                      = big.NewInt(1 << 35)
+	appFieldProductionAndroidBuild         = big.NewInt(1 << 36)
+	appFieldProductionIosBuild             = big.NewInt(1 << 37)
+	appFieldProductionWebBuild             = big.NewInt(1 << 38)
+	appFieldPublishedReviewsCount          = big.NewInt(1 << 39)
+	appFieldRedirectURIs                   = big.NewInt(1 << 40)
+	appFieldRequestedPermissions           = big.NewInt(1 << 41)
+	appFieldRequiredScopes                 = big.NewInt(1 << 42)
+	appFieldRoute                          = big.NewInt(1 << 43)
+	appFieldSchedule                       = big.NewInt(1 << 44)
+	appFieldSecrets                        = big.NewInt(1 << 45)
+	appFieldSkillsPath                     = big.NewInt(1 << 46)
+	appFieldStatus                         = big.NewInt(1 << 47)
+	appFieldVerified                       = big.NewInt(1 << 48)
 )
 
 // appNullableFields maps the wire names of App's nullable fields (required or optional) to their field bits.
@@ -638,6 +652,8 @@ type App struct {
 	AppStoreDescription *string `json:"app_store_description,omitempty" url:"app_store_description,omitempty"`
 	// The type of end-user the app is built for.
 	AppType AppAppType `json:"app_type" url:"app_type"`
+	// Average star rating across published reviews for this app, from `1.0` to `5.0`. Returns `0.0` when no published-review rating is available.
+	AverageReviewRating float64 `json:"average_review_rating" url:"average_review_rating"`
 	// Banner image from the app's product listing, or `null` when none is uploaded.
 	BannerImage *AppBannerImage `json:"banner_image,omitempty" url:"banner_image,omitempty"`
 	// The production base URL where the app is hosted. `null` if no base URL is configured, if the caller lacks the `developer:basic:read` permission on the app's account, or on list responses, which never expose it.
@@ -676,6 +692,10 @@ type App struct {
 	ID string `json:"id" url:"id"`
 	// The address of the existing website this app was imported from, such as `https://shop.example.com`. `null` if the app was not imported from another site, or if the caller lacks the `developer:basic:read` permission on the app's account.
 	ImportedFromURL *string `json:"imported_from_url,omitempty" url:"imported_from_url,omitempty"`
+	// Whether the app is published, approved, and visible in the public app store.
+	IsAppStoreListed bool `json:"is_app_store_listed" url:"is_app_store_listed"`
+	// Whether Whop publishes this app.
+	IsWhopApp bool `json:"is_whop_app" url:"is_whop_app"`
 	// Approval status of the app's product listing on the Whop app store, or `null` when the app has no associated product.
 	MarketplaceStatus *AppMarketplaceStatus `json:"marketplace_status,omitempty" url:"marketplace_status,omitempty"`
 	// Display name shown on the app store and in experience navigation.
@@ -699,10 +719,12 @@ type App struct {
 	// The approved build currently served on iOS, or `null` when none is deployed.
 	ProductionIosBuild *AppProductionBuild `json:"production_ios_build,omitempty" url:"production_ios_build,omitempty"`
 	// The approved build currently served on web, or `null` when none is deployed.
-	ProductionWebBuild   *AppProductionBuild       `json:"production_web_build,omitempty" url:"production_web_build,omitempty"`
-	RedirectURIs         []string                  `json:"redirect_uris" url:"redirect_uris"`
-	RequestedPermissions []*AppRequestedPermission `json:"requested_permissions" url:"requested_permissions"`
-	RequiredScopes       []AppRequiredScopesItem   `json:"required_scopes" url:"required_scopes"`
+	ProductionWebBuild *AppProductionBuild `json:"production_web_build,omitempty" url:"production_web_build,omitempty"`
+	// Published customer reviews for this app.
+	PublishedReviewsCount int                       `json:"published_reviews_count" url:"published_reviews_count"`
+	RedirectURIs          []string                  `json:"redirect_uris" url:"redirect_uris"`
+	RequestedPermissions  []*AppRequestedPermission `json:"requested_permissions" url:"requested_permissions"`
+	RequiredScopes        []AppRequiredScopesItem   `json:"required_scopes" url:"required_scopes"`
 	// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.site), or `null` if no route is claimed.
 	// DEPRECATED: Read `domains` instead.
 	Route *string `json:"route,omitempty" url:"route,omitempty"`
@@ -750,6 +772,13 @@ func (a *App) GetAppType() AppAppType {
 		return ""
 	}
 	return a.AppType
+}
+
+func (a *App) GetAverageReviewRating() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.AverageReviewRating
 }
 
 func (a *App) GetBannerImage() *AppBannerImage {
@@ -892,6 +921,20 @@ func (a *App) GetImportedFromURL() *string {
 	return a.ImportedFromURL
 }
 
+func (a *App) GetIsAppStoreListed() bool {
+	if a == nil {
+		return false
+	}
+	return a.IsAppStoreListed
+}
+
+func (a *App) GetIsWhopApp() bool {
+	if a == nil {
+		return false
+	}
+	return a.IsWhopApp
+}
+
 func (a *App) GetMarketplaceStatus() *AppMarketplaceStatus {
 	if a == nil {
 		return nil
@@ -974,6 +1017,13 @@ func (a *App) GetProductionWebBuild() *AppProductionBuild {
 		return nil
 	}
 	return a.ProductionWebBuild
+}
+
+func (a *App) GetPublishedReviewsCount() int {
+	if a == nil {
+		return 0
+	}
+	return a.PublishedReviewsCount
 }
 
 func (a *App) GetRedirectURIs() []string {
@@ -1081,6 +1131,13 @@ func (a *App) SetAppStoreDescription(appStoreDescription *string) {
 func (a *App) SetAppType(appType AppAppType) {
 	a.AppType = appType
 	a.require(appFieldAppType)
+}
+
+// SetAverageReviewRating sets the AverageReviewRating field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetAverageReviewRating(averageReviewRating float64) {
+	a.AverageReviewRating = averageReviewRating
+	a.require(appFieldAverageReviewRating)
 }
 
 // SetBannerImage sets the BannerImage field and marks it as non-optional;
@@ -1223,6 +1280,20 @@ func (a *App) SetImportedFromURL(importedFromURL *string) {
 	a.require(appFieldImportedFromURL)
 }
 
+// SetIsAppStoreListed sets the IsAppStoreListed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetIsAppStoreListed(isAppStoreListed bool) {
+	a.IsAppStoreListed = isAppStoreListed
+	a.require(appFieldIsAppStoreListed)
+}
+
+// SetIsWhopApp sets the IsWhopApp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetIsWhopApp(isWhopApp bool) {
+	a.IsWhopApp = isWhopApp
+	a.require(appFieldIsWhopApp)
+}
+
 // SetMarketplaceStatus sets the MarketplaceStatus field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *App) SetMarketplaceStatus(marketplaceStatus *AppMarketplaceStatus) {
@@ -1305,6 +1376,13 @@ func (a *App) SetProductionIosBuild(productionIosBuild *AppProductionBuild) {
 func (a *App) SetProductionWebBuild(productionWebBuild *AppProductionBuild) {
 	a.ProductionWebBuild = productionWebBuild
 	a.require(appFieldProductionWebBuild)
+}
+
+// SetPublishedReviewsCount sets the PublishedReviewsCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *App) SetPublishedReviewsCount(publishedReviewsCount int) {
+	a.PublishedReviewsCount = publishedReviewsCount
+	a.require(appFieldPublishedReviewsCount)
 }
 
 // SetRedirectURIs sets the RedirectURIs field and marks it as non-optional;
@@ -2588,30 +2666,33 @@ func (a AppElementsUsedItem) Ptr() *AppElementsUsedItem {
 var (
 	appListItemFieldAccount                        = big.NewInt(1 << 0)
 	appListItemFieldAppType                        = big.NewInt(1 << 1)
-	appListItemFieldBannerImage                    = big.NewInt(1 << 2)
-	appListItemFieldBaseURL                        = big.NewInt(1 << 3)
-	appListItemFieldBusinessesCreatedCount         = big.NewInt(1 << 4)
-	appListItemFieldBusinessesCreatedLogoURLs      = big.NewInt(1 << 5)
-	appListItemFieldBusinessesWithRecentSalesCount = big.NewInt(1 << 6)
-	appListItemFieldCategory                       = big.NewInt(1 << 7)
-	appListItemFieldCreator                        = big.NewInt(1 << 8)
-	appListItemFieldDashboardPath                  = big.NewInt(1 << 9)
-	appListItemFieldDescription                    = big.NewInt(1 << 10)
-	appListItemFieldDiscoverPath                   = big.NewInt(1 << 11)
-	appListItemFieldDomainID                       = big.NewInt(1 << 12)
-	appListItemFieldDomains                        = big.NewInt(1 << 13)
-	appListItemFieldExperiencePath                 = big.NewInt(1 << 14)
-	appListItemFieldHostedURL                      = big.NewInt(1 << 15)
-	appListItemFieldIcon                           = big.NewInt(1 << 16)
-	appListItemFieldID                             = big.NewInt(1 << 17)
-	appListItemFieldName                           = big.NewInt(1 << 18)
-	appListItemFieldOpenapiPath                    = big.NewInt(1 << 19)
-	appListItemFieldOrigin                         = big.NewInt(1 << 20)
-	appListItemFieldProductCategory                = big.NewInt(1 << 21)
-	appListItemFieldRoute                          = big.NewInt(1 << 22)
-	appListItemFieldSkillsPath                     = big.NewInt(1 << 23)
-	appListItemFieldStatus                         = big.NewInt(1 << 24)
-	appListItemFieldVerified                       = big.NewInt(1 << 25)
+	appListItemFieldAverageReviewRating            = big.NewInt(1 << 2)
+	appListItemFieldBannerImage                    = big.NewInt(1 << 3)
+	appListItemFieldBaseURL                        = big.NewInt(1 << 4)
+	appListItemFieldBusinessesCreatedCount         = big.NewInt(1 << 5)
+	appListItemFieldBusinessesCreatedLogoURLs      = big.NewInt(1 << 6)
+	appListItemFieldBusinessesWithRecentSalesCount = big.NewInt(1 << 7)
+	appListItemFieldCategory                       = big.NewInt(1 << 8)
+	appListItemFieldCreator                        = big.NewInt(1 << 9)
+	appListItemFieldDashboardPath                  = big.NewInt(1 << 10)
+	appListItemFieldDescription                    = big.NewInt(1 << 11)
+	appListItemFieldDiscoverPath                   = big.NewInt(1 << 12)
+	appListItemFieldDomainID                       = big.NewInt(1 << 13)
+	appListItemFieldDomains                        = big.NewInt(1 << 14)
+	appListItemFieldExperiencePath                 = big.NewInt(1 << 15)
+	appListItemFieldHostedURL                      = big.NewInt(1 << 16)
+	appListItemFieldIcon                           = big.NewInt(1 << 17)
+	appListItemFieldID                             = big.NewInt(1 << 18)
+	appListItemFieldIsWhopApp                      = big.NewInt(1 << 19)
+	appListItemFieldName                           = big.NewInt(1 << 20)
+	appListItemFieldOpenapiPath                    = big.NewInt(1 << 21)
+	appListItemFieldOrigin                         = big.NewInt(1 << 22)
+	appListItemFieldProductCategory                = big.NewInt(1 << 23)
+	appListItemFieldPublishedReviewsCount          = big.NewInt(1 << 24)
+	appListItemFieldRoute                          = big.NewInt(1 << 25)
+	appListItemFieldSkillsPath                     = big.NewInt(1 << 26)
+	appListItemFieldStatus                         = big.NewInt(1 << 27)
+	appListItemFieldVerified                       = big.NewInt(1 << 28)
 )
 
 // appListItemNullableFields maps the wire names of AppListItem's nullable fields (required or optional) to their field bits.
@@ -2636,6 +2717,8 @@ type AppListItem struct {
 	Account *AccountParent `json:"account" url:"account"`
 	// The type of end-user the app is built for.
 	AppType AppListItemAppType `json:"app_type" url:"app_type"`
+	// Average star rating across published reviews for this app, from `1.0` to `5.0`. Returns `0.0` when no published-review rating is available.
+	AverageReviewRating float64 `json:"average_review_rating" url:"average_review_rating"`
 	// Banner image from the app's product listing, or `null` when none is uploaded.
 	BannerImage *AppBannerImage `json:"banner_image,omitempty" url:"banner_image,omitempty"`
 	// The production base URL where the app is hosted. `null` if no base URL is configured, if the caller lacks the `developer:basic:read` permission on the app's account, or on list responses, which never expose it.
@@ -2667,6 +2750,8 @@ type AppListItem struct {
 	Icon *AppIcon `json:"icon" url:"icon"`
 	// App ID, prefixed `app_`.
 	ID string `json:"id" url:"id"`
+	// Whether Whop publishes this app.
+	IsWhopApp bool `json:"is_whop_app" url:"is_whop_app"`
 	// Display name shown on the app store and in experience navigation.
 	Name string `json:"name" url:"name"`
 	// URL path to the app's OpenAPI spec file, or `null` when not configured.
@@ -2675,6 +2760,8 @@ type AppListItem struct {
 	Origin *string `json:"origin,omitempty" url:"origin,omitempty"`
 	// Product category a business built from this app as a template sells, such as `pressure_washing`, or `null` when none has been set.
 	ProductCategory *string `json:"product_category,omitempty" url:"product_category,omitempty"`
+	// Published customer reviews for this app.
+	PublishedReviewsCount int `json:"published_reviews_count" url:"published_reviews_count"`
 	// Claimed subdomain route where hosted web builds are served (`myapp` for myapp.whop.site), or `null` if no route is claimed.
 	// DEPRECATED: Read `domains` instead.
 	Route *string `json:"route,omitempty" url:"route,omitempty"`
@@ -2704,6 +2791,13 @@ func (a *AppListItem) GetAppType() AppListItemAppType {
 		return ""
 	}
 	return a.AppType
+}
+
+func (a *AppListItem) GetAverageReviewRating() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.AverageReviewRating
 }
 
 func (a *AppListItem) GetBannerImage() *AppBannerImage {
@@ -2818,6 +2912,13 @@ func (a *AppListItem) GetID() string {
 	return a.ID
 }
 
+func (a *AppListItem) GetIsWhopApp() bool {
+	if a == nil {
+		return false
+	}
+	return a.IsWhopApp
+}
+
 func (a *AppListItem) GetName() string {
 	if a == nil {
 		return ""
@@ -2844,6 +2945,13 @@ func (a *AppListItem) GetProductCategory() *string {
 		return nil
 	}
 	return a.ProductCategory
+}
+
+func (a *AppListItem) GetPublishedReviewsCount() int {
+	if a == nil {
+		return 0
+	}
+	return a.PublishedReviewsCount
 }
 
 func (a *AppListItem) GetRoute() *string {
@@ -2902,6 +3010,13 @@ func (a *AppListItem) SetAccount(account *AccountParent) {
 func (a *AppListItem) SetAppType(appType AppListItemAppType) {
 	a.AppType = appType
 	a.require(appListItemFieldAppType)
+}
+
+// SetAverageReviewRating sets the AverageReviewRating field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppListItem) SetAverageReviewRating(averageReviewRating float64) {
+	a.AverageReviewRating = averageReviewRating
+	a.require(appListItemFieldAverageReviewRating)
 }
 
 // SetBannerImage sets the BannerImage field and marks it as non-optional;
@@ -3016,6 +3131,13 @@ func (a *AppListItem) SetID(id string) {
 	a.require(appListItemFieldID)
 }
 
+// SetIsWhopApp sets the IsWhopApp field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppListItem) SetIsWhopApp(isWhopApp bool) {
+	a.IsWhopApp = isWhopApp
+	a.require(appListItemFieldIsWhopApp)
+}
+
 // SetName sets the Name field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AppListItem) SetName(name string) {
@@ -3042,6 +3164,13 @@ func (a *AppListItem) SetOrigin(origin *string) {
 func (a *AppListItem) SetProductCategory(productCategory *string) {
 	a.ProductCategory = productCategory
 	a.require(appListItemFieldProductCategory)
+}
+
+// SetPublishedReviewsCount sets the PublishedReviewsCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppListItem) SetPublishedReviewsCount(publishedReviewsCount int) {
+	a.PublishedReviewsCount = publishedReviewsCount
+	a.require(appListItemFieldPublishedReviewsCount)
 }
 
 // SetRoute sets the Route field and marks it as non-optional;
@@ -4177,16 +4306,19 @@ func (l *ListAppsResponse) String() string {
 }
 
 var (
-	listAppsResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
-	listAppsResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
-	listAppsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
-	listAppsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+	listAppsResponsePageInfoFieldEndCursor        = big.NewInt(1 << 0)
+	listAppsResponsePageInfoFieldHasNextPage      = big.NewInt(1 << 1)
+	listAppsResponsePageInfoFieldHasPreviousPage  = big.NewInt(1 << 2)
+	listAppsResponsePageInfoFieldStartCursor      = big.NewInt(1 << 3)
+	listAppsResponsePageInfoFieldTotalCount       = big.NewInt(1 << 4)
+	listAppsResponsePageInfoFieldTotalCountCapped = big.NewInt(1 << 5)
 )
 
 // listAppsResponsePageInfoNullableFields maps the wire names of ListAppsResponsePageInfo's nullable fields (required or optional) to their field bits.
 var listAppsResponsePageInfoNullableFields = map[string]*big.Int{
 	"end_cursor":   listAppsResponsePageInfoFieldEndCursor,
 	"start_cursor": listAppsResponsePageInfoFieldStartCursor,
+	"total_count":  listAppsResponsePageInfoFieldTotalCount,
 }
 
 type ListAppsResponsePageInfo struct {
@@ -4194,6 +4326,10 @@ type ListAppsResponsePageInfo struct {
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
 	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
 	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+	// Number of results matching the filters, across every page. Counting stops at 10,000. `null` when `include_total_count` isn't `true`, or when the count ran out of time.
+	TotalCount *int `json:"total_count,omitempty" url:"total_count,omitempty"`
+	// Whether counting stopped at the limit. `true` means `total_count` is 10,000 or more.
+	TotalCountCapped bool `json:"total_count_capped" url:"total_count_capped"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4228,6 +4364,20 @@ func (l *ListAppsResponsePageInfo) GetStartCursor() *string {
 		return nil
 	}
 	return l.StartCursor
+}
+
+func (l *ListAppsResponsePageInfo) GetTotalCount() *int {
+	if l == nil {
+		return nil
+	}
+	return l.TotalCount
+}
+
+func (l *ListAppsResponsePageInfo) GetTotalCountCapped() bool {
+	if l == nil {
+		return false
+	}
+	return l.TotalCountCapped
 }
 
 func (l *ListAppsResponsePageInfo) GetExtraProperties() map[string]interface{} {
@@ -4272,6 +4422,20 @@ func (l *ListAppsResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
 func (l *ListAppsResponsePageInfo) SetStartCursor(startCursor *string) {
 	l.StartCursor = startCursor
 	l.require(listAppsResponsePageInfoFieldStartCursor)
+}
+
+// SetTotalCount sets the TotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAppsResponsePageInfo) SetTotalCount(totalCount *int) {
+	l.TotalCount = totalCount
+	l.require(listAppsResponsePageInfoFieldTotalCount)
+}
+
+// SetTotalCountCapped sets the TotalCountCapped field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAppsResponsePageInfo) SetTotalCountCapped(totalCountCapped bool) {
+	l.TotalCountCapped = totalCountCapped
+	l.require(listAppsResponsePageInfoFieldTotalCountCapped)
 }
 
 func (l *ListAppsResponsePageInfo) UnmarshalJSON(data []byte) error {
