@@ -509,7 +509,7 @@ client.Accounts.Me(
 <dl>
 <dd>
 
-**includeTrading:** `*bool` — Also return the trading account under `trading`: its address and its Hyperliquid WebSocket subscriptions. Requires crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet; null otherwise.
+**includeTrading:** `*bool` — Also return the trading account under `trading`: its address, a snapshot of its margin and open positions, and its Hyperliquid WebSocket subscriptions. Requires crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet. Otherwise `trading` is `null`.
     
 </dd>
 </dl>
@@ -685,7 +685,7 @@ client.Accounts.Retrieve(
 <dl>
 <dd>
 
-**includeTrading:** `*bool` — Also return the trading account under `trading`: its address and its Hyperliquid WebSocket subscriptions. Requires crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet; null otherwise.
+**includeTrading:** `*bool` — Also return the trading account under `trading`: its address, a snapshot of its margin and open positions, and its Hyperliquid WebSocket subscriptions. Requires crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet. Otherwise `trading` is `null`.
     
 </dd>
 </dl>
@@ -43920,7 +43920,7 @@ client.Users.Me(
 <dl>
 <dd>
 
-**includeTrading:** `*bool` — Also return the trading account under `trading`: its address and its Hyperliquid WebSocket subscriptions. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet.
+**includeTrading:** `*bool` — Also return the trading account under `trading`: its address, a snapshot of its margin and open positions, and its Hyperliquid WebSocket subscriptions. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet.
     
 </dd>
 </dl>
@@ -44150,7 +44150,7 @@ client.Users.Retrieve(
 <dl>
 <dd>
 
-**includeTrading:** `*bool` — Also return the trading account under `trading`: its address and its Hyperliquid WebSocket subscriptions. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet.
+**includeTrading:** `*bool` — Also return the trading account under `trading`: its address, a snapshot of its margin and open positions, and its Hyperliquid WebSocket subscriptions. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet.
     
 </dd>
 </dl>

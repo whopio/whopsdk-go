@@ -74898,20 +74898,27 @@ func (t *TradingCumulativeFunding) String() string {
 var (
 	tradingHyperliquidAccountFieldAddress                = big.NewInt(1 << 0)
 	tradingHyperliquidAccountFieldDepositable            = big.NewInt(1 << 1)
-	tradingHyperliquidAccountFieldWebsocketSubscriptions = big.NewInt(1 << 2)
-	tradingHyperliquidAccountFieldWebsocketURL           = big.NewInt(1 << 3)
+	tradingHyperliquidAccountFieldMarginSummary          = big.NewInt(1 << 2)
+	tradingHyperliquidAccountFieldPositions              = big.NewInt(1 << 3)
+	tradingHyperliquidAccountFieldWebsocketSubscriptions = big.NewInt(1 << 4)
+	tradingHyperliquidAccountFieldWebsocketURL           = big.NewInt(1 << 5)
 )
 
 // tradingHyperliquidAccountNullableFields maps the wire names of TradingHyperliquidAccount's nullable fields (required or optional) to their field bits.
 var tradingHyperliquidAccountNullableFields = map[string]*big.Int{
-	"depositable": tradingHyperliquidAccountFieldDepositable,
+	"depositable":    tradingHyperliquidAccountFieldDepositable,
+	"margin_summary": tradingHyperliquidAccountFieldMarginSummary,
+	"positions":      tradingHyperliquidAccountFieldPositions,
 }
 
 type TradingHyperliquidAccount struct {
 	// Lowercase wallet address that holds the Hyperliquid account.
 	Address string `json:"address" url:"address"`
 	// USDT0 in the Whop wallet on Plasma that a `deposit` trade can move into this account, as a decimal string. `null` when the chain could not be read.
-	Depositable            *string                         `json:"depositable,omitempty" url:"depositable,omitempty"`
+	Depositable *string `json:"depositable,omitempty" url:"depositable,omitempty"`
+	// Account value and margin across the main exchange and the `xyz` markets, read from Hyperliquid at most once a second. `null` when Hyperliquid could not be read. Use `websocket_subscriptions` for live updates.
+	MarginSummary          *TradingMarginSummary           `json:"margin_summary,omitempty" url:"margin_summary,omitempty"`
+	Positions              []*TradingPosition              `json:"positions,omitempty" url:"positions,omitempty"`
 	WebsocketSubscriptions []*TradingWebsocketSubscription `json:"websocket_subscriptions" url:"websocket_subscriptions"`
 	// Hyperliquid WebSocket URL to connect to directly for live updates.
 	WebsocketURL string `json:"websocket_url" url:"websocket_url"`
@@ -74935,6 +74942,20 @@ func (t *TradingHyperliquidAccount) GetDepositable() *string {
 		return nil
 	}
 	return t.Depositable
+}
+
+func (t *TradingHyperliquidAccount) GetMarginSummary() *TradingMarginSummary {
+	if t == nil {
+		return nil
+	}
+	return t.MarginSummary
+}
+
+func (t *TradingHyperliquidAccount) GetPositions() []*TradingPosition {
+	if t == nil {
+		return nil
+	}
+	return t.Positions
 }
 
 func (t *TradingHyperliquidAccount) GetWebsocketSubscriptions() []*TradingWebsocketSubscription {
@@ -74979,6 +75000,20 @@ func (t *TradingHyperliquidAccount) SetAddress(address string) {
 func (t *TradingHyperliquidAccount) SetDepositable(depositable *string) {
 	t.Depositable = depositable
 	t.require(tradingHyperliquidAccountFieldDepositable)
+}
+
+// SetMarginSummary sets the MarginSummary field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingHyperliquidAccount) SetMarginSummary(marginSummary *TradingMarginSummary) {
+	t.MarginSummary = marginSummary
+	t.require(tradingHyperliquidAccountFieldMarginSummary)
+}
+
+// SetPositions sets the Positions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingHyperliquidAccount) SetPositions(positions []*TradingPosition) {
+	t.Positions = positions
+	t.require(tradingHyperliquidAccountFieldPositions)
 }
 
 // SetWebsocketSubscriptions sets the WebsocketSubscriptions field and marks it as non-optional;
@@ -75332,8 +75367,7 @@ var (
 	tradingMarginSummaryFieldAccountValue          = big.NewInt(1 << 0)
 	tradingMarginSummaryFieldTotalMarginUsed       = big.NewInt(1 << 1)
 	tradingMarginSummaryFieldTotalPositionNotional = big.NewInt(1 << 2)
-	tradingMarginSummaryFieldTotalRawUsd           = big.NewInt(1 << 3)
-	tradingMarginSummaryFieldWithdrawable          = big.NewInt(1 << 4)
+	tradingMarginSummaryFieldWithdrawable          = big.NewInt(1 << 3)
 )
 
 type TradingMarginSummary struct {
@@ -75343,8 +75377,6 @@ type TradingMarginSummary struct {
 	TotalMarginUsed *Money `json:"total_margin_used" url:"total_margin_used"`
 	// Combined notional value of open positions, in USD.
 	TotalPositionNotional *Money `json:"total_position_notional" url:"total_position_notional"`
-	// Raw USD balance as Hyperliquid reports it, excluding position value.
-	TotalRawUsd *Money `json:"total_raw_usd" url:"total_raw_usd"`
 	// USD that can be withdrawn now without closing positions.
 	Withdrawable *Money `json:"withdrawable" url:"withdrawable"`
 
@@ -75374,13 +75406,6 @@ func (t *TradingMarginSummary) GetTotalPositionNotional() *Money {
 		return nil
 	}
 	return t.TotalPositionNotional
-}
-
-func (t *TradingMarginSummary) GetTotalRawUsd() *Money {
-	if t == nil {
-		return nil
-	}
-	return t.TotalRawUsd
 }
 
 func (t *TradingMarginSummary) GetWithdrawable() *Money {
@@ -75425,13 +75450,6 @@ func (t *TradingMarginSummary) SetTotalMarginUsed(totalMarginUsed *Money) {
 func (t *TradingMarginSummary) SetTotalPositionNotional(totalPositionNotional *Money) {
 	t.TotalPositionNotional = totalPositionNotional
 	t.require(tradingMarginSummaryFieldTotalPositionNotional)
-}
-
-// SetTotalRawUsd sets the TotalRawUsd field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TradingMarginSummary) SetTotalRawUsd(totalRawUsd *Money) {
-	t.TotalRawUsd = totalRawUsd
-	t.require(tradingMarginSummaryFieldTotalRawUsd)
 }
 
 // SetWithdrawable sets the Withdrawable field and marks it as non-optional;
@@ -76188,7 +76206,7 @@ var (
 )
 
 type TradingPositionLeverage struct {
-	// `cross` shares margin across positions; `isolated` limits margin to this position.
+	// `cross` shares margin across positions. `isolated` limits margin to this position.
 	Type TradingPositionLeverageType `json:"type" url:"type"`
 	// Multiplier applied to the position's margin, such as `10` for 10x.
 	Value int `json:"value" url:"value"`
@@ -76286,7 +76304,7 @@ func (t *TradingPositionLeverage) String() string {
 	return fmt.Sprintf("%#v", t)
 }
 
-// `cross` shares margin across positions; `isolated` limits margin to this position.
+// `cross` shares margin across positions. `isolated` limits margin to this position.
 type TradingPositionLeverageType string
 
 const (
