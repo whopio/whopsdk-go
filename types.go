@@ -74524,13 +74524,15 @@ var (
 	tradingAccountFieldID          = big.NewInt(1 << 2)
 	tradingAccountFieldObject      = big.NewInt(1 << 3)
 	tradingAccountFieldProvider    = big.NewInt(1 << 4)
-	tradingAccountFieldUserID      = big.NewInt(1 << 5)
+	tradingAccountFieldSpot        = big.NewInt(1 << 5)
+	tradingAccountFieldUserID      = big.NewInt(1 << 6)
 )
 
 // tradingAccountNullableFields maps the wire names of TradingAccount's nullable fields (required or optional) to their field bits.
 var tradingAccountNullableFields = map[string]*big.Int{
 	"account_id":  tradingAccountFieldAccountID,
 	"hyperliquid": tradingAccountFieldHyperliquid,
+	"spot":        tradingAccountFieldSpot,
 	"user_id":     tradingAccountFieldUserID,
 }
 
@@ -74544,6 +74546,8 @@ type TradingAccount struct {
 	Object TradingAccountObject `json:"object" url:"object"`
 	// Trading venue that holds the positions and orders.
 	Provider TradingAccountProvider `json:"provider" url:"provider"`
+	// Spot holdings in the Whop wallet with their entry price and profit and loss. `null` when it could not be read.
+	Spot *TradingSpotAccount `json:"spot,omitempty" url:"spot,omitempty"`
 	// The user who owns this trading account, prefixed `user_`. `null` when an account owns it.
 	UserID *string `json:"user_id,omitempty" url:"user_id,omitempty"`
 
@@ -74587,6 +74591,13 @@ func (t *TradingAccount) GetProvider() TradingAccountProvider {
 		return ""
 	}
 	return t.Provider
+}
+
+func (t *TradingAccount) GetSpot() *TradingSpotAccount {
+	if t == nil {
+		return nil
+	}
+	return t.Spot
 }
 
 func (t *TradingAccount) GetUserID() *string {
@@ -74645,6 +74656,13 @@ func (t *TradingAccount) SetObject(object TradingAccountObject) {
 func (t *TradingAccount) SetProvider(provider TradingAccountProvider) {
 	t.Provider = provider
 	t.require(tradingAccountFieldProvider)
+}
+
+// SetSpot sets the Spot field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingAccount) SetSpot(spot *TradingSpotAccount) {
+	t.Spot = spot
+	t.require(tradingAccountFieldSpot)
 }
 
 // SetUserID sets the UserID field and marks it as non-optional;
@@ -76330,6 +76348,277 @@ func NewTradingPositionSideFromString(s string) (TradingPositionSide, error) {
 
 func (t TradingPositionSide) Ptr() *TradingPositionSide {
 	return &t
+}
+
+var (
+	tradingSpotAccountFieldHoldings = big.NewInt(1 << 0)
+)
+
+type TradingSpotAccount struct {
+	Holdings []*TradingSpotHolding `json:"holdings" url:"holdings"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TradingSpotAccount) GetHoldings() []*TradingSpotHolding {
+	if t == nil {
+		return nil
+	}
+	return t.Holdings
+}
+
+func (t *TradingSpotAccount) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TradingSpotAccount) require(field *big.Int) {
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
+	}
+	next.Or(next, field)
+	t.explicitFields = next
+}
+
+// SetHoldings sets the Holdings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingSpotAccount) SetHoldings(holdings []*TradingSpotHolding) {
+	t.Holdings = holdings
+	t.require(tradingSpotAccountFieldHoldings)
+}
+
+func (t *TradingSpotAccount) UnmarshalJSON(data []byte) error {
+	type unmarshaler TradingSpotAccount
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TradingSpotAccount(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TradingSpotAccount) MarshalJSON() ([]byte, error) {
+	type embed TradingSpotAccount
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TradingSpotAccount) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
+}
+
+var (
+	tradingSpotHoldingFieldAverageEntryPrice       = big.NewInt(1 << 0)
+	tradingSpotHoldingFieldCostBasis               = big.NewInt(1 << 1)
+	tradingSpotHoldingFieldMarket                  = big.NewInt(1 << 2)
+	tradingSpotHoldingFieldRealizedPnl             = big.NewInt(1 << 3)
+	tradingSpotHoldingFieldUnrealizedPnl           = big.NewInt(1 << 4)
+	tradingSpotHoldingFieldUnrealizedPnlPercentage = big.NewInt(1 << 5)
+)
+
+// tradingSpotHoldingNullableFields maps the wire names of TradingSpotHolding's nullable fields (required or optional) to their field bits.
+var tradingSpotHoldingNullableFields = map[string]*big.Int{
+	"average_entry_price":       tradingSpotHoldingFieldAverageEntryPrice,
+	"unrealized_pnl_percentage": tradingSpotHoldingFieldUnrealizedPnlPercentage,
+}
+
+type TradingSpotHolding struct {
+	// The average price paid per unit of what is still held, in USD, counting the oldest units as sold first. `null` when it is not known.
+	AverageEntryPrice *Money `json:"average_entry_price,omitempty" url:"average_entry_price,omitempty"`
+	// What was paid in USD for the units still held.
+	CostBasis *Money `json:"cost_basis" url:"cost_basis"`
+	// The spot market's `id` from `GET /trades/markets`, such as `BTC`, `XAUT`, or a tokenized stock's ticker such as `AAPL`.
+	Market string `json:"market" url:"market"`
+	// Gains and losses already locked in by selling, in USD.
+	RealizedPnl *Money `json:"realized_pnl" url:"realized_pnl"`
+	// The value of the units still held minus their `cost_basis`, in USD.
+	UnrealizedPnl *Money `json:"unrealized_pnl" url:"unrealized_pnl"`
+	// `unrealized_pnl` as a percentage of `cost_basis`, where `2` means up 2%. `null` when it is not known.
+	UnrealizedPnlPercentage *float64 `json:"unrealized_pnl_percentage,omitempty" url:"unrealized_pnl_percentage,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (t *TradingSpotHolding) GetAverageEntryPrice() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.AverageEntryPrice
+}
+
+func (t *TradingSpotHolding) GetCostBasis() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.CostBasis
+}
+
+func (t *TradingSpotHolding) GetMarket() string {
+	if t == nil {
+		return ""
+	}
+	return t.Market
+}
+
+func (t *TradingSpotHolding) GetRealizedPnl() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.RealizedPnl
+}
+
+func (t *TradingSpotHolding) GetUnrealizedPnl() *Money {
+	if t == nil {
+		return nil
+	}
+	return t.UnrealizedPnl
+}
+
+func (t *TradingSpotHolding) GetUnrealizedPnlPercentage() *float64 {
+	if t == nil {
+		return nil
+	}
+	return t.UnrealizedPnlPercentage
+}
+
+func (t *TradingSpotHolding) GetExtraProperties() map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return t.extraProperties
+}
+
+func (t *TradingSpotHolding) require(field *big.Int) {
+	next := new(big.Int)
+	if t.explicitFields != nil {
+		next.Set(t.explicitFields)
+	}
+	next.Or(next, field)
+	t.explicitFields = next
+}
+
+// SetAverageEntryPrice sets the AverageEntryPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingSpotHolding) SetAverageEntryPrice(averageEntryPrice *Money) {
+	t.AverageEntryPrice = averageEntryPrice
+	t.require(tradingSpotHoldingFieldAverageEntryPrice)
+}
+
+// SetCostBasis sets the CostBasis field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingSpotHolding) SetCostBasis(costBasis *Money) {
+	t.CostBasis = costBasis
+	t.require(tradingSpotHoldingFieldCostBasis)
+}
+
+// SetMarket sets the Market field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingSpotHolding) SetMarket(market string) {
+	t.Market = market
+	t.require(tradingSpotHoldingFieldMarket)
+}
+
+// SetRealizedPnl sets the RealizedPnl field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingSpotHolding) SetRealizedPnl(realizedPnl *Money) {
+	t.RealizedPnl = realizedPnl
+	t.require(tradingSpotHoldingFieldRealizedPnl)
+}
+
+// SetUnrealizedPnl sets the UnrealizedPnl field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingSpotHolding) SetUnrealizedPnl(unrealizedPnl *Money) {
+	t.UnrealizedPnl = unrealizedPnl
+	t.require(tradingSpotHoldingFieldUnrealizedPnl)
+}
+
+// SetUnrealizedPnlPercentage sets the UnrealizedPnlPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TradingSpotHolding) SetUnrealizedPnlPercentage(unrealizedPnlPercentage *float64) {
+	t.UnrealizedPnlPercentage = unrealizedPnlPercentage
+	t.require(tradingSpotHoldingFieldUnrealizedPnlPercentage)
+}
+
+func (t *TradingSpotHolding) UnmarshalJSON(data []byte) error {
+	type unmarshaler TradingSpotHolding
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*t = TradingSpotHolding(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *t)
+	if err != nil {
+		return err
+	}
+	t.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, tradingSpotHoldingNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		t.require(presentFields)
+	}
+	t.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (t *TradingSpotHolding) MarshalJSON() ([]byte, error) {
+	type embed TradingSpotHolding
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*t),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, t.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (t *TradingSpotHolding) String() string {
+	if t == nil {
+		return "<nil>"
+	}
+	if len(t.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(t.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(t); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", t)
 }
 
 var (
