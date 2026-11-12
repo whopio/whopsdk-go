@@ -63,7 +63,7 @@ import (
 	forums "github.com/whopio/whopsdk-go/v2/forums"
 	identityprofiles "github.com/whopio/whopsdk-go/v2/identityprofiles"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
-	invoices "github.com/whopio/whopsdk-go/v2/invoices"
+	invoicesclient "github.com/whopio/whopsdk-go/v2/invoices/client"
 	leads "github.com/whopio/whopsdk-go/v2/leads"
 	ledgeraccounts "github.com/whopio/whopsdk-go/v2/ledgeraccounts"
 	livestreams "github.com/whopio/whopsdk-go/v2/livestreams"
@@ -170,7 +170,7 @@ type Whop struct {
 	ForumPosts               *forumposts.Client
 	Forums                   *forums.Client
 	IdentityProfiles         *identityprofiles.Client
-	Invoices                 *invoices.Client
+	Invoices                 *invoicesclient.Client
 	Leads                    *leads.Client
 	LedgerAccounts           *ledgeraccounts.Client
 	Livestreams              *livestreams.Client
@@ -286,7 +286,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		ForumPosts:               forumposts.NewClient(options),
 		Forums:                   forums.NewClient(options),
 		IdentityProfiles:         identityprofiles.NewClient(options),
-		Invoices:                 invoices.NewClient(options),
+		Invoices:                 invoicesclient.NewClient(options),
 		Leads:                    leads.NewClient(options),
 		LedgerAccounts:           ledgeraccounts.NewClient(options),
 		Livestreams:              livestreams.NewClient(options),

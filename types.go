@@ -25424,6 +25424,204 @@ func (i *InvoiceLegacyUser) String() string {
 	return fmt.Sprintf("%#v", i)
 }
 
+var (
+	invoiceSendFieldActor          = big.NewInt(1 << 0)
+	invoiceSendFieldKind           = big.NewInt(1 << 1)
+	invoiceSendFieldRecipientCount = big.NewInt(1 << 2)
+	invoiceSendFieldRecipients     = big.NewInt(1 << 3)
+	invoiceSendFieldSentAt         = big.NewInt(1 << 4)
+)
+
+// invoiceSendNullableFields maps the wire names of InvoiceSend's nullable fields (required or optional) to their field bits.
+var invoiceSendNullableFields = map[string]*big.Int{
+	"actor": invoiceSendFieldActor,
+}
+
+type InvoiceSend struct {
+	// The user who requested the send, when you have `company:authorized_user:read`. `null` for automatic sends, account API keys, apps, or when the caller cannot read team members. Whop employee identities are shown as Whop Team to external viewers.
+	Actor *UserSummary `json:"actor,omitempty" url:"actor,omitempty"`
+	// How batches are classified: manual batches use `send` when no earlier completed email history exists and `resend` otherwise. Classification happens when history is recorded. Earlier unrecorded emails are unknown. Automatic sends use `scheduled_send` for a scheduled send and `reminder` for a reminder after the due date. They use `payment_follow_up` for the payment link after a charge to the saved payment method failed or needed the customer to act.
+	Kind InvoiceSendKind `json:"kind" url:"kind"`
+	// How many addresses were submitted for delivery, each separately.
+	RecipientCount int      `json:"recipient_count" url:"recipient_count"`
+	Recipients     []string `json:"recipients" url:"recipients"`
+	// When the worker finished submitting this batch for delivery, as an ISO 8601 timestamp. Partial batches are not recorded until a retry completes them. This does not confirm delivery to an inbox.
+	SentAt string `json:"sent_at" url:"sent_at"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *InvoiceSend) GetActor() *UserSummary {
+	if i == nil {
+		return nil
+	}
+	return i.Actor
+}
+
+func (i *InvoiceSend) GetKind() InvoiceSendKind {
+	if i == nil {
+		return ""
+	}
+	return i.Kind
+}
+
+func (i *InvoiceSend) GetRecipientCount() int {
+	if i == nil {
+		return 0
+	}
+	return i.RecipientCount
+}
+
+func (i *InvoiceSend) GetRecipients() []string {
+	if i == nil {
+		return nil
+	}
+	return i.Recipients
+}
+
+func (i *InvoiceSend) GetSentAt() string {
+	if i == nil {
+		return ""
+	}
+	return i.SentAt
+}
+
+func (i *InvoiceSend) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *InvoiceSend) require(field *big.Int) {
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
+	}
+	next.Or(next, field)
+	i.explicitFields = next
+}
+
+// SetActor sets the Actor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceSend) SetActor(actor *UserSummary) {
+	i.Actor = actor
+	i.require(invoiceSendFieldActor)
+}
+
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceSend) SetKind(kind InvoiceSendKind) {
+	i.Kind = kind
+	i.require(invoiceSendFieldKind)
+}
+
+// SetRecipientCount sets the RecipientCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceSend) SetRecipientCount(recipientCount int) {
+	i.RecipientCount = recipientCount
+	i.require(invoiceSendFieldRecipientCount)
+}
+
+// SetRecipients sets the Recipients field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceSend) SetRecipients(recipients []string) {
+	i.Recipients = recipients
+	i.require(invoiceSendFieldRecipients)
+}
+
+// SetSentAt sets the SentAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceSend) SetSentAt(sentAt string) {
+	i.SentAt = sentAt
+	i.require(invoiceSendFieldSentAt)
+}
+
+func (i *InvoiceSend) UnmarshalJSON(data []byte) error {
+	type unmarshaler InvoiceSend
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = InvoiceSend(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, invoiceSendNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		i.require(presentFields)
+	}
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *InvoiceSend) MarshalJSON() ([]byte, error) {
+	type embed InvoiceSend
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *InvoiceSend) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+// How batches are classified: manual batches use `send` when no earlier completed email history exists and `resend` otherwise. Classification happens when history is recorded. Earlier unrecorded emails are unknown. Automatic sends use `scheduled_send` for a scheduled send and `reminder` for a reminder after the due date. They use `payment_follow_up` for the payment link after a charge to the saved payment method failed or needed the customer to act.
+type InvoiceSendKind string
+
+const (
+	InvoiceSendKindSend            InvoiceSendKind = "send"
+	InvoiceSendKindResend          InvoiceSendKind = "resend"
+	InvoiceSendKindScheduledSend   InvoiceSendKind = "scheduled_send"
+	InvoiceSendKindReminder        InvoiceSendKind = "reminder"
+	InvoiceSendKindPaymentFollowUp InvoiceSendKind = "payment_follow_up"
+)
+
+func NewInvoiceSendKindFromString(s string) (InvoiceSendKind, error) {
+	switch s {
+	case "send":
+		return InvoiceSendKindSend, nil
+	case "resend":
+		return InvoiceSendKindResend, nil
+	case "scheduled_send":
+		return InvoiceSendKindScheduledSend, nil
+	case "reminder":
+		return InvoiceSendKindReminder, nil
+	case "payment_follow_up":
+		return InvoiceSendKindPaymentFollowUp, nil
+	}
+	var t InvoiceSendKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (i InvoiceSendKind) Ptr() *InvoiceSendKind {
+	return &i
+}
+
 // The different statuses an invoice can be in
 type InvoiceStatuses string
 
@@ -64390,7 +64588,7 @@ var receiptLineItemNullableFields = map[string]*big.Int{
 type ReceiptLineItem struct {
 	// Line item ID, prefixed `li_`. Null when the payment predates item snapshots and the item is read from the payment's variant.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
-	// The item's name as shown at checkout — the product title, else the variant title.
+	// The item's name as shown at checkout (the product title, else the variant title).
 	Label *string `json:"label,omitempty" url:"label,omitempty"`
 	// The product the variant belongs to, prefixed `prod_`. On a payment that predates item snapshots this falls back to the variant's product, so it can be set where the parent's own `product_id` is null. Null for a variant with no product.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
