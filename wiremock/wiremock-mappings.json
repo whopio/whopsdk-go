@@ -18089,6 +18089,42 @@
       "postServeActions": []
     },
     {
+      "id": "98446c7c-5fe0-4851-be3c-cdb5c7316f66",
+      "name": "List Invoice Sends - default",
+      "request": {
+        "urlPathTemplate": "/invoices/{id}/sends",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"actor\": {\n        \"id\": \"user_xxxxxxxxxxxxxx\",\n        \"name\": \"Dana Whitfield\",\n        \"profile_picture\": {\n          \"url\": \"https://ui-avatars.com/api/\"\n        },\n        \"username\": \"danawhitfield\"\n      },\n      \"kind\": \"send\",\n      \"recipient_count\": 2,\n      \"recipients\": [\n        \"marcus@shinetime.example\"\n      ],\n      \"sent_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "98446c7c-5fe0-4851-be3c-cdb5c7316f66",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "b7b2864f-082c-4279-accf-4387a09f7240",
       "name": "List Member Logs - default",
       "request": {
@@ -19281,6 +19317,6 @@
     }
   ],
   "meta": {
-    "total": 539
+    "total": 540
   }
 }

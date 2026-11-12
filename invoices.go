@@ -1341,7 +1341,7 @@ type InvoiceLineItem struct {
 	DiscountAmount *Money `json:"discount_amount,omitempty" url:"discount_amount,omitempty"`
 	// Line item ID, prefixed `li_`. Null when the payment predates item snapshots and the item is read from the payment's variant.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
-	// The item's name as shown at checkout — the product title, else the variant title.
+	// The item's name as shown at checkout (the product title, else the variant title).
 	Label *string `json:"label,omitempty" url:"label,omitempty"`
 	// The product the variant belongs to, prefixed `prod_`. Null for a variant with no product.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
