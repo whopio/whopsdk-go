@@ -177,6 +177,33 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
+// Deletes a draft or void invoice. A deleted invoice no longer appears in invoice or payment lists, and its ID returns a `404`. Deleting can't be undone. Void an open invoice before you delete it. A draft with a scheduled send or charge must be unscheduled first. A draft renewal invoice can't be deleted, and neither can a void invoice that collected money or still awaits a bank wire. The invoice's `deletable` field is `true` when this call can delete it.
+//
+// Example:
+//
+//	request := &whopsdk.DeleteInvoicesRequest{
+//	    ID: "id",
+//	}
+//	client.Invoices.Delete(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Delete(
+	ctx context.Context,
+	request *whopsdk.DeleteInvoicesRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.DeleteInvoicesResponse, error) {
+	response, err := c.WithRawResponse.Delete(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Updates draft invoice items and billing fields. Updates of only `recipient_emails` and `memo` are also allowed on unpaid invoices. The customer is set when the draft is created and can't change. To bill someone else, first void the draft. Then create a new invoice. Edit customer contact details through the member API. A draft with no saved payment method and no scheduled send needs `invoice:update`, `invoice:create`, or `payment:charge`; every other update, and setting `payment_method_id`, needs `payment:charge`.
 //
 // Example:

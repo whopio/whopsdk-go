@@ -257,6 +257,34 @@ func (c *CreateInvoicesRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	deleteInvoicesRequestFieldID = big.NewInt(1 << 0)
+)
+
+type DeleteInvoicesRequest struct {
+	// The invoice's pay_ ID.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (d *DeleteInvoicesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
+	}
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteInvoicesRequest) SetID(id string) {
+	d.ID = id
+	d.require(deleteInvoicesRequestFieldID)
+}
+
+var (
 	generatePdfInvoicesRequestFieldID                  = big.NewInt(1 << 0)
 	generatePdfInvoicesRequestFieldIncludeDescriptions = big.NewInt(1 << 1)
 )
@@ -697,32 +725,33 @@ var (
 	invoiceFieldCheckoutLink               = big.NewInt(1 << 5)
 	invoiceFieldCreatedAt                  = big.NewInt(1 << 6)
 	invoiceFieldCustomerName               = big.NewInt(1 << 7)
-	invoiceFieldDueAt                      = big.NewInt(1 << 8)
-	invoiceFieldEmailAddress               = big.NewInt(1 << 9)
-	invoiceFieldID                         = big.NewInt(1 << 10)
-	invoiceFieldInvoicePrefix              = big.NewInt(1 << 11)
-	invoiceFieldLineItems                  = big.NewInt(1 << 12)
-	invoiceFieldMailingAddressID           = big.NewInt(1 << 13)
-	invoiceFieldMemberID                   = big.NewInt(1 << 14)
-	invoiceFieldMembershipID               = big.NewInt(1 << 15)
-	invoiceFieldMemo                       = big.NewInt(1 << 16)
-	invoiceFieldMetadata                   = big.NewInt(1 << 17)
-	invoiceFieldNumber                     = big.NewInt(1 << 18)
-	invoiceFieldObject                     = big.NewInt(1 << 19)
-	invoiceFieldOverdue                    = big.NewInt(1 << 20)
-	invoiceFieldPaidAt                     = big.NewInt(1 << 21)
-	invoiceFieldPaymentMethodConfiguration = big.NewInt(1 << 22)
-	invoiceFieldPaymentMethodID            = big.NewInt(1 << 23)
-	invoiceFieldRecipientEmails            = big.NewInt(1 << 24)
-	invoiceFieldScheduledChargeAt          = big.NewInt(1 << 25)
-	invoiceFieldScheduledCollectionMethod  = big.NewInt(1 << 26)
-	invoiceFieldScheduledSendAt            = big.NewInt(1 << 27)
-	invoiceFieldStatus                     = big.NewInt(1 << 28)
-	invoiceFieldSubtotal                   = big.NewInt(1 << 29)
-	invoiceFieldTaxAmount                  = big.NewInt(1 << 30)
-	invoiceFieldTotal                      = big.NewInt(1 << 31)
-	invoiceFieldTotalsStatus               = big.NewInt(1 << 32)
-	invoiceFieldUpdatedAt                  = big.NewInt(1 << 33)
+	invoiceFieldDeletable                  = big.NewInt(1 << 8)
+	invoiceFieldDueAt                      = big.NewInt(1 << 9)
+	invoiceFieldEmailAddress               = big.NewInt(1 << 10)
+	invoiceFieldID                         = big.NewInt(1 << 11)
+	invoiceFieldInvoicePrefix              = big.NewInt(1 << 12)
+	invoiceFieldLineItems                  = big.NewInt(1 << 13)
+	invoiceFieldMailingAddressID           = big.NewInt(1 << 14)
+	invoiceFieldMemberID                   = big.NewInt(1 << 15)
+	invoiceFieldMembershipID               = big.NewInt(1 << 16)
+	invoiceFieldMemo                       = big.NewInt(1 << 17)
+	invoiceFieldMetadata                   = big.NewInt(1 << 18)
+	invoiceFieldNumber                     = big.NewInt(1 << 19)
+	invoiceFieldObject                     = big.NewInt(1 << 20)
+	invoiceFieldOverdue                    = big.NewInt(1 << 21)
+	invoiceFieldPaidAt                     = big.NewInt(1 << 22)
+	invoiceFieldPaymentMethodConfiguration = big.NewInt(1 << 23)
+	invoiceFieldPaymentMethodID            = big.NewInt(1 << 24)
+	invoiceFieldRecipientEmails            = big.NewInt(1 << 25)
+	invoiceFieldScheduledChargeAt          = big.NewInt(1 << 26)
+	invoiceFieldScheduledCollectionMethod  = big.NewInt(1 << 27)
+	invoiceFieldScheduledSendAt            = big.NewInt(1 << 28)
+	invoiceFieldStatus                     = big.NewInt(1 << 29)
+	invoiceFieldSubtotal                   = big.NewInt(1 << 30)
+	invoiceFieldTaxAmount                  = big.NewInt(1 << 31)
+	invoiceFieldTotal                      = big.NewInt(1 << 32)
+	invoiceFieldTotalsStatus               = big.NewInt(1 << 33)
+	invoiceFieldUpdatedAt                  = big.NewInt(1 << 34)
 )
 
 // invoiceNullableFields maps the wire names of Invoice's nullable fields (required or optional) to their field bits.
@@ -753,9 +782,11 @@ type Invoice struct {
 	BuyerFeeAmount     *Money          `json:"buyer_fee_amount" url:"buyer_fee_amount"`
 	BuyerFeePercentage float64         `json:"buyer_fee_percentage" url:"buyer_fee_percentage"`
 	// A signed link that opens this invoice in a checkout session so the buyer can pay it: pass it as `link` to `POST /checkout_sessions`. Present while the invoice is open; null in any other status, for an invoice billed to a business buyer or whose membership was canceled, and unless you have `payment:charge`, or `invoice:create` or `invoice:update` on an invoice with no `payment_method_id`.
-	CheckoutLink     *string            `json:"checkout_link,omitempty" url:"checkout_link,omitempty"`
-	CreatedAt        string             `json:"created_at" url:"created_at"`
-	CustomerName     *string            `json:"customer_name,omitempty" url:"customer_name,omitempty"`
+	CheckoutLink *string `json:"checkout_link,omitempty" url:"checkout_link,omitempty"`
+	CreatedAt    string  `json:"created_at" url:"created_at"`
+	CustomerName *string `json:"customer_name,omitempty" url:"customer_name,omitempty"`
+	// True when `DELETE /invoices/{id}` can delete this invoice. A draft qualifies unless it is scheduled or bills a subscription. A void invoice qualifies unless it collected money or still awaits a bank wire.
+	Deletable        bool               `json:"deletable" url:"deletable"`
 	DueAt            *string            `json:"due_at,omitempty" url:"due_at,omitempty"`
 	EmailAddress     *string            `json:"email_address,omitempty" url:"email_address,omitempty"`
 	ID               string             `json:"id" url:"id"`
@@ -849,6 +880,13 @@ func (i *Invoice) GetCustomerName() *string {
 		return nil
 	}
 	return i.CustomerName
+}
+
+func (i *Invoice) GetDeletable() bool {
+	if i == nil {
+		return false
+	}
+	return i.Deletable
 }
 
 func (i *Invoice) GetDueAt() *string {
@@ -1103,6 +1141,13 @@ func (i *Invoice) SetCreatedAt(createdAt string) {
 func (i *Invoice) SetCustomerName(customerName *string) {
 	i.CustomerName = customerName
 	i.require(invoiceFieldCustomerName)
+}
+
+// SetDeletable sets the Deletable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetDeletable(deletable bool) {
+	i.Deletable = deletable
+	i.require(invoiceFieldDeletable)
 }
 
 // SetDueAt sets the DueAt field and marks it as non-optional;
@@ -3297,6 +3342,110 @@ func (c *CreateInvoicesRequestPaymentMethodConfiguration) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	deleteInvoicesResponseFieldDeleted = big.NewInt(1 << 0)
+	deleteInvoicesResponseFieldID      = big.NewInt(1 << 1)
+)
+
+type DeleteInvoicesResponse struct {
+	// Always `true`.
+	Deleted bool `json:"deleted" url:"deleted"`
+	// The ID of the deleted invoice, prefixed `pay_`.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DeleteInvoicesResponse) GetDeleted() bool {
+	if d == nil {
+		return false
+	}
+	return d.Deleted
+}
+
+func (d *DeleteInvoicesResponse) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DeleteInvoicesResponse) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DeleteInvoicesResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
+	}
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetDeleted sets the Deleted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteInvoicesResponse) SetDeleted(deleted bool) {
+	d.Deleted = deleted
+	d.require(deleteInvoicesResponseFieldDeleted)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteInvoicesResponse) SetID(id string) {
+	d.ID = id
+	d.require(deleteInvoicesResponseFieldID)
+}
+
+func (d *DeleteInvoicesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler DeleteInvoicesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DeleteInvoicesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DeleteInvoicesResponse) MarshalJSON() ([]byte, error) {
+	type embed DeleteInvoicesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DeleteInvoicesResponse) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
 }
 
 // How the subscription this invoice starts collects each renewal. `charge_automatically` charges the payment method that paid the invoice each period: the draft's `payment_method_id`, or the one the customer pays the invoice link with. `send_invoice` issues a numbered invoice each period, due on the renewal date and emailed with its payment link to the latest invoice's `recipient_emails`, so it needs at least one recipient and isn't available for invoices billed to a business. Defaults to `charge_automatically`. Only for a draft with a recurring item. A scheduled send applies it when it fires (see `scheduled_collection_method`).
