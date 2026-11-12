@@ -9036,6 +9036,14 @@ func TestSettersAccountPreferences(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSubaccountTeamViewOnly", func(t *testing.T) {
+		obj := &AccountPreferences{}
+		var fernTestValueSubaccountTeamViewOnly *bool
+		obj.SetSubaccountTeamViewOnly(fernTestValueSubaccountTeamViewOnly)
+		assert.Equal(t, fernTestValueSubaccountTeamViewOnly, obj.SubaccountTeamViewOnly)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSubscriptionFailureBehavior", func(t *testing.T) {
 		obj := &AccountPreferences{}
 		var fernTestValueSubscriptionFailureBehavior AccountPreferencesSubscriptionFailureBehavior
@@ -9691,6 +9699,39 @@ func TestGettersAccountPreferences(t *testing.T) {
 			}
 		}()
 		_ = obj.GetSubaccountNotifications() // Should return zero value
+	})
+
+	t.Run("GetSubaccountTeamViewOnly", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPreferences{}
+		var expected *bool
+		obj.SubaccountTeamViewOnly = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSubaccountTeamViewOnly(), "getter should return the property value")
+	})
+
+	t.Run("GetSubaccountTeamViewOnly_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPreferences{}
+		obj.SubaccountTeamViewOnly = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSubaccountTeamViewOnly(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSubaccountTeamViewOnly_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountPreferences
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSubaccountTeamViewOnly() // Should return zero value
 	})
 
 	t.Run("GetSubscriptionFailureBehavior", func(t *testing.T) {
@@ -10378,6 +10419,37 @@ func TestSettersMarkExplicitAccountPreferences(t *testing.T) {
 
 		// Act
 		obj.SetSubaccountNotifications(fernTestValueSubaccountNotifications)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubaccountTeamViewOnly_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPreferences{}
+		var fernTestValueSubaccountTeamViewOnly *bool
+
+		// Act
+		obj.SetSubaccountTeamViewOnly(fernTestValueSubaccountTeamViewOnly)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -170170,6 +170242,7 @@ func TestRequiredNullableRoundTripAccountPreferences(t *testing.T) {
 		"preferred_settlement_currency",
 		"preferred_settlement_currency_changeable_at",
 		"subaccount_notifications",
+		"subaccount_team_view_only",
 	}
 	marshalToMap := func(t *testing.T, obj *AccountPreferences) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -170182,7 +170255,7 @@ func TestRequiredNullableRoundTripAccountPreferences(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj AccountPreferences
-		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"covers_subaccount_negative_balances":null,"customer_tracking":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_first_renewal_at":null,"economic_intelligence_previous_period":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null,"subaccount_notifications":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"covers_subaccount_negative_balances":null,"customer_tracking":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_first_renewal_at":null,"economic_intelligence_previous_period":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null,"subaccount_notifications":null,"subaccount_team_view_only":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

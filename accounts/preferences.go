@@ -61,7 +61,8 @@ var (
 	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 19)
 	retrievePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 20)
 	retrievePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 21)
-	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 22)
+	retrievePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 22)
+	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 23)
 )
 
 // retrievePreferencesResponseNullableFields maps the wire names of RetrievePreferencesResponse's nullable fields (required or optional) to their field bits.
@@ -76,6 +77,7 @@ var retrievePreferencesResponseNullableFields = map[string]*big.Int{
 	"preferred_settlement_currency":               retrievePreferencesResponseFieldPreferredSettlementCurrency,
 	"preferred_settlement_currency_changeable_at": retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt,
 	"subaccount_notifications":                    retrievePreferencesResponseFieldSubaccountNotifications,
+	"subaccount_team_view_only":                   retrievePreferencesResponseFieldSubaccountTeamViewOnly,
 }
 
 type RetrievePreferencesResponse struct {
@@ -123,6 +125,8 @@ type RetrievePreferencesResponse struct {
 	ReviewRequestEmails bool `json:"review_request_emails" url:"review_request_emails"`
 	// Whether Whop emails and notifies the teams of this account's subaccounts. `true` by default. Set it to `false` to stop Whop's emails, push, and in-app notifications to them. These include payout, verification, dispute, and card alerts about their accounts. `null` when the account has no subaccounts.
 	SubaccountNotifications *bool `json:"subaccount_notifications,omitempty" url:"subaccount_notifications,omitempty"`
+	// Whether this account's subaccounts are view-only for their own team members. When `true`, a subaccount's team can still see everything their role allows but every change is refused with a view-only error. `false` by default. `null` when the account has no subaccounts.
+	SubaccountTeamViewOnly *bool `json:"subaccount_team_view_only,omitempty" url:"subaccount_team_view_only,omitempty"`
 	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
 	SubscriptionFailureBehavior RetrievePreferencesResponseSubscriptionFailureBehavior `json:"subscription_failure_behavior" url:"subscription_failure_behavior"`
 
@@ -285,6 +289,13 @@ func (r *RetrievePreferencesResponse) GetSubaccountNotifications() *bool {
 		return nil
 	}
 	return r.SubaccountNotifications
+}
+
+func (r *RetrievePreferencesResponse) GetSubaccountTeamViewOnly() *bool {
+	if r == nil {
+		return nil
+	}
+	return r.SubaccountTeamViewOnly
 }
 
 func (r *RetrievePreferencesResponse) GetSubscriptionFailureBehavior() RetrievePreferencesResponseSubscriptionFailureBehavior {
@@ -462,6 +473,13 @@ func (r *RetrievePreferencesResponse) SetReviewRequestEmails(reviewRequestEmails
 func (r *RetrievePreferencesResponse) SetSubaccountNotifications(subaccountNotifications *bool) {
 	r.SubaccountNotifications = subaccountNotifications
 	r.require(retrievePreferencesResponseFieldSubaccountNotifications)
+}
+
+// SetSubaccountTeamViewOnly sets the SubaccountTeamViewOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetSubaccountTeamViewOnly(subaccountTeamViewOnly *bool) {
+	r.SubaccountTeamViewOnly = subaccountTeamViewOnly
+	r.require(retrievePreferencesResponseFieldSubaccountTeamViewOnly)
 }
 
 // SetSubscriptionFailureBehavior sets the SubscriptionFailureBehavior field and marks it as non-optional;
@@ -2949,7 +2967,8 @@ var (
 	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 19)
 	updatePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 20)
 	updatePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 21)
-	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 22)
+	updatePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 22)
+	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 23)
 )
 
 // updatePreferencesResponseNullableFields maps the wire names of UpdatePreferencesResponse's nullable fields (required or optional) to their field bits.
@@ -2964,6 +2983,7 @@ var updatePreferencesResponseNullableFields = map[string]*big.Int{
 	"preferred_settlement_currency":               updatePreferencesResponseFieldPreferredSettlementCurrency,
 	"preferred_settlement_currency_changeable_at": updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt,
 	"subaccount_notifications":                    updatePreferencesResponseFieldSubaccountNotifications,
+	"subaccount_team_view_only":                   updatePreferencesResponseFieldSubaccountTeamViewOnly,
 }
 
 type UpdatePreferencesResponse struct {
@@ -3011,6 +3031,8 @@ type UpdatePreferencesResponse struct {
 	ReviewRequestEmails bool `json:"review_request_emails" url:"review_request_emails"`
 	// Whether Whop emails and notifies the teams of this account's subaccounts. `true` by default. Set it to `false` to stop Whop's emails, push, and in-app notifications to them. These include payout, verification, dispute, and card alerts about their accounts. `null` when the account has no subaccounts.
 	SubaccountNotifications *bool `json:"subaccount_notifications,omitempty" url:"subaccount_notifications,omitempty"`
+	// Whether this account's subaccounts are view-only for their own team members. When `true`, a subaccount's team can still see everything their role allows but every change is refused with a view-only error. `false` by default. `null` when the account has no subaccounts.
+	SubaccountTeamViewOnly *bool `json:"subaccount_team_view_only,omitempty" url:"subaccount_team_view_only,omitempty"`
 	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting.
 	SubscriptionFailureBehavior UpdatePreferencesResponseSubscriptionFailureBehavior `json:"subscription_failure_behavior" url:"subscription_failure_behavior"`
 
@@ -3173,6 +3195,13 @@ func (u *UpdatePreferencesResponse) GetSubaccountNotifications() *bool {
 		return nil
 	}
 	return u.SubaccountNotifications
+}
+
+func (u *UpdatePreferencesResponse) GetSubaccountTeamViewOnly() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.SubaccountTeamViewOnly
 }
 
 func (u *UpdatePreferencesResponse) GetSubscriptionFailureBehavior() UpdatePreferencesResponseSubscriptionFailureBehavior {
@@ -3350,6 +3379,13 @@ func (u *UpdatePreferencesResponse) SetReviewRequestEmails(reviewRequestEmails b
 func (u *UpdatePreferencesResponse) SetSubaccountNotifications(subaccountNotifications *bool) {
 	u.SubaccountNotifications = subaccountNotifications
 	u.require(updatePreferencesResponseFieldSubaccountNotifications)
+}
+
+// SetSubaccountTeamViewOnly sets the SubaccountTeamViewOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetSubaccountTeamViewOnly(subaccountTeamViewOnly *bool) {
+	u.SubaccountTeamViewOnly = subaccountTeamViewOnly
+	u.require(updatePreferencesResponseFieldSubaccountTeamViewOnly)
 }
 
 // SetSubscriptionFailureBehavior sets the SubscriptionFailureBehavior field and marks it as non-optional;
@@ -4919,7 +4955,8 @@ var (
 	updatePreferencesRequestFieldPreferredSettlementCurrency      = big.NewInt(1 << 13)
 	updatePreferencesRequestFieldReviewRequestEmails              = big.NewInt(1 << 14)
 	updatePreferencesRequestFieldSubaccountNotifications          = big.NewInt(1 << 15)
-	updatePreferencesRequestFieldSubscriptionFailureBehavior      = big.NewInt(1 << 16)
+	updatePreferencesRequestFieldSubaccountTeamViewOnly           = big.NewInt(1 << 16)
+	updatePreferencesRequestFieldSubscriptionFailureBehavior      = big.NewInt(1 << 17)
 )
 
 type UpdatePreferencesRequest struct {
@@ -4955,6 +4992,8 @@ type UpdatePreferencesRequest struct {
 	ReviewRequestEmails *bool `json:"review_request_emails,omitempty" url:"-"`
 	// Whether Whop emails and notifies the teams of this account's subaccounts. Set it to `false` to stop Whop's emails, push, and in-app notifications to them. These include payout, verification, dispute, and card alerts about their accounts. Only accounts with subaccounts can set it. Requires the `company:update` scope on your API key.
 	SubaccountNotifications *bool `json:"subaccount_notifications,omitempty" url:"-"`
+	// Whether this account's subaccounts are view-only for their own team members. Set it to `true` to refuse every change a subaccount's team tries to make while still letting them see what their role allows. Only accounts with subaccounts can set it. Requires the `company:update` scope on your API key.
+	SubaccountTeamViewOnly *bool `json:"subaccount_team_view_only,omitempty" url:"-"`
 	// What happens to a subscription once every retry of a renewal payment has failed. `cancel` (the default) cancels it. `none` leaves it past due and keeps billing it each period; access follows the account's past-due access setting. Requires company:manage_checkout permission.
 	SubscriptionFailureBehavior *UpdatePreferencesRequestSubscriptionFailureBehavior `json:"subscription_failure_behavior,omitempty" url:"-"`
 
@@ -5081,6 +5120,13 @@ func (u *UpdatePreferencesRequest) SetReviewRequestEmails(reviewRequestEmails *b
 func (u *UpdatePreferencesRequest) SetSubaccountNotifications(subaccountNotifications *bool) {
 	u.SubaccountNotifications = subaccountNotifications
 	u.require(updatePreferencesRequestFieldSubaccountNotifications)
+}
+
+// SetSubaccountTeamViewOnly sets the SubaccountTeamViewOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetSubaccountTeamViewOnly(subaccountTeamViewOnly *bool) {
+	u.SubaccountTeamViewOnly = subaccountTeamViewOnly
+	u.require(updatePreferencesRequestFieldSubaccountTeamViewOnly)
 }
 
 // SetSubscriptionFailureBehavior sets the SubscriptionFailureBehavior field and marks it as non-optional;
