@@ -8900,6 +8900,14 @@ func TestSettersAccountPreferences(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetCancellationEmails", func(t *testing.T) {
+		obj := &AccountPreferences{}
+		var fernTestValueCancellationEmails bool
+		obj.SetCancellationEmails(fernTestValueCancellationEmails)
+		assert.Equal(t, fernTestValueCancellationEmails, obj.CancellationEmails)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCardsAutoTopUp", func(t *testing.T) {
 		obj := &AccountPreferences{}
 		var fernTestValueCardsAutoTopUp bool
@@ -8996,6 +9004,14 @@ func TestSettersAccountPreferences(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetFailedPaymentEmails", func(t *testing.T) {
+		obj := &AccountPreferences{}
+		var fernTestValueFailedPaymentEmails bool
+		obj.SetFailedPaymentEmails(fernTestValueFailedPaymentEmails)
+		assert.Equal(t, fernTestValueFailedPaymentEmails, obj.FailedPaymentEmails)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFeedbackOptions", func(t *testing.T) {
 		obj := &AccountPreferences{}
 		var fernTestValueFeedbackOptions []*FeedbackOption
@@ -9017,6 +9033,14 @@ func TestSettersAccountPreferences(t *testing.T) {
 		var fernTestValuePreferredSettlementCurrencyChangeableAt *string
 		obj.SetPreferredSettlementCurrencyChangeableAt(fernTestValuePreferredSettlementCurrencyChangeableAt)
 		assert.Equal(t, fernTestValuePreferredSettlementCurrencyChangeableAt, obj.PreferredSettlementCurrencyChangeableAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRenewalReminderEmails", func(t *testing.T) {
+		obj := &AccountPreferences{}
+		var fernTestValueRenewalReminderEmails bool
+		obj.SetRenewalReminderEmails(fernTestValueRenewalReminderEmails)
+		assert.Equal(t, fernTestValueRenewalReminderEmails, obj.RenewalReminderEmails)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -9198,6 +9222,29 @@ func TestGettersAccountPreferences(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAdsTripleWhaleIntegration() // Should return zero value
+	})
+
+	t.Run("GetCancellationEmails", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPreferences{}
+		var expected bool
+		obj.CancellationEmails = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCancellationEmails(), "getter should return the property value")
+	})
+
+	t.Run("GetCancellationEmails_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountPreferences
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCancellationEmails() // Should return zero value
 	})
 
 	t.Run("GetCardsAutoTopUp", func(t *testing.T) {
@@ -9546,6 +9593,29 @@ func TestGettersAccountPreferences(t *testing.T) {
 		_ = obj.GetEconomicIntelligencePreviousPeriod() // Should return zero value
 	})
 
+	t.Run("GetFailedPaymentEmails", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPreferences{}
+		var expected bool
+		obj.FailedPaymentEmails = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetFailedPaymentEmails(), "getter should return the property value")
+	})
+
+	t.Run("GetFailedPaymentEmails_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountPreferences
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetFailedPaymentEmails() // Should return zero value
+	})
+
 	t.Run("GetFeedbackOptions", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -9643,6 +9713,29 @@ func TestGettersAccountPreferences(t *testing.T) {
 			}
 		}()
 		_ = obj.GetPreferredSettlementCurrencyChangeableAt() // Should return zero value
+	})
+
+	t.Run("GetRenewalReminderEmails", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPreferences{}
+		var expected bool
+		obj.RenewalReminderEmails = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRenewalReminderEmails(), "getter should return the property value")
+	})
+
+	t.Run("GetRenewalReminderEmails_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountPreferences
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRenewalReminderEmails() // Should return zero value
 	})
 
 	t.Run("GetReviewRequestEmails", func(t *testing.T) {
@@ -9892,6 +9985,37 @@ func TestSettersMarkExplicitAccountPreferences(t *testing.T) {
 
 		// Act
 		obj.SetAdsTripleWhaleIntegration(fernTestValueAdsTripleWhaleIntegration)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCancellationEmails_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPreferences{}
+		var fernTestValueCancellationEmails bool
+
+		// Act
+		obj.SetCancellationEmails(fernTestValueCancellationEmails)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -10287,6 +10411,37 @@ func TestSettersMarkExplicitAccountPreferences(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetFailedPaymentEmails_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPreferences{}
+		var fernTestValueFailedPaymentEmails bool
+
+		// Act
+		obj.SetFailedPaymentEmails(fernTestValueFailedPaymentEmails)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetFeedbackOptions_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -10357,6 +10512,37 @@ func TestSettersMarkExplicitAccountPreferences(t *testing.T) {
 
 		// Act
 		obj.SetPreferredSettlementCurrencyChangeableAt(fernTestValuePreferredSettlementCurrencyChangeableAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRenewalReminderEmails_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountPreferences{}
+		var fernTestValueRenewalReminderEmails bool
+
+		// Act
+		obj.SetRenewalReminderEmails(fernTestValueRenewalReminderEmails)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

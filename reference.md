@@ -47968,7 +47968,7 @@ The required scope depends on which preferences you update.
 - `ad_campaign:create`: `ads_payment_methods`, `ads_reporting_currency`, `ads_scheduling_timezone`, `ads_triple_whale_integration`.
 - `payout:account:update`: `cards_auto_top_up`, `cards_notifications`, `covers_subaccount_negative_balances`.
 - `payment:dispute`: `dispute_fighter_enabled`.
-- `company:update`: `economic_intelligence_duration_key`, `economic_intelligence_auto_renew`, `review_request_emails`, `subaccount_notifications`, `subaccount_team_view_only`.
+- `company:update`: `economic_intelligence_duration_key`, `economic_intelligence_auto_renew`, `review_request_emails`, `cancellation_emails`, `renewal_reminder_emails`, `failed_payment_emails`, `subaccount_notifications`, `subaccount_team_view_only`.
 - `company:manage_checkout`: `feedback_options`, `customer_tracking`.
 
 To update keys under more than one scope, the API key needs all of those scopes.
@@ -48047,6 +48047,14 @@ client.Accounts.Preferences.Update(
 <dl>
 <dd>
 
+**cancellationEmails:** `*bool` — Whether Whop emails members when their membership is canceled or terminated. Set it to `false` to stop these emails while keeping the account's other customer emails. Requires the `company:update` scope on your API key.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **cardsAutoTopUp:** `*bool` — Whether incoming funds are automatically moved to the account's cards balance. Requires a cards balance on the account and the `payout:account:update` scope on your API key.
     
 </dd>
@@ -48103,6 +48111,14 @@ client.Accounts.Preferences.Update(
 <dl>
 <dd>
 
+**failedPaymentEmails:** `*bool` — Whether Whop emails members when a renewal payment fails or needs them to verify it. Set it to `false` to stop these emails while keeping the account's other customer emails. Subscriptions billed by invoice still get their invoice emails. Requires the `company:update` scope on your API key.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **feedbackOptions:** `[]*accounts.UpdatePreferencesRequestFeedbackOptionsItem` — Replaces the account's own cancel reasons, shown to members in this order when they cancel. Pass an option's `id` to keep it, for example when renaming it; options without an `id` are added, and options left out are removed. Pass an empty array to go back to Whop's default reasons. Members who already picked an option keep the label they saw. Requires the `company:manage_checkout` scope on your API key.
     
 </dd>
@@ -48112,6 +48128,14 @@ client.Accounts.Preferences.Update(
 <dd>
 
 **preferredSettlementCurrency:** `*accounts.UpdatePreferencesRequestPreferredSettlementCurrency` — Settle every new sale into this currency, regardless of the plan's currency or what the buyer paid in; sales converted this way carry an additional 0.5% FX fee. Pass `null` to go back to settling each sale in its plan's currency. Changing it never converts money already in your balances, and it can change at most once a day (see `preferred_settlement_currency_changeable_at`). Requires the `payout:account:update` scope on your API key.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**renewalReminderEmails:** `*bool` — Whether Whop emails members the day before their membership renews or their free trial converts. Set it to `false` to stop that reminder. Members still get the reminders card networks require. Requires the `company:update` scope on your API key.
     
 </dd>
 </dl>
