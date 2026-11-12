@@ -1608,7 +1608,7 @@ type DisputeEvidenceDocument struct {
 	MultipartUploadURLs []*FileMultipartURL `json:"multipart_upload_urls,omitempty" url:"multipart_upload_urls,omitempty"`
 	// The type of this object, always `file`.
 	Object string `json:"object" url:"object"`
-	// Whether moderation removed the file. When true, `url` serves a replacement image; filename, size, and content type still describe the original file.
+	// Whether moderation removed the file. When `true`, `url` serves a replacement image. `filename`, `size` and `content_type` still describe the original file.
 	RemovedByModeration bool `json:"removed_by_moderation" url:"removed_by_moderation"`
 	// The file size in bytes. `null` until the upload has finished.
 	Size *int `json:"size,omitempty" url:"size,omitempty"`
@@ -1618,9 +1618,9 @@ type DisputeEvidenceDocument struct {
 	UploadStatus DisputeEvidenceDocumentUploadStatus `json:"upload_status" url:"upload_status"`
 	// Presigned URL to PUT the file's bytes to. Present only on create, and only for single-part uploads.
 	UploadURL *string `json:"upload_url,omitempty" url:"upload_url,omitempty"`
-	// A URL to download the file: a permanent CDN URL for public files, a signed expiring URL for private ones. Null until the upload has finished; a replacement image URL when removed by moderation.
+	// A URL to download the file. Public files get a permanent CDN URL, and private files get a signed URL that expires. `null` until the upload has finished. When moderation removes the file, a replacement image URL.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
-	// `public` files are served via an unsigned CDN URL; `private` files via a signed, expiring URL.
+	// `public` files are served from an unsigned CDN URL. `private` files are served from a signed URL that expires.
 	Visibility DisputeEvidenceDocumentVisibility `json:"visibility" url:"visibility"`
 	// Audio waveform URL. Null when unavailable or removed by moderation.
 	WaveformURL *string `json:"waveform_url,omitempty" url:"waveform_url,omitempty"`
@@ -2107,7 +2107,7 @@ func (d DisputeEvidenceDocumentUploadStatus) Ptr() *DisputeEvidenceDocumentUploa
 	return &d
 }
 
-// `public` files are served via an unsigned CDN URL; `private` files via a signed, expiring URL.
+// `public` files are served from an unsigned CDN URL. `private` files are served from a signed URL that expires.
 type DisputeEvidenceDocumentVisibility string
 
 const (

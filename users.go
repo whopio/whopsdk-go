@@ -691,7 +691,7 @@ type User struct {
 	Level *OwnerLevel `json:"level,omitempty" url:"level,omitempty"`
 	// The user's display name
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// Avatar wrapper; its `url` is always present, using a generated placeholder when the user set no picture.
+	// Avatar wrapper. Its `url` is always present, and is a generated placeholder when the user set no picture.
 	ProfilePicture *UserProfilePicture `json:"profile_picture" url:"profile_picture"`
 	SocialLinks    []*UserSocialLink   `json:"social_links" url:"social_links"`
 	// The user's state or region, derived from their IP address. `null` when unknown or the user turned off location sharing.

@@ -781,7 +781,7 @@ type Invoice struct {
 	BillingAddress     *PaymentAddress `json:"billing_address,omitempty" url:"billing_address,omitempty"`
 	BuyerFeeAmount     *Money          `json:"buyer_fee_amount" url:"buyer_fee_amount"`
 	BuyerFeePercentage float64         `json:"buyer_fee_percentage" url:"buyer_fee_percentage"`
-	// A signed link that opens this invoice in a checkout session so the buyer can pay it: pass it as `link` to `POST /checkout_sessions`. Present while the invoice is open; null in any other status, for an invoice billed to a business buyer or whose membership was canceled, and unless you have `payment:charge`, or `invoice:create` or `invoice:update` on an invoice with no `payment_method_id`.
+	// A signed link that opens this invoice in a checkout session so the buyer can pay it. Pass it as `link` to `POST /checkout_sessions`. Present while the invoice is open. `null` in any other status, for an invoice billed to a business buyer, and for an invoice whose membership was canceled. Also `null` unless you have `payment:charge`, or `invoice:create` or `invoice:update` on an invoice with no `payment_method_id`.
 	CheckoutLink *string `json:"checkout_link,omitempty" url:"checkout_link,omitempty"`
 	CreatedAt    string  `json:"created_at" url:"created_at"`
 	CustomerName *string `json:"customer_name,omitempty" url:"customer_name,omitempty"`
@@ -794,7 +794,7 @@ type Invoice struct {
 	LineItems        []*InvoiceLineItem `json:"line_items" url:"line_items"`
 	MailingAddressID *string            `json:"mailing_address_id,omitempty" url:"mailing_address_id,omitempty"`
 	MemberID         *string            `json:"member_id,omitempty" url:"member_id,omitempty"`
-	// The membership this invoice bills, prefixed `mem_`: the subscription a renewal invoice renews, or the one created when an invoice with a recurring item is issued. Null for one-off invoices, for a draft not yet issued, and without the member:basic:read permission.
+	// The membership this invoice bills, prefixed `mem_`. For a renewal invoice, it is the subscription that renews. For an invoice with a recurring item, it is the membership created when the invoice is issued. Null for one-off invoices, for a draft not yet issued, and without the member:basic:read permission.
 	MembershipID *string `json:"membership_id,omitempty" url:"membership_id,omitempty"`
 	// A note to the customer, shown on the invoice email, PDF, and checkout page with its line breaks kept. `null` when none is set.
 	Memo     *string           `json:"memo,omitempty" url:"memo,omitempty"`
@@ -807,7 +807,7 @@ type Invoice struct {
 	PaymentMethodConfiguration *CheckoutSessionPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
 	PaymentMethodID            *string                                    `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
 	RecipientEmails            []string                                   `json:"recipient_emails" url:"recipient_emails"`
-	// When the invoice's saved payment method will be charged, as an ISO 8601 timestamp: the `charge_at` it was sent or issued with, or `due_at` when an invoice with a `payment_method_id` is sent or issued before it is due without one. On a draft, the `charge_at` of its scheduled send. `null` otherwise, once the charge starts, and once the invoice is paid, void, or uncollectible.
+	// When the invoice's saved payment method will be charged, as an ISO 8601 timestamp. It is the `charge_at` the invoice was sent or issued with. Without one, it is `due_at` when an invoice with a `payment_method_id` is sent or issued before it is due. On a draft, it is the `charge_at` of its scheduled send. `null` otherwise, once the charge starts, and once the invoice is paid, void, or uncollectible.
 	ScheduledChargeAt *string `json:"scheduled_charge_at,omitempty" url:"scheduled_charge_at,omitempty"`
 	// The `collection_method` a draft's scheduled send applies when it fires. `null` when the draft has no scheduled send or it was scheduled without one, and once the invoice is issued.
 	ScheduledCollectionMethod *InvoiceScheduledCollectionMethod `json:"scheduled_collection_method,omitempty" url:"scheduled_collection_method,omitempty"`
@@ -1408,7 +1408,7 @@ var invoiceLineItemNullableFields = map[string]*big.Int{
 }
 
 type InvoiceLineItem struct {
-	// Text shown under the item on the invoice, its email, and its PDF, read from the variant's `description`. A custom charge sets it with the item's `description`; a product variant keeps its own. Null when the variant has none or has since been deleted.
+	// Text shown under the item on the invoice, its email, and its PDF, read from the variant's `description`. A custom charge sets it with the item's `description`. A product variant keeps its own. Null when the variant has none or has since been deleted.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
 	// The promo discount applied to this item, in the payment's `currency`. Null when no discount was recorded.
 	DiscountAmount *Money `json:"discount_amount,omitempty" url:"discount_amount,omitempty"`
