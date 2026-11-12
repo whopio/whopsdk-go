@@ -3752,6 +3752,14 @@ func TestSettersExperimentTargetingRulesItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPassPercentage", func(t *testing.T) {
+		obj := &ExperimentTargetingRulesItem{}
+		var fernTestValuePassPercentage *float64
+		obj.SetPassPercentage(fernTestValuePassPercentage)
+		assert.Equal(t, fernTestValuePassPercentage, obj.PassPercentage)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetType", func(t *testing.T) {
 		obj := &ExperimentTargetingRulesItem{}
 		var fernTestValueType *ExperimentTargetingRulesItemType
@@ -3794,6 +3802,39 @@ func TestGettersExperimentTargetingRulesItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetConditions() // Should return zero value
+	})
+
+	t.Run("GetPassPercentage", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExperimentTargetingRulesItem{}
+		var expected *float64
+		obj.PassPercentage = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPassPercentage(), "getter should return the property value")
+	})
+
+	t.Run("GetPassPercentage_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExperimentTargetingRulesItem{}
+		obj.PassPercentage = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPassPercentage(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPassPercentage_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExperimentTargetingRulesItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPassPercentage() // Should return zero value
 	})
 
 	t.Run("GetType", func(t *testing.T) {
@@ -3840,6 +3881,37 @@ func TestSettersMarkExplicitExperimentTargetingRulesItem(t *testing.T) {
 
 		// Act
 		obj.SetConditions(fernTestValueConditions)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPassPercentage_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExperimentTargetingRulesItem{}
+		var fernTestValuePassPercentage *float64
+
+		// Act
+		obj.SetPassPercentage(fernTestValuePassPercentage)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4755,6 +4827,14 @@ func TestSettersCreateExperimentsRequestTargetingRulesItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPassPercentage", func(t *testing.T) {
+		obj := &CreateExperimentsRequestTargetingRulesItem{}
+		var fernTestValuePassPercentage *float64
+		obj.SetPassPercentage(fernTestValuePassPercentage)
+		assert.Equal(t, fernTestValuePassPercentage, obj.PassPercentage)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetType", func(t *testing.T) {
 		obj := &CreateExperimentsRequestTargetingRulesItem{}
 		var fernTestValueType *CreateExperimentsRequestTargetingRulesItemType
@@ -4797,6 +4877,39 @@ func TestGettersCreateExperimentsRequestTargetingRulesItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetConditions() // Should return zero value
+	})
+
+	t.Run("GetPassPercentage", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateExperimentsRequestTargetingRulesItem{}
+		var expected *float64
+		obj.PassPercentage = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPassPercentage(), "getter should return the property value")
+	})
+
+	t.Run("GetPassPercentage_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateExperimentsRequestTargetingRulesItem{}
+		obj.PassPercentage = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPassPercentage(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPassPercentage_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateExperimentsRequestTargetingRulesItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPassPercentage() // Should return zero value
 	})
 
 	t.Run("GetType", func(t *testing.T) {
@@ -4843,6 +4956,37 @@ func TestSettersMarkExplicitCreateExperimentsRequestTargetingRulesItem(t *testin
 
 		// Act
 		obj.SetConditions(fernTestValueConditions)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPassPercentage_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateExperimentsRequestTargetingRulesItem{}
+		var fernTestValuePassPercentage *float64
+
+		// Act
+		obj.SetPassPercentage(fernTestValuePassPercentage)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5960,6 +6104,14 @@ func TestSettersUpdateExperimentsRequestTargetingRulesItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetPassPercentage", func(t *testing.T) {
+		obj := &UpdateExperimentsRequestTargetingRulesItem{}
+		var fernTestValuePassPercentage *float64
+		obj.SetPassPercentage(fernTestValuePassPercentage)
+		assert.Equal(t, fernTestValuePassPercentage, obj.PassPercentage)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetType", func(t *testing.T) {
 		obj := &UpdateExperimentsRequestTargetingRulesItem{}
 		var fernTestValueType *UpdateExperimentsRequestTargetingRulesItemType
@@ -6002,6 +6154,39 @@ func TestGettersUpdateExperimentsRequestTargetingRulesItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetConditions() // Should return zero value
+	})
+
+	t.Run("GetPassPercentage", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateExperimentsRequestTargetingRulesItem{}
+		var expected *float64
+		obj.PassPercentage = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPassPercentage(), "getter should return the property value")
+	})
+
+	t.Run("GetPassPercentage_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateExperimentsRequestTargetingRulesItem{}
+		obj.PassPercentage = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPassPercentage(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPassPercentage_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateExperimentsRequestTargetingRulesItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPassPercentage() // Should return zero value
 	})
 
 	t.Run("GetType", func(t *testing.T) {
@@ -6048,6 +6233,37 @@ func TestSettersMarkExplicitUpdateExperimentsRequestTargetingRulesItem(t *testin
 
 		// Act
 		obj.SetConditions(fernTestValueConditions)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPassPercentage_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateExperimentsRequestTargetingRulesItem{}
+		var fernTestValuePassPercentage *float64
+
+		// Act
+		obj.SetPassPercentage(fernTestValuePassPercentage)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

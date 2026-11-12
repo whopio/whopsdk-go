@@ -1571,13 +1571,16 @@ func (e ExperimentStatus) Ptr() *ExperimentStatus {
 }
 
 var (
-	experimentTargetingRulesItemFieldConditions = big.NewInt(1 << 0)
-	experimentTargetingRulesItemFieldType       = big.NewInt(1 << 1)
+	experimentTargetingRulesItemFieldConditions     = big.NewInt(1 << 0)
+	experimentTargetingRulesItemFieldPassPercentage = big.NewInt(1 << 1)
+	experimentTargetingRulesItemFieldType           = big.NewInt(1 << 2)
 )
 
 type ExperimentTargetingRulesItem struct {
 	// Conditions within this rule, all of which must match.
 	Conditions []*ExperimentTargetingRulesItemConditionsItem `json:"conditions" url:"conditions"`
+	// Percentage of matching subjects that this rule lets in, from 0 to 100. Absent when the rule lets in every matching subject. Raising it keeps every subject that the rule already lets in.
+	PassPercentage *float64 `json:"pass_percentage,omitempty" url:"pass_percentage,omitempty"`
 	// `include` — users matching this rule qualify; `exclude` — users matching this rule are always excluded, overriding any include rule.
 	Type *ExperimentTargetingRulesItemType `json:"type,omitempty" url:"type,omitempty"`
 
@@ -1593,6 +1596,13 @@ func (e *ExperimentTargetingRulesItem) GetConditions() []*ExperimentTargetingRul
 		return nil
 	}
 	return e.Conditions
+}
+
+func (e *ExperimentTargetingRulesItem) GetPassPercentage() *float64 {
+	if e == nil {
+		return nil
+	}
+	return e.PassPercentage
 }
 
 func (e *ExperimentTargetingRulesItem) GetType() *ExperimentTargetingRulesItemType {
@@ -1623,6 +1633,13 @@ func (e *ExperimentTargetingRulesItem) require(field *big.Int) {
 func (e *ExperimentTargetingRulesItem) SetConditions(conditions []*ExperimentTargetingRulesItemConditionsItem) {
 	e.Conditions = conditions
 	e.require(experimentTargetingRulesItemFieldConditions)
+}
+
+// SetPassPercentage sets the PassPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentTargetingRulesItem) SetPassPercentage(passPercentage *float64) {
+	e.PassPercentage = passPercentage
+	e.require(experimentTargetingRulesItemFieldPassPercentage)
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -2281,13 +2298,16 @@ func (c *CreateExperimentsRequestControl) String() string {
 }
 
 var (
-	createExperimentsRequestTargetingRulesItemFieldConditions = big.NewInt(1 << 0)
-	createExperimentsRequestTargetingRulesItemFieldType       = big.NewInt(1 << 1)
+	createExperimentsRequestTargetingRulesItemFieldConditions     = big.NewInt(1 << 0)
+	createExperimentsRequestTargetingRulesItemFieldPassPercentage = big.NewInt(1 << 1)
+	createExperimentsRequestTargetingRulesItemFieldType           = big.NewInt(1 << 2)
 )
 
 type CreateExperimentsRequestTargetingRulesItem struct {
 	// Conditions within this rule. Must be non-empty. All conditions must be satisfied for the rule to match (AND logic). Rules are OR-ed together.
 	Conditions []*CreateExperimentsRequestTargetingRulesItemConditionsItem `json:"conditions" url:"conditions"`
+	// Percentage of matching subjects that this rule lets in, from 0 to 100. Omit it to let in every matching subject. Only `include` rules accept it. Raising it keeps every subject that the rule already lets in.
+	PassPercentage *float64 `json:"pass_percentage,omitempty" url:"pass_percentage,omitempty"`
 	// `include` — users matching this rule qualify; `exclude` — users matching this rule are always excluded, overriding any include rule. Defaults to `include`.
 	Type *CreateExperimentsRequestTargetingRulesItemType `json:"type,omitempty" url:"type,omitempty"`
 
@@ -2303,6 +2323,13 @@ func (c *CreateExperimentsRequestTargetingRulesItem) GetConditions() []*CreateEx
 		return nil
 	}
 	return c.Conditions
+}
+
+func (c *CreateExperimentsRequestTargetingRulesItem) GetPassPercentage() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.PassPercentage
 }
 
 func (c *CreateExperimentsRequestTargetingRulesItem) GetType() *CreateExperimentsRequestTargetingRulesItemType {
@@ -2333,6 +2360,13 @@ func (c *CreateExperimentsRequestTargetingRulesItem) require(field *big.Int) {
 func (c *CreateExperimentsRequestTargetingRulesItem) SetConditions(conditions []*CreateExperimentsRequestTargetingRulesItemConditionsItem) {
 	c.Conditions = conditions
 	c.require(createExperimentsRequestTargetingRulesItemFieldConditions)
+}
+
+// SetPassPercentage sets the PassPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateExperimentsRequestTargetingRulesItem) SetPassPercentage(passPercentage *float64) {
+	c.PassPercentage = passPercentage
+	c.require(createExperimentsRequestTargetingRulesItemFieldPassPercentage)
 }
 
 // SetType sets the Type field and marks it as non-optional;
@@ -3245,13 +3279,16 @@ func (u *UpdateExperimentsRequestControl) String() string {
 }
 
 var (
-	updateExperimentsRequestTargetingRulesItemFieldConditions = big.NewInt(1 << 0)
-	updateExperimentsRequestTargetingRulesItemFieldType       = big.NewInt(1 << 1)
+	updateExperimentsRequestTargetingRulesItemFieldConditions     = big.NewInt(1 << 0)
+	updateExperimentsRequestTargetingRulesItemFieldPassPercentage = big.NewInt(1 << 1)
+	updateExperimentsRequestTargetingRulesItemFieldType           = big.NewInt(1 << 2)
 )
 
 type UpdateExperimentsRequestTargetingRulesItem struct {
 	// Conditions within this rule. Must be non-empty. All conditions must be satisfied for the rule to match (AND logic). Rules are OR-ed together.
 	Conditions []*UpdateExperimentsRequestTargetingRulesItemConditionsItem `json:"conditions" url:"conditions"`
+	// Percentage of matching subjects that this rule lets in, from 0 to 100. Omit it to let in every matching subject. Only `include` rules accept it. Raising it keeps every subject that the rule already lets in.
+	PassPercentage *float64 `json:"pass_percentage,omitempty" url:"pass_percentage,omitempty"`
 	// `include` — users matching this rule qualify; `exclude` — users matching this rule are always excluded, overriding any include rule. Defaults to `include`.
 	Type *UpdateExperimentsRequestTargetingRulesItemType `json:"type,omitempty" url:"type,omitempty"`
 
@@ -3267,6 +3304,13 @@ func (u *UpdateExperimentsRequestTargetingRulesItem) GetConditions() []*UpdateEx
 		return nil
 	}
 	return u.Conditions
+}
+
+func (u *UpdateExperimentsRequestTargetingRulesItem) GetPassPercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.PassPercentage
 }
 
 func (u *UpdateExperimentsRequestTargetingRulesItem) GetType() *UpdateExperimentsRequestTargetingRulesItemType {
@@ -3297,6 +3341,13 @@ func (u *UpdateExperimentsRequestTargetingRulesItem) require(field *big.Int) {
 func (u *UpdateExperimentsRequestTargetingRulesItem) SetConditions(conditions []*UpdateExperimentsRequestTargetingRulesItemConditionsItem) {
 	u.Conditions = conditions
 	u.require(updateExperimentsRequestTargetingRulesItemFieldConditions)
+}
+
+// SetPassPercentage sets the PassPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateExperimentsRequestTargetingRulesItem) SetPassPercentage(passPercentage *float64) {
+	u.PassPercentage = passPercentage
+	u.require(updateExperimentsRequestTargetingRulesItemFieldPassPercentage)
 }
 
 // SetType sets the Type field and marks it as non-optional;
