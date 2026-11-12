@@ -16,11 +16,13 @@ var (
 	createAccountsRequestFieldCountry               = big.NewInt(1 << 2)
 	createAccountsRequestFieldDisputeFighterEnabled = big.NewInt(1 << 3)
 	createAccountsRequestFieldEmail                 = big.NewInt(1 << 4)
-	createAccountsRequestFieldMetadata              = big.NewInt(1 << 5)
-	createAccountsRequestFieldOrchestrationEnabled  = big.NewInt(1 << 6)
-	createAccountsRequestFieldSendCustomerEmails    = big.NewInt(1 << 7)
-	createAccountsRequestFieldTitle                 = big.NewInt(1 << 8)
-	createAccountsRequestFieldWebsite               = big.NewInt(1 << 9)
+	createAccountsRequestFieldExternalID            = big.NewInt(1 << 5)
+	createAccountsRequestFieldMetadata              = big.NewInt(1 << 6)
+	createAccountsRequestFieldOrchestrationEnabled  = big.NewInt(1 << 7)
+	createAccountsRequestFieldReassignExternalID    = big.NewInt(1 << 8)
+	createAccountsRequestFieldSendCustomerEmails    = big.NewInt(1 << 9)
+	createAccountsRequestFieldTitle                 = big.NewInt(1 << 10)
+	createAccountsRequestFieldWebsite               = big.NewInt(1 << 11)
 )
 
 type CreateAccountsRequest struct {
@@ -34,13 +36,17 @@ type CreateAccountsRequest struct {
 	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
 	// The email address of the account owner. Required when creating a subaccount.
 	Email *string `json:"email,omitempty" url:"-"`
-	// Arbitrary key/value metadata to store on the account.
+	// Your platform's own identifier for this subaccount, such as your user or store ID. Unique among your subaccounts: creating a second account with the same `external_id` and a different `email` returns a 409, unless `reassign_external_id` is `true`. Retrying with the same `email` and `external_id` returns the existing account. Subaccounts only.
+	ExternalID *string `json:"external_id,omitempty" url:"-"`
+	// Arbitrary key/value metadata to store on the account. When `external_id` is not sent, an `external_id` key here sets `external_id` and follows its rules. It must be unique among your subaccounts unless `reassign_external_id` is `true`. It stays in `metadata` as sent. Changing it later does not change `external_id`.
 	Metadata map[string]any `json:"metadata,omitempty" url:"-"`
 	// Whether payment orchestration is enabled for this account. Requires payout:account:update. Omit to preserve the existing setting or creation default.
 	OrchestrationEnabled *bool `json:"orchestration_enabled,omitempty" url:"-"`
+	// Pass `true` to move `external_id` to the new subaccount when another of your subaccounts already has it. Without it, that request returns a 409. The subaccount that had it is not deleted. It stays active with `external_id` set to `null`, and its `metadata` is unchanged. Requires `external_id`. Also requires the `company:update` permission on your platform account, in addition to `company:create_child`. Ignored when the same `email` already has the `external_id`, which returns that account.
+	ReassignExternalID *bool `json:"reassign_external_id,omitempty" url:"-"`
 	// Whether Whop sends transactional emails to customers on behalf of the subaccount.
 	SendCustomerEmails *bool `json:"send_customer_emails,omitempty" url:"-"`
-	// The display name of the account. Defaults to `metadata.external_id` or the owner's email when omitted.
+	// The display name of the account. Defaults to `external_id` or the owner's email when omitted.
 	Title *string `json:"title,omitempty" url:"-"`
 	// The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry.
 	Website *string `json:"website,omitempty" url:"-"`
@@ -93,6 +99,13 @@ func (c *CreateAccountsRequest) SetEmail(email *string) {
 	c.require(createAccountsRequestFieldEmail)
 }
 
+// SetExternalID sets the ExternalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAccountsRequest) SetExternalID(externalID *string) {
+	c.ExternalID = externalID
+	c.require(createAccountsRequestFieldExternalID)
+}
+
 // SetMetadata sets the Metadata field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateAccountsRequest) SetMetadata(metadata map[string]any) {
@@ -105,6 +118,13 @@ func (c *CreateAccountsRequest) SetMetadata(metadata map[string]any) {
 func (c *CreateAccountsRequest) SetOrchestrationEnabled(orchestrationEnabled *bool) {
 	c.OrchestrationEnabled = orchestrationEnabled
 	c.require(createAccountsRequestFieldOrchestrationEnabled)
+}
+
+// SetReassignExternalID sets the ReassignExternalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAccountsRequest) SetReassignExternalID(reassignExternalID *bool) {
+	c.ReassignExternalID = reassignExternalID
+	c.require(createAccountsRequestFieldReassignExternalID)
 }
 
 // SetSendCustomerEmails sets the SendCustomerEmails field and marks it as non-optional;
@@ -347,10 +367,11 @@ var (
 	listAccountsRequestFieldQuery           = big.NewInt(1 << 7)
 	listAccountsRequestFieldCreatedAfter    = big.NewInt(1 << 8)
 	listAccountsRequestFieldCreatedBefore   = big.NewInt(1 << 9)
-	listAccountsRequestFieldVolumeMin       = big.NewInt(1 << 10)
-	listAccountsRequestFieldVolumeMax       = big.NewInt(1 << 11)
-	listAccountsRequestFieldParentAccountID = big.NewInt(1 << 12)
-	listAccountsRequestFieldOwnerID         = big.NewInt(1 << 13)
+	listAccountsRequestFieldExternalID      = big.NewInt(1 << 10)
+	listAccountsRequestFieldVolumeMin       = big.NewInt(1 << 11)
+	listAccountsRequestFieldVolumeMax       = big.NewInt(1 << 12)
+	listAccountsRequestFieldParentAccountID = big.NewInt(1 << 13)
+	listAccountsRequestFieldOwnerID         = big.NewInt(1 << 14)
 )
 
 type ListAccountsRequest struct {
@@ -374,6 +395,8 @@ type ListAccountsRequest struct {
 	CreatedAfter *time.Time `json:"-" url:"created_after,omitempty"`
 	// Return only accounts created before this ISO 8601 timestamp.
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
+	// Return only the subaccount with this `external_id`, matched exactly and case-sensitively. End it with `%` to return every subaccount whose `external_id` starts with the text before it, such as `shopline:%`. `%` is accepted only at the end, because anywhere else it would scan all your subaccounts. `_` always matches literally.
+	ExternalID *string `json:"-" url:"external_id,omitempty"`
 	// Return only accounts whose lifetime USD volume is at least this value. Requires `stats:read` on the parent account.
 	VolumeMin *float64 `json:"-" url:"volume_min,omitempty"`
 	// Return only accounts whose lifetime USD volume is at most this value. Requires `stats:read` on the parent account.
@@ -464,6 +487,13 @@ func (l *ListAccountsRequest) SetCreatedAfter(createdAfter *time.Time) {
 func (l *ListAccountsRequest) SetCreatedBefore(createdBefore *time.Time) {
 	l.CreatedBefore = createdBefore
 	l.require(listAccountsRequestFieldCreatedBefore)
+}
+
+// SetExternalID sets the ExternalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAccountsRequest) SetExternalID(externalID *string) {
+	l.ExternalID = externalID
+	l.require(listAccountsRequestFieldExternalID)
 }
 
 // SetVolumeMin sets the VolumeMin field and marks it as non-optional;
@@ -825,62 +855,63 @@ var (
 	accountFieldEconomicIntelligence                = big.NewInt(1 << 18)
 	accountFieldEmail                               = big.NewInt(1 << 19)
 	accountFieldEula                                = big.NewInt(1 << 20)
-	accountFieldFinancing                           = big.NewInt(1 << 21)
-	accountFieldFundsReleaseAt                      = big.NewInt(1 << 22)
-	accountFieldHomePreferences                     = big.NewInt(1 << 23)
-	accountFieldID                                  = big.NewInt(1 << 24)
-	accountFieldIndustryType                        = big.NewInt(1 << 25)
-	accountFieldInvoicePrefix                       = big.NewInt(1 << 26)
-	accountFieldLevel                               = big.NewInt(1 << 27)
-	accountFieldLogoURL                             = big.NewInt(1 << 28)
-	accountFieldMetadata                            = big.NewInt(1 << 29)
-	accountFieldOnboardingType                      = big.NewInt(1 << 30)
-	accountFieldOpengraphImageURL                   = big.NewInt(1 << 31)
-	accountFieldOpengraphImageVariant               = big.NewInt(1 << 32)
-	accountFieldOrchestrationEnabled                = big.NewInt(1 << 33)
-	accountFieldOtherBusinessDescription            = big.NewInt(1 << 34)
-	accountFieldOtherIndustryDescription            = big.NewInt(1 << 35)
-	accountFieldOwner                               = big.NewInt(1 << 36)
-	accountFieldParentAccount                       = big.NewInt(1 << 37)
-	accountFieldPartner                             = big.NewInt(1 << 38)
-	accountFieldPaymentControls                     = big.NewInt(1 << 39)
-	accountFieldPaymentMethodConfiguration          = big.NewInt(1 << 40)
-	accountFieldPlatformCredits                     = big.NewInt(1 << 41)
-	accountFieldPrivacyPolicy                       = big.NewInt(1 << 42)
-	accountFieldProductTaxCode                      = big.NewInt(1 << 43)
-	accountFieldRecommendedActions                  = big.NewInt(1 << 44)
-	accountFieldRequire2Fa                          = big.NewInt(1 << 45)
-	accountFieldRequiredActions                     = big.NewInt(1 << 46)
-	accountFieldReturnPolicy                        = big.NewInt(1 << 47)
-	accountFieldRewards                             = big.NewInt(1 << 48)
-	accountFieldRoute                               = big.NewInt(1 << 49)
-	accountFieldSendCustomerEmails                  = big.NewInt(1 << 50)
-	accountFieldShippingPolicy                      = big.NewInt(1 << 51)
-	accountFieldShowJoinedWhops                     = big.NewInt(1 << 52)
-	accountFieldShowReviewsDtc                      = big.NewInt(1 << 53)
-	accountFieldShowUserDirectory                   = big.NewInt(1 << 54)
-	accountFieldSocialLinks                         = big.NewInt(1 << 55)
-	accountFieldStatus                              = big.NewInt(1 << 56)
-	accountFieldStatusReason                        = big.NewInt(1 << 57)
-	accountFieldStorePageConfig                     = big.NewInt(1 << 58)
-	accountFieldTargetAudience                      = big.NewInt(1 << 59)
-	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 60)
-	accountFieldTaxIdentifiers                      = big.NewInt(1 << 61)
-	accountFieldTaxRemittedBy                       = big.NewInt(1 << 62)
-	accountFieldTaxType                             = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	accountFieldTermsOfService                      = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	accountFieldThreeDsLevel                        = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	accountFieldTitle                               = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 71)
-	accountFieldVolumeL30DUsd                       = big.NewInt(0).Lsh(big.NewInt(1), 72)
-	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 73)
-	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 74)
-	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 75)
-	accountFieldWhopPartnerEnabledAt                = big.NewInt(0).Lsh(big.NewInt(1), 76)
+	accountFieldExternalID                          = big.NewInt(1 << 21)
+	accountFieldFinancing                           = big.NewInt(1 << 22)
+	accountFieldFundsReleaseAt                      = big.NewInt(1 << 23)
+	accountFieldHomePreferences                     = big.NewInt(1 << 24)
+	accountFieldID                                  = big.NewInt(1 << 25)
+	accountFieldIndustryType                        = big.NewInt(1 << 26)
+	accountFieldInvoicePrefix                       = big.NewInt(1 << 27)
+	accountFieldLevel                               = big.NewInt(1 << 28)
+	accountFieldLogoURL                             = big.NewInt(1 << 29)
+	accountFieldMetadata                            = big.NewInt(1 << 30)
+	accountFieldOnboardingType                      = big.NewInt(1 << 31)
+	accountFieldOpengraphImageURL                   = big.NewInt(1 << 32)
+	accountFieldOpengraphImageVariant               = big.NewInt(1 << 33)
+	accountFieldOrchestrationEnabled                = big.NewInt(1 << 34)
+	accountFieldOtherBusinessDescription            = big.NewInt(1 << 35)
+	accountFieldOtherIndustryDescription            = big.NewInt(1 << 36)
+	accountFieldOwner                               = big.NewInt(1 << 37)
+	accountFieldParentAccount                       = big.NewInt(1 << 38)
+	accountFieldPartner                             = big.NewInt(1 << 39)
+	accountFieldPaymentControls                     = big.NewInt(1 << 40)
+	accountFieldPaymentMethodConfiguration          = big.NewInt(1 << 41)
+	accountFieldPlatformCredits                     = big.NewInt(1 << 42)
+	accountFieldPrivacyPolicy                       = big.NewInt(1 << 43)
+	accountFieldProductTaxCode                      = big.NewInt(1 << 44)
+	accountFieldRecommendedActions                  = big.NewInt(1 << 45)
+	accountFieldRequire2Fa                          = big.NewInt(1 << 46)
+	accountFieldRequiredActions                     = big.NewInt(1 << 47)
+	accountFieldReturnPolicy                        = big.NewInt(1 << 48)
+	accountFieldRewards                             = big.NewInt(1 << 49)
+	accountFieldRoute                               = big.NewInt(1 << 50)
+	accountFieldSendCustomerEmails                  = big.NewInt(1 << 51)
+	accountFieldShippingPolicy                      = big.NewInt(1 << 52)
+	accountFieldShowJoinedWhops                     = big.NewInt(1 << 53)
+	accountFieldShowReviewsDtc                      = big.NewInt(1 << 54)
+	accountFieldShowUserDirectory                   = big.NewInt(1 << 55)
+	accountFieldSocialLinks                         = big.NewInt(1 << 56)
+	accountFieldStatus                              = big.NewInt(1 << 57)
+	accountFieldStatusReason                        = big.NewInt(1 << 58)
+	accountFieldStorePageConfig                     = big.NewInt(1 << 59)
+	accountFieldTargetAudience                      = big.NewInt(1 << 60)
+	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 61)
+	accountFieldTaxIdentifiers                      = big.NewInt(1 << 62)
+	accountFieldTaxRemittedBy                       = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	accountFieldTaxType                             = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	accountFieldTermsOfService                      = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	accountFieldThreeDsLevel                        = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	accountFieldTitle                               = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	accountFieldVolumeL30DUsd                       = big.NewInt(0).Lsh(big.NewInt(1), 73)
+	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 74)
+	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 75)
+	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 76)
+	accountFieldWhopPartnerEnabledAt                = big.NewInt(0).Lsh(big.NewInt(1), 77)
 )
 
 // accountNullableFields maps the wire names of Account's nullable fields (required or optional) to their field bits.
@@ -898,6 +929,7 @@ var accountNullableFields = map[string]*big.Int{
 	"description":                  accountFieldDescription,
 	"email":                        accountFieldEmail,
 	"eula":                         accountFieldEula,
+	"external_id":                  accountFieldExternalID,
 	"financing":                    accountFieldFinancing,
 	"funds_release_at":             accountFieldFundsReleaseAt,
 	"industry_type":                accountFieldIndustryType,
@@ -978,6 +1010,8 @@ type Account struct {
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// The account's end-user license agreement document, or `null` if they have not published one.
 	Eula *File `json:"eula,omitempty" url:"eula,omitempty"`
+	// The parent platform's own identifier for this subaccount, unique among the platform's subaccounts. `null` when unset.
+	ExternalID *string `json:"external_id,omitempty" url:"external_id,omitempty"`
 	// The account's most recent financing application. Computed only on `retrieve` and `me` for callers with `company:balance:read` scope; `null` otherwise, or when the account has never applied for financing.
 	Financing *AccountFinancing `json:"financing,omitempty" url:"financing,omitempty"`
 	// When a suspended account can pay out its balance to its own payout method, as an ISO 8601 timestamp. A dispute can move it later. Computed on `retrieve`, `me`, and `suspend`; `null` otherwise, when `status` is not `suspended`, and when the suspension holds the balance.
@@ -1236,6 +1270,13 @@ func (a *Account) GetEula() *File {
 		return nil
 	}
 	return a.Eula
+}
+
+func (a *Account) GetExternalID() *string {
+	if a == nil {
+		return nil
+	}
+	return a.ExternalID
 }
 
 func (a *Account) GetFinancing() *AccountFinancing {
@@ -1791,6 +1832,13 @@ func (a *Account) SetEmail(email *string) {
 func (a *Account) SetEula(eula *File) {
 	a.Eula = eula
 	a.require(accountFieldEula)
+}
+
+// SetExternalID sets the ExternalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetExternalID(externalID *string) {
+	a.ExternalID = externalID
+	a.require(accountFieldExternalID)
 }
 
 // SetFinancing sets the Financing field and marks it as non-optional;
@@ -10503,41 +10551,42 @@ var (
 	updateAccountsRequestFieldDescription                     = big.NewInt(1 << 9)
 	updateAccountsRequestFieldDisputeFighterEnabled           = big.NewInt(1 << 10)
 	updateAccountsRequestFieldEula                            = big.NewInt(1 << 11)
-	updateAccountsRequestFieldFeaturedAffiliateProductID      = big.NewInt(1 << 12)
-	updateAccountsRequestFieldHomePreferences                 = big.NewInt(1 << 13)
-	updateAccountsRequestFieldInvoicePrefix                   = big.NewInt(1 << 14)
-	updateAccountsRequestFieldLogo                            = big.NewInt(1 << 15)
-	updateAccountsRequestFieldMetadata                        = big.NewInt(1 << 16)
-	updateAccountsRequestFieldOnboardingType                  = big.NewInt(1 << 17)
-	updateAccountsRequestFieldOpengraphImage                  = big.NewInt(1 << 18)
-	updateAccountsRequestFieldOpengraphImageVariant           = big.NewInt(1 << 19)
-	updateAccountsRequestFieldOrchestrationEnabled            = big.NewInt(1 << 20)
-	updateAccountsRequestFieldOtherBusinessDescription        = big.NewInt(1 << 21)
-	updateAccountsRequestFieldOtherIndustryDescription        = big.NewInt(1 << 22)
-	updateAccountsRequestFieldPrivacyPolicy                   = big.NewInt(1 << 23)
-	updateAccountsRequestFieldProductTaxCodeID                = big.NewInt(1 << 24)
-	updateAccountsRequestFieldRequire2Fa                      = big.NewInt(1 << 25)
-	updateAccountsRequestFieldReturnPolicy                    = big.NewInt(1 << 26)
-	updateAccountsRequestFieldRoute                           = big.NewInt(1 << 27)
-	updateAccountsRequestFieldSendCustomerEmails              = big.NewInt(1 << 28)
-	updateAccountsRequestFieldShippingPolicy                  = big.NewInt(1 << 29)
-	updateAccountsRequestFieldShowJoinedWhops                 = big.NewInt(1 << 30)
-	updateAccountsRequestFieldShowReviewsDtc                  = big.NewInt(1 << 31)
-	updateAccountsRequestFieldShowUserDirectory               = big.NewInt(1 << 32)
-	updateAccountsRequestFieldSocialLinks                     = big.NewInt(1 << 33)
-	updateAccountsRequestFieldStorePageConfig                 = big.NewInt(1 << 34)
-	updateAccountsRequestFieldTargetAudience                  = big.NewInt(1 << 35)
-	updateAccountsRequestFieldTaxCollectionEnabledStates      = big.NewInt(1 << 36)
-	updateAccountsRequestFieldTaxIdentifiers                  = big.NewInt(1 << 37)
-	updateAccountsRequestFieldTaxRemittedBy                   = big.NewInt(1 << 38)
-	updateAccountsRequestFieldTaxType                         = big.NewInt(1 << 39)
-	updateAccountsRequestFieldTermsOfService                  = big.NewInt(1 << 40)
-	updateAccountsRequestFieldThreeDsLevel                    = big.NewInt(1 << 41)
-	updateAccountsRequestFieldTitle                           = big.NewInt(1 << 42)
-	updateAccountsRequestFieldUseLogoAsOpengraphImageFallback = big.NewInt(1 << 43)
-	updateAccountsRequestFieldWebsite                         = big.NewInt(1 << 44)
-	updateAccountsRequestFieldWhopPartnerEnabled              = big.NewInt(1 << 45)
-	updateAccountsRequestFieldIndustryType                    = big.NewInt(1 << 46)
+	updateAccountsRequestFieldExternalID                      = big.NewInt(1 << 12)
+	updateAccountsRequestFieldFeaturedAffiliateProductID      = big.NewInt(1 << 13)
+	updateAccountsRequestFieldHomePreferences                 = big.NewInt(1 << 14)
+	updateAccountsRequestFieldInvoicePrefix                   = big.NewInt(1 << 15)
+	updateAccountsRequestFieldLogo                            = big.NewInt(1 << 16)
+	updateAccountsRequestFieldMetadata                        = big.NewInt(1 << 17)
+	updateAccountsRequestFieldOnboardingType                  = big.NewInt(1 << 18)
+	updateAccountsRequestFieldOpengraphImage                  = big.NewInt(1 << 19)
+	updateAccountsRequestFieldOpengraphImageVariant           = big.NewInt(1 << 20)
+	updateAccountsRequestFieldOrchestrationEnabled            = big.NewInt(1 << 21)
+	updateAccountsRequestFieldOtherBusinessDescription        = big.NewInt(1 << 22)
+	updateAccountsRequestFieldOtherIndustryDescription        = big.NewInt(1 << 23)
+	updateAccountsRequestFieldPrivacyPolicy                   = big.NewInt(1 << 24)
+	updateAccountsRequestFieldProductTaxCodeID                = big.NewInt(1 << 25)
+	updateAccountsRequestFieldRequire2Fa                      = big.NewInt(1 << 26)
+	updateAccountsRequestFieldReturnPolicy                    = big.NewInt(1 << 27)
+	updateAccountsRequestFieldRoute                           = big.NewInt(1 << 28)
+	updateAccountsRequestFieldSendCustomerEmails              = big.NewInt(1 << 29)
+	updateAccountsRequestFieldShippingPolicy                  = big.NewInt(1 << 30)
+	updateAccountsRequestFieldShowJoinedWhops                 = big.NewInt(1 << 31)
+	updateAccountsRequestFieldShowReviewsDtc                  = big.NewInt(1 << 32)
+	updateAccountsRequestFieldShowUserDirectory               = big.NewInt(1 << 33)
+	updateAccountsRequestFieldSocialLinks                     = big.NewInt(1 << 34)
+	updateAccountsRequestFieldStorePageConfig                 = big.NewInt(1 << 35)
+	updateAccountsRequestFieldTargetAudience                  = big.NewInt(1 << 36)
+	updateAccountsRequestFieldTaxCollectionEnabledStates      = big.NewInt(1 << 37)
+	updateAccountsRequestFieldTaxIdentifiers                  = big.NewInt(1 << 38)
+	updateAccountsRequestFieldTaxRemittedBy                   = big.NewInt(1 << 39)
+	updateAccountsRequestFieldTaxType                         = big.NewInt(1 << 40)
+	updateAccountsRequestFieldTermsOfService                  = big.NewInt(1 << 41)
+	updateAccountsRequestFieldThreeDsLevel                    = big.NewInt(1 << 42)
+	updateAccountsRequestFieldTitle                           = big.NewInt(1 << 43)
+	updateAccountsRequestFieldUseLogoAsOpengraphImageFallback = big.NewInt(1 << 44)
+	updateAccountsRequestFieldWebsite                         = big.NewInt(1 << 45)
+	updateAccountsRequestFieldWhopPartnerEnabled              = big.NewInt(1 << 46)
+	updateAccountsRequestFieldIndustryType                    = big.NewInt(1 << 47)
 )
 
 type UpdateAccountsRequest struct {
@@ -10565,6 +10614,8 @@ type UpdateAccountsRequest struct {
 	DisputeFighterEnabled *bool `json:"dispute_fighter_enabled,omitempty" url:"-"`
 	// The account's end-user license agreement document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
 	Eula *UpdateAccountsRequestEula `json:"eula,omitempty" url:"-"`
+	// Your platform's own identifier for this subaccount. It must be unique among your subaccounts, and a duplicate returns a 409. Only the parent account can set it. Pass `null` to clear.
+	ExternalID *string `json:"external_id,omitempty" url:"-"`
 	// The ID of the product to feature for affiliates. Pass `null` to clear.
 	FeaturedAffiliateProductID *string `json:"featured_affiliate_product_id,omitempty" url:"-"`
 	// Public account home page preferences.
@@ -10730,6 +10781,13 @@ func (u *UpdateAccountsRequest) SetDisputeFighterEnabled(disputeFighterEnabled *
 func (u *UpdateAccountsRequest) SetEula(eula *UpdateAccountsRequestEula) {
 	u.Eula = eula
 	u.require(updateAccountsRequestFieldEula)
+}
+
+// SetExternalID sets the ExternalID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetExternalID(externalID *string) {
+	u.ExternalID = externalID
+	u.require(updateAccountsRequestFieldExternalID)
 }
 
 // SetFeaturedAffiliateProductID sets the FeaturedAffiliateProductID field and marks it as non-optional;
