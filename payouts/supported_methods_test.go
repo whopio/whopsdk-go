@@ -76,6 +76,14 @@ func TestSettersListSupportedMethodsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIncludeIndividualBanks", func(t *testing.T) {
+		obj := &ListSupportedMethodsRequest{}
+		var fernTestValueIncludeIndividualBanks *bool
+		obj.SetIncludeIndividualBanks(fernTestValueIncludeIndividualBanks)
+		assert.Equal(t, fernTestValueIncludeIndividualBanks, obj.IncludeIndividualBanks)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFirst", func(t *testing.T) {
 		obj := &ListSupportedMethodsRequest{}
 		var fernTestValueFirst *int
@@ -336,6 +344,37 @@ func TestSettersMarkExplicitListSupportedMethodsRequest(t *testing.T) {
 
 		// Act
 		obj.SetPartyType(fernTestValuePartyType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIncludeIndividualBanks_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsRequest{}
+		var fernTestValueIncludeIndividualBanks *bool
+
+		// Act
+		obj.SetIncludeIndividualBanks(fernTestValueIncludeIndividualBanks)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -687,6 +726,14 @@ func TestSettersListSupportedMethodsResponseDataItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetParentID", func(t *testing.T) {
+		obj := &ListSupportedMethodsResponseDataItem{}
+		var fernTestValueParentID *string
+		obj.SetParentID(fernTestValueParentID)
+		assert.Equal(t, fernTestValueParentID, obj.ParentID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetQuotes", func(t *testing.T) {
 		obj := &ListSupportedMethodsResponseDataItem{}
 		var fernTestValueQuotes []*ListSupportedMethodsResponseDataItemQuotesItem
@@ -896,6 +943,39 @@ func TestGettersListSupportedMethodsResponseDataItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetObject() // Should return zero value
+	})
+
+	t.Run("GetParentID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItem{}
+		var expected *string
+		obj.ParentID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetParentID(), "getter should return the property value")
+	})
+
+	t.Run("GetParentID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItem{}
+		obj.ParentID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetParentID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetParentID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListSupportedMethodsResponseDataItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetParentID() // Should return zero value
 	})
 
 	t.Run("GetQuotes", func(t *testing.T) {
@@ -1209,6 +1289,37 @@ func TestSettersMarkExplicitListSupportedMethodsResponseDataItem(t *testing.T) {
 
 		// Act
 		obj.SetObject(fernTestValueObject)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetParentID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListSupportedMethodsResponseDataItem{}
+		var fernTestValueParentID *string
+
+		// Act
+		obj.SetParentID(fernTestValueParentID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3661,6 +3772,7 @@ func TestRequiredNullableRoundTripListSupportedMethodsResponseDataItem(t *testin
 	requiredNullableKeys := []string{
 		"icon_url",
 		"name",
+		"parent_id",
 		"quotes",
 		"required_fields",
 	}
@@ -3675,7 +3787,7 @@ func TestRequiredNullableRoundTripListSupportedMethodsResponseDataItem(t *testin
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ListSupportedMethodsResponseDataItem
-		require.NoError(t, json.Unmarshal([]byte(`{"icon_url":null,"name":null,"quotes":null,"required_fields":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"icon_url":null,"name":null,"parent_id":null,"quotes":null,"required_fields":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

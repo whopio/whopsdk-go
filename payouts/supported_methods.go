@@ -20,10 +20,11 @@ var (
 	listSupportedMethodsRequestFieldSupportedPayoutMethodID = big.NewInt(1 << 5)
 	listSupportedMethodsRequestFieldDestinationCurrency     = big.NewInt(1 << 6)
 	listSupportedMethodsRequestFieldPartyType               = big.NewInt(1 << 7)
-	listSupportedMethodsRequestFieldFirst                   = big.NewInt(1 << 8)
-	listSupportedMethodsRequestFieldAfter                   = big.NewInt(1 << 9)
-	listSupportedMethodsRequestFieldLast                    = big.NewInt(1 << 10)
-	listSupportedMethodsRequestFieldBefore                  = big.NewInt(1 << 11)
+	listSupportedMethodsRequestFieldIncludeIndividualBanks  = big.NewInt(1 << 8)
+	listSupportedMethodsRequestFieldFirst                   = big.NewInt(1 << 9)
+	listSupportedMethodsRequestFieldAfter                   = big.NewInt(1 << 10)
+	listSupportedMethodsRequestFieldLast                    = big.NewInt(1 << 11)
+	listSupportedMethodsRequestFieldBefore                  = big.NewInt(1 << 12)
 )
 
 type ListSupportedMethodsRequest struct {
@@ -43,6 +44,8 @@ type ListSupportedMethodsRequest struct {
 	DestinationCurrency *string `json:"-" url:"destination_currency,omitempty"`
 	// Who will own the payout method. `first_party` is the account itself. `third_party` is a recipient the account pays, saved with `recipient` on `POST /payouts/methods`, which needs no identity fields. Only meaningful with supported_payout_method_id.
 	PartyType *ListSupportedMethodsRequestPartyType `json:"-" url:"party_type,omitempty"`
+	// Whether to list each bank as its own payout method in countries where people choose a bank by name. Each bank has `parent_id` set to the bank deposit method that lists it. When `false`, these countries list one bank deposit method instead.
+	IncludeIndividualBanks *bool `json:"-" url:"include_individual_banks,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
@@ -119,6 +122,13 @@ func (l *ListSupportedMethodsRequest) SetDestinationCurrency(destinationCurrency
 func (l *ListSupportedMethodsRequest) SetPartyType(partyType *ListSupportedMethodsRequestPartyType) {
 	l.PartyType = partyType
 	l.require(listSupportedMethodsRequestFieldPartyType)
+}
+
+// SetIncludeIndividualBanks sets the IncludeIndividualBanks field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportedMethodsRequest) SetIncludeIndividualBanks(includeIndividualBanks *bool) {
+	l.IncludeIndividualBanks = includeIndividualBanks
+	l.require(listSupportedMethodsRequestFieldIncludeIndividualBanks)
 }
 
 // SetFirst sets the First field and marks it as non-optional;
@@ -280,17 +290,19 @@ var (
 	listSupportedMethodsResponseDataItemFieldID                       = big.NewInt(1 << 3)
 	listSupportedMethodsResponseDataItemFieldName                     = big.NewInt(1 << 4)
 	listSupportedMethodsResponseDataItemFieldObject                   = big.NewInt(1 << 5)
-	listSupportedMethodsResponseDataItemFieldQuotes                   = big.NewInt(1 << 6)
-	listSupportedMethodsResponseDataItemFieldRequiredFields           = big.NewInt(1 << 7)
-	listSupportedMethodsResponseDataItemFieldSupportsInstantDelivery  = big.NewInt(1 << 8)
-	listSupportedMethodsResponseDataItemFieldSupportsPaypalLogin      = big.NewInt(1 << 9)
-	listSupportedMethodsResponseDataItemFieldSupportsStandardDelivery = big.NewInt(1 << 10)
+	listSupportedMethodsResponseDataItemFieldParentID                 = big.NewInt(1 << 6)
+	listSupportedMethodsResponseDataItemFieldQuotes                   = big.NewInt(1 << 7)
+	listSupportedMethodsResponseDataItemFieldRequiredFields           = big.NewInt(1 << 8)
+	listSupportedMethodsResponseDataItemFieldSupportsInstantDelivery  = big.NewInt(1 << 9)
+	listSupportedMethodsResponseDataItemFieldSupportsPaypalLogin      = big.NewInt(1 << 10)
+	listSupportedMethodsResponseDataItemFieldSupportsStandardDelivery = big.NewInt(1 << 11)
 )
 
 // listSupportedMethodsResponseDataItemNullableFields maps the wire names of ListSupportedMethodsResponseDataItem's nullable fields (required or optional) to their field bits.
 var listSupportedMethodsResponseDataItemNullableFields = map[string]*big.Int{
 	"icon_url":        listSupportedMethodsResponseDataItemFieldIconURL,
 	"name":            listSupportedMethodsResponseDataItemFieldName,
+	"parent_id":       listSupportedMethodsResponseDataItemFieldParentID,
 	"quotes":          listSupportedMethodsResponseDataItemFieldQuotes,
 	"required_fields": listSupportedMethodsResponseDataItemFieldRequiredFields,
 }
@@ -307,6 +319,8 @@ type ListSupportedMethodsResponseDataItem struct {
 	// Supported payout method display name.
 	Name   *string                                    `json:"name,omitempty" url:"name,omitempty"`
 	Object ListSupportedMethodsResponseDataItemObject `json:"object" url:"object"`
+	// The ID of the supported payout method that lists this one, such as the bank deposit method that lists a named bank. Show this method as a choice inside that method, not as a separate method. Null for every other method.
+	ParentID *string `json:"parent_id,omitempty" url:"parent_id,omitempty"`
 	// Fee and delivery estimates for the requested amount, one per destination currency. Null unless an amount was provided.
 	Quotes []*ListSupportedMethodsResponseDataItemQuotesItem `json:"quotes,omitempty" url:"quotes,omitempty"`
 	// Fields to collect before saving this supported payout method. Present only when supported_payout_method_id narrows the request to one method.
@@ -363,6 +377,13 @@ func (l *ListSupportedMethodsResponseDataItem) GetObject() ListSupportedMethodsR
 		return ""
 	}
 	return l.Object
+}
+
+func (l *ListSupportedMethodsResponseDataItem) GetParentID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.ParentID
 }
 
 func (l *ListSupportedMethodsResponseDataItem) GetQuotes() []*ListSupportedMethodsResponseDataItemQuotesItem {
@@ -456,6 +477,13 @@ func (l *ListSupportedMethodsResponseDataItem) SetName(name *string) {
 func (l *ListSupportedMethodsResponseDataItem) SetObject(object ListSupportedMethodsResponseDataItemObject) {
 	l.Object = object
 	l.require(listSupportedMethodsResponseDataItemFieldObject)
+}
+
+// SetParentID sets the ParentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportedMethodsResponseDataItem) SetParentID(parentID *string) {
+	l.ParentID = parentID
+	l.require(listSupportedMethodsResponseDataItemFieldParentID)
 }
 
 // SetQuotes sets the Quotes field and marks it as non-optional;
