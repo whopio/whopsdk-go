@@ -51841,6 +51841,132 @@ client.Stats.TimeSeries.Retrieve(
 </dl>
 </details>
 
+## Trades Candles
+<details><summary><code>client.Trades.Candles.List() -> *trades.ListCandlesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Returns price candles for a tokenized stock, oldest first.
+
+- **Intervals:** `1h`, `2h`, `4h`, `6h` and `12h` candles cover the last 30 days. `1d` and `1w` candles cover the full history.
+- **Weeks** start on Monday at 00:00 UTC.
+
+This endpoint is public: no API key is needed, and each IP address can make up to 60 requests a minute.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &trades.ListCandlesRequest{
+    Market: "market",
+    Interval: trades.ListCandlesRequestIntervalOneH,
+    From: whopsdk.MustParseDateTime(
+        "2024-01-15T09:30:00Z",
+    ),
+}
+client.Trades.Candles.List(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**market:** `string` — The tokenized stock's ticker, such as `NVDA`. This is the `id` of a spot market from List Markets.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**interval:** `trades.ListCandlesRequestInterval` — How much time each candle covers.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**from:** `time.Time` — Return candles that start at or after this time, as an ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**to:** `*time.Time` — Return candles that start before this time, as an ISO 8601 timestamp. Defaults to now.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**last:** `*int` — Number of results to return from the end of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Trades Markets
 <details><summary><code>client.Trades.Markets.List() -> *trades.ListMarketsResponse</code></summary>
 <dl>

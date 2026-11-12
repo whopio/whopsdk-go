@@ -18902,6 +18902,44 @@
       }
     },
     {
+      "id": "11d258b1-b260-42ff-ac6e-cbe66fab78bd",
+      "name": "List Candles - candles",
+      "request": {
+        "urlPathTemplate": "/trades/candles",
+        "method": "GET",
+        "queryParameters": {
+          "market": {
+            "equalTo": "market"
+          },
+          "interval": {
+            "equalTo": "1h"
+          },
+          "from": {
+            "equalTo": "2024-01-15T09:30:00.000Z"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"close\": {\n        \"amount\": \"161.00000000\",\n        \"currency\": \"usd\",\n        \"decimals\": 8,\n        \"display_decimals\": 8\n      },\n      \"high\": {\n        \"amount\": \"161.40000000\",\n        \"currency\": \"usd\",\n        \"decimals\": 8,\n        \"display_decimals\": 8\n      },\n      \"low\": {\n        \"amount\": \"159.60000000\",\n        \"currency\": \"usd\",\n        \"decimals\": 8,\n        \"display_decimals\": 8\n      },\n      \"open\": {\n        \"amount\": \"160.00000000\",\n        \"currency\": \"usd\",\n        \"decimals\": 8,\n        \"display_decimals\": 8\n      },\n      \"started_at\": \"2026-11-12T00:00:00.000Z\",\n      \"volume\": {\n        \"amount\": \"900.00\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      }\n    },\n    {\n      \"close\": {\n        \"amount\": \"161.80000000\",\n        \"currency\": \"usd\",\n        \"decimals\": 8,\n        \"display_decimals\": 8\n      },\n      \"high\": {\n        \"amount\": \"162.50000000\",\n        \"currency\": \"usd\",\n        \"decimals\": 8,\n        \"display_decimals\": 8\n      },\n      \"low\": {\n        \"amount\": \"160.20000000\",\n        \"currency\": \"usd\",\n        \"decimals\": 8,\n        \"display_decimals\": 8\n      },\n      \"open\": {\n        \"amount\": \"161.00000000\",\n        \"currency\": \"usd\",\n        \"decimals\": 8,\n        \"display_decimals\": 8\n      },\n      \"started_at\": \"2026-11-12T01:00:00.000Z\",\n      \"volume\": {\n        \"amount\": \"1200.00\",\n        \"currency\": \"usd\",\n        \"decimals\": 2,\n        \"display_decimals\": 2\n      }\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"Mg\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"MQ\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "11d258b1-b260-42ff-ac6e-cbe66fab78bd",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
       "id": "ec56e604-f713-4eb2-bca1-a94413e7e940",
       "name": "List Markets - markets",
       "request": {
@@ -19317,6 +19355,6 @@
     }
   ],
   "meta": {
-    "total": 540
+    "total": 541
   }
 }
