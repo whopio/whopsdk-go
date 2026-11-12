@@ -1053,7 +1053,7 @@ type Account struct {
 	TargetAudience             *string                 `json:"target_audience,omitempty" url:"target_audience,omitempty"`
 	TaxCollectionEnabledStates []string                `json:"tax_collection_enabled_states" url:"tax_collection_enabled_states"`
 	TaxIdentifiers             []*AccountTaxIdentifier `json:"tax_identifiers" url:"tax_identifiers"`
-	// Who calculates and remits tax for the account: `whop` (Whop calculates and remits), `self` (Whop calculates; the account collects and remits), or `none` (neither; the account is responsible). `null` until the account enrolls in the Whop tax service.
+	// Who calculates and remits tax for the account. `whop` means Whop calculates and remits. `self` means Whop calculates, and the account collects and remits. `none` means neither, and the account is responsible. New businesses start on `whop`, and new connected accounts start on `none`. `null` means the account has no setting yet.
 	TaxRemittedBy *AccountTaxRemittedBy `json:"tax_remitted_by,omitempty" url:"tax_remitted_by,omitempty"`
 	// How tax is applied to the account's prices: `inclusive` (tax included in the listed price) or `exclusive` (tax added on top). Defaults to `exclusive` when unset; `null` only when the account has no payment connection.
 	TaxType *AccountTaxType `json:"tax_type,omitempty" url:"tax_type,omitempty"`
@@ -5745,7 +5745,7 @@ func (a AccountTaxIdentifierTaxIDType) Ptr() *AccountTaxIdentifierTaxIDType {
 	return &a
 }
 
-// Who calculates and remits tax for the account: `whop` (Whop calculates and remits), `self` (Whop calculates; the account collects and remits), or `none` (neither; the account is responsible). `null` until the account enrolls in the Whop tax service.
+// Who calculates and remits tax for the account. `whop` means Whop calculates and remits. `self` means Whop calculates, and the account collects and remits. `none` means neither, and the account is responsible. New businesses start on `whop`, and new connected accounts start on `none`. `null` means the account has no setting yet.
 type AccountTaxRemittedBy string
 
 const (
