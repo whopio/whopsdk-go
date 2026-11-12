@@ -2108,7 +2108,7 @@ type CreateInvoicesRequestItemsItemVariant struct {
 	AllowMultipleQuantity *bool `json:"allow_multiple_quantity,omitempty" url:"allow_multiple_quantity,omitempty"`
 	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for subaccounts with a parent account.
 	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
-	// Recurring billing interval in days.
+	// A recurring variant's billing period in days, from 2 to 365, such as `45`.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
 	// Billing model for the variant.
 	BillingType *CreateInvoicesRequestItemsItemVariantBillingType `json:"billing_type,omitempty" url:"billing_type,omitempty"`
@@ -5347,7 +5347,7 @@ type UpdateInvoicesRequestItemsItemVariant struct {
 	AllowMultipleQuantity *bool `json:"allow_multiple_quantity,omitempty" url:"allow_multiple_quantity,omitempty"`
 	// Application fee the platform collects per unit, in the variant currency (5.00 means $5.00 for USD). Must be positive and below the initial price for one-time variants or renewal price for recurring variants. Paid to the parent account alongside other processing fees; collection is capped to remaining proceeds. Applies to subsequent payments on recurring variants. Only valid for subaccounts with a parent account.
 	ApplicationFeeAmount *float64 `json:"application_fee_amount,omitempty" url:"application_fee_amount,omitempty"`
-	// Recurring billing interval in days.
+	// A recurring variant's billing period in days, from 2 to 365, such as `45`.
 	BillingPeriod *int `json:"billing_period,omitempty" url:"billing_period,omitempty"`
 	// Billing model for the variant.
 	BillingType *UpdateInvoicesRequestItemsItemVariantBillingType `json:"billing_type,omitempty" url:"billing_type,omitempty"`
