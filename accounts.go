@@ -499,7 +499,7 @@ var (
 )
 
 type MeAccountsRequest struct {
-	// Also return the trading account under `trading`: its address and its Hyperliquid WebSocket subscriptions. Requires crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet; null otherwise.
+	// Also return the trading account under `trading`: its address, a snapshot of its margin and open positions, and its Hyperliquid WebSocket subscriptions. Requires crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet. Otherwise `trading` is `null`.
 	IncludeTrading *bool `json:"-" url:"include_trading,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -530,7 +530,7 @@ var (
 type RetrieveAccountsRequest struct {
 	// Account ID, prefixed `biz_`, its public route, or `me` for the account associated with the current Account API key. User tokens have no single account, so they cannot use `me`.
 	ID string `json:"-" url:"-"`
-	// Also return the trading account under `trading`: its address and its Hyperliquid WebSocket subscriptions. Requires crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet; null otherwise.
+	// Also return the trading account under `trading`: its address, a snapshot of its margin and open positions, and its Hyperliquid WebSocket subscriptions. Requires crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet. Otherwise `trading` is `null`.
 	IncludeTrading *bool `json:"-" url:"include_trading,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1067,7 +1067,7 @@ type Account struct {
 	TotalEarnedUsd *float64 `json:"total_earned_usd,omitempty" url:"total_earned_usd,omitempty"`
 	// Total USD value across balances with known exchange rates. Computed only on single-account reads (`retrieve` and `me`); `null` on list responses, writes, missing balance-read permission, or unavailable balance source.
 	TotalUsd *string `json:"total_usd,omitempty" url:"total_usd,omitempty"`
-	// The trading account address and its WebSocket subscriptions. Opt in with `include_trading=true` on single-account reads. `null` otherwise, without trading permission, or without an Ethereum wallet.
+	// The trading account address, a snapshot of its margin and open positions, and its WebSocket subscriptions. Opt in with `include_trading=true` on single-account reads. `null` otherwise, without trading permission, or without an Ethereum wallet.
 	Trading *TradingAccount `json:"trading,omitempty" url:"trading,omitempty"`
 	// Whether the account uses its logo as the fallback Open Graph image.
 	UseLogoAsOpengraphImageFallback bool `json:"use_logo_as_opengraph_image_fallback" url:"use_logo_as_opengraph_image_fallback"`

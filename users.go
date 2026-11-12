@@ -138,7 +138,7 @@ var (
 )
 
 type MeUsersRequest struct {
-	// Also return the trading account under `trading`: its address and its Hyperliquid WebSocket subscriptions. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet.
+	// Also return the trading account under `trading`: its address, a snapshot of its margin and open positions, and its Hyperliquid WebSocket subscriptions. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet.
 	IncludeTrading *bool `json:"-" url:"include_trading,omitempty"`
 	// When set, returns your account-specific profile overrides for this account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
@@ -267,7 +267,7 @@ var (
 type RetrieveUsersRequest struct {
 	// User ID (prefixed `user_`), username, or `me` for the authenticated user.
 	ID string `json:"-" url:"-"`
-	// Also return the trading account under `trading`: its address and its Hyperliquid WebSocket subscriptions. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet.
+	// Also return the trading account under `trading`: its address, a snapshot of its margin and open positions, and its Hyperliquid WebSocket subscriptions. Only honored on the self view (me) with crypto_wallet:trade:read, crypto_wallet:trade, or crypto_wallet:manage permission and an Ethereum wallet.
 	IncludeTrading *bool `json:"-" url:"include_trading,omitempty"`
 	// When set, returns the user's account-specific profile overrides for this account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
@@ -698,7 +698,7 @@ type User struct {
 	State *string `json:"state,omitempty" url:"state,omitempty"`
 	// Total USD value of the user's personal holdings in `balances`, across those with known exchange rates. Computed only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise, when `include_balance=false`, or when the balance source is unavailable.
 	TotalUsd *string `json:"total_usd,omitempty" url:"total_usd,omitempty"`
-	// The trading account address and its WebSocket subscriptions. Opt in with `include_trading=true` when retrieving `me`. `null` otherwise, without trading permission, or without an Ethereum wallet.
+	// The trading account address, a snapshot of its margin and open positions, and its WebSocket subscriptions. Opt in with `include_trading=true` when retrieving `me`. `null` otherwise, without trading permission, or without an Ethereum wallet.
 	Trading *TradingAccount `json:"trading,omitempty" url:"trading,omitempty"`
 	// The user's unique username
 	Username string `json:"username" url:"username"`
