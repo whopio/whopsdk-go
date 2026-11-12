@@ -154,6 +154,32 @@ func TestInvoicesRetrieveWithWireMock(
 	VerifyRequestCount(t, "TestInvoicesRetrieveWithWireMock", "GET", "/invoices/id", nil, 1)
 }
 
+func TestInvoicesDeleteWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.DeleteInvoicesRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Invoices.Delete(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestInvoicesDeleteWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestInvoicesDeleteWithWireMock", "DELETE", "/invoices/id", nil, 1)
+}
+
 func TestInvoicesUpdateWithWireMock(
 	t *testing.T,
 ) {
