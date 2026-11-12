@@ -99,7 +99,7 @@ type CreateInvoicesRequest struct {
 	DueAt *time.Time `json:"due_at,omitempty" url:"-"`
 	// Resolve or create the member for this email, creating a Whop user when none exists. Mutually exclusive with member_id.
 	EmailAddress *string `json:"email_address,omitempty" url:"-"`
-	// The variants being invoiced, all in the same currency. Each variant may appear once; use quantity for multiple units. Product and price come from each variant; a recurring variant must belong to a product, bills its renewal price and, once the invoice is paid, renews as a subscription collected by the `collection_method` the invoice was sent or issued with. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, and access settings.
+	// The variants being invoiced, all in the same currency. Each variant may appear once. Use quantity for multiple units. A recurring variant must belong to a product. Its first invoice charges `initial_price` plus `renewal_price`. Later invoices charge only `renewal_price`. Paying the first invoice starts a paid billing period immediately, without the variant's trial. The subscription uses the `collection_method` the invoice was sent or issued with. A finite payment count includes the first paid invoice. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, and access settings.
 	Items []*CreateInvoicesRequestItemsItem `json:"items" url:"-"`
 	// An address associated with the member. Mutually exclusive with billing_address.
 	MailingAddressID *string `json:"mailing_address_id,omitempty" url:"-"`
@@ -1424,7 +1424,7 @@ type InvoiceLineItem struct {
 	Subtotal *Money `json:"subtotal,omitempty" url:"subtotal,omitempty"`
 	// The tax collected on this item, in the payment's `currency`. Null when no tax was recorded.
 	TaxAmount *Money `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
-	// The price of one unit before discounts, in the payment's `currency`. Null when the payment recorded no price.
+	// The saved price of one unit before discounts, in the payment's `currency`. Creating or replacing recurring items includes the upfront fee and first billing period. Renewal invoices exclude the upfront fee. Other edits preserve saved prices. Null when the payment recorded no price.
 	UnitAmount *Money `json:"unit_amount,omitempty" url:"unit_amount,omitempty"`
 	// The variant bought, prefixed `plan_`. Null when the variant has since been deleted.
 	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
@@ -6739,7 +6739,7 @@ type UpdateInvoicesRequest struct {
 	BuyerFeePercentage *float64 `json:"buyer_fee_percentage,omitempty" url:"-"`
 	// When payment is due, as an ISO 8601 timestamp.
 	DueAt *time.Time `json:"due_at,omitempty" url:"-"`
-	// The variants being invoiced, all in the same currency. Each variant may appear once; use quantity for multiple units. Product and price come from each variant; a recurring variant must belong to a product, bills its renewal price and, once the invoice is paid, renews as a subscription collected by the `collection_method` the invoice was sent or issued with. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, and access settings.
+	// The variants being invoiced, all in the same currency. Each variant may appear once. Use quantity for multiple units. A recurring variant must belong to a product. Its first invoice charges `initial_price` plus `renewal_price`. Later invoices charge only `renewal_price`. Paying the first invoice starts a paid billing period immediately, without the variant's trial. The subscription uses the `collection_method` the invoice was sent or issued with. A finite payment count includes the first paid invoice. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, and access settings.
 	Items []*UpdateInvoicesRequestItemsItem `json:"items,omitempty" url:"-"`
 	// An address associated with the member. Mutually exclusive with billing_address.
 	MailingAddressID *string `json:"mailing_address_id,omitempty" url:"-"`
