@@ -2,5 +2,5 @@
 
 // A Review Report is a request from an account's admins for Whop staff to review a customer's review. Staff remove the review if it breaks the guidelines.
 //
-// Use the Review Reports API to list the reports filed on an account's reviews, narrowed by review, status, or creation date, and check whether a report is still pending.
+// Use the Review Reports API to list the reports filed on an account's reviews, narrowed by review, status, or creation date. Check `status` to see whether a report is still pending.
 package reviewreports

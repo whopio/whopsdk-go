@@ -9466,13 +9466,13 @@ type ChannelMember struct {
 	CreatedAt *string `json:"created_at,omitempty" url:"created_at,omitempty"`
 	// Stored membership ID, or null for access-derived users.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
-	// Your private-channel inbox state; null for other users or channel kinds.
+	// Your inbox state for a private channel. `null` for other users and other channel kinds.
 	InboxStatus *ChannelMemberInboxStatus `json:"inbox_status,omitempty" url:"inbox_status,omitempty"`
 	// Authorized participant read position. Community positions are visible only to the user themselves.
 	LastViewedAt           *string                              `json:"last_viewed_at,omitempty" url:"last_viewed_at,omitempty"`
 	NotificationPreference *ChannelMemberNotificationPreference `json:"notification_preference,omitempty" url:"notification_preference,omitempty"`
 	PinnedPosition         *int                                 `json:"pinned_position,omitempty" url:"pinned_position,omitempty"`
-	// Personal unread state; null for other users.
+	// Your unread state for the channel. `null` for other users.
 	Unread *bool `json:"unread,omitempty" url:"unread,omitempty"`
 	// When the stored channel membership last changed, as an ISO 8601 timestamp. Null for users whose access does not have a stored membership.
 	UpdatedAt *string      `json:"updated_at,omitempty" url:"updated_at,omitempty"`
@@ -9706,7 +9706,7 @@ func (c *ChannelMember) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Your private-channel inbox state; null for other users or channel kinds.
+// Your inbox state for a private channel. `null` for other users and other channel kinds.
 type ChannelMemberInboxStatus string
 
 const (
@@ -9805,7 +9805,7 @@ type ChatMessage struct {
 	AuthorIsTeamMember bool    `json:"author_is_team_member" url:"author_is_team_member"`
 	AuthorUserID       *string `json:"author_user_id,omitempty" url:"author_user_id,omitempty"`
 	ChannelID          string  `json:"channel_id" url:"channel_id"`
-	// Markdown content; null for a deleted message.
+	// Markdown content. `null` for a deleted message.
 	Content *string `json:"content,omitempty" url:"content,omitempty"`
 	// Creation time as an ISO 8601 timestamp.
 	CreatedAt    string               `json:"created_at" url:"created_at"`
@@ -9830,7 +9830,7 @@ type ChatMessage struct {
 	ReplyingToUserID *string `json:"replying_to_user_id,omitempty" url:"replying_to_user_id,omitempty"`
 	// Last message change as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
-	// Experience view count; null for DM-backed channels.
+	// Experience view count. `null` for DM-backed channels.
 	ViewCount *int `json:"view_count,omitempty" url:"view_count,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -18782,9 +18782,10 @@ type Embed struct {
 	Color       *int          `json:"color,omitempty" url:"color,omitempty"`
 	Description *string       `json:"description,omitempty" url:"description,omitempty"`
 	Fields      []*EmbedField `json:"fields" url:"fields"`
-	Footer      *EmbedFooter  `json:"footer,omitempty" url:"footer,omitempty"`
-	Image       *EmbedImage   `json:"image,omitempty" url:"image,omitempty"`
-	Thumbnail   *EmbedImage   `json:"thumbnail,omitempty" url:"thumbnail,omitempty"`
+	// Footer shown at the bottom of the embed. Null when the embed has no footer.
+	Footer    *EmbedFooter `json:"footer,omitempty" url:"footer,omitempty"`
+	Image     *EmbedImage  `json:"image,omitempty" url:"image,omitempty"`
+	Thumbnail *EmbedImage  `json:"thumbnail,omitempty" url:"thumbnail,omitempty"`
 	// Time supplied by the embed author, as an ISO 8601 timestamp in UTC. Null when missing or invalid.
 	TimestampAt *string `json:"timestamp_at,omitempty" url:"timestamp_at,omitempty"`
 	Title       *string `json:"title,omitempty" url:"title,omitempty"`
@@ -19117,6 +19118,7 @@ var embedFooterNullableFields = map[string]*big.Int{
 }
 
 type EmbedFooter struct {
+	// Small image shown beside the footer text. Null when the footer has no icon.
 	Icon *EmbedImage `json:"icon,omitempty" url:"icon,omitempty"`
 	Text string      `json:"text" url:"text"`
 
@@ -20449,7 +20451,7 @@ var fileNullableFields = map[string]*big.Int{
 type File struct {
 	// BlurHash placeholder for an image or video. Null when unavailable or removed by moderation.
 	Blurhash *string `json:"blurhash,omitempty" url:"blurhash,omitempty"`
-	// The original file's MIME type, preserved when removed by moderation, e.g. `application/pdf`.
+	// The original file's MIME type, for example `application/pdf`. It is kept when moderation removes the file.
 	ContentType *string `json:"content_type,omitempty" url:"content_type,omitempty"`
 	// When the file was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
@@ -20468,7 +20470,7 @@ type File struct {
 	MultipartUploadURLs []*FileMultipartURL `json:"multipart_upload_urls,omitempty" url:"multipart_upload_urls,omitempty"`
 	// The type of this object, always `file`.
 	Object string `json:"object" url:"object"`
-	// Whether moderation removed the file. When true, `url` serves a replacement image; filename, size, and content type still describe the original file.
+	// Whether moderation removed the file. When `true`, `url` serves a replacement image. `filename`, `size` and `content_type` still describe the original file.
 	RemovedByModeration bool `json:"removed_by_moderation" url:"removed_by_moderation"`
 	// The file size in bytes. `null` until the upload has finished.
 	Size *int `json:"size,omitempty" url:"size,omitempty"`
@@ -20478,9 +20480,9 @@ type File struct {
 	UploadStatus FileUploadStatus `json:"upload_status" url:"upload_status"`
 	// Presigned URL to PUT the file's bytes to. Present only on create, and only for single-part uploads.
 	UploadURL *string `json:"upload_url,omitempty" url:"upload_url,omitempty"`
-	// A URL to download the file: a permanent CDN URL for public files, a signed expiring URL for private ones. Null until the upload has finished; a replacement image URL when removed by moderation.
+	// A URL to download the file. Public files get a permanent CDN URL, and private files get a signed URL that expires. `null` until the upload has finished. When moderation removes the file, a replacement image URL.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
-	// `public` files are served via an unsigned CDN URL; `private` files via a signed, expiring URL.
+	// `public` files are served from an unsigned CDN URL. `private` files are served from a signed URL that expires.
 	Visibility FileVisibility `json:"visibility" url:"visibility"`
 	// Audio waveform URL. Null when unavailable or removed by moderation.
 	WaveformURL *string `json:"waveform_url,omitempty" url:"waveform_url,omitempty"`
@@ -41401,7 +41403,7 @@ type MessageReactionCount struct {
 	Reacted    bool `json:"reacted" url:"reacted"`
 	TotalScore int  `json:"total_score" url:"total_score"`
 	UserCount  int  `json:"user_count" url:"user_count"`
-	// The Unicode emoji for emoji reactions; otherwise the reaction's value.
+	// The Unicode emoji for an emoji reaction. For other reaction kinds, the reaction's value.
 	Value *string `json:"value,omitempty" url:"value,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -41830,11 +41832,11 @@ var (
 )
 
 type Money struct {
-	// The amount in major units, as an exact decimal string — `"10.00"` is ten dollars. A string so no float rounds it in transit.
+	// The amount in major units, as an exact decimal string. For example, `"10.00"` is ten dollars. It is a string so that no float rounds it in transit.
 	Amount string `json:"amount" url:"amount"`
 	// Three-letter ISO 4217 currency code, lowercase.
 	Currency string `json:"currency" url:"currency"`
-	// How many decimal places the amount CARRIES — the precision the charge itself runs at.
+	// How many decimal places the amount carries. This is the precision the charge itself runs at.
 	Decimals int `json:"decimals" url:"decimals"`
 	// How many decimal places to SHOW. Usually equal to `decimals`, and deliberately not always: COP is charged in centavos but written in whole pesos, so it is `2` and `0`. Format the number in your own locale using this.
 	DisplayDecimals int `json:"display_decimals" url:"display_decimals"`
@@ -63777,7 +63779,7 @@ var (
 type ProductLegacyCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
-	// URL slug for the account's store page, e.g. `pickaxe` in whop.com/pickaxe.
+	// URL slug for the account's store page. For example, `pickaxe` in whop.com/pickaxe.
 	Route string `json:"route" url:"route"`
 	// The display name of the company shown to customers.
 	Title string `json:"title" url:"title"`
@@ -78121,7 +78123,7 @@ var (
 )
 
 type UserProfilePicture struct {
-	// Avatar image URL. Always present — a generated placeholder when the user set no picture.
+	// Avatar image URL. Always present. It is a generated placeholder when the user set no picture.
 	URL string `json:"url" url:"url"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -78220,7 +78222,7 @@ type UserSummary struct {
 	ID string `json:"id" url:"id"`
 	// Display name.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// Avatar wrapper; its `url` is always present, using a generated placeholder when the user set no picture.
+	// Avatar wrapper. Its `url` is always present, and is a generated placeholder when the user set no picture.
 	ProfilePicture *UserProfilePicture `json:"profile_picture" url:"profile_picture"`
 	// Public username.
 	Username string `json:"username" url:"username"`

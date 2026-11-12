@@ -241,7 +241,7 @@ type AutomationEnrollment struct {
 	NextStepID *string `json:"next_step_id,omitempty" url:"next_step_id,omitempty"`
 	// The `key` of the step the member is waiting on, in their version. `null` once the enrollment ends.
 	NextStepKey *int `json:"next_step_key,omitempty" url:"next_step_key,omitempty"`
-	// `active` while the member moves through the automation, `completed` after its last step, `canceled` when the account canceled the enrollment or stopped or deleted the automation.
+	// `active` while the member moves through the automation. `completed` after its last step. `canceled` when the account canceled the enrollment, or stopped or deleted the automation.
 	Status AutomationEnrollmentStatus `json:"status" url:"status"`
 	// The webhook event that enrolled the member. `null` when `POST /automations/{id}/trigger` enrolled them.
 	TriggerEvent *AutomationEnrollmentTriggerEvent `json:"trigger_event,omitempty" url:"trigger_event,omitempty"`
@@ -536,7 +536,7 @@ func (a *AutomationEnrollment) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// `active` while the member moves through the automation, `completed` after its last step, `canceled` when the account canceled the enrollment or stopped or deleted the automation.
+// `active` while the member moves through the automation. `completed` after its last step. `canceled` when the account canceled the enrollment, or stopped or deleted the automation.
 type AutomationEnrollmentStatus string
 
 const (

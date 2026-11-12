@@ -361,7 +361,7 @@ type ProductAffiliateUser struct {
 	ID string `json:"id" url:"id"`
 	// Display name.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// Avatar wrapper; its `url` is always present, using a generated placeholder when the user set no picture.
+	// Avatar wrapper. Its `url` is always present, and is a generated placeholder when the user set no picture.
 	ProfilePicture *UserProfilePicture `json:"profile_picture" url:"profile_picture"`
 	// Public username.
 	Username string `json:"username" url:"username"`

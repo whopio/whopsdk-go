@@ -2,5 +2,5 @@
 
 // An Automation enrollment is one member's pass through an automation. It records the version the member is on, the step they reach next and when, and whether they are still going, finished, or canceled.
 //
-// Use the Automation enrollments API to list who is in an automation, or which automations a member is in, retrieve one enrollment, and cancel one to stop that member's remaining steps.
+// Use the Automation enrollments API to list who is in an automation, or which automations a member is in. You can also retrieve one enrollment, and cancel one to stop that member's remaining steps.
 package automationenrollments

@@ -972,7 +972,7 @@ var (
 type ExperienceCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
-	// URL slug for the account's store page, e.g. `pickaxe` in whop.com/pickaxe.
+	// URL slug for the account's store page. For example, `pickaxe` in whop.com/pickaxe.
 	Route string `json:"route" url:"route"`
 	// The display name of the company shown to customers.
 	Title string `json:"title" url:"title"`
@@ -1656,7 +1656,7 @@ var (
 type ExperienceListItemCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
-	// URL slug for the account's store page, e.g. `pickaxe` in whop.com/pickaxe.
+	// URL slug for the account's store page. For example, `pickaxe` in whop.com/pickaxe.
 	Route string `json:"route" url:"route"`
 	// The display name of the company shown to customers.
 	Title string `json:"title" url:"title"`

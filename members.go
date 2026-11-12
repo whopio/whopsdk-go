@@ -1038,7 +1038,7 @@ type MemberUser struct {
 	ID string `json:"id" url:"id"`
 	// Display name.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
-	// Avatar wrapper; its `url` is always present, using a generated placeholder when the user set no picture.
+	// Avatar wrapper. Its `url` is always present, and is a generated placeholder when the user set no picture.
 	ProfilePicture *UserProfilePicture `json:"profile_picture" url:"profile_picture"`
 	// The user's state or region code, like `CA`, derived from their IP address. `null` when unknown or the user turned off location sharing.
 	State *string `json:"state,omitempty" url:"state,omitempty"`
