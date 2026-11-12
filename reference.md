@@ -297,6 +297,14 @@ client.Accounts.List(
 <dl>
 <dd>
 
+**externalID:** `*string` — Return only the subaccount with this `external_id`, matched exactly and case-sensitively. End it with `%` to return every subaccount whose `external_id` starts with the text before it, such as `shopline:%`. `%` is accepted only at the end, because anywhere else it would scan all your subaccounts. `_` always matches literally.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **volumeMin:** `*float64` — Return only accounts whose lifetime USD volume is at least this value. Requires `stats:read` on the parent account.
     
 </dd>
@@ -419,7 +427,15 @@ client.Accounts.Create(
 <dl>
 <dd>
 
-**metadata:** `map[string]any` — Arbitrary key/value metadata to store on the account.
+**externalID:** `*string` — Your platform's own identifier for this subaccount, such as your user or store ID. Unique among your subaccounts: creating a second account with the same `external_id` and a different `email` returns a 409, unless `reassign_external_id` is `true`. Retrying with the same `email` and `external_id` returns the existing account. Subaccounts only.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**metadata:** `map[string]any` — Arbitrary key/value metadata to store on the account. When `external_id` is not sent, an `external_id` key here sets `external_id` and follows its rules. It must be unique among your subaccounts unless `reassign_external_id` is `true`. It stays in `metadata` as sent. Changing it later does not change `external_id`.
     
 </dd>
 </dl>
@@ -435,6 +451,14 @@ client.Accounts.Create(
 <dl>
 <dd>
 
+**reassignExternalID:** `*bool` — Pass `true` to move `external_id` to the new subaccount when another of your subaccounts already has it. Without it, that request returns a 409. The subaccount that had it is not deleted. It stays active with `external_id` set to `null`, and its `metadata` is unchanged. Requires `external_id`. Also requires the `company:update` permission on your platform account, in addition to `company:create_child`. Ignored when the same `email` already has the `external_id`, which returns that account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **sendCustomerEmails:** `*bool` — Whether Whop sends transactional emails to customers on behalf of the subaccount.
     
 </dd>
@@ -443,7 +467,7 @@ client.Accounts.Create(
 <dl>
 <dd>
 
-**title:** `*string` — The display name of the account. Defaults to `metadata.external_id` or the owner's email when omitted.
+**title:** `*string` — The display name of the account. Defaults to `external_id` or the owner's email when omitted.
     
 </dd>
 </dl>
@@ -894,6 +918,14 @@ client.Accounts.Update(
 <dd>
 
 **eula:** `*whopsdk.UpdateAccountsRequestEula` — The account's end-user license agreement document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**externalID:** `*string` — Your platform's own identifier for this subaccount. It must be unique among your subaccounts, and a duplicate returns a 409. Only the parent account can set it. Pass `null` to clear.
     
 </dd>
 </dl>

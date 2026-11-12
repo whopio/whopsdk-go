@@ -51,6 +51,14 @@ func TestSettersCreateAccountsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetExternalID", func(t *testing.T) {
+		obj := &CreateAccountsRequest{}
+		var fernTestValueExternalID *string
+		obj.SetExternalID(fernTestValueExternalID)
+		assert.Equal(t, fernTestValueExternalID, obj.ExternalID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetMetadata", func(t *testing.T) {
 		obj := &CreateAccountsRequest{}
 		var fernTestValueMetadata map[string]any
@@ -64,6 +72,14 @@ func TestSettersCreateAccountsRequest(t *testing.T) {
 		var fernTestValueOrchestrationEnabled *bool
 		obj.SetOrchestrationEnabled(fernTestValueOrchestrationEnabled)
 		assert.Equal(t, fernTestValueOrchestrationEnabled, obj.OrchestrationEnabled)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetReassignExternalID", func(t *testing.T) {
+		obj := &CreateAccountsRequest{}
+		var fernTestValueReassignExternalID *bool
+		obj.SetReassignExternalID(fernTestValueReassignExternalID)
+		assert.Equal(t, fernTestValueReassignExternalID, obj.ReassignExternalID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -249,6 +265,37 @@ func TestSettersMarkExplicitCreateAccountsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetExternalID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAccountsRequest{}
+		var fernTestValueExternalID *string
+
+		// Act
+		obj.SetExternalID(fernTestValueExternalID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetMetadata_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -288,6 +335,37 @@ func TestSettersMarkExplicitCreateAccountsRequest(t *testing.T) {
 
 		// Act
 		obj.SetOrchestrationEnabled(fernTestValueOrchestrationEnabled)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetReassignExternalID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateAccountsRequest{}
+		var fernTestValueReassignExternalID *bool
+
+		// Act
+		obj.SetReassignExternalID(fernTestValueReassignExternalID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1006,6 +1084,14 @@ func TestSettersListAccountsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetExternalID", func(t *testing.T) {
+		obj := &ListAccountsRequest{}
+		var fernTestValueExternalID *string
+		obj.SetExternalID(fernTestValueExternalID)
+		assert.Equal(t, fernTestValueExternalID, obj.ExternalID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetVolumeMin", func(t *testing.T) {
 		obj := &ListAccountsRequest{}
 		var fernTestValueVolumeMin *float64
@@ -1328,6 +1414,37 @@ func TestSettersMarkExplicitListAccountsRequest(t *testing.T) {
 
 		// Act
 		obj.SetCreatedBefore(fernTestValueCreatedBefore)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetExternalID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListAccountsRequest{}
+		var fernTestValueExternalID *string
+
+		// Act
+		obj.SetExternalID(fernTestValueExternalID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2381,6 +2498,14 @@ func TestSettersAccount(t *testing.T) {
 		var fernTestValueEula *File
 		obj.SetEula(fernTestValueEula)
 		assert.Equal(t, fernTestValueEula, obj.Eula)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetExternalID", func(t *testing.T) {
+		obj := &Account{}
+		var fernTestValueExternalID *string
+		obj.SetExternalID(fernTestValueExternalID)
+		assert.Equal(t, fernTestValueExternalID, obj.ExternalID)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -3476,6 +3601,39 @@ func TestGettersAccount(t *testing.T) {
 			}
 		}()
 		_ = obj.GetEula() // Should return zero value
+	})
+
+	t.Run("GetExternalID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var expected *string
+		obj.ExternalID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetExternalID(), "getter should return the property value")
+	})
+
+	t.Run("GetExternalID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		obj.ExternalID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetExternalID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetExternalID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Account
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetExternalID() // Should return zero value
 	})
 
 	t.Run("GetFinancing", func(t *testing.T) {
@@ -5857,6 +6015,37 @@ func TestSettersMarkExplicitAccount(t *testing.T) {
 
 		// Act
 		obj.SetEula(fernTestValueEula)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetExternalID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var fernTestValueExternalID *string
+
+		// Act
+		obj.SetExternalID(fernTestValueExternalID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -18718,6 +18907,14 @@ func TestSettersUpdateAccountsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetExternalID", func(t *testing.T) {
+		obj := &UpdateAccountsRequest{}
+		var fernTestValueExternalID *string
+		obj.SetExternalID(fernTestValueExternalID)
+		assert.Equal(t, fernTestValueExternalID, obj.ExternalID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFeaturedAffiliateProductID", func(t *testing.T) {
 		obj := &UpdateAccountsRequest{}
 		var fernTestValueFeaturedAffiliateProductID *string
@@ -19350,6 +19547,37 @@ func TestSettersMarkExplicitUpdateAccountsRequest(t *testing.T) {
 
 		// Act
 		obj.SetEula(fernTestValueEula)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetExternalID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAccountsRequest{}
+		var fernTestValueExternalID *string
+
+		// Act
+		obj.SetExternalID(fernTestValueExternalID)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -21927,6 +22155,7 @@ func TestRequiredNullableRoundTripAccount(t *testing.T) {
 		"description",
 		"email",
 		"eula",
+		"external_id",
 		"financing",
 		"funds_release_at",
 		"industry_type",
@@ -21973,7 +22202,7 @@ func TestRequiredNullableRoundTripAccount(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Account
-		require.NoError(t, json.Unmarshal([]byte(`{"ads_spend_usd":null,"banner_image_url":null,"business_address":null,"business_name":null,"business_type":null,"cancellation_policy":null,"capabilities":null,"cards":null,"country":null,"customers_l30d":null,"description":null,"email":null,"eula":null,"financing":null,"funds_release_at":null,"industry_type":null,"invoice_prefix":null,"level":null,"logo_url":null,"onboarding_type":null,"opengraph_image_url":null,"opengraph_image_variant":null,"other_business_description":null,"other_industry_description":null,"parent_account":null,"payment_controls":null,"payment_method_configuration":null,"privacy_policy":null,"product_tax_code":null,"recommended_actions":null,"required_actions":null,"return_policy":null,"shipping_policy":null,"status":null,"status_reason":null,"target_audience":null,"tax_remitted_by":null,"tax_type":null,"terms_of_service":null,"three_ds_level":null,"total_earned_usd":null,"total_usd":null,"trading":null,"volume_l30d_usd":null,"volume_usd":null,"wallet":null,"website":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"ads_spend_usd":null,"banner_image_url":null,"business_address":null,"business_name":null,"business_type":null,"cancellation_policy":null,"capabilities":null,"cards":null,"country":null,"customers_l30d":null,"description":null,"email":null,"eula":null,"external_id":null,"financing":null,"funds_release_at":null,"industry_type":null,"invoice_prefix":null,"level":null,"logo_url":null,"onboarding_type":null,"opengraph_image_url":null,"opengraph_image_variant":null,"other_business_description":null,"other_industry_description":null,"parent_account":null,"payment_controls":null,"payment_method_configuration":null,"privacy_policy":null,"product_tax_code":null,"recommended_actions":null,"required_actions":null,"return_policy":null,"shipping_policy":null,"status":null,"status_reason":null,"target_audience":null,"tax_remitted_by":null,"tax_type":null,"terms_of_service":null,"three_ds_level":null,"total_earned_usd":null,"total_usd":null,"trading":null,"volume_l30d_usd":null,"volume_usd":null,"wallet":null,"website":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
