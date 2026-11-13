@@ -1550,12 +1550,13 @@ func (u *UpdateFeesRequestCardProcessingRegionsValue) String() string {
 }
 
 var (
-	updateFeesRequestChildMarkupsFieldCardSpend   = big.NewInt(1 << 0)
-	updateFeesRequestChildMarkupsFieldCryptoSwaps = big.NewInt(1 << 1)
-	updateFeesRequestChildMarkupsFieldDeposits    = big.NewInt(1 << 2)
-	updateFeesRequestChildMarkupsFieldPayments    = big.NewInt(1 << 3)
-	updateFeesRequestChildMarkupsFieldPayouts     = big.NewInt(1 << 4)
-	updateFeesRequestChildMarkupsFieldTransfers   = big.NewInt(1 << 5)
+	updateFeesRequestChildMarkupsFieldCardSpend      = big.NewInt(1 << 0)
+	updateFeesRequestChildMarkupsFieldCryptoSwaps    = big.NewInt(1 << 1)
+	updateFeesRequestChildMarkupsFieldDeposits       = big.NewInt(1 << 2)
+	updateFeesRequestChildMarkupsFieldPaymentMethods = big.NewInt(1 << 3)
+	updateFeesRequestChildMarkupsFieldPayments       = big.NewInt(1 << 4)
+	updateFeesRequestChildMarkupsFieldPayouts        = big.NewInt(1 << 5)
+	updateFeesRequestChildMarkupsFieldTransfers      = big.NewInt(1 << 6)
 )
 
 // updateFeesRequestChildMarkupsNullableFields maps the wire names of UpdateFeesRequestChildMarkups's nullable fields (required or optional) to their field bits.
@@ -1570,15 +1571,17 @@ var updateFeesRequestChildMarkupsNullableFields = map[string]*big.Int{
 type UpdateFeesRequestChildMarkups struct {
 	// The markup on card purchases settled by the subaccount. `null` clears the custom markup.
 	CardSpend *UpdateFeesRequestChildMarkupsCardSpend `json:"card_spend,omitempty" url:"card_spend,omitempty"`
-	// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
+	// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
 	CryptoSwaps *UpdateFeesRequestChildMarkupsCryptoSwaps `json:"crypto_swaps,omitempty" url:"crypto_swaps,omitempty"`
 	// Markups on deposits, keyed by rail: `bank` or `crypto`.
 	Deposits map[string]*UpdateFeesRequestChildMarkupsDepositsValue `json:"deposits,omitempty" url:"deposits,omitempty"`
-	// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
+	// Markups on payments, keyed by payment method: `card`, `ach`, or `wire`. `null` clears a method's markup so it uses `payments`.
+	PaymentMethods map[string]*UpdateFeesRequestChildMarkupsPaymentMethodsValue `json:"payment_methods,omitempty" url:"payment_methods,omitempty"`
+	// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
 	Payments *UpdateFeesRequestChildMarkupsPayments `json:"payments,omitempty" url:"payments,omitempty"`
 	// Markups on withdrawals, keyed by payout method. Percentage and fixed components may be negative, down to negative 100, to subsidize Whop's fee from the platform's balance in the withdrawal currency. The creator's total fee cannot go below zero. An unfunded subsidy keeps the payout pending until funded or failed by the creation deadline.
 	Payouts map[string]*UpdateFeesRequestChildMarkupsPayoutsValue `json:"payouts,omitempty" url:"payouts,omitempty"`
-	// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
+	// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
 	Transfers *UpdateFeesRequestChildMarkupsTransfers `json:"transfers,omitempty" url:"transfers,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1607,6 +1610,13 @@ func (u *UpdateFeesRequestChildMarkups) GetDeposits() map[string]*UpdateFeesRequ
 		return nil
 	}
 	return u.Deposits
+}
+
+func (u *UpdateFeesRequestChildMarkups) GetPaymentMethods() map[string]*UpdateFeesRequestChildMarkupsPaymentMethodsValue {
+	if u == nil {
+		return nil
+	}
+	return u.PaymentMethods
 }
 
 func (u *UpdateFeesRequestChildMarkups) GetPayments() *UpdateFeesRequestChildMarkupsPayments {
@@ -1665,6 +1675,13 @@ func (u *UpdateFeesRequestChildMarkups) SetCryptoSwaps(cryptoSwaps *UpdateFeesRe
 func (u *UpdateFeesRequestChildMarkups) SetDeposits(deposits map[string]*UpdateFeesRequestChildMarkupsDepositsValue) {
 	u.Deposits = deposits
 	u.require(updateFeesRequestChildMarkupsFieldDeposits)
+}
+
+// SetPaymentMethods sets the PaymentMethods field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestChildMarkups) SetPaymentMethods(paymentMethods map[string]*UpdateFeesRequestChildMarkupsPaymentMethodsValue) {
+	u.PaymentMethods = paymentMethods
+	u.require(updateFeesRequestChildMarkupsFieldPaymentMethods)
 }
 
 // SetPayments sets the Payments field and marks it as non-optional;
@@ -1847,7 +1864,7 @@ var (
 	updateFeesRequestChildMarkupsCryptoSwapsFieldPercentage = big.NewInt(1 << 1)
 )
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
+// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestChildMarkupsCryptoSwaps struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -1952,7 +1969,7 @@ var (
 	updateFeesRequestChildMarkupsDepositsValueFieldPercentage = big.NewInt(1 << 1)
 )
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
+// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestChildMarkupsDepositsValue struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -2053,11 +2070,116 @@ func (u *UpdateFeesRequestChildMarkupsDepositsValue) String() string {
 }
 
 var (
+	updateFeesRequestChildMarkupsPaymentMethodsValueFieldFixed      = big.NewInt(1 << 0)
+	updateFeesRequestChildMarkupsPaymentMethodsValueFieldPercentage = big.NewInt(1 << 1)
+)
+
+// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
+type UpdateFeesRequestChildMarkupsPaymentMethodsValue struct {
+	// The amount the platform adds per event, in US dollars.
+	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
+	// The percentage of the transaction the platform adds, where `2` means 2%.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateFeesRequestChildMarkupsPaymentMethodsValue) GetFixed() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Fixed
+}
+
+func (u *UpdateFeesRequestChildMarkupsPaymentMethodsValue) GetPercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Percentage
+}
+
+func (u *UpdateFeesRequestChildMarkupsPaymentMethodsValue) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateFeesRequestChildMarkupsPaymentMethodsValue) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestChildMarkupsPaymentMethodsValue) SetFixed(fixed *float64) {
+	u.Fixed = fixed
+	u.require(updateFeesRequestChildMarkupsPaymentMethodsValueFieldFixed)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestChildMarkupsPaymentMethodsValue) SetPercentage(percentage *float64) {
+	u.Percentage = percentage
+	u.require(updateFeesRequestChildMarkupsPaymentMethodsValueFieldPercentage)
+}
+
+func (u *UpdateFeesRequestChildMarkupsPaymentMethodsValue) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateFeesRequestChildMarkupsPaymentMethodsValue
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateFeesRequestChildMarkupsPaymentMethodsValue(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateFeesRequestChildMarkupsPaymentMethodsValue) MarshalJSON() ([]byte, error) {
+	type embed UpdateFeesRequestChildMarkupsPaymentMethodsValue
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateFeesRequestChildMarkupsPaymentMethodsValue) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
 	updateFeesRequestChildMarkupsPaymentsFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestChildMarkupsPaymentsFieldPercentage = big.NewInt(1 << 1)
 )
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
+// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestChildMarkupsPayments struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -2162,7 +2284,7 @@ var (
 	updateFeesRequestChildMarkupsPayoutsValueFieldPercentage = big.NewInt(1 << 1)
 )
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
+// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestChildMarkupsPayoutsValue struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -2267,7 +2389,7 @@ var (
 	updateFeesRequestChildMarkupsTransfersFieldPercentage = big.NewInt(1 << 1)
 )
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
+// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestChildMarkupsTransfers struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -5307,12 +5429,13 @@ func (u *UpdateFeesRequestMarketplaceRegionsValue) String() string {
 }
 
 var (
-	updateFeesRequestMarkupsFieldCardSpend   = big.NewInt(1 << 0)
-	updateFeesRequestMarkupsFieldCryptoSwaps = big.NewInt(1 << 1)
-	updateFeesRequestMarkupsFieldDeposits    = big.NewInt(1 << 2)
-	updateFeesRequestMarkupsFieldPayments    = big.NewInt(1 << 3)
-	updateFeesRequestMarkupsFieldPayouts     = big.NewInt(1 << 4)
-	updateFeesRequestMarkupsFieldTransfers   = big.NewInt(1 << 5)
+	updateFeesRequestMarkupsFieldCardSpend      = big.NewInt(1 << 0)
+	updateFeesRequestMarkupsFieldCryptoSwaps    = big.NewInt(1 << 1)
+	updateFeesRequestMarkupsFieldDeposits       = big.NewInt(1 << 2)
+	updateFeesRequestMarkupsFieldPaymentMethods = big.NewInt(1 << 3)
+	updateFeesRequestMarkupsFieldPayments       = big.NewInt(1 << 4)
+	updateFeesRequestMarkupsFieldPayouts        = big.NewInt(1 << 5)
+	updateFeesRequestMarkupsFieldTransfers      = big.NewInt(1 << 6)
 )
 
 // updateFeesRequestMarkupsNullableFields maps the wire names of UpdateFeesRequestMarkups's nullable fields (required or optional) to their field bits.
@@ -5327,15 +5450,17 @@ var updateFeesRequestMarkupsNullableFields = map[string]*big.Int{
 type UpdateFeesRequestMarkups struct {
 	// The markup on card purchases settled by the subaccount. `null` clears the custom markup.
 	CardSpend *UpdateFeesRequestMarkupsCardSpend `json:"card_spend,omitempty" url:"card_spend,omitempty"`
-	// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
+	// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
 	CryptoSwaps *UpdateFeesRequestMarkupsCryptoSwaps `json:"crypto_swaps,omitempty" url:"crypto_swaps,omitempty"`
 	// Markups on deposits, keyed by rail: `bank` or `crypto`.
 	Deposits map[string]*UpdateFeesRequestMarkupsDepositsValue `json:"deposits,omitempty" url:"deposits,omitempty"`
-	// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
+	// Markups on payments, keyed by payment method: `card`, `ach`, or `wire`. `null` clears a method's markup so it uses `payments`.
+	PaymentMethods map[string]*UpdateFeesRequestMarkupsPaymentMethodsValue `json:"payment_methods,omitempty" url:"payment_methods,omitempty"`
+	// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
 	Payments *UpdateFeesRequestMarkupsPayments `json:"payments,omitempty" url:"payments,omitempty"`
 	// Markups on withdrawals, keyed by payout method. Percentage and fixed components may be negative, down to negative 100, to subsidize Whop's fee from the platform's balance in the withdrawal currency. The creator's total fee cannot go below zero. An unfunded subsidy keeps the payout pending until funded or failed by the creation deadline.
 	Payouts map[string]*UpdateFeesRequestMarkupsPayoutsValue `json:"payouts,omitempty" url:"payouts,omitempty"`
-	// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
+	// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
 	Transfers *UpdateFeesRequestMarkupsTransfers `json:"transfers,omitempty" url:"transfers,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -5364,6 +5489,13 @@ func (u *UpdateFeesRequestMarkups) GetDeposits() map[string]*UpdateFeesRequestMa
 		return nil
 	}
 	return u.Deposits
+}
+
+func (u *UpdateFeesRequestMarkups) GetPaymentMethods() map[string]*UpdateFeesRequestMarkupsPaymentMethodsValue {
+	if u == nil {
+		return nil
+	}
+	return u.PaymentMethods
 }
 
 func (u *UpdateFeesRequestMarkups) GetPayments() *UpdateFeesRequestMarkupsPayments {
@@ -5422,6 +5554,13 @@ func (u *UpdateFeesRequestMarkups) SetCryptoSwaps(cryptoSwaps *UpdateFeesRequest
 func (u *UpdateFeesRequestMarkups) SetDeposits(deposits map[string]*UpdateFeesRequestMarkupsDepositsValue) {
 	u.Deposits = deposits
 	u.require(updateFeesRequestMarkupsFieldDeposits)
+}
+
+// SetPaymentMethods sets the PaymentMethods field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestMarkups) SetPaymentMethods(paymentMethods map[string]*UpdateFeesRequestMarkupsPaymentMethodsValue) {
+	u.PaymentMethods = paymentMethods
+	u.require(updateFeesRequestMarkupsFieldPaymentMethods)
 }
 
 // SetPayments sets the Payments field and marks it as non-optional;
@@ -5604,7 +5743,7 @@ var (
 	updateFeesRequestMarkupsCryptoSwapsFieldPercentage = big.NewInt(1 << 1)
 )
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
+// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestMarkupsCryptoSwaps struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -5709,7 +5848,7 @@ var (
 	updateFeesRequestMarkupsDepositsValueFieldPercentage = big.NewInt(1 << 1)
 )
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
+// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestMarkupsDepositsValue struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -5810,11 +5949,116 @@ func (u *UpdateFeesRequestMarkupsDepositsValue) String() string {
 }
 
 var (
+	updateFeesRequestMarkupsPaymentMethodsValueFieldFixed      = big.NewInt(1 << 0)
+	updateFeesRequestMarkupsPaymentMethodsValueFieldPercentage = big.NewInt(1 << 1)
+)
+
+// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
+type UpdateFeesRequestMarkupsPaymentMethodsValue struct {
+	// The amount the platform adds per event, in US dollars.
+	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
+	// The percentage of the transaction the platform adds, where `2` means 2%.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateFeesRequestMarkupsPaymentMethodsValue) GetFixed() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Fixed
+}
+
+func (u *UpdateFeesRequestMarkupsPaymentMethodsValue) GetPercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Percentage
+}
+
+func (u *UpdateFeesRequestMarkupsPaymentMethodsValue) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateFeesRequestMarkupsPaymentMethodsValue) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestMarkupsPaymentMethodsValue) SetFixed(fixed *float64) {
+	u.Fixed = fixed
+	u.require(updateFeesRequestMarkupsPaymentMethodsValueFieldFixed)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestMarkupsPaymentMethodsValue) SetPercentage(percentage *float64) {
+	u.Percentage = percentage
+	u.require(updateFeesRequestMarkupsPaymentMethodsValueFieldPercentage)
+}
+
+func (u *UpdateFeesRequestMarkupsPaymentMethodsValue) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateFeesRequestMarkupsPaymentMethodsValue
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateFeesRequestMarkupsPaymentMethodsValue(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateFeesRequestMarkupsPaymentMethodsValue) MarshalJSON() ([]byte, error) {
+	type embed UpdateFeesRequestMarkupsPaymentMethodsValue
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateFeesRequestMarkupsPaymentMethodsValue) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
 	updateFeesRequestMarkupsPaymentsFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestMarkupsPaymentsFieldPercentage = big.NewInt(1 << 1)
 )
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
+// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestMarkupsPayments struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -5919,7 +6163,7 @@ var (
 	updateFeesRequestMarkupsPayoutsValueFieldPercentage = big.NewInt(1 << 1)
 )
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
+// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestMarkupsPayoutsValue struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
@@ -6024,7 +6268,7 @@ var (
 	updateFeesRequestMarkupsTransfersFieldPercentage = big.NewInt(1 << 1)
 )
 
-// The new markup. Fields left out keep their current value; `null` clears the row so the markup returns to its default.
+// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
 type UpdateFeesRequestMarkupsTransfers struct {
 	// The amount the platform adds per event, in US dollars.
 	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`

@@ -2672,12 +2672,13 @@ func (a AccountFeeMarkupUnadjustableReason) Ptr() *AccountFeeMarkupUnadjustableR
 }
 
 var (
-	accountFeeMarkupsFieldCardSpend   = big.NewInt(1 << 0)
-	accountFeeMarkupsFieldCryptoSwaps = big.NewInt(1 << 1)
-	accountFeeMarkupsFieldDeposits    = big.NewInt(1 << 2)
-	accountFeeMarkupsFieldPayments    = big.NewInt(1 << 3)
-	accountFeeMarkupsFieldPayouts     = big.NewInt(1 << 4)
-	accountFeeMarkupsFieldTransfers   = big.NewInt(1 << 5)
+	accountFeeMarkupsFieldCardSpend      = big.NewInt(1 << 0)
+	accountFeeMarkupsFieldCryptoSwaps    = big.NewInt(1 << 1)
+	accountFeeMarkupsFieldDeposits       = big.NewInt(1 << 2)
+	accountFeeMarkupsFieldPaymentMethods = big.NewInt(1 << 3)
+	accountFeeMarkupsFieldPayments       = big.NewInt(1 << 4)
+	accountFeeMarkupsFieldPayouts        = big.NewInt(1 << 5)
+	accountFeeMarkupsFieldTransfers      = big.NewInt(1 << 6)
 )
 
 type AccountFeeMarkups struct {
@@ -2687,7 +2688,9 @@ type AccountFeeMarkups struct {
 	CryptoSwaps *AccountFeeMarkup `json:"crypto_swaps" url:"crypto_swaps"`
 	// Markups on deposits into the account's balance, keyed by rail: `bank` and `crypto`.
 	Deposits map[string]*AccountFeeMarkup `json:"deposits" url:"deposits"`
-	// The markup on payments the subaccount collects without a checkout application fee.
+	// Markups on payments, keyed by payment method: `card` (including Apple Pay and Google Pay), `ach` (US bank account and US bank transfer), and `wire`. A payment method without its own markup uses `payments`.
+	PaymentMethods map[string]*AccountFeeMarkup `json:"payment_methods" url:"payment_methods"`
+	// The markup on payments the subaccount collects without a checkout application fee, for every payment method without its own markup under `payment_methods`.
 	Payments *AccountFeeMarkup `json:"payments" url:"payments"`
 	// Markups on withdrawals, keyed by payout method: `bank_wire`, `next_day_bank`, `rtp`, `crypto`, and `digital_wallet`.
 	Payouts map[string]*AccountFeeMarkup `json:"payouts" url:"payouts"`
@@ -2720,6 +2723,13 @@ func (a *AccountFeeMarkups) GetDeposits() map[string]*AccountFeeMarkup {
 		return nil
 	}
 	return a.Deposits
+}
+
+func (a *AccountFeeMarkups) GetPaymentMethods() map[string]*AccountFeeMarkup {
+	if a == nil {
+		return nil
+	}
+	return a.PaymentMethods
 }
 
 func (a *AccountFeeMarkups) GetPayments() *AccountFeeMarkup {
@@ -2778,6 +2788,13 @@ func (a *AccountFeeMarkups) SetCryptoSwaps(cryptoSwaps *AccountFeeMarkup) {
 func (a *AccountFeeMarkups) SetDeposits(deposits map[string]*AccountFeeMarkup) {
 	a.Deposits = deposits
 	a.require(accountFeeMarkupsFieldDeposits)
+}
+
+// SetPaymentMethods sets the PaymentMethods field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeMarkups) SetPaymentMethods(paymentMethods map[string]*AccountFeeMarkup) {
+	a.PaymentMethods = paymentMethods
+	a.require(accountFeeMarkupsFieldPaymentMethods)
 }
 
 // SetPayments sets the Payments field and marks it as non-optional;
