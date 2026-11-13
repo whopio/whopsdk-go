@@ -27062,6 +27062,20 @@ const (
 	LedgerActivityLineTypeTradingAccountWithdrawalOffset            LedgerActivityLineType = "trading_account_withdrawal_offset"
 	LedgerActivityLineTypeTradingAccountDeposit                     LedgerActivityLineType = "trading_account_deposit"
 	LedgerActivityLineTypeTradingAccountDepositOffset               LedgerActivityLineType = "trading_account_deposit_offset"
+	LedgerActivityLineTypePerpsLoadTransfer                         LedgerActivityLineType = "perps_load_transfer"
+	LedgerActivityLineTypePerpsLoadDeposit                          LedgerActivityLineType = "perps_load_deposit"
+	LedgerActivityLineTypePerpsUnloadTransfer                       LedgerActivityLineType = "perps_unload_transfer"
+	LedgerActivityLineTypePerpsUnloadDeposit                        LedgerActivityLineType = "perps_unload_deposit"
+	LedgerActivityLineTypePerpsBridgeFee                            LedgerActivityLineType = "perps_bridge_fee"
+	LedgerActivityLineTypePerpsBridgeFeeOffset                      LedgerActivityLineType = "perps_bridge_fee_offset"
+	LedgerActivityLineTypePerpsVolume                               LedgerActivityLineType = "perps_volume"
+	LedgerActivityLineTypePerpsVolumeOffset                         LedgerActivityLineType = "perps_volume_offset"
+	LedgerActivityLineTypePerpsFee                                  LedgerActivityLineType = "perps_fee"
+	LedgerActivityLineTypePerpsFeeOffset                            LedgerActivityLineType = "perps_fee_offset"
+	LedgerActivityLineTypePlatformTradingCommission                 LedgerActivityLineType = "platform_trading_commission"
+	LedgerActivityLineTypeTradingFee                                LedgerActivityLineType = "trading_fee"
+	LedgerActivityLineTypePerpsRealizedPnl                          LedgerActivityLineType = "perps_realized_pnl"
+	LedgerActivityLineTypePerpsRealizedPnlOffset                    LedgerActivityLineType = "perps_realized_pnl_offset"
 	LedgerActivityLineTypeOnchainWalletTransferOutgoing             LedgerActivityLineType = "onchain_wallet_transfer_outgoing"
 	LedgerActivityLineTypeOnchainWalletTransferIncoming             LedgerActivityLineType = "onchain_wallet_transfer_incoming"
 	LedgerActivityLineTypeOnchainPlatformTransferOutgoing           LedgerActivityLineType = "onchain_platform_transfer_outgoing"
@@ -27473,6 +27487,34 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeTradingAccountDeposit, nil
 	case "trading_account_deposit_offset":
 		return LedgerActivityLineTypeTradingAccountDepositOffset, nil
+	case "perps_load_transfer":
+		return LedgerActivityLineTypePerpsLoadTransfer, nil
+	case "perps_load_deposit":
+		return LedgerActivityLineTypePerpsLoadDeposit, nil
+	case "perps_unload_transfer":
+		return LedgerActivityLineTypePerpsUnloadTransfer, nil
+	case "perps_unload_deposit":
+		return LedgerActivityLineTypePerpsUnloadDeposit, nil
+	case "perps_bridge_fee":
+		return LedgerActivityLineTypePerpsBridgeFee, nil
+	case "perps_bridge_fee_offset":
+		return LedgerActivityLineTypePerpsBridgeFeeOffset, nil
+	case "perps_volume":
+		return LedgerActivityLineTypePerpsVolume, nil
+	case "perps_volume_offset":
+		return LedgerActivityLineTypePerpsVolumeOffset, nil
+	case "perps_fee":
+		return LedgerActivityLineTypePerpsFee, nil
+	case "perps_fee_offset":
+		return LedgerActivityLineTypePerpsFeeOffset, nil
+	case "platform_trading_commission":
+		return LedgerActivityLineTypePlatformTradingCommission, nil
+	case "trading_fee":
+		return LedgerActivityLineTypeTradingFee, nil
+	case "perps_realized_pnl":
+		return LedgerActivityLineTypePerpsRealizedPnl, nil
+	case "perps_realized_pnl_offset":
+		return LedgerActivityLineTypePerpsRealizedPnlOffset, nil
 	case "onchain_wallet_transfer_outgoing":
 		return LedgerActivityLineTypeOnchainWalletTransferOutgoing, nil
 	case "onchain_wallet_transfer_incoming":
