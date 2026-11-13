@@ -146,6 +146,33 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
+// Adds a person to an account as a member. If the person is already a member of the account, that member is returned unchanged.
+//
+// Example:
+//
+//	request := &whopsdk.CreateMembersRequest{
+//	    Email: "jane@example.com",
+//	}
+//	client.Members.Create(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Create(
+	ctx context.Context,
+	request *whopsdk.CreateMembersRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Member, error) {
+	response, err := c.WithRawResponse.Create(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Retrieves a member by ID. Accessible to the account and to the member's own user.
 //
 // Example:

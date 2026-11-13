@@ -46971,29 +46971,32 @@ func (p *PaymentAddress) String() string {
 }
 
 var (
-	paymentBankTransferFieldAccountNumber               = big.NewInt(1 << 0)
-	paymentBankTransferFieldAccountNumberLabel          = big.NewInt(1 << 1)
-	paymentBankTransferFieldAmount                      = big.NewInt(1 << 2)
-	paymentBankTransferFieldBankAccountType             = big.NewInt(1 << 3)
-	paymentBankTransferFieldBankAddress                 = big.NewInt(1 << 4)
-	paymentBankTransferFieldBankBranch                  = big.NewInt(1 << 5)
-	paymentBankTransferFieldBankCode                    = big.NewInt(1 << 6)
-	paymentBankTransferFieldBankCodeLabel               = big.NewInt(1 << 7)
-	paymentBankTransferFieldBankName                    = big.NewInt(1 << 8)
-	paymentBankTransferFieldBeneficiaryDocument         = big.NewInt(1 << 9)
-	paymentBankTransferFieldBeneficiaryDocumentType     = big.NewInt(1 << 10)
-	paymentBankTransferFieldBeneficiaryName             = big.NewInt(1 << 11)
-	paymentBankTransferFieldDocumentURL                 = big.NewInt(1 << 12)
-	paymentBankTransferFieldExpiresAt                   = big.NewInt(1 << 13)
-	paymentBankTransferFieldInstructions                = big.NewInt(1 << 14)
-	paymentBankTransferFieldIntermediaryBic             = big.NewInt(1 << 15)
-	paymentBankTransferFieldReference                   = big.NewInt(1 << 16)
-	paymentBankTransferFieldRoutingNumber               = big.NewInt(1 << 17)
-	paymentBankTransferFieldSecondaryAccountNumber      = big.NewInt(1 << 18)
-	paymentBankTransferFieldSecondaryAccountNumberLabel = big.NewInt(1 << 19)
+	paymentBankTransferFieldAcceptsSplitTransfers       = big.NewInt(1 << 0)
+	paymentBankTransferFieldAccountNumber               = big.NewInt(1 << 1)
+	paymentBankTransferFieldAccountNumberLabel          = big.NewInt(1 << 2)
+	paymentBankTransferFieldAmount                      = big.NewInt(1 << 3)
+	paymentBankTransferFieldBankAccountType             = big.NewInt(1 << 4)
+	paymentBankTransferFieldBankAddress                 = big.NewInt(1 << 5)
+	paymentBankTransferFieldBankBranch                  = big.NewInt(1 << 6)
+	paymentBankTransferFieldBankCode                    = big.NewInt(1 << 7)
+	paymentBankTransferFieldBankCodeLabel               = big.NewInt(1 << 8)
+	paymentBankTransferFieldBankName                    = big.NewInt(1 << 9)
+	paymentBankTransferFieldBeneficiaryDocument         = big.NewInt(1 << 10)
+	paymentBankTransferFieldBeneficiaryDocumentType     = big.NewInt(1 << 11)
+	paymentBankTransferFieldBeneficiaryName             = big.NewInt(1 << 12)
+	paymentBankTransferFieldDocumentURL                 = big.NewInt(1 << 13)
+	paymentBankTransferFieldExpiresAt                   = big.NewInt(1 << 14)
+	paymentBankTransferFieldInstructions                = big.NewInt(1 << 15)
+	paymentBankTransferFieldIntermediaryBic             = big.NewInt(1 << 16)
+	paymentBankTransferFieldReference                   = big.NewInt(1 << 17)
+	paymentBankTransferFieldRoutingNumber               = big.NewInt(1 << 18)
+	paymentBankTransferFieldSecondaryAccountNumber      = big.NewInt(1 << 19)
+	paymentBankTransferFieldSecondaryAccountNumberLabel = big.NewInt(1 << 20)
 )
 
 type PaymentBankTransfer struct {
+	// Whether the buyer can complete this payment with more than one transfer. When false, only one transfer for the full amount completes it.
+	AcceptsSplitTransfers *bool `json:"accepts_split_transfers,omitempty" url:"accepts_split_transfers,omitempty"`
 	// The account to send to, in the local scheme's format — `account_number_label` says what to call it.
 	AccountNumber *string `json:"account_number,omitempty" url:"account_number,omitempty"`
 	// What to call `account_number` when showing it, in the local scheme's own terms — `CLABE` in Mexico, for example.
@@ -47040,6 +47043,13 @@ type PaymentBankTransfer struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (p *PaymentBankTransfer) GetAcceptsSplitTransfers() *bool {
+	if p == nil {
+		return nil
+	}
+	return p.AcceptsSplitTransfers
 }
 
 func (p *PaymentBankTransfer) GetAccountNumber() *string {
@@ -47196,6 +47206,13 @@ func (p *PaymentBankTransfer) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	p.explicitFields = next
+}
+
+// SetAcceptsSplitTransfers sets the AcceptsSplitTransfers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentBankTransfer) SetAcceptsSplitTransfers(acceptsSplitTransfers *bool) {
+	p.AcceptsSplitTransfers = acceptsSplitTransfers
+	p.require(paymentBankTransferFieldAcceptsSplitTransfers)
 }
 
 // SetAccountNumber sets the AccountNumber field and marks it as non-optional;

@@ -27299,6 +27299,82 @@ client.Members.List(
 </dl>
 </details>
 
+<details><summary><code>client.Members.Create(request) -> *whopsdk.Member</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Adds a person to an account as a member. If the person is already a member of the account, that member is returned unchanged.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.CreateMembersRequest{
+    Email: "jane@example.com",
+}
+client.Members.Create(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The account to add the member to (`biz_` tag). Defaults to the account the credential acts as.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**email:** `string` — The email address of the person to add. If no Whop user has it, one is created.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**name:** `*string` — The name of the person to add. Ignored when a user on Whop already exists for this email address.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Members.Retrieve(ID) -> *whopsdk.Member</code></summary>
 <dl>
 <dd>
