@@ -128,22 +128,23 @@ var (
 	listTeamMembersRequestFieldDirectReportsMax      = big.NewInt(1 << 8)
 	listTeamMembersRequestFieldTeamLeadID            = big.NewInt(1 << 9)
 	listTeamMembersRequestFieldHasReferredBusinesses = big.NewInt(1 << 10)
-	listTeamMembersRequestFieldCreatedBefore         = big.NewInt(1 << 11)
-	listTeamMembersRequestFieldCreatedAfter          = big.NewInt(1 << 12)
-	listTeamMembersRequestFieldOrder                 = big.NewInt(1 << 13)
-	listTeamMembersRequestFieldDirection             = big.NewInt(1 << 14)
-	listTeamMembersRequestFieldFirst                 = big.NewInt(1 << 15)
-	listTeamMembersRequestFieldAfter                 = big.NewInt(1 << 16)
-	listTeamMembersRequestFieldLast                  = big.NewInt(1 << 17)
-	listTeamMembersRequestFieldBefore                = big.NewInt(1 << 18)
+	listTeamMembersRequestFieldIsPartner             = big.NewInt(1 << 11)
+	listTeamMembersRequestFieldCreatedBefore         = big.NewInt(1 << 12)
+	listTeamMembersRequestFieldCreatedAfter          = big.NewInt(1 << 13)
+	listTeamMembersRequestFieldOrder                 = big.NewInt(1 << 14)
+	listTeamMembersRequestFieldDirection             = big.NewInt(1 << 15)
+	listTeamMembersRequestFieldFirst                 = big.NewInt(1 << 16)
+	listTeamMembersRequestFieldAfter                 = big.NewInt(1 << 17)
+	listTeamMembersRequestFieldLast                  = big.NewInt(1 << 18)
+	listTeamMembersRequestFieldBefore                = big.NewInt(1 << 19)
 )
 
 type ListTeamMembersRequest struct {
-	// Account ID, prefixed `biz_`.
-	AccountID string `json:"-" url:"account_id"`
+	// Only return the team of this account, prefixed `biz_`. A signed-in user can omit it only with `user_id=me` or their own user ID. An API key that omits it gets its own account. `reports_to_id`, `direct_reports_min` and `direct_reports_max` need it.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Only return members with this status: `joined` (accepted members) or `pending` (pending invites). Both are returned by default.
 	Status *ListTeamMembersRequestStatus `json:"-" url:"status,omitempty"`
-	// Only return the membership for this user ID, prefixed `user_`.
+	// Only return the memberships of this user ID, prefixed `user_`. Pass `me` for the signed-in user.
 	UserID *string `json:"-" url:"user_id,omitempty"`
 	// Only return the memberships of these users, prefixed `user_`, at most 100. IDs that match no user are ignored. With `account_id=global`, a user can have one in each partner account. Can't be combined with `user_id`.
 	UserIDs []*string `json:"-" url:"user_ids,omitempty"`
@@ -161,6 +162,8 @@ type ListTeamMembersRequest struct {
 	TeamLeadID *string `json:"-" url:"team_lead_id,omitempty"`
 	// When true, only members who referred at least one business for their account; when false, only members who referred none. Pending invites are excluded, and the list pages in `created_at` order without moving Partner-role members last.
 	HasReferredBusinesses *bool `json:"-" url:"has_referred_businesses,omitempty"`
+	// When true, only members and invites with the view-only Partner role. When false, only the ones without it.
+	IsPartner *bool `json:"-" url:"is_partner,omitempty"`
 	// Only return members added before this ISO 8601 timestamp.
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only return members added after this ISO 8601 timestamp.
@@ -193,7 +196,7 @@ func (l *ListTeamMembersRequest) require(field *big.Int) {
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListTeamMembersRequest) SetAccountID(accountID string) {
+func (l *ListTeamMembersRequest) SetAccountID(accountID *string) {
 	l.AccountID = accountID
 	l.require(listTeamMembersRequestFieldAccountID)
 }
@@ -266,6 +269,13 @@ func (l *ListTeamMembersRequest) SetTeamLeadID(teamLeadID *string) {
 func (l *ListTeamMembersRequest) SetHasReferredBusinesses(hasReferredBusinesses *bool) {
 	l.HasReferredBusinesses = hasReferredBusinesses
 	l.require(listTeamMembersRequestFieldHasReferredBusinesses)
+}
+
+// SetIsPartner sets the IsPartner field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTeamMembersRequest) SetIsPartner(isPartner *bool) {
+	l.IsPartner = isPartner
+	l.require(listTeamMembersRequestFieldIsPartner)
 }
 
 // SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;
@@ -353,19 +363,20 @@ func (r *RetrieveTeamMembersRequest) SetID(id string) {
 }
 
 var (
-	teamMemberFieldAccountID          = big.NewInt(1 << 0)
+	teamMemberFieldAccount            = big.NewInt(1 << 0)
 	teamMemberFieldAuthorizedRole     = big.NewInt(1 << 1)
 	teamMemberFieldCreatedAt          = big.NewInt(1 << 2)
 	teamMemberFieldDirectReportsCount = big.NewInt(1 << 3)
 	teamMemberFieldEmail              = big.NewInt(1 << 4)
 	teamMemberFieldID                 = big.NewInt(1 << 5)
 	teamMemberFieldIsAgent            = big.NewInt(1 << 6)
-	teamMemberFieldReportsToChain     = big.NewInt(1 << 7)
-	teamMemberFieldReportsToID        = big.NewInt(1 << 8)
-	teamMemberFieldRole               = big.NewInt(1 << 9)
-	teamMemberFieldStatus             = big.NewInt(1 << 10)
-	teamMemberFieldUpdatedAt          = big.NewInt(1 << 11)
-	teamMemberFieldUser               = big.NewInt(1 << 12)
+	teamMemberFieldIsPartner          = big.NewInt(1 << 7)
+	teamMemberFieldReportsToChain     = big.NewInt(1 << 8)
+	teamMemberFieldReportsToID        = big.NewInt(1 << 9)
+	teamMemberFieldRole               = big.NewInt(1 << 10)
+	teamMemberFieldStatus             = big.NewInt(1 << 11)
+	teamMemberFieldUpdatedAt          = big.NewInt(1 << 12)
+	teamMemberFieldUser               = big.NewInt(1 << 13)
 )
 
 // teamMemberNullableFields maps the wire names of TeamMember's nullable fields (required or optional) to their field bits.
@@ -379,20 +390,22 @@ var teamMemberNullableFields = map[string]*big.Int{
 }
 
 type TeamMember struct {
-	// The account this membership belongs to, prefixed `biz_`.
-	AccountID string `json:"account_id" url:"account_id"`
+	// The account this membership belongs to.
+	Account *AccountParent `json:"account" url:"account"`
 	// Custom role assigned to this member, or `null` when the member has a system role.
 	AuthorizedRole *TeamMemberAuthorizedRole `json:"authorized_role,omitempty" url:"authorized_role,omitempty"`
 	// When the member joined the team or the invite was sent, as an ISO 8601 timestamp. A member who was a customer first keeps the date they were given their role.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// How many team members report directly to this member. `null` for invites.
 	DirectReportsCount *int `json:"direct_reports_count,omitempty" url:"direct_reports_count,omitempty"`
-	// The member's email address. For an invite sent to an email with no Whop account yet, the invited address; for accepted members and invites to an existing Whop account, `null` unless the caller holds the `company:authorized_user:email:read` scope.
+	// The member's email address. For an invite to an email with no Whop account yet, this is the invited address. Otherwise it is `null` unless the caller holds the `company:authorized_user:email:read` scope.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// Team member ID. Accepted members have an ID starting with `ausr_` or `mber_`, and pending invites one starting with `ausri_`. Treat it as opaque: both member prefixes are accepted wherever a team member ID is.
 	ID string `json:"id" url:"id"`
 	// Whether this member is an agent (app-controlled account) rather than a human team member. Always `false` for invites.
-	IsAgent        bool                 `json:"is_agent" url:"is_agent"`
+	IsAgent bool `json:"is_agent" url:"is_agent"`
+	// Whether this member or invite has the view-only Partner role, directly or through a custom role based on it. A Partner can read only the account's basic details.
+	IsPartner      bool                 `json:"is_partner" url:"is_partner"`
 	ReportsToChain []*TeamMemberManager `json:"reports_to_chain,omitempty" url:"reports_to_chain,omitempty"`
 	// The ID of the team member this member reports to, starting with `ausr_` or `mber_`; treat it as opaque. `null` when the member reports to the business directly, and for invites.
 	ReportsToID *string `json:"reports_to_id,omitempty" url:"reports_to_id,omitempty"`
@@ -412,11 +425,11 @@ type TeamMember struct {
 	rawJSON         json.RawMessage
 }
 
-func (t *TeamMember) GetAccountID() string {
+func (t *TeamMember) GetAccount() *AccountParent {
 	if t == nil {
-		return ""
+		return nil
 	}
-	return t.AccountID
+	return t.Account
 }
 
 func (t *TeamMember) GetAuthorizedRole() *TeamMemberAuthorizedRole {
@@ -459,6 +472,13 @@ func (t *TeamMember) GetIsAgent() bool {
 		return false
 	}
 	return t.IsAgent
+}
+
+func (t *TeamMember) GetIsPartner() bool {
+	if t == nil {
+		return false
+	}
+	return t.IsPartner
 }
 
 func (t *TeamMember) GetReportsToChain() []*TeamMemberManager {
@@ -519,11 +539,11 @@ func (t *TeamMember) require(field *big.Int) {
 	t.explicitFields = next
 }
 
-// SetAccountID sets the AccountID field and marks it as non-optional;
+// SetAccount sets the Account field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (t *TeamMember) SetAccountID(accountID string) {
-	t.AccountID = accountID
-	t.require(teamMemberFieldAccountID)
+func (t *TeamMember) SetAccount(account *AccountParent) {
+	t.Account = account
+	t.require(teamMemberFieldAccount)
 }
 
 // SetAuthorizedRole sets the AuthorizedRole field and marks it as non-optional;
@@ -566,6 +586,13 @@ func (t *TeamMember) SetID(id string) {
 func (t *TeamMember) SetIsAgent(isAgent bool) {
 	t.IsAgent = isAgent
 	t.require(teamMemberFieldIsAgent)
+}
+
+// SetIsPartner sets the IsPartner field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TeamMember) SetIsPartner(isPartner bool) {
+	t.IsPartner = isPartner
+	t.require(teamMemberFieldIsPartner)
 }
 
 // SetReportsToChain sets the ReportsToChain field and marks it as non-optional;

@@ -222,7 +222,7 @@ type Whop struct {
 func NewWhop(opts ...option.RequestOption) *Whop {
 	options := core.NewRequestOptions(opts...)
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-13"
+		apiVersionDateDefault := "2026-11-13-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Whop{

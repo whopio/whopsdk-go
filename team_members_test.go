@@ -219,7 +219,7 @@ func TestSettersMarkExplicitDeleteTeamMembersRequest(t *testing.T) {
 func TestSettersListTeamMembersRequest(t *testing.T) {
 	t.Run("SetAccountID", func(t *testing.T) {
 		obj := &ListTeamMembersRequest{}
-		var fernTestValueAccountID string
+		var fernTestValueAccountID *string
 		obj.SetAccountID(fernTestValueAccountID)
 		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
 		assert.NotNil(t, obj.explicitFields)
@@ -305,6 +305,14 @@ func TestSettersListTeamMembersRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIsPartner", func(t *testing.T) {
+		obj := &ListTeamMembersRequest{}
+		var fernTestValueIsPartner *bool
+		obj.SetIsPartner(fernTestValueIsPartner)
+		assert.Equal(t, fernTestValueIsPartner, obj.IsPartner)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCreatedBefore", func(t *testing.T) {
 		obj := &ListTeamMembersRequest{}
 		var fernTestValueCreatedBefore *string
@@ -376,7 +384,7 @@ func TestSettersMarkExplicitListTeamMembersRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListTeamMembersRequest{}
-		var fernTestValueAccountID string
+		var fernTestValueAccountID *string
 
 		// Act
 		obj.SetAccountID(fernTestValueAccountID)
@@ -713,6 +721,37 @@ func TestSettersMarkExplicitListTeamMembersRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetIsPartner_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListTeamMembersRequest{}
+		var fernTestValueIsPartner *bool
+
+		// Act
+		obj.SetIsPartner(fernTestValueIsPartner)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetCreatedBefore_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1009,11 +1048,11 @@ func TestSettersMarkExplicitRetrieveTeamMembersRequest(t *testing.T) {
 }
 
 func TestSettersTeamMember(t *testing.T) {
-	t.Run("SetAccountID", func(t *testing.T) {
+	t.Run("SetAccount", func(t *testing.T) {
 		obj := &TeamMember{}
-		var fernTestValueAccountID string
-		obj.SetAccountID(fernTestValueAccountID)
-		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
+		var fernTestValueAccount *AccountParent
+		obj.SetAccount(fernTestValueAccount)
+		assert.Equal(t, fernTestValueAccount, obj.Account)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1062,6 +1101,14 @@ func TestSettersTeamMember(t *testing.T) {
 		var fernTestValueIsAgent bool
 		obj.SetIsAgent(fernTestValueIsAgent)
 		assert.Equal(t, fernTestValueIsAgent, obj.IsAgent)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetIsPartner", func(t *testing.T) {
+		obj := &TeamMember{}
+		var fernTestValueIsPartner bool
+		obj.SetIsPartner(fernTestValueIsPartner)
+		assert.Equal(t, fernTestValueIsPartner, obj.IsPartner)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1116,18 +1163,28 @@ func TestSettersTeamMember(t *testing.T) {
 }
 
 func TestGettersTeamMember(t *testing.T) {
-	t.Run("GetAccountID", func(t *testing.T) {
+	t.Run("GetAccount", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &TeamMember{}
-		var expected string
-		obj.AccountID = expected
+		var expected *AccountParent
+		obj.Account = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetAccountID(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetAccount(), "getter should return the property value")
 	})
 
-	t.Run("GetAccountID_NilReceiver", func(t *testing.T) {
+	t.Run("GetAccount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TeamMember{}
+		obj.Account = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAccount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAccount_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *TeamMember
 		// Should not panic - getters should handle nil receiver gracefully
@@ -1136,7 +1193,7 @@ func TestGettersTeamMember(t *testing.T) {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetAccountID() // Should return zero value
+		_ = obj.GetAccount() // Should return zero value
 	})
 
 	t.Run("GetAuthorizedRole", func(t *testing.T) {
@@ -1305,6 +1362,29 @@ func TestGettersTeamMember(t *testing.T) {
 			}
 		}()
 		_ = obj.GetIsAgent() // Should return zero value
+	})
+
+	t.Run("GetIsPartner", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TeamMember{}
+		var expected bool
+		obj.IsPartner = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIsPartner(), "getter should return the property value")
+	})
+
+	t.Run("GetIsPartner_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *TeamMember
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIsPartner() // Should return zero value
 	})
 
 	t.Run("GetReportsToChain", func(t *testing.T) {
@@ -1478,14 +1558,14 @@ func TestGettersTeamMember(t *testing.T) {
 }
 
 func TestSettersMarkExplicitTeamMember(t *testing.T) {
-	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
+	t.Run("SetAccount_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &TeamMember{}
-		var fernTestValueAccountID string
+		var fernTestValueAccount *AccountParent
 
 		// Act
-		obj.SetAccountID(fernTestValueAccountID)
+		obj.SetAccount(fernTestValueAccount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1672,6 +1752,37 @@ func TestSettersMarkExplicitTeamMember(t *testing.T) {
 
 		// Act
 		obj.SetIsAgent(fernTestValueIsAgent)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIsPartner_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &TeamMember{}
+		var fernTestValueIsPartner bool
+
+		// Act
+		obj.SetIsPartner(fernTestValueIsPartner)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
