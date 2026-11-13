@@ -1591,7 +1591,7 @@ type DisputeEvidenceDocument struct {
 	ContentType *DisputeEvidenceDocumentContentType `json:"content_type,omitempty" url:"content_type,omitempty"`
 	// When the file was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
+	// What this document proves. `return_policy`, `cancellation_policy` and `terms_of_service` are the seller's policy documents. A policy document replaces the account's copy for this dispute. `return_policy`, `cancellation_policy` and `customer_communication` also replace the matching fixed evidence slot. `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer, such as a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof that a physical order shipped and arrived. `digital_fulfillment` is proof that the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller. `prior_transactions` is the buyer's payment history across the platform, for a fraud defense. `customer_session` is checkout data, such as IP address, device fingerprint, AVS and CVV results, and the 3D Secure result. `subscription` is membership lifecycle evidence, such as renewals, cancellation and reminders sent. `complete_evidence` is the seller's whole response as one PDF of at most 19 pages, and it must be the only document. Whop sends a `complete_evidence` document to the processor in place of every other evidence field, attachment and document.
 	DocumentType DisputeEvidenceDocumentDocumentType `json:"document_type" url:"document_type"`
 	// Audio or video duration in seconds. Null when unavailable or removed by moderation.
 	DurationSeconds *float64 `json:"duration_seconds,omitempty" url:"duration_seconds,omitempty"`
@@ -2025,7 +2025,7 @@ func (d DisputeEvidenceDocumentContentType) Ptr() *DisputeEvidenceDocumentConten
 	return &d
 }
 
-// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
+// What this document proves. `return_policy`, `cancellation_policy` and `terms_of_service` are the seller's policy documents. A policy document replaces the account's copy for this dispute. `return_policy`, `cancellation_policy` and `customer_communication` also replace the matching fixed evidence slot. `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer, such as a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof that a physical order shipped and arrived. `digital_fulfillment` is proof that the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller. `prior_transactions` is the buyer's payment history across the platform, for a fraud defense. `customer_session` is checkout data, such as IP address, device fingerprint, AVS and CVV results, and the 3D Secure result. `subscription` is membership lifecycle evidence, such as renewals, cancellation and reminders sent. `complete_evidence` is the seller's whole response as one PDF of at most 19 pages, and it must be the only document. Whop sends a `complete_evidence` document to the processor in place of every other evidence field, attachment and document.
 type DisputeEvidenceDocumentDocumentType string
 
 const (
@@ -2041,6 +2041,7 @@ const (
 	DisputeEvidenceDocumentDocumentTypeDigitalFulfillment    DisputeEvidenceDocumentDocumentType = "digital_fulfillment"
 	DisputeEvidenceDocumentDocumentTypeSubscription          DisputeEvidenceDocumentDocumentType = "subscription"
 	DisputeEvidenceDocumentDocumentTypeCustomerCommunication DisputeEvidenceDocumentDocumentType = "customer_communication"
+	DisputeEvidenceDocumentDocumentTypeCompleteEvidence      DisputeEvidenceDocumentDocumentType = "complete_evidence"
 )
 
 func NewDisputeEvidenceDocumentDocumentTypeFromString(s string) (DisputeEvidenceDocumentDocumentType, error) {
@@ -2069,6 +2070,8 @@ func NewDisputeEvidenceDocumentDocumentTypeFromString(s string) (DisputeEvidence
 		return DisputeEvidenceDocumentDocumentTypeSubscription, nil
 	case "customer_communication":
 		return DisputeEvidenceDocumentDocumentTypeCustomerCommunication, nil
+	case "complete_evidence":
+		return DisputeEvidenceDocumentDocumentTypeCompleteEvidence, nil
 	}
 	var t DisputeEvidenceDocumentDocumentType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -4542,7 +4545,7 @@ var (
 type UpdateDisputesRequestEvidenceDocumentsItem struct {
 	// The ID returned by a direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
-	// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
+	// What this document proves. `return_policy`, `cancellation_policy` and `terms_of_service` are the seller's policy documents. A policy document replaces the account's copy for this dispute. `return_policy`, `cancellation_policy` and `customer_communication` also replace the matching fixed evidence slot. `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer, such as a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof that a physical order shipped and arrived. `digital_fulfillment` is proof that the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller. `prior_transactions` is the buyer's payment history across the platform, for a fraud defense. `customer_session` is checkout data, such as IP address, device fingerprint, AVS and CVV results, and the 3D Secure result. `subscription` is membership lifecycle evidence, such as renewals, cancellation and reminders sent. `complete_evidence` is the seller's whole response as one PDF of at most 19 pages, and it must be the only document. Whop sends a `complete_evidence` document to the processor in place of every other evidence field, attachment and document.
 	DocumentType UpdateDisputesRequestEvidenceDocumentsItemDocumentType `json:"document_type" url:"document_type"`
 	// The file itself. Send it as a file part to upload and attach in one call, or use `id`/`direct_upload_id` for a file that is already stored.
 	File *string `json:"file,omitempty" url:"file,omitempty"`
@@ -4670,7 +4673,7 @@ func (u *UpdateDisputesRequestEvidenceDocumentsItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
+// What this document proves. `return_policy`, `cancellation_policy` and `terms_of_service` are the seller's policy documents. A policy document replaces the account's copy for this dispute. `return_policy`, `cancellation_policy` and `customer_communication` also replace the matching fixed evidence slot. `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer, such as a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof that a physical order shipped and arrived. `digital_fulfillment` is proof that the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller. `prior_transactions` is the buyer's payment history across the platform, for a fraud defense. `customer_session` is checkout data, such as IP address, device fingerprint, AVS and CVV results, and the 3D Secure result. `subscription` is membership lifecycle evidence, such as renewals, cancellation and reminders sent. `complete_evidence` is the seller's whole response as one PDF of at most 19 pages, and it must be the only document. Whop sends a `complete_evidence` document to the processor in place of every other evidence field, attachment and document.
 type UpdateDisputesRequestEvidenceDocumentsItemDocumentType string
 
 const (
@@ -4686,6 +4689,7 @@ const (
 	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeDigitalFulfillment    UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "digital_fulfillment"
 	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeSubscription          UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "subscription"
 	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCustomerCommunication UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "customer_communication"
+	UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCompleteEvidence      UpdateDisputesRequestEvidenceDocumentsItemDocumentType = "complete_evidence"
 )
 
 func NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString(s string) (UpdateDisputesRequestEvidenceDocumentsItemDocumentType, error) {
@@ -4714,6 +4718,8 @@ func NewUpdateDisputesRequestEvidenceDocumentsItemDocumentTypeFromString(s strin
 		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeSubscription, nil
 	case "customer_communication":
 		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCustomerCommunication, nil
+	case "complete_evidence":
+		return UpdateDisputesRequestEvidenceDocumentsItemDocumentTypeCompleteEvidence, nil
 	}
 	var t UpdateDisputesRequestEvidenceDocumentsItemDocumentType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -4943,7 +4949,7 @@ var (
 type UploadEvidenceDisputesRequestDocumentsItem struct {
 	// The ID returned by a direct upload.
 	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
-	// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
+	// What this document proves. `return_policy`, `cancellation_policy` and `terms_of_service` are the seller's policy documents. A policy document replaces the account's copy for this dispute. `return_policy`, `cancellation_policy` and `customer_communication` also replace the matching fixed evidence slot. `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer, such as a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof that a physical order shipped and arrived. `digital_fulfillment` is proof that the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller. `prior_transactions` is the buyer's payment history across the platform, for a fraud defense. `customer_session` is checkout data, such as IP address, device fingerprint, AVS and CVV results, and the 3D Secure result. `subscription` is membership lifecycle evidence, such as renewals, cancellation and reminders sent. `complete_evidence` is the seller's whole response as one PDF of at most 19 pages, and it must be the only document. Whop sends a `complete_evidence` document to the processor in place of every other evidence field, attachment and document.
 	DocumentType UploadEvidenceDisputesRequestDocumentsItemDocumentType `json:"document_type" url:"document_type"`
 	// The file itself. Send it as a file part to upload and attach in one call, or use `id`/`direct_upload_id` for a file that is already stored.
 	File *string `json:"file,omitempty" url:"file,omitempty"`
@@ -5071,7 +5077,7 @@ func (u *UploadEvidenceDisputesRequestDocumentsItem) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// What this document proves, in the processor's own evidence vocabulary. `return_policy`, `cancellation_policy`, and `terms_of_service` are the seller's policy documents — uploading one overrides the account's copy for this dispute (`return_policy`, `cancellation_policy`, and `customer_communication` also override the matching fixed evidence slot). `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer — a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof a physical order shipped and arrived; `digital_fulfillment` is proof the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller; `prior_transactions` is their broader payment history across the platform, for a fraud defense. `customer_session` is checkout forensics — IP, device fingerprint, AVS/CVV, 3D Secure result. `subscription` is membership lifecycle evidence — renewals, cancellation, reminders sent.
+// What this document proves. `return_policy`, `cancellation_policy` and `terms_of_service` are the seller's policy documents. A policy document replaces the account's copy for this dispute. `return_policy`, `cancellation_policy` and `customer_communication` also replace the matching fixed evidence slot. `shipping_policy` is the seller's shipping terms. `customer_communication` is correspondence with the buyer, such as a support thread or chat log. `product_image` is a photo of the product or service the buyer received. `physical_fulfillment` is proof that a physical order shipped and arrived. `digital_fulfillment` is proof that the buyer accessed a digital product. `customer_order_history` is the buyer's past orders with this seller. `prior_transactions` is the buyer's payment history across the platform, for a fraud defense. `customer_session` is checkout data, such as IP address, device fingerprint, AVS and CVV results, and the 3D Secure result. `subscription` is membership lifecycle evidence, such as renewals, cancellation and reminders sent. `complete_evidence` is the seller's whole response as one PDF of at most 19 pages, and it must be the only document. Whop sends a `complete_evidence` document to the processor in place of every other evidence field, attachment and document.
 type UploadEvidenceDisputesRequestDocumentsItemDocumentType string
 
 const (
@@ -5087,6 +5093,7 @@ const (
 	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeDigitalFulfillment    UploadEvidenceDisputesRequestDocumentsItemDocumentType = "digital_fulfillment"
 	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeSubscription          UploadEvidenceDisputesRequestDocumentsItemDocumentType = "subscription"
 	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCustomerCommunication UploadEvidenceDisputesRequestDocumentsItemDocumentType = "customer_communication"
+	UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCompleteEvidence      UploadEvidenceDisputesRequestDocumentsItemDocumentType = "complete_evidence"
 )
 
 func NewUploadEvidenceDisputesRequestDocumentsItemDocumentTypeFromString(s string) (UploadEvidenceDisputesRequestDocumentsItemDocumentType, error) {
@@ -5115,6 +5122,8 @@ func NewUploadEvidenceDisputesRequestDocumentsItemDocumentTypeFromString(s strin
 		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypeSubscription, nil
 	case "customer_communication":
 		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCustomerCommunication, nil
+	case "complete_evidence":
+		return UploadEvidenceDisputesRequestDocumentsItemDocumentTypeCompleteEvidence, nil
 	}
 	var t UploadEvidenceDisputesRequestDocumentsItemDocumentType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
