@@ -619,9 +619,10 @@ func (c CreateTransfersRequestBodyBalanceFeedType) Ptr() *CreateTransfersRequest
 
 var (
 	createTransfersRequestBodyClaimLinkFieldAmount          = big.NewInt(1 << 0)
-	createTransfersRequestBodyClaimLinkFieldExpiresAt       = big.NewInt(1 << 1)
-	createTransfersRequestBodyClaimLinkFieldOriginID        = big.NewInt(1 << 2)
-	createTransfersRequestBodyClaimLinkFieldRedeemableCount = big.NewInt(1 << 3)
+	createTransfersRequestBodyClaimLinkFieldCurrency        = big.NewInt(1 << 1)
+	createTransfersRequestBodyClaimLinkFieldExpiresAt       = big.NewInt(1 << 2)
+	createTransfersRequestBodyClaimLinkFieldOriginID        = big.NewInt(1 << 3)
+	createTransfersRequestBodyClaimLinkFieldRedeemableCount = big.NewInt(1 << 4)
 )
 
 // createTransfersRequestBodyClaimLinkNullableFields maps the wire names of CreateTransfersRequestBodyClaimLink's nullable fields (required or optional) to their field bits.
@@ -631,8 +632,10 @@ var createTransfersRequestBodyClaimLinkNullableFields = map[string]*big.Int{
 
 // Funds a shareable link anyone with the URL can redeem and returns a `claim_link`.
 type CreateTransfersRequestBodyClaimLink struct {
-	// The amount to move, in the transfer currency. For example 25.00.
+	// The amount each claim pays, in the link currency. For example 25.00. Use at most two decimal places. Use a whole number for a currency without decimal places, such as `jpy`.
 	Amount float64 `json:"amount" url:"amount"`
+	// Currency of `amount`, as a lowercase ISO 4217 code. Defaults to `usd`. The origin balance must hold `amount` times `redeemable_count` in this currency.
+	Currency *CreateTransfersRequestBodyClaimLinkCurrency `json:"currency,omitempty" url:"currency,omitempty"`
 	// Link expiry as an ISO 8601 timestamp. Defaults to 24 hours from creation.
 	ExpiresAt *time.Time `json:"expires_at,omitempty" url:"expires_at,omitempty"`
 	// The account sending the funds. A user ID (user_xxx), account ID (biz_xxx), or ledger account ID (ldgr_xxx).
@@ -652,6 +655,13 @@ func (c *CreateTransfersRequestBodyClaimLink) GetAmount() float64 {
 		return 0
 	}
 	return c.Amount
+}
+
+func (c *CreateTransfersRequestBodyClaimLink) GetCurrency() *CreateTransfersRequestBodyClaimLinkCurrency {
+	if c == nil {
+		return nil
+	}
+	return c.Currency
 }
 
 func (c *CreateTransfersRequestBodyClaimLink) GetExpiresAt() *time.Time {
@@ -696,6 +706,13 @@ func (c *CreateTransfersRequestBodyClaimLink) require(field *big.Int) {
 func (c *CreateTransfersRequestBodyClaimLink) SetAmount(amount float64) {
 	c.Amount = amount
 	c.require(createTransfersRequestBodyClaimLinkFieldAmount)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTransfersRequestBodyClaimLink) SetCurrency(currency *CreateTransfersRequestBodyClaimLinkCurrency) {
+	c.Currency = currency
+	c.require(createTransfersRequestBodyClaimLinkFieldCurrency)
 }
 
 // SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
@@ -774,6 +791,275 @@ func (c *CreateTransfersRequestBodyClaimLink) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+// Currency of `amount`, as a lowercase ISO 4217 code. Defaults to `usd`. The origin balance must hold `amount` times `redeemable_count` in this currency.
+type CreateTransfersRequestBodyClaimLinkCurrency string
+
+const (
+	CreateTransfersRequestBodyClaimLinkCurrencyUsd CreateTransfersRequestBodyClaimLinkCurrency = "usd"
+	CreateTransfersRequestBodyClaimLinkCurrencySgd CreateTransfersRequestBodyClaimLinkCurrency = "sgd"
+	CreateTransfersRequestBodyClaimLinkCurrencyInr CreateTransfersRequestBodyClaimLinkCurrency = "inr"
+	CreateTransfersRequestBodyClaimLinkCurrencyAud CreateTransfersRequestBodyClaimLinkCurrency = "aud"
+	CreateTransfersRequestBodyClaimLinkCurrencyBrl CreateTransfersRequestBodyClaimLinkCurrency = "brl"
+	CreateTransfersRequestBodyClaimLinkCurrencyCad CreateTransfersRequestBodyClaimLinkCurrency = "cad"
+	CreateTransfersRequestBodyClaimLinkCurrencyDkk CreateTransfersRequestBodyClaimLinkCurrency = "dkk"
+	CreateTransfersRequestBodyClaimLinkCurrencyEur CreateTransfersRequestBodyClaimLinkCurrency = "eur"
+	CreateTransfersRequestBodyClaimLinkCurrencyNok CreateTransfersRequestBodyClaimLinkCurrency = "nok"
+	CreateTransfersRequestBodyClaimLinkCurrencyGbp CreateTransfersRequestBodyClaimLinkCurrency = "gbp"
+	CreateTransfersRequestBodyClaimLinkCurrencySek CreateTransfersRequestBodyClaimLinkCurrency = "sek"
+	CreateTransfersRequestBodyClaimLinkCurrencyChf CreateTransfersRequestBodyClaimLinkCurrency = "chf"
+	CreateTransfersRequestBodyClaimLinkCurrencyHkd CreateTransfersRequestBodyClaimLinkCurrency = "hkd"
+	CreateTransfersRequestBodyClaimLinkCurrencyHuf CreateTransfersRequestBodyClaimLinkCurrency = "huf"
+	CreateTransfersRequestBodyClaimLinkCurrencyJpy CreateTransfersRequestBodyClaimLinkCurrency = "jpy"
+	CreateTransfersRequestBodyClaimLinkCurrencyMxn CreateTransfersRequestBodyClaimLinkCurrency = "mxn"
+	CreateTransfersRequestBodyClaimLinkCurrencyMyr CreateTransfersRequestBodyClaimLinkCurrency = "myr"
+	CreateTransfersRequestBodyClaimLinkCurrencyPln CreateTransfersRequestBodyClaimLinkCurrency = "pln"
+	CreateTransfersRequestBodyClaimLinkCurrencyCzk CreateTransfersRequestBodyClaimLinkCurrency = "czk"
+	CreateTransfersRequestBodyClaimLinkCurrencyNzd CreateTransfersRequestBodyClaimLinkCurrency = "nzd"
+	CreateTransfersRequestBodyClaimLinkCurrencyAed CreateTransfersRequestBodyClaimLinkCurrency = "aed"
+	CreateTransfersRequestBodyClaimLinkCurrencyCop CreateTransfersRequestBodyClaimLinkCurrency = "cop"
+	CreateTransfersRequestBodyClaimLinkCurrencyRon CreateTransfersRequestBodyClaimLinkCurrency = "ron"
+	CreateTransfersRequestBodyClaimLinkCurrencyThb CreateTransfersRequestBodyClaimLinkCurrency = "thb"
+	CreateTransfersRequestBodyClaimLinkCurrencyBgn CreateTransfersRequestBodyClaimLinkCurrency = "bgn"
+	CreateTransfersRequestBodyClaimLinkCurrencyIdr CreateTransfersRequestBodyClaimLinkCurrency = "idr"
+	CreateTransfersRequestBodyClaimLinkCurrencyDop CreateTransfersRequestBodyClaimLinkCurrency = "dop"
+	CreateTransfersRequestBodyClaimLinkCurrencyPhp CreateTransfersRequestBodyClaimLinkCurrency = "php"
+	CreateTransfersRequestBodyClaimLinkCurrencyTry CreateTransfersRequestBodyClaimLinkCurrency = "try"
+	CreateTransfersRequestBodyClaimLinkCurrencyKrw CreateTransfersRequestBodyClaimLinkCurrency = "krw"
+	CreateTransfersRequestBodyClaimLinkCurrencyTwd CreateTransfersRequestBodyClaimLinkCurrency = "twd"
+	CreateTransfersRequestBodyClaimLinkCurrencyVnd CreateTransfersRequestBodyClaimLinkCurrency = "vnd"
+	CreateTransfersRequestBodyClaimLinkCurrencyPkr CreateTransfersRequestBodyClaimLinkCurrency = "pkr"
+	CreateTransfersRequestBodyClaimLinkCurrencyClp CreateTransfersRequestBodyClaimLinkCurrency = "clp"
+	CreateTransfersRequestBodyClaimLinkCurrencyUyu CreateTransfersRequestBodyClaimLinkCurrency = "uyu"
+	CreateTransfersRequestBodyClaimLinkCurrencyArs CreateTransfersRequestBodyClaimLinkCurrency = "ars"
+	CreateTransfersRequestBodyClaimLinkCurrencyZar CreateTransfersRequestBodyClaimLinkCurrency = "zar"
+	CreateTransfersRequestBodyClaimLinkCurrencyDzd CreateTransfersRequestBodyClaimLinkCurrency = "dzd"
+	CreateTransfersRequestBodyClaimLinkCurrencyTnd CreateTransfersRequestBodyClaimLinkCurrency = "tnd"
+	CreateTransfersRequestBodyClaimLinkCurrencyMad CreateTransfersRequestBodyClaimLinkCurrency = "mad"
+	CreateTransfersRequestBodyClaimLinkCurrencyKes CreateTransfersRequestBodyClaimLinkCurrency = "kes"
+	CreateTransfersRequestBodyClaimLinkCurrencyKwd CreateTransfersRequestBodyClaimLinkCurrency = "kwd"
+	CreateTransfersRequestBodyClaimLinkCurrencyJod CreateTransfersRequestBodyClaimLinkCurrency = "jod"
+	CreateTransfersRequestBodyClaimLinkCurrencyAll CreateTransfersRequestBodyClaimLinkCurrency = "all"
+	CreateTransfersRequestBodyClaimLinkCurrencyXcd CreateTransfersRequestBodyClaimLinkCurrency = "xcd"
+	CreateTransfersRequestBodyClaimLinkCurrencyAmd CreateTransfersRequestBodyClaimLinkCurrency = "amd"
+	CreateTransfersRequestBodyClaimLinkCurrencyBsd CreateTransfersRequestBodyClaimLinkCurrency = "bsd"
+	CreateTransfersRequestBodyClaimLinkCurrencyBhd CreateTransfersRequestBodyClaimLinkCurrency = "bhd"
+	CreateTransfersRequestBodyClaimLinkCurrencyBob CreateTransfersRequestBodyClaimLinkCurrency = "bob"
+	CreateTransfersRequestBodyClaimLinkCurrencyBam CreateTransfersRequestBodyClaimLinkCurrency = "bam"
+	CreateTransfersRequestBodyClaimLinkCurrencyKhr CreateTransfersRequestBodyClaimLinkCurrency = "khr"
+	CreateTransfersRequestBodyClaimLinkCurrencyCrc CreateTransfersRequestBodyClaimLinkCurrency = "crc"
+	CreateTransfersRequestBodyClaimLinkCurrencyXof CreateTransfersRequestBodyClaimLinkCurrency = "xof"
+	CreateTransfersRequestBodyClaimLinkCurrencyEgp CreateTransfersRequestBodyClaimLinkCurrency = "egp"
+	CreateTransfersRequestBodyClaimLinkCurrencyEtb CreateTransfersRequestBodyClaimLinkCurrency = "etb"
+	CreateTransfersRequestBodyClaimLinkCurrencyGmd CreateTransfersRequestBodyClaimLinkCurrency = "gmd"
+	CreateTransfersRequestBodyClaimLinkCurrencyGhs CreateTransfersRequestBodyClaimLinkCurrency = "ghs"
+	CreateTransfersRequestBodyClaimLinkCurrencyGtq CreateTransfersRequestBodyClaimLinkCurrency = "gtq"
+	CreateTransfersRequestBodyClaimLinkCurrencyGyd CreateTransfersRequestBodyClaimLinkCurrency = "gyd"
+	CreateTransfersRequestBodyClaimLinkCurrencyIls CreateTransfersRequestBodyClaimLinkCurrency = "ils"
+	CreateTransfersRequestBodyClaimLinkCurrencyJmd CreateTransfersRequestBodyClaimLinkCurrency = "jmd"
+	CreateTransfersRequestBodyClaimLinkCurrencyMop CreateTransfersRequestBodyClaimLinkCurrency = "mop"
+	CreateTransfersRequestBodyClaimLinkCurrencyMga CreateTransfersRequestBodyClaimLinkCurrency = "mga"
+	CreateTransfersRequestBodyClaimLinkCurrencyMur CreateTransfersRequestBodyClaimLinkCurrency = "mur"
+	CreateTransfersRequestBodyClaimLinkCurrencyMdl CreateTransfersRequestBodyClaimLinkCurrency = "mdl"
+	CreateTransfersRequestBodyClaimLinkCurrencyMnt CreateTransfersRequestBodyClaimLinkCurrency = "mnt"
+	CreateTransfersRequestBodyClaimLinkCurrencyNad CreateTransfersRequestBodyClaimLinkCurrency = "nad"
+	CreateTransfersRequestBodyClaimLinkCurrencyNgn CreateTransfersRequestBodyClaimLinkCurrency = "ngn"
+	CreateTransfersRequestBodyClaimLinkCurrencyMkd CreateTransfersRequestBodyClaimLinkCurrency = "mkd"
+	CreateTransfersRequestBodyClaimLinkCurrencyOmr CreateTransfersRequestBodyClaimLinkCurrency = "omr"
+	CreateTransfersRequestBodyClaimLinkCurrencyPyg CreateTransfersRequestBodyClaimLinkCurrency = "pyg"
+	CreateTransfersRequestBodyClaimLinkCurrencyPen CreateTransfersRequestBodyClaimLinkCurrency = "pen"
+	CreateTransfersRequestBodyClaimLinkCurrencyQar CreateTransfersRequestBodyClaimLinkCurrency = "qar"
+	CreateTransfersRequestBodyClaimLinkCurrencyRwf CreateTransfersRequestBodyClaimLinkCurrency = "rwf"
+	CreateTransfersRequestBodyClaimLinkCurrencySar CreateTransfersRequestBodyClaimLinkCurrency = "sar"
+	CreateTransfersRequestBodyClaimLinkCurrencyRsd CreateTransfersRequestBodyClaimLinkCurrency = "rsd"
+	CreateTransfersRequestBodyClaimLinkCurrencyLkr CreateTransfersRequestBodyClaimLinkCurrency = "lkr"
+	CreateTransfersRequestBodyClaimLinkCurrencyTzs CreateTransfersRequestBodyClaimLinkCurrency = "tzs"
+	CreateTransfersRequestBodyClaimLinkCurrencyTtd CreateTransfersRequestBodyClaimLinkCurrency = "ttd"
+	CreateTransfersRequestBodyClaimLinkCurrencyUzs CreateTransfersRequestBodyClaimLinkCurrency = "uzs"
+	CreateTransfersRequestBodyClaimLinkCurrencyRub CreateTransfersRequestBodyClaimLinkCurrency = "rub"
+	CreateTransfersRequestBodyClaimLinkCurrencyCny CreateTransfersRequestBodyClaimLinkCurrency = "cny"
+	CreateTransfersRequestBodyClaimLinkCurrencyKzt CreateTransfersRequestBodyClaimLinkCurrency = "kzt"
+	CreateTransfersRequestBodyClaimLinkCurrencyAwg CreateTransfersRequestBodyClaimLinkCurrency = "awg"
+)
+
+func NewCreateTransfersRequestBodyClaimLinkCurrencyFromString(s string) (CreateTransfersRequestBodyClaimLinkCurrency, error) {
+	switch s {
+	case "usd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyUsd, nil
+	case "sgd":
+		return CreateTransfersRequestBodyClaimLinkCurrencySgd, nil
+	case "inr":
+		return CreateTransfersRequestBodyClaimLinkCurrencyInr, nil
+	case "aud":
+		return CreateTransfersRequestBodyClaimLinkCurrencyAud, nil
+	case "brl":
+		return CreateTransfersRequestBodyClaimLinkCurrencyBrl, nil
+	case "cad":
+		return CreateTransfersRequestBodyClaimLinkCurrencyCad, nil
+	case "dkk":
+		return CreateTransfersRequestBodyClaimLinkCurrencyDkk, nil
+	case "eur":
+		return CreateTransfersRequestBodyClaimLinkCurrencyEur, nil
+	case "nok":
+		return CreateTransfersRequestBodyClaimLinkCurrencyNok, nil
+	case "gbp":
+		return CreateTransfersRequestBodyClaimLinkCurrencyGbp, nil
+	case "sek":
+		return CreateTransfersRequestBodyClaimLinkCurrencySek, nil
+	case "chf":
+		return CreateTransfersRequestBodyClaimLinkCurrencyChf, nil
+	case "hkd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyHkd, nil
+	case "huf":
+		return CreateTransfersRequestBodyClaimLinkCurrencyHuf, nil
+	case "jpy":
+		return CreateTransfersRequestBodyClaimLinkCurrencyJpy, nil
+	case "mxn":
+		return CreateTransfersRequestBodyClaimLinkCurrencyMxn, nil
+	case "myr":
+		return CreateTransfersRequestBodyClaimLinkCurrencyMyr, nil
+	case "pln":
+		return CreateTransfersRequestBodyClaimLinkCurrencyPln, nil
+	case "czk":
+		return CreateTransfersRequestBodyClaimLinkCurrencyCzk, nil
+	case "nzd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyNzd, nil
+	case "aed":
+		return CreateTransfersRequestBodyClaimLinkCurrencyAed, nil
+	case "cop":
+		return CreateTransfersRequestBodyClaimLinkCurrencyCop, nil
+	case "ron":
+		return CreateTransfersRequestBodyClaimLinkCurrencyRon, nil
+	case "thb":
+		return CreateTransfersRequestBodyClaimLinkCurrencyThb, nil
+	case "bgn":
+		return CreateTransfersRequestBodyClaimLinkCurrencyBgn, nil
+	case "idr":
+		return CreateTransfersRequestBodyClaimLinkCurrencyIdr, nil
+	case "dop":
+		return CreateTransfersRequestBodyClaimLinkCurrencyDop, nil
+	case "php":
+		return CreateTransfersRequestBodyClaimLinkCurrencyPhp, nil
+	case "try":
+		return CreateTransfersRequestBodyClaimLinkCurrencyTry, nil
+	case "krw":
+		return CreateTransfersRequestBodyClaimLinkCurrencyKrw, nil
+	case "twd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyTwd, nil
+	case "vnd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyVnd, nil
+	case "pkr":
+		return CreateTransfersRequestBodyClaimLinkCurrencyPkr, nil
+	case "clp":
+		return CreateTransfersRequestBodyClaimLinkCurrencyClp, nil
+	case "uyu":
+		return CreateTransfersRequestBodyClaimLinkCurrencyUyu, nil
+	case "ars":
+		return CreateTransfersRequestBodyClaimLinkCurrencyArs, nil
+	case "zar":
+		return CreateTransfersRequestBodyClaimLinkCurrencyZar, nil
+	case "dzd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyDzd, nil
+	case "tnd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyTnd, nil
+	case "mad":
+		return CreateTransfersRequestBodyClaimLinkCurrencyMad, nil
+	case "kes":
+		return CreateTransfersRequestBodyClaimLinkCurrencyKes, nil
+	case "kwd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyKwd, nil
+	case "jod":
+		return CreateTransfersRequestBodyClaimLinkCurrencyJod, nil
+	case "all":
+		return CreateTransfersRequestBodyClaimLinkCurrencyAll, nil
+	case "xcd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyXcd, nil
+	case "amd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyAmd, nil
+	case "bsd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyBsd, nil
+	case "bhd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyBhd, nil
+	case "bob":
+		return CreateTransfersRequestBodyClaimLinkCurrencyBob, nil
+	case "bam":
+		return CreateTransfersRequestBodyClaimLinkCurrencyBam, nil
+	case "khr":
+		return CreateTransfersRequestBodyClaimLinkCurrencyKhr, nil
+	case "crc":
+		return CreateTransfersRequestBodyClaimLinkCurrencyCrc, nil
+	case "xof":
+		return CreateTransfersRequestBodyClaimLinkCurrencyXof, nil
+	case "egp":
+		return CreateTransfersRequestBodyClaimLinkCurrencyEgp, nil
+	case "etb":
+		return CreateTransfersRequestBodyClaimLinkCurrencyEtb, nil
+	case "gmd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyGmd, nil
+	case "ghs":
+		return CreateTransfersRequestBodyClaimLinkCurrencyGhs, nil
+	case "gtq":
+		return CreateTransfersRequestBodyClaimLinkCurrencyGtq, nil
+	case "gyd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyGyd, nil
+	case "ils":
+		return CreateTransfersRequestBodyClaimLinkCurrencyIls, nil
+	case "jmd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyJmd, nil
+	case "mop":
+		return CreateTransfersRequestBodyClaimLinkCurrencyMop, nil
+	case "mga":
+		return CreateTransfersRequestBodyClaimLinkCurrencyMga, nil
+	case "mur":
+		return CreateTransfersRequestBodyClaimLinkCurrencyMur, nil
+	case "mdl":
+		return CreateTransfersRequestBodyClaimLinkCurrencyMdl, nil
+	case "mnt":
+		return CreateTransfersRequestBodyClaimLinkCurrencyMnt, nil
+	case "nad":
+		return CreateTransfersRequestBodyClaimLinkCurrencyNad, nil
+	case "ngn":
+		return CreateTransfersRequestBodyClaimLinkCurrencyNgn, nil
+	case "mkd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyMkd, nil
+	case "omr":
+		return CreateTransfersRequestBodyClaimLinkCurrencyOmr, nil
+	case "pyg":
+		return CreateTransfersRequestBodyClaimLinkCurrencyPyg, nil
+	case "pen":
+		return CreateTransfersRequestBodyClaimLinkCurrencyPen, nil
+	case "qar":
+		return CreateTransfersRequestBodyClaimLinkCurrencyQar, nil
+	case "rwf":
+		return CreateTransfersRequestBodyClaimLinkCurrencyRwf, nil
+	case "sar":
+		return CreateTransfersRequestBodyClaimLinkCurrencySar, nil
+	case "rsd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyRsd, nil
+	case "lkr":
+		return CreateTransfersRequestBodyClaimLinkCurrencyLkr, nil
+	case "tzs":
+		return CreateTransfersRequestBodyClaimLinkCurrencyTzs, nil
+	case "ttd":
+		return CreateTransfersRequestBodyClaimLinkCurrencyTtd, nil
+	case "uzs":
+		return CreateTransfersRequestBodyClaimLinkCurrencyUzs, nil
+	case "rub":
+		return CreateTransfersRequestBodyClaimLinkCurrencyRub, nil
+	case "cny":
+		return CreateTransfersRequestBodyClaimLinkCurrencyCny, nil
+	case "kzt":
+		return CreateTransfersRequestBodyClaimLinkCurrencyKzt, nil
+	case "awg":
+		return CreateTransfersRequestBodyClaimLinkCurrencyAwg, nil
+	}
+	var t CreateTransfersRequestBodyClaimLinkCurrency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateTransfersRequestBodyClaimLinkCurrency) Ptr() *CreateTransfersRequestBodyClaimLinkCurrency {
+	return &c
 }
 
 type CreateTransfersResponse struct {
