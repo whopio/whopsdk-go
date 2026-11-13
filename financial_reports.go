@@ -1620,6 +1620,18 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPayoutSubsidy                             RetrieveFinancialReportsResponseRowsItemLineCategory = "payout_subsidy"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPayoutUnreconciledClearing                RetrieveFinancialReportsResponseRowsItemLineCategory = "payout_unreconciled_clearing"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPending                                   RetrieveFinancialReportsResponseRowsItemLineCategory = "pending"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsBridgeFee                            RetrieveFinancialReportsResponseRowsItemLineCategory = "perps_bridge_fee"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsBridgeFeeOffset                      RetrieveFinancialReportsResponseRowsItemLineCategory = "perps_bridge_fee_offset"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsFee                                  RetrieveFinancialReportsResponseRowsItemLineCategory = "perps_fee"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsFeeOffset                            RetrieveFinancialReportsResponseRowsItemLineCategory = "perps_fee_offset"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsLoadDeposit                          RetrieveFinancialReportsResponseRowsItemLineCategory = "perps_load_deposit"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsLoadTransfer                         RetrieveFinancialReportsResponseRowsItemLineCategory = "perps_load_transfer"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsRealizedPnl                          RetrieveFinancialReportsResponseRowsItemLineCategory = "perps_realized_pnl"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsRealizedPnlOffset                    RetrieveFinancialReportsResponseRowsItemLineCategory = "perps_realized_pnl_offset"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsUnloadDeposit                        RetrieveFinancialReportsResponseRowsItemLineCategory = "perps_unload_deposit"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsUnloadTransfer                       RetrieveFinancialReportsResponseRowsItemLineCategory = "perps_unload_transfer"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsVolume                               RetrieveFinancialReportsResponseRowsItemLineCategory = "perps_volume"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsVolumeOffset                         RetrieveFinancialReportsResponseRowsItemLineCategory = "perps_volume_offset"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformAffiliatePayment                  RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_affiliate_payment"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformAffiliatePaymentReversal          RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_affiliate_payment_reversal"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalancePayment                    RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_balance_payment"
@@ -1636,6 +1648,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformEarningUnreconciledClearing       RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_earning_unreconciled_clearing"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformMarkupFee                         RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_markup_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformMarkupFeePayout                   RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_markup_fee_payout"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformTradingCommission                 RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_trading_commission"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPromoReversal                             RetrieveFinancialReportsResponseRowsItemLineCategory = "promo_reversal"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspAcceleratedSettlementFee               RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_accelerated_settlement_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspAccountDebit                           RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_account_debit"
@@ -1738,6 +1751,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryTradingAccountDepositOffset               RetrieveFinancialReportsResponseRowsItemLineCategory = "trading_account_deposit_offset"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryTradingAccountWithdrawal                  RetrieveFinancialReportsResponseRowsItemLineCategory = "trading_account_withdrawal"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryTradingAccountWithdrawalOffset            RetrieveFinancialReportsResponseRowsItemLineCategory = "trading_account_withdrawal_offset"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryTradingFee                                RetrieveFinancialReportsResponseRowsItemLineCategory = "trading_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryTreasuryFee                               RetrieveFinancialReportsResponseRowsItemLineCategory = "treasury_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryTreasuryPayin                             RetrieveFinancialReportsResponseRowsItemLineCategory = "treasury_payin"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryTreasuryPayinReceivable                   RetrieveFinancialReportsResponseRowsItemLineCategory = "treasury_payin_receivable"
@@ -2127,6 +2141,30 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPayoutUnreconciledClearing, nil
 	case "pending":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPending, nil
+	case "perps_bridge_fee":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsBridgeFee, nil
+	case "perps_bridge_fee_offset":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsBridgeFeeOffset, nil
+	case "perps_fee":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsFee, nil
+	case "perps_fee_offset":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsFeeOffset, nil
+	case "perps_load_deposit":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsLoadDeposit, nil
+	case "perps_load_transfer":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsLoadTransfer, nil
+	case "perps_realized_pnl":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsRealizedPnl, nil
+	case "perps_realized_pnl_offset":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsRealizedPnlOffset, nil
+	case "perps_unload_deposit":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsUnloadDeposit, nil
+	case "perps_unload_transfer":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsUnloadTransfer, nil
+	case "perps_volume":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsVolume, nil
+	case "perps_volume_offset":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPerpsVolumeOffset, nil
 	case "platform_affiliate_payment":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformAffiliatePayment, nil
 	case "platform_affiliate_payment_reversal":
@@ -2159,6 +2197,8 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformMarkupFee, nil
 	case "platform_markup_fee_payout":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformMarkupFeePayout, nil
+	case "platform_trading_commission":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformTradingCommission, nil
 	case "promo_reversal":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPromoReversal, nil
 	case "psp_accelerated_settlement_fee":
@@ -2363,6 +2403,8 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryTradingAccountWithdrawal, nil
 	case "trading_account_withdrawal_offset":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryTradingAccountWithdrawalOffset, nil
+	case "trading_fee":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryTradingFee, nil
 	case "treasury_fee":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryTreasuryFee, nil
 	case "treasury_payin":

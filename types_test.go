@@ -196008,6 +196008,104 @@ func TestEnumLedgerActivityLineType(t *testing.T) {
 		assert.Equal(t, LedgerActivityLineType("trading_account_deposit_offset"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_perps_load_transfer", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("perps_load_transfer")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("perps_load_transfer"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_perps_load_deposit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("perps_load_deposit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("perps_load_deposit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_perps_unload_transfer", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("perps_unload_transfer")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("perps_unload_transfer"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_perps_unload_deposit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("perps_unload_deposit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("perps_unload_deposit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_perps_bridge_fee", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("perps_bridge_fee")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("perps_bridge_fee"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_perps_bridge_fee_offset", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("perps_bridge_fee_offset")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("perps_bridge_fee_offset"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_perps_volume", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("perps_volume")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("perps_volume"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_perps_volume_offset", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("perps_volume_offset")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("perps_volume_offset"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_perps_fee", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("perps_fee")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("perps_fee"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_perps_fee_offset", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("perps_fee_offset")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("perps_fee_offset"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platform_trading_commission", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("platform_trading_commission")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("platform_trading_commission"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_trading_fee", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("trading_fee")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("trading_fee"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_perps_realized_pnl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("perps_realized_pnl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("perps_realized_pnl"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_perps_realized_pnl_offset", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("perps_realized_pnl_offset")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("perps_realized_pnl_offset"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_onchain_wallet_transfer_outgoing", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewLedgerActivityLineTypeFromString("onchain_wallet_transfer_outgoing")
