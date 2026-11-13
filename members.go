@@ -327,15 +327,16 @@ var (
 	memberFieldLastAccessedAt     = big.NewInt(1 << 8)
 	memberFieldLastActivity       = big.NewInt(1 << 9)
 	memberFieldLastActivityAt     = big.NewInt(1 << 10)
-	memberFieldMostRecentAction   = big.NewInt(1 << 11)
-	memberFieldMostRecentActionAt = big.NewInt(1 << 12)
-	memberFieldName               = big.NewInt(1 << 13)
-	memberFieldPhoneNumber        = big.NewInt(1 << 14)
-	memberFieldStatus             = big.NewInt(1 << 15)
-	memberFieldTokenBalance       = big.NewInt(1 << 16)
-	memberFieldUnsubscribeStatus  = big.NewInt(1 << 17)
-	memberFieldUsdTotalSpent      = big.NewInt(1 << 18)
-	memberFieldUser               = big.NewInt(1 << 19)
+	memberFieldMetadata           = big.NewInt(1 << 11)
+	memberFieldMostRecentAction   = big.NewInt(1 << 12)
+	memberFieldMostRecentActionAt = big.NewInt(1 << 13)
+	memberFieldName               = big.NewInt(1 << 14)
+	memberFieldPhoneNumber        = big.NewInt(1 << 15)
+	memberFieldStatus             = big.NewInt(1 << 16)
+	memberFieldTokenBalance       = big.NewInt(1 << 17)
+	memberFieldUnsubscribeStatus  = big.NewInt(1 << 18)
+	memberFieldUsdTotalSpent      = big.NewInt(1 << 19)
+	memberFieldUser               = big.NewInt(1 << 20)
 )
 
 // memberNullableFields maps the wire names of Member's nullable fields (required or optional) to their field bits.
@@ -345,6 +346,7 @@ var memberNullableFields = map[string]*big.Int{
 	"last_accessed_at":      memberFieldLastAccessedAt,
 	"last_activity":         memberFieldLastActivity,
 	"last_activity_at":      memberFieldLastActivityAt,
+	"metadata":              memberFieldMetadata,
 	"most_recent_action":    memberFieldMostRecentAction,
 	"most_recent_action_at": memberFieldMostRecentActionAt,
 	"name":                  memberFieldName,
@@ -376,6 +378,8 @@ type Member struct {
 	LastActivity *MemberLastActivity `json:"last_activity,omitempty" url:"last_activity,omitempty"`
 	// When the member and the account last interacted, as an ISO 8601 timestamp. For example, a message in the member's support chat.
 	LastActivityAt *string `json:"last_activity_at,omitempty" url:"last_activity_at,omitempty"`
+	// Your own key-value data stored on this member. `null` when none is set.
+	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// The member's latest lifecycle state on the account, derived from their memberships, such as `paid_subscriber`, `canceling`, or `churned`. `null` until it is first computed.
 	MostRecentAction *MemberMostRecentAction `json:"most_recent_action,omitempty" url:"most_recent_action,omitempty"`
 	// When `most_recent_action` took effect, as an ISO 8601 timestamp. `null` when `most_recent_action` is `null`.
@@ -477,6 +481,13 @@ func (m *Member) GetLastActivityAt() *string {
 		return nil
 	}
 	return m.LastActivityAt
+}
+
+func (m *Member) GetMetadata() map[string]any {
+	if m == nil {
+		return nil
+	}
+	return m.Metadata
 }
 
 func (m *Member) GetMostRecentAction() *MemberMostRecentAction {
@@ -633,6 +644,13 @@ func (m *Member) SetLastActivity(lastActivity *MemberLastActivity) {
 func (m *Member) SetLastActivityAt(lastActivityAt *string) {
 	m.LastActivityAt = lastActivityAt
 	m.require(memberFieldLastActivityAt)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetMetadata(metadata map[string]any) {
+	m.Metadata = metadata
+	m.require(memberFieldMetadata)
 }
 
 // SetMostRecentAction sets the MostRecentAction field and marks it as non-optional;
@@ -2280,7 +2298,90 @@ func (p PostMemberUpdatedPayloadType) Ptr() *PostMemberUpdatedPayloadType {
 	return &p
 }
 
-// `unsubscribed` to stop the account's marketing communications, or `null` to resubscribe. Only the member can set it.
+type UpdateMembersRequestMetadataValue struct {
+	String  string
+	Double  float64
+	Boolean bool
+
+	typ string
+}
+
+func (u *UpdateMembersRequestMetadataValue) GetString() string {
+	if u == nil {
+		return ""
+	}
+	return u.String
+}
+
+func (u *UpdateMembersRequestMetadataValue) GetDouble() float64 {
+	if u == nil {
+		return 0
+	}
+	return u.Double
+}
+
+func (u *UpdateMembersRequestMetadataValue) GetBoolean() bool {
+	if u == nil {
+		return false
+	}
+	return u.Boolean
+}
+
+func (u *UpdateMembersRequestMetadataValue) UnmarshalJSON(data []byte) error {
+	var valueString string
+	if err := json.Unmarshal(data, &valueString); err == nil {
+		u.typ = "String"
+		u.String = valueString
+		return nil
+	}
+	var valueDouble float64
+	if err := json.Unmarshal(data, &valueDouble); err == nil {
+		u.typ = "Double"
+		u.Double = valueDouble
+		return nil
+	}
+	var valueBoolean bool
+	if err := json.Unmarshal(data, &valueBoolean); err == nil {
+		u.typ = "Boolean"
+		u.Boolean = valueBoolean
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, u)
+}
+
+func (u UpdateMembersRequestMetadataValue) MarshalJSON() ([]byte, error) {
+	if u.typ == "String" || u.String != "" {
+		return json.Marshal(u.String)
+	}
+	if u.typ == "Double" || u.Double != 0 {
+		return json.Marshal(u.Double)
+	}
+	if u.typ == "Boolean" || u.Boolean != false {
+		return json.Marshal(u.Boolean)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", u)
+}
+
+type UpdateMembersRequestMetadataValueVisitor interface {
+	VisitString(string) error
+	VisitDouble(float64) error
+	VisitBoolean(bool) error
+}
+
+func (u *UpdateMembersRequestMetadataValue) Accept(visitor UpdateMembersRequestMetadataValueVisitor) error {
+	if u.typ == "String" || u.String != "" {
+		return visitor.VisitString(u.String)
+	}
+	if u.typ == "Double" || u.Double != 0 {
+		return visitor.VisitDouble(u.Double)
+	}
+	if u.typ == "Boolean" || u.Boolean != false {
+		return visitor.VisitBoolean(u.Boolean)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", u)
+}
+
+// `unsubscribed` to opt out of the account's marketing, `null` to opt back in. Only the member can set it, with `user:notifications:update`.
 type UpdateMembersRequestUnsubscribeStatus string
 
 const (
@@ -2340,16 +2441,19 @@ func (u *UnsubscribeMembersRequest) SetToken(token string) {
 
 var (
 	updateMembersRequestFieldID                = big.NewInt(1 << 0)
-	updateMembersRequestFieldName              = big.NewInt(1 << 1)
-	updateMembersRequestFieldUnsubscribeStatus = big.NewInt(1 << 2)
+	updateMembersRequestFieldMetadata          = big.NewInt(1 << 1)
+	updateMembersRequestFieldName              = big.NewInt(1 << 2)
+	updateMembersRequestFieldUnsubscribeStatus = big.NewInt(1 << 3)
 )
 
 type UpdateMembersRequest struct {
 	// Member ID (`mber_` tag).
 	ID string `json:"-" url:"-"`
-	// The customer name to show on this member's invoices, at most 255 bytes. Leading and trailing spaces are trimmed. `null` or a blank string clears it, so invoices show the user's own name again.
+	// Your own key-value data on this member. Up to 50 keys of at most 100 characters. Values are strings of at most 500 characters, numbers, `true`, `false`, or `null`. At most 200 KB. Replaces existing metadata, and `null` clears it. Requires `member:manage`.
+	Metadata map[string]*UpdateMembersRequestMetadataValue `json:"metadata,omitempty" url:"-"`
+	// The name invoices show for this member, in place of the user's own. `null` clears it. Requires `member:manage`.
 	Name *string `json:"name,omitempty" url:"-"`
-	// `unsubscribed` to stop the account's marketing communications, or `null` to resubscribe. Only the member can set it.
+	// `unsubscribed` to opt out of the account's marketing, `null` to opt back in. Only the member can set it, with `user:notifications:update`.
 	UnsubscribeStatus *UpdateMembersRequestUnsubscribeStatus `json:"unsubscribe_status,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -2370,6 +2474,13 @@ func (u *UpdateMembersRequest) require(field *big.Int) {
 func (u *UpdateMembersRequest) SetID(id string) {
 	u.ID = id
 	u.require(updateMembersRequestFieldID)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMembersRequest) SetMetadata(metadata map[string]*UpdateMembersRequestMetadataValue) {
+	u.Metadata = metadata
+	u.require(updateMembersRequestFieldMetadata)
 }
 
 // SetName sets the Name field and marks it as non-optional;

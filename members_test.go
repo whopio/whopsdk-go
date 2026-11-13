@@ -1014,6 +1014,14 @@ func TestSettersMember(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMetadata", func(t *testing.T) {
+		obj := &Member{}
+		var fernTestValueMetadata map[string]any
+		obj.SetMetadata(fernTestValueMetadata)
+		assert.Equal(t, fernTestValueMetadata, obj.Metadata)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetMostRecentAction", func(t *testing.T) {
 		obj := &Member{}
 		var fernTestValueMostRecentAction *MemberMostRecentAction
@@ -1390,6 +1398,39 @@ func TestGettersMember(t *testing.T) {
 			}
 		}()
 		_ = obj.GetLastActivityAt() // Should return zero value
+	})
+
+	t.Run("GetMetadata", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		var expected map[string]any
+		obj.Metadata = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMetadata(), "getter should return the property value")
+	})
+
+	t.Run("GetMetadata_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		obj.Metadata = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMetadata(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMetadata_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Member
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMetadata() // Should return zero value
 	})
 
 	t.Run("GetMostRecentAction", func(t *testing.T) {
@@ -1990,6 +2031,37 @@ func TestSettersMarkExplicitMember(t *testing.T) {
 
 		// Act
 		obj.SetLastActivityAt(fernTestValueLastActivityAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMetadata_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Member{}
+		var fernTestValueMetadata map[string]any
+
+		// Act
+		obj.SetMetadata(fernTestValueMetadata)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4842,6 +4914,78 @@ func TestSettersMarkExplicitPostMemberUpdatedPayload(t *testing.T) {
 
 }
 
+func TestGettersUpdateMembersRequestMetadataValue(t *testing.T) {
+	t.Run("GetString", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateMembersRequestMetadataValue{}
+		var expected string
+		obj.String = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetString(), "getter should return the property value")
+	})
+
+	t.Run("GetString_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateMembersRequestMetadataValue
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetString() // Should return zero value
+	})
+
+	t.Run("GetDouble", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateMembersRequestMetadataValue{}
+		var expected float64
+		obj.Double = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDouble(), "getter should return the property value")
+	})
+
+	t.Run("GetDouble_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateMembersRequestMetadataValue
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDouble() // Should return zero value
+	})
+
+	t.Run("GetBoolean", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateMembersRequestMetadataValue{}
+		var expected bool
+		obj.Boolean = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBoolean(), "getter should return the property value")
+	})
+
+	t.Run("GetBoolean_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateMembersRequestMetadataValue
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBoolean() // Should return zero value
+	})
+
+}
+
 func TestSettersUnsubscribeMembersRequest(t *testing.T) {
 	t.Run("SetID", func(t *testing.T) {
 		obj := &UnsubscribeMembersRequest{}
@@ -4935,6 +5079,14 @@ func TestSettersUpdateMembersRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMetadata", func(t *testing.T) {
+		obj := &UpdateMembersRequest{}
+		var fernTestValueMetadata map[string]*UpdateMembersRequestMetadataValue
+		obj.SetMetadata(fernTestValueMetadata)
+		assert.Equal(t, fernTestValueMetadata, obj.Metadata)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetName", func(t *testing.T) {
 		obj := &UpdateMembersRequest{}
 		var fernTestValueName *string
@@ -4962,6 +5114,37 @@ func TestSettersMarkExplicitUpdateMembersRequest(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMetadata_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateMembersRequest{}
+		var fernTestValueMetadata map[string]*UpdateMembersRequestMetadataValue
+
+		// Act
+		obj.SetMetadata(fernTestValueMetadata)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5332,6 +5515,7 @@ func TestRequiredNullableRoundTripMember(t *testing.T) {
 		"last_accessed_at",
 		"last_activity",
 		"last_activity_at",
+		"metadata",
 		"most_recent_action",
 		"most_recent_action_at",
 		"name",
@@ -5350,7 +5534,7 @@ func TestRequiredNullableRoundTripMember(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Member
-		require.NoError(t, json.Unmarshal([]byte(`{"earnings_usd":null,"email":null,"last_accessed_at":null,"last_activity":null,"last_activity_at":null,"most_recent_action":null,"most_recent_action_at":null,"name":null,"phone_number":null,"unsubscribe_status":null,"user":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"earnings_usd":null,"email":null,"last_accessed_at":null,"last_activity":null,"last_activity_at":null,"metadata":null,"most_recent_action":null,"most_recent_action_at":null,"name":null,"phone_number":null,"unsubscribe_status":null,"user":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
