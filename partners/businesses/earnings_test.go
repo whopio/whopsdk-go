@@ -2824,6 +2824,39 @@ func TestGettersListEarningsResponseDataItemResource(t *testing.T) {
 		_ = obj.GetListEarningsResponseDataItemResourceFive() // Should return zero value
 	})
 
+	t.Run("GetListEarningsResponseDataItemResourceCreatedAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListEarningsResponseDataItemResource{}
+		var expected *ListEarningsResponseDataItemResourceCreatedAt
+		obj.ListEarningsResponseDataItemResourceCreatedAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetListEarningsResponseDataItemResourceCreatedAt(), "getter should return the property value")
+	})
+
+	t.Run("GetListEarningsResponseDataItemResourceCreatedAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListEarningsResponseDataItemResource{}
+		obj.ListEarningsResponseDataItemResourceCreatedAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetListEarningsResponseDataItemResourceCreatedAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetListEarningsResponseDataItemResourceCreatedAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListEarningsResponseDataItemResource
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetListEarningsResponseDataItemResourceCreatedAt() // Should return zero value
+	})
+
 }
 
 func TestSettersListEarningsResponseDataItemResourceAlternativePaymentMethod(t *testing.T) {
@@ -3561,6 +3594,263 @@ func TestSettersMarkExplicitListEarningsResponseDataItemResourceAlternativePayme
 
 		// Act
 		obj.SetName(fernTestValueName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersListEarningsResponseDataItemResourceCreatedAt(t *testing.T) {
+	t.Run("SetCreatedAt", func(t *testing.T) {
+		obj := &ListEarningsResponseDataItemResourceCreatedAt{}
+		var fernTestValueCreatedAt time.Time
+		obj.SetCreatedAt(fernTestValueCreatedAt)
+		assert.Equal(t, fernTestValueCreatedAt, obj.CreatedAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetID", func(t *testing.T) {
+		obj := &ListEarningsResponseDataItemResourceCreatedAt{}
+		var fernTestValueID string
+		obj.SetID(fernTestValueID)
+		assert.Equal(t, fernTestValueID, obj.ID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetIncomeSource", func(t *testing.T) {
+		obj := &ListEarningsResponseDataItemResourceCreatedAt{}
+		var fernTestValueIncomeSource ListEarningsResponseDataItemResourceCreatedAtIncomeSource
+		obj.SetIncomeSource(fernTestValueIncomeSource)
+		assert.Equal(t, fernTestValueIncomeSource, obj.IncomeSource)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetObject", func(t *testing.T) {
+		obj := &ListEarningsResponseDataItemResourceCreatedAt{}
+		var fernTestValueObject ListEarningsResponseDataItemResourceCreatedAtObject
+		obj.SetObject(fernTestValueObject)
+		assert.Equal(t, fernTestValueObject, obj.Object)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersListEarningsResponseDataItemResourceCreatedAt(t *testing.T) {
+	t.Run("GetCreatedAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListEarningsResponseDataItemResourceCreatedAt{}
+		var expected time.Time
+		obj.CreatedAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCreatedAt(), "getter should return the property value")
+	})
+
+	t.Run("GetCreatedAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListEarningsResponseDataItemResourceCreatedAt
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCreatedAt() // Should return zero value
+	})
+
+	t.Run("GetID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListEarningsResponseDataItemResourceCreatedAt{}
+		var expected string
+		obj.ID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetID(), "getter should return the property value")
+	})
+
+	t.Run("GetID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListEarningsResponseDataItemResourceCreatedAt
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetIncomeSource", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListEarningsResponseDataItemResourceCreatedAt{}
+		var expected ListEarningsResponseDataItemResourceCreatedAtIncomeSource
+		obj.IncomeSource = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIncomeSource(), "getter should return the property value")
+	})
+
+	t.Run("GetIncomeSource_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListEarningsResponseDataItemResourceCreatedAt
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIncomeSource() // Should return zero value
+	})
+
+	t.Run("GetObject", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListEarningsResponseDataItemResourceCreatedAt{}
+		var expected ListEarningsResponseDataItemResourceCreatedAtObject
+		obj.Object = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetObject(), "getter should return the property value")
+	})
+
+	t.Run("GetObject_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListEarningsResponseDataItemResourceCreatedAt
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetObject() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitListEarningsResponseDataItemResourceCreatedAt(t *testing.T) {
+	t.Run("SetCreatedAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListEarningsResponseDataItemResourceCreatedAt{}
+		var fernTestValueCreatedAt time.Time
+
+		// Act
+		obj.SetCreatedAt(fernTestValueCreatedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListEarningsResponseDataItemResourceCreatedAt{}
+		var fernTestValueID string
+
+		// Act
+		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIncomeSource_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListEarningsResponseDataItemResourceCreatedAt{}
+		var fernTestValueIncomeSource ListEarningsResponseDataItemResourceCreatedAtIncomeSource
+
+		// Act
+		obj.SetIncomeSource(fernTestValueIncomeSource)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetObject_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListEarningsResponseDataItemResourceCreatedAt{}
+		var fernTestValueObject ListEarningsResponseDataItemResourceCreatedAtObject
+
+		// Act
+		obj.SetObject(fernTestValueObject)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5543,6 +5833,39 @@ func TestJSONMarshalingListEarningsResponseDataItemResourceAlternativePaymentMet
 	})
 }
 
+func TestJSONMarshalingListEarningsResponseDataItemResourceCreatedAt(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListEarningsResponseDataItemResourceCreatedAt{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled ListEarningsResponseDataItemResourceCreatedAt
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj ListEarningsResponseDataItemResourceCreatedAt
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj ListEarningsResponseDataItemResourceCreatedAt
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingListEarningsResponseDataItemResourceFive(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -6214,6 +6537,22 @@ func TestStringListEarningsResponseDataItemResourceAlternativePaymentMethodAlter
 	})
 }
 
+func TestStringListEarningsResponseDataItemResourceCreatedAt(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &ListEarningsResponseDataItemResourceCreatedAt{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListEarningsResponseDataItemResourceCreatedAt
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringListEarningsResponseDataItemResourceFive(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -6373,6 +6712,13 @@ func TestEnumListEarningsRequestIncomeSourceItem(t *testing.T) {
 		val, err := NewListEarningsRequestIncomeSourceItemFromString("withdrawal")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListEarningsRequestIncomeSourceItem("withdrawal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_business_referral", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListEarningsRequestIncomeSourceItemFromString("business_referral")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListEarningsRequestIncomeSourceItem("business_referral"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_onboarding_reward", func(t *testing.T) {
@@ -6575,6 +6921,13 @@ func TestEnumListEarningsResponseDataItemIncomeSource(t *testing.T) {
 		assert.Equal(t, ListEarningsResponseDataItemIncomeSource("withdrawal"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_business_referral", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListEarningsResponseDataItemIncomeSourceFromString("business_referral")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListEarningsResponseDataItemIncomeSource("business_referral"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_onboarding_reward", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListEarningsResponseDataItemIncomeSourceFromString("onboarding_reward")
@@ -6654,6 +7007,113 @@ func TestEnumListEarningsResponseDataItemResourceAlternativePaymentMethodObject(
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewListEarningsResponseDataItemResourceAlternativePaymentMethodObjectFromString("receipt")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListEarningsResponseDataItemResourceCreatedAtIncomeSource(t *testing.T) {
+	t.Run("NewFromString_sales", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListEarningsResponseDataItemResourceCreatedAtIncomeSourceFromString("sales")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListEarningsResponseDataItemResourceCreatedAtIncomeSource("sales"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_spend", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListEarningsResponseDataItemResourceCreatedAtIncomeSourceFromString("ad_spend")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListEarningsResponseDataItemResourceCreatedAtIncomeSource("ad_spend"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_transfer", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListEarningsResponseDataItemResourceCreatedAtIncomeSourceFromString("transfer")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListEarningsResponseDataItemResourceCreatedAtIncomeSource("transfer"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_card_interchange", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListEarningsResponseDataItemResourceCreatedAtIncomeSourceFromString("card_interchange")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListEarningsResponseDataItemResourceCreatedAtIncomeSource("card_interchange"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdrawal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListEarningsResponseDataItemResourceCreatedAtIncomeSourceFromString("withdrawal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListEarningsResponseDataItemResourceCreatedAtIncomeSource("withdrawal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_business_referral", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListEarningsResponseDataItemResourceCreatedAtIncomeSourceFromString("business_referral")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListEarningsResponseDataItemResourceCreatedAtIncomeSource("business_referral"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_onboarding_reward", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListEarningsResponseDataItemResourceCreatedAtIncomeSourceFromString("onboarding_reward")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListEarningsResponseDataItemResourceCreatedAtIncomeSource("onboarding_reward"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_partner_reward", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListEarningsResponseDataItemResourceCreatedAtIncomeSourceFromString("partner_reward")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListEarningsResponseDataItemResourceCreatedAtIncomeSource("partner_reward"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_verified_partner_referral_payback", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListEarningsResponseDataItemResourceCreatedAtIncomeSourceFromString("verified_partner_referral_payback")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListEarningsResponseDataItemResourceCreatedAtIncomeSource("verified_partner_referral_payback"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_commission_advance", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListEarningsResponseDataItemResourceCreatedAtIncomeSourceFromString("commission_advance")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListEarningsResponseDataItemResourceCreatedAtIncomeSource("commission_advance"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListEarningsResponseDataItemResourceCreatedAtIncomeSourceFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListEarningsResponseDataItemResourceCreatedAtIncomeSourceFromString("sales")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListEarningsResponseDataItemResourceCreatedAtObject(t *testing.T) {
+	t.Run("NewFromString_commission", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListEarningsResponseDataItemResourceCreatedAtObjectFromString("commission")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListEarningsResponseDataItemResourceCreatedAtObject("commission"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListEarningsResponseDataItemResourceCreatedAtObjectFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListEarningsResponseDataItemResourceCreatedAtObjectFromString("commission")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -6977,6 +7437,29 @@ func TestExtraPropertiesListEarningsResponseDataItemResourceAlternativePaymentMe
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ListEarningsResponseDataItemResourceAlternativePaymentMethodAlternativePaymentMethod
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesListEarningsResponseDataItemResourceCreatedAt(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &ListEarningsResponseDataItemResourceCreatedAt{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListEarningsResponseDataItemResourceCreatedAt
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

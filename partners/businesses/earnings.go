@@ -169,6 +169,7 @@ const (
 	ListEarningsRequestIncomeSourceItemTransfer                       ListEarningsRequestIncomeSourceItem = "transfer"
 	ListEarningsRequestIncomeSourceItemCardInterchange                ListEarningsRequestIncomeSourceItem = "card_interchange"
 	ListEarningsRequestIncomeSourceItemWithdrawal                     ListEarningsRequestIncomeSourceItem = "withdrawal"
+	ListEarningsRequestIncomeSourceItemBusinessReferral               ListEarningsRequestIncomeSourceItem = "business_referral"
 	ListEarningsRequestIncomeSourceItemOnboardingReward               ListEarningsRequestIncomeSourceItem = "onboarding_reward"
 	ListEarningsRequestIncomeSourceItemPartnerReward                  ListEarningsRequestIncomeSourceItem = "partner_reward"
 	ListEarningsRequestIncomeSourceItemVerifiedPartnerReferralPayback ListEarningsRequestIncomeSourceItem = "verified_partner_referral_payback"
@@ -187,6 +188,8 @@ func NewListEarningsRequestIncomeSourceItemFromString(s string) (ListEarningsReq
 		return ListEarningsRequestIncomeSourceItemCardInterchange, nil
 	case "withdrawal":
 		return ListEarningsRequestIncomeSourceItemWithdrawal, nil
+	case "business_referral":
+		return ListEarningsRequestIncomeSourceItemBusinessReferral, nil
 	case "onboarding_reward":
 		return ListEarningsRequestIncomeSourceItemOnboardingReward, nil
 	case "partner_reward":
@@ -421,7 +424,7 @@ type ListEarningsResponseDataItem struct {
 	Product          *ListEarningsResponseDataItemProduct `json:"product,omitempty" url:"product,omitempty"`
 	// Estimated commission while awaiting settlement. Zero when a funded commission advance covers the earning. Null when no estimate is available or the earning has settled.
 	ProjectedCommissionAmountUsd *v2.Money `json:"projected_commission_amount_usd,omitempty" url:"projected_commission_amount_usd,omitempty"`
-	// The resource that generated the earning: the customer payment receipt for sales and ad spend earnings, the balance transfer for transfer earnings, the withdrawal for withdrawal earnings, the card transaction for card interchange earnings, or the qualifying reward for fixed reward earnings.
+	// The resource that generated the earning. For sales and ad spend earnings, it is the customer payment receipt. For transfer earnings, it is the balance transfer. For withdrawal earnings, it is the withdrawal. For card interchange earnings, it is the card transaction. For fixed reward earnings, it is the qualifying reward. For business referral earnings, it is the referred partner business's own commission.
 	Resource *ListEarningsResponseDataItemResource `json:"resource,omitempty" url:"resource,omitempty"`
 	// Whether this earning is a second-tier (grandparent) commission.
 	SecondTier bool `json:"second_tier" url:"second_tier"`
@@ -1127,6 +1130,7 @@ const (
 	ListEarningsResponseDataItemIncomeSourceTransfer                       ListEarningsResponseDataItemIncomeSource = "transfer"
 	ListEarningsResponseDataItemIncomeSourceCardInterchange                ListEarningsResponseDataItemIncomeSource = "card_interchange"
 	ListEarningsResponseDataItemIncomeSourceWithdrawal                     ListEarningsResponseDataItemIncomeSource = "withdrawal"
+	ListEarningsResponseDataItemIncomeSourceBusinessReferral               ListEarningsResponseDataItemIncomeSource = "business_referral"
 	ListEarningsResponseDataItemIncomeSourceOnboardingReward               ListEarningsResponseDataItemIncomeSource = "onboarding_reward"
 	ListEarningsResponseDataItemIncomeSourcePartnerReward                  ListEarningsResponseDataItemIncomeSource = "partner_reward"
 	ListEarningsResponseDataItemIncomeSourceVerifiedPartnerReferralPayback ListEarningsResponseDataItemIncomeSource = "verified_partner_referral_payback"
@@ -1145,6 +1149,8 @@ func NewListEarningsResponseDataItemIncomeSourceFromString(s string) (ListEarnin
 		return ListEarningsResponseDataItemIncomeSourceCardInterchange, nil
 	case "withdrawal":
 		return ListEarningsResponseDataItemIncomeSourceWithdrawal, nil
+	case "business_referral":
+		return ListEarningsResponseDataItemIncomeSourceBusinessReferral, nil
 	case "onboarding_reward":
 		return ListEarningsResponseDataItemIncomeSourceOnboardingReward, nil
 	case "partner_reward":
@@ -1299,7 +1305,7 @@ func (l *ListEarningsResponseDataItemProduct) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// The resource that generated the earning: the customer payment receipt for sales and ad spend earnings, the balance transfer for transfer earnings, the withdrawal for withdrawal earnings, the card transaction for card interchange earnings, or the qualifying reward for fixed reward earnings.
+// The resource that generated the earning. For sales and ad spend earnings, it is the customer payment receipt. For transfer earnings, it is the balance transfer. For withdrawal earnings, it is the withdrawal. For card interchange earnings, it is the card transaction. For fixed reward earnings, it is the qualifying reward. For business referral earnings, it is the referred partner business's own commission.
 type ListEarningsResponseDataItemResource struct {
 	ListEarningsResponseDataItemResourceAlternativePaymentMethodOptional *ListEarningsResponseDataItemResourceAlternativePaymentMethod
 	ListEarningsResponseDataItemResourceOne                              *ListEarningsResponseDataItemResourceOne
@@ -1307,6 +1313,7 @@ type ListEarningsResponseDataItemResource struct {
 	ListEarningsResponseDataItemResourceMerchantName                     *ListEarningsResponseDataItemResourceMerchantName
 	ListEarningsResponseDataItemResourceSlug                             *ListEarningsResponseDataItemResourceSlug
 	ListEarningsResponseDataItemResourceFive                             *ListEarningsResponseDataItemResourceFive
+	ListEarningsResponseDataItemResourceCreatedAt                        *ListEarningsResponseDataItemResourceCreatedAt
 
 	typ string
 }
@@ -1351,6 +1358,13 @@ func (l *ListEarningsResponseDataItemResource) GetListEarningsResponseDataItemRe
 		return nil
 	}
 	return l.ListEarningsResponseDataItemResourceFive
+}
+
+func (l *ListEarningsResponseDataItemResource) GetListEarningsResponseDataItemResourceCreatedAt() *ListEarningsResponseDataItemResourceCreatedAt {
+	if l == nil {
+		return nil
+	}
+	return l.ListEarningsResponseDataItemResourceCreatedAt
 }
 
 func (l *ListEarningsResponseDataItemResource) UnmarshalJSON(data []byte) error {
@@ -1400,6 +1414,14 @@ func (l *ListEarningsResponseDataItemResource) UnmarshalJSON(data []byte) error 
 			return nil
 		}
 	}
+	if internal.MatchesObjectKeys(data, []string{"created_at", "id", "income_source", "object"}, []string{"created_at", "id", "income_source", "object"}) {
+		valueListEarningsResponseDataItemResourceCreatedAt := new(ListEarningsResponseDataItemResourceCreatedAt)
+		if err := json.Unmarshal(data, &valueListEarningsResponseDataItemResourceCreatedAt); err == nil {
+			l.typ = "ListEarningsResponseDataItemResourceCreatedAt"
+			l.ListEarningsResponseDataItemResourceCreatedAt = valueListEarningsResponseDataItemResourceCreatedAt
+			return nil
+		}
+	}
 	if internal.HasObjectKeys(data, []string{"created_at", "currency", "id", "object"}) {
 		valueListEarningsResponseDataItemResourceOne := new(ListEarningsResponseDataItemResourceOne)
 		if err := json.Unmarshal(data, &valueListEarningsResponseDataItemResourceOne); err == nil {
@@ -1440,6 +1462,14 @@ func (l *ListEarningsResponseDataItemResource) UnmarshalJSON(data []byte) error 
 			return nil
 		}
 	}
+	if internal.HasObjectKeys(data, []string{"created_at", "id", "income_source", "object"}) {
+		valueListEarningsResponseDataItemResourceCreatedAt := new(ListEarningsResponseDataItemResourceCreatedAt)
+		if err := json.Unmarshal(data, &valueListEarningsResponseDataItemResourceCreatedAt); err == nil {
+			l.typ = "ListEarningsResponseDataItemResourceCreatedAt"
+			l.ListEarningsResponseDataItemResourceCreatedAt = valueListEarningsResponseDataItemResourceCreatedAt
+			return nil
+		}
+	}
 	valueListEarningsResponseDataItemResourceOne := new(ListEarningsResponseDataItemResourceOne)
 	if err := json.Unmarshal(data, &valueListEarningsResponseDataItemResourceOne); err == nil {
 		l.typ = "ListEarningsResponseDataItemResourceOne"
@@ -1470,6 +1500,12 @@ func (l *ListEarningsResponseDataItemResource) UnmarshalJSON(data []byte) error 
 		l.ListEarningsResponseDataItemResourceFive = valueListEarningsResponseDataItemResourceFive
 		return nil
 	}
+	valueListEarningsResponseDataItemResourceCreatedAt := new(ListEarningsResponseDataItemResourceCreatedAt)
+	if err := json.Unmarshal(data, &valueListEarningsResponseDataItemResourceCreatedAt); err == nil {
+		l.typ = "ListEarningsResponseDataItemResourceCreatedAt"
+		l.ListEarningsResponseDataItemResourceCreatedAt = valueListEarningsResponseDataItemResourceCreatedAt
+		return nil
+	}
 	return fmt.Errorf("%s cannot be deserialized as a %T", data, l)
 }
 
@@ -1492,6 +1528,9 @@ func (l ListEarningsResponseDataItemResource) MarshalJSON() ([]byte, error) {
 	if l.typ == "ListEarningsResponseDataItemResourceFive" || l.ListEarningsResponseDataItemResourceFive != nil {
 		return json.Marshal(l.ListEarningsResponseDataItemResourceFive)
 	}
+	if l.typ == "ListEarningsResponseDataItemResourceCreatedAt" || l.ListEarningsResponseDataItemResourceCreatedAt != nil {
+		return json.Marshal(l.ListEarningsResponseDataItemResourceCreatedAt)
+	}
 	return nil, fmt.Errorf("type %T does not include a non-empty union type", l)
 }
 
@@ -1502,6 +1541,7 @@ type ListEarningsResponseDataItemResourceVisitor interface {
 	VisitListEarningsResponseDataItemResourceMerchantName(*ListEarningsResponseDataItemResourceMerchantName) error
 	VisitListEarningsResponseDataItemResourceSlug(*ListEarningsResponseDataItemResourceSlug) error
 	VisitListEarningsResponseDataItemResourceFive(*ListEarningsResponseDataItemResourceFive) error
+	VisitListEarningsResponseDataItemResourceCreatedAt(*ListEarningsResponseDataItemResourceCreatedAt) error
 }
 
 func (l *ListEarningsResponseDataItemResource) Accept(visitor ListEarningsResponseDataItemResourceVisitor) error {
@@ -1522,6 +1562,9 @@ func (l *ListEarningsResponseDataItemResource) Accept(visitor ListEarningsRespon
 	}
 	if l.typ == "ListEarningsResponseDataItemResourceFive" || l.ListEarningsResponseDataItemResourceFive != nil {
 		return visitor.VisitListEarningsResponseDataItemResourceFive(l.ListEarningsResponseDataItemResourceFive)
+	}
+	if l.typ == "ListEarningsResponseDataItemResourceCreatedAt" || l.ListEarningsResponseDataItemResourceCreatedAt != nil {
+		return visitor.VisitListEarningsResponseDataItemResourceCreatedAt(l.ListEarningsResponseDataItemResourceCreatedAt)
 	}
 	return fmt.Errorf("type %T does not include a non-empty union type", l)
 }
@@ -1894,6 +1937,216 @@ func NewListEarningsResponseDataItemResourceAlternativePaymentMethodObjectFromSt
 }
 
 func (l ListEarningsResponseDataItemResourceAlternativePaymentMethodObject) Ptr() *ListEarningsResponseDataItemResourceAlternativePaymentMethodObject {
+	return &l
+}
+
+var (
+	listEarningsResponseDataItemResourceCreatedAtFieldCreatedAt    = big.NewInt(1 << 0)
+	listEarningsResponseDataItemResourceCreatedAtFieldID           = big.NewInt(1 << 1)
+	listEarningsResponseDataItemResourceCreatedAtFieldIncomeSource = big.NewInt(1 << 2)
+	listEarningsResponseDataItemResourceCreatedAtFieldObject       = big.NewInt(1 << 3)
+)
+
+type ListEarningsResponseDataItemResourceCreatedAt struct {
+	CreatedAt time.Time `json:"created_at" url:"created_at"`
+	// The referred partner business's own commission the share was paid on, prefixed `afpy_`.
+	ID string `json:"id" url:"id"`
+	// Which income source that commission is on.
+	IncomeSource ListEarningsResponseDataItemResourceCreatedAtIncomeSource `json:"income_source" url:"income_source"`
+	Object       ListEarningsResponseDataItemResourceCreatedAtObject       `json:"object" url:"object"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListEarningsResponseDataItemResourceCreatedAt) GetCreatedAt() time.Time {
+	if l == nil {
+		return time.Time{}
+	}
+	return l.CreatedAt
+}
+
+func (l *ListEarningsResponseDataItemResourceCreatedAt) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *ListEarningsResponseDataItemResourceCreatedAt) GetIncomeSource() ListEarningsResponseDataItemResourceCreatedAtIncomeSource {
+	if l == nil {
+		return ""
+	}
+	return l.IncomeSource
+}
+
+func (l *ListEarningsResponseDataItemResourceCreatedAt) GetObject() ListEarningsResponseDataItemResourceCreatedAtObject {
+	if l == nil {
+		return ""
+	}
+	return l.Object
+}
+
+func (l *ListEarningsResponseDataItemResourceCreatedAt) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListEarningsResponseDataItemResourceCreatedAt) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetCreatedAt sets the CreatedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEarningsResponseDataItemResourceCreatedAt) SetCreatedAt(createdAt time.Time) {
+	l.CreatedAt = createdAt
+	l.require(listEarningsResponseDataItemResourceCreatedAtFieldCreatedAt)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEarningsResponseDataItemResourceCreatedAt) SetID(id string) {
+	l.ID = id
+	l.require(listEarningsResponseDataItemResourceCreatedAtFieldID)
+}
+
+// SetIncomeSource sets the IncomeSource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEarningsResponseDataItemResourceCreatedAt) SetIncomeSource(incomeSource ListEarningsResponseDataItemResourceCreatedAtIncomeSource) {
+	l.IncomeSource = incomeSource
+	l.require(listEarningsResponseDataItemResourceCreatedAtFieldIncomeSource)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListEarningsResponseDataItemResourceCreatedAt) SetObject(object ListEarningsResponseDataItemResourceCreatedAtObject) {
+	l.Object = object
+	l.require(listEarningsResponseDataItemResourceCreatedAtFieldObject)
+}
+
+func (l *ListEarningsResponseDataItemResourceCreatedAt) UnmarshalJSON(data []byte) error {
+	type embed ListEarningsResponseDataItemResourceCreatedAt
+	var unmarshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed: embed(*l),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	*l = ListEarningsResponseDataItemResourceCreatedAt(unmarshaler.embed)
+	l.CreatedAt = unmarshaler.CreatedAt.Time()
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListEarningsResponseDataItemResourceCreatedAt) MarshalJSON() ([]byte, error) {
+	type embed ListEarningsResponseDataItemResourceCreatedAt
+	var marshaler = struct {
+		embed
+		CreatedAt *internal.DateTime `json:"created_at"`
+	}{
+		embed:     embed(*l),
+		CreatedAt: internal.NewDateTime(l.CreatedAt),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListEarningsResponseDataItemResourceCreatedAt) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// Which income source that commission is on.
+type ListEarningsResponseDataItemResourceCreatedAtIncomeSource string
+
+const (
+	ListEarningsResponseDataItemResourceCreatedAtIncomeSourceSales                          ListEarningsResponseDataItemResourceCreatedAtIncomeSource = "sales"
+	ListEarningsResponseDataItemResourceCreatedAtIncomeSourceAdSpend                        ListEarningsResponseDataItemResourceCreatedAtIncomeSource = "ad_spend"
+	ListEarningsResponseDataItemResourceCreatedAtIncomeSourceTransfer                       ListEarningsResponseDataItemResourceCreatedAtIncomeSource = "transfer"
+	ListEarningsResponseDataItemResourceCreatedAtIncomeSourceCardInterchange                ListEarningsResponseDataItemResourceCreatedAtIncomeSource = "card_interchange"
+	ListEarningsResponseDataItemResourceCreatedAtIncomeSourceWithdrawal                     ListEarningsResponseDataItemResourceCreatedAtIncomeSource = "withdrawal"
+	ListEarningsResponseDataItemResourceCreatedAtIncomeSourceBusinessReferral               ListEarningsResponseDataItemResourceCreatedAtIncomeSource = "business_referral"
+	ListEarningsResponseDataItemResourceCreatedAtIncomeSourceOnboardingReward               ListEarningsResponseDataItemResourceCreatedAtIncomeSource = "onboarding_reward"
+	ListEarningsResponseDataItemResourceCreatedAtIncomeSourcePartnerReward                  ListEarningsResponseDataItemResourceCreatedAtIncomeSource = "partner_reward"
+	ListEarningsResponseDataItemResourceCreatedAtIncomeSourceVerifiedPartnerReferralPayback ListEarningsResponseDataItemResourceCreatedAtIncomeSource = "verified_partner_referral_payback"
+	ListEarningsResponseDataItemResourceCreatedAtIncomeSourceCommissionAdvance              ListEarningsResponseDataItemResourceCreatedAtIncomeSource = "commission_advance"
+)
+
+func NewListEarningsResponseDataItemResourceCreatedAtIncomeSourceFromString(s string) (ListEarningsResponseDataItemResourceCreatedAtIncomeSource, error) {
+	switch s {
+	case "sales":
+		return ListEarningsResponseDataItemResourceCreatedAtIncomeSourceSales, nil
+	case "ad_spend":
+		return ListEarningsResponseDataItemResourceCreatedAtIncomeSourceAdSpend, nil
+	case "transfer":
+		return ListEarningsResponseDataItemResourceCreatedAtIncomeSourceTransfer, nil
+	case "card_interchange":
+		return ListEarningsResponseDataItemResourceCreatedAtIncomeSourceCardInterchange, nil
+	case "withdrawal":
+		return ListEarningsResponseDataItemResourceCreatedAtIncomeSourceWithdrawal, nil
+	case "business_referral":
+		return ListEarningsResponseDataItemResourceCreatedAtIncomeSourceBusinessReferral, nil
+	case "onboarding_reward":
+		return ListEarningsResponseDataItemResourceCreatedAtIncomeSourceOnboardingReward, nil
+	case "partner_reward":
+		return ListEarningsResponseDataItemResourceCreatedAtIncomeSourcePartnerReward, nil
+	case "verified_partner_referral_payback":
+		return ListEarningsResponseDataItemResourceCreatedAtIncomeSourceVerifiedPartnerReferralPayback, nil
+	case "commission_advance":
+		return ListEarningsResponseDataItemResourceCreatedAtIncomeSourceCommissionAdvance, nil
+	}
+	var t ListEarningsResponseDataItemResourceCreatedAtIncomeSource
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListEarningsResponseDataItemResourceCreatedAtIncomeSource) Ptr() *ListEarningsResponseDataItemResourceCreatedAtIncomeSource {
+	return &l
+}
+
+type ListEarningsResponseDataItemResourceCreatedAtObject string
+
+const (
+	ListEarningsResponseDataItemResourceCreatedAtObjectCommission ListEarningsResponseDataItemResourceCreatedAtObject = "commission"
+)
+
+func NewListEarningsResponseDataItemResourceCreatedAtObjectFromString(s string) (ListEarningsResponseDataItemResourceCreatedAtObject, error) {
+	switch s {
+	case "commission":
+		return ListEarningsResponseDataItemResourceCreatedAtObjectCommission, nil
+	}
+	var t ListEarningsResponseDataItemResourceCreatedAtObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListEarningsResponseDataItemResourceCreatedAtObject) Ptr() *ListEarningsResponseDataItemResourceCreatedAtObject {
 	return &l
 }
 
