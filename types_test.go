@@ -145835,6 +145835,22 @@ func TestSettersShippingAddressChangedWebhookReply(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetShippingOptions", func(t *testing.T) {
+		obj := &ShippingAddressChangedWebhookReply{}
+		var fernTestValueShippingOptions []*ShippingAddressChangedWebhookReplyShippingOption
+		obj.SetShippingOptions(fernTestValueShippingOptions)
+		assert.Equal(t, fernTestValueShippingOptions, obj.ShippingOptions)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTax", func(t *testing.T) {
+		obj := &ShippingAddressChangedWebhookReply{}
+		var fernTestValueTax *Money
+		obj.SetTax(fernTestValueTax)
+		assert.Equal(t, fernTestValueTax, obj.Tax)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersShippingAddressChangedWebhookReply(t *testing.T) {
@@ -145871,6 +145887,72 @@ func TestGettersShippingAddressChangedWebhookReply(t *testing.T) {
 		_ = obj.GetLineItems() // Should return zero value
 	})
 
+	t.Run("GetShippingOptions", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookReply{}
+		var expected []*ShippingAddressChangedWebhookReplyShippingOption
+		obj.ShippingOptions = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetShippingOptions(), "getter should return the property value")
+	})
+
+	t.Run("GetShippingOptions_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookReply{}
+		obj.ShippingOptions = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetShippingOptions(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetShippingOptions_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ShippingAddressChangedWebhookReply
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetShippingOptions() // Should return zero value
+	})
+
+	t.Run("GetTax", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookReply{}
+		var expected *Money
+		obj.Tax = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTax(), "getter should return the property value")
+	})
+
+	t.Run("GetTax_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookReply{}
+		obj.Tax = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTax(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTax_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ShippingAddressChangedWebhookReply
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTax() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitShippingAddressChangedWebhookReply(t *testing.T) {
@@ -145882,6 +145964,68 @@ func TestSettersMarkExplicitShippingAddressChangedWebhookReply(t *testing.T) {
 
 		// Act
 		obj.SetLineItems(fernTestValueLineItems)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetShippingOptions_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookReply{}
+		var fernTestValueShippingOptions []*ShippingAddressChangedWebhookReplyShippingOption
+
+		// Act
+		obj.SetShippingOptions(fernTestValueShippingOptions)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTax_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookReply{}
+		var fernTestValueTax *Money
+
+		// Act
+		obj.SetTax(fernTestValueTax)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -146025,6 +146169,211 @@ func TestSettersMarkExplicitShippingAddressChangedWebhookReplyLineItem(t *testin
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersShippingAddressChangedWebhookReplyShippingOption(t *testing.T) {
+	t.Run("SetAmount", func(t *testing.T) {
+		obj := &ShippingAddressChangedWebhookReplyShippingOption{}
+		var fernTestValueAmount *Money
+		obj.SetAmount(fernTestValueAmount)
+		assert.Equal(t, fernTestValueAmount, obj.Amount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDescription", func(t *testing.T) {
+		obj := &ShippingAddressChangedWebhookReplyShippingOption{}
+		var fernTestValueDescription string
+		obj.SetDescription(fernTestValueDescription)
+		assert.Equal(t, fernTestValueDescription, obj.Description)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetExternalIdentifier", func(t *testing.T) {
+		obj := &ShippingAddressChangedWebhookReplyShippingOption{}
+		var fernTestValueExternalIdentifier string
+		obj.SetExternalIdentifier(fernTestValueExternalIdentifier)
+		assert.Equal(t, fernTestValueExternalIdentifier, obj.ExternalIdentifier)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersShippingAddressChangedWebhookReplyShippingOption(t *testing.T) {
+	t.Run("GetAmount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookReplyShippingOption{}
+		var expected *Money
+		obj.Amount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAmount(), "getter should return the property value")
+	})
+
+	t.Run("GetAmount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookReplyShippingOption{}
+		obj.Amount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAmount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAmount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ShippingAddressChangedWebhookReplyShippingOption
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAmount() // Should return zero value
+	})
+
+	t.Run("GetDescription", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookReplyShippingOption{}
+		var expected string
+		obj.Description = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDescription(), "getter should return the property value")
+	})
+
+	t.Run("GetDescription_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ShippingAddressChangedWebhookReplyShippingOption
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDescription() // Should return zero value
+	})
+
+	t.Run("GetExternalIdentifier", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookReplyShippingOption{}
+		var expected string
+		obj.ExternalIdentifier = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetExternalIdentifier(), "getter should return the property value")
+	})
+
+	t.Run("GetExternalIdentifier_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ShippingAddressChangedWebhookReplyShippingOption
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetExternalIdentifier() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitShippingAddressChangedWebhookReplyShippingOption(t *testing.T) {
+	t.Run("SetAmount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookReplyShippingOption{}
+		var fernTestValueAmount *Money
+
+		// Act
+		obj.SetAmount(fernTestValueAmount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDescription_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookReplyShippingOption{}
+		var fernTestValueDescription string
+
+		// Act
+		obj.SetDescription(fernTestValueDescription)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetExternalIdentifier_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookReplyShippingOption{}
+		var fernTestValueExternalIdentifier string
+
+		// Act
+		obj.SetExternalIdentifier(fernTestValueExternalIdentifier)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -170140,6 +170489,39 @@ func TestJSONMarshalingShippingAddressChangedWebhookReplyLineItem(t *testing.T) 
 	})
 }
 
+func TestJSONMarshalingShippingAddressChangedWebhookReplyShippingOption(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ShippingAddressChangedWebhookReplyShippingOption{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled ShippingAddressChangedWebhookReplyShippingOption
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj ShippingAddressChangedWebhookReplyShippingOption
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj ShippingAddressChangedWebhookReplyShippingOption
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingStorefrontAccount(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -187686,6 +188068,22 @@ func TestStringShippingAddressChangedWebhookReplyLineItem(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ShippingAddressChangedWebhookReplyLineItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringShippingAddressChangedWebhookReplyShippingOption(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &ShippingAddressChangedWebhookReplyShippingOption{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ShippingAddressChangedWebhookReplyShippingOption
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -214019,6 +214417,29 @@ func TestExtraPropertiesShippingAddressChangedWebhookReplyLineItem(t *testing.T)
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ShippingAddressChangedWebhookReplyLineItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesShippingAddressChangedWebhookReplyShippingOption(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &ShippingAddressChangedWebhookReplyShippingOption{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ShippingAddressChangedWebhookReplyShippingOption
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

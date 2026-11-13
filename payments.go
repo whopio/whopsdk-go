@@ -8066,7 +8066,7 @@ func (p *PostShippingAddressChangedResponse) GetPostShippingAddressChangedRespon
 }
 
 func (p *PostShippingAddressChangedResponse) UnmarshalJSON(data []byte) error {
-	if internal.MatchesObjectKeys(data, []string{"line_items"}, []string{"line_items"}) {
+	if internal.MatchesObjectKeys(data, []string{"line_items", "shipping_options", "tax"}, []string{"line_items"}) {
 		valueShippingAddressChangedWebhookReply := new(ShippingAddressChangedWebhookReply)
 		if err := json.Unmarshal(data, &valueShippingAddressChangedWebhookReply); err == nil {
 			p.typ = "ShippingAddressChangedWebhookReply"
