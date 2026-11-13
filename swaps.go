@@ -980,9 +980,9 @@ type CreateSwapsResponse struct {
 	AccountID string `json:"account_id" url:"account_id"`
 	// Crypto pairs only: the from_token amount the swap spends, as a decimal string. A request for `all` returns the wallet balance it read.
 	Amount *string `json:"amount,omitempty" url:"amount,omitempty"`
-	// Fiat pairs only: amount of the source currency converted. Null while a stablecoin repayment is processing.
+	// Fiat pairs only: amount of the source currency converted. Null while the conversion is settling.
 	AmountIn *float64 `json:"amount_in,omitempty" url:"amount_in,omitempty"`
-	// Fiat pairs only: amount credited in the destination currency. Null while a stablecoin repayment is processing.
+	// Fiat pairs only: amount credited in the destination currency. Null while the conversion is settling.
 	AmountOut *float64 `json:"amount_out,omitempty" url:"amount_out,omitempty"`
 	// Expected destination token amount.
 	AmountOutExpected *string `json:"amount_out_expected,omitempty" url:"amount_out_expected,omitempty"`
@@ -995,7 +995,7 @@ type CreateSwapsResponse struct {
 	Object CreateSwapsResponseObject `json:"object" url:"object"`
 	// Quoted exchange rate used to create the swap.
 	Rate *string `json:"rate,omitempty" url:"rate,omitempty"`
-	// Swap status. Crypto swaps start `queued`; fiat conversions return `complete`, or `working` while a stablecoin repayment settles.
+	// Swap status. Crypto swaps start `queued`. Fiat conversions return `complete`, or `working` while the conversion settles.
 	Status CreateSwapsResponseStatus `json:"status" url:"status"`
 	// Destination chain for the swap.
 	ToChain *string `json:"to_chain,omitempty" url:"to_chain,omitempty"`
@@ -1378,7 +1378,7 @@ func (c CreateSwapsResponseObject) Ptr() *CreateSwapsResponseObject {
 	return &c
 }
 
-// Swap status. Crypto swaps start `queued`; fiat conversions return `complete`, or `working` while a stablecoin repayment settles.
+// Swap status. Crypto swaps start `queued`. Fiat conversions return `complete`, or `working` while the conversion settles.
 type CreateSwapsResponseStatus string
 
 const (
