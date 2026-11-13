@@ -64,7 +64,6 @@ import (
 	identityprofiles "github.com/whopio/whopsdk-go/v2/identityprofiles"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	invoicesclient "github.com/whopio/whopsdk-go/v2/invoices/client"
-	leads "github.com/whopio/whopsdk-go/v2/leads"
 	ledgeraccounts "github.com/whopio/whopsdk-go/v2/ledgeraccounts"
 	livestreams "github.com/whopio/whopsdk-go/v2/livestreams"
 	media "github.com/whopio/whopsdk-go/v2/media"
@@ -171,7 +170,6 @@ type Whop struct {
 	Forums                   *forums.Client
 	IdentityProfiles         *identityprofiles.Client
 	Invoices                 *invoicesclient.Client
-	Leads                    *leads.Client
 	LedgerAccounts           *ledgeraccounts.Client
 	Livestreams              *livestreams.Client
 	Media                    *media.Client
@@ -224,7 +222,7 @@ type Whop struct {
 func NewWhop(opts ...option.RequestOption) *Whop {
 	options := core.NewRequestOptions(opts...)
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-12"
+		apiVersionDateDefault := "2026-11-13"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Whop{
@@ -287,7 +285,6 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Forums:                   forums.NewClient(options),
 		IdentityProfiles:         identityprofiles.NewClient(options),
 		Invoices:                 invoicesclient.NewClient(options),
-		Leads:                    leads.NewClient(options),
 		LedgerAccounts:           ledgeraccounts.NewClient(options),
 		Livestreams:              livestreams.NewClient(options),
 		Media:                    media.NewClient(options),
