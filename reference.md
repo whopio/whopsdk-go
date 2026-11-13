@@ -27447,7 +27447,7 @@ client.Members.Retrieve(
 <dl>
 <dd>
 
-Updates a member. The account can update `name`, the customer name its invoices show for this member; it doesn't change the user's Whop profile. The member can update `unsubscribe_status`, with a credential for their own user that holds `user:notifications:update`, to unsubscribe from the account's marketing communications or resubscribe. Each sends only its own field.
+Updates a member.
 </dd>
 </dl>
 </dd>
@@ -27491,7 +27491,7 @@ client.Members.Update(
 <dl>
 <dd>
 
-**name:** `*string` — The customer name to show on this member's invoices, at most 255 bytes. Leading and trailing spaces are trimmed. `null` or a blank string clears it, so invoices show the user's own name again.
+**metadata:** `map[string]*whopsdk.UpdateMembersRequestMetadataValue` — Your own key-value data on this member. Up to 50 keys of at most 100 characters. Values are strings of at most 500 characters, numbers, `true`, `false`, or `null`. At most 200 KB. Replaces existing metadata, and `null` clears it. Requires `member:manage`.
     
 </dd>
 </dl>
@@ -27499,7 +27499,15 @@ client.Members.Update(
 <dl>
 <dd>
 
-**unsubscribeStatus:** `*whopsdk.UpdateMembersRequestUnsubscribeStatus` — `unsubscribed` to stop the account's marketing communications, or `null` to resubscribe. Only the member can set it.
+**name:** `*string` — The name invoices show for this member, in place of the user's own. `null` clears it. Requires `member:manage`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**unsubscribeStatus:** `*whopsdk.UpdateMembersRequestUnsubscribeStatus` — `unsubscribed` to opt out of the account's marketing, `null` to opt back in. Only the member can set it, with `user:notifications:update`.
     
 </dd>
 </dl>
