@@ -122,6 +122,32 @@ func TestMembersListWithWireMock(
 	VerifyRequestCount(t, "TestMembersListWithWireMock", "GET", "/members", map[string]interface{}{"user_ids": "user_xxxxxxxxxxxxxx", "product_ids": "prod_xxxxxxxxxxxxx", "variant_ids": "plan_xxxxxxxxxxxxx", "promo_code_ids": "promo_xxxxxxxxxxxx"}, 1)
 }
 
+func TestMembersCreateWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.CreateMembersRequest{
+		Email: "jane@example.com",
+	}
+	_, invocationErr := client.Members.Create(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestMembersCreateWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestMembersCreateWithWireMock", "POST", "/members", nil, 1)
+}
+
 func TestMembersRetrieveWithWireMock(
 	t *testing.T,
 ) {

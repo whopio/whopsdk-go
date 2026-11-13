@@ -10355,6 +10355,37 @@
       "postServeActions": []
     },
     {
+      "id": "7e081883-670b-400a-8ca6-40d580d99a72",
+      "name": "Create Member - default",
+      "request": {
+        "urlPathTemplate": "/members",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"access_level\": \"no_access\",\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"display_name\": \"Dana Whitfield\",\n  \"earnings_usd\": {\n    \"last_24_hours\": \"0.00\",\n    \"last_30_days\": \"0.00\",\n    \"last_7_days\": \"0.00\",\n    \"lifetime\": \"0.00\"\n  },\n  \"email\": \"marcus@shinetime.example\",\n  \"id\": \"mber_xxxxxxxxxxxxxx\",\n  \"joined_at\": \"2026-01-01T12:00:00.000Z\",\n  \"last_accessed_at\": \"2026-01-01T12:00:00.000Z\",\n  \"last_activity\": {\n    \"author\": {\n      \"id\": \"user_xxxxxxxxxxxxxx\",\n      \"name\": \"Dana Whitfield\",\n      \"profile_picture\": {\n        \"url\": \"https://ui-avatars.com/api/\"\n      },\n      \"username\": \"danawhitfield\"\n    },\n    \"channel_id\": \"channel_id\",\n    \"created_at\": \"created_at\",\n    \"id\": \"id\",\n    \"object\": \"message\",\n    \"plain_content\": \"plain_content\"\n  },\n  \"last_activity_at\": \"2026-01-01T12:00:00.000Z\",\n  \"most_recent_action\": \"canceling\",\n  \"most_recent_action_at\": \"2026-01-01T12:00:00.000Z\",\n  \"name\": \"Northwind Legal LLP\",\n  \"phone_number\": \"+xxxxxxxxxxx\",\n  \"status\": \"joined\",\n  \"token_balance\": 70.25,\n  \"unsubscribe_status\": \"unsubscribed\",\n  \"usd_total_spent\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"user\": {\n    \"city\": \"Austin\",\n    \"country\": \"US\",\n    \"id\": \"user_xxxxxxxxxxxxxx\",\n    \"name\": \"Dana Whitfield\",\n    \"profile_picture\": {\n      \"url\": \"https://ui-avatars.com/api/\"\n    },\n    \"state\": \"TX\",\n    \"username\": \"danawhitfield\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "7e081883-670b-400a-8ca6-40d580d99a72",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "faaec920-1c08-4ab5-b781-c1c1da6b7e41",
       "name": "Retrieve Member - default",
       "request": {
@@ -19391,6 +19422,6 @@
     }
   ],
   "meta": {
-    "total": 542
+    "total": 543
   }
 }

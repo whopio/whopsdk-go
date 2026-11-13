@@ -11,6 +11,75 @@ import (
 )
 
 var (
+	createMembersRequestFieldAccountID = big.NewInt(1 << 0)
+	createMembersRequestFieldEmail     = big.NewInt(1 << 1)
+	createMembersRequestFieldName      = big.NewInt(1 << 2)
+)
+
+type CreateMembersRequest struct {
+	// The account to add the member to (`biz_` tag). Defaults to the account the credential acts as.
+	AccountID *string `json:"account_id,omitempty" url:"-"`
+	// The email address of the person to add. If no Whop user has it, one is created.
+	Email string `json:"email" url:"-"`
+	// The name of the person to add. Ignored when a user on Whop already exists for this email address.
+	Name *string `json:"name,omitempty" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (c *CreateMembersRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMembersRequest) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createMembersRequestFieldAccountID)
+}
+
+// SetEmail sets the Email field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMembersRequest) SetEmail(email string) {
+	c.Email = email
+	c.require(createMembersRequestFieldEmail)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMembersRequest) SetName(name *string) {
+	c.Name = name
+	c.require(createMembersRequestFieldName)
+}
+
+func (c *CreateMembersRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateMembersRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = CreateMembersRequest(body)
+	return nil
+}
+
+func (c *CreateMembersRequest) MarshalJSON() ([]byte, error) {
+	type embed CreateMembersRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	listMembersRequestFieldAccountID         = big.NewInt(1 << 0)
 	listMembersRequestFieldAccessLevel       = big.NewInt(1 << 1)
 	listMembersRequestFieldStatus            = big.NewInt(1 << 2)
