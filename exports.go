@@ -23,7 +23,7 @@ type CreateExportsRequest struct {
 	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// Column keys to include. Empty means all columns for the resource.
 	Columns []string `json:"columns,omitempty" url:"-"`
-	// Resource-specific filters. For native REST resources (`payouts`, `transfers`, `products`) these are the resource's own list query params; for dashboard tables they mirror the dashboard table filters.
+	// Resource-specific filters. For a native REST resource, such as `payouts`, `transfers` or `products`, these are the query params of its list endpoint. For a dashboard table, they are the table's filters.
 	Filters map[string]any `json:"filters,omitempty" url:"-"`
 	// The resource to export, e.g. `payouts`, `receipts`, or `members`.
 	Resource CreateExportsRequestResource `json:"resource" url:"-"`
