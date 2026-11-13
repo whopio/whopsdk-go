@@ -302,6 +302,7 @@ const (
 	PermissionActionUserAbuseReportRead               PermissionAction = "user:abuse_report:read"
 	PermissionActionUserBalanceRead                   PermissionAction = "user:balance:read"
 	PermissionActionUserEmailRead                     PermissionAction = "user:email:read"
+	PermissionActionUserMailingAddressesRead          PermissionAction = "user:mailing_addresses:read"
 	PermissionActionUserNotificationsRead             PermissionAction = "user:notifications:read"
 	PermissionActionUserNotificationsUpdate           PermissionAction = "user:notifications:update"
 	PermissionActionUserPaymentCharge                 PermissionAction = "user:payment:charge"
@@ -853,6 +854,8 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionUserBalanceRead, nil
 	case "user:email:read":
 		return PermissionActionUserEmailRead, nil
+	case "user:mailing_addresses:read":
+		return PermissionActionUserMailingAddressesRead, nil
 	case "user:notifications:read":
 		return PermissionActionUserNotificationsRead, nil
 	case "user:notifications:update":
