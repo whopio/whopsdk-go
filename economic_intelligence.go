@@ -23,13 +23,13 @@ var (
 )
 
 type ListEconomicIntelligenceRequest struct {
-	// Account ID, prefixed `biz_`. Defaults to the API key's own account; omit for personal onboarding, where signed-out visitors receive a business-setup template and eligible users receive their saved setup recommendation.
+	// Account ID, prefixed `biz_`. Defaults to the API key's own account. Omit with `has_run` for the runs on every account you can read.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// Filter recommendations by their current status.
+	// `ready` lists the recommendations the account can run now. A run status lists only the runs in that state. `queued`, `pending` and `superseded` are no longer listed and answer nothing.
 	Status *ListEconomicIntelligenceRequestStatus `json:"-" url:"status,omitempty"`
-	// What you want recommendations for, in your own words. Up to 1000 characters. Narrows the list to the recommendations that address it. Without a `status` filter, when none do and you can update the account, new recommendations start generating for your input, and the list shows that request until they're ready. Repeating the same input while it generates doesn't start another.
+	// No longer read: recommendations are written for the business as it changes. Up to 1000 characters.
 	Input *string `json:"-" url:"input,omitempty"`
-	// When true, only recommendations someone has started running, by any user. Without `account_id`, covers every account you can read that has Economic Intelligence. Can't be combined with `input`.
+	// When true, only recommendations someone has started running, by any user. Without `account_id`, covers every account you can read.
 	HasRun *bool `json:"-" url:"has_run,omitempty"`
 	// Sort field.
 	Order *ListEconomicIntelligenceRequestOrder `json:"-" url:"order,omitempty"`
@@ -1272,7 +1272,7 @@ func (l *ListEconomicIntelligenceResponsePageInfo) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// With `status: executed`, the page where the run's result can be seen when it is not one resource, such as the checkout links list or the store page. The recommendation's `result_url` becomes that page on the account's dashboard, or its store page for `store_page`.
+// With `status: executed`, the page where the run's result can be seen when it is not one resource, such as the checkout links list. The recommendation's `result_url` becomes that page on the account's dashboard.
 type UpdateEconomicIntelligenceRequestResultPage string
 
 const (
@@ -1397,11 +1397,11 @@ type UpdateEconomicIntelligenceRequest struct {
 	ID string `json:"-" url:"-"`
 	// Account ID, prefixed `biz_`. Defaults to the API key's own account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// What you want the replacement recommendation for, in your own words. Up to 1000 characters. Sent when superseding, it directs the generation that replaces the rejected recommendation.
+	// No longer read: recommendations are written for the business as it changes. Up to 1000 characters.
 	Input *string `json:"input,omitempty" url:"-"`
 	// With `status: executed`, the ID of what the run produced or changed, and the recommendation's `result_url` becomes where to view it: an ad (`ad_`), ad group (`adgrp_`) or ad campaign (`adcamp_`), a website (`app_`), a product (`prod_`), a plan (`plan_`), a checkout link (`ch_`), a promo code (`promo_`), or an experience (`exp_`). Without `result_id` or `result_page`, `result_url` links to the resource the recommendation was about, when it names one. Send only one of `result_id`, `result_page` and `result_url`.
 	ResultID *string `json:"result_id,omitempty" url:"-"`
-	// With `status: executed`, the page where the run's result can be seen when it is not one resource, such as the checkout links list or the store page. The recommendation's `result_url` becomes that page on the account's dashboard, or its store page for `store_page`.
+	// With `status: executed`, the page where the run's result can be seen when it is not one resource, such as the checkout links list. The recommendation's `result_url` becomes that page on the account's dashboard.
 	ResultPage *UpdateEconomicIntelligenceRequestResultPage `json:"result_page,omitempty" url:"-"`
 	// With `status: executed`, where to view what was produced when it is outside Whop. An http or https URL. Prefer `result_id` for anything on Whop.
 	ResultURL *string `json:"result_url,omitempty" url:"-"`
@@ -1409,7 +1409,7 @@ type UpdateEconomicIntelligenceRequest struct {
 	Sentiment *UpdateEconomicIntelligenceRequestSentiment `json:"sentiment,omitempty" url:"-"`
 	// Use `running` to start a run of a ready recommendation, `executed` to record that it was carried out, `incomplete` to record that a running recommendation's run ended without carrying it out, `superseded` to reject a ready recommendation, or `acknowledged` to mark an executed run as seen; the recommendation stays `executed` and records `acknowledged_at`.
 	Status *UpdateEconomicIntelligenceRequestStatus `json:"status,omitempty" url:"-"`
-	// An optional explanation of the rating or rejection. Negative feedback informs replacement recommendations.
+	// An optional explanation of the rating or rejection.
 	UserFeedback *string `json:"user_feedback,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
