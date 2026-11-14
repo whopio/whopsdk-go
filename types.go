@@ -45521,79 +45521,81 @@ func (p *PasskeyUserEntity) String() string {
 var (
 	paymentFieldAccountID                  = big.NewInt(1 << 0)
 	paymentFieldAmountAfterFees            = big.NewInt(1 << 1)
-	paymentFieldAutoCaptureAt              = big.NewInt(1 << 2)
-	paymentFieldAutoRefunded               = big.NewInt(1 << 3)
-	paymentFieldBillingAddress             = big.NewInt(1 << 4)
-	paymentFieldBillingReason              = big.NewInt(1 << 5)
-	paymentFieldCaptureExpiresAt           = big.NewInt(1 << 6)
-	paymentFieldCheckoutConfigurationID    = big.NewInt(1 << 7)
-	paymentFieldCheckoutOrigin             = big.NewInt(1 << 8)
-	paymentFieldCheckoutSurface            = big.NewInt(1 << 9)
-	paymentFieldClientSecret               = big.NewInt(1 << 10)
-	paymentFieldCreatedAt                  = big.NewInt(1 << 11)
-	paymentFieldCurrency                   = big.NewInt(1 << 12)
-	paymentFieldCustomerEmail              = big.NewInt(1 << 13)
-	paymentFieldCustomerPhone              = big.NewInt(1 << 14)
-	paymentFieldDeclineCode                = big.NewInt(1 << 15)
-	paymentFieldDisputeAlertedAt           = big.NewInt(1 << 16)
-	paymentFieldDisputeCreatedAt           = big.NewInt(1 << 17)
-	paymentFieldFailureMessage             = big.NewInt(1 << 18)
-	paymentFieldFinancingInstallmentsCount = big.NewInt(1 << 19)
-	paymentFieldHolds                      = big.NewInt(1 << 20)
-	paymentFieldID                         = big.NewInt(1 << 21)
-	paymentFieldIPAddress                  = big.NewInt(1 << 22)
-	paymentFieldLastPaymentAttemptAt       = big.NewInt(1 << 23)
-	paymentFieldLineItems                  = big.NewInt(1 << 24)
-	paymentFieldMemberID                   = big.NewInt(1 << 25)
-	paymentFieldMembershipID               = big.NewInt(1 << 26)
-	paymentFieldMetadata                   = big.NewInt(1 << 27)
-	paymentFieldMissingTracking            = big.NewInt(1 << 28)
-	paymentFieldNeedsTracking              = big.NewInt(1 << 29)
-	paymentFieldNextPaymentAttemptAt       = big.NewInt(1 << 30)
-	paymentFieldPaidAt                     = big.NewInt(1 << 31)
-	paymentFieldPaymentInstrument          = big.NewInt(1 << 32)
-	paymentFieldPaymentMethodID            = big.NewInt(1 << 33)
-	paymentFieldPaymentMethodType          = big.NewInt(1 << 34)
-	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 35)
-	paymentFieldPaymentsFailed             = big.NewInt(1 << 36)
-	paymentFieldPresentmentRefundedAmount  = big.NewInt(1 << 37)
-	paymentFieldPresentmentTaxAmount       = big.NewInt(1 << 38)
-	paymentFieldPresentmentTotal           = big.NewInt(1 << 39)
-	paymentFieldProductID                  = big.NewInt(1 << 40)
-	paymentFieldPromoCodeID                = big.NewInt(1 << 41)
-	paymentFieldQuoteID                    = big.NewInt(1 << 42)
-	paymentFieldRecoveryURL                = big.NewInt(1 << 43)
-	paymentFieldRefundable                 = big.NewInt(1 << 44)
-	paymentFieldRefundedAmount             = big.NewInt(1 << 45)
-	paymentFieldRefundedAt                 = big.NewInt(1 << 46)
-	paymentFieldResponseDueAt              = big.NewInt(1 << 47)
-	paymentFieldRetryable                  = big.NewInt(1 << 48)
-	paymentFieldRiskScore                  = big.NewInt(1 << 49)
-	paymentFieldRiskSignals                = big.NewInt(1 << 50)
-	paymentFieldSettlementTimeAt           = big.NewInt(1 << 51)
-	paymentFieldShipmentID                 = big.NewInt(1 << 52)
-	paymentFieldShippingAddress            = big.NewInt(1 << 53)
-	paymentFieldStatus                     = big.NewInt(1 << 54)
-	paymentFieldSubstatus                  = big.NewInt(1 << 55)
-	paymentFieldSubtotal                   = big.NewInt(1 << 56)
-	paymentFieldTaxAmount                  = big.NewInt(1 << 57)
-	paymentFieldTaxBehavior                = big.NewInt(1 << 58)
-	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 59)
-	paymentFieldThreeDsVerified            = big.NewInt(1 << 60)
-	paymentFieldTotal                      = big.NewInt(1 << 61)
-	paymentFieldUpdatedAt                  = big.NewInt(1 << 62)
-	paymentFieldUsdTotal                   = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	paymentFieldUser                       = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	paymentFieldUserAgent                  = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	paymentFieldVariantID                  = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	paymentFieldVerificationChecks         = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	paymentFieldVoidable                   = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	paymentFieldWuid                       = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	paymentFieldAmountCharged              = big.NewInt(1 << 2)
+	paymentFieldAutoCaptureAt              = big.NewInt(1 << 3)
+	paymentFieldAutoRefunded               = big.NewInt(1 << 4)
+	paymentFieldBillingAddress             = big.NewInt(1 << 5)
+	paymentFieldBillingReason              = big.NewInt(1 << 6)
+	paymentFieldCaptureExpiresAt           = big.NewInt(1 << 7)
+	paymentFieldCheckoutConfigurationID    = big.NewInt(1 << 8)
+	paymentFieldCheckoutOrigin             = big.NewInt(1 << 9)
+	paymentFieldCheckoutSurface            = big.NewInt(1 << 10)
+	paymentFieldClientSecret               = big.NewInt(1 << 11)
+	paymentFieldCreatedAt                  = big.NewInt(1 << 12)
+	paymentFieldCurrency                   = big.NewInt(1 << 13)
+	paymentFieldCustomerEmail              = big.NewInt(1 << 14)
+	paymentFieldCustomerPhone              = big.NewInt(1 << 15)
+	paymentFieldDeclineCode                = big.NewInt(1 << 16)
+	paymentFieldDisputeAlertedAt           = big.NewInt(1 << 17)
+	paymentFieldDisputeCreatedAt           = big.NewInt(1 << 18)
+	paymentFieldFailureMessage             = big.NewInt(1 << 19)
+	paymentFieldFinancingInstallmentsCount = big.NewInt(1 << 20)
+	paymentFieldHolds                      = big.NewInt(1 << 21)
+	paymentFieldID                         = big.NewInt(1 << 22)
+	paymentFieldIPAddress                  = big.NewInt(1 << 23)
+	paymentFieldLastPaymentAttemptAt       = big.NewInt(1 << 24)
+	paymentFieldLineItems                  = big.NewInt(1 << 25)
+	paymentFieldMemberID                   = big.NewInt(1 << 26)
+	paymentFieldMembershipID               = big.NewInt(1 << 27)
+	paymentFieldMetadata                   = big.NewInt(1 << 28)
+	paymentFieldMissingTracking            = big.NewInt(1 << 29)
+	paymentFieldNeedsTracking              = big.NewInt(1 << 30)
+	paymentFieldNextPaymentAttemptAt       = big.NewInt(1 << 31)
+	paymentFieldPaidAt                     = big.NewInt(1 << 32)
+	paymentFieldPaymentInstrument          = big.NewInt(1 << 33)
+	paymentFieldPaymentMethodID            = big.NewInt(1 << 34)
+	paymentFieldPaymentMethodType          = big.NewInt(1 << 35)
+	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 36)
+	paymentFieldPaymentsFailed             = big.NewInt(1 << 37)
+	paymentFieldPresentmentRefundedAmount  = big.NewInt(1 << 38)
+	paymentFieldPresentmentTaxAmount       = big.NewInt(1 << 39)
+	paymentFieldPresentmentTotal           = big.NewInt(1 << 40)
+	paymentFieldProductID                  = big.NewInt(1 << 41)
+	paymentFieldPromoCodeID                = big.NewInt(1 << 42)
+	paymentFieldQuoteID                    = big.NewInt(1 << 43)
+	paymentFieldRecoveryURL                = big.NewInt(1 << 44)
+	paymentFieldRefundable                 = big.NewInt(1 << 45)
+	paymentFieldRefundedAmount             = big.NewInt(1 << 46)
+	paymentFieldRefundedAt                 = big.NewInt(1 << 47)
+	paymentFieldResponseDueAt              = big.NewInt(1 << 48)
+	paymentFieldRetryable                  = big.NewInt(1 << 49)
+	paymentFieldRiskScore                  = big.NewInt(1 << 50)
+	paymentFieldRiskSignals                = big.NewInt(1 << 51)
+	paymentFieldSettlementTimeAt           = big.NewInt(1 << 52)
+	paymentFieldShipmentID                 = big.NewInt(1 << 53)
+	paymentFieldShippingAddress            = big.NewInt(1 << 54)
+	paymentFieldStatus                     = big.NewInt(1 << 55)
+	paymentFieldSubstatus                  = big.NewInt(1 << 56)
+	paymentFieldSubtotal                   = big.NewInt(1 << 57)
+	paymentFieldTaxAmount                  = big.NewInt(1 << 58)
+	paymentFieldTaxBehavior                = big.NewInt(1 << 59)
+	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 60)
+	paymentFieldThreeDsVerified            = big.NewInt(1 << 61)
+	paymentFieldTotal                      = big.NewInt(1 << 62)
+	paymentFieldUpdatedAt                  = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	paymentFieldUsdTotal                   = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	paymentFieldUser                       = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	paymentFieldUserAgent                  = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	paymentFieldVariantID                  = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	paymentFieldVerificationChecks         = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	paymentFieldVoidable                   = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	paymentFieldWuid                       = big.NewInt(0).Lsh(big.NewInt(1), 70)
 )
 
 // paymentNullableFields maps the wire names of Payment's nullable fields (required or optional) to their field bits.
 var paymentNullableFields = map[string]*big.Int{
 	"account_id":                   paymentFieldAccountID,
+	"amount_after_fees":            paymentFieldAmountAfterFees,
 	"auto_capture_at":              paymentFieldAutoCaptureAt,
 	"billing_address":              paymentFieldBillingAddress,
 	"billing_reason":               paymentFieldBillingReason,
@@ -45651,8 +45653,10 @@ var paymentNullableFields = map[string]*big.Int{
 type Payment struct {
 	// The account that received the payment, prefixed `biz_`.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// What the account keeps: the total less Whop's fees.
-	AmountAfterFees *Money `json:"amount_after_fees" url:"amount_after_fees"`
+	// What the account keeps: the total less Whop's fees. Null when you read the payment as its buyer.
+	AmountAfterFees *Money `json:"amount_after_fees,omitempty" url:"amount_after_fees,omitempty"`
+	// What the buyer is charged for this payment: the total plus any buyer fees, in the currency the buyer pays in. Refunds do not reduce it; `presentment_refunded_amount` states them in the same currency.
+	AmountCharged *Money `json:"amount_charged" url:"amount_charged"`
 	// When Whop will capture this authorized card payment automatically unless it is voided first, as an ISO 8601 timestamp. Null when no automatic capture was requested.
 	AutoCaptureAt *string `json:"auto_capture_at,omitempty" url:"auto_capture_at,omitempty"`
 	// True when Whop refunded the payment automatically, for example on a dispute alert.
@@ -45669,7 +45673,7 @@ type Payment struct {
 	CheckoutOrigin *string `json:"checkout_origin,omitempty" url:"checkout_origin,omitempty"`
 	// The checkout experience that produced this payment, such as `embedded_checkout` for a checkout on the account's own website or `off_session` for a subscription renewal. Null when the checkout was not recorded.
 	CheckoutSurface *PaymentCheckoutSurface `json:"checkout_surface,omitempty" url:"checkout_surface,omitempty"`
-	// The credential a buyer's surface presents to poll this payment, set its return URL and resume it when the bank asked the customer to authenticate. Only on payments created from a confirmation token or waiting on that authentication, and always null in list responses — retrieve the payment for it.
+	// The credential a buyer's surface presents to poll this payment, set its return URL and resume it when the bank asked the customer to authenticate. Only on payments created from a confirmation token or waiting on that authentication, null when you read the payment as its buyer, and always null in list responses — retrieve the payment for it.
 	ClientSecret *string `json:"client_secret,omitempty" url:"client_secret,omitempty"`
 	// When the payment was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
@@ -45692,16 +45696,16 @@ type Payment struct {
 	Holds                      []*PaymentHold `json:"holds" url:"holds"`
 	// Payment ID, prefixed `pay_`.
 	ID string `json:"id" url:"id"`
-	// The buyer's IP address at checkout: the one Whop's fraud screening identified, otherwise the one Whop captured from the buyer's browser at checkout. Null when the buyer was not present at checkout, such as a subscription renewal or a charge made without the buyer present.
+	// The buyer's IP address at checkout: the one Whop's fraud screening identified, otherwise the one Whop captured from the buyer's browser at checkout. Null when the buyer was not present at checkout, such as a subscription renewal or a charge made without the buyer present, or when you read the payment as its buyer.
 	IPAddress *string `json:"ip_address,omitempty" url:"ip_address,omitempty"`
 	// When the most recent charge attempt ran, or null.
 	LastPaymentAttemptAt *string            `json:"last_payment_attempt_at,omitempty" url:"last_payment_attempt_at,omitempty"`
 	LineItems            []*ReceiptLineItem `json:"line_items" url:"line_items"`
-	// The buyer's member record on the account, prefixed `mber_`. Null without the member:basic:read permission.
+	// The buyer's member record on the account, prefixed `mber_`. Null without the member:basic:read permission, unless you are the buyer.
 	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
-	// The membership this payment is billed against, prefixed `mem_`. Null for one-off purchases or without the member:basic:read permission.
+	// The membership this payment is billed against, prefixed `mem_`. Null for one-off purchases, or without the member:basic:read permission unless you are the buyer.
 	MembershipID *string `json:"membership_id,omitempty" url:"membership_id,omitempty"`
-	// Your own key-value data attached when the payment was created.
+	// Your own key-value data attached when the payment was created. Null when you read the payment as its buyer.
 	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// True for a paid payment with a shipping address, no shipment, and no full refund. Null without the shipment:basic:read permission.
 	MissingTracking *bool `json:"missing_tracking,omitempty" url:"missing_tracking,omitempty"`
@@ -45711,7 +45715,7 @@ type Payment struct {
 	NextPaymentAttemptAt *string `json:"next_payment_attempt_at,omitempty" url:"next_payment_attempt_at,omitempty"`
 	// When the money was collected, or null while it has not been.
 	PaidAt *string `json:"paid_at,omitempty" url:"paid_at,omitempty"`
-	// The instrument shaped for display: a buyer-facing name, the standard icon set, and when it was a card, the card's brand, last four, issuer identification number, and the network transaction id the account uses for the card.
+	// The instrument shaped for display: a buyer-facing name, the standard icon set, and when it was a card, the card's brand, last four, issuer identification number, and the network transaction id the account uses for the card. The network transaction id is null when you read the payment as its buyer.
 	PaymentInstrument *PaymentInstrument `json:"payment_instrument,omitempty" url:"payment_instrument,omitempty"`
 	// The stored payment method that was charged, prefixed `payt_`. Null when the method was not saved.
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
@@ -45744,12 +45748,12 @@ type Payment struct {
 	ResponseDueAt *string `json:"response_due_at,omitempty" url:"response_due_at,omitempty"`
 	// True when the payment is `open` and can be retried by hand with `POST /payments/{id}/retry`: its membership is `active`, `trialing`, or `past_due` (or it is a failed first payment on a `drafted` membership), it is not paid through an invoice payment link, and its one manual retry is not used up. A retry can still be refused when the company cannot currently accept payments.
 	Retryable bool `json:"retryable" url:"retryable"`
-	// Whop's published risk index from 0 (lowest) to 100 (highest), including enforced decision floors. This is not a fraud probability. Null when no score is available.
+	// Whop's published risk index from 0 (lowest) to 100 (highest), including enforced decision floors. This is not a fraud probability. Null when no score is available or you read the payment as its buyer.
 	RiskScore *float64 `json:"risk_score,omitempty" url:"risk_score,omitempty"`
 	// Deprecated. Risk score explanations are no longer provided; always null.
 	// DEPRECATED: Risk score explanations are no longer provided. Always null.
 	RiskSignals map[string]any `json:"risk_signals,omitempty" url:"risk_signals,omitempty"`
-	// When the portion not listed in `holds` posts to the account's available balance, at midnight UTC. The `financial_activity.funds_available` webhook's `posted_at` carries the same value when the settlement that clears it posts. Null until the payment is paid, and always null in list responses — retrieve the payment for it.
+	// When the portion not listed in `holds` posts to the account's available balance, at midnight UTC. The `financial_activity.funds_available` webhook's `posted_at` carries the same value when the settlement that clears it posts. Null until the payment is paid or when you read the payment as its buyer, and always null in list responses — retrieve the payment for it.
 	SettlementTimeAt *string `json:"settlement_time_at,omitempty" url:"settlement_time_at,omitempty"`
 	// The shipment fulfilling this payment, prefixed `ship_`. Null when nothing ships or without the shipment:basic:read permission.
 	ShipmentID *string `json:"shipment_id,omitempty" url:"shipment_id,omitempty"`
@@ -45769,11 +45773,11 @@ type Payment struct {
 	TaxRefundedAmount *Money `json:"tax_refunded_amount" url:"tax_refunded_amount"`
 	// True when the buyer completed 3D Secure for this payment.
 	ThreeDsVerified bool `json:"three_ds_verified" url:"three_ds_verified"`
-	// The account-facing total: the price after discounts, plus any tax added on top. Excludes buyer fees, which the buyer pays above this amount — so this is not necessarily what the buyer's statement shows.
+	// The account-facing total: the price after discounts, plus any tax added on top. Excludes buyer fees, which the buyer pays above this amount — so this is not necessarily what the buyer's statement shows; `amount_charged` is what the buyer is charged.
 	Total *Money `json:"total,omitempty" url:"total,omitempty"`
 	// When the payment last changed, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
-	// The total converted to USD at the time of the charge, for reporting across currencies. Excludes the adaptive pricing FX markup, which the account does not keep.
+	// The total converted to USD at the time of the charge, for reporting across currencies. Excludes the adaptive pricing FX markup, which the account does not keep. Null when you read the payment as its buyer.
 	UsdTotal *Money `json:"usd_total,omitempty" url:"usd_total,omitempty"`
 	// The buyer. Null when the payment belongs to a company buyer rather than a user.
 	User *UserSummary `json:"user,omitempty" url:"user,omitempty"`
@@ -45781,7 +45785,7 @@ type Payment struct {
 	UserAgent *string `json:"user_agent,omitempty" url:"user_agent,omitempty"`
 	// The variant that was charged, prefixed `plan_`.
 	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
-	// The Address Verification Service (AVS), cardholder name, and Card Verification Value (CVV/CVC) results, or null when the processor returned none.
+	// The Address Verification Service (AVS), cardholder name, and Card Verification Value (CVV/CVC) results, or null when the processor returned none or you read the payment as its buyer.
 	VerificationChecks *PaymentVerificationChecks `json:"verification_checks,omitempty" url:"verification_checks,omitempty"`
 	// True when the payment can be voided or canceled. The request is rejected if the payment is no longer eligible — see `POST /payments/{id}/void`.
 	Voidable bool `json:"voidable" url:"voidable"`
@@ -45807,6 +45811,13 @@ func (p *Payment) GetAmountAfterFees() *Money {
 		return nil
 	}
 	return p.AmountAfterFees
+}
+
+func (p *Payment) GetAmountCharged() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.AmountCharged
 }
 
 func (p *Payment) GetAutoCaptureAt() *string {
@@ -46313,6 +46324,13 @@ func (p *Payment) SetAccountID(accountID *string) {
 func (p *Payment) SetAmountAfterFees(amountAfterFees *Money) {
 	p.AmountAfterFees = amountAfterFees
 	p.require(paymentFieldAmountAfterFees)
+}
+
+// SetAmountCharged sets the AmountCharged field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetAmountCharged(amountCharged *Money) {
+	p.AmountCharged = amountCharged
+	p.require(paymentFieldAmountCharged)
 }
 
 // SetAutoCaptureAt sets the AutoCaptureAt field and marks it as non-optional;

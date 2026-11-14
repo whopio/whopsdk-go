@@ -32145,7 +32145,7 @@ client.PaymentRules.Replace(
 <dl>
 <dd>
 
-Lists payments, newest first. By default, returns sales for the accounts your credential can read: an account credential's own account, or every account a user can read payments for. Set `mode` to `user_sales` to list the sales the signed-in user received personally, outside any account.
+Lists payments, newest first. By default, returns sales for the accounts your credential can read: an account credential's own account, or every account a user can read payments for. Set `mode` to `user_sales` to list the sales the signed-in user received personally, outside any account. With a user credential, set `user_id` to `me` to list the user's own payments, including their purchases from any account; a purchase leaves out the account's side of the payment, such as `amount_after_fees`, `metadata` and the risk fields.
 </dd>
 </dl>
 </dd>
@@ -32201,7 +32201,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**mode:** `*whopsdk.ListPaymentsRequestMode` — Which sales to list. `account_sales` returns sales for the accounts the caller can read. `user_sales` returns only sales the signed-in user received personally, outside any account; it requires the user's own Whop login session and cannot be combined with `account_id`.
+**mode:** `*whopsdk.ListPaymentsRequestMode` — Which sales to list. `account_sales` returns sales for the accounts the caller can read, and with `user_id=me` the user's own purchases too. `user_sales` returns only sales the signed-in user received personally, outside any account; it requires the user's own Whop login session and cannot be combined with `account_id`.
     
 </dd>
 </dl>
@@ -32209,7 +32209,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**accountID:** `*string` — Only payments charged by this account, prefixed `biz_`.
+**accountID:** `*string` — Only payments charged by this account, prefixed `biz_`. With `user_id=me`, an account whose payments you cannot read lists only your own purchases from it.
     
 </dd>
 </dl>
@@ -32225,7 +32225,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**trackingStatus:** `*whopsdk.ListPaymentsRequestTrackingStatus` — Only payments whose most recently attached kept shipment is in this tracking state. `missing_tracking` selects paid payments with a captured shipping address and no kept shipment, excluding fully refunded payments. `needs_tracking` selects payments with an open pre-shipment funds hold and no kept shipment. Shipment states do not imply a payment or refund state. Requires `shipment:basic:read` as well as `payment:basic:read`; user-wide lists include only accounts readable under both scopes. Only supported with `mode=account_sales`.
+**trackingStatus:** `*whopsdk.ListPaymentsRequestTrackingStatus` — Only payments whose most recently attached kept shipment is in this tracking state. `missing_tracking` selects paid payments with a captured shipping address and no kept shipment, excluding fully refunded payments. `needs_tracking` selects payments with an open pre-shipment funds hold and no kept shipment. Shipment states do not imply a payment or refund state. Requires `shipment:basic:read` as well as `payment:basic:read`; user-wide lists include only accounts readable under both scopes, and none of the user's purchases. Only supported with `mode=account_sales`.
     
 </dd>
 </dl>
@@ -32249,7 +32249,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**userID:** `*string` — Only payments made by this buyer, prefixed `user_`. This filters sales the caller can read, so `me` is not accepted; list the caller's own purchases with `GET /memberships?user_id=me`.
+**userID:** `*string` — Only payments made by this buyer, prefixed `user_`. `me` is the signed-in user and needs a user credential: a whop.com session, an OAuth token or a user-scoped token. It lists the user's own payments: their purchases from any account, and their payments on accounts they read as the seller.
     
 </dd>
 </dl>
@@ -32329,7 +32329,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**substatuses:** `*whopsdk.ListPaymentsRequestSubstatusesItem` — Only payments whose `substatus` is any of these. Repeat the parameter to pass several. `incomplete` also matches payments that report `incomplete` because no finer status was recorded.
+**substatuses:** `*whopsdk.ListPaymentsRequestSubstatusesItem` — Only payments whose `substatus` is any of these. Repeat the parameter to pass several. `incomplete` also matches payments that report `incomplete` because no finer status was recorded. A purchase Whop's risk checks blocked reports `failed`, so `failed` matches it and `blocked` does not.
     
 </dd>
 </dl>
@@ -32965,7 +32965,7 @@ client.Payments.Summary(
 <dl>
 <dd>
 
-Returns one payment, including every purchased line item with its quantity and subtotal. Related records are ids — resolve a variant, membership, member or shipment on its own endpoint, and list this payment's refunds, disputes or Resolution Center cases with `?payment_id=`.
+Returns one payment, including every purchased line item with its quantity and subtotal. Related records are ids — resolve a variant, membership, member or shipment on its own endpoint, and list this payment's refunds, disputes or Resolution Center cases with `?payment_id=`. A buyer can retrieve their own payment with a user credential; it leaves out the account's side of the payment, as the list does.
 </dd>
 </dl>
 </dd>
