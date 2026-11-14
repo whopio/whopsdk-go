@@ -34581,6 +34581,7 @@ var (
 	marketFieldMaxLeverage         = big.NewInt(1 << 4)
 	marketFieldPrice               = big.NewInt(1 << 5)
 	marketFieldSizeDecimals        = big.NewInt(1 << 6)
+	marketFieldVolume24H           = big.NewInt(1 << 7)
 )
 
 // marketNullableFields maps the wire names of Market's nullable fields (required or optional) to their field bits.
@@ -34589,6 +34590,7 @@ var marketNullableFields = map[string]*big.Int{
 	"logo_url":              marketFieldLogoURL,
 	"max_leverage":          marketFieldMaxLeverage,
 	"price":                 marketFieldPrice,
+	"volume_24h":            marketFieldVolume24H,
 }
 
 type Market struct {
@@ -34606,6 +34608,8 @@ type Market struct {
 	Price *Money `json:"price,omitempty" url:"price,omitempty"`
 	// The most decimals an order's `size` can have on this market.
 	SizeDecimals int `json:"size_decimals" url:"size_decimals"`
+	// The value of the asset traded on all exchanges in the last 24 hours, in USD. For a tokenized stock, this counts trades of the token. `null` for a perpetual. `null` when the volume is not available.
+	Volume24H *Money `json:"volume_24h,omitempty" url:"volume_24h,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -34661,6 +34665,13 @@ func (m *Market) GetSizeDecimals() int {
 		return 0
 	}
 	return m.SizeDecimals
+}
+
+func (m *Market) GetVolume24H() *Money {
+	if m == nil {
+		return nil
+	}
+	return m.Volume24H
 }
 
 func (m *Market) GetExtraProperties() map[string]interface{} {
@@ -34726,6 +34737,13 @@ func (m *Market) SetPrice(price *Money) {
 func (m *Market) SetSizeDecimals(sizeDecimals int) {
 	m.SizeDecimals = sizeDecimals
 	m.require(marketFieldSizeDecimals)
+}
+
+// SetVolume24H sets the Volume24H field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Market) SetVolume24H(volume24H *Money) {
+	m.Volume24H = volume24H
+	m.require(marketFieldVolume24H)
 }
 
 func (m *Market) UnmarshalJSON(data []byte) error {
