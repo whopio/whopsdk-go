@@ -424,29 +424,33 @@ var (
 	listInvoicesRequestFieldAccountID         = big.NewInt(1 << 0)
 	listInvoicesRequestFieldStatus            = big.NewInt(1 << 1)
 	listInvoicesRequestFieldOverdue           = big.NewInt(1 << 2)
-	listInvoicesRequestFieldMemberID          = big.NewInt(1 << 3)
-	listInvoicesRequestFieldProductID         = big.NewInt(1 << 4)
-	listInvoicesRequestFieldCreatedAfter      = big.NewInt(1 << 5)
-	listInvoicesRequestFieldCreatedBefore     = big.NewInt(1 << 6)
-	listInvoicesRequestFieldOrder             = big.NewInt(1 << 7)
-	listInvoicesRequestFieldDirection         = big.NewInt(1 << 8)
-	listInvoicesRequestFieldFirst             = big.NewInt(1 << 9)
-	listInvoicesRequestFieldAfter             = big.NewInt(1 << 10)
-	listInvoicesRequestFieldLast              = big.NewInt(1 << 11)
-	listInvoicesRequestFieldBefore            = big.NewInt(1 << 12)
-	listInvoicesRequestFieldIncludeTotalCount = big.NewInt(1 << 13)
+	listInvoicesRequestFieldScheduled         = big.NewInt(1 << 3)
+	listInvoicesRequestFieldMemberID          = big.NewInt(1 << 4)
+	listInvoicesRequestFieldProductID         = big.NewInt(1 << 5)
+	listInvoicesRequestFieldCreatedAfter      = big.NewInt(1 << 6)
+	listInvoicesRequestFieldCreatedBefore     = big.NewInt(1 << 7)
+	listInvoicesRequestFieldOrder             = big.NewInt(1 << 8)
+	listInvoicesRequestFieldDirection         = big.NewInt(1 << 9)
+	listInvoicesRequestFieldFirst             = big.NewInt(1 << 10)
+	listInvoicesRequestFieldAfter             = big.NewInt(1 << 11)
+	listInvoicesRequestFieldLast              = big.NewInt(1 << 12)
+	listInvoicesRequestFieldBefore            = big.NewInt(1 << 13)
+	listInvoicesRequestFieldIncludeTotalCount = big.NewInt(1 << 14)
 )
 
 type ListInvoicesRequest struct {
-	AccountID     *string                       `json:"-" url:"account_id,omitempty"`
-	Status        *ListInvoicesRequestStatus    `json:"-" url:"status,omitempty"`
-	Overdue       *bool                         `json:"-" url:"overdue,omitempty"`
-	MemberID      *string                       `json:"-" url:"member_id,omitempty"`
-	ProductID     *string                       `json:"-" url:"product_id,omitempty"`
-	CreatedAfter  *time.Time                    `json:"-" url:"created_after,omitempty"`
-	CreatedBefore *time.Time                    `json:"-" url:"created_before,omitempty"`
-	Order         *ListInvoicesRequestOrder     `json:"-" url:"order,omitempty"`
-	Direction     *ListInvoicesRequestDirection `json:"-" url:"direction,omitempty"`
+	AccountID *string                    `json:"-" url:"account_id,omitempty"`
+	Status    *ListInvoicesRequestStatus `json:"-" url:"status,omitempty"`
+	Overdue   *bool                      `json:"-" url:"overdue,omitempty"`
+	// Set to `true` for drafts with a scheduled send, which are the invoices with a `scheduled_send_at`. Set to `false` for every other invoice. Only a `draft` can be scheduled. An `open` invoice is not scheduled, even with a `scheduled_charge_at`. A draft that sends on its due date (`sends_on_due_date`) is not scheduled. Omit to include both.
+	Scheduled     *bool      `json:"-" url:"scheduled,omitempty"`
+	MemberID      *string    `json:"-" url:"member_id,omitempty"`
+	ProductID     *string    `json:"-" url:"product_id,omitempty"`
+	CreatedAfter  *time.Time `json:"-" url:"created_after,omitempty"`
+	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
+	// Field to sort by. Sorting by `due_at` or `scheduled_send_at` puts invoices without that date last in both directions.
+	Order     *ListInvoicesRequestOrder     `json:"-" url:"order,omitempty"`
+	Direction *ListInvoicesRequestDirection `json:"-" url:"direction,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
@@ -490,6 +494,13 @@ func (l *ListInvoicesRequest) SetStatus(status *ListInvoicesRequestStatus) {
 func (l *ListInvoicesRequest) SetOverdue(overdue *bool) {
 	l.Overdue = overdue
 	l.require(listInvoicesRequestFieldOverdue)
+}
+
+// SetScheduled sets the Scheduled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInvoicesRequest) SetScheduled(scheduled *bool) {
+	l.Scheduled = scheduled
+	l.require(listInvoicesRequestFieldScheduled)
 }
 
 // SetMemberID sets the MemberID field and marks it as non-optional;
@@ -3513,9 +3524,10 @@ func (l ListInvoicesRequestDirection) Ptr() *ListInvoicesRequestDirection {
 type ListInvoicesRequestOrder string
 
 const (
-	ListInvoicesRequestOrderCreatedAt ListInvoicesRequestOrder = "created_at"
-	ListInvoicesRequestOrderDueAt     ListInvoicesRequestOrder = "due_at"
-	ListInvoicesRequestOrderStatus    ListInvoicesRequestOrder = "status"
+	ListInvoicesRequestOrderCreatedAt       ListInvoicesRequestOrder = "created_at"
+	ListInvoicesRequestOrderDueAt           ListInvoicesRequestOrder = "due_at"
+	ListInvoicesRequestOrderStatus          ListInvoicesRequestOrder = "status"
+	ListInvoicesRequestOrderScheduledSendAt ListInvoicesRequestOrder = "scheduled_send_at"
 )
 
 func NewListInvoicesRequestOrderFromString(s string) (ListInvoicesRequestOrder, error) {
@@ -3526,6 +3538,8 @@ func NewListInvoicesRequestOrderFromString(s string) (ListInvoicesRequestOrder, 
 		return ListInvoicesRequestOrderDueAt, nil
 	case "status":
 		return ListInvoicesRequestOrderStatus, nil
+	case "scheduled_send_at":
+		return ListInvoicesRequestOrderScheduledSendAt, nil
 	}
 	var t ListInvoicesRequestOrder
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

@@ -25173,6 +25173,14 @@ client.Invoices.List(
 <dl>
 <dd>
 
+**scheduled:** `*bool` — Set to `true` for drafts with a scheduled send, which are the invoices with a `scheduled_send_at`. Set to `false` for every other invoice. Only a `draft` can be scheduled. An `open` invoice is not scheduled, even with a `scheduled_charge_at`. A draft that sends on its due date (`sends_on_due_date`) is not scheduled. Omit to include both.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **memberID:** `*string` 
     
 </dd>
@@ -25205,7 +25213,7 @@ client.Invoices.List(
 <dl>
 <dd>
 
-**order:** `*whopsdk.ListInvoicesRequestOrder` 
+**order:** `*whopsdk.ListInvoicesRequestOrder` — Field to sort by. Sorting by `due_at` or `scheduled_send_at` puts invoices without that date last in both directions.
     
 </dd>
 </dl>
