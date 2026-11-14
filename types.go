@@ -3439,7 +3439,7 @@ type AccountFees struct {
 	SepaDispute *AccountFee `json:"sepa_dispute" url:"sepa_dispute"`
 	// A flat fee in euros (EUR), charged when the buyer's bank returns a SEPA Direct Debit payment unpaid.
 	SepaReturn *AccountFee `json:"sepa_return" url:"sepa_return"`
-	// Charged when tax is calculated on a payment.
+	// Charged when Whop calculates tax on a payment and the account remits the tax itself. An account whose `tax_remitted_by` is `null` pays it on every taxed payment.
 	TaxCalculation *AccountFee `json:"tax_calculation" url:"tax_calculation"`
 	// Charged when Whop collects and remits tax on the account's behalf.
 	TaxService *AccountFee `json:"tax_service" url:"tax_service"`
