@@ -26,7 +26,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-13-1"
+		apiVersionDateDefault := "2026-11-14"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -45,7 +45,7 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists payments, newest first. By default, returns sales for the accounts your credential can read: an account credential's own account, or every account a user can read payments for. Set `mode` to `user_sales` to list the sales the signed-in user received personally, outside any account.
+// Lists payments, newest first. By default, returns sales for the accounts your credential can read: an account credential's own account, or every account a user can read payments for. Set `mode` to `user_sales` to list the sales the signed-in user received personally, outside any account. With a user credential, set `user_id` to `me` to list the user's own payments, including their purchases from any account; a purchase leaves out the account's side of the payment, such as `amount_after_fees`, `metadata` and the risk fields.
 //
 // Example:
 //
@@ -221,7 +221,7 @@ func (c *Client) Summary(
 	return response.Body, nil
 }
 
-// Returns one payment, including every purchased line item with its quantity and subtotal. Related records are ids — resolve a variant, membership, member or shipment on its own endpoint, and list this payment's refunds, disputes or Resolution Center cases with `?payment_id=`.
+// Returns one payment, including every purchased line item with its quantity and subtotal. Related records are ids — resolve a variant, membership, member or shipment on its own endpoint, and list this payment's refunds, disputes or Resolution Center cases with `?payment_id=`. A buyer can retrieve their own payment with a user credential; it leaves out the account's side of the payment, as the list does.
 //
 // Example:
 //

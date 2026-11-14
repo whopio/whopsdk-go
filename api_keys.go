@@ -713,6 +713,7 @@ const (
 	APIKeyAPIVersionDateTwoThousandTwentySix1112  APIKeyAPIVersionDate = "2026-11-12"
 	APIKeyAPIVersionDateTwoThousandTwentySix1113  APIKeyAPIVersionDate = "2026-11-13"
 	APIKeyAPIVersionDateTwoThousandTwentySix11131 APIKeyAPIVersionDate = "2026-11-13-1"
+	APIKeyAPIVersionDateTwoThousandTwentySix1114  APIKeyAPIVersionDate = "2026-11-14"
 )
 
 func NewAPIKeyAPIVersionDateFromString(s string) (APIKeyAPIVersionDate, error) {
@@ -919,6 +920,8 @@ func NewAPIKeyAPIVersionDateFromString(s string) (APIKeyAPIVersionDate, error) {
 		return APIKeyAPIVersionDateTwoThousandTwentySix1113, nil
 	case "2026-11-13-1":
 		return APIKeyAPIVersionDateTwoThousandTwentySix11131, nil
+	case "2026-11-14":
+		return APIKeyAPIVersionDateTwoThousandTwentySix1114, nil
 	}
 	var t APIKeyAPIVersionDate
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1695,6 +1698,7 @@ const (
 	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1112  CreateAPIKeysRequestAPIVersionDate = "2026-11-12"
 	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1113  CreateAPIKeysRequestAPIVersionDate = "2026-11-13"
 	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix11131 CreateAPIKeysRequestAPIVersionDate = "2026-11-13-1"
+	CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1114  CreateAPIKeysRequestAPIVersionDate = "2026-11-14"
 )
 
 func NewCreateAPIKeysRequestAPIVersionDateFromString(s string) (CreateAPIKeysRequestAPIVersionDate, error) {
@@ -1901,6 +1905,8 @@ func NewCreateAPIKeysRequestAPIVersionDateFromString(s string) (CreateAPIKeysReq
 		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1113, nil
 	case "2026-11-13-1":
 		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix11131, nil
+	case "2026-11-14":
+		return CreateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1114, nil
 	}
 	var t CreateAPIKeysRequestAPIVersionDate
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2979,6 +2985,7 @@ const (
 	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1112  UpdateAPIKeysRequestAPIVersionDate = "2026-11-12"
 	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1113  UpdateAPIKeysRequestAPIVersionDate = "2026-11-13"
 	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix11131 UpdateAPIKeysRequestAPIVersionDate = "2026-11-13-1"
+	UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1114  UpdateAPIKeysRequestAPIVersionDate = "2026-11-14"
 )
 
 func NewUpdateAPIKeysRequestAPIVersionDateFromString(s string) (UpdateAPIKeysRequestAPIVersionDate, error) {
@@ -3185,6 +3192,8 @@ func NewUpdateAPIKeysRequestAPIVersionDateFromString(s string) (UpdateAPIKeysReq
 		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1113, nil
 	case "2026-11-13-1":
 		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix11131, nil
+	case "2026-11-14":
+		return UpdateAPIKeysRequestAPIVersionDateTwoThousandTwentySix1114, nil
 	}
 	var t UpdateAPIKeysRequestAPIVersionDate
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

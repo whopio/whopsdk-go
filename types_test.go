@@ -87357,6 +87357,14 @@ func TestSettersPayment(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAmountCharged", func(t *testing.T) {
+		obj := &Payment{}
+		var fernTestValueAmountCharged *Money
+		obj.SetAmountCharged(fernTestValueAmountCharged)
+		assert.Equal(t, fernTestValueAmountCharged, obj.AmountCharged)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAutoCaptureAt", func(t *testing.T) {
 		obj := &Payment{}
 		var fernTestValueAutoCaptureAt *string
@@ -87968,6 +87976,39 @@ func TestGettersPayment(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAmountAfterFees() // Should return zero value
+	})
+
+	t.Run("GetAmountCharged", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		var expected *Money
+		obj.AmountCharged = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAmountCharged(), "getter should return the property value")
+	})
+
+	t.Run("GetAmountCharged_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		obj.AmountCharged = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAmountCharged(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAmountCharged_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Payment
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAmountCharged() // Should return zero value
 	})
 
 	t.Run("GetAutoCaptureAt", func(t *testing.T) {
@@ -90136,6 +90177,37 @@ func TestSettersMarkExplicitPayment(t *testing.T) {
 
 		// Act
 		obj.SetAmountAfterFees(fernTestValueAmountAfterFees)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAmountCharged_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		var fernTestValueAmountCharged *Money
+
+		// Act
+		obj.SetAmountCharged(fernTestValueAmountCharged)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -177578,6 +177650,7 @@ func TestRequiredNullableRoundTripPasskeyChallenge(t *testing.T) {
 func TestRequiredNullableRoundTripPayment(t *testing.T) {
 	requiredNullableKeys := []string{
 		"account_id",
+		"amount_after_fees",
 		"auto_capture_at",
 		"billing_address",
 		"billing_reason",
@@ -177642,7 +177715,7 @@ func TestRequiredNullableRoundTripPayment(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Payment
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"auto_capture_at":null,"billing_address":null,"billing_reason":null,"capture_expires_at":null,"checkout_configuration_id":null,"checkout_origin":null,"checkout_surface":null,"client_secret":null,"customer_email":null,"customer_phone":null,"decline_code":null,"dispute_alerted_at":null,"dispute_created_at":null,"failure_message":null,"financing_installments_count":null,"ip_address":null,"last_payment_attempt_at":null,"member_id":null,"membership_id":null,"metadata":null,"missing_tracking":null,"needs_tracking":null,"next_payment_attempt_at":null,"paid_at":null,"payment_instrument":null,"payment_method_id":null,"payment_method_type":null,"presentment_refunded_amount":null,"presentment_tax_amount":null,"presentment_total":null,"product_id":null,"promo_code_id":null,"quote_id":null,"recovery_url":null,"refunded_amount":null,"refunded_at":null,"response_due_at":null,"risk_score":null,"risk_signals":null,"settlement_time_at":null,"shipment_id":null,"shipping_address":null,"subtotal":null,"tax_amount":null,"tax_behavior":null,"total":null,"usd_total":null,"user":null,"user_agent":null,"variant_id":null,"verification_checks":null,"wuid":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"amount_after_fees":null,"auto_capture_at":null,"billing_address":null,"billing_reason":null,"capture_expires_at":null,"checkout_configuration_id":null,"checkout_origin":null,"checkout_surface":null,"client_secret":null,"customer_email":null,"customer_phone":null,"decline_code":null,"dispute_alerted_at":null,"dispute_created_at":null,"failure_message":null,"financing_installments_count":null,"ip_address":null,"last_payment_attempt_at":null,"member_id":null,"membership_id":null,"metadata":null,"missing_tracking":null,"needs_tracking":null,"next_payment_attempt_at":null,"paid_at":null,"payment_instrument":null,"payment_method_id":null,"payment_method_type":null,"presentment_refunded_amount":null,"presentment_tax_amount":null,"presentment_total":null,"product_id":null,"promo_code_id":null,"quote_id":null,"recovery_url":null,"refunded_amount":null,"refunded_at":null,"response_due_at":null,"risk_score":null,"risk_signals":null,"settlement_time_at":null,"shipment_id":null,"shipping_address":null,"subtotal":null,"tax_amount":null,"tax_behavior":null,"total":null,"usd_total":null,"user":null,"user_agent":null,"variant_id":null,"verification_checks":null,"wuid":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
