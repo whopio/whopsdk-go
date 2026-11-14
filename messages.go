@@ -15,11 +15,12 @@ var (
 	createMessagesRequestFieldAutoDetectLinks     = big.NewInt(1 << 1)
 	createMessagesRequestFieldChannelID           = big.NewInt(1 << 2)
 	createMessagesRequestFieldContent             = big.NewInt(1 << 3)
-	createMessagesRequestFieldGifs                = big.NewInt(1 << 4)
-	createMessagesRequestFieldID                  = big.NewInt(1 << 5)
-	createMessagesRequestFieldLinkPreviews        = big.NewInt(1 << 6)
-	createMessagesRequestFieldPoll                = big.NewInt(1 << 7)
-	createMessagesRequestFieldReplyingToMessageID = big.NewInt(1 << 8)
+	createMessagesRequestFieldEmailAddress        = big.NewInt(1 << 4)
+	createMessagesRequestFieldGifs                = big.NewInt(1 << 5)
+	createMessagesRequestFieldID                  = big.NewInt(1 << 6)
+	createMessagesRequestFieldLinkPreviews        = big.NewInt(1 << 7)
+	createMessagesRequestFieldPoll                = big.NewInt(1 << 8)
+	createMessagesRequestFieldReplyingToMessageID = big.NewInt(1 << 9)
 )
 
 type CreateMessagesRequest struct {
@@ -31,6 +32,8 @@ type CreateMessagesRequest struct {
 	ChannelID string `json:"channel_id" url:"-"`
 	// Markdown content. May be empty when the message contains media or a poll.
 	Content string `json:"content" url:"-"`
+	// Also send this message as an email from this email address. Pass the address, like `support@example.com`, or its ID, prefixed `emaddr_`.
+	EmailAddress *string `json:"email_address,omitempty" url:"-"`
 	// Up to 10 GIFs to attach. URLs must use HTTPS on static.klipy.com, static1.klipy.com, or static2.klipy.com. Omit to preserve on edit; an empty list clears them.
 	Gifs []*CreateMessagesRequestGifsItem `json:"gifs,omitempty" url:"-"`
 	// Optional, for clients that show a message before the server confirms it. Use `post_` followed by 22 Base58 characters. Omit to generate an ID. Reuse the same ID and `Idempotency-Key` when retrying a send.
@@ -80,6 +83,13 @@ func (c *CreateMessagesRequest) SetChannelID(channelID string) {
 func (c *CreateMessagesRequest) SetContent(content string) {
 	c.Content = content
 	c.require(createMessagesRequestFieldContent)
+}
+
+// SetEmailAddress sets the EmailAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMessagesRequest) SetEmailAddress(emailAddress *string) {
+	c.EmailAddress = emailAddress
+	c.require(createMessagesRequestFieldEmailAddress)
 }
 
 // SetGifs sets the Gifs field and marks it as non-optional;
