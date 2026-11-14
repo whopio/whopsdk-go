@@ -58,3 +58,28 @@ func (c *Client) List(
 	}
 	return response.Body, nil
 }
+
+// Retrieves payments across all of Whop for up to four windows at once. Pass `breakdown_by` to split them by business type, industry type, product category, account country or customer country. The report covers the whole platform, so it takes no `account_id`. Only users with Trends access can read it, from whop.com, the Whop apps, the Whop CLI or the Whop MCP.
+//
+// Example:
+//
+//	request := &stats.PlatformTrendsReportsRequest{}
+//	client.Stats.Reports.PlatformTrends(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) PlatformTrends(
+	ctx context.Context,
+	request *stats.PlatformTrendsReportsRequest,
+	opts ...option.RequestOption,
+) (*stats.PlatformTrendsReportsResponse, error) {
+	response, err := c.WithRawResponse.PlatformTrends(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
