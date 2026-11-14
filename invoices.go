@@ -3515,6 +3515,7 @@ type ListInvoicesRequestOrder string
 const (
 	ListInvoicesRequestOrderCreatedAt ListInvoicesRequestOrder = "created_at"
 	ListInvoicesRequestOrderDueAt     ListInvoicesRequestOrder = "due_at"
+	ListInvoicesRequestOrderStatus    ListInvoicesRequestOrder = "status"
 )
 
 func NewListInvoicesRequestOrderFromString(s string) (ListInvoicesRequestOrder, error) {
@@ -3523,6 +3524,8 @@ func NewListInvoicesRequestOrderFromString(s string) (ListInvoicesRequestOrder, 
 		return ListInvoicesRequestOrderCreatedAt, nil
 	case "due_at":
 		return ListInvoicesRequestOrderDueAt, nil
+	case "status":
+		return ListInvoicesRequestOrderStatus, nil
 	}
 	var t ListInvoicesRequestOrder
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
