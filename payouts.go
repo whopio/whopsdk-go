@@ -555,34 +555,36 @@ func (r *RetrievePayoutsRequest) SetUserID(userID *string) {
 var (
 	cancelPayoutsResponseFieldAmount              = big.NewInt(1 << 0)
 	cancelPayoutsResponseFieldCancelable          = big.NewInt(1 << 1)
-	cancelPayoutsResponseFieldCreatedAt           = big.NewInt(1 << 2)
-	cancelPayoutsResponseFieldCurrency            = big.NewInt(1 << 3)
-	cancelPayoutsResponseFieldDestinationAmount   = big.NewInt(1 << 4)
-	cancelPayoutsResponseFieldDestinationCurrency = big.NewInt(1 << 5)
-	cancelPayoutsResponseFieldEstimatedArrival    = big.NewInt(1 << 6)
-	cancelPayoutsResponseFieldExchangeRate        = big.NewInt(1 << 7)
-	cancelPayoutsResponseFieldFailure             = big.NewInt(1 << 8)
-	cancelPayoutsResponseFieldFeeAmount           = big.NewInt(1 << 9)
-	cancelPayoutsResponseFieldFeePaidBy           = big.NewInt(1 << 10)
-	cancelPayoutsResponseFieldID                  = big.NewInt(1 << 11)
-	cancelPayoutsResponseFieldMarkupFee           = big.NewInt(1 << 12)
-	cancelPayoutsResponseFieldMetadata            = big.NewInt(1 << 13)
-	cancelPayoutsResponseFieldNetAmount           = big.NewInt(1 << 14)
-	cancelPayoutsResponseFieldNotes               = big.NewInt(1 << 15)
-	cancelPayoutsResponseFieldObject              = big.NewInt(1 << 16)
-	cancelPayoutsResponseFieldPayerName           = big.NewInt(1 << 17)
-	cancelPayoutsResponseFieldPayoutMethod        = big.NewInt(1 << 18)
-	cancelPayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 19)
-	cancelPayoutsResponseFieldSource              = big.NewInt(1 << 20)
-	cancelPayoutsResponseFieldSpeed               = big.NewInt(1 << 21)
-	cancelPayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 22)
-	cancelPayoutsResponseFieldStatus              = big.NewInt(1 << 23)
-	cancelPayoutsResponseFieldStatusDetail        = big.NewInt(1 << 24)
-	cancelPayoutsResponseFieldTraceCode           = big.NewInt(1 << 25)
+	cancelPayoutsResponseFieldConversion          = big.NewInt(1 << 2)
+	cancelPayoutsResponseFieldCreatedAt           = big.NewInt(1 << 3)
+	cancelPayoutsResponseFieldCurrency            = big.NewInt(1 << 4)
+	cancelPayoutsResponseFieldDestinationAmount   = big.NewInt(1 << 5)
+	cancelPayoutsResponseFieldDestinationCurrency = big.NewInt(1 << 6)
+	cancelPayoutsResponseFieldEstimatedArrival    = big.NewInt(1 << 7)
+	cancelPayoutsResponseFieldExchangeRate        = big.NewInt(1 << 8)
+	cancelPayoutsResponseFieldFailure             = big.NewInt(1 << 9)
+	cancelPayoutsResponseFieldFeeAmount           = big.NewInt(1 << 10)
+	cancelPayoutsResponseFieldFeePaidBy           = big.NewInt(1 << 11)
+	cancelPayoutsResponseFieldID                  = big.NewInt(1 << 12)
+	cancelPayoutsResponseFieldMarkupFee           = big.NewInt(1 << 13)
+	cancelPayoutsResponseFieldMetadata            = big.NewInt(1 << 14)
+	cancelPayoutsResponseFieldNetAmount           = big.NewInt(1 << 15)
+	cancelPayoutsResponseFieldNotes               = big.NewInt(1 << 16)
+	cancelPayoutsResponseFieldObject              = big.NewInt(1 << 17)
+	cancelPayoutsResponseFieldPayerName           = big.NewInt(1 << 18)
+	cancelPayoutsResponseFieldPayoutMethod        = big.NewInt(1 << 19)
+	cancelPayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 20)
+	cancelPayoutsResponseFieldSource              = big.NewInt(1 << 21)
+	cancelPayoutsResponseFieldSpeed               = big.NewInt(1 << 22)
+	cancelPayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 23)
+	cancelPayoutsResponseFieldStatus              = big.NewInt(1 << 24)
+	cancelPayoutsResponseFieldStatusDetail        = big.NewInt(1 << 25)
+	cancelPayoutsResponseFieldTraceCode           = big.NewInt(1 << 26)
 )
 
 // cancelPayoutsResponseNullableFields maps the wire names of CancelPayoutsResponse's nullable fields (required or optional) to their field bits.
 var cancelPayoutsResponseNullableFields = map[string]*big.Int{
+	"conversion":           cancelPayoutsResponseFieldConversion,
 	"destination_amount":   cancelPayoutsResponseFieldDestinationAmount,
 	"destination_currency": cancelPayoutsResponseFieldDestinationCurrency,
 	"estimated_arrival":    cancelPayoutsResponseFieldEstimatedArrival,
@@ -602,6 +604,8 @@ type CancelPayoutsResponse struct {
 	Amount string `json:"amount" url:"amount"`
 	// Whether `POST /payouts/{id}/cancel` would act on this payout right now: `true` while it is `in_review`, while it is `processing` with nothing yet submitted to the payout provider, or while a submitted payout can still be asked to cancel at the provider. `false` once the money has arrived or the payout has already ended.
 	Cancelable bool `json:"cancelable" url:"cancelable"`
+	// How the balance was converted into the payout currency before the payout was sent. `null` when the payout was sent from a balance in its own currency.
+	Conversion *CancelPayoutsResponseConversion `json:"conversion,omitempty" url:"conversion,omitempty"`
 	// When the payout was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// Payout currency.
@@ -669,6 +673,13 @@ func (c *CancelPayoutsResponse) GetCancelable() bool {
 		return false
 	}
 	return c.Cancelable
+}
+
+func (c *CancelPayoutsResponse) GetConversion() *CancelPayoutsResponseConversion {
+	if c == nil {
+		return nil
+	}
+	return c.Conversion
 }
 
 func (c *CancelPayoutsResponse) GetCreatedAt() time.Time {
@@ -867,6 +878,13 @@ func (c *CancelPayoutsResponse) SetAmount(amount string) {
 func (c *CancelPayoutsResponse) SetCancelable(cancelable bool) {
 	c.Cancelable = cancelable
 	c.require(cancelPayoutsResponseFieldCancelable)
+}
+
+// SetConversion sets the Conversion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponse) SetConversion(conversion *CancelPayoutsResponseConversion) {
+	c.Conversion = conversion
+	c.require(cancelPayoutsResponseFieldConversion)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -1084,6 +1102,128 @@ func (c *CancelPayoutsResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CancelPayoutsResponse) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	cancelPayoutsResponseConversionFieldFromAmount   = big.NewInt(1 << 0)
+	cancelPayoutsResponseConversionFieldFromCurrency = big.NewInt(1 << 1)
+	cancelPayoutsResponseConversionFieldRate         = big.NewInt(1 << 2)
+)
+
+// How the balance was converted into the payout currency before the payout was sent. `null` when the payout was sent from a balance in its own currency.
+type CancelPayoutsResponseConversion struct {
+	// The amount the conversion took from the balance, as a decimal string.
+	FromAmount string `json:"from_amount" url:"from_amount"`
+	// The currency of the balance the conversion took the amount from.
+	FromCurrency string `json:"from_currency" url:"from_currency"`
+	// The conversion rate, in units of the payout currency for each unit of `from_currency`. Any conversion charge is included in this rate.
+	Rate float64 `json:"rate" url:"rate"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CancelPayoutsResponseConversion) GetFromAmount() string {
+	if c == nil {
+		return ""
+	}
+	return c.FromAmount
+}
+
+func (c *CancelPayoutsResponseConversion) GetFromCurrency() string {
+	if c == nil {
+		return ""
+	}
+	return c.FromCurrency
+}
+
+func (c *CancelPayoutsResponseConversion) GetRate() float64 {
+	if c == nil {
+		return 0
+	}
+	return c.Rate
+}
+
+func (c *CancelPayoutsResponseConversion) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CancelPayoutsResponseConversion) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetFromAmount sets the FromAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponseConversion) SetFromAmount(fromAmount string) {
+	c.FromAmount = fromAmount
+	c.require(cancelPayoutsResponseConversionFieldFromAmount)
+}
+
+// SetFromCurrency sets the FromCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponseConversion) SetFromCurrency(fromCurrency string) {
+	c.FromCurrency = fromCurrency
+	c.require(cancelPayoutsResponseConversionFieldFromCurrency)
+}
+
+// SetRate sets the Rate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponseConversion) SetRate(rate float64) {
+	c.Rate = rate
+	c.require(cancelPayoutsResponseConversionFieldRate)
+}
+
+func (c *CancelPayoutsResponseConversion) UnmarshalJSON(data []byte) error {
+	type unmarshaler CancelPayoutsResponseConversion
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CancelPayoutsResponseConversion(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CancelPayoutsResponseConversion) MarshalJSON() ([]byte, error) {
+	type embed CancelPayoutsResponseConversion
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CancelPayoutsResponseConversion) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -1737,34 +1877,36 @@ func (c CreatePayoutsRequestSpeed) Ptr() *CreatePayoutsRequestSpeed {
 var (
 	createPayoutsResponseFieldAmount              = big.NewInt(1 << 0)
 	createPayoutsResponseFieldCancelable          = big.NewInt(1 << 1)
-	createPayoutsResponseFieldCreatedAt           = big.NewInt(1 << 2)
-	createPayoutsResponseFieldCurrency            = big.NewInt(1 << 3)
-	createPayoutsResponseFieldDestinationAmount   = big.NewInt(1 << 4)
-	createPayoutsResponseFieldDestinationCurrency = big.NewInt(1 << 5)
-	createPayoutsResponseFieldEstimatedArrival    = big.NewInt(1 << 6)
-	createPayoutsResponseFieldExchangeRate        = big.NewInt(1 << 7)
-	createPayoutsResponseFieldFailure             = big.NewInt(1 << 8)
-	createPayoutsResponseFieldFeeAmount           = big.NewInt(1 << 9)
-	createPayoutsResponseFieldFeePaidBy           = big.NewInt(1 << 10)
-	createPayoutsResponseFieldID                  = big.NewInt(1 << 11)
-	createPayoutsResponseFieldMarkupFee           = big.NewInt(1 << 12)
-	createPayoutsResponseFieldMetadata            = big.NewInt(1 << 13)
-	createPayoutsResponseFieldNetAmount           = big.NewInt(1 << 14)
-	createPayoutsResponseFieldNotes               = big.NewInt(1 << 15)
-	createPayoutsResponseFieldObject              = big.NewInt(1 << 16)
-	createPayoutsResponseFieldPayerName           = big.NewInt(1 << 17)
-	createPayoutsResponseFieldPayoutMethod        = big.NewInt(1 << 18)
-	createPayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 19)
-	createPayoutsResponseFieldSource              = big.NewInt(1 << 20)
-	createPayoutsResponseFieldSpeed               = big.NewInt(1 << 21)
-	createPayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 22)
-	createPayoutsResponseFieldStatus              = big.NewInt(1 << 23)
-	createPayoutsResponseFieldStatusDetail        = big.NewInt(1 << 24)
-	createPayoutsResponseFieldTraceCode           = big.NewInt(1 << 25)
+	createPayoutsResponseFieldConversion          = big.NewInt(1 << 2)
+	createPayoutsResponseFieldCreatedAt           = big.NewInt(1 << 3)
+	createPayoutsResponseFieldCurrency            = big.NewInt(1 << 4)
+	createPayoutsResponseFieldDestinationAmount   = big.NewInt(1 << 5)
+	createPayoutsResponseFieldDestinationCurrency = big.NewInt(1 << 6)
+	createPayoutsResponseFieldEstimatedArrival    = big.NewInt(1 << 7)
+	createPayoutsResponseFieldExchangeRate        = big.NewInt(1 << 8)
+	createPayoutsResponseFieldFailure             = big.NewInt(1 << 9)
+	createPayoutsResponseFieldFeeAmount           = big.NewInt(1 << 10)
+	createPayoutsResponseFieldFeePaidBy           = big.NewInt(1 << 11)
+	createPayoutsResponseFieldID                  = big.NewInt(1 << 12)
+	createPayoutsResponseFieldMarkupFee           = big.NewInt(1 << 13)
+	createPayoutsResponseFieldMetadata            = big.NewInt(1 << 14)
+	createPayoutsResponseFieldNetAmount           = big.NewInt(1 << 15)
+	createPayoutsResponseFieldNotes               = big.NewInt(1 << 16)
+	createPayoutsResponseFieldObject              = big.NewInt(1 << 17)
+	createPayoutsResponseFieldPayerName           = big.NewInt(1 << 18)
+	createPayoutsResponseFieldPayoutMethod        = big.NewInt(1 << 19)
+	createPayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 20)
+	createPayoutsResponseFieldSource              = big.NewInt(1 << 21)
+	createPayoutsResponseFieldSpeed               = big.NewInt(1 << 22)
+	createPayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 23)
+	createPayoutsResponseFieldStatus              = big.NewInt(1 << 24)
+	createPayoutsResponseFieldStatusDetail        = big.NewInt(1 << 25)
+	createPayoutsResponseFieldTraceCode           = big.NewInt(1 << 26)
 )
 
 // createPayoutsResponseNullableFields maps the wire names of CreatePayoutsResponse's nullable fields (required or optional) to their field bits.
 var createPayoutsResponseNullableFields = map[string]*big.Int{
+	"conversion":           createPayoutsResponseFieldConversion,
 	"destination_amount":   createPayoutsResponseFieldDestinationAmount,
 	"destination_currency": createPayoutsResponseFieldDestinationCurrency,
 	"estimated_arrival":    createPayoutsResponseFieldEstimatedArrival,
@@ -1784,6 +1926,8 @@ type CreatePayoutsResponse struct {
 	Amount string `json:"amount" url:"amount"`
 	// Whether `POST /payouts/{id}/cancel` would act on this payout right now: `true` while it is `in_review`, while it is `processing` with nothing yet submitted to the payout provider, or while a submitted payout can still be asked to cancel at the provider. `false` once the money has arrived or the payout has already ended.
 	Cancelable bool `json:"cancelable" url:"cancelable"`
+	// How the balance was converted into the payout currency before the payout was sent. `null` when the payout was sent from a balance in its own currency.
+	Conversion *CreatePayoutsResponseConversion `json:"conversion,omitempty" url:"conversion,omitempty"`
 	// When the payout was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// Payout currency.
@@ -1851,6 +1995,13 @@ func (c *CreatePayoutsResponse) GetCancelable() bool {
 		return false
 	}
 	return c.Cancelable
+}
+
+func (c *CreatePayoutsResponse) GetConversion() *CreatePayoutsResponseConversion {
+	if c == nil {
+		return nil
+	}
+	return c.Conversion
 }
 
 func (c *CreatePayoutsResponse) GetCreatedAt() time.Time {
@@ -2049,6 +2200,13 @@ func (c *CreatePayoutsResponse) SetAmount(amount string) {
 func (c *CreatePayoutsResponse) SetCancelable(cancelable bool) {
 	c.Cancelable = cancelable
 	c.require(createPayoutsResponseFieldCancelable)
+}
+
+// SetConversion sets the Conversion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsResponse) SetConversion(conversion *CreatePayoutsResponseConversion) {
+	c.Conversion = conversion
+	c.require(createPayoutsResponseFieldConversion)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -2266,6 +2424,128 @@ func (c *CreatePayoutsResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CreatePayoutsResponse) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createPayoutsResponseConversionFieldFromAmount   = big.NewInt(1 << 0)
+	createPayoutsResponseConversionFieldFromCurrency = big.NewInt(1 << 1)
+	createPayoutsResponseConversionFieldRate         = big.NewInt(1 << 2)
+)
+
+// How the balance was converted into the payout currency before the payout was sent. `null` when the payout was sent from a balance in its own currency.
+type CreatePayoutsResponseConversion struct {
+	// The amount the conversion took from the balance, as a decimal string.
+	FromAmount string `json:"from_amount" url:"from_amount"`
+	// The currency of the balance the conversion took the amount from.
+	FromCurrency string `json:"from_currency" url:"from_currency"`
+	// The conversion rate, in units of the payout currency for each unit of `from_currency`. Any conversion charge is included in this rate.
+	Rate float64 `json:"rate" url:"rate"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreatePayoutsResponseConversion) GetFromAmount() string {
+	if c == nil {
+		return ""
+	}
+	return c.FromAmount
+}
+
+func (c *CreatePayoutsResponseConversion) GetFromCurrency() string {
+	if c == nil {
+		return ""
+	}
+	return c.FromCurrency
+}
+
+func (c *CreatePayoutsResponseConversion) GetRate() float64 {
+	if c == nil {
+		return 0
+	}
+	return c.Rate
+}
+
+func (c *CreatePayoutsResponseConversion) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreatePayoutsResponseConversion) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetFromAmount sets the FromAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsResponseConversion) SetFromAmount(fromAmount string) {
+	c.FromAmount = fromAmount
+	c.require(createPayoutsResponseConversionFieldFromAmount)
+}
+
+// SetFromCurrency sets the FromCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsResponseConversion) SetFromCurrency(fromCurrency string) {
+	c.FromCurrency = fromCurrency
+	c.require(createPayoutsResponseConversionFieldFromCurrency)
+}
+
+// SetRate sets the Rate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsResponseConversion) SetRate(rate float64) {
+	c.Rate = rate
+	c.require(createPayoutsResponseConversionFieldRate)
+}
+
+func (c *CreatePayoutsResponseConversion) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreatePayoutsResponseConversion
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreatePayoutsResponseConversion(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreatePayoutsResponseConversion) MarshalJSON() ([]byte, error) {
+	type embed CreatePayoutsResponseConversion
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreatePayoutsResponseConversion) String() string {
 	if c == nil {
 		return "<nil>"
 	}
@@ -3787,34 +4067,36 @@ func (l *ListPayoutsResponse) String() string {
 var (
 	listPayoutsResponseDataItemFieldAmount              = big.NewInt(1 << 0)
 	listPayoutsResponseDataItemFieldCancelable          = big.NewInt(1 << 1)
-	listPayoutsResponseDataItemFieldCreatedAt           = big.NewInt(1 << 2)
-	listPayoutsResponseDataItemFieldCurrency            = big.NewInt(1 << 3)
-	listPayoutsResponseDataItemFieldDestinationAmount   = big.NewInt(1 << 4)
-	listPayoutsResponseDataItemFieldDestinationCurrency = big.NewInt(1 << 5)
-	listPayoutsResponseDataItemFieldEstimatedArrival    = big.NewInt(1 << 6)
-	listPayoutsResponseDataItemFieldExchangeRate        = big.NewInt(1 << 7)
-	listPayoutsResponseDataItemFieldFailure             = big.NewInt(1 << 8)
-	listPayoutsResponseDataItemFieldFeeAmount           = big.NewInt(1 << 9)
-	listPayoutsResponseDataItemFieldFeePaidBy           = big.NewInt(1 << 10)
-	listPayoutsResponseDataItemFieldID                  = big.NewInt(1 << 11)
-	listPayoutsResponseDataItemFieldMarkupFee           = big.NewInt(1 << 12)
-	listPayoutsResponseDataItemFieldMetadata            = big.NewInt(1 << 13)
-	listPayoutsResponseDataItemFieldNetAmount           = big.NewInt(1 << 14)
-	listPayoutsResponseDataItemFieldNotes               = big.NewInt(1 << 15)
-	listPayoutsResponseDataItemFieldObject              = big.NewInt(1 << 16)
-	listPayoutsResponseDataItemFieldPayerName           = big.NewInt(1 << 17)
-	listPayoutsResponseDataItemFieldPayoutMethod        = big.NewInt(1 << 18)
-	listPayoutsResponseDataItemFieldPayoutRequestID     = big.NewInt(1 << 19)
-	listPayoutsResponseDataItemFieldSource              = big.NewInt(1 << 20)
-	listPayoutsResponseDataItemFieldSpeed               = big.NewInt(1 << 21)
-	listPayoutsResponseDataItemFieldStatementDescriptor = big.NewInt(1 << 22)
-	listPayoutsResponseDataItemFieldStatus              = big.NewInt(1 << 23)
-	listPayoutsResponseDataItemFieldStatusDetail        = big.NewInt(1 << 24)
-	listPayoutsResponseDataItemFieldTraceCode           = big.NewInt(1 << 25)
+	listPayoutsResponseDataItemFieldConversion          = big.NewInt(1 << 2)
+	listPayoutsResponseDataItemFieldCreatedAt           = big.NewInt(1 << 3)
+	listPayoutsResponseDataItemFieldCurrency            = big.NewInt(1 << 4)
+	listPayoutsResponseDataItemFieldDestinationAmount   = big.NewInt(1 << 5)
+	listPayoutsResponseDataItemFieldDestinationCurrency = big.NewInt(1 << 6)
+	listPayoutsResponseDataItemFieldEstimatedArrival    = big.NewInt(1 << 7)
+	listPayoutsResponseDataItemFieldExchangeRate        = big.NewInt(1 << 8)
+	listPayoutsResponseDataItemFieldFailure             = big.NewInt(1 << 9)
+	listPayoutsResponseDataItemFieldFeeAmount           = big.NewInt(1 << 10)
+	listPayoutsResponseDataItemFieldFeePaidBy           = big.NewInt(1 << 11)
+	listPayoutsResponseDataItemFieldID                  = big.NewInt(1 << 12)
+	listPayoutsResponseDataItemFieldMarkupFee           = big.NewInt(1 << 13)
+	listPayoutsResponseDataItemFieldMetadata            = big.NewInt(1 << 14)
+	listPayoutsResponseDataItemFieldNetAmount           = big.NewInt(1 << 15)
+	listPayoutsResponseDataItemFieldNotes               = big.NewInt(1 << 16)
+	listPayoutsResponseDataItemFieldObject              = big.NewInt(1 << 17)
+	listPayoutsResponseDataItemFieldPayerName           = big.NewInt(1 << 18)
+	listPayoutsResponseDataItemFieldPayoutMethod        = big.NewInt(1 << 19)
+	listPayoutsResponseDataItemFieldPayoutRequestID     = big.NewInt(1 << 20)
+	listPayoutsResponseDataItemFieldSource              = big.NewInt(1 << 21)
+	listPayoutsResponseDataItemFieldSpeed               = big.NewInt(1 << 22)
+	listPayoutsResponseDataItemFieldStatementDescriptor = big.NewInt(1 << 23)
+	listPayoutsResponseDataItemFieldStatus              = big.NewInt(1 << 24)
+	listPayoutsResponseDataItemFieldStatusDetail        = big.NewInt(1 << 25)
+	listPayoutsResponseDataItemFieldTraceCode           = big.NewInt(1 << 26)
 )
 
 // listPayoutsResponseDataItemNullableFields maps the wire names of ListPayoutsResponseDataItem's nullable fields (required or optional) to their field bits.
 var listPayoutsResponseDataItemNullableFields = map[string]*big.Int{
+	"conversion":           listPayoutsResponseDataItemFieldConversion,
 	"destination_amount":   listPayoutsResponseDataItemFieldDestinationAmount,
 	"destination_currency": listPayoutsResponseDataItemFieldDestinationCurrency,
 	"estimated_arrival":    listPayoutsResponseDataItemFieldEstimatedArrival,
@@ -3834,6 +4116,8 @@ type ListPayoutsResponseDataItem struct {
 	Amount string `json:"amount" url:"amount"`
 	// Whether `POST /payouts/{id}/cancel` would act on this payout right now: `true` while it is `in_review`, while it is `processing` with nothing yet submitted to the payout provider, or while a submitted payout can still be asked to cancel at the provider. `false` once the money has arrived or the payout has already ended.
 	Cancelable bool `json:"cancelable" url:"cancelable"`
+	// How the balance was converted into the payout currency before the payout was sent. `null` when the payout was sent from a balance in its own currency.
+	Conversion *ListPayoutsResponseDataItemConversion `json:"conversion,omitempty" url:"conversion,omitempty"`
 	// When the payout was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// Payout currency.
@@ -3901,6 +4185,13 @@ func (l *ListPayoutsResponseDataItem) GetCancelable() bool {
 		return false
 	}
 	return l.Cancelable
+}
+
+func (l *ListPayoutsResponseDataItem) GetConversion() *ListPayoutsResponseDataItemConversion {
+	if l == nil {
+		return nil
+	}
+	return l.Conversion
 }
 
 func (l *ListPayoutsResponseDataItem) GetCreatedAt() time.Time {
@@ -4099,6 +4390,13 @@ func (l *ListPayoutsResponseDataItem) SetAmount(amount string) {
 func (l *ListPayoutsResponseDataItem) SetCancelable(cancelable bool) {
 	l.Cancelable = cancelable
 	l.require(listPayoutsResponseDataItemFieldCancelable)
+}
+
+// SetConversion sets the Conversion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPayoutsResponseDataItem) SetConversion(conversion *ListPayoutsResponseDataItemConversion) {
+	l.Conversion = conversion
+	l.require(listPayoutsResponseDataItemFieldConversion)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -4316,6 +4614,128 @@ func (l *ListPayoutsResponseDataItem) MarshalJSON() ([]byte, error) {
 }
 
 func (l *ListPayoutsResponseDataItem) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listPayoutsResponseDataItemConversionFieldFromAmount   = big.NewInt(1 << 0)
+	listPayoutsResponseDataItemConversionFieldFromCurrency = big.NewInt(1 << 1)
+	listPayoutsResponseDataItemConversionFieldRate         = big.NewInt(1 << 2)
+)
+
+// How the balance was converted into the payout currency before the payout was sent. `null` when the payout was sent from a balance in its own currency.
+type ListPayoutsResponseDataItemConversion struct {
+	// The amount the conversion took from the balance, as a decimal string.
+	FromAmount string `json:"from_amount" url:"from_amount"`
+	// The currency of the balance the conversion took the amount from.
+	FromCurrency string `json:"from_currency" url:"from_currency"`
+	// The conversion rate, in units of the payout currency for each unit of `from_currency`. Any conversion charge is included in this rate.
+	Rate float64 `json:"rate" url:"rate"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListPayoutsResponseDataItemConversion) GetFromAmount() string {
+	if l == nil {
+		return ""
+	}
+	return l.FromAmount
+}
+
+func (l *ListPayoutsResponseDataItemConversion) GetFromCurrency() string {
+	if l == nil {
+		return ""
+	}
+	return l.FromCurrency
+}
+
+func (l *ListPayoutsResponseDataItemConversion) GetRate() float64 {
+	if l == nil {
+		return 0
+	}
+	return l.Rate
+}
+
+func (l *ListPayoutsResponseDataItemConversion) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListPayoutsResponseDataItemConversion) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetFromAmount sets the FromAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPayoutsResponseDataItemConversion) SetFromAmount(fromAmount string) {
+	l.FromAmount = fromAmount
+	l.require(listPayoutsResponseDataItemConversionFieldFromAmount)
+}
+
+// SetFromCurrency sets the FromCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPayoutsResponseDataItemConversion) SetFromCurrency(fromCurrency string) {
+	l.FromCurrency = fromCurrency
+	l.require(listPayoutsResponseDataItemConversionFieldFromCurrency)
+}
+
+// SetRate sets the Rate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPayoutsResponseDataItemConversion) SetRate(rate float64) {
+	l.Rate = rate
+	l.require(listPayoutsResponseDataItemConversionFieldRate)
+}
+
+func (l *ListPayoutsResponseDataItemConversion) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListPayoutsResponseDataItemConversion
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListPayoutsResponseDataItemConversion(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListPayoutsResponseDataItemConversion) MarshalJSON() ([]byte, error) {
+	type embed ListPayoutsResponseDataItemConversion
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListPayoutsResponseDataItemConversion) String() string {
 	if l == nil {
 		return "<nil>"
 	}
@@ -5339,34 +5759,36 @@ func (p PostPayoutCreatedPayloadAPIVersion) Ptr() *PostPayoutCreatedPayloadAPIVe
 var (
 	postPayoutCreatedPayloadDataFieldAmount              = big.NewInt(1 << 0)
 	postPayoutCreatedPayloadDataFieldCancelable          = big.NewInt(1 << 1)
-	postPayoutCreatedPayloadDataFieldCreatedAt           = big.NewInt(1 << 2)
-	postPayoutCreatedPayloadDataFieldCurrency            = big.NewInt(1 << 3)
-	postPayoutCreatedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 4)
-	postPayoutCreatedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 5)
-	postPayoutCreatedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 6)
-	postPayoutCreatedPayloadDataFieldExchangeRate        = big.NewInt(1 << 7)
-	postPayoutCreatedPayloadDataFieldFailure             = big.NewInt(1 << 8)
-	postPayoutCreatedPayloadDataFieldFeeAmount           = big.NewInt(1 << 9)
-	postPayoutCreatedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 10)
-	postPayoutCreatedPayloadDataFieldID                  = big.NewInt(1 << 11)
-	postPayoutCreatedPayloadDataFieldMarkupFee           = big.NewInt(1 << 12)
-	postPayoutCreatedPayloadDataFieldMetadata            = big.NewInt(1 << 13)
-	postPayoutCreatedPayloadDataFieldNetAmount           = big.NewInt(1 << 14)
-	postPayoutCreatedPayloadDataFieldNotes               = big.NewInt(1 << 15)
-	postPayoutCreatedPayloadDataFieldObject              = big.NewInt(1 << 16)
-	postPayoutCreatedPayloadDataFieldPayerName           = big.NewInt(1 << 17)
-	postPayoutCreatedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 18)
-	postPayoutCreatedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 19)
-	postPayoutCreatedPayloadDataFieldSource              = big.NewInt(1 << 20)
-	postPayoutCreatedPayloadDataFieldSpeed               = big.NewInt(1 << 21)
-	postPayoutCreatedPayloadDataFieldStatementDescriptor = big.NewInt(1 << 22)
-	postPayoutCreatedPayloadDataFieldStatus              = big.NewInt(1 << 23)
-	postPayoutCreatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 24)
-	postPayoutCreatedPayloadDataFieldTraceCode           = big.NewInt(1 << 25)
+	postPayoutCreatedPayloadDataFieldConversion          = big.NewInt(1 << 2)
+	postPayoutCreatedPayloadDataFieldCreatedAt           = big.NewInt(1 << 3)
+	postPayoutCreatedPayloadDataFieldCurrency            = big.NewInt(1 << 4)
+	postPayoutCreatedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 5)
+	postPayoutCreatedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 6)
+	postPayoutCreatedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 7)
+	postPayoutCreatedPayloadDataFieldExchangeRate        = big.NewInt(1 << 8)
+	postPayoutCreatedPayloadDataFieldFailure             = big.NewInt(1 << 9)
+	postPayoutCreatedPayloadDataFieldFeeAmount           = big.NewInt(1 << 10)
+	postPayoutCreatedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 11)
+	postPayoutCreatedPayloadDataFieldID                  = big.NewInt(1 << 12)
+	postPayoutCreatedPayloadDataFieldMarkupFee           = big.NewInt(1 << 13)
+	postPayoutCreatedPayloadDataFieldMetadata            = big.NewInt(1 << 14)
+	postPayoutCreatedPayloadDataFieldNetAmount           = big.NewInt(1 << 15)
+	postPayoutCreatedPayloadDataFieldNotes               = big.NewInt(1 << 16)
+	postPayoutCreatedPayloadDataFieldObject              = big.NewInt(1 << 17)
+	postPayoutCreatedPayloadDataFieldPayerName           = big.NewInt(1 << 18)
+	postPayoutCreatedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 19)
+	postPayoutCreatedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 20)
+	postPayoutCreatedPayloadDataFieldSource              = big.NewInt(1 << 21)
+	postPayoutCreatedPayloadDataFieldSpeed               = big.NewInt(1 << 22)
+	postPayoutCreatedPayloadDataFieldStatementDescriptor = big.NewInt(1 << 23)
+	postPayoutCreatedPayloadDataFieldStatus              = big.NewInt(1 << 24)
+	postPayoutCreatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 25)
+	postPayoutCreatedPayloadDataFieldTraceCode           = big.NewInt(1 << 26)
 )
 
 // postPayoutCreatedPayloadDataNullableFields maps the wire names of PostPayoutCreatedPayloadData's nullable fields (required or optional) to their field bits.
 var postPayoutCreatedPayloadDataNullableFields = map[string]*big.Int{
+	"conversion":           postPayoutCreatedPayloadDataFieldConversion,
 	"destination_amount":   postPayoutCreatedPayloadDataFieldDestinationAmount,
 	"destination_currency": postPayoutCreatedPayloadDataFieldDestinationCurrency,
 	"estimated_arrival":    postPayoutCreatedPayloadDataFieldEstimatedArrival,
@@ -5386,6 +5808,8 @@ type PostPayoutCreatedPayloadData struct {
 	Amount string `json:"amount" url:"amount"`
 	// Whether `POST /payouts/{id}/cancel` would act on this payout right now: `true` while it is `in_review`, while it is `processing` with nothing yet submitted to the payout provider, or while a submitted payout can still be asked to cancel at the provider. `false` once the money has arrived or the payout has already ended.
 	Cancelable bool `json:"cancelable" url:"cancelable"`
+	// How the balance was converted into the payout currency before the payout was sent. `null` when the payout was sent from a balance in its own currency.
+	Conversion *PostPayoutCreatedPayloadDataConversion `json:"conversion,omitempty" url:"conversion,omitempty"`
 	// When the payout was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// Payout currency.
@@ -5453,6 +5877,13 @@ func (p *PostPayoutCreatedPayloadData) GetCancelable() bool {
 		return false
 	}
 	return p.Cancelable
+}
+
+func (p *PostPayoutCreatedPayloadData) GetConversion() *PostPayoutCreatedPayloadDataConversion {
+	if p == nil {
+		return nil
+	}
+	return p.Conversion
 }
 
 func (p *PostPayoutCreatedPayloadData) GetCreatedAt() time.Time {
@@ -5651,6 +6082,13 @@ func (p *PostPayoutCreatedPayloadData) SetAmount(amount string) {
 func (p *PostPayoutCreatedPayloadData) SetCancelable(cancelable bool) {
 	p.Cancelable = cancelable
 	p.require(postPayoutCreatedPayloadDataFieldCancelable)
+}
+
+// SetConversion sets the Conversion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadData) SetConversion(conversion *PostPayoutCreatedPayloadDataConversion) {
+	p.Conversion = conversion
+	p.require(postPayoutCreatedPayloadDataFieldConversion)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -5868,6 +6306,128 @@ func (p *PostPayoutCreatedPayloadData) MarshalJSON() ([]byte, error) {
 }
 
 func (p *PostPayoutCreatedPayloadData) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	postPayoutCreatedPayloadDataConversionFieldFromAmount   = big.NewInt(1 << 0)
+	postPayoutCreatedPayloadDataConversionFieldFromCurrency = big.NewInt(1 << 1)
+	postPayoutCreatedPayloadDataConversionFieldRate         = big.NewInt(1 << 2)
+)
+
+// How the balance was converted into the payout currency before the payout was sent. `null` when the payout was sent from a balance in its own currency.
+type PostPayoutCreatedPayloadDataConversion struct {
+	// The amount the conversion took from the balance, as a decimal string.
+	FromAmount string `json:"from_amount" url:"from_amount"`
+	// The currency of the balance the conversion took the amount from.
+	FromCurrency string `json:"from_currency" url:"from_currency"`
+	// The conversion rate, in units of the payout currency for each unit of `from_currency`. Any conversion charge is included in this rate.
+	Rate float64 `json:"rate" url:"rate"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostPayoutCreatedPayloadDataConversion) GetFromAmount() string {
+	if p == nil {
+		return ""
+	}
+	return p.FromAmount
+}
+
+func (p *PostPayoutCreatedPayloadDataConversion) GetFromCurrency() string {
+	if p == nil {
+		return ""
+	}
+	return p.FromCurrency
+}
+
+func (p *PostPayoutCreatedPayloadDataConversion) GetRate() float64 {
+	if p == nil {
+		return 0
+	}
+	return p.Rate
+}
+
+func (p *PostPayoutCreatedPayloadDataConversion) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostPayoutCreatedPayloadDataConversion) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetFromAmount sets the FromAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadDataConversion) SetFromAmount(fromAmount string) {
+	p.FromAmount = fromAmount
+	p.require(postPayoutCreatedPayloadDataConversionFieldFromAmount)
+}
+
+// SetFromCurrency sets the FromCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadDataConversion) SetFromCurrency(fromCurrency string) {
+	p.FromCurrency = fromCurrency
+	p.require(postPayoutCreatedPayloadDataConversionFieldFromCurrency)
+}
+
+// SetRate sets the Rate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadDataConversion) SetRate(rate float64) {
+	p.Rate = rate
+	p.require(postPayoutCreatedPayloadDataConversionFieldRate)
+}
+
+func (p *PostPayoutCreatedPayloadDataConversion) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostPayoutCreatedPayloadDataConversion
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PostPayoutCreatedPayloadDataConversion(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostPayoutCreatedPayloadDataConversion) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutCreatedPayloadDataConversion
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostPayoutCreatedPayloadDataConversion) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -8731,34 +9291,36 @@ func (p PostPayoutReversedPayloadAPIVersion) Ptr() *PostPayoutReversedPayloadAPI
 var (
 	postPayoutReversedPayloadDataFieldAmount              = big.NewInt(1 << 0)
 	postPayoutReversedPayloadDataFieldCancelable          = big.NewInt(1 << 1)
-	postPayoutReversedPayloadDataFieldCreatedAt           = big.NewInt(1 << 2)
-	postPayoutReversedPayloadDataFieldCurrency            = big.NewInt(1 << 3)
-	postPayoutReversedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 4)
-	postPayoutReversedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 5)
-	postPayoutReversedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 6)
-	postPayoutReversedPayloadDataFieldExchangeRate        = big.NewInt(1 << 7)
-	postPayoutReversedPayloadDataFieldFailure             = big.NewInt(1 << 8)
-	postPayoutReversedPayloadDataFieldFeeAmount           = big.NewInt(1 << 9)
-	postPayoutReversedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 10)
-	postPayoutReversedPayloadDataFieldID                  = big.NewInt(1 << 11)
-	postPayoutReversedPayloadDataFieldMarkupFee           = big.NewInt(1 << 12)
-	postPayoutReversedPayloadDataFieldMetadata            = big.NewInt(1 << 13)
-	postPayoutReversedPayloadDataFieldNetAmount           = big.NewInt(1 << 14)
-	postPayoutReversedPayloadDataFieldNotes               = big.NewInt(1 << 15)
-	postPayoutReversedPayloadDataFieldObject              = big.NewInt(1 << 16)
-	postPayoutReversedPayloadDataFieldPayerName           = big.NewInt(1 << 17)
-	postPayoutReversedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 18)
-	postPayoutReversedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 19)
-	postPayoutReversedPayloadDataFieldSource              = big.NewInt(1 << 20)
-	postPayoutReversedPayloadDataFieldSpeed               = big.NewInt(1 << 21)
-	postPayoutReversedPayloadDataFieldStatementDescriptor = big.NewInt(1 << 22)
-	postPayoutReversedPayloadDataFieldStatus              = big.NewInt(1 << 23)
-	postPayoutReversedPayloadDataFieldStatusDetail        = big.NewInt(1 << 24)
-	postPayoutReversedPayloadDataFieldTraceCode           = big.NewInt(1 << 25)
+	postPayoutReversedPayloadDataFieldConversion          = big.NewInt(1 << 2)
+	postPayoutReversedPayloadDataFieldCreatedAt           = big.NewInt(1 << 3)
+	postPayoutReversedPayloadDataFieldCurrency            = big.NewInt(1 << 4)
+	postPayoutReversedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 5)
+	postPayoutReversedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 6)
+	postPayoutReversedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 7)
+	postPayoutReversedPayloadDataFieldExchangeRate        = big.NewInt(1 << 8)
+	postPayoutReversedPayloadDataFieldFailure             = big.NewInt(1 << 9)
+	postPayoutReversedPayloadDataFieldFeeAmount           = big.NewInt(1 << 10)
+	postPayoutReversedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 11)
+	postPayoutReversedPayloadDataFieldID                  = big.NewInt(1 << 12)
+	postPayoutReversedPayloadDataFieldMarkupFee           = big.NewInt(1 << 13)
+	postPayoutReversedPayloadDataFieldMetadata            = big.NewInt(1 << 14)
+	postPayoutReversedPayloadDataFieldNetAmount           = big.NewInt(1 << 15)
+	postPayoutReversedPayloadDataFieldNotes               = big.NewInt(1 << 16)
+	postPayoutReversedPayloadDataFieldObject              = big.NewInt(1 << 17)
+	postPayoutReversedPayloadDataFieldPayerName           = big.NewInt(1 << 18)
+	postPayoutReversedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 19)
+	postPayoutReversedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 20)
+	postPayoutReversedPayloadDataFieldSource              = big.NewInt(1 << 21)
+	postPayoutReversedPayloadDataFieldSpeed               = big.NewInt(1 << 22)
+	postPayoutReversedPayloadDataFieldStatementDescriptor = big.NewInt(1 << 23)
+	postPayoutReversedPayloadDataFieldStatus              = big.NewInt(1 << 24)
+	postPayoutReversedPayloadDataFieldStatusDetail        = big.NewInt(1 << 25)
+	postPayoutReversedPayloadDataFieldTraceCode           = big.NewInt(1 << 26)
 )
 
 // postPayoutReversedPayloadDataNullableFields maps the wire names of PostPayoutReversedPayloadData's nullable fields (required or optional) to their field bits.
 var postPayoutReversedPayloadDataNullableFields = map[string]*big.Int{
+	"conversion":           postPayoutReversedPayloadDataFieldConversion,
 	"destination_amount":   postPayoutReversedPayloadDataFieldDestinationAmount,
 	"destination_currency": postPayoutReversedPayloadDataFieldDestinationCurrency,
 	"estimated_arrival":    postPayoutReversedPayloadDataFieldEstimatedArrival,
@@ -8778,6 +9340,8 @@ type PostPayoutReversedPayloadData struct {
 	Amount string `json:"amount" url:"amount"`
 	// Whether `POST /payouts/{id}/cancel` would act on this payout right now: `true` while it is `in_review`, while it is `processing` with nothing yet submitted to the payout provider, or while a submitted payout can still be asked to cancel at the provider. `false` once the money has arrived or the payout has already ended.
 	Cancelable bool `json:"cancelable" url:"cancelable"`
+	// How the balance was converted into the payout currency before the payout was sent. `null` when the payout was sent from a balance in its own currency.
+	Conversion *PostPayoutReversedPayloadDataConversion `json:"conversion,omitempty" url:"conversion,omitempty"`
 	// When the payout was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// Payout currency.
@@ -8845,6 +9409,13 @@ func (p *PostPayoutReversedPayloadData) GetCancelable() bool {
 		return false
 	}
 	return p.Cancelable
+}
+
+func (p *PostPayoutReversedPayloadData) GetConversion() *PostPayoutReversedPayloadDataConversion {
+	if p == nil {
+		return nil
+	}
+	return p.Conversion
 }
 
 func (p *PostPayoutReversedPayloadData) GetCreatedAt() time.Time {
@@ -9043,6 +9614,13 @@ func (p *PostPayoutReversedPayloadData) SetAmount(amount string) {
 func (p *PostPayoutReversedPayloadData) SetCancelable(cancelable bool) {
 	p.Cancelable = cancelable
 	p.require(postPayoutReversedPayloadDataFieldCancelable)
+}
+
+// SetConversion sets the Conversion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutReversedPayloadData) SetConversion(conversion *PostPayoutReversedPayloadDataConversion) {
+	p.Conversion = conversion
+	p.require(postPayoutReversedPayloadDataFieldConversion)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -9260,6 +9838,128 @@ func (p *PostPayoutReversedPayloadData) MarshalJSON() ([]byte, error) {
 }
 
 func (p *PostPayoutReversedPayloadData) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	postPayoutReversedPayloadDataConversionFieldFromAmount   = big.NewInt(1 << 0)
+	postPayoutReversedPayloadDataConversionFieldFromCurrency = big.NewInt(1 << 1)
+	postPayoutReversedPayloadDataConversionFieldRate         = big.NewInt(1 << 2)
+)
+
+// How the balance was converted into the payout currency before the payout was sent. `null` when the payout was sent from a balance in its own currency.
+type PostPayoutReversedPayloadDataConversion struct {
+	// The amount the conversion took from the balance, as a decimal string.
+	FromAmount string `json:"from_amount" url:"from_amount"`
+	// The currency of the balance the conversion took the amount from.
+	FromCurrency string `json:"from_currency" url:"from_currency"`
+	// The conversion rate, in units of the payout currency for each unit of `from_currency`. Any conversion charge is included in this rate.
+	Rate float64 `json:"rate" url:"rate"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostPayoutReversedPayloadDataConversion) GetFromAmount() string {
+	if p == nil {
+		return ""
+	}
+	return p.FromAmount
+}
+
+func (p *PostPayoutReversedPayloadDataConversion) GetFromCurrency() string {
+	if p == nil {
+		return ""
+	}
+	return p.FromCurrency
+}
+
+func (p *PostPayoutReversedPayloadDataConversion) GetRate() float64 {
+	if p == nil {
+		return 0
+	}
+	return p.Rate
+}
+
+func (p *PostPayoutReversedPayloadDataConversion) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostPayoutReversedPayloadDataConversion) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetFromAmount sets the FromAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutReversedPayloadDataConversion) SetFromAmount(fromAmount string) {
+	p.FromAmount = fromAmount
+	p.require(postPayoutReversedPayloadDataConversionFieldFromAmount)
+}
+
+// SetFromCurrency sets the FromCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutReversedPayloadDataConversion) SetFromCurrency(fromCurrency string) {
+	p.FromCurrency = fromCurrency
+	p.require(postPayoutReversedPayloadDataConversionFieldFromCurrency)
+}
+
+// SetRate sets the Rate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutReversedPayloadDataConversion) SetRate(rate float64) {
+	p.Rate = rate
+	p.require(postPayoutReversedPayloadDataConversionFieldRate)
+}
+
+func (p *PostPayoutReversedPayloadDataConversion) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostPayoutReversedPayloadDataConversion
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PostPayoutReversedPayloadDataConversion(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostPayoutReversedPayloadDataConversion) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutReversedPayloadDataConversion
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostPayoutReversedPayloadDataConversion) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -10156,34 +10856,36 @@ func (p PostPayoutUpdatedPayloadAPIVersion) Ptr() *PostPayoutUpdatedPayloadAPIVe
 var (
 	postPayoutUpdatedPayloadDataFieldAmount              = big.NewInt(1 << 0)
 	postPayoutUpdatedPayloadDataFieldCancelable          = big.NewInt(1 << 1)
-	postPayoutUpdatedPayloadDataFieldCreatedAt           = big.NewInt(1 << 2)
-	postPayoutUpdatedPayloadDataFieldCurrency            = big.NewInt(1 << 3)
-	postPayoutUpdatedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 4)
-	postPayoutUpdatedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 5)
-	postPayoutUpdatedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 6)
-	postPayoutUpdatedPayloadDataFieldExchangeRate        = big.NewInt(1 << 7)
-	postPayoutUpdatedPayloadDataFieldFailure             = big.NewInt(1 << 8)
-	postPayoutUpdatedPayloadDataFieldFeeAmount           = big.NewInt(1 << 9)
-	postPayoutUpdatedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 10)
-	postPayoutUpdatedPayloadDataFieldID                  = big.NewInt(1 << 11)
-	postPayoutUpdatedPayloadDataFieldMarkupFee           = big.NewInt(1 << 12)
-	postPayoutUpdatedPayloadDataFieldMetadata            = big.NewInt(1 << 13)
-	postPayoutUpdatedPayloadDataFieldNetAmount           = big.NewInt(1 << 14)
-	postPayoutUpdatedPayloadDataFieldNotes               = big.NewInt(1 << 15)
-	postPayoutUpdatedPayloadDataFieldObject              = big.NewInt(1 << 16)
-	postPayoutUpdatedPayloadDataFieldPayerName           = big.NewInt(1 << 17)
-	postPayoutUpdatedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 18)
-	postPayoutUpdatedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 19)
-	postPayoutUpdatedPayloadDataFieldSource              = big.NewInt(1 << 20)
-	postPayoutUpdatedPayloadDataFieldSpeed               = big.NewInt(1 << 21)
-	postPayoutUpdatedPayloadDataFieldStatementDescriptor = big.NewInt(1 << 22)
-	postPayoutUpdatedPayloadDataFieldStatus              = big.NewInt(1 << 23)
-	postPayoutUpdatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 24)
-	postPayoutUpdatedPayloadDataFieldTraceCode           = big.NewInt(1 << 25)
+	postPayoutUpdatedPayloadDataFieldConversion          = big.NewInt(1 << 2)
+	postPayoutUpdatedPayloadDataFieldCreatedAt           = big.NewInt(1 << 3)
+	postPayoutUpdatedPayloadDataFieldCurrency            = big.NewInt(1 << 4)
+	postPayoutUpdatedPayloadDataFieldDestinationAmount   = big.NewInt(1 << 5)
+	postPayoutUpdatedPayloadDataFieldDestinationCurrency = big.NewInt(1 << 6)
+	postPayoutUpdatedPayloadDataFieldEstimatedArrival    = big.NewInt(1 << 7)
+	postPayoutUpdatedPayloadDataFieldExchangeRate        = big.NewInt(1 << 8)
+	postPayoutUpdatedPayloadDataFieldFailure             = big.NewInt(1 << 9)
+	postPayoutUpdatedPayloadDataFieldFeeAmount           = big.NewInt(1 << 10)
+	postPayoutUpdatedPayloadDataFieldFeePaidBy           = big.NewInt(1 << 11)
+	postPayoutUpdatedPayloadDataFieldID                  = big.NewInt(1 << 12)
+	postPayoutUpdatedPayloadDataFieldMarkupFee           = big.NewInt(1 << 13)
+	postPayoutUpdatedPayloadDataFieldMetadata            = big.NewInt(1 << 14)
+	postPayoutUpdatedPayloadDataFieldNetAmount           = big.NewInt(1 << 15)
+	postPayoutUpdatedPayloadDataFieldNotes               = big.NewInt(1 << 16)
+	postPayoutUpdatedPayloadDataFieldObject              = big.NewInt(1 << 17)
+	postPayoutUpdatedPayloadDataFieldPayerName           = big.NewInt(1 << 18)
+	postPayoutUpdatedPayloadDataFieldPayoutMethod        = big.NewInt(1 << 19)
+	postPayoutUpdatedPayloadDataFieldPayoutRequestID     = big.NewInt(1 << 20)
+	postPayoutUpdatedPayloadDataFieldSource              = big.NewInt(1 << 21)
+	postPayoutUpdatedPayloadDataFieldSpeed               = big.NewInt(1 << 22)
+	postPayoutUpdatedPayloadDataFieldStatementDescriptor = big.NewInt(1 << 23)
+	postPayoutUpdatedPayloadDataFieldStatus              = big.NewInt(1 << 24)
+	postPayoutUpdatedPayloadDataFieldStatusDetail        = big.NewInt(1 << 25)
+	postPayoutUpdatedPayloadDataFieldTraceCode           = big.NewInt(1 << 26)
 )
 
 // postPayoutUpdatedPayloadDataNullableFields maps the wire names of PostPayoutUpdatedPayloadData's nullable fields (required or optional) to their field bits.
 var postPayoutUpdatedPayloadDataNullableFields = map[string]*big.Int{
+	"conversion":           postPayoutUpdatedPayloadDataFieldConversion,
 	"destination_amount":   postPayoutUpdatedPayloadDataFieldDestinationAmount,
 	"destination_currency": postPayoutUpdatedPayloadDataFieldDestinationCurrency,
 	"estimated_arrival":    postPayoutUpdatedPayloadDataFieldEstimatedArrival,
@@ -10203,6 +10905,8 @@ type PostPayoutUpdatedPayloadData struct {
 	Amount string `json:"amount" url:"amount"`
 	// Whether `POST /payouts/{id}/cancel` would act on this payout right now: `true` while it is `in_review`, while it is `processing` with nothing yet submitted to the payout provider, or while a submitted payout can still be asked to cancel at the provider. `false` once the money has arrived or the payout has already ended.
 	Cancelable bool `json:"cancelable" url:"cancelable"`
+	// How the balance was converted into the payout currency before the payout was sent. `null` when the payout was sent from a balance in its own currency.
+	Conversion *PostPayoutUpdatedPayloadDataConversion `json:"conversion,omitempty" url:"conversion,omitempty"`
 	// When the payout was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// Payout currency.
@@ -10270,6 +10974,13 @@ func (p *PostPayoutUpdatedPayloadData) GetCancelable() bool {
 		return false
 	}
 	return p.Cancelable
+}
+
+func (p *PostPayoutUpdatedPayloadData) GetConversion() *PostPayoutUpdatedPayloadDataConversion {
+	if p == nil {
+		return nil
+	}
+	return p.Conversion
 }
 
 func (p *PostPayoutUpdatedPayloadData) GetCreatedAt() time.Time {
@@ -10468,6 +11179,13 @@ func (p *PostPayoutUpdatedPayloadData) SetAmount(amount string) {
 func (p *PostPayoutUpdatedPayloadData) SetCancelable(cancelable bool) {
 	p.Cancelable = cancelable
 	p.require(postPayoutUpdatedPayloadDataFieldCancelable)
+}
+
+// SetConversion sets the Conversion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutUpdatedPayloadData) SetConversion(conversion *PostPayoutUpdatedPayloadDataConversion) {
+	p.Conversion = conversion
+	p.require(postPayoutUpdatedPayloadDataFieldConversion)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -10685,6 +11403,128 @@ func (p *PostPayoutUpdatedPayloadData) MarshalJSON() ([]byte, error) {
 }
 
 func (p *PostPayoutUpdatedPayloadData) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	postPayoutUpdatedPayloadDataConversionFieldFromAmount   = big.NewInt(1 << 0)
+	postPayoutUpdatedPayloadDataConversionFieldFromCurrency = big.NewInt(1 << 1)
+	postPayoutUpdatedPayloadDataConversionFieldRate         = big.NewInt(1 << 2)
+)
+
+// How the balance was converted into the payout currency before the payout was sent. `null` when the payout was sent from a balance in its own currency.
+type PostPayoutUpdatedPayloadDataConversion struct {
+	// The amount the conversion took from the balance, as a decimal string.
+	FromAmount string `json:"from_amount" url:"from_amount"`
+	// The currency of the balance the conversion took the amount from.
+	FromCurrency string `json:"from_currency" url:"from_currency"`
+	// The conversion rate, in units of the payout currency for each unit of `from_currency`. Any conversion charge is included in this rate.
+	Rate float64 `json:"rate" url:"rate"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PostPayoutUpdatedPayloadDataConversion) GetFromAmount() string {
+	if p == nil {
+		return ""
+	}
+	return p.FromAmount
+}
+
+func (p *PostPayoutUpdatedPayloadDataConversion) GetFromCurrency() string {
+	if p == nil {
+		return ""
+	}
+	return p.FromCurrency
+}
+
+func (p *PostPayoutUpdatedPayloadDataConversion) GetRate() float64 {
+	if p == nil {
+		return 0
+	}
+	return p.Rate
+}
+
+func (p *PostPayoutUpdatedPayloadDataConversion) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PostPayoutUpdatedPayloadDataConversion) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetFromAmount sets the FromAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutUpdatedPayloadDataConversion) SetFromAmount(fromAmount string) {
+	p.FromAmount = fromAmount
+	p.require(postPayoutUpdatedPayloadDataConversionFieldFromAmount)
+}
+
+// SetFromCurrency sets the FromCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutUpdatedPayloadDataConversion) SetFromCurrency(fromCurrency string) {
+	p.FromCurrency = fromCurrency
+	p.require(postPayoutUpdatedPayloadDataConversionFieldFromCurrency)
+}
+
+// SetRate sets the Rate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutUpdatedPayloadDataConversion) SetRate(rate float64) {
+	p.Rate = rate
+	p.require(postPayoutUpdatedPayloadDataConversionFieldRate)
+}
+
+func (p *PostPayoutUpdatedPayloadDataConversion) UnmarshalJSON(data []byte) error {
+	type unmarshaler PostPayoutUpdatedPayloadDataConversion
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PostPayoutUpdatedPayloadDataConversion(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PostPayoutUpdatedPayloadDataConversion) MarshalJSON() ([]byte, error) {
+	type embed PostPayoutUpdatedPayloadDataConversion
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PostPayoutUpdatedPayloadDataConversion) String() string {
 	if p == nil {
 		return "<nil>"
 	}
@@ -11335,39 +12175,41 @@ func (p PostPayoutUpdatedPayloadType) Ptr() *PostPayoutUpdatedPayloadType {
 var (
 	retrievePayoutsResponseFieldAmount              = big.NewInt(1 << 0)
 	retrievePayoutsResponseFieldCancelable          = big.NewInt(1 << 1)
-	retrievePayoutsResponseFieldCreatedAt           = big.NewInt(1 << 2)
-	retrievePayoutsResponseFieldCurrency            = big.NewInt(1 << 3)
-	retrievePayoutsResponseFieldDelayed             = big.NewInt(1 << 4)
-	retrievePayoutsResponseFieldDestinationAmount   = big.NewInt(1 << 5)
-	retrievePayoutsResponseFieldDestinationCurrency = big.NewInt(1 << 6)
-	retrievePayoutsResponseFieldEstimatedArrival    = big.NewInt(1 << 7)
-	retrievePayoutsResponseFieldEstimatedArrivalEnd = big.NewInt(1 << 8)
-	retrievePayoutsResponseFieldExchangeRate        = big.NewInt(1 << 9)
-	retrievePayoutsResponseFieldFailure             = big.NewInt(1 << 10)
-	retrievePayoutsResponseFieldFeeAmount           = big.NewInt(1 << 11)
-	retrievePayoutsResponseFieldFeePaidBy           = big.NewInt(1 << 12)
-	retrievePayoutsResponseFieldID                  = big.NewInt(1 << 13)
-	retrievePayoutsResponseFieldMarkupFee           = big.NewInt(1 << 14)
-	retrievePayoutsResponseFieldMetadata            = big.NewInt(1 << 15)
-	retrievePayoutsResponseFieldNetAmount           = big.NewInt(1 << 16)
-	retrievePayoutsResponseFieldNotes               = big.NewInt(1 << 17)
-	retrievePayoutsResponseFieldObject              = big.NewInt(1 << 18)
-	retrievePayoutsResponseFieldPayerName           = big.NewInt(1 << 19)
-	retrievePayoutsResponseFieldPayoutMethod        = big.NewInt(1 << 20)
-	retrievePayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 21)
-	retrievePayoutsResponseFieldRecipientName       = big.NewInt(1 << 22)
-	retrievePayoutsResponseFieldSenderName          = big.NewInt(1 << 23)
-	retrievePayoutsResponseFieldSource              = big.NewInt(1 << 24)
-	retrievePayoutsResponseFieldSpeed               = big.NewInt(1 << 25)
-	retrievePayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 26)
-	retrievePayoutsResponseFieldStatus              = big.NewInt(1 << 27)
-	retrievePayoutsResponseFieldStatusDetail        = big.NewInt(1 << 28)
-	retrievePayoutsResponseFieldTimeline            = big.NewInt(1 << 29)
-	retrievePayoutsResponseFieldTraceCode           = big.NewInt(1 << 30)
+	retrievePayoutsResponseFieldConversion          = big.NewInt(1 << 2)
+	retrievePayoutsResponseFieldCreatedAt           = big.NewInt(1 << 3)
+	retrievePayoutsResponseFieldCurrency            = big.NewInt(1 << 4)
+	retrievePayoutsResponseFieldDelayed             = big.NewInt(1 << 5)
+	retrievePayoutsResponseFieldDestinationAmount   = big.NewInt(1 << 6)
+	retrievePayoutsResponseFieldDestinationCurrency = big.NewInt(1 << 7)
+	retrievePayoutsResponseFieldEstimatedArrival    = big.NewInt(1 << 8)
+	retrievePayoutsResponseFieldEstimatedArrivalEnd = big.NewInt(1 << 9)
+	retrievePayoutsResponseFieldExchangeRate        = big.NewInt(1 << 10)
+	retrievePayoutsResponseFieldFailure             = big.NewInt(1 << 11)
+	retrievePayoutsResponseFieldFeeAmount           = big.NewInt(1 << 12)
+	retrievePayoutsResponseFieldFeePaidBy           = big.NewInt(1 << 13)
+	retrievePayoutsResponseFieldID                  = big.NewInt(1 << 14)
+	retrievePayoutsResponseFieldMarkupFee           = big.NewInt(1 << 15)
+	retrievePayoutsResponseFieldMetadata            = big.NewInt(1 << 16)
+	retrievePayoutsResponseFieldNetAmount           = big.NewInt(1 << 17)
+	retrievePayoutsResponseFieldNotes               = big.NewInt(1 << 18)
+	retrievePayoutsResponseFieldObject              = big.NewInt(1 << 19)
+	retrievePayoutsResponseFieldPayerName           = big.NewInt(1 << 20)
+	retrievePayoutsResponseFieldPayoutMethod        = big.NewInt(1 << 21)
+	retrievePayoutsResponseFieldPayoutRequestID     = big.NewInt(1 << 22)
+	retrievePayoutsResponseFieldRecipientName       = big.NewInt(1 << 23)
+	retrievePayoutsResponseFieldSenderName          = big.NewInt(1 << 24)
+	retrievePayoutsResponseFieldSource              = big.NewInt(1 << 25)
+	retrievePayoutsResponseFieldSpeed               = big.NewInt(1 << 26)
+	retrievePayoutsResponseFieldStatementDescriptor = big.NewInt(1 << 27)
+	retrievePayoutsResponseFieldStatus              = big.NewInt(1 << 28)
+	retrievePayoutsResponseFieldStatusDetail        = big.NewInt(1 << 29)
+	retrievePayoutsResponseFieldTimeline            = big.NewInt(1 << 30)
+	retrievePayoutsResponseFieldTraceCode           = big.NewInt(1 << 31)
 )
 
 // retrievePayoutsResponseNullableFields maps the wire names of RetrievePayoutsResponse's nullable fields (required or optional) to their field bits.
 var retrievePayoutsResponseNullableFields = map[string]*big.Int{
+	"conversion":            retrievePayoutsResponseFieldConversion,
 	"destination_amount":    retrievePayoutsResponseFieldDestinationAmount,
 	"destination_currency":  retrievePayoutsResponseFieldDestinationCurrency,
 	"estimated_arrival":     retrievePayoutsResponseFieldEstimatedArrival,
@@ -11390,6 +12232,8 @@ type RetrievePayoutsResponse struct {
 	Amount *string `json:"amount,omitempty" url:"amount,omitempty"`
 	// Whether `POST /payouts/{id}/cancel` would act on this payout right now: `true` while it is `in_review`, while it is `processing` with nothing yet submitted to the payout provider, or while a submitted payout can still be asked to cancel at the provider. `false` once the money has arrived or the payout has already ended. Only returned to callers with payout:withdrawal:read on the owning ledger.
 	Cancelable *bool `json:"cancelable,omitempty" url:"cancelable,omitempty"`
+	// How the balance was converted into the payout currency before the payout was sent. `null` when the payout was sent from a balance in its own currency. Only returned to callers with payout:withdrawal:read on the owning ledger.
+	Conversion *RetrievePayoutsResponseConversion `json:"conversion,omitempty" url:"conversion,omitempty"`
 	// When the payout was created.
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// Payout currency.
@@ -11467,6 +12311,13 @@ func (r *RetrievePayoutsResponse) GetCancelable() *bool {
 		return nil
 	}
 	return r.Cancelable
+}
+
+func (r *RetrievePayoutsResponse) GetConversion() *RetrievePayoutsResponseConversion {
+	if r == nil {
+		return nil
+	}
+	return r.Conversion
 }
 
 func (r *RetrievePayoutsResponse) GetCreatedAt() time.Time {
@@ -11700,6 +12551,13 @@ func (r *RetrievePayoutsResponse) SetAmount(amount *string) {
 func (r *RetrievePayoutsResponse) SetCancelable(cancelable *bool) {
 	r.Cancelable = cancelable
 	r.require(retrievePayoutsResponseFieldCancelable)
+}
+
+// SetConversion sets the Conversion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponse) SetConversion(conversion *RetrievePayoutsResponseConversion) {
+	r.Conversion = conversion
+	r.require(retrievePayoutsResponseFieldConversion)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -11956,6 +12814,128 @@ func (r *RetrievePayoutsResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (r *RetrievePayoutsResponse) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	retrievePayoutsResponseConversionFieldFromAmount   = big.NewInt(1 << 0)
+	retrievePayoutsResponseConversionFieldFromCurrency = big.NewInt(1 << 1)
+	retrievePayoutsResponseConversionFieldRate         = big.NewInt(1 << 2)
+)
+
+// How the balance was converted into the payout currency before the payout was sent. `null` when the payout was sent from a balance in its own currency. Only returned to callers with payout:withdrawal:read on the owning ledger.
+type RetrievePayoutsResponseConversion struct {
+	// The amount the conversion took from the balance, as a decimal string.
+	FromAmount string `json:"from_amount" url:"from_amount"`
+	// The currency of the balance the conversion took the amount from.
+	FromCurrency string `json:"from_currency" url:"from_currency"`
+	// The conversion rate, in units of the payout currency for each unit of `from_currency`. Any conversion charge is included in this rate.
+	Rate float64 `json:"rate" url:"rate"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrievePayoutsResponseConversion) GetFromAmount() string {
+	if r == nil {
+		return ""
+	}
+	return r.FromAmount
+}
+
+func (r *RetrievePayoutsResponseConversion) GetFromCurrency() string {
+	if r == nil {
+		return ""
+	}
+	return r.FromCurrency
+}
+
+func (r *RetrievePayoutsResponseConversion) GetRate() float64 {
+	if r == nil {
+		return 0
+	}
+	return r.Rate
+}
+
+func (r *RetrievePayoutsResponseConversion) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrievePayoutsResponseConversion) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetFromAmount sets the FromAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponseConversion) SetFromAmount(fromAmount string) {
+	r.FromAmount = fromAmount
+	r.require(retrievePayoutsResponseConversionFieldFromAmount)
+}
+
+// SetFromCurrency sets the FromCurrency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponseConversion) SetFromCurrency(fromCurrency string) {
+	r.FromCurrency = fromCurrency
+	r.require(retrievePayoutsResponseConversionFieldFromCurrency)
+}
+
+// SetRate sets the Rate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponseConversion) SetRate(rate float64) {
+	r.Rate = rate
+	r.require(retrievePayoutsResponseConversionFieldRate)
+}
+
+func (r *RetrievePayoutsResponseConversion) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrievePayoutsResponseConversion
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrievePayoutsResponseConversion(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrievePayoutsResponseConversion) MarshalJSON() ([]byte, error) {
+	type embed RetrievePayoutsResponseConversion
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrievePayoutsResponseConversion) String() string {
 	if r == nil {
 		return "<nil>"
 	}
