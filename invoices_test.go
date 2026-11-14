@@ -923,6 +923,14 @@ func TestSettersListInvoicesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetScheduled", func(t *testing.T) {
+		obj := &ListInvoicesRequest{}
+		var fernTestValueScheduled *bool
+		obj.SetScheduled(fernTestValueScheduled)
+		assert.Equal(t, fernTestValueScheduled, obj.Scheduled)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetMemberID", func(t *testing.T) {
 		obj := &ListInvoicesRequest{}
 		var fernTestValueMemberID *string
@@ -1084,6 +1092,37 @@ func TestSettersMarkExplicitListInvoicesRequest(t *testing.T) {
 
 		// Act
 		obj.SetOverdue(fernTestValueOverdue)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetScheduled_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListInvoicesRequest{}
+		var fernTestValueScheduled *bool
+
+		// Act
+		obj.SetScheduled(fernTestValueScheduled)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -17791,6 +17830,13 @@ func TestEnumListInvoicesRequestOrder(t *testing.T) {
 		val, err := NewListInvoicesRequestOrderFromString("status")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListInvoicesRequestOrder("status"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_scheduled_send_at", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListInvoicesRequestOrderFromString("scheduled_send_at")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListInvoicesRequestOrder("scheduled_send_at"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
