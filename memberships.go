@@ -872,7 +872,7 @@ type Membership struct {
 	ProductID string `json:"product_id" url:"product_id"`
 	// The promo code discounting this membership, prefixed `promo_`. `null` when none is applied. Set at checkout or by Apply Promo Code to Membership.
 	PromoCodeID *string `json:"promo_code_id,omitempty" url:"promo_code_id,omitempty"`
-	// What the next renewal charges, after any promo code that still applies. `null` for non-renewing memberships.
+	// The variant's renewal price, in the variant's currency, after any promo code that still applies. A membership billed in the buyer's local currency is charged this price converted at the exchange rate on each billing date. `null` for non-renewing memberships.
 	RenewalPrice *Money `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
 	// Paid installments counted so far on a split pay membership. `null` when the membership is not on split pay, or before its first installment is counted.
 	SplitPayCurrentPayments *int `json:"split_pay_current_payments,omitempty" url:"split_pay_current_payments,omitempty"`
