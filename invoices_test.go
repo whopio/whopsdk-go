@@ -4247,6 +4247,14 @@ func TestSettersInvoiceLineItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetInitialPrice", func(t *testing.T) {
+		obj := &InvoiceLineItem{}
+		var fernTestValueInitialPrice *Money
+		obj.SetInitialPrice(fernTestValueInitialPrice)
+		assert.Equal(t, fernTestValueInitialPrice, obj.InitialPrice)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetLabel", func(t *testing.T) {
 		obj := &InvoiceLineItem{}
 		var fernTestValueLabel *string
@@ -4403,6 +4411,39 @@ func TestGettersInvoiceLineItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetInitialPrice", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &InvoiceLineItem{}
+		var expected *Money
+		obj.InitialPrice = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInitialPrice(), "getter should return the property value")
+	})
+
+	t.Run("GetInitialPrice_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &InvoiceLineItem{}
+		obj.InitialPrice = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInitialPrice(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInitialPrice_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *InvoiceLineItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInitialPrice() // Should return zero value
 	})
 
 	t.Run("GetLabel", func(t *testing.T) {
@@ -4699,6 +4740,37 @@ func TestSettersMarkExplicitInvoiceLineItem(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInitialPrice_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &InvoiceLineItem{}
+		var fernTestValueInitialPrice *Money
+
+		// Act
+		obj.SetInitialPrice(fernTestValueInitialPrice)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -15783,6 +15855,7 @@ func TestRequiredNullableRoundTripInvoiceLineItem(t *testing.T) {
 		"description",
 		"discount_amount",
 		"id",
+		"initial_price",
 		"label",
 		"product_id",
 		"subtotal",
@@ -15801,7 +15874,7 @@ func TestRequiredNullableRoundTripInvoiceLineItem(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj InvoiceLineItem
-		require.NoError(t, json.Unmarshal([]byte(`{"description":null,"discount_amount":null,"id":null,"label":null,"product_id":null,"subtotal":null,"tax_amount":null,"unit_amount":null,"variant_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"description":null,"discount_amount":null,"id":null,"initial_price":null,"label":null,"product_id":null,"subtotal":null,"tax_amount":null,"unit_amount":null,"variant_id":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
