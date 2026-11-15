@@ -651,8 +651,9 @@ var (
 	planFieldTitle                               = big.NewInt(1 << 40)
 	planFieldTrialPeriodDays                     = big.NewInt(1 << 41)
 	planFieldUnlimitedStock                      = big.NewInt(1 << 42)
-	planFieldUpdatedAt                           = big.NewInt(1 << 43)
-	planFieldVisibility                          = big.NewInt(1 << 44)
+	planFieldUnpaidInvoiceCount                  = big.NewInt(1 << 43)
+	planFieldUpdatedAt                           = big.NewInt(1 << 44)
+	planFieldVisibility                          = big.NewInt(1 << 45)
 )
 
 // planNullableFields maps the wire names of Plan's nullable fields (required or optional) to their field bits.
@@ -684,6 +685,7 @@ var planNullableFields = map[string]*big.Int{
 	"three_ds_level":                         planFieldThreeDsLevel,
 	"title":                                  planFieldTitle,
 	"trial_period_days":                      planFieldTrialPeriodDays,
+	"unpaid_invoice_count":                   planFieldUnpaidInvoiceCount,
 }
 
 type Plan struct {
@@ -772,6 +774,8 @@ type Plan struct {
 	TrialPeriodDays *float64 `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
 	// Whether the variant has unlimited stock. When `true`, the `stock` field is ignored; waitlist variants always report `true`.
 	UnlimitedStock bool `json:"unlimited_stock" url:"unlimited_stock"`
+	// Number of issued invoices for this variant that are not paid or void. While it is above `0`, you can't change the variant's prices, billing period, trial, number of payments, currency or billing type. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
+	UnpaidInvoiceCount *int `json:"unpaid_invoice_count,omitempty" url:"unpaid_invoice_count,omitempty"`
 	// When the variant was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
 	// Controls where this variant can be seen. When `hidden`, the variant is reachable only by its direct link.
@@ -1083,6 +1087,13 @@ func (p *Plan) GetUnlimitedStock() bool {
 		return false
 	}
 	return p.UnlimitedStock
+}
+
+func (p *Plan) GetUnpaidInvoiceCount() *int {
+	if p == nil {
+		return nil
+	}
+	return p.UnpaidInvoiceCount
 }
 
 func (p *Plan) GetUpdatedAt() string {
@@ -1414,6 +1425,13 @@ func (p *Plan) SetTrialPeriodDays(trialPeriodDays *float64) {
 func (p *Plan) SetUnlimitedStock(unlimitedStock bool) {
 	p.UnlimitedStock = unlimitedStock
 	p.require(planFieldUnlimitedStock)
+}
+
+// SetUnpaidInvoiceCount sets the UnpaidInvoiceCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Plan) SetUnpaidInvoiceCount(unpaidInvoiceCount *int) {
+	p.UnpaidInvoiceCount = unpaidInvoiceCount
+	p.require(planFieldUnpaidInvoiceCount)
 }
 
 // SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;

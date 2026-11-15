@@ -756,8 +756,9 @@ var (
 	variantFieldTitle                               = big.NewInt(1 << 40)
 	variantFieldTrialPeriodDays                     = big.NewInt(1 << 41)
 	variantFieldUnlimitedStock                      = big.NewInt(1 << 42)
-	variantFieldUpdatedAt                           = big.NewInt(1 << 43)
-	variantFieldVisibility                          = big.NewInt(1 << 44)
+	variantFieldUnpaidInvoiceCount                  = big.NewInt(1 << 43)
+	variantFieldUpdatedAt                           = big.NewInt(1 << 44)
+	variantFieldVisibility                          = big.NewInt(1 << 45)
 )
 
 // variantNullableFields maps the wire names of Variant's nullable fields (required or optional) to their field bits.
@@ -789,6 +790,7 @@ var variantNullableFields = map[string]*big.Int{
 	"three_ds_level":                         variantFieldThreeDsLevel,
 	"title":                                  variantFieldTitle,
 	"trial_period_days":                      variantFieldTrialPeriodDays,
+	"unpaid_invoice_count":                   variantFieldUnpaidInvoiceCount,
 }
 
 type Variant struct {
@@ -877,6 +879,8 @@ type Variant struct {
 	TrialPeriodDays *float64 `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
 	// Whether the variant has unlimited stock. When `true`, the `stock` field is ignored; waitlist variants always report `true`.
 	UnlimitedStock bool `json:"unlimited_stock" url:"unlimited_stock"`
+	// Number of issued invoices for this variant that are not paid or void. While it is above `0`, you can't change the variant's prices, billing period, trial, number of payments, currency or billing type. `null` unless the actor has the `plan:basic:read` scope on the variant's account.
+	UnpaidInvoiceCount *int `json:"unpaid_invoice_count,omitempty" url:"unpaid_invoice_count,omitempty"`
 	// When the variant was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
 	// Controls where this variant can be seen. When `hidden`, the variant is reachable only by its direct link.
@@ -1188,6 +1192,13 @@ func (v *Variant) GetUnlimitedStock() bool {
 		return false
 	}
 	return v.UnlimitedStock
+}
+
+func (v *Variant) GetUnpaidInvoiceCount() *int {
+	if v == nil {
+		return nil
+	}
+	return v.UnpaidInvoiceCount
 }
 
 func (v *Variant) GetUpdatedAt() string {
@@ -1519,6 +1530,13 @@ func (v *Variant) SetTrialPeriodDays(trialPeriodDays *float64) {
 func (v *Variant) SetUnlimitedStock(unlimitedStock bool) {
 	v.UnlimitedStock = unlimitedStock
 	v.require(variantFieldUnlimitedStock)
+}
+
+// SetUnpaidInvoiceCount sets the UnpaidInvoiceCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *Variant) SetUnpaidInvoiceCount(unpaidInvoiceCount *int) {
+	v.UnpaidInvoiceCount = unpaidInvoiceCount
+	v.require(variantFieldUnpaidInvoiceCount)
 }
 
 // SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
