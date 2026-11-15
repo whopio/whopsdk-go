@@ -423,29 +423,35 @@ func (i *IssueInvoicesRequest) MarshalJSON() ([]byte, error) {
 var (
 	listInvoicesRequestFieldAccountID         = big.NewInt(1 << 0)
 	listInvoicesRequestFieldStatus            = big.NewInt(1 << 1)
-	listInvoicesRequestFieldOverdue           = big.NewInt(1 << 2)
-	listInvoicesRequestFieldScheduled         = big.NewInt(1 << 3)
-	listInvoicesRequestFieldMemberID          = big.NewInt(1 << 4)
-	listInvoicesRequestFieldProductID         = big.NewInt(1 << 5)
-	listInvoicesRequestFieldCreatedAfter      = big.NewInt(1 << 6)
-	listInvoicesRequestFieldCreatedBefore     = big.NewInt(1 << 7)
-	listInvoicesRequestFieldOrder             = big.NewInt(1 << 8)
-	listInvoicesRequestFieldDirection         = big.NewInt(1 << 9)
-	listInvoicesRequestFieldFirst             = big.NewInt(1 << 10)
-	listInvoicesRequestFieldAfter             = big.NewInt(1 << 11)
-	listInvoicesRequestFieldLast              = big.NewInt(1 << 12)
-	listInvoicesRequestFieldBefore            = big.NewInt(1 << 13)
-	listInvoicesRequestFieldIncludeTotalCount = big.NewInt(1 << 14)
+	listInvoicesRequestFieldStatuses          = big.NewInt(1 << 2)
+	listInvoicesRequestFieldOverdue           = big.NewInt(1 << 3)
+	listInvoicesRequestFieldScheduled         = big.NewInt(1 << 4)
+	listInvoicesRequestFieldMemberID          = big.NewInt(1 << 5)
+	listInvoicesRequestFieldProductID         = big.NewInt(1 << 6)
+	listInvoicesRequestFieldVariantID         = big.NewInt(1 << 7)
+	listInvoicesRequestFieldCreatedAfter      = big.NewInt(1 << 8)
+	listInvoicesRequestFieldCreatedBefore     = big.NewInt(1 << 9)
+	listInvoicesRequestFieldOrder             = big.NewInt(1 << 10)
+	listInvoicesRequestFieldDirection         = big.NewInt(1 << 11)
+	listInvoicesRequestFieldFirst             = big.NewInt(1 << 12)
+	listInvoicesRequestFieldAfter             = big.NewInt(1 << 13)
+	listInvoicesRequestFieldLast              = big.NewInt(1 << 14)
+	listInvoicesRequestFieldBefore            = big.NewInt(1 << 15)
+	listInvoicesRequestFieldIncludeTotalCount = big.NewInt(1 << 16)
 )
 
 type ListInvoicesRequest struct {
 	AccountID *string                    `json:"-" url:"account_id,omitempty"`
 	Status    *ListInvoicesRequestStatus `json:"-" url:"status,omitempty"`
-	Overdue   *bool                      `json:"-" url:"overdue,omitempty"`
+	// Only invoices in any of these statuses. Repeat the parameter to pass several. Combined with `status` when both are sent.
+	Statuses []*ListInvoicesRequestStatusesItem `json:"-" url:"statuses,omitempty"`
+	Overdue  *bool                              `json:"-" url:"overdue,omitempty"`
 	// Set to `true` for drafts with a scheduled send, which are the invoices with a `scheduled_send_at`. Set to `false` for every other invoice. Only a `draft` can be scheduled. An `open` invoice is not scheduled, even with a `scheduled_charge_at`. A draft that sends on its due date (`sends_on_due_date`) is not scheduled. Omit to include both.
-	Scheduled     *bool      `json:"-" url:"scheduled,omitempty"`
-	MemberID      *string    `json:"-" url:"member_id,omitempty"`
-	ProductID     *string    `json:"-" url:"product_id,omitempty"`
+	Scheduled *bool   `json:"-" url:"scheduled,omitempty"`
+	MemberID  *string `json:"-" url:"member_id,omitempty"`
+	ProductID *string `json:"-" url:"product_id,omitempty"`
+	// Only invoices that bill this variant, prefixed `plan_`. An invoice matches when the variant is any of its items.
+	VariantID     *string    `json:"-" url:"variant_id,omitempty"`
 	CreatedAfter  *time.Time `json:"-" url:"created_after,omitempty"`
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
 	// Field to sort by. Sorting by `due_at` or `scheduled_send_at` puts invoices without that date last in both directions.
@@ -489,6 +495,13 @@ func (l *ListInvoicesRequest) SetStatus(status *ListInvoicesRequestStatus) {
 	l.require(listInvoicesRequestFieldStatus)
 }
 
+// SetStatuses sets the Statuses field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInvoicesRequest) SetStatuses(statuses []*ListInvoicesRequestStatusesItem) {
+	l.Statuses = statuses
+	l.require(listInvoicesRequestFieldStatuses)
+}
+
 // SetOverdue sets the Overdue field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListInvoicesRequest) SetOverdue(overdue *bool) {
@@ -515,6 +528,13 @@ func (l *ListInvoicesRequest) SetMemberID(memberID *string) {
 func (l *ListInvoicesRequest) SetProductID(productID *string) {
 	l.ProductID = productID
 	l.require(listInvoicesRequestFieldProductID)
+}
+
+// SetVariantID sets the VariantID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInvoicesRequest) SetVariantID(variantID *string) {
+	l.VariantID = variantID
+	l.require(listInvoicesRequestFieldVariantID)
 }
 
 // SetCreatedAfter sets the CreatedAfter field and marks it as non-optional;
@@ -3622,6 +3642,46 @@ func NewListInvoicesRequestStatusFromString(s string) (ListInvoicesRequestStatus
 }
 
 func (l ListInvoicesRequestStatus) Ptr() *ListInvoicesRequestStatus {
+	return &l
+}
+
+type ListInvoicesRequestStatusesItem string
+
+const (
+	ListInvoicesRequestStatusesItemDraft         ListInvoicesRequestStatusesItem = "draft"
+	ListInvoicesRequestStatusesItemOpen          ListInvoicesRequestStatusesItem = "open"
+	ListInvoicesRequestStatusesItemAuthorized    ListInvoicesRequestStatusesItem = "authorized"
+	ListInvoicesRequestStatusesItemPaid          ListInvoicesRequestStatusesItem = "paid"
+	ListInvoicesRequestStatusesItemPending       ListInvoicesRequestStatusesItem = "pending"
+	ListInvoicesRequestStatusesItemUncollectible ListInvoicesRequestStatusesItem = "uncollectible"
+	ListInvoicesRequestStatusesItemUnresolved    ListInvoicesRequestStatusesItem = "unresolved"
+	ListInvoicesRequestStatusesItemVoid          ListInvoicesRequestStatusesItem = "void"
+)
+
+func NewListInvoicesRequestStatusesItemFromString(s string) (ListInvoicesRequestStatusesItem, error) {
+	switch s {
+	case "draft":
+		return ListInvoicesRequestStatusesItemDraft, nil
+	case "open":
+		return ListInvoicesRequestStatusesItemOpen, nil
+	case "authorized":
+		return ListInvoicesRequestStatusesItemAuthorized, nil
+	case "paid":
+		return ListInvoicesRequestStatusesItemPaid, nil
+	case "pending":
+		return ListInvoicesRequestStatusesItemPending, nil
+	case "uncollectible":
+		return ListInvoicesRequestStatusesItemUncollectible, nil
+	case "unresolved":
+		return ListInvoicesRequestStatusesItemUnresolved, nil
+	case "void":
+		return ListInvoicesRequestStatusesItemVoid, nil
+	}
+	var t ListInvoicesRequestStatusesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListInvoicesRequestStatusesItem) Ptr() *ListInvoicesRequestStatusesItem {
 	return &l
 }
 
