@@ -474,15 +474,16 @@ var (
 	listVariantsRequestFieldVisibilities        = big.NewInt(1 << 4)
 	listVariantsRequestFieldBillingTypes        = big.NewInt(1 << 5)
 	listVariantsRequestFieldProductIDs          = big.NewInt(1 << 6)
-	listVariantsRequestFieldCreatedBefore       = big.NewInt(1 << 7)
-	listVariantsRequestFieldCreatedAfter        = big.NewInt(1 << 8)
-	listVariantsRequestFieldPresentmentCurrency = big.NewInt(1 << 9)
-	listVariantsRequestFieldIPAddress           = big.NewInt(1 << 10)
-	listVariantsRequestFieldPresentmentCountry  = big.NewInt(1 << 11)
-	listVariantsRequestFieldFirst               = big.NewInt(1 << 12)
-	listVariantsRequestFieldAfter               = big.NewInt(1 << 13)
-	listVariantsRequestFieldLast                = big.NewInt(1 << 14)
-	listVariantsRequestFieldBefore              = big.NewInt(1 << 15)
+	listVariantsRequestFieldSku                 = big.NewInt(1 << 7)
+	listVariantsRequestFieldCreatedBefore       = big.NewInt(1 << 8)
+	listVariantsRequestFieldCreatedAfter        = big.NewInt(1 << 9)
+	listVariantsRequestFieldPresentmentCurrency = big.NewInt(1 << 10)
+	listVariantsRequestFieldIPAddress           = big.NewInt(1 << 11)
+	listVariantsRequestFieldPresentmentCountry  = big.NewInt(1 << 12)
+	listVariantsRequestFieldFirst               = big.NewInt(1 << 13)
+	listVariantsRequestFieldAfter               = big.NewInt(1 << 14)
+	listVariantsRequestFieldLast                = big.NewInt(1 << 15)
+	listVariantsRequestFieldBefore              = big.NewInt(1 << 16)
 )
 
 type ListVariantsRequest struct {
@@ -500,6 +501,8 @@ type ListVariantsRequest struct {
 	BillingTypes []*string `json:"-" url:"billing_types,omitempty"`
 	// Filter to only variants belonging to these product identifiers. When `account_id` is omitted, this is required and the response is publicly readable: only visible, non-invoice variants are returned.
 	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
+	// Filter to only variants with this stock keeping unit. The match is on the full value and is not case-sensitive.
+	Sku *string `json:"-" url:"sku,omitempty"`
 	// Only return variants created before this timestamp.
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only return variants created after this timestamp.
@@ -579,6 +582,13 @@ func (l *ListVariantsRequest) SetBillingTypes(billingTypes []*string) {
 func (l *ListVariantsRequest) SetProductIDs(productIDs []*string) {
 	l.ProductIDs = productIDs
 	l.require(listVariantsRequestFieldProductIDs)
+}
+
+// SetSku sets the Sku field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVariantsRequest) SetSku(sku *string) {
+	l.Sku = sku
+	l.require(listVariantsRequestFieldSku)
 }
 
 // SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;

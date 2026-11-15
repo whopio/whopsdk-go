@@ -439,12 +439,13 @@ var (
 	listPlansRequestFieldVisibilities   = big.NewInt(1 << 4)
 	listPlansRequestFieldBillingTypes   = big.NewInt(1 << 5)
 	listPlansRequestFieldProductIDs     = big.NewInt(1 << 6)
-	listPlansRequestFieldCreatedBefore  = big.NewInt(1 << 7)
-	listPlansRequestFieldCreatedAfter   = big.NewInt(1 << 8)
-	listPlansRequestFieldFirst          = big.NewInt(1 << 9)
-	listPlansRequestFieldAfter          = big.NewInt(1 << 10)
-	listPlansRequestFieldLast           = big.NewInt(1 << 11)
-	listPlansRequestFieldBefore         = big.NewInt(1 << 12)
+	listPlansRequestFieldSku            = big.NewInt(1 << 7)
+	listPlansRequestFieldCreatedBefore  = big.NewInt(1 << 8)
+	listPlansRequestFieldCreatedAfter   = big.NewInt(1 << 9)
+	listPlansRequestFieldFirst          = big.NewInt(1 << 10)
+	listPlansRequestFieldAfter          = big.NewInt(1 << 11)
+	listPlansRequestFieldLast           = big.NewInt(1 << 12)
+	listPlansRequestFieldBefore         = big.NewInt(1 << 13)
 )
 
 type ListPlansRequest struct {
@@ -455,6 +456,7 @@ type ListPlansRequest struct {
 	Visibilities   []*string                  `json:"-" url:"visibilities,omitempty"`
 	BillingTypes   []*string                  `json:"-" url:"billing_types,omitempty"`
 	ProductIDs     []*string                  `json:"-" url:"product_ids,omitempty"`
+	Sku            *string                    `json:"-" url:"sku,omitempty"`
 	CreatedBefore  *string                    `json:"-" url:"created_before,omitempty"`
 	CreatedAfter   *string                    `json:"-" url:"created_after,omitempty"`
 	// Number of results to return from the start of the range.
@@ -526,6 +528,13 @@ func (l *ListPlansRequest) SetBillingTypes(billingTypes []*string) {
 func (l *ListPlansRequest) SetProductIDs(productIDs []*string) {
 	l.ProductIDs = productIDs
 	l.require(listPlansRequestFieldProductIDs)
+}
+
+// SetSku sets the Sku field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPlansRequest) SetSku(sku *string) {
+	l.Sku = sku
+	l.require(listPlansRequestFieldSku)
 }
 
 // SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;

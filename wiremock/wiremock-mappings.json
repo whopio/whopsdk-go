@@ -16487,6 +16487,9 @@
               }
             ]
           },
+          "sku": {
+            "equalTo": "TEE-LARGE-BLUE"
+          },
           "presentment_currency": {
             "equalTo": "auto"
           },
