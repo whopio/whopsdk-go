@@ -64,6 +64,9 @@ func NewClient(options *core.RequestOptions) *Client {
 //	            "prod_xxxxxxxxxxxxxx",
 //	        ),
 //	    },
+//	    Sku: whopsdk.String(
+//	        "TEE-LARGE-BLUE",
+//	    ),
 //	    PresentmentCurrency: whopsdk.String(
 //	        "auto",
 //	    ),

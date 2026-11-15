@@ -35166,6 +35166,14 @@ client.Plans.List(
 <dl>
 <dd>
 
+**sku:** `*string` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **createdBefore:** `*string` 
     
 </dd>
@@ -44349,6 +44357,9 @@ request := &whopsdk.ListVariantsRequest{
             "prod_xxxxxxxxxxxxxx",
         ),
     },
+    Sku: whopsdk.String(
+        "TEE-LARGE-BLUE",
+    ),
     PresentmentCurrency: whopsdk.String(
         "auto",
     ),
@@ -44426,6 +44437,14 @@ client.Variants.List(
 <dd>
 
 **productIDs:** `*string` — Filter to only variants belonging to these product identifiers. When `account_id` is omitted, this is required and the response is publicly readable: only visible, non-invoice variants are returned.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**sku:** `*string` — Filter to only variants with this stock keeping unit. The match is on the full value and is not case-sensitive.
     
 </dd>
 </dl>

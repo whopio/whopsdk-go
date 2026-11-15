@@ -109,6 +109,9 @@ func TestVariantsListWithWireMock(
 				"prod_xxxxxxxxxxxxxx",
 			),
 		},
+		Sku: whopsdk.String(
+			"TEE-LARGE-BLUE",
+		),
 		PresentmentCurrency: whopsdk.String(
 			"auto",
 		),
@@ -128,7 +131,7 @@ func TestVariantsListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestVariantsListWithWireMock", "GET", "/variants", map[string]interface{}{"release_methods": "buy_now", "visibilities": "visible", "billing_types": "renewal", "product_ids": "prod_xxxxxxxxxxxxxx", "presentment_currency": "auto", "ip_address": "203.0.113.7", "presentment_country": "JP"}, 1)
+	VerifyRequestCount(t, "TestVariantsListWithWireMock", "GET", "/variants", map[string]interface{}{"release_methods": "buy_now", "visibilities": "visible", "billing_types": "renewal", "product_ids": "prod_xxxxxxxxxxxxxx", "sku": "TEE-LARGE-BLUE", "presentment_currency": "auto", "ip_address": "203.0.113.7", "presentment_country": "JP"}, 1)
 }
 
 func TestVariantsCreateWithWireMock(
