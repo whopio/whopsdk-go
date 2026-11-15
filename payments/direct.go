@@ -1057,11 +1057,12 @@ var (
 	createDirectRequestPlanFieldPlanType                 = big.NewInt(1 << 10)
 	createDirectRequestPlanFieldProduct                  = big.NewInt(1 << 11)
 	createDirectRequestPlanFieldProductID                = big.NewInt(1 << 12)
-	createDirectRequestPlanFieldRenewalPrice             = big.NewInt(1 << 13)
-	createDirectRequestPlanFieldSplitPayRequiredPayments = big.NewInt(1 << 14)
-	createDirectRequestPlanFieldTitle                    = big.NewInt(1 << 15)
-	createDirectRequestPlanFieldTrialPeriodDays          = big.NewInt(1 << 16)
-	createDirectRequestPlanFieldVisibility               = big.NewInt(1 << 17)
+	createDirectRequestPlanFieldRedirectURL              = big.NewInt(1 << 13)
+	createDirectRequestPlanFieldRenewalPrice             = big.NewInt(1 << 14)
+	createDirectRequestPlanFieldSplitPayRequiredPayments = big.NewInt(1 << 15)
+	createDirectRequestPlanFieldTitle                    = big.NewInt(1 << 16)
+	createDirectRequestPlanFieldTrialPeriodDays          = big.NewInt(1 << 17)
+	createDirectRequestPlanFieldVisibility               = big.NewInt(1 << 18)
 )
 
 // createDirectRequestPlanNullableFields maps the wire names of CreateDirectRequestPlan's nullable fields (required or optional) to their field bits.
@@ -1078,6 +1079,7 @@ var createDirectRequestPlanNullableFields = map[string]*big.Int{
 	"plan_type":                   createDirectRequestPlanFieldPlanType,
 	"product":                     createDirectRequestPlanFieldProduct,
 	"product_id":                  createDirectRequestPlanFieldProductID,
+	"redirect_url":                createDirectRequestPlanFieldRedirectURL,
 	"renewal_price":               createDirectRequestPlanFieldRenewalPrice,
 	"split_pay_required_payments": createDirectRequestPlanFieldSplitPayRequiredPayments,
 	"title":                       createDirectRequestPlanFieldTitle,
@@ -1113,6 +1115,8 @@ type CreateDirectRequestPlan struct {
 	Product *CreateDirectRequestPlanProduct `json:"product,omitempty" url:"product,omitempty"`
 	// Existing product ID belonging to the account, prefixed `prod_`. Mutually exclusive with `product`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
+	// Where the customer is sent after paying for this variant. Must be a valid URL that is not another Whop checkout link.
+	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
 	// Recurring price in the variant currency.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
 	// How many payments a recurring variant collects before it stops billing, from 2 to 115. Only valid for `renewal` variants. `null` bills until the subscription is canceled.
@@ -1220,6 +1224,13 @@ func (c *CreateDirectRequestPlan) GetProductID() *string {
 		return nil
 	}
 	return c.ProductID
+}
+
+func (c *CreateDirectRequestPlan) GetRedirectURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.RedirectURL
 }
 
 func (c *CreateDirectRequestPlan) GetRenewalPrice() *float64 {
@@ -1362,6 +1373,13 @@ func (c *CreateDirectRequestPlan) SetProduct(product *CreateDirectRequestPlanPro
 func (c *CreateDirectRequestPlan) SetProductID(productID *string) {
 	c.ProductID = productID
 	c.require(createDirectRequestPlanFieldProductID)
+}
+
+// SetRedirectURL sets the RedirectURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDirectRequestPlan) SetRedirectURL(redirectURL *string) {
+	c.RedirectURL = redirectURL
+	c.require(createDirectRequestPlanFieldRedirectURL)
 }
 
 // SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;

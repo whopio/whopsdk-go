@@ -2147,11 +2147,12 @@ var (
 	createInvoicesRequestItemsItemVariantFieldOverrideTaxType          = big.NewInt(1 << 10)
 	createInvoicesRequestItemsItemVariantFieldProduct                  = big.NewInt(1 << 11)
 	createInvoicesRequestItemsItemVariantFieldProductID                = big.NewInt(1 << 12)
-	createInvoicesRequestItemsItemVariantFieldRenewalPrice             = big.NewInt(1 << 13)
-	createInvoicesRequestItemsItemVariantFieldSplitPayRequiredPayments = big.NewInt(1 << 14)
-	createInvoicesRequestItemsItemVariantFieldTitle                    = big.NewInt(1 << 15)
-	createInvoicesRequestItemsItemVariantFieldTrialPeriodDays          = big.NewInt(1 << 16)
-	createInvoicesRequestItemsItemVariantFieldVisibility               = big.NewInt(1 << 17)
+	createInvoicesRequestItemsItemVariantFieldRedirectURL              = big.NewInt(1 << 13)
+	createInvoicesRequestItemsItemVariantFieldRenewalPrice             = big.NewInt(1 << 14)
+	createInvoicesRequestItemsItemVariantFieldSplitPayRequiredPayments = big.NewInt(1 << 15)
+	createInvoicesRequestItemsItemVariantFieldTitle                    = big.NewInt(1 << 16)
+	createInvoicesRequestItemsItemVariantFieldTrialPeriodDays          = big.NewInt(1 << 17)
+	createInvoicesRequestItemsItemVariantFieldVisibility               = big.NewInt(1 << 18)
 )
 
 // createInvoicesRequestItemsItemVariantNullableFields maps the wire names of CreateInvoicesRequestItemsItemVariant's nullable fields (required or optional) to their field bits.
@@ -2168,6 +2169,7 @@ var createInvoicesRequestItemsItemVariantNullableFields = map[string]*big.Int{
 	"override_tax_type":           createInvoicesRequestItemsItemVariantFieldOverrideTaxType,
 	"product":                     createInvoicesRequestItemsItemVariantFieldProduct,
 	"product_id":                  createInvoicesRequestItemsItemVariantFieldProductID,
+	"redirect_url":                createInvoicesRequestItemsItemVariantFieldRedirectURL,
 	"renewal_price":               createInvoicesRequestItemsItemVariantFieldRenewalPrice,
 	"split_pay_required_payments": createInvoicesRequestItemsItemVariantFieldSplitPayRequiredPayments,
 	"title":                       createInvoicesRequestItemsItemVariantFieldTitle,
@@ -2203,6 +2205,8 @@ type CreateInvoicesRequestItemsItemVariant struct {
 	Product *CreateInvoicesRequestItemsItemVariantProduct `json:"product,omitempty" url:"product,omitempty"`
 	// Existing product ID belonging to the account, prefixed `prod_`. Mutually exclusive with `product`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
+	// Where the customer is sent after paying for this variant. Must be a valid URL that is not another Whop checkout link.
+	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
 	// Recurring price in the variant currency.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
 	// How many payments a recurring variant collects before it stops billing, from 2 to 115. Only valid for `renewal` variants. `null` bills until the subscription is canceled.
@@ -2310,6 +2314,13 @@ func (c *CreateInvoicesRequestItemsItemVariant) GetProductID() *string {
 		return nil
 	}
 	return c.ProductID
+}
+
+func (c *CreateInvoicesRequestItemsItemVariant) GetRedirectURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.RedirectURL
 }
 
 func (c *CreateInvoicesRequestItemsItemVariant) GetRenewalPrice() *float64 {
@@ -2452,6 +2463,13 @@ func (c *CreateInvoicesRequestItemsItemVariant) SetProduct(product *CreateInvoic
 func (c *CreateInvoicesRequestItemsItemVariant) SetProductID(productID *string) {
 	c.ProductID = productID
 	c.require(createInvoicesRequestItemsItemVariantFieldProductID)
+}
+
+// SetRedirectURL sets the RedirectURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequestItemsItemVariant) SetRedirectURL(redirectURL *string) {
+	c.RedirectURL = redirectURL
+	c.require(createInvoicesRequestItemsItemVariantFieldRedirectURL)
 }
 
 // SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
@@ -5496,11 +5514,12 @@ var (
 	updateInvoicesRequestItemsItemVariantFieldOverrideTaxType          = big.NewInt(1 << 10)
 	updateInvoicesRequestItemsItemVariantFieldProduct                  = big.NewInt(1 << 11)
 	updateInvoicesRequestItemsItemVariantFieldProductID                = big.NewInt(1 << 12)
-	updateInvoicesRequestItemsItemVariantFieldRenewalPrice             = big.NewInt(1 << 13)
-	updateInvoicesRequestItemsItemVariantFieldSplitPayRequiredPayments = big.NewInt(1 << 14)
-	updateInvoicesRequestItemsItemVariantFieldTitle                    = big.NewInt(1 << 15)
-	updateInvoicesRequestItemsItemVariantFieldTrialPeriodDays          = big.NewInt(1 << 16)
-	updateInvoicesRequestItemsItemVariantFieldVisibility               = big.NewInt(1 << 17)
+	updateInvoicesRequestItemsItemVariantFieldRedirectURL              = big.NewInt(1 << 13)
+	updateInvoicesRequestItemsItemVariantFieldRenewalPrice             = big.NewInt(1 << 14)
+	updateInvoicesRequestItemsItemVariantFieldSplitPayRequiredPayments = big.NewInt(1 << 15)
+	updateInvoicesRequestItemsItemVariantFieldTitle                    = big.NewInt(1 << 16)
+	updateInvoicesRequestItemsItemVariantFieldTrialPeriodDays          = big.NewInt(1 << 17)
+	updateInvoicesRequestItemsItemVariantFieldVisibility               = big.NewInt(1 << 18)
 )
 
 // updateInvoicesRequestItemsItemVariantNullableFields maps the wire names of UpdateInvoicesRequestItemsItemVariant's nullable fields (required or optional) to their field bits.
@@ -5517,6 +5536,7 @@ var updateInvoicesRequestItemsItemVariantNullableFields = map[string]*big.Int{
 	"override_tax_type":           updateInvoicesRequestItemsItemVariantFieldOverrideTaxType,
 	"product":                     updateInvoicesRequestItemsItemVariantFieldProduct,
 	"product_id":                  updateInvoicesRequestItemsItemVariantFieldProductID,
+	"redirect_url":                updateInvoicesRequestItemsItemVariantFieldRedirectURL,
 	"renewal_price":               updateInvoicesRequestItemsItemVariantFieldRenewalPrice,
 	"split_pay_required_payments": updateInvoicesRequestItemsItemVariantFieldSplitPayRequiredPayments,
 	"title":                       updateInvoicesRequestItemsItemVariantFieldTitle,
@@ -5552,6 +5572,8 @@ type UpdateInvoicesRequestItemsItemVariant struct {
 	Product *UpdateInvoicesRequestItemsItemVariantProduct `json:"product,omitempty" url:"product,omitempty"`
 	// Existing product ID belonging to the account, prefixed `prod_`. Mutually exclusive with `product`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
+	// Where the customer is sent after paying for this variant. Must be a valid URL that is not another Whop checkout link.
+	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
 	// Recurring price in the variant currency.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
 	// How many payments a recurring variant collects before it stops billing, from 2 to 115. Only valid for `renewal` variants. `null` bills until the subscription is canceled.
@@ -5659,6 +5681,13 @@ func (u *UpdateInvoicesRequestItemsItemVariant) GetProductID() *string {
 		return nil
 	}
 	return u.ProductID
+}
+
+func (u *UpdateInvoicesRequestItemsItemVariant) GetRedirectURL() *string {
+	if u == nil {
+		return nil
+	}
+	return u.RedirectURL
 }
 
 func (u *UpdateInvoicesRequestItemsItemVariant) GetRenewalPrice() *float64 {
@@ -5801,6 +5830,13 @@ func (u *UpdateInvoicesRequestItemsItemVariant) SetProduct(product *UpdateInvoic
 func (u *UpdateInvoicesRequestItemsItemVariant) SetProductID(productID *string) {
 	u.ProductID = productID
 	u.require(updateInvoicesRequestItemsItemVariantFieldProductID)
+}
+
+// SetRedirectURL sets the RedirectURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequestItemsItemVariant) SetRedirectURL(redirectURL *string) {
+	u.RedirectURL = redirectURL
+	u.require(updateInvoicesRequestItemsItemVariantFieldRedirectURL)
 }
 
 // SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;

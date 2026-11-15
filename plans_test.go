@@ -2269,6 +2269,14 @@ func TestSettersPlan(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetRedirectURL", func(t *testing.T) {
+		obj := &Plan{}
+		var fernTestValueRedirectURL *string
+		obj.SetRedirectURL(fernTestValueRedirectURL)
+		assert.Equal(t, fernTestValueRedirectURL, obj.RedirectURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetReleaseMethod", func(t *testing.T) {
 		obj := &Plan{}
 		var fernTestValueReleaseMethod PlanReleaseMethod
@@ -3272,6 +3280,39 @@ func TestGettersPlan(t *testing.T) {
 			}
 		}()
 		_ = obj.GetPurchaseURL() // Should return zero value
+	})
+
+	t.Run("GetRedirectURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Plan{}
+		var expected *string
+		obj.RedirectURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRedirectURL(), "getter should return the property value")
+	})
+
+	t.Run("GetRedirectURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Plan{}
+		obj.RedirectURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRedirectURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRedirectURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Plan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRedirectURL() // Should return zero value
 	})
 
 	t.Run("GetReleaseMethod", func(t *testing.T) {
@@ -4609,6 +4650,37 @@ func TestSettersMarkExplicitPlan(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetRedirectURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Plan{}
+		var fernTestValueRedirectURL *string
+
+		// Act
+		obj.SetRedirectURL(fernTestValueRedirectURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetReleaseMethod_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -5259,6 +5331,14 @@ func TestSettersPlanListItem(t *testing.T) {
 		var fernTestValuePurchaseURL string
 		obj.SetPurchaseURL(fernTestValuePurchaseURL)
 		assert.Equal(t, fernTestValuePurchaseURL, obj.PurchaseURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetRedirectURL", func(t *testing.T) {
+		obj := &PlanListItem{}
+		var fernTestValueRedirectURL *string
+		obj.SetRedirectURL(fernTestValueRedirectURL)
+		assert.Equal(t, fernTestValueRedirectURL, obj.RedirectURL)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -6168,6 +6248,39 @@ func TestGettersPlanListItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetPurchaseURL() // Should return zero value
+	})
+
+	t.Run("GetRedirectURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PlanListItem{}
+		var expected *string
+		obj.RedirectURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRedirectURL(), "getter should return the property value")
+	})
+
+	t.Run("GetRedirectURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PlanListItem{}
+		obj.RedirectURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRedirectURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRedirectURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PlanListItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRedirectURL() // Should return zero value
 	})
 
 	t.Run("GetReleaseMethod", func(t *testing.T) {
@@ -7366,6 +7479,37 @@ func TestSettersMarkExplicitPlanListItem(t *testing.T) {
 
 		// Act
 		obj.SetPurchaseURL(fernTestValuePurchaseURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRedirectURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PlanListItem{}
+		var fernTestValueRedirectURL *string
+
+		// Act
+		obj.SetRedirectURL(fernTestValueRedirectURL)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -12701,6 +12845,7 @@ func TestRequiredNullableRoundTripPlan(t *testing.T) {
 		"offer_cancel_discount",
 		"payment_method_configuration",
 		"product",
+		"redirect_url",
 		"sku",
 		"split_pay_required_payments",
 		"stock",
@@ -12721,7 +12866,7 @@ func TestRequiredNullableRoundTripPlan(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Plan
-		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"attributes":null,"billing_period":null,"cancel_discount_intervals":null,"cancel_discount_percentage":null,"checkout_styling":null,"deletable":null,"description":null,"effective_payment_method_configuration":null,"expiration_days":null,"image":null,"internal_notes":null,"invoice":null,"member_count":null,"metadata":null,"offer_cancel_discount":null,"payment_method_configuration":null,"product":null,"sku":null,"split_pay_required_payments":null,"stock":null,"strike_through_initial_price":null,"strike_through_renewal_price":null,"three_ds_level":null,"title":null,"trial_period_days":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"attributes":null,"billing_period":null,"cancel_discount_intervals":null,"cancel_discount_percentage":null,"checkout_styling":null,"deletable":null,"description":null,"effective_payment_method_configuration":null,"expiration_days":null,"image":null,"internal_notes":null,"invoice":null,"member_count":null,"metadata":null,"offer_cancel_discount":null,"payment_method_configuration":null,"product":null,"redirect_url":null,"sku":null,"split_pay_required_payments":null,"stock":null,"strike_through_initial_price":null,"strike_through_renewal_price":null,"three_ds_level":null,"title":null,"trial_period_days":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -12767,6 +12912,7 @@ func TestRequiredNullableRoundTripPlanListItem(t *testing.T) {
 		"offer_cancel_discount",
 		"payment_method_configuration",
 		"product",
+		"redirect_url",
 		"sku",
 		"split_pay_required_payments",
 		"stock",
@@ -12787,7 +12933,7 @@ func TestRequiredNullableRoundTripPlanListItem(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PlanListItem
-		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"attributes":null,"billing_period":null,"cancel_discount_intervals":null,"cancel_discount_percentage":null,"checkout_styling":null,"description":null,"expiration_days":null,"image":null,"internal_notes":null,"invoice":null,"member_count":null,"metadata":null,"offer_cancel_discount":null,"payment_method_configuration":null,"product":null,"sku":null,"split_pay_required_payments":null,"stock":null,"strike_through_initial_price":null,"strike_through_renewal_price":null,"three_ds_level":null,"title":null,"trial_period_days":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account":null,"attributes":null,"billing_period":null,"cancel_discount_intervals":null,"cancel_discount_percentage":null,"checkout_styling":null,"description":null,"expiration_days":null,"image":null,"internal_notes":null,"invoice":null,"member_count":null,"metadata":null,"offer_cancel_discount":null,"payment_method_configuration":null,"product":null,"redirect_url":null,"sku":null,"split_pay_required_payments":null,"stock":null,"strike_through_initial_price":null,"strike_through_renewal_price":null,"three_ds_level":null,"title":null,"trial_period_days":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

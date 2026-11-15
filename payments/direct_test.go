@@ -2109,6 +2109,14 @@ func TestSettersCreateDirectRequestPlan(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetRedirectURL", func(t *testing.T) {
+		obj := &CreateDirectRequestPlan{}
+		var fernTestValueRedirectURL *string
+		obj.SetRedirectURL(fernTestValueRedirectURL)
+		assert.Equal(t, fernTestValueRedirectURL, obj.RedirectURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetRenewalPrice", func(t *testing.T) {
 		obj := &CreateDirectRequestPlan{}
 		var fernTestValueRenewalPrice *float64
@@ -2569,6 +2577,39 @@ func TestGettersCreateDirectRequestPlan(t *testing.T) {
 			}
 		}()
 		_ = obj.GetProductID() // Should return zero value
+	})
+
+	t.Run("GetRedirectURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateDirectRequestPlan{}
+		var expected *string
+		obj.RedirectURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRedirectURL(), "getter should return the property value")
+	})
+
+	t.Run("GetRedirectURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateDirectRequestPlan{}
+		obj.RedirectURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRedirectURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRedirectURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateDirectRequestPlan
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRedirectURL() // Should return zero value
 	})
 
 	t.Run("GetRenewalPrice", func(t *testing.T) {
@@ -3119,6 +3160,37 @@ func TestSettersMarkExplicitCreateDirectRequestPlan(t *testing.T) {
 
 		// Act
 		obj.SetProductID(fernTestValueProductID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetRedirectURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateDirectRequestPlan{}
+		var fernTestValueRedirectURL *string
+
+		// Act
+		obj.SetRedirectURL(fernTestValueRedirectURL)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4603,6 +4675,7 @@ func TestOptionalNullableRoundTripCreateDirectRequestPlan(t *testing.T) {
 		"plan_type",
 		"product",
 		"product_id",
+		"redirect_url",
 		"renewal_price",
 		"split_pay_required_payments",
 		"title",
@@ -4620,7 +4693,7 @@ func TestOptionalNullableRoundTripCreateDirectRequestPlan(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj CreateDirectRequestPlan
-		require.NoError(t, json.Unmarshal([]byte(`{"allow_multiple_quantity":null,"application_fee_amount":null,"billing_period":null,"description":null,"expiration_days":null,"force_create_new_plan":null,"initial_price":null,"internal_notes":null,"override_tax_type":null,"plan_type":null,"product":null,"product_id":null,"renewal_price":null,"split_pay_required_payments":null,"title":null,"trial_period_days":null,"visibility":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"allow_multiple_quantity":null,"application_fee_amount":null,"billing_period":null,"description":null,"expiration_days":null,"force_create_new_plan":null,"initial_price":null,"internal_notes":null,"override_tax_type":null,"plan_type":null,"product":null,"product_id":null,"redirect_url":null,"renewal_price":null,"split_pay_required_payments":null,"title":null,"trial_period_days":null,"visibility":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]

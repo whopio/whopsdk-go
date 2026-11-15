@@ -638,20 +638,21 @@ var (
 	planFieldPaymentMethodConfiguration          = big.NewInt(1 << 27)
 	planFieldProduct                             = big.NewInt(1 << 28)
 	planFieldPurchaseURL                         = big.NewInt(1 << 29)
-	planFieldReleaseMethod                       = big.NewInt(1 << 30)
-	planFieldRenewalPrice                        = big.NewInt(1 << 31)
-	planFieldSku                                 = big.NewInt(1 << 32)
-	planFieldSplitPayRequiredPayments            = big.NewInt(1 << 33)
-	planFieldStock                               = big.NewInt(1 << 34)
-	planFieldStrikeThroughInitialPrice           = big.NewInt(1 << 35)
-	planFieldStrikeThroughRenewalPrice           = big.NewInt(1 << 36)
-	planFieldTaxType                             = big.NewInt(1 << 37)
-	planFieldThreeDsLevel                        = big.NewInt(1 << 38)
-	planFieldTitle                               = big.NewInt(1 << 39)
-	planFieldTrialPeriodDays                     = big.NewInt(1 << 40)
-	planFieldUnlimitedStock                      = big.NewInt(1 << 41)
-	planFieldUpdatedAt                           = big.NewInt(1 << 42)
-	planFieldVisibility                          = big.NewInt(1 << 43)
+	planFieldRedirectURL                         = big.NewInt(1 << 30)
+	planFieldReleaseMethod                       = big.NewInt(1 << 31)
+	planFieldRenewalPrice                        = big.NewInt(1 << 32)
+	planFieldSku                                 = big.NewInt(1 << 33)
+	planFieldSplitPayRequiredPayments            = big.NewInt(1 << 34)
+	planFieldStock                               = big.NewInt(1 << 35)
+	planFieldStrikeThroughInitialPrice           = big.NewInt(1 << 36)
+	planFieldStrikeThroughRenewalPrice           = big.NewInt(1 << 37)
+	planFieldTaxType                             = big.NewInt(1 << 38)
+	planFieldThreeDsLevel                        = big.NewInt(1 << 39)
+	planFieldTitle                               = big.NewInt(1 << 40)
+	planFieldTrialPeriodDays                     = big.NewInt(1 << 41)
+	planFieldUnlimitedStock                      = big.NewInt(1 << 42)
+	planFieldUpdatedAt                           = big.NewInt(1 << 43)
+	planFieldVisibility                          = big.NewInt(1 << 44)
 )
 
 // planNullableFields maps the wire names of Plan's nullable fields (required or optional) to their field bits.
@@ -674,6 +675,7 @@ var planNullableFields = map[string]*big.Int{
 	"offer_cancel_discount":                  planFieldOfferCancelDiscount,
 	"payment_method_configuration":           planFieldPaymentMethodConfiguration,
 	"product":                                planFieldProduct,
+	"redirect_url":                           planFieldRedirectURL,
 	"sku":                                    planFieldSku,
 	"split_pay_required_payments":            planFieldSplitPayRequiredPayments,
 	"stock":                                  planFieldStock,
@@ -744,6 +746,8 @@ type Plan struct {
 	Product map[string]any `json:"product,omitempty" url:"product,omitempty"`
 	// URL where customers can purchase this variant directly.
 	PurchaseURL string `json:"purchase_url" url:"purchase_url"`
+	// Where the customer is sent after paying for this variant. `null` when none is set, or unless the actor has the `plan:basic:read` scope on the variant's account.
+	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
 	// Sales method for this variant.
 	ReleaseMethod PlanReleaseMethod `json:"release_method" url:"release_method"`
 	// Recurring price charged every billing period, in `currency`.
@@ -988,6 +992,13 @@ func (p *Plan) GetPurchaseURL() string {
 		return ""
 	}
 	return p.PurchaseURL
+}
+
+func (p *Plan) GetRedirectURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.RedirectURL
 }
 
 func (p *Plan) GetReleaseMethod() PlanReleaseMethod {
@@ -1312,6 +1323,13 @@ func (p *Plan) SetProduct(product map[string]any) {
 func (p *Plan) SetPurchaseURL(purchaseURL string) {
 	p.PurchaseURL = purchaseURL
 	p.require(planFieldPurchaseURL)
+}
+
+// SetRedirectURL sets the RedirectURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Plan) SetRedirectURL(redirectURL *string) {
+	p.RedirectURL = redirectURL
+	p.require(planFieldRedirectURL)
 }
 
 // SetReleaseMethod sets the ReleaseMethod field and marks it as non-optional;
@@ -1799,19 +1817,20 @@ var (
 	planListItemFieldPaymentMethodConfiguration = big.NewInt(1 << 24)
 	planListItemFieldProduct                    = big.NewInt(1 << 25)
 	planListItemFieldPurchaseURL                = big.NewInt(1 << 26)
-	planListItemFieldReleaseMethod              = big.NewInt(1 << 27)
-	planListItemFieldRenewalPrice               = big.NewInt(1 << 28)
-	planListItemFieldSku                        = big.NewInt(1 << 29)
-	planListItemFieldSplitPayRequiredPayments   = big.NewInt(1 << 30)
-	planListItemFieldStock                      = big.NewInt(1 << 31)
-	planListItemFieldStrikeThroughInitialPrice  = big.NewInt(1 << 32)
-	planListItemFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 33)
-	planListItemFieldThreeDsLevel               = big.NewInt(1 << 34)
-	planListItemFieldTitle                      = big.NewInt(1 << 35)
-	planListItemFieldTrialPeriodDays            = big.NewInt(1 << 36)
-	planListItemFieldUnlimitedStock             = big.NewInt(1 << 37)
-	planListItemFieldUpdatedAt                  = big.NewInt(1 << 38)
-	planListItemFieldVisibility                 = big.NewInt(1 << 39)
+	planListItemFieldRedirectURL                = big.NewInt(1 << 27)
+	planListItemFieldReleaseMethod              = big.NewInt(1 << 28)
+	planListItemFieldRenewalPrice               = big.NewInt(1 << 29)
+	planListItemFieldSku                        = big.NewInt(1 << 30)
+	planListItemFieldSplitPayRequiredPayments   = big.NewInt(1 << 31)
+	planListItemFieldStock                      = big.NewInt(1 << 32)
+	planListItemFieldStrikeThroughInitialPrice  = big.NewInt(1 << 33)
+	planListItemFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 34)
+	planListItemFieldThreeDsLevel               = big.NewInt(1 << 35)
+	planListItemFieldTitle                      = big.NewInt(1 << 36)
+	planListItemFieldTrialPeriodDays            = big.NewInt(1 << 37)
+	planListItemFieldUnlimitedStock             = big.NewInt(1 << 38)
+	planListItemFieldUpdatedAt                  = big.NewInt(1 << 39)
+	planListItemFieldVisibility                 = big.NewInt(1 << 40)
 )
 
 // planListItemNullableFields maps the wire names of PlanListItem's nullable fields (required or optional) to their field bits.
@@ -1832,6 +1851,7 @@ var planListItemNullableFields = map[string]*big.Int{
 	"offer_cancel_discount":        planListItemFieldOfferCancelDiscount,
 	"payment_method_configuration": planListItemFieldPaymentMethodConfiguration,
 	"product":                      planListItemFieldProduct,
+	"redirect_url":                 planListItemFieldRedirectURL,
 	"sku":                          planListItemFieldSku,
 	"split_pay_required_payments":  planListItemFieldSplitPayRequiredPayments,
 	"stock":                        planListItemFieldStock,
@@ -1896,6 +1916,8 @@ type PlanListItem struct {
 	Product map[string]any `json:"product,omitempty" url:"product,omitempty"`
 	// URL where customers can purchase this variant directly.
 	PurchaseURL string `json:"purchase_url" url:"purchase_url"`
+	// Where the customer is sent after paying for this variant. `null` when none is set, or unless the actor has the `plan:basic:read` scope on the variant's account.
+	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
 	// Sales method for this variant.
 	ReleaseMethod PlanListItemReleaseMethod `json:"release_method" url:"release_method"`
 	// Recurring price charged every billing period, in `currency`.
@@ -2117,6 +2139,13 @@ func (p *PlanListItem) GetPurchaseURL() string {
 		return ""
 	}
 	return p.PurchaseURL
+}
+
+func (p *PlanListItem) GetRedirectURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.RedirectURL
 }
 
 func (p *PlanListItem) GetReleaseMethod() PlanListItemReleaseMethod {
@@ -2413,6 +2442,13 @@ func (p *PlanListItem) SetProduct(product map[string]any) {
 func (p *PlanListItem) SetPurchaseURL(purchaseURL string) {
 	p.PurchaseURL = purchaseURL
 	p.require(planListItemFieldPurchaseURL)
+}
+
+// SetRedirectURL sets the RedirectURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlanListItem) SetRedirectURL(redirectURL *string) {
+	p.RedirectURL = redirectURL
+	p.require(planListItemFieldRedirectURL)
 }
 
 // SetReleaseMethod sets the ReleaseMethod field and marks it as non-optional;
