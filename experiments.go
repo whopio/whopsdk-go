@@ -10,9 +10,8 @@ import (
 )
 
 var (
-	activateExperimentsRequestFieldID           = big.NewInt(1 << 0)
-	activateExperimentsRequestFieldAccountID    = big.NewInt(1 << 1)
-	activateExperimentsRequestFieldDurationDays = big.NewInt(1 << 2)
+	activateExperimentsRequestFieldID        = big.NewInt(1 << 0)
+	activateExperimentsRequestFieldAccountID = big.NewInt(1 << 1)
 )
 
 type ActivateExperimentsRequest struct {
@@ -20,8 +19,6 @@ type ActivateExperimentsRequest struct {
 	ID string `json:"-" url:"-"`
 	// Owning account ID. Required when id is a flag key; optional for an expt_ ID.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// Reporting window length in days. Omit to use the default. This does not automatically end the experiment.
-	DurationDays *int `json:"duration_days,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -50,13 +47,6 @@ func (a *ActivateExperimentsRequest) SetAccountID(accountID *string) {
 	a.require(activateExperimentsRequestFieldAccountID)
 }
 
-// SetDurationDays sets the DurationDays field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *ActivateExperimentsRequest) SetDurationDays(durationDays *int) {
-	a.DurationDays = durationDays
-	a.require(activateExperimentsRequestFieldDurationDays)
-}
-
 func (a *ActivateExperimentsRequest) UnmarshalJSON(data []byte) error {
 	type unmarshaler ActivateExperimentsRequest
 	var body unmarshaler
@@ -82,14 +72,12 @@ var (
 	createExperimentsRequestFieldAccountID       = big.NewInt(1 << 0)
 	createExperimentsRequestFieldBucketBy        = big.NewInt(1 << 1)
 	createExperimentsRequestFieldControl         = big.NewInt(1 << 2)
-	createExperimentsRequestFieldFeatureFlagOnly = big.NewInt(1 << 3)
-	createExperimentsRequestFieldFlagKey         = big.NewInt(1 << 4)
-	createExperimentsRequestFieldHypothesis      = big.NewInt(1 << 5)
-	createExperimentsRequestFieldMetadata        = big.NewInt(1 << 6)
-	createExperimentsRequestFieldName            = big.NewInt(1 << 7)
-	createExperimentsRequestFieldRelatedResource = big.NewInt(1 << 8)
-	createExperimentsRequestFieldTargetingRules  = big.NewInt(1 << 9)
-	createExperimentsRequestFieldVariants        = big.NewInt(1 << 10)
+	createExperimentsRequestFieldFlagKey         = big.NewInt(1 << 3)
+	createExperimentsRequestFieldHypothesis      = big.NewInt(1 << 4)
+	createExperimentsRequestFieldMetadata        = big.NewInt(1 << 5)
+	createExperimentsRequestFieldName            = big.NewInt(1 << 6)
+	createExperimentsRequestFieldRelatedResource = big.NewInt(1 << 7)
+	createExperimentsRequestFieldVariants        = big.NewInt(1 << 8)
 )
 
 type CreateExperimentsRequest struct {
@@ -98,8 +86,6 @@ type CreateExperimentsRequest struct {
 	// Randomization unit, and the only identity the assignment is keyed on — evaluation fails rather than falling back to another. `user` (default) uses `subject[user_id]`; `account` uses `subject[account_id]`, so every user of an account gets the same arm; `anonymous` uses the anonymous id and survives sign-in. Fixed after creation.
 	BucketBy *CreateExperimentsRequestBucketBy `json:"bucket_by,omitempty" url:"-"`
 	Control  *CreateExperimentsRequestControl  `json:"control,omitempty" url:"-"`
-	// When `true`, creates a binary feature flag rather than a full experiment. Feature flags expose the same evaluation API but do not collect metric results. Defaults to `false`.
-	FeatureFlagOnly *bool `json:"feature_flag_only,omitempty" url:"-"`
 	// Developer-chosen handle referenced from code, used in evaluation and results calls. Interchangeable with the returned `expt_` id anywhere the API takes an experiment identifier.
 	FlagKey string `json:"flag_key" url:"-"`
 	// Required for full experiments; rejected on feature flags. Structure it as "If we [change] for [cohort], then [measurable behavior] will [increase/decrease], resulting in [business outcome], because [evidence]. Created by [name]." Evidence should be something real — a baseline number, a funnel breakdown — not a guess, and [name] is you, not something to leave blank.
@@ -110,8 +96,6 @@ type CreateExperimentsRequest struct {
 	Name *string `json:"name,omitempty" url:"-"`
 	// Resource owned by the account that this experiment is bound to, such as an app or product. `null` when unbound. Fixed once the experiment first activates.
 	RelatedResource *ExperimentResourceReference `json:"related_resource,omitempty" url:"-"`
-	// Rules that determine which subjects qualify for the experiment.
-	TargetingRules []*CreateExperimentsRequestTargetingRulesItem `json:"targeting_rules,omitempty" url:"-"`
 	// Treatment arms to create. Users outside every arm form the implicit `control` group. Required unless `feature_flag_only` is `true`.
 	Variants []*CreateExperimentsRequestVariantsItem `json:"variants,omitempty" url:"-"`
 
@@ -149,13 +133,6 @@ func (c *CreateExperimentsRequest) SetControl(control *CreateExperimentsRequestC
 	c.require(createExperimentsRequestFieldControl)
 }
 
-// SetFeatureFlagOnly sets the FeatureFlagOnly field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateExperimentsRequest) SetFeatureFlagOnly(featureFlagOnly *bool) {
-	c.FeatureFlagOnly = featureFlagOnly
-	c.require(createExperimentsRequestFieldFeatureFlagOnly)
-}
-
 // SetFlagKey sets the FlagKey field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateExperimentsRequest) SetFlagKey(flagKey string) {
@@ -189,13 +166,6 @@ func (c *CreateExperimentsRequest) SetName(name *string) {
 func (c *CreateExperimentsRequest) SetRelatedResource(relatedResource *ExperimentResourceReference) {
 	c.RelatedResource = relatedResource
 	c.require(createExperimentsRequestFieldRelatedResource)
-}
-
-// SetTargetingRules sets the TargetingRules field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateExperimentsRequest) SetTargetingRules(targetingRules []*CreateExperimentsRequestTargetingRulesItem) {
-	c.TargetingRules = targetingRules
-	c.require(createExperimentsRequestFieldTargetingRules)
 }
 
 // SetVariants sets the Variants field and marks it as non-optional;
@@ -576,34 +546,31 @@ var (
 	experimentFieldCreatedAt             = big.NewInt(1 << 5)
 	experimentFieldCreatedBy             = big.NewInt(1 << 6)
 	experimentFieldEndedAt               = big.NewInt(1 << 7)
-	experimentFieldFeatureFlagOnly       = big.NewInt(1 << 8)
-	experimentFieldFindings              = big.NewInt(1 << 9)
-	experimentFieldFlagKey               = big.NewInt(1 << 10)
-	experimentFieldHypothesis            = big.NewInt(1 << 11)
-	experimentFieldID                    = big.NewInt(1 << 12)
-	experimentFieldMetadata              = big.NewInt(1 << 13)
-	experimentFieldName                  = big.NewInt(1 << 14)
-	experimentFieldRelatedResource       = big.NewInt(1 << 15)
-	experimentFieldStartedAt             = big.NewInt(1 << 16)
-	experimentFieldStatus                = big.NewInt(1 << 17)
-	experimentFieldTargetingRules        = big.NewInt(1 << 18)
-	experimentFieldUpdatedAt             = big.NewInt(1 << 19)
-	experimentFieldVariants              = big.NewInt(1 << 20)
-	experimentFieldWinningArm            = big.NewInt(1 << 21)
+	experimentFieldFindings              = big.NewInt(1 << 8)
+	experimentFieldFlagKey               = big.NewInt(1 << 9)
+	experimentFieldHypothesis            = big.NewInt(1 << 10)
+	experimentFieldID                    = big.NewInt(1 << 11)
+	experimentFieldMetadata              = big.NewInt(1 << 12)
+	experimentFieldName                  = big.NewInt(1 << 13)
+	experimentFieldRelatedResource       = big.NewInt(1 << 14)
+	experimentFieldStartedAt             = big.NewInt(1 << 15)
+	experimentFieldStatus                = big.NewInt(1 << 16)
+	experimentFieldUpdatedAt             = big.NewInt(1 << 17)
+	experimentFieldVariants              = big.NewInt(1 << 18)
+	experimentFieldWinningArm            = big.NewInt(1 << 19)
 )
 
 // experimentNullableFields maps the wire names of Experiment's nullable fields (required or optional) to their field bits.
 var experimentNullableFields = map[string]*big.Int{
-	"bucket_by":         experimentFieldBucketBy,
-	"created_at":        experimentFieldCreatedAt,
-	"created_by":        experimentFieldCreatedBy,
-	"ended_at":          experimentFieldEndedAt,
-	"feature_flag_only": experimentFieldFeatureFlagOnly,
-	"findings":          experimentFieldFindings,
-	"hypothesis":        experimentFieldHypothesis,
-	"started_at":        experimentFieldStartedAt,
-	"updated_at":        experimentFieldUpdatedAt,
-	"winning_arm":       experimentFieldWinningArm,
+	"bucket_by":   experimentFieldBucketBy,
+	"created_at":  experimentFieldCreatedAt,
+	"created_by":  experimentFieldCreatedBy,
+	"ended_at":    experimentFieldEndedAt,
+	"findings":    experimentFieldFindings,
+	"hypothesis":  experimentFieldHypothesis,
+	"started_at":  experimentFieldStartedAt,
+	"updated_at":  experimentFieldUpdatedAt,
+	"winning_arm": experimentFieldWinningArm,
 }
 
 type Experiment struct {
@@ -622,8 +589,6 @@ type Experiment struct {
 	CreatedBy *string `json:"created_by,omitempty" url:"created_by,omitempty"`
 	// When the experiment stopped collecting data, as an ISO 8601 timestamp. `null` while still running.
 	EndedAt *string `json:"ended_at,omitempty" url:"ended_at,omitempty"`
-	// `true` when this was created as a feature flag rather than a full experiment. Feature flags share the same evaluation API but do not collect metric results.
-	FeatureFlagOnly *bool `json:"feature_flag_only,omitempty" url:"feature_flag_only,omitempty"`
 	// What was learned and why this outcome, recorded when the experiment was ended. `null` until then.
 	Findings *string `json:"findings,omitempty" url:"findings,omitempty"`
 	// Developer-chosen handle referenced from code. Anywhere the API takes an experiment identifier, the `expt_` id and the flag_key are interchangeable.
@@ -641,10 +606,8 @@ type Experiment struct {
 	// When the experiment began collecting data, as an ISO 8601 timestamp. `null` for drafts.
 	StartedAt *string `json:"started_at,omitempty" url:"started_at,omitempty"`
 	// Lifecycle state. `draft` — not yet live; `active` — currently running; `paused` — traffic paused; `ended` — concluded.
-	Status ExperimentStatus `json:"status" url:"status"`
-	// Rules gating who is in the experiment at all. Conditions within a rule are AND-ed, rules are OR-ed, and `exclude` rules always win. Empty means everyone qualifies.
-	TargetingRules []*ExperimentTargetingRulesItem `json:"targeting_rules" url:"targeting_rules"`
-	UpdatedAt      *string                         `json:"updated_at,omitempty" url:"updated_at,omitempty"`
+	Status    ExperimentStatus `json:"status" url:"status"`
+	UpdatedAt *string          `json:"updated_at,omitempty" url:"updated_at,omitempty"`
 	// Treatment arms. Users outside every arm's allocation form the implicit `control` group. Weights only ever grow and arms are never removed, so a user moves from control into a treatment at most once.
 	Variants []*ExperimentVariantsItem `json:"variants" url:"variants"`
 	// The treatment that won, set when the experiment was ended. Once set, every evaluation returns this arm to every caller regardless of targeting or allocation, and no further exposures are recorded. `null` means control won — an ended experiment with no winning arm evaluates to `control` for everyone. Always `null` for feature flags, which simply evaluate to disabled once ended.
@@ -713,13 +676,6 @@ func (e *Experiment) GetEndedAt() *string {
 	return e.EndedAt
 }
 
-func (e *Experiment) GetFeatureFlagOnly() *bool {
-	if e == nil {
-		return nil
-	}
-	return e.FeatureFlagOnly
-}
-
 func (e *Experiment) GetFindings() *string {
 	if e == nil {
 		return nil
@@ -781,13 +737,6 @@ func (e *Experiment) GetStatus() ExperimentStatus {
 		return ""
 	}
 	return e.Status
-}
-
-func (e *Experiment) GetTargetingRules() []*ExperimentTargetingRulesItem {
-	if e == nil {
-		return nil
-	}
-	return e.TargetingRules
 }
 
 func (e *Experiment) GetUpdatedAt() *string {
@@ -883,13 +832,6 @@ func (e *Experiment) SetEndedAt(endedAt *string) {
 	e.require(experimentFieldEndedAt)
 }
 
-// SetFeatureFlagOnly sets the FeatureFlagOnly field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *Experiment) SetFeatureFlagOnly(featureFlagOnly *bool) {
-	e.FeatureFlagOnly = featureFlagOnly
-	e.require(experimentFieldFeatureFlagOnly)
-}
-
 // SetFindings sets the Findings field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (e *Experiment) SetFindings(findings *string) {
@@ -951,13 +893,6 @@ func (e *Experiment) SetStartedAt(startedAt *string) {
 func (e *Experiment) SetStatus(status ExperimentStatus) {
 	e.Status = status
 	e.require(experimentFieldStatus)
-}
-
-// SetTargetingRules sets the TargetingRules field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *Experiment) SetTargetingRules(targetingRules []*ExperimentTargetingRulesItem) {
-	e.TargetingRules = targetingRules
-	e.require(experimentFieldTargetingRules)
 }
 
 // SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
@@ -1571,366 +1506,6 @@ func (e ExperimentStatus) Ptr() *ExperimentStatus {
 }
 
 var (
-	experimentTargetingRulesItemFieldConditions     = big.NewInt(1 << 0)
-	experimentTargetingRulesItemFieldPassPercentage = big.NewInt(1 << 1)
-	experimentTargetingRulesItemFieldType           = big.NewInt(1 << 2)
-)
-
-type ExperimentTargetingRulesItem struct {
-	// Conditions within this rule, all of which must match.
-	Conditions []*ExperimentTargetingRulesItemConditionsItem `json:"conditions" url:"conditions"`
-	// Percentage of matching subjects that this rule lets in, from 0 to 100. Absent when the rule lets in every matching subject. Raising it keeps every subject that the rule already lets in.
-	PassPercentage *float64 `json:"pass_percentage,omitempty" url:"pass_percentage,omitempty"`
-	// `include` — users matching this rule qualify; `exclude` — users matching this rule are always excluded, overriding any include rule.
-	Type *ExperimentTargetingRulesItemType `json:"type,omitempty" url:"type,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (e *ExperimentTargetingRulesItem) GetConditions() []*ExperimentTargetingRulesItemConditionsItem {
-	if e == nil {
-		return nil
-	}
-	return e.Conditions
-}
-
-func (e *ExperimentTargetingRulesItem) GetPassPercentage() *float64 {
-	if e == nil {
-		return nil
-	}
-	return e.PassPercentage
-}
-
-func (e *ExperimentTargetingRulesItem) GetType() *ExperimentTargetingRulesItemType {
-	if e == nil {
-		return nil
-	}
-	return e.Type
-}
-
-func (e *ExperimentTargetingRulesItem) GetExtraProperties() map[string]interface{} {
-	if e == nil {
-		return nil
-	}
-	return e.extraProperties
-}
-
-func (e *ExperimentTargetingRulesItem) require(field *big.Int) {
-	next := new(big.Int)
-	if e.explicitFields != nil {
-		next.Set(e.explicitFields)
-	}
-	next.Or(next, field)
-	e.explicitFields = next
-}
-
-// SetConditions sets the Conditions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *ExperimentTargetingRulesItem) SetConditions(conditions []*ExperimentTargetingRulesItemConditionsItem) {
-	e.Conditions = conditions
-	e.require(experimentTargetingRulesItemFieldConditions)
-}
-
-// SetPassPercentage sets the PassPercentage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *ExperimentTargetingRulesItem) SetPassPercentage(passPercentage *float64) {
-	e.PassPercentage = passPercentage
-	e.require(experimentTargetingRulesItemFieldPassPercentage)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *ExperimentTargetingRulesItem) SetType(type_ *ExperimentTargetingRulesItemType) {
-	e.Type = type_
-	e.require(experimentTargetingRulesItemFieldType)
-}
-
-func (e *ExperimentTargetingRulesItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler ExperimentTargetingRulesItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*e = ExperimentTargetingRulesItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *e)
-	if err != nil {
-		return err
-	}
-	e.extraProperties = extraProperties
-	e.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (e *ExperimentTargetingRulesItem) MarshalJSON() ([]byte, error) {
-	type embed ExperimentTargetingRulesItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*e),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (e *ExperimentTargetingRulesItem) String() string {
-	if e == nil {
-		return "<nil>"
-	}
-	if len(e.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(e); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", e)
-}
-
-var (
-	experimentTargetingRulesItemConditionsItemFieldField    = big.NewInt(1 << 0)
-	experimentTargetingRulesItemConditionsItemFieldOperator = big.NewInt(1 << 1)
-	experimentTargetingRulesItemConditionsItemFieldType     = big.NewInt(1 << 2)
-	experimentTargetingRulesItemConditionsItemFieldValue    = big.NewInt(1 << 3)
-)
-
-// experimentTargetingRulesItemConditionsItemNullableFields maps the wire names of ExperimentTargetingRulesItemConditionsItem's nullable fields (required or optional) to their field bits.
-var experimentTargetingRulesItemConditionsItemNullableFields = map[string]*big.Int{
-	"field": experimentTargetingRulesItemConditionsItemFieldField,
-}
-
-type ExperimentTargetingRulesItemConditionsItem struct {
-	// Property name to read from the user context. Present when `type` is `property`.
-	Field *string `json:"field,omitempty" url:"field,omitempty"`
-	// Comparison to apply.
-	Operator ExperimentTargetingRulesItemConditionsItemOperator `json:"operator" url:"operator"`
-	// What the condition matches on: the user ID, the account ID, or a named user property.
-	Type  ExperimentTargetingRulesItemConditionsItemType `json:"type" url:"type"`
-	Value any                                            `json:"value" url:"value"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (e *ExperimentTargetingRulesItemConditionsItem) GetField() *string {
-	if e == nil {
-		return nil
-	}
-	return e.Field
-}
-
-func (e *ExperimentTargetingRulesItemConditionsItem) GetOperator() ExperimentTargetingRulesItemConditionsItemOperator {
-	if e == nil {
-		return ""
-	}
-	return e.Operator
-}
-
-func (e *ExperimentTargetingRulesItemConditionsItem) GetType() ExperimentTargetingRulesItemConditionsItemType {
-	if e == nil {
-		return ""
-	}
-	return e.Type
-}
-
-func (e *ExperimentTargetingRulesItemConditionsItem) GetValue() any {
-	if e == nil {
-		return nil
-	}
-	return e.Value
-}
-
-func (e *ExperimentTargetingRulesItemConditionsItem) GetExtraProperties() map[string]interface{} {
-	if e == nil {
-		return nil
-	}
-	return e.extraProperties
-}
-
-func (e *ExperimentTargetingRulesItemConditionsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if e.explicitFields != nil {
-		next.Set(e.explicitFields)
-	}
-	next.Or(next, field)
-	e.explicitFields = next
-}
-
-// SetField sets the Field field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *ExperimentTargetingRulesItemConditionsItem) SetField(field *string) {
-	e.Field = field
-	e.require(experimentTargetingRulesItemConditionsItemFieldField)
-}
-
-// SetOperator sets the Operator field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *ExperimentTargetingRulesItemConditionsItem) SetOperator(operator ExperimentTargetingRulesItemConditionsItemOperator) {
-	e.Operator = operator
-	e.require(experimentTargetingRulesItemConditionsItemFieldOperator)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *ExperimentTargetingRulesItemConditionsItem) SetType(type_ ExperimentTargetingRulesItemConditionsItemType) {
-	e.Type = type_
-	e.require(experimentTargetingRulesItemConditionsItemFieldType)
-}
-
-// SetValue sets the Value field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *ExperimentTargetingRulesItemConditionsItem) SetValue(value any) {
-	e.Value = value
-	e.require(experimentTargetingRulesItemConditionsItemFieldValue)
-}
-
-func (e *ExperimentTargetingRulesItemConditionsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler ExperimentTargetingRulesItemConditionsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*e = ExperimentTargetingRulesItemConditionsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *e)
-	if err != nil {
-		return err
-	}
-	e.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, experimentTargetingRulesItemConditionsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		e.require(presentFields)
-	}
-	e.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (e *ExperimentTargetingRulesItemConditionsItem) MarshalJSON() ([]byte, error) {
-	type embed ExperimentTargetingRulesItemConditionsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*e),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (e *ExperimentTargetingRulesItemConditionsItem) String() string {
-	if e == nil {
-		return "<nil>"
-	}
-	if len(e.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(e); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", e)
-}
-
-// Comparison to apply.
-type ExperimentTargetingRulesItemConditionsItemOperator string
-
-const (
-	ExperimentTargetingRulesItemConditionsItemOperatorAny  ExperimentTargetingRulesItemConditionsItemOperator = "any"
-	ExperimentTargetingRulesItemConditionsItemOperatorNone ExperimentTargetingRulesItemConditionsItemOperator = "none"
-	ExperimentTargetingRulesItemConditionsItemOperatorEq   ExperimentTargetingRulesItemConditionsItemOperator = "eq"
-	ExperimentTargetingRulesItemConditionsItemOperatorNeq  ExperimentTargetingRulesItemConditionsItemOperator = "neq"
-	ExperimentTargetingRulesItemConditionsItemOperatorGt   ExperimentTargetingRulesItemConditionsItemOperator = "gt"
-	ExperimentTargetingRulesItemConditionsItemOperatorGte  ExperimentTargetingRulesItemConditionsItemOperator = "gte"
-	ExperimentTargetingRulesItemConditionsItemOperatorLt   ExperimentTargetingRulesItemConditionsItemOperator = "lt"
-	ExperimentTargetingRulesItemConditionsItemOperatorLte  ExperimentTargetingRulesItemConditionsItemOperator = "lte"
-)
-
-func NewExperimentTargetingRulesItemConditionsItemOperatorFromString(s string) (ExperimentTargetingRulesItemConditionsItemOperator, error) {
-	switch s {
-	case "any":
-		return ExperimentTargetingRulesItemConditionsItemOperatorAny, nil
-	case "none":
-		return ExperimentTargetingRulesItemConditionsItemOperatorNone, nil
-	case "eq":
-		return ExperimentTargetingRulesItemConditionsItemOperatorEq, nil
-	case "neq":
-		return ExperimentTargetingRulesItemConditionsItemOperatorNeq, nil
-	case "gt":
-		return ExperimentTargetingRulesItemConditionsItemOperatorGt, nil
-	case "gte":
-		return ExperimentTargetingRulesItemConditionsItemOperatorGte, nil
-	case "lt":
-		return ExperimentTargetingRulesItemConditionsItemOperatorLt, nil
-	case "lte":
-		return ExperimentTargetingRulesItemConditionsItemOperatorLte, nil
-	}
-	var t ExperimentTargetingRulesItemConditionsItemOperator
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (e ExperimentTargetingRulesItemConditionsItemOperator) Ptr() *ExperimentTargetingRulesItemConditionsItemOperator {
-	return &e
-}
-
-// What the condition matches on: the user ID, the account ID, or a named user property.
-type ExperimentTargetingRulesItemConditionsItemType string
-
-const (
-	ExperimentTargetingRulesItemConditionsItemTypeUserID    ExperimentTargetingRulesItemConditionsItemType = "user_id"
-	ExperimentTargetingRulesItemConditionsItemTypeAccountID ExperimentTargetingRulesItemConditionsItemType = "account_id"
-	ExperimentTargetingRulesItemConditionsItemTypeProperty  ExperimentTargetingRulesItemConditionsItemType = "property"
-)
-
-func NewExperimentTargetingRulesItemConditionsItemTypeFromString(s string) (ExperimentTargetingRulesItemConditionsItemType, error) {
-	switch s {
-	case "user_id":
-		return ExperimentTargetingRulesItemConditionsItemTypeUserID, nil
-	case "account_id":
-		return ExperimentTargetingRulesItemConditionsItemTypeAccountID, nil
-	case "property":
-		return ExperimentTargetingRulesItemConditionsItemTypeProperty, nil
-	}
-	var t ExperimentTargetingRulesItemConditionsItemType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (e ExperimentTargetingRulesItemConditionsItemType) Ptr() *ExperimentTargetingRulesItemConditionsItemType {
-	return &e
-}
-
-// `include` — users matching this rule qualify; `exclude` — users matching this rule are always excluded, overriding any include rule.
-type ExperimentTargetingRulesItemType string
-
-const (
-	ExperimentTargetingRulesItemTypeInclude ExperimentTargetingRulesItemType = "include"
-	ExperimentTargetingRulesItemTypeExclude ExperimentTargetingRulesItemType = "exclude"
-)
-
-func NewExperimentTargetingRulesItemTypeFromString(s string) (ExperimentTargetingRulesItemType, error) {
-	switch s {
-	case "include":
-		return ExperimentTargetingRulesItemTypeInclude, nil
-	case "exclude":
-		return ExperimentTargetingRulesItemTypeExclude, nil
-	}
-	var t ExperimentTargetingRulesItemType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (e ExperimentTargetingRulesItemType) Ptr() *ExperimentTargetingRulesItemType {
-	return &e
-}
-
-var (
 	experimentVariantsItemFieldName            = big.NewInt(1 << 0)
 	experimentVariantsItemFieldRanges          = big.NewInt(1 << 1)
 	experimentVariantsItemFieldRelatedResource = big.NewInt(1 << 2)
@@ -2295,366 +1870,6 @@ func (c *CreateExperimentsRequestControl) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createExperimentsRequestTargetingRulesItemFieldConditions     = big.NewInt(1 << 0)
-	createExperimentsRequestTargetingRulesItemFieldPassPercentage = big.NewInt(1 << 1)
-	createExperimentsRequestTargetingRulesItemFieldType           = big.NewInt(1 << 2)
-)
-
-type CreateExperimentsRequestTargetingRulesItem struct {
-	// Conditions within this rule. Must be non-empty. All conditions must be satisfied for the rule to match (AND logic). Rules are OR-ed together.
-	Conditions []*CreateExperimentsRequestTargetingRulesItemConditionsItem `json:"conditions" url:"conditions"`
-	// Percentage of matching subjects that this rule lets in, from 0 to 100. Omit it to let in every matching subject. Only `include` rules accept it. Raising it keeps every subject that the rule already lets in.
-	PassPercentage *float64 `json:"pass_percentage,omitempty" url:"pass_percentage,omitempty"`
-	// `include` — users matching this rule qualify; `exclude` — users matching this rule are always excluded, overriding any include rule. Defaults to `include`.
-	Type *CreateExperimentsRequestTargetingRulesItemType `json:"type,omitempty" url:"type,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateExperimentsRequestTargetingRulesItem) GetConditions() []*CreateExperimentsRequestTargetingRulesItemConditionsItem {
-	if c == nil {
-		return nil
-	}
-	return c.Conditions
-}
-
-func (c *CreateExperimentsRequestTargetingRulesItem) GetPassPercentage() *float64 {
-	if c == nil {
-		return nil
-	}
-	return c.PassPercentage
-}
-
-func (c *CreateExperimentsRequestTargetingRulesItem) GetType() *CreateExperimentsRequestTargetingRulesItemType {
-	if c == nil {
-		return nil
-	}
-	return c.Type
-}
-
-func (c *CreateExperimentsRequestTargetingRulesItem) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateExperimentsRequestTargetingRulesItem) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetConditions sets the Conditions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateExperimentsRequestTargetingRulesItem) SetConditions(conditions []*CreateExperimentsRequestTargetingRulesItemConditionsItem) {
-	c.Conditions = conditions
-	c.require(createExperimentsRequestTargetingRulesItemFieldConditions)
-}
-
-// SetPassPercentage sets the PassPercentage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateExperimentsRequestTargetingRulesItem) SetPassPercentage(passPercentage *float64) {
-	c.PassPercentage = passPercentage
-	c.require(createExperimentsRequestTargetingRulesItemFieldPassPercentage)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateExperimentsRequestTargetingRulesItem) SetType(type_ *CreateExperimentsRequestTargetingRulesItemType) {
-	c.Type = type_
-	c.require(createExperimentsRequestTargetingRulesItemFieldType)
-}
-
-func (c *CreateExperimentsRequestTargetingRulesItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateExperimentsRequestTargetingRulesItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateExperimentsRequestTargetingRulesItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateExperimentsRequestTargetingRulesItem) MarshalJSON() ([]byte, error) {
-	type embed CreateExperimentsRequestTargetingRulesItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateExperimentsRequestTargetingRulesItem) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-var (
-	createExperimentsRequestTargetingRulesItemConditionsItemFieldField    = big.NewInt(1 << 0)
-	createExperimentsRequestTargetingRulesItemConditionsItemFieldOperator = big.NewInt(1 << 1)
-	createExperimentsRequestTargetingRulesItemConditionsItemFieldType     = big.NewInt(1 << 2)
-	createExperimentsRequestTargetingRulesItemConditionsItemFieldValue    = big.NewInt(1 << 3)
-)
-
-// createExperimentsRequestTargetingRulesItemConditionsItemNullableFields maps the wire names of CreateExperimentsRequestTargetingRulesItemConditionsItem's nullable fields (required or optional) to their field bits.
-var createExperimentsRequestTargetingRulesItemConditionsItemNullableFields = map[string]*big.Int{
-	"field": createExperimentsRequestTargetingRulesItemConditionsItemFieldField,
-}
-
-type CreateExperimentsRequestTargetingRulesItemConditionsItem struct {
-	// Property name to read from the user context. Required when `type` is `property`.
-	Field *string `json:"field,omitempty" url:"field,omitempty"`
-	// Comparison to apply: `any`/`none` — inclusion/exclusion list; `eq`/`neq` — equality; `gt`/`gte`/`lt`/`lte` — numeric range.
-	Operator CreateExperimentsRequestTargetingRulesItemConditionsItemOperator `json:"operator" url:"operator"`
-	// `user_id` — match on subject user ID; `account_id` — match on account ID (prefixed `biz_`); `property` — match on a named user property (requires `field`).
-	Type  CreateExperimentsRequestTargetingRulesItemConditionsItemType `json:"type" url:"type"`
-	Value any                                                          `json:"value" url:"value"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (c *CreateExperimentsRequestTargetingRulesItemConditionsItem) GetField() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Field
-}
-
-func (c *CreateExperimentsRequestTargetingRulesItemConditionsItem) GetOperator() CreateExperimentsRequestTargetingRulesItemConditionsItemOperator {
-	if c == nil {
-		return ""
-	}
-	return c.Operator
-}
-
-func (c *CreateExperimentsRequestTargetingRulesItemConditionsItem) GetType() CreateExperimentsRequestTargetingRulesItemConditionsItemType {
-	if c == nil {
-		return ""
-	}
-	return c.Type
-}
-
-func (c *CreateExperimentsRequestTargetingRulesItemConditionsItem) GetValue() any {
-	if c == nil {
-		return nil
-	}
-	return c.Value
-}
-
-func (c *CreateExperimentsRequestTargetingRulesItemConditionsItem) GetExtraProperties() map[string]interface{} {
-	if c == nil {
-		return nil
-	}
-	return c.extraProperties
-}
-
-func (c *CreateExperimentsRequestTargetingRulesItemConditionsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if c.explicitFields != nil {
-		next.Set(c.explicitFields)
-	}
-	next.Or(next, field)
-	c.explicitFields = next
-}
-
-// SetField sets the Field field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateExperimentsRequestTargetingRulesItemConditionsItem) SetField(field *string) {
-	c.Field = field
-	c.require(createExperimentsRequestTargetingRulesItemConditionsItemFieldField)
-}
-
-// SetOperator sets the Operator field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateExperimentsRequestTargetingRulesItemConditionsItem) SetOperator(operator CreateExperimentsRequestTargetingRulesItemConditionsItemOperator) {
-	c.Operator = operator
-	c.require(createExperimentsRequestTargetingRulesItemConditionsItemFieldOperator)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateExperimentsRequestTargetingRulesItemConditionsItem) SetType(type_ CreateExperimentsRequestTargetingRulesItemConditionsItemType) {
-	c.Type = type_
-	c.require(createExperimentsRequestTargetingRulesItemConditionsItemFieldType)
-}
-
-// SetValue sets the Value field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateExperimentsRequestTargetingRulesItemConditionsItem) SetValue(value any) {
-	c.Value = value
-	c.require(createExperimentsRequestTargetingRulesItemConditionsItemFieldValue)
-}
-
-func (c *CreateExperimentsRequestTargetingRulesItemConditionsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler CreateExperimentsRequestTargetingRulesItemConditionsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*c = CreateExperimentsRequestTargetingRulesItemConditionsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *c)
-	if err != nil {
-		return err
-	}
-	c.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, createExperimentsRequestTargetingRulesItemConditionsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		c.require(presentFields)
-	}
-	c.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (c *CreateExperimentsRequestTargetingRulesItemConditionsItem) MarshalJSON() ([]byte, error) {
-	type embed CreateExperimentsRequestTargetingRulesItemConditionsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*c),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (c *CreateExperimentsRequestTargetingRulesItemConditionsItem) String() string {
-	if c == nil {
-		return "<nil>"
-	}
-	if len(c.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(c); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", c)
-}
-
-// Comparison to apply: `any`/`none` — inclusion/exclusion list; `eq`/`neq` — equality; `gt`/`gte`/`lt`/`lte` — numeric range.
-type CreateExperimentsRequestTargetingRulesItemConditionsItemOperator string
-
-const (
-	CreateExperimentsRequestTargetingRulesItemConditionsItemOperatorAny  CreateExperimentsRequestTargetingRulesItemConditionsItemOperator = "any"
-	CreateExperimentsRequestTargetingRulesItemConditionsItemOperatorNone CreateExperimentsRequestTargetingRulesItemConditionsItemOperator = "none"
-	CreateExperimentsRequestTargetingRulesItemConditionsItemOperatorEq   CreateExperimentsRequestTargetingRulesItemConditionsItemOperator = "eq"
-	CreateExperimentsRequestTargetingRulesItemConditionsItemOperatorNeq  CreateExperimentsRequestTargetingRulesItemConditionsItemOperator = "neq"
-	CreateExperimentsRequestTargetingRulesItemConditionsItemOperatorGt   CreateExperimentsRequestTargetingRulesItemConditionsItemOperator = "gt"
-	CreateExperimentsRequestTargetingRulesItemConditionsItemOperatorGte  CreateExperimentsRequestTargetingRulesItemConditionsItemOperator = "gte"
-	CreateExperimentsRequestTargetingRulesItemConditionsItemOperatorLt   CreateExperimentsRequestTargetingRulesItemConditionsItemOperator = "lt"
-	CreateExperimentsRequestTargetingRulesItemConditionsItemOperatorLte  CreateExperimentsRequestTargetingRulesItemConditionsItemOperator = "lte"
-)
-
-func NewCreateExperimentsRequestTargetingRulesItemConditionsItemOperatorFromString(s string) (CreateExperimentsRequestTargetingRulesItemConditionsItemOperator, error) {
-	switch s {
-	case "any":
-		return CreateExperimentsRequestTargetingRulesItemConditionsItemOperatorAny, nil
-	case "none":
-		return CreateExperimentsRequestTargetingRulesItemConditionsItemOperatorNone, nil
-	case "eq":
-		return CreateExperimentsRequestTargetingRulesItemConditionsItemOperatorEq, nil
-	case "neq":
-		return CreateExperimentsRequestTargetingRulesItemConditionsItemOperatorNeq, nil
-	case "gt":
-		return CreateExperimentsRequestTargetingRulesItemConditionsItemOperatorGt, nil
-	case "gte":
-		return CreateExperimentsRequestTargetingRulesItemConditionsItemOperatorGte, nil
-	case "lt":
-		return CreateExperimentsRequestTargetingRulesItemConditionsItemOperatorLt, nil
-	case "lte":
-		return CreateExperimentsRequestTargetingRulesItemConditionsItemOperatorLte, nil
-	}
-	var t CreateExperimentsRequestTargetingRulesItemConditionsItemOperator
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateExperimentsRequestTargetingRulesItemConditionsItemOperator) Ptr() *CreateExperimentsRequestTargetingRulesItemConditionsItemOperator {
-	return &c
-}
-
-// `user_id` — match on subject user ID; `account_id` — match on account ID (prefixed `biz_`); `property` — match on a named user property (requires `field`).
-type CreateExperimentsRequestTargetingRulesItemConditionsItemType string
-
-const (
-	CreateExperimentsRequestTargetingRulesItemConditionsItemTypeUserID    CreateExperimentsRequestTargetingRulesItemConditionsItemType = "user_id"
-	CreateExperimentsRequestTargetingRulesItemConditionsItemTypeAccountID CreateExperimentsRequestTargetingRulesItemConditionsItemType = "account_id"
-	CreateExperimentsRequestTargetingRulesItemConditionsItemTypeProperty  CreateExperimentsRequestTargetingRulesItemConditionsItemType = "property"
-)
-
-func NewCreateExperimentsRequestTargetingRulesItemConditionsItemTypeFromString(s string) (CreateExperimentsRequestTargetingRulesItemConditionsItemType, error) {
-	switch s {
-	case "user_id":
-		return CreateExperimentsRequestTargetingRulesItemConditionsItemTypeUserID, nil
-	case "account_id":
-		return CreateExperimentsRequestTargetingRulesItemConditionsItemTypeAccountID, nil
-	case "property":
-		return CreateExperimentsRequestTargetingRulesItemConditionsItemTypeProperty, nil
-	}
-	var t CreateExperimentsRequestTargetingRulesItemConditionsItemType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateExperimentsRequestTargetingRulesItemConditionsItemType) Ptr() *CreateExperimentsRequestTargetingRulesItemConditionsItemType {
-	return &c
-}
-
-// `include` — users matching this rule qualify; `exclude` — users matching this rule are always excluded, overriding any include rule. Defaults to `include`.
-type CreateExperimentsRequestTargetingRulesItemType string
-
-const (
-	CreateExperimentsRequestTargetingRulesItemTypeInclude CreateExperimentsRequestTargetingRulesItemType = "include"
-	CreateExperimentsRequestTargetingRulesItemTypeExclude CreateExperimentsRequestTargetingRulesItemType = "exclude"
-)
-
-func NewCreateExperimentsRequestTargetingRulesItemTypeFromString(s string) (CreateExperimentsRequestTargetingRulesItemType, error) {
-	switch s {
-	case "include":
-		return CreateExperimentsRequestTargetingRulesItemTypeInclude, nil
-	case "exclude":
-		return CreateExperimentsRequestTargetingRulesItemTypeExclude, nil
-	}
-	var t CreateExperimentsRequestTargetingRulesItemType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (c CreateExperimentsRequestTargetingRulesItemType) Ptr() *CreateExperimentsRequestTargetingRulesItemType {
-	return &c
 }
 
 var (
@@ -3279,366 +2494,6 @@ func (u *UpdateExperimentsRequestControl) String() string {
 }
 
 var (
-	updateExperimentsRequestTargetingRulesItemFieldConditions     = big.NewInt(1 << 0)
-	updateExperimentsRequestTargetingRulesItemFieldPassPercentage = big.NewInt(1 << 1)
-	updateExperimentsRequestTargetingRulesItemFieldType           = big.NewInt(1 << 2)
-)
-
-type UpdateExperimentsRequestTargetingRulesItem struct {
-	// Conditions within this rule. Must be non-empty. All conditions must be satisfied for the rule to match (AND logic). Rules are OR-ed together.
-	Conditions []*UpdateExperimentsRequestTargetingRulesItemConditionsItem `json:"conditions" url:"conditions"`
-	// Percentage of matching subjects that this rule lets in, from 0 to 100. Omit it to let in every matching subject. Only `include` rules accept it. Raising it keeps every subject that the rule already lets in.
-	PassPercentage *float64 `json:"pass_percentage,omitempty" url:"pass_percentage,omitempty"`
-	// `include` — users matching this rule qualify; `exclude` — users matching this rule are always excluded, overriding any include rule. Defaults to `include`.
-	Type *UpdateExperimentsRequestTargetingRulesItemType `json:"type,omitempty" url:"type,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateExperimentsRequestTargetingRulesItem) GetConditions() []*UpdateExperimentsRequestTargetingRulesItemConditionsItem {
-	if u == nil {
-		return nil
-	}
-	return u.Conditions
-}
-
-func (u *UpdateExperimentsRequestTargetingRulesItem) GetPassPercentage() *float64 {
-	if u == nil {
-		return nil
-	}
-	return u.PassPercentage
-}
-
-func (u *UpdateExperimentsRequestTargetingRulesItem) GetType() *UpdateExperimentsRequestTargetingRulesItemType {
-	if u == nil {
-		return nil
-	}
-	return u.Type
-}
-
-func (u *UpdateExperimentsRequestTargetingRulesItem) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateExperimentsRequestTargetingRulesItem) require(field *big.Int) {
-	next := new(big.Int)
-	if u.explicitFields != nil {
-		next.Set(u.explicitFields)
-	}
-	next.Or(next, field)
-	u.explicitFields = next
-}
-
-// SetConditions sets the Conditions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateExperimentsRequestTargetingRulesItem) SetConditions(conditions []*UpdateExperimentsRequestTargetingRulesItemConditionsItem) {
-	u.Conditions = conditions
-	u.require(updateExperimentsRequestTargetingRulesItemFieldConditions)
-}
-
-// SetPassPercentage sets the PassPercentage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateExperimentsRequestTargetingRulesItem) SetPassPercentage(passPercentage *float64) {
-	u.PassPercentage = passPercentage
-	u.require(updateExperimentsRequestTargetingRulesItemFieldPassPercentage)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateExperimentsRequestTargetingRulesItem) SetType(type_ *UpdateExperimentsRequestTargetingRulesItemType) {
-	u.Type = type_
-	u.require(updateExperimentsRequestTargetingRulesItemFieldType)
-}
-
-func (u *UpdateExperimentsRequestTargetingRulesItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateExperimentsRequestTargetingRulesItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateExperimentsRequestTargetingRulesItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateExperimentsRequestTargetingRulesItem) MarshalJSON() ([]byte, error) {
-	type embed UpdateExperimentsRequestTargetingRulesItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateExperimentsRequestTargetingRulesItem) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-var (
-	updateExperimentsRequestTargetingRulesItemConditionsItemFieldField    = big.NewInt(1 << 0)
-	updateExperimentsRequestTargetingRulesItemConditionsItemFieldOperator = big.NewInt(1 << 1)
-	updateExperimentsRequestTargetingRulesItemConditionsItemFieldType     = big.NewInt(1 << 2)
-	updateExperimentsRequestTargetingRulesItemConditionsItemFieldValue    = big.NewInt(1 << 3)
-)
-
-// updateExperimentsRequestTargetingRulesItemConditionsItemNullableFields maps the wire names of UpdateExperimentsRequestTargetingRulesItemConditionsItem's nullable fields (required or optional) to their field bits.
-var updateExperimentsRequestTargetingRulesItemConditionsItemNullableFields = map[string]*big.Int{
-	"field": updateExperimentsRequestTargetingRulesItemConditionsItemFieldField,
-}
-
-type UpdateExperimentsRequestTargetingRulesItemConditionsItem struct {
-	// Property name to read from the user context. Required when `type` is `property`.
-	Field *string `json:"field,omitempty" url:"field,omitempty"`
-	// Comparison to apply: `any`/`none` — inclusion/exclusion list; `eq`/`neq` — equality; `gt`/`gte`/`lt`/`lte` — numeric range.
-	Operator UpdateExperimentsRequestTargetingRulesItemConditionsItemOperator `json:"operator" url:"operator"`
-	// `user_id` — match on subject user ID; `account_id` — match on account ID (prefixed `biz_`); `property` — match on a named user property (requires `field`).
-	Type  UpdateExperimentsRequestTargetingRulesItemConditionsItemType `json:"type" url:"type"`
-	Value any                                                          `json:"value" url:"value"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (u *UpdateExperimentsRequestTargetingRulesItemConditionsItem) GetField() *string {
-	if u == nil {
-		return nil
-	}
-	return u.Field
-}
-
-func (u *UpdateExperimentsRequestTargetingRulesItemConditionsItem) GetOperator() UpdateExperimentsRequestTargetingRulesItemConditionsItemOperator {
-	if u == nil {
-		return ""
-	}
-	return u.Operator
-}
-
-func (u *UpdateExperimentsRequestTargetingRulesItemConditionsItem) GetType() UpdateExperimentsRequestTargetingRulesItemConditionsItemType {
-	if u == nil {
-		return ""
-	}
-	return u.Type
-}
-
-func (u *UpdateExperimentsRequestTargetingRulesItemConditionsItem) GetValue() any {
-	if u == nil {
-		return nil
-	}
-	return u.Value
-}
-
-func (u *UpdateExperimentsRequestTargetingRulesItemConditionsItem) GetExtraProperties() map[string]interface{} {
-	if u == nil {
-		return nil
-	}
-	return u.extraProperties
-}
-
-func (u *UpdateExperimentsRequestTargetingRulesItemConditionsItem) require(field *big.Int) {
-	next := new(big.Int)
-	if u.explicitFields != nil {
-		next.Set(u.explicitFields)
-	}
-	next.Or(next, field)
-	u.explicitFields = next
-}
-
-// SetField sets the Field field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateExperimentsRequestTargetingRulesItemConditionsItem) SetField(field *string) {
-	u.Field = field
-	u.require(updateExperimentsRequestTargetingRulesItemConditionsItemFieldField)
-}
-
-// SetOperator sets the Operator field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateExperimentsRequestTargetingRulesItemConditionsItem) SetOperator(operator UpdateExperimentsRequestTargetingRulesItemConditionsItemOperator) {
-	u.Operator = operator
-	u.require(updateExperimentsRequestTargetingRulesItemConditionsItemFieldOperator)
-}
-
-// SetType sets the Type field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateExperimentsRequestTargetingRulesItemConditionsItem) SetType(type_ UpdateExperimentsRequestTargetingRulesItemConditionsItemType) {
-	u.Type = type_
-	u.require(updateExperimentsRequestTargetingRulesItemConditionsItemFieldType)
-}
-
-// SetValue sets the Value field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateExperimentsRequestTargetingRulesItemConditionsItem) SetValue(value any) {
-	u.Value = value
-	u.require(updateExperimentsRequestTargetingRulesItemConditionsItemFieldValue)
-}
-
-func (u *UpdateExperimentsRequestTargetingRulesItemConditionsItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler UpdateExperimentsRequestTargetingRulesItemConditionsItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*u = UpdateExperimentsRequestTargetingRulesItemConditionsItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *u)
-	if err != nil {
-		return err
-	}
-	u.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateExperimentsRequestTargetingRulesItemConditionsItemNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		u.require(presentFields)
-	}
-	u.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (u *UpdateExperimentsRequestTargetingRulesItemConditionsItem) MarshalJSON() ([]byte, error) {
-	type embed UpdateExperimentsRequestTargetingRulesItemConditionsItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*u),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (u *UpdateExperimentsRequestTargetingRulesItemConditionsItem) String() string {
-	if u == nil {
-		return "<nil>"
-	}
-	if len(u.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(u); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", u)
-}
-
-// Comparison to apply: `any`/`none` — inclusion/exclusion list; `eq`/`neq` — equality; `gt`/`gte`/`lt`/`lte` — numeric range.
-type UpdateExperimentsRequestTargetingRulesItemConditionsItemOperator string
-
-const (
-	UpdateExperimentsRequestTargetingRulesItemConditionsItemOperatorAny  UpdateExperimentsRequestTargetingRulesItemConditionsItemOperator = "any"
-	UpdateExperimentsRequestTargetingRulesItemConditionsItemOperatorNone UpdateExperimentsRequestTargetingRulesItemConditionsItemOperator = "none"
-	UpdateExperimentsRequestTargetingRulesItemConditionsItemOperatorEq   UpdateExperimentsRequestTargetingRulesItemConditionsItemOperator = "eq"
-	UpdateExperimentsRequestTargetingRulesItemConditionsItemOperatorNeq  UpdateExperimentsRequestTargetingRulesItemConditionsItemOperator = "neq"
-	UpdateExperimentsRequestTargetingRulesItemConditionsItemOperatorGt   UpdateExperimentsRequestTargetingRulesItemConditionsItemOperator = "gt"
-	UpdateExperimentsRequestTargetingRulesItemConditionsItemOperatorGte  UpdateExperimentsRequestTargetingRulesItemConditionsItemOperator = "gte"
-	UpdateExperimentsRequestTargetingRulesItemConditionsItemOperatorLt   UpdateExperimentsRequestTargetingRulesItemConditionsItemOperator = "lt"
-	UpdateExperimentsRequestTargetingRulesItemConditionsItemOperatorLte  UpdateExperimentsRequestTargetingRulesItemConditionsItemOperator = "lte"
-)
-
-func NewUpdateExperimentsRequestTargetingRulesItemConditionsItemOperatorFromString(s string) (UpdateExperimentsRequestTargetingRulesItemConditionsItemOperator, error) {
-	switch s {
-	case "any":
-		return UpdateExperimentsRequestTargetingRulesItemConditionsItemOperatorAny, nil
-	case "none":
-		return UpdateExperimentsRequestTargetingRulesItemConditionsItemOperatorNone, nil
-	case "eq":
-		return UpdateExperimentsRequestTargetingRulesItemConditionsItemOperatorEq, nil
-	case "neq":
-		return UpdateExperimentsRequestTargetingRulesItemConditionsItemOperatorNeq, nil
-	case "gt":
-		return UpdateExperimentsRequestTargetingRulesItemConditionsItemOperatorGt, nil
-	case "gte":
-		return UpdateExperimentsRequestTargetingRulesItemConditionsItemOperatorGte, nil
-	case "lt":
-		return UpdateExperimentsRequestTargetingRulesItemConditionsItemOperatorLt, nil
-	case "lte":
-		return UpdateExperimentsRequestTargetingRulesItemConditionsItemOperatorLte, nil
-	}
-	var t UpdateExperimentsRequestTargetingRulesItemConditionsItemOperator
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateExperimentsRequestTargetingRulesItemConditionsItemOperator) Ptr() *UpdateExperimentsRequestTargetingRulesItemConditionsItemOperator {
-	return &u
-}
-
-// `user_id` — match on subject user ID; `account_id` — match on account ID (prefixed `biz_`); `property` — match on a named user property (requires `field`).
-type UpdateExperimentsRequestTargetingRulesItemConditionsItemType string
-
-const (
-	UpdateExperimentsRequestTargetingRulesItemConditionsItemTypeUserID    UpdateExperimentsRequestTargetingRulesItemConditionsItemType = "user_id"
-	UpdateExperimentsRequestTargetingRulesItemConditionsItemTypeAccountID UpdateExperimentsRequestTargetingRulesItemConditionsItemType = "account_id"
-	UpdateExperimentsRequestTargetingRulesItemConditionsItemTypeProperty  UpdateExperimentsRequestTargetingRulesItemConditionsItemType = "property"
-)
-
-func NewUpdateExperimentsRequestTargetingRulesItemConditionsItemTypeFromString(s string) (UpdateExperimentsRequestTargetingRulesItemConditionsItemType, error) {
-	switch s {
-	case "user_id":
-		return UpdateExperimentsRequestTargetingRulesItemConditionsItemTypeUserID, nil
-	case "account_id":
-		return UpdateExperimentsRequestTargetingRulesItemConditionsItemTypeAccountID, nil
-	case "property":
-		return UpdateExperimentsRequestTargetingRulesItemConditionsItemTypeProperty, nil
-	}
-	var t UpdateExperimentsRequestTargetingRulesItemConditionsItemType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateExperimentsRequestTargetingRulesItemConditionsItemType) Ptr() *UpdateExperimentsRequestTargetingRulesItemConditionsItemType {
-	return &u
-}
-
-// `include` — users matching this rule qualify; `exclude` — users matching this rule are always excluded, overriding any include rule. Defaults to `include`.
-type UpdateExperimentsRequestTargetingRulesItemType string
-
-const (
-	UpdateExperimentsRequestTargetingRulesItemTypeInclude UpdateExperimentsRequestTargetingRulesItemType = "include"
-	UpdateExperimentsRequestTargetingRulesItemTypeExclude UpdateExperimentsRequestTargetingRulesItemType = "exclude"
-)
-
-func NewUpdateExperimentsRequestTargetingRulesItemTypeFromString(s string) (UpdateExperimentsRequestTargetingRulesItemType, error) {
-	switch s {
-	case "include":
-		return UpdateExperimentsRequestTargetingRulesItemTypeInclude, nil
-	case "exclude":
-		return UpdateExperimentsRequestTargetingRulesItemTypeExclude, nil
-	}
-	var t UpdateExperimentsRequestTargetingRulesItemType
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateExperimentsRequestTargetingRulesItemType) Ptr() *UpdateExperimentsRequestTargetingRulesItemType {
-	return &u
-}
-
-var (
 	updateExperimentsRequestVariantsItemFieldName            = big.NewInt(1 << 0)
 	updateExperimentsRequestVariantsItemFieldRelatedResource = big.NewInt(1 << 1)
 	updateExperimentsRequestVariantsItemFieldWeight          = big.NewInt(1 << 2)
@@ -3764,8 +2619,7 @@ var (
 	updateExperimentsRequestFieldControl         = big.NewInt(1 << 2)
 	updateExperimentsRequestFieldHypothesis      = big.NewInt(1 << 3)
 	updateExperimentsRequestFieldRelatedResource = big.NewInt(1 << 4)
-	updateExperimentsRequestFieldTargetingRules  = big.NewInt(1 << 5)
-	updateExperimentsRequestFieldVariants        = big.NewInt(1 << 6)
+	updateExperimentsRequestFieldVariants        = big.NewInt(1 << 5)
 )
 
 type UpdateExperimentsRequest struct {
@@ -3778,8 +2632,6 @@ type UpdateExperimentsRequest struct {
 	Hypothesis *string `json:"hypothesis,omitempty" url:"-"`
 	// Resource owned by the account that this experiment is bound to, such as an app or product. `null` when unbound. Fixed once the experiment first activates.
 	RelatedResource *ExperimentResourceReference `json:"related_resource,omitempty" url:"-"`
-	// Replace the targeting rules with this set. Omit to leave unchanged.
-	TargetingRules []*UpdateExperimentsRequestTargetingRulesItem `json:"targeting_rules,omitempty" url:"-"`
 	// Grow treatment allocation. Pass every existing treatment with an equal-or-higher weight; append new names to add arms. Weights never decrease and arms are never removed. Omit to leave unchanged.
 	Variants []*UpdateExperimentsRequestVariantsItem `json:"variants,omitempty" url:"-"`
 
@@ -3829,13 +2681,6 @@ func (u *UpdateExperimentsRequest) SetHypothesis(hypothesis *string) {
 func (u *UpdateExperimentsRequest) SetRelatedResource(relatedResource *ExperimentResourceReference) {
 	u.RelatedResource = relatedResource
 	u.require(updateExperimentsRequestFieldRelatedResource)
-}
-
-// SetTargetingRules sets the TargetingRules field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateExperimentsRequest) SetTargetingRules(targetingRules []*UpdateExperimentsRequestTargetingRulesItem) {
-	u.TargetingRules = targetingRules
-	u.require(updateExperimentsRequestFieldTargetingRules)
 }
 
 // SetVariants sets the Variants field and marks it as non-optional;
