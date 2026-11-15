@@ -373,19 +373,21 @@ var (
 	userFieldDateOfBirth                       = big.NewInt(1 << 9)
 	userFieldEarningsUsd                       = big.NewInt(1 << 10)
 	userFieldEmail                             = big.NewInt(1 << 11)
-	userFieldID                                = big.NewInt(1 << 12)
-	userFieldLevel                             = big.NewInt(1 << 13)
-	userFieldName                              = big.NewInt(1 << 14)
-	userFieldProfilePicture                    = big.NewInt(1 << 15)
-	userFieldSocialLinks                       = big.NewInt(1 << 16)
-	userFieldState                             = big.NewInt(1 << 17)
-	userFieldTotalUsd                          = big.NewInt(1 << 18)
-	userFieldTrading                           = big.NewInt(1 << 19)
-	userFieldUsername                          = big.NewInt(1 << 20)
-	userFieldVerification                      = big.NewInt(1 << 21)
-	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 22)
-	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 23)
-	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 24)
+	userFieldFollowersCount                    = big.NewInt(1 << 12)
+	userFieldID                                = big.NewInt(1 << 13)
+	userFieldLevel                             = big.NewInt(1 << 14)
+	userFieldName                              = big.NewInt(1 << 15)
+	userFieldProfilePicture                    = big.NewInt(1 << 16)
+	userFieldSocialLinks                       = big.NewInt(1 << 17)
+	userFieldState                             = big.NewInt(1 << 18)
+	userFieldTotalUsd                          = big.NewInt(1 << 19)
+	userFieldTrading                           = big.NewInt(1 << 20)
+	userFieldUsername                          = big.NewInt(1 << 21)
+	userFieldVerification                      = big.NewInt(1 << 22)
+	userFieldVerifiedAt                        = big.NewInt(1 << 23)
+	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 24)
+	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 25)
+	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 26)
 )
 
 // userNullableFields maps the wire names of User's nullable fields (required or optional) to their field bits.
@@ -405,6 +407,7 @@ var userNullableFields = map[string]*big.Int{
 	"state":                                 userFieldState,
 	"total_usd":                             userFieldTotalUsd,
 	"trading":                               userFieldTrading,
+	"verified_at":                           userFieldVerifiedAt,
 	"whop_partner_enabled_at":               userFieldWhopPartnerEnabledAt,
 	"whop_partner_onboarded_accounts_count": userFieldWhopPartnerOnboardedAccountsCount,
 	"whop_partner_verified_at":              userFieldWhopPartnerVerifiedAt,
@@ -434,6 +437,8 @@ type User struct {
 	EarningsUsd *UserEarnings `json:"earnings_usd,omitempty" url:"earnings_usd,omitempty"`
 	// The user's email address. Populated only on the self view (retrieved with the reserved id `me`) for callers with email-read scope; `null` otherwise, or while the account has no confirmed email yet.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
+	// The number of users who follow this user.
+	FollowersCount int `json:"followers_count" url:"followers_count"`
 	// User ID, prefixed `user_`.
 	ID string `json:"id" url:"id"`
 	// The user's Whop Level, counted across every account they own. `applied_level` is public. The points and spend fields are populated only when you retrieve yourself with the reserved id `me` and have balance-read scope. `null` on lists, and when none of their accounts are in Whop Levels.
@@ -453,6 +458,8 @@ type User struct {
 	Username string `json:"username" url:"username"`
 	// Identity verification status for the user's `individual` (KYC) and `business` (KYB) profiles. Each is `null` until created, otherwise a `status` of `not_started`, `pending`, `approved`, or `rejected`.
 	Verification map[string]any `json:"verification" url:"verification"`
+	// When the user received a verified badge, as an ISO 8601 timestamp. `null` when the user is not verified.
+	VerifiedAt *string `json:"verified_at,omitempty" url:"verified_at,omitempty"`
 	// When the user became an enrolled Whop Partner, as an ISO 8601 timestamp. `null` if never enrolled.
 	WhopPartnerEnabledAt *string `json:"whop_partner_enabled_at,omitempty" url:"whop_partner_enabled_at,omitempty"`
 	// Number of accounts the user referred to Whop as a Whop Partner that have processed more than $1 in volume attributed to the user. Populated only when retrieving a single user who is a Verified Whop Partner; `null` otherwise.
@@ -551,6 +558,13 @@ func (u *User) GetEmail() *string {
 	return u.Email
 }
 
+func (u *User) GetFollowersCount() int {
+	if u == nil {
+		return 0
+	}
+	return u.FollowersCount
+}
+
 func (u *User) GetID() string {
 	if u == nil {
 		return ""
@@ -619,6 +633,13 @@ func (u *User) GetVerification() map[string]any {
 		return nil
 	}
 	return u.Verification
+}
+
+func (u *User) GetVerifiedAt() *string {
+	if u == nil {
+		return nil
+	}
+	return u.VerifiedAt
 }
 
 func (u *User) GetWhopPartnerEnabledAt() *string {
@@ -742,6 +763,13 @@ func (u *User) SetEmail(email *string) {
 	u.require(userFieldEmail)
 }
 
+// SetFollowersCount sets the FollowersCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetFollowersCount(followersCount int) {
+	u.FollowersCount = followersCount
+	u.require(userFieldFollowersCount)
+}
+
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *User) SetID(id string) {
@@ -810,6 +838,13 @@ func (u *User) SetUsername(username string) {
 func (u *User) SetVerification(verification map[string]any) {
 	u.Verification = verification
 	u.require(userFieldVerification)
+}
+
+// SetVerifiedAt sets the VerifiedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetVerifiedAt(verifiedAt *string) {
+	u.VerifiedAt = verifiedAt
+	u.require(userFieldVerifiedAt)
 }
 
 // SetWhopPartnerEnabledAt sets the WhopPartnerEnabledAt field and marks it as non-optional;
