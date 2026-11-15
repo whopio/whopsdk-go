@@ -361,257 +361,6 @@ func (r *RetrieveUsersRequest) SetTimeZone(timeZone *string) {
 }
 
 var (
-	ownerLevelFieldAppliedLevel           = big.NewInt(1 << 0)
-	ownerLevelFieldLevels                 = big.NewInt(1 << 1)
-	ownerLevelFieldMonthlyAdsSpend        = big.NewInt(1 << 2)
-	ownerLevelFieldMonthlyCardSpend       = big.NewInt(1 << 3)
-	ownerLevelFieldMonthlyQualifyingSpend = big.NewInt(1 << 4)
-	ownerLevelFieldMonthlyTradingVolume   = big.NewInt(1 << 5)
-	ownerLevelFieldPoints                 = big.NewInt(1 << 6)
-	ownerLevelFieldPointsBySource         = big.NewInt(1 << 7)
-	ownerLevelFieldPointsToNext           = big.NewInt(1 << 8)
-	ownerLevelFieldResetsAt               = big.NewInt(1 << 9)
-)
-
-// ownerLevelNullableFields maps the wire names of OwnerLevel's nullable fields (required or optional) to their field bits.
-var ownerLevelNullableFields = map[string]*big.Int{
-	"points_to_next": ownerLevelFieldPointsToNext,
-}
-
-type OwnerLevel struct {
-	// The level that applies: the highest the owner reached this month or in the 5 months before, from `0` up to `10`.
-	AppliedLevel int                            `json:"applied_level" url:"applied_level"`
-	Levels       []*AccountProcessingOfferLevel `json:"levels" url:"levels"`
-	// Whop Ads charges paid this calendar month across every account the owner owns, net of refunds, in USD, so it can be negative. An account whose month nets to zero or below is left out.
-	MonthlyAdsSpend *Money `json:"monthly_ads_spend" url:"monthly_ads_spend"`
-	// Captured Whop Card spend this calendar month across every account the owner owns, net of refunds, in USD, so it can be negative. An account whose month nets to zero or below is left out.
-	MonthlyCardSpend *Money `json:"monthly_card_spend" url:"monthly_card_spend"`
-	// Qualifying spend this calendar month across every account the owner owns, plus the owner's personal trading and partner points, in USD: `points` divided by 10.
-	MonthlyQualifyingSpend *Money `json:"monthly_qualifying_spend" url:"monthly_qualifying_spend"`
-	// Perpetual trading volume filled through Whop this calendar month across every account the owner owns and their personal wallet, in USD. An account whose month nets to zero or below is left out.
-	MonthlyTradingVolume *Money `json:"monthly_trading_volume" url:"monthly_trading_volume"`
-	// Points earned this month across every account the owner owns, plus the owner's partner points, rounded down. An account whose month nets below zero counts as zero.
-	Points int `json:"points" url:"points"`
-	// This month's points, split by where they were earned. Each source is net of its refunds, so one can be negative.
-	PointsBySource *OwnerLevelPoints `json:"points_by_source" url:"points_by_source"`
-	// Points still needed this month to reach the next level, or `null` at level `10`.
-	PointsToNext *int `json:"points_to_next,omitempty" url:"points_to_next,omitempty"`
-	// When this month's points reset to zero, as an ISO 8601 timestamp.
-	ResetsAt string `json:"resets_at" url:"resets_at"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (o *OwnerLevel) GetAppliedLevel() int {
-	if o == nil {
-		return 0
-	}
-	return o.AppliedLevel
-}
-
-func (o *OwnerLevel) GetLevels() []*AccountProcessingOfferLevel {
-	if o == nil {
-		return nil
-	}
-	return o.Levels
-}
-
-func (o *OwnerLevel) GetMonthlyAdsSpend() *Money {
-	if o == nil {
-		return nil
-	}
-	return o.MonthlyAdsSpend
-}
-
-func (o *OwnerLevel) GetMonthlyCardSpend() *Money {
-	if o == nil {
-		return nil
-	}
-	return o.MonthlyCardSpend
-}
-
-func (o *OwnerLevel) GetMonthlyQualifyingSpend() *Money {
-	if o == nil {
-		return nil
-	}
-	return o.MonthlyQualifyingSpend
-}
-
-func (o *OwnerLevel) GetMonthlyTradingVolume() *Money {
-	if o == nil {
-		return nil
-	}
-	return o.MonthlyTradingVolume
-}
-
-func (o *OwnerLevel) GetPoints() int {
-	if o == nil {
-		return 0
-	}
-	return o.Points
-}
-
-func (o *OwnerLevel) GetPointsBySource() *OwnerLevelPoints {
-	if o == nil {
-		return nil
-	}
-	return o.PointsBySource
-}
-
-func (o *OwnerLevel) GetPointsToNext() *int {
-	if o == nil {
-		return nil
-	}
-	return o.PointsToNext
-}
-
-func (o *OwnerLevel) GetResetsAt() string {
-	if o == nil {
-		return ""
-	}
-	return o.ResetsAt
-}
-
-func (o *OwnerLevel) GetExtraProperties() map[string]interface{} {
-	if o == nil {
-		return nil
-	}
-	return o.extraProperties
-}
-
-func (o *OwnerLevel) require(field *big.Int) {
-	next := new(big.Int)
-	if o.explicitFields != nil {
-		next.Set(o.explicitFields)
-	}
-	next.Or(next, field)
-	o.explicitFields = next
-}
-
-// SetAppliedLevel sets the AppliedLevel field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetAppliedLevel(appliedLevel int) {
-	o.AppliedLevel = appliedLevel
-	o.require(ownerLevelFieldAppliedLevel)
-}
-
-// SetLevels sets the Levels field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetLevels(levels []*AccountProcessingOfferLevel) {
-	o.Levels = levels
-	o.require(ownerLevelFieldLevels)
-}
-
-// SetMonthlyAdsSpend sets the MonthlyAdsSpend field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetMonthlyAdsSpend(monthlyAdsSpend *Money) {
-	o.MonthlyAdsSpend = monthlyAdsSpend
-	o.require(ownerLevelFieldMonthlyAdsSpend)
-}
-
-// SetMonthlyCardSpend sets the MonthlyCardSpend field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetMonthlyCardSpend(monthlyCardSpend *Money) {
-	o.MonthlyCardSpend = monthlyCardSpend
-	o.require(ownerLevelFieldMonthlyCardSpend)
-}
-
-// SetMonthlyQualifyingSpend sets the MonthlyQualifyingSpend field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetMonthlyQualifyingSpend(monthlyQualifyingSpend *Money) {
-	o.MonthlyQualifyingSpend = monthlyQualifyingSpend
-	o.require(ownerLevelFieldMonthlyQualifyingSpend)
-}
-
-// SetMonthlyTradingVolume sets the MonthlyTradingVolume field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetMonthlyTradingVolume(monthlyTradingVolume *Money) {
-	o.MonthlyTradingVolume = monthlyTradingVolume
-	o.require(ownerLevelFieldMonthlyTradingVolume)
-}
-
-// SetPoints sets the Points field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetPoints(points int) {
-	o.Points = points
-	o.require(ownerLevelFieldPoints)
-}
-
-// SetPointsBySource sets the PointsBySource field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetPointsBySource(pointsBySource *OwnerLevelPoints) {
-	o.PointsBySource = pointsBySource
-	o.require(ownerLevelFieldPointsBySource)
-}
-
-// SetPointsToNext sets the PointsToNext field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetPointsToNext(pointsToNext *int) {
-	o.PointsToNext = pointsToNext
-	o.require(ownerLevelFieldPointsToNext)
-}
-
-// SetResetsAt sets the ResetsAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetResetsAt(resetsAt string) {
-	o.ResetsAt = resetsAt
-	o.require(ownerLevelFieldResetsAt)
-}
-
-func (o *OwnerLevel) UnmarshalJSON(data []byte) error {
-	type unmarshaler OwnerLevel
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*o = OwnerLevel(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *o)
-	if err != nil {
-		return err
-	}
-	o.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, ownerLevelNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		o.require(presentFields)
-	}
-	o.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (o *OwnerLevel) MarshalJSON() ([]byte, error) {
-	type embed OwnerLevel
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*o),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, o.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (o *OwnerLevel) String() string {
-	if o == nil {
-		return "<nil>"
-	}
-	if len(o.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(o.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(o); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", o)
-}
-
-var (
 	userFieldBalance                           = big.NewInt(1 << 0)
 	userFieldBalanceHistory                    = big.NewInt(1 << 1)
 	userFieldBalances                          = big.NewInt(1 << 2)
@@ -687,8 +436,8 @@ type User struct {
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// User ID, prefixed `user_`.
 	ID string `json:"id" url:"id"`
-	// The user's Whop Levels progress, counted across every account they own. Populated only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise, and when none of their accounts are in Whop Levels.
-	Level *OwnerLevel `json:"level,omitempty" url:"level,omitempty"`
+	// The user's Whop Level, counted across every account they own. `applied_level` is public. The points and spend fields are populated only when you retrieve yourself with the reserved id `me` and have balance-read scope. `null` on lists, and when none of their accounts are in Whop Levels.
+	Level *UserLevel `json:"level,omitempty" url:"level,omitempty"`
 	// The user's display name
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
 	// Avatar wrapper. Its `url` is always present, and is a generated placeholder when the user set no picture.
@@ -809,7 +558,7 @@ func (u *User) GetID() string {
 	return u.ID
 }
 
-func (u *User) GetLevel() *OwnerLevel {
+func (u *User) GetLevel() *UserLevel {
 	if u == nil {
 		return nil
 	}
@@ -1002,7 +751,7 @@ func (u *User) SetID(id string) {
 
 // SetLevel sets the Level field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *User) SetLevel(level *OwnerLevel) {
+func (u *User) SetLevel(level *UserLevel) {
 	u.Level = level
 	u.require(userFieldLevel)
 }
@@ -2406,6 +2155,265 @@ func (u *UserEarnings) MarshalJSON() ([]byte, error) {
 }
 
 func (u *UserEarnings) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	userLevelFieldAppliedLevel           = big.NewInt(1 << 0)
+	userLevelFieldLevels                 = big.NewInt(1 << 1)
+	userLevelFieldMonthlyAdsSpend        = big.NewInt(1 << 2)
+	userLevelFieldMonthlyCardSpend       = big.NewInt(1 << 3)
+	userLevelFieldMonthlyQualifyingSpend = big.NewInt(1 << 4)
+	userLevelFieldMonthlyTradingVolume   = big.NewInt(1 << 5)
+	userLevelFieldPoints                 = big.NewInt(1 << 6)
+	userLevelFieldPointsBySource         = big.NewInt(1 << 7)
+	userLevelFieldPointsToNext           = big.NewInt(1 << 8)
+	userLevelFieldResetsAt               = big.NewInt(1 << 9)
+)
+
+// userLevelNullableFields maps the wire names of UserLevel's nullable fields (required or optional) to their field bits.
+var userLevelNullableFields = map[string]*big.Int{
+	"levels":                   userLevelFieldLevels,
+	"monthly_ads_spend":        userLevelFieldMonthlyAdsSpend,
+	"monthly_card_spend":       userLevelFieldMonthlyCardSpend,
+	"monthly_qualifying_spend": userLevelFieldMonthlyQualifyingSpend,
+	"monthly_trading_volume":   userLevelFieldMonthlyTradingVolume,
+	"points":                   userLevelFieldPoints,
+	"points_by_source":         userLevelFieldPointsBySource,
+	"points_to_next":           userLevelFieldPointsToNext,
+	"resets_at":                userLevelFieldResetsAt,
+}
+
+type UserLevel struct {
+	// The level that applies: the highest the user reached this month or in the 5 months before, from `0` up to `10`. Public.
+	AppliedLevel int                            `json:"applied_level" url:"applied_level"`
+	Levels       []*AccountProcessingOfferLevel `json:"levels,omitempty" url:"levels,omitempty"`
+	// Whop Ads charges paid this calendar month across every account the user owns, net of refunds, in USD, so it can be negative. An account whose month nets to zero or below is left out. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
+	MonthlyAdsSpend *Money `json:"monthly_ads_spend,omitempty" url:"monthly_ads_spend,omitempty"`
+	// Captured Whop Card spend this calendar month across every account the user owns, net of refunds, in USD, so it can be negative. An account whose month nets to zero or below is left out. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
+	MonthlyCardSpend *Money `json:"monthly_card_spend,omitempty" url:"monthly_card_spend,omitempty"`
+	// Qualifying spend this calendar month across every account the user owns, plus their personal trading and partner points, in USD: `points` divided by 10. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
+	MonthlyQualifyingSpend *Money `json:"monthly_qualifying_spend,omitempty" url:"monthly_qualifying_spend,omitempty"`
+	// Perpetual trading volume filled through Whop this calendar month across every account the user owns and their personal wallet, in USD. An account whose month nets to zero or below is left out. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
+	MonthlyTradingVolume *Money `json:"monthly_trading_volume,omitempty" url:"monthly_trading_volume,omitempty"`
+	// Points earned this month across every account the user owns, plus their partner points, rounded down. An account whose month nets below zero counts as zero. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
+	Points *int `json:"points,omitempty" url:"points,omitempty"`
+	// This month's points, split by where they were earned. Each source is net of its refunds, so one can be negative. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
+	PointsBySource *OwnerLevelPoints `json:"points_by_source,omitempty" url:"points_by_source,omitempty"`
+	// Points still needed this month to reach the next level. `null` at level `10`, and unless you retrieve yourself with the reserved id `me` and have balance-read scope.
+	PointsToNext *int `json:"points_to_next,omitempty" url:"points_to_next,omitempty"`
+	// When this month's points reset to zero, as an ISO 8601 timestamp. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
+	ResetsAt *string `json:"resets_at,omitempty" url:"resets_at,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UserLevel) GetAppliedLevel() int {
+	if u == nil {
+		return 0
+	}
+	return u.AppliedLevel
+}
+
+func (u *UserLevel) GetLevels() []*AccountProcessingOfferLevel {
+	if u == nil {
+		return nil
+	}
+	return u.Levels
+}
+
+func (u *UserLevel) GetMonthlyAdsSpend() *Money {
+	if u == nil {
+		return nil
+	}
+	return u.MonthlyAdsSpend
+}
+
+func (u *UserLevel) GetMonthlyCardSpend() *Money {
+	if u == nil {
+		return nil
+	}
+	return u.MonthlyCardSpend
+}
+
+func (u *UserLevel) GetMonthlyQualifyingSpend() *Money {
+	if u == nil {
+		return nil
+	}
+	return u.MonthlyQualifyingSpend
+}
+
+func (u *UserLevel) GetMonthlyTradingVolume() *Money {
+	if u == nil {
+		return nil
+	}
+	return u.MonthlyTradingVolume
+}
+
+func (u *UserLevel) GetPoints() *int {
+	if u == nil {
+		return nil
+	}
+	return u.Points
+}
+
+func (u *UserLevel) GetPointsBySource() *OwnerLevelPoints {
+	if u == nil {
+		return nil
+	}
+	return u.PointsBySource
+}
+
+func (u *UserLevel) GetPointsToNext() *int {
+	if u == nil {
+		return nil
+	}
+	return u.PointsToNext
+}
+
+func (u *UserLevel) GetResetsAt() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ResetsAt
+}
+
+func (u *UserLevel) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UserLevel) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetAppliedLevel sets the AppliedLevel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserLevel) SetAppliedLevel(appliedLevel int) {
+	u.AppliedLevel = appliedLevel
+	u.require(userLevelFieldAppliedLevel)
+}
+
+// SetLevels sets the Levels field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserLevel) SetLevels(levels []*AccountProcessingOfferLevel) {
+	u.Levels = levels
+	u.require(userLevelFieldLevels)
+}
+
+// SetMonthlyAdsSpend sets the MonthlyAdsSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserLevel) SetMonthlyAdsSpend(monthlyAdsSpend *Money) {
+	u.MonthlyAdsSpend = monthlyAdsSpend
+	u.require(userLevelFieldMonthlyAdsSpend)
+}
+
+// SetMonthlyCardSpend sets the MonthlyCardSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserLevel) SetMonthlyCardSpend(monthlyCardSpend *Money) {
+	u.MonthlyCardSpend = monthlyCardSpend
+	u.require(userLevelFieldMonthlyCardSpend)
+}
+
+// SetMonthlyQualifyingSpend sets the MonthlyQualifyingSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserLevel) SetMonthlyQualifyingSpend(monthlyQualifyingSpend *Money) {
+	u.MonthlyQualifyingSpend = monthlyQualifyingSpend
+	u.require(userLevelFieldMonthlyQualifyingSpend)
+}
+
+// SetMonthlyTradingVolume sets the MonthlyTradingVolume field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserLevel) SetMonthlyTradingVolume(monthlyTradingVolume *Money) {
+	u.MonthlyTradingVolume = monthlyTradingVolume
+	u.require(userLevelFieldMonthlyTradingVolume)
+}
+
+// SetPoints sets the Points field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserLevel) SetPoints(points *int) {
+	u.Points = points
+	u.require(userLevelFieldPoints)
+}
+
+// SetPointsBySource sets the PointsBySource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserLevel) SetPointsBySource(pointsBySource *OwnerLevelPoints) {
+	u.PointsBySource = pointsBySource
+	u.require(userLevelFieldPointsBySource)
+}
+
+// SetPointsToNext sets the PointsToNext field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserLevel) SetPointsToNext(pointsToNext *int) {
+	u.PointsToNext = pointsToNext
+	u.require(userLevelFieldPointsToNext)
+}
+
+// SetResetsAt sets the ResetsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserLevel) SetResetsAt(resetsAt *string) {
+	u.ResetsAt = resetsAt
+	u.require(userLevelFieldResetsAt)
+}
+
+func (u *UserLevel) UnmarshalJSON(data []byte) error {
+	type unmarshaler UserLevel
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UserLevel(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, userLevelNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UserLevel) MarshalJSON() ([]byte, error) {
+	type embed UserLevel
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UserLevel) String() string {
 	if u == nil {
 		return "<nil>"
 	}

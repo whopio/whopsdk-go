@@ -43148,6 +43148,257 @@ func (o *OauthGrant) String() string {
 }
 
 var (
+	ownerLevelFieldAppliedLevel           = big.NewInt(1 << 0)
+	ownerLevelFieldLevels                 = big.NewInt(1 << 1)
+	ownerLevelFieldMonthlyAdsSpend        = big.NewInt(1 << 2)
+	ownerLevelFieldMonthlyCardSpend       = big.NewInt(1 << 3)
+	ownerLevelFieldMonthlyQualifyingSpend = big.NewInt(1 << 4)
+	ownerLevelFieldMonthlyTradingVolume   = big.NewInt(1 << 5)
+	ownerLevelFieldPoints                 = big.NewInt(1 << 6)
+	ownerLevelFieldPointsBySource         = big.NewInt(1 << 7)
+	ownerLevelFieldPointsToNext           = big.NewInt(1 << 8)
+	ownerLevelFieldResetsAt               = big.NewInt(1 << 9)
+)
+
+// ownerLevelNullableFields maps the wire names of OwnerLevel's nullable fields (required or optional) to their field bits.
+var ownerLevelNullableFields = map[string]*big.Int{
+	"points_to_next": ownerLevelFieldPointsToNext,
+}
+
+type OwnerLevel struct {
+	// The level that applies: the highest the owner reached this month or in the 5 months before, from `0` up to `10`.
+	AppliedLevel int                            `json:"applied_level" url:"applied_level"`
+	Levels       []*AccountProcessingOfferLevel `json:"levels" url:"levels"`
+	// Whop Ads charges paid this calendar month across every account the owner owns, net of refunds, in USD, so it can be negative. An account whose month nets to zero or below is left out.
+	MonthlyAdsSpend *Money `json:"monthly_ads_spend" url:"monthly_ads_spend"`
+	// Captured Whop Card spend this calendar month across every account the owner owns, net of refunds, in USD, so it can be negative. An account whose month nets to zero or below is left out.
+	MonthlyCardSpend *Money `json:"monthly_card_spend" url:"monthly_card_spend"`
+	// Qualifying spend this calendar month across every account the owner owns, plus the owner's personal trading and partner points, in USD: `points` divided by 10.
+	MonthlyQualifyingSpend *Money `json:"monthly_qualifying_spend" url:"monthly_qualifying_spend"`
+	// Perpetual trading volume filled through Whop this calendar month across every account the owner owns and their personal wallet, in USD. An account whose month nets to zero or below is left out.
+	MonthlyTradingVolume *Money `json:"monthly_trading_volume" url:"monthly_trading_volume"`
+	// Points earned this month across every account the owner owns, plus the owner's partner points, rounded down. An account whose month nets below zero counts as zero.
+	Points int `json:"points" url:"points"`
+	// This month's points, split by where they were earned. Each source is net of its refunds, so one can be negative.
+	PointsBySource *OwnerLevelPoints `json:"points_by_source" url:"points_by_source"`
+	// Points still needed this month to reach the next level, or `null` at level `10`.
+	PointsToNext *int `json:"points_to_next,omitempty" url:"points_to_next,omitempty"`
+	// When this month's points reset to zero, as an ISO 8601 timestamp.
+	ResetsAt string `json:"resets_at" url:"resets_at"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (o *OwnerLevel) GetAppliedLevel() int {
+	if o == nil {
+		return 0
+	}
+	return o.AppliedLevel
+}
+
+func (o *OwnerLevel) GetLevels() []*AccountProcessingOfferLevel {
+	if o == nil {
+		return nil
+	}
+	return o.Levels
+}
+
+func (o *OwnerLevel) GetMonthlyAdsSpend() *Money {
+	if o == nil {
+		return nil
+	}
+	return o.MonthlyAdsSpend
+}
+
+func (o *OwnerLevel) GetMonthlyCardSpend() *Money {
+	if o == nil {
+		return nil
+	}
+	return o.MonthlyCardSpend
+}
+
+func (o *OwnerLevel) GetMonthlyQualifyingSpend() *Money {
+	if o == nil {
+		return nil
+	}
+	return o.MonthlyQualifyingSpend
+}
+
+func (o *OwnerLevel) GetMonthlyTradingVolume() *Money {
+	if o == nil {
+		return nil
+	}
+	return o.MonthlyTradingVolume
+}
+
+func (o *OwnerLevel) GetPoints() int {
+	if o == nil {
+		return 0
+	}
+	return o.Points
+}
+
+func (o *OwnerLevel) GetPointsBySource() *OwnerLevelPoints {
+	if o == nil {
+		return nil
+	}
+	return o.PointsBySource
+}
+
+func (o *OwnerLevel) GetPointsToNext() *int {
+	if o == nil {
+		return nil
+	}
+	return o.PointsToNext
+}
+
+func (o *OwnerLevel) GetResetsAt() string {
+	if o == nil {
+		return ""
+	}
+	return o.ResetsAt
+}
+
+func (o *OwnerLevel) GetExtraProperties() map[string]interface{} {
+	if o == nil {
+		return nil
+	}
+	return o.extraProperties
+}
+
+func (o *OwnerLevel) require(field *big.Int) {
+	next := new(big.Int)
+	if o.explicitFields != nil {
+		next.Set(o.explicitFields)
+	}
+	next.Or(next, field)
+	o.explicitFields = next
+}
+
+// SetAppliedLevel sets the AppliedLevel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetAppliedLevel(appliedLevel int) {
+	o.AppliedLevel = appliedLevel
+	o.require(ownerLevelFieldAppliedLevel)
+}
+
+// SetLevels sets the Levels field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetLevels(levels []*AccountProcessingOfferLevel) {
+	o.Levels = levels
+	o.require(ownerLevelFieldLevels)
+}
+
+// SetMonthlyAdsSpend sets the MonthlyAdsSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetMonthlyAdsSpend(monthlyAdsSpend *Money) {
+	o.MonthlyAdsSpend = monthlyAdsSpend
+	o.require(ownerLevelFieldMonthlyAdsSpend)
+}
+
+// SetMonthlyCardSpend sets the MonthlyCardSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetMonthlyCardSpend(monthlyCardSpend *Money) {
+	o.MonthlyCardSpend = monthlyCardSpend
+	o.require(ownerLevelFieldMonthlyCardSpend)
+}
+
+// SetMonthlyQualifyingSpend sets the MonthlyQualifyingSpend field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetMonthlyQualifyingSpend(monthlyQualifyingSpend *Money) {
+	o.MonthlyQualifyingSpend = monthlyQualifyingSpend
+	o.require(ownerLevelFieldMonthlyQualifyingSpend)
+}
+
+// SetMonthlyTradingVolume sets the MonthlyTradingVolume field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetMonthlyTradingVolume(monthlyTradingVolume *Money) {
+	o.MonthlyTradingVolume = monthlyTradingVolume
+	o.require(ownerLevelFieldMonthlyTradingVolume)
+}
+
+// SetPoints sets the Points field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetPoints(points int) {
+	o.Points = points
+	o.require(ownerLevelFieldPoints)
+}
+
+// SetPointsBySource sets the PointsBySource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetPointsBySource(pointsBySource *OwnerLevelPoints) {
+	o.PointsBySource = pointsBySource
+	o.require(ownerLevelFieldPointsBySource)
+}
+
+// SetPointsToNext sets the PointsToNext field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetPointsToNext(pointsToNext *int) {
+	o.PointsToNext = pointsToNext
+	o.require(ownerLevelFieldPointsToNext)
+}
+
+// SetResetsAt sets the ResetsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevel) SetResetsAt(resetsAt string) {
+	o.ResetsAt = resetsAt
+	o.require(ownerLevelFieldResetsAt)
+}
+
+func (o *OwnerLevel) UnmarshalJSON(data []byte) error {
+	type unmarshaler OwnerLevel
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*o = OwnerLevel(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *o)
+	if err != nil {
+		return err
+	}
+	o.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, ownerLevelNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		o.require(presentFields)
+	}
+	o.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (o *OwnerLevel) MarshalJSON() ([]byte, error) {
+	type embed OwnerLevel
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*o),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, o.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (o *OwnerLevel) String() string {
+	if o == nil {
+		return "<nil>"
+	}
+	if len(o.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(o.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(o); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", o)
+}
+
+var (
 	ownerLevelPointsFieldAds      = big.NewInt(1 << 0)
 	ownerLevelPointsFieldCards    = big.NewInt(1 << 1)
 	ownerLevelPointsFieldPartners = big.NewInt(1 << 2)
