@@ -48264,11 +48264,12 @@ var (
 	paymentInputVariantFieldOverrideTaxType          = big.NewInt(1 << 10)
 	paymentInputVariantFieldProduct                  = big.NewInt(1 << 11)
 	paymentInputVariantFieldProductID                = big.NewInt(1 << 12)
-	paymentInputVariantFieldRenewalPrice             = big.NewInt(1 << 13)
-	paymentInputVariantFieldSplitPayRequiredPayments = big.NewInt(1 << 14)
-	paymentInputVariantFieldTitle                    = big.NewInt(1 << 15)
-	paymentInputVariantFieldTrialPeriodDays          = big.NewInt(1 << 16)
-	paymentInputVariantFieldVisibility               = big.NewInt(1 << 17)
+	paymentInputVariantFieldRedirectURL              = big.NewInt(1 << 13)
+	paymentInputVariantFieldRenewalPrice             = big.NewInt(1 << 14)
+	paymentInputVariantFieldSplitPayRequiredPayments = big.NewInt(1 << 15)
+	paymentInputVariantFieldTitle                    = big.NewInt(1 << 16)
+	paymentInputVariantFieldTrialPeriodDays          = big.NewInt(1 << 17)
+	paymentInputVariantFieldVisibility               = big.NewInt(1 << 18)
 )
 
 // paymentInputVariantNullableFields maps the wire names of PaymentInputVariant's nullable fields (required or optional) to their field bits.
@@ -48285,6 +48286,7 @@ var paymentInputVariantNullableFields = map[string]*big.Int{
 	"override_tax_type":           paymentInputVariantFieldOverrideTaxType,
 	"product":                     paymentInputVariantFieldProduct,
 	"product_id":                  paymentInputVariantFieldProductID,
+	"redirect_url":                paymentInputVariantFieldRedirectURL,
 	"renewal_price":               paymentInputVariantFieldRenewalPrice,
 	"split_pay_required_payments": paymentInputVariantFieldSplitPayRequiredPayments,
 	"title":                       paymentInputVariantFieldTitle,
@@ -48320,6 +48322,8 @@ type PaymentInputVariant struct {
 	Product *PaymentInputVariantProduct `json:"product,omitempty" url:"product,omitempty"`
 	// Existing product ID belonging to the account, prefixed `prod_`. Mutually exclusive with `product`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
+	// Where the customer is sent after paying for this variant. Must be a valid URL that is not another Whop checkout link.
+	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
 	// Recurring price in the variant currency.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
 	// How many payments a recurring variant collects before it stops billing, from 2 to 115. Only valid for `renewal` variants. `null` bills until the subscription is canceled.
@@ -48427,6 +48431,13 @@ func (p *PaymentInputVariant) GetProductID() *string {
 		return nil
 	}
 	return p.ProductID
+}
+
+func (p *PaymentInputVariant) GetRedirectURL() *string {
+	if p == nil {
+		return nil
+	}
+	return p.RedirectURL
 }
 
 func (p *PaymentInputVariant) GetRenewalPrice() *float64 {
@@ -48569,6 +48580,13 @@ func (p *PaymentInputVariant) SetProduct(product *PaymentInputVariantProduct) {
 func (p *PaymentInputVariant) SetProductID(productID *string) {
 	p.ProductID = productID
 	p.require(paymentInputVariantFieldProductID)
+}
+
+// SetRedirectURL sets the RedirectURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInputVariant) SetRedirectURL(redirectURL *string) {
+	p.RedirectURL = redirectURL
+	p.require(paymentInputVariantFieldRedirectURL)
 }
 
 // SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;
@@ -78907,19 +78925,20 @@ var (
 	variantListItemFieldPaymentMethodConfiguration = big.NewInt(1 << 24)
 	variantListItemFieldProduct                    = big.NewInt(1 << 25)
 	variantListItemFieldPurchaseURL                = big.NewInt(1 << 26)
-	variantListItemFieldReleaseMethod              = big.NewInt(1 << 27)
-	variantListItemFieldRenewalPrice               = big.NewInt(1 << 28)
-	variantListItemFieldSku                        = big.NewInt(1 << 29)
-	variantListItemFieldSplitPayRequiredPayments   = big.NewInt(1 << 30)
-	variantListItemFieldStock                      = big.NewInt(1 << 31)
-	variantListItemFieldStrikeThroughInitialPrice  = big.NewInt(1 << 32)
-	variantListItemFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 33)
-	variantListItemFieldThreeDsLevel               = big.NewInt(1 << 34)
-	variantListItemFieldTitle                      = big.NewInt(1 << 35)
-	variantListItemFieldTrialPeriodDays            = big.NewInt(1 << 36)
-	variantListItemFieldUnlimitedStock             = big.NewInt(1 << 37)
-	variantListItemFieldUpdatedAt                  = big.NewInt(1 << 38)
-	variantListItemFieldVisibility                 = big.NewInt(1 << 39)
+	variantListItemFieldRedirectURL                = big.NewInt(1 << 27)
+	variantListItemFieldReleaseMethod              = big.NewInt(1 << 28)
+	variantListItemFieldRenewalPrice               = big.NewInt(1 << 29)
+	variantListItemFieldSku                        = big.NewInt(1 << 30)
+	variantListItemFieldSplitPayRequiredPayments   = big.NewInt(1 << 31)
+	variantListItemFieldStock                      = big.NewInt(1 << 32)
+	variantListItemFieldStrikeThroughInitialPrice  = big.NewInt(1 << 33)
+	variantListItemFieldStrikeThroughRenewalPrice  = big.NewInt(1 << 34)
+	variantListItemFieldThreeDsLevel               = big.NewInt(1 << 35)
+	variantListItemFieldTitle                      = big.NewInt(1 << 36)
+	variantListItemFieldTrialPeriodDays            = big.NewInt(1 << 37)
+	variantListItemFieldUnlimitedStock             = big.NewInt(1 << 38)
+	variantListItemFieldUpdatedAt                  = big.NewInt(1 << 39)
+	variantListItemFieldVisibility                 = big.NewInt(1 << 40)
 )
 
 // variantListItemNullableFields maps the wire names of VariantListItem's nullable fields (required or optional) to their field bits.
@@ -78940,6 +78959,7 @@ var variantListItemNullableFields = map[string]*big.Int{
 	"offer_cancel_discount":        variantListItemFieldOfferCancelDiscount,
 	"payment_method_configuration": variantListItemFieldPaymentMethodConfiguration,
 	"product":                      variantListItemFieldProduct,
+	"redirect_url":                 variantListItemFieldRedirectURL,
 	"sku":                          variantListItemFieldSku,
 	"split_pay_required_payments":  variantListItemFieldSplitPayRequiredPayments,
 	"stock":                        variantListItemFieldStock,
@@ -79004,6 +79024,8 @@ type VariantListItem struct {
 	Product map[string]any `json:"product,omitempty" url:"product,omitempty"`
 	// URL where customers can purchase this variant directly.
 	PurchaseURL string `json:"purchase_url" url:"purchase_url"`
+	// Where the customer is sent after paying for this variant. `null` when none is set, or unless the actor has the `plan:basic:read` scope on the variant's account.
+	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
 	// Sales method for this variant.
 	ReleaseMethod VariantListItemReleaseMethod `json:"release_method" url:"release_method"`
 	// Recurring price charged every billing period, in `currency`.
@@ -79225,6 +79247,13 @@ func (v *VariantListItem) GetPurchaseURL() string {
 		return ""
 	}
 	return v.PurchaseURL
+}
+
+func (v *VariantListItem) GetRedirectURL() *string {
+	if v == nil {
+		return nil
+	}
+	return v.RedirectURL
 }
 
 func (v *VariantListItem) GetReleaseMethod() VariantListItemReleaseMethod {
@@ -79521,6 +79550,13 @@ func (v *VariantListItem) SetProduct(product map[string]any) {
 func (v *VariantListItem) SetPurchaseURL(purchaseURL string) {
 	v.PurchaseURL = purchaseURL
 	v.require(variantListItemFieldPurchaseURL)
+}
+
+// SetRedirectURL sets the RedirectURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *VariantListItem) SetRedirectURL(redirectURL *string) {
+	v.RedirectURL = redirectURL
+	v.require(variantListItemFieldRedirectURL)
 }
 
 // SetReleaseMethod sets the ReleaseMethod field and marks it as non-optional;

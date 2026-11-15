@@ -2719,11 +2719,12 @@ var (
 	createPaymentsRequestLineItemsItemVariantFieldOverrideTaxType          = big.NewInt(1 << 10)
 	createPaymentsRequestLineItemsItemVariantFieldProduct                  = big.NewInt(1 << 11)
 	createPaymentsRequestLineItemsItemVariantFieldProductID                = big.NewInt(1 << 12)
-	createPaymentsRequestLineItemsItemVariantFieldRenewalPrice             = big.NewInt(1 << 13)
-	createPaymentsRequestLineItemsItemVariantFieldSplitPayRequiredPayments = big.NewInt(1 << 14)
-	createPaymentsRequestLineItemsItemVariantFieldTitle                    = big.NewInt(1 << 15)
-	createPaymentsRequestLineItemsItemVariantFieldTrialPeriodDays          = big.NewInt(1 << 16)
-	createPaymentsRequestLineItemsItemVariantFieldVisibility               = big.NewInt(1 << 17)
+	createPaymentsRequestLineItemsItemVariantFieldRedirectURL              = big.NewInt(1 << 13)
+	createPaymentsRequestLineItemsItemVariantFieldRenewalPrice             = big.NewInt(1 << 14)
+	createPaymentsRequestLineItemsItemVariantFieldSplitPayRequiredPayments = big.NewInt(1 << 15)
+	createPaymentsRequestLineItemsItemVariantFieldTitle                    = big.NewInt(1 << 16)
+	createPaymentsRequestLineItemsItemVariantFieldTrialPeriodDays          = big.NewInt(1 << 17)
+	createPaymentsRequestLineItemsItemVariantFieldVisibility               = big.NewInt(1 << 18)
 )
 
 // createPaymentsRequestLineItemsItemVariantNullableFields maps the wire names of CreatePaymentsRequestLineItemsItemVariant's nullable fields (required or optional) to their field bits.
@@ -2740,6 +2741,7 @@ var createPaymentsRequestLineItemsItemVariantNullableFields = map[string]*big.In
 	"override_tax_type":           createPaymentsRequestLineItemsItemVariantFieldOverrideTaxType,
 	"product":                     createPaymentsRequestLineItemsItemVariantFieldProduct,
 	"product_id":                  createPaymentsRequestLineItemsItemVariantFieldProductID,
+	"redirect_url":                createPaymentsRequestLineItemsItemVariantFieldRedirectURL,
 	"renewal_price":               createPaymentsRequestLineItemsItemVariantFieldRenewalPrice,
 	"split_pay_required_payments": createPaymentsRequestLineItemsItemVariantFieldSplitPayRequiredPayments,
 	"title":                       createPaymentsRequestLineItemsItemVariantFieldTitle,
@@ -2775,6 +2777,8 @@ type CreatePaymentsRequestLineItemsItemVariant struct {
 	Product *CreatePaymentsRequestLineItemsItemVariantProduct `json:"product,omitempty" url:"product,omitempty"`
 	// Existing product ID belonging to the account, prefixed `prod_`. Mutually exclusive with `product`.
 	ProductID *string `json:"product_id,omitempty" url:"product_id,omitempty"`
+	// Where the customer is sent after paying for this variant. Must be a valid URL that is not another Whop checkout link.
+	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
 	// Recurring price in the variant currency.
 	RenewalPrice *float64 `json:"renewal_price,omitempty" url:"renewal_price,omitempty"`
 	// How many payments a recurring variant collects before it stops billing, from 2 to 115. Only valid for `renewal` variants. `null` bills until the subscription is canceled.
@@ -2882,6 +2886,13 @@ func (c *CreatePaymentsRequestLineItemsItemVariant) GetProductID() *string {
 		return nil
 	}
 	return c.ProductID
+}
+
+func (c *CreatePaymentsRequestLineItemsItemVariant) GetRedirectURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.RedirectURL
 }
 
 func (c *CreatePaymentsRequestLineItemsItemVariant) GetRenewalPrice() *float64 {
@@ -3024,6 +3035,13 @@ func (c *CreatePaymentsRequestLineItemsItemVariant) SetProduct(product *CreatePa
 func (c *CreatePaymentsRequestLineItemsItemVariant) SetProductID(productID *string) {
 	c.ProductID = productID
 	c.require(createPaymentsRequestLineItemsItemVariantFieldProductID)
+}
+
+// SetRedirectURL sets the RedirectURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequestLineItemsItemVariant) SetRedirectURL(redirectURL *string) {
+	c.RedirectURL = redirectURL
+	c.require(createPaymentsRequestLineItemsItemVariantFieldRedirectURL)
 }
 
 // SetRenewalPrice sets the RenewalPrice field and marks it as non-optional;

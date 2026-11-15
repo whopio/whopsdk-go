@@ -743,20 +743,21 @@ var (
 	variantFieldPaymentMethodConfiguration          = big.NewInt(1 << 27)
 	variantFieldProduct                             = big.NewInt(1 << 28)
 	variantFieldPurchaseURL                         = big.NewInt(1 << 29)
-	variantFieldReleaseMethod                       = big.NewInt(1 << 30)
-	variantFieldRenewalPrice                        = big.NewInt(1 << 31)
-	variantFieldSku                                 = big.NewInt(1 << 32)
-	variantFieldSplitPayRequiredPayments            = big.NewInt(1 << 33)
-	variantFieldStock                               = big.NewInt(1 << 34)
-	variantFieldStrikeThroughInitialPrice           = big.NewInt(1 << 35)
-	variantFieldStrikeThroughRenewalPrice           = big.NewInt(1 << 36)
-	variantFieldTaxType                             = big.NewInt(1 << 37)
-	variantFieldThreeDsLevel                        = big.NewInt(1 << 38)
-	variantFieldTitle                               = big.NewInt(1 << 39)
-	variantFieldTrialPeriodDays                     = big.NewInt(1 << 40)
-	variantFieldUnlimitedStock                      = big.NewInt(1 << 41)
-	variantFieldUpdatedAt                           = big.NewInt(1 << 42)
-	variantFieldVisibility                          = big.NewInt(1 << 43)
+	variantFieldRedirectURL                         = big.NewInt(1 << 30)
+	variantFieldReleaseMethod                       = big.NewInt(1 << 31)
+	variantFieldRenewalPrice                        = big.NewInt(1 << 32)
+	variantFieldSku                                 = big.NewInt(1 << 33)
+	variantFieldSplitPayRequiredPayments            = big.NewInt(1 << 34)
+	variantFieldStock                               = big.NewInt(1 << 35)
+	variantFieldStrikeThroughInitialPrice           = big.NewInt(1 << 36)
+	variantFieldStrikeThroughRenewalPrice           = big.NewInt(1 << 37)
+	variantFieldTaxType                             = big.NewInt(1 << 38)
+	variantFieldThreeDsLevel                        = big.NewInt(1 << 39)
+	variantFieldTitle                               = big.NewInt(1 << 40)
+	variantFieldTrialPeriodDays                     = big.NewInt(1 << 41)
+	variantFieldUnlimitedStock                      = big.NewInt(1 << 42)
+	variantFieldUpdatedAt                           = big.NewInt(1 << 43)
+	variantFieldVisibility                          = big.NewInt(1 << 44)
 )
 
 // variantNullableFields maps the wire names of Variant's nullable fields (required or optional) to their field bits.
@@ -779,6 +780,7 @@ var variantNullableFields = map[string]*big.Int{
 	"offer_cancel_discount":                  variantFieldOfferCancelDiscount,
 	"payment_method_configuration":           variantFieldPaymentMethodConfiguration,
 	"product":                                variantFieldProduct,
+	"redirect_url":                           variantFieldRedirectURL,
 	"sku":                                    variantFieldSku,
 	"split_pay_required_payments":            variantFieldSplitPayRequiredPayments,
 	"stock":                                  variantFieldStock,
@@ -849,6 +851,8 @@ type Variant struct {
 	Product map[string]any `json:"product,omitempty" url:"product,omitempty"`
 	// URL where customers can purchase this variant directly.
 	PurchaseURL string `json:"purchase_url" url:"purchase_url"`
+	// Where the customer is sent after paying for this variant. `null` when none is set, or unless the actor has the `plan:basic:read` scope on the variant's account.
+	RedirectURL *string `json:"redirect_url,omitempty" url:"redirect_url,omitempty"`
 	// Sales method for this variant.
 	ReleaseMethod VariantReleaseMethod `json:"release_method" url:"release_method"`
 	// Recurring price charged every billing period, in `currency`.
@@ -1093,6 +1097,13 @@ func (v *Variant) GetPurchaseURL() string {
 		return ""
 	}
 	return v.PurchaseURL
+}
+
+func (v *Variant) GetRedirectURL() *string {
+	if v == nil {
+		return nil
+	}
+	return v.RedirectURL
 }
 
 func (v *Variant) GetReleaseMethod() VariantReleaseMethod {
@@ -1417,6 +1428,13 @@ func (v *Variant) SetProduct(product map[string]any) {
 func (v *Variant) SetPurchaseURL(purchaseURL string) {
 	v.PurchaseURL = purchaseURL
 	v.require(variantFieldPurchaseURL)
+}
+
+// SetRedirectURL sets the RedirectURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (v *Variant) SetRedirectURL(redirectURL *string) {
+	v.RedirectURL = redirectURL
+	v.require(variantFieldRedirectURL)
 }
 
 // SetReleaseMethod sets the ReleaseMethod field and marks it as non-optional;
