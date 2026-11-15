@@ -1413,13 +1413,14 @@ var (
 	invoiceLineItemFieldDescription    = big.NewInt(1 << 0)
 	invoiceLineItemFieldDiscountAmount = big.NewInt(1 << 1)
 	invoiceLineItemFieldID             = big.NewInt(1 << 2)
-	invoiceLineItemFieldLabel          = big.NewInt(1 << 3)
-	invoiceLineItemFieldProductID      = big.NewInt(1 << 4)
-	invoiceLineItemFieldQuantity       = big.NewInt(1 << 5)
-	invoiceLineItemFieldSubtotal       = big.NewInt(1 << 6)
-	invoiceLineItemFieldTaxAmount      = big.NewInt(1 << 7)
-	invoiceLineItemFieldUnitAmount     = big.NewInt(1 << 8)
-	invoiceLineItemFieldVariantID      = big.NewInt(1 << 9)
+	invoiceLineItemFieldInitialPrice   = big.NewInt(1 << 3)
+	invoiceLineItemFieldLabel          = big.NewInt(1 << 4)
+	invoiceLineItemFieldProductID      = big.NewInt(1 << 5)
+	invoiceLineItemFieldQuantity       = big.NewInt(1 << 6)
+	invoiceLineItemFieldSubtotal       = big.NewInt(1 << 7)
+	invoiceLineItemFieldTaxAmount      = big.NewInt(1 << 8)
+	invoiceLineItemFieldUnitAmount     = big.NewInt(1 << 9)
+	invoiceLineItemFieldVariantID      = big.NewInt(1 << 10)
 )
 
 // invoiceLineItemNullableFields maps the wire names of InvoiceLineItem's nullable fields (required or optional) to their field bits.
@@ -1427,6 +1428,7 @@ var invoiceLineItemNullableFields = map[string]*big.Int{
 	"description":     invoiceLineItemFieldDescription,
 	"discount_amount": invoiceLineItemFieldDiscountAmount,
 	"id":              invoiceLineItemFieldID,
+	"initial_price":   invoiceLineItemFieldInitialPrice,
 	"label":           invoiceLineItemFieldLabel,
 	"product_id":      invoiceLineItemFieldProductID,
 	"subtotal":        invoiceLineItemFieldSubtotal,
@@ -1442,6 +1444,8 @@ type InvoiceLineItem struct {
 	DiscountAmount *Money `json:"discount_amount,omitempty" url:"discount_amount,omitempty"`
 	// Line item ID, prefixed `li_`. Null when the payment predates item snapshots and the item is read from the payment's variant.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// The part of `unit_amount` that is a recurring variant's one-time upfront fee, the variant's `initial_price`, charged on this invoice only. The rest of `unit_amount` is the first billing period. Null for one-time items, renewal invoices, items with no upfront fee, and items whose variant prices changed after the invoice was priced.
+	InitialPrice *Money `json:"initial_price,omitempty" url:"initial_price,omitempty"`
 	// The item's name as shown at checkout (the product title, else the variant title).
 	Label *string `json:"label,omitempty" url:"label,omitempty"`
 	// The product the variant belongs to, prefixed `prod_`. Null for a variant with no product.
@@ -1483,6 +1487,13 @@ func (i *InvoiceLineItem) GetID() *string {
 		return nil
 	}
 	return i.ID
+}
+
+func (i *InvoiceLineItem) GetInitialPrice() *Money {
+	if i == nil {
+		return nil
+	}
+	return i.InitialPrice
 }
 
 func (i *InvoiceLineItem) GetLabel() *string {
@@ -1569,6 +1580,13 @@ func (i *InvoiceLineItem) SetDiscountAmount(discountAmount *Money) {
 func (i *InvoiceLineItem) SetID(id *string) {
 	i.ID = id
 	i.require(invoiceLineItemFieldID)
+}
+
+// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLineItem) SetInitialPrice(initialPrice *Money) {
+	i.InitialPrice = initialPrice
+	i.require(invoiceLineItemFieldInitialPrice)
 }
 
 // SetLabel sets the Label field and marks it as non-optional;
