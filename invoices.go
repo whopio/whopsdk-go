@@ -84,6 +84,7 @@ var (
 	createInvoicesRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 11)
 	createInvoicesRequestFieldPaymentMethodID            = big.NewInt(1 << 12)
 	createInvoicesRequestFieldRecipientEmails            = big.NewInt(1 << 13)
+	createInvoicesRequestFieldTimeZone                   = big.NewInt(1 << 14)
 )
 
 type CreateInvoicesRequest struct {
@@ -115,6 +116,8 @@ type CreateInvoicesRequest struct {
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
 	RecipientEmails []string `json:"recipient_emails,omitempty" url:"-"`
+	// The IANA time zone for the dates on the invoice's email and PDF. Set it so the due date reads as the day you picked. When omitted, a new invoice uses the time zone Whop has for the user creating it, else UTC. Can be updated on drafts.
+	TimeZone *string `json:"time_zone,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -225,6 +228,13 @@ func (c *CreateInvoicesRequest) SetPaymentMethodID(paymentMethodID *string) {
 func (c *CreateInvoicesRequest) SetRecipientEmails(recipientEmails []string) {
 	c.RecipientEmails = recipientEmails
 	c.require(createInvoicesRequestFieldRecipientEmails)
+}
+
+// SetTimeZone sets the TimeZone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequest) SetTimeZone(timeZone *string) {
+	c.TimeZone = timeZone
+	c.require(createInvoicesRequestFieldTimeZone)
 }
 
 func (c *CreateInvoicesRequest) UnmarshalJSON(data []byte) error {
@@ -781,9 +791,10 @@ var (
 	invoiceFieldStatus                     = big.NewInt(1 << 30)
 	invoiceFieldSubtotal                   = big.NewInt(1 << 31)
 	invoiceFieldTaxAmount                  = big.NewInt(1 << 32)
-	invoiceFieldTotal                      = big.NewInt(1 << 33)
-	invoiceFieldTotalsStatus               = big.NewInt(1 << 34)
-	invoiceFieldUpdatedAt                  = big.NewInt(1 << 35)
+	invoiceFieldTimeZone                   = big.NewInt(1 << 33)
+	invoiceFieldTotal                      = big.NewInt(1 << 34)
+	invoiceFieldTotalsStatus               = big.NewInt(1 << 35)
+	invoiceFieldUpdatedAt                  = big.NewInt(1 << 36)
 )
 
 // invoiceNullableFields maps the wire names of Invoice's nullable fields (required or optional) to their field bits.
@@ -845,13 +856,15 @@ type Invoice struct {
 	ScheduledCollectionMethod *InvoiceScheduledCollectionMethod `json:"scheduled_collection_method,omitempty" url:"scheduled_collection_method,omitempty"`
 	ScheduledSendAt           *string                           `json:"scheduled_send_at,omitempty" url:"scheduled_send_at,omitempty"`
 	// Whether this draft is issued automatically when its `due_at` arrives. Issuing it charges its `payment_method_id`, or emails its payment link to its `recipient_emails`. `false` for an invoice that is not a draft and for a draft with a scheduled send. `false` while sending the draft would fail for missing recipients or an unavailable payment link. `false` for a draft that had no future `due_at` when it was last saved. `false` for a draft created before 2026-11-12T22:00:00Z.
-	SendsOnDueDate bool                `json:"sends_on_due_date" url:"sends_on_due_date"`
-	Status         InvoiceStatus       `json:"status" url:"status"`
-	Subtotal       *Money              `json:"subtotal" url:"subtotal"`
-	TaxAmount      *Money              `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
-	Total          *Money              `json:"total" url:"total"`
-	TotalsStatus   InvoiceTotalsStatus `json:"totals_status" url:"totals_status"`
-	UpdatedAt      string              `json:"updated_at" url:"updated_at"`
+	SendsOnDueDate bool          `json:"sends_on_due_date" url:"sends_on_due_date"`
+	Status         InvoiceStatus `json:"status" url:"status"`
+	Subtotal       *Money        `json:"subtotal" url:"subtotal"`
+	TaxAmount      *Money        `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
+	// The IANA time zone for the dates on the invoice's email and PDF, such as `America/New_York`. `UTC` unless one was set.
+	TimeZone     string              `json:"time_zone" url:"time_zone"`
+	Total        *Money              `json:"total" url:"total"`
+	TotalsStatus InvoiceTotalsStatus `json:"totals_status" url:"totals_status"`
+	UpdatedAt    string              `json:"updated_at" url:"updated_at"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1089,6 +1102,13 @@ func (i *Invoice) GetTaxAmount() *Money {
 		return nil
 	}
 	return i.TaxAmount
+}
+
+func (i *Invoice) GetTimeZone() string {
+	if i == nil {
+		return ""
+	}
+	return i.TimeZone
 }
 
 func (i *Invoice) GetTotal() *Money {
@@ -1357,6 +1377,13 @@ func (i *Invoice) SetSubtotal(subtotal *Money) {
 func (i *Invoice) SetTaxAmount(taxAmount *Money) {
 	i.TaxAmount = taxAmount
 	i.require(invoiceFieldTaxAmount)
+}
+
+// SetTimeZone sets the TimeZone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetTimeZone(timeZone string) {
+	i.TimeZone = timeZone
+	i.require(invoiceFieldTimeZone)
 }
 
 // SetTotal sets the Total field and marks it as non-optional;
@@ -6900,6 +6927,7 @@ var (
 	updateInvoicesRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 9)
 	updateInvoicesRequestFieldPaymentMethodID            = big.NewInt(1 << 10)
 	updateInvoicesRequestFieldRecipientEmails            = big.NewInt(1 << 11)
+	updateInvoicesRequestFieldTimeZone                   = big.NewInt(1 << 12)
 )
 
 type UpdateInvoicesRequest struct {
@@ -6927,6 +6955,8 @@ type UpdateInvoicesRequest struct {
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
 	RecipientEmails []string `json:"recipient_emails,omitempty" url:"-"`
+	// The IANA time zone for the dates on the invoice's email and PDF. Set it so the due date reads as the day you picked. When omitted, a new invoice uses the time zone Whop has for the user creating it, else UTC. Can be updated on drafts.
+	TimeZone *string `json:"time_zone,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -7023,6 +7053,13 @@ func (u *UpdateInvoicesRequest) SetPaymentMethodID(paymentMethodID *string) {
 func (u *UpdateInvoicesRequest) SetRecipientEmails(recipientEmails []string) {
 	u.RecipientEmails = recipientEmails
 	u.require(updateInvoicesRequestFieldRecipientEmails)
+}
+
+// SetTimeZone sets the TimeZone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequest) SetTimeZone(timeZone *string) {
+	u.TimeZone = timeZone
+	u.require(updateInvoicesRequestFieldTimeZone)
 }
 
 func (u *UpdateInvoicesRequest) UnmarshalJSON(data []byte) error {
