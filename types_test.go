@@ -190868,6 +190868,13 @@ func TestEnumAccountFeeRegion(t *testing.T) {
 		assert.Equal(t, AccountFeeRegion("sv"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_hn", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountFeeRegionFromString("hn")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountFeeRegion("hn"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewAccountFeeRegionFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -193230,6 +193237,13 @@ func TestEnumCheckoutConfigurationCurrency(t *testing.T) {
 		assert.Equal(t, CheckoutConfigurationCurrency("xau"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_hnl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCheckoutConfigurationCurrencyFromString("hnl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CheckoutConfigurationCurrency("hnl"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewCheckoutConfigurationCurrencyFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -194176,6 +194190,13 @@ func TestEnumCurrencies(t *testing.T) {
 		val, err := NewCurrenciesFromString("xau")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, Currencies("xau"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_hnl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCurrenciesFromString("hnl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, Currencies("hnl"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -195671,6 +195692,13 @@ func TestEnumFinancingProviderCurrencyCurrency(t *testing.T) {
 		val, err := NewFinancingProviderCurrencyCurrencyFromString("xau")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, FinancingProviderCurrencyCurrency("xau"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_hnl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewFinancingProviderCurrencyCurrencyFromString("hnl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, FinancingProviderCurrencyCurrency("hnl"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -201405,6 +201433,13 @@ func TestEnumPaymentInputVariantCurrency(t *testing.T) {
 		val, err := NewPaymentInputVariantCurrencyFromString("xau")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PaymentInputVariantCurrency("xau"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_hnl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentInputVariantCurrencyFromString("hnl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentInputVariantCurrency("hnl"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

@@ -165,7 +165,7 @@ type RetrieveStatsRequest struct {
 	BusinessType *string `json:"-" url:"business_type,omitempty"`
 	// Filter to one industry type, for example `options_trading`. Pair with `breakdown_by=industry_type` to split by industry type. Available on metrics that list `industry_type`.
 	IndustryType *string `json:"-" url:"industry_type,omitempty"`
-	// Filter to one product category, for example `algo_trading_course`. Pair with `breakdown_by=product_category` to split by product category. Available on metrics that list `product_category`.
+	// Filter to one product category, for example `algo_trading_program`. Pair with `breakdown_by=product_category` to split by product category. Available on metrics that list `product_category`.
 	ProductCategory *string `json:"-" url:"product_category,omitempty"`
 	// Filter to accounts located in one country, as an ISO 3166-1 alpha-2 code such as `US`. Pair with `breakdown_by=account_country` to split by account country. Available on metrics that list `account_country`.
 	AccountCountry *string `json:"-" url:"account_country,omitempty"`

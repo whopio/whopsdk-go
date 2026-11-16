@@ -17806,6 +17806,13 @@ func TestEnumCreateInvoicesRequestItemsItemVariantCurrency(t *testing.T) {
 		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("xau"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_hnl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("hnl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateInvoicesRequestItemsItemVariantCurrency("hnl"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewCreateInvoicesRequestItemsItemVariantCurrencyFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -19272,6 +19279,13 @@ func TestEnumUpdateInvoicesRequestItemsItemVariantCurrency(t *testing.T) {
 		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("xau")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("xau"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_hnl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString("hnl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateInvoicesRequestItemsItemVariantCurrency("hnl"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

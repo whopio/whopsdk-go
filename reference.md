@@ -41360,7 +41360,7 @@ client.Stats.Retrieve(
 <dl>
 <dd>
 
-**productCategory:** `*string` — Filter to one product category, for example `algo_trading_course`. Pair with `breakdown_by=product_category` to split by product category. Available on metrics that list `product_category`.
+**productCategory:** `*string` — Filter to one product category, for example `algo_trading_program`. Pair with `breakdown_by=product_category` to split by product category. Available on metrics that list `product_category`.
     
 </dd>
 </dl>
@@ -51172,7 +51172,7 @@ client.Stats.Reports.PlatformTrends(
 <dl>
 <dd>
 
-**productCategory:** `*string` — Only counts payments for products in these comma-separated product categories, such as `algo_trading_course`.
+**productCategory:** `*string` — Only counts payments for products in these comma-separated product categories, such as `algo_trading_program`.
     
 </dd>
 </dl>
@@ -51627,7 +51627,7 @@ client.Stats.TimeSeries.Retrieve(
 <dl>
 <dd>
 
-**productCategory:** `*string` — Filter to one product category, for example `algo_trading_course`. Pair with `breakdown_by=product_category` to split by product category. Available on metrics that list `product_category`.
+**productCategory:** `*string` — Filter to one product category, for example `algo_trading_program`. Pair with `breakdown_by=product_category` to split by product category. Available on metrics that list `product_category`.
     
 </dd>
 </dl>

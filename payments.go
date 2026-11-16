@@ -3245,6 +3245,7 @@ const (
 	CreatePaymentsRequestLineItemsItemVariantCurrencyAwg     CreatePaymentsRequestLineItemsItemVariantCurrency = "awg"
 	CreatePaymentsRequestLineItemsItemVariantCurrencyWhopUsd CreatePaymentsRequestLineItemsItemVariantCurrency = "whop_usd"
 	CreatePaymentsRequestLineItemsItemVariantCurrencyXau     CreatePaymentsRequestLineItemsItemVariantCurrency = "xau"
+	CreatePaymentsRequestLineItemsItemVariantCurrencyHnl     CreatePaymentsRequestLineItemsItemVariantCurrency = "hnl"
 )
 
 func NewCreatePaymentsRequestLineItemsItemVariantCurrencyFromString(s string) (CreatePaymentsRequestLineItemsItemVariantCurrency, error) {
@@ -3429,6 +3430,8 @@ func NewCreatePaymentsRequestLineItemsItemVariantCurrencyFromString(s string) (C
 		return CreatePaymentsRequestLineItemsItemVariantCurrencyWhopUsd, nil
 	case "xau":
 		return CreatePaymentsRequestLineItemsItemVariantCurrencyXau, nil
+	case "hnl":
+		return CreatePaymentsRequestLineItemsItemVariantCurrencyHnl, nil
 	}
 	var t CreatePaymentsRequestLineItemsItemVariantCurrency
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

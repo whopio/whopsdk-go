@@ -1407,6 +1407,7 @@ const (
 	BountyCurrencyCny BountyCurrency = "cny"
 	BountyCurrencyKzt BountyCurrency = "kzt"
 	BountyCurrencyAwg BountyCurrency = "awg"
+	BountyCurrencyHnl BountyCurrency = "hnl"
 )
 
 func NewBountyCurrencyFromString(s string) (BountyCurrency, error) {
@@ -1579,6 +1580,8 @@ func NewBountyCurrencyFromString(s string) (BountyCurrency, error) {
 		return BountyCurrencyKzt, nil
 	case "awg":
 		return BountyCurrencyAwg, nil
+	case "hnl":
+		return BountyCurrencyHnl, nil
 	}
 	var t BountyCurrency
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

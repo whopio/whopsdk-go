@@ -47,7 +47,7 @@ type PlatformTrendsReportsRequest struct {
 	BusinessType *string `json:"-" url:"business_type,omitempty"`
 	// Only counts payments to businesses in these comma-separated industry types, such as `options_trading`.
 	IndustryType *string `json:"-" url:"industry_type,omitempty"`
-	// Only counts payments for products in these comma-separated product categories, such as `algo_trading_course`.
+	// Only counts payments for products in these comma-separated product categories, such as `algo_trading_program`.
 	ProductCategory *string `json:"-" url:"product_category,omitempty"`
 	// Only counts payments to accounts located in these comma-separated countries, as ISO 3166-1 alpha-2 codes such as `US`.
 	AccountCountry *string `json:"-" url:"account_country,omitempty"`

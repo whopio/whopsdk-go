@@ -1253,6 +1253,7 @@ const (
 	PromoCodeCurrencyAwg     PromoCodeCurrency = "awg"
 	PromoCodeCurrencyWhopUsd PromoCodeCurrency = "whop_usd"
 	PromoCodeCurrencyXau     PromoCodeCurrency = "xau"
+	PromoCodeCurrencyHnl     PromoCodeCurrency = "hnl"
 )
 
 func NewPromoCodeCurrencyFromString(s string) (PromoCodeCurrency, error) {
@@ -1437,6 +1438,8 @@ func NewPromoCodeCurrencyFromString(s string) (PromoCodeCurrency, error) {
 		return PromoCodeCurrencyWhopUsd, nil
 	case "xau":
 		return PromoCodeCurrencyXau, nil
+	case "hnl":
+		return PromoCodeCurrencyHnl, nil
 	}
 	var t PromoCodeCurrency
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2009,6 +2012,7 @@ const (
 	PromoCodeListItemCurrencyAwg     PromoCodeListItemCurrency = "awg"
 	PromoCodeListItemCurrencyWhopUsd PromoCodeListItemCurrency = "whop_usd"
 	PromoCodeListItemCurrencyXau     PromoCodeListItemCurrency = "xau"
+	PromoCodeListItemCurrencyHnl     PromoCodeListItemCurrency = "hnl"
 )
 
 func NewPromoCodeListItemCurrencyFromString(s string) (PromoCodeListItemCurrency, error) {
@@ -2193,6 +2197,8 @@ func NewPromoCodeListItemCurrencyFromString(s string) (PromoCodeListItemCurrency
 		return PromoCodeListItemCurrencyWhopUsd, nil
 	case "xau":
 		return PromoCodeListItemCurrencyXau, nil
+	case "hnl":
+		return PromoCodeListItemCurrencyHnl, nil
 	}
 	var t PromoCodeListItemCurrency
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2419,6 +2425,7 @@ const (
 	CreatePromoCodesRequestBaseCurrencyAwg     CreatePromoCodesRequestBaseCurrency = "awg"
 	CreatePromoCodesRequestBaseCurrencyWhopUsd CreatePromoCodesRequestBaseCurrency = "whop_usd"
 	CreatePromoCodesRequestBaseCurrencyXau     CreatePromoCodesRequestBaseCurrency = "xau"
+	CreatePromoCodesRequestBaseCurrencyHnl     CreatePromoCodesRequestBaseCurrency = "hnl"
 )
 
 func NewCreatePromoCodesRequestBaseCurrencyFromString(s string) (CreatePromoCodesRequestBaseCurrency, error) {
@@ -2603,6 +2610,8 @@ func NewCreatePromoCodesRequestBaseCurrencyFromString(s string) (CreatePromoCode
 		return CreatePromoCodesRequestBaseCurrencyWhopUsd, nil
 	case "xau":
 		return CreatePromoCodesRequestBaseCurrencyXau, nil
+	case "hnl":
+		return CreatePromoCodesRequestBaseCurrencyHnl, nil
 	}
 	var t CreatePromoCodesRequestBaseCurrency
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

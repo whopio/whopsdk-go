@@ -3001,6 +3001,7 @@ const (
 	AccountFeeRegionMy  AccountFeeRegion = "my"
 	AccountFeeRegionDo  AccountFeeRegion = "do"
 	AccountFeeRegionSv  AccountFeeRegion = "sv"
+	AccountFeeRegionHn  AccountFeeRegion = "hn"
 )
 
 func NewAccountFeeRegionFromString(s string) (AccountFeeRegion, error) {
@@ -3045,6 +3046,8 @@ func NewAccountFeeRegionFromString(s string) (AccountFeeRegion, error) {
 		return AccountFeeRegionDo, nil
 	case "sv":
 		return AccountFeeRegionSv, nil
+	case "hn":
+		return AccountFeeRegionHn, nil
 	}
 	var t AccountFeeRegion
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -10977,6 +10980,7 @@ const (
 	CheckoutConfigurationCurrencyAwg     CheckoutConfigurationCurrency = "awg"
 	CheckoutConfigurationCurrencyWhopUsd CheckoutConfigurationCurrency = "whop_usd"
 	CheckoutConfigurationCurrencyXau     CheckoutConfigurationCurrency = "xau"
+	CheckoutConfigurationCurrencyHnl     CheckoutConfigurationCurrency = "hnl"
 )
 
 func NewCheckoutConfigurationCurrencyFromString(s string) (CheckoutConfigurationCurrency, error) {
@@ -11161,6 +11165,8 @@ func NewCheckoutConfigurationCurrencyFromString(s string) (CheckoutConfiguration
 		return CheckoutConfigurationCurrencyWhopUsd, nil
 	case "xau":
 		return CheckoutConfigurationCurrencyXau, nil
+	case "hnl":
+		return CheckoutConfigurationCurrencyHnl, nil
 	}
 	var t CheckoutConfigurationCurrency
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -12584,6 +12590,7 @@ const (
 	CurrenciesAwg     Currencies = "awg"
 	CurrenciesWhopUsd Currencies = "whop_usd"
 	CurrenciesXau     Currencies = "xau"
+	CurrenciesHnl     Currencies = "hnl"
 )
 
 func NewCurrenciesFromString(s string) (Currencies, error) {
@@ -12768,6 +12775,8 @@ func NewCurrenciesFromString(s string) (Currencies, error) {
 		return CurrenciesWhopUsd, nil
 	case "xau":
 		return CurrenciesXau, nil
+	case "hnl":
+		return CurrenciesHnl, nil
 	}
 	var t Currencies
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -21830,6 +21839,7 @@ const (
 	FinancingProviderCurrencyCurrencyAwg     FinancingProviderCurrencyCurrency = "awg"
 	FinancingProviderCurrencyCurrencyWhopUsd FinancingProviderCurrencyCurrency = "whop_usd"
 	FinancingProviderCurrencyCurrencyXau     FinancingProviderCurrencyCurrency = "xau"
+	FinancingProviderCurrencyCurrencyHnl     FinancingProviderCurrencyCurrency = "hnl"
 )
 
 func NewFinancingProviderCurrencyCurrencyFromString(s string) (FinancingProviderCurrencyCurrency, error) {
@@ -22014,6 +22024,8 @@ func NewFinancingProviderCurrencyCurrencyFromString(s string) (FinancingProvider
 		return FinancingProviderCurrencyCurrencyWhopUsd, nil
 	case "xau":
 		return FinancingProviderCurrencyCurrencyXau, nil
+	case "hnl":
+		return FinancingProviderCurrencyCurrencyHnl, nil
 	}
 	var t FinancingProviderCurrencyCurrency
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -49041,6 +49053,7 @@ const (
 	PaymentInputVariantCurrencyAwg     PaymentInputVariantCurrency = "awg"
 	PaymentInputVariantCurrencyWhopUsd PaymentInputVariantCurrency = "whop_usd"
 	PaymentInputVariantCurrencyXau     PaymentInputVariantCurrency = "xau"
+	PaymentInputVariantCurrencyHnl     PaymentInputVariantCurrency = "hnl"
 )
 
 func NewPaymentInputVariantCurrencyFromString(s string) (PaymentInputVariantCurrency, error) {
@@ -49225,6 +49238,8 @@ func NewPaymentInputVariantCurrencyFromString(s string) (PaymentInputVariantCurr
 		return PaymentInputVariantCurrencyWhopUsd, nil
 	case "xau":
 		return PaymentInputVariantCurrencyXau, nil
+	case "hnl":
+		return PaymentInputVariantCurrencyHnl, nil
 	}
 	var t PaymentInputVariantCurrency
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

@@ -6382,6 +6382,13 @@ func TestEnumCreatePromoCodesRequestBaseCurrency(t *testing.T) {
 		assert.Equal(t, CreatePromoCodesRequestBaseCurrency("xau"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_hnl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreatePromoCodesRequestBaseCurrencyFromString("hnl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreatePromoCodesRequestBaseCurrency("hnl"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewCreatePromoCodesRequestBaseCurrencyFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -7150,6 +7157,13 @@ func TestEnumPromoCodeCurrency(t *testing.T) {
 		assert.Equal(t, PromoCodeCurrency("xau"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_hnl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPromoCodeCurrencyFromString("hnl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PromoCodeCurrency("hnl"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewPromoCodeCurrencyFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -7829,6 +7843,13 @@ func TestEnumPromoCodeListItemCurrency(t *testing.T) {
 		val, err := NewPromoCodeListItemCurrencyFromString("xau")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PromoCodeListItemCurrency("xau"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_hnl", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPromoCodeListItemCurrencyFromString("hnl")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PromoCodeListItemCurrency("hnl"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
