@@ -244,7 +244,8 @@ type Partner struct {
 	PayoutRates []*PartnerPayoutTier `json:"payout_rates" url:"payout_rates"`
 	// Number of active first-tier business referrals attributed to the partner, excluding deleted businesses.
 	ReferredBusinessesCount int `json:"referred_businesses_count" url:"referred_businesses_count"`
-	// The user currently attributed as this user's primary referrer. Null when there is no active primary referral.
+	// The user who referred this user. Deprecated: no longer populated. Always `null`.
+	// DEPRECATED: No longer populated. Always null.
 	ReferringPartner *UserSummary `json:"referring_partner,omitempty" url:"referring_partner,omitempty"`
 	// The authenticated partner's public profile.
 	User *UserSummary `json:"user" url:"user"`
