@@ -99,7 +99,7 @@ type CreateInvoicesRequest struct {
 	DueAt *time.Time `json:"due_at,omitempty" url:"-"`
 	// Resolve or create the member for this email, creating a Whop user when none exists. Mutually exclusive with member_id.
 	EmailAddress *string `json:"email_address,omitempty" url:"-"`
-	// The variants being invoiced, all in the same currency. Each variant may appear once. Use quantity for multiple units. A recurring variant must belong to a product. Its first invoice charges `initial_price` plus `renewal_price`. Later invoices charge only `renewal_price`. Paying the first invoice starts a paid billing period immediately, without the variant's trial. The subscription uses the `collection_method` the invoice was sent or issued with. A finite payment count includes the first paid invoice. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, and access settings.
+	// The variants being invoiced, all in the same currency. Each variant may appear once. Use quantity for multiple units. A recurring variant must belong to a product. Its first invoice charges `initial_price` plus `renewal_price`. Later invoices charge only `renewal_price`. When the variant has `trial_period_days`, the first invoice charges only `initial_price`. Paying it starts the trial, and the first renewal is billed when the trial ends. A customer who already had a subscription to the variant gets no trial, so paying starts a paid billing period immediately. Renewal invoices never start a trial. When the trial leaves nothing due, issuing or sending needs a `payment_method_id` or the `send_invoice` collection method. The subscription uses the `collection_method` the invoice was sent or issued with. A finite payment count includes the first paid invoice. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, access, and trial settings.
 	Items []*CreateInvoicesRequestItemsItem `json:"items" url:"-"`
 	// An address associated with the member. Mutually exclusive with billing_address.
 	MailingAddressID *string `json:"mailing_address_id,omitempty" url:"-"`
@@ -1430,31 +1430,33 @@ func (i *Invoice) String() string {
 }
 
 var (
-	invoiceLineItemFieldDescription    = big.NewInt(1 << 0)
-	invoiceLineItemFieldDiscountAmount = big.NewInt(1 << 1)
-	invoiceLineItemFieldID             = big.NewInt(1 << 2)
-	invoiceLineItemFieldInitialPrice   = big.NewInt(1 << 3)
-	invoiceLineItemFieldLabel          = big.NewInt(1 << 4)
-	invoiceLineItemFieldProductID      = big.NewInt(1 << 5)
-	invoiceLineItemFieldQuantity       = big.NewInt(1 << 6)
-	invoiceLineItemFieldSubtotal       = big.NewInt(1 << 7)
-	invoiceLineItemFieldTaxAmount      = big.NewInt(1 << 8)
-	invoiceLineItemFieldUnitAmount     = big.NewInt(1 << 9)
-	invoiceLineItemFieldVariantID      = big.NewInt(1 << 10)
+	invoiceLineItemFieldDescription     = big.NewInt(1 << 0)
+	invoiceLineItemFieldDiscountAmount  = big.NewInt(1 << 1)
+	invoiceLineItemFieldID              = big.NewInt(1 << 2)
+	invoiceLineItemFieldInitialPrice    = big.NewInt(1 << 3)
+	invoiceLineItemFieldLabel           = big.NewInt(1 << 4)
+	invoiceLineItemFieldProductID       = big.NewInt(1 << 5)
+	invoiceLineItemFieldQuantity        = big.NewInt(1 << 6)
+	invoiceLineItemFieldSubtotal        = big.NewInt(1 << 7)
+	invoiceLineItemFieldTaxAmount       = big.NewInt(1 << 8)
+	invoiceLineItemFieldTrialPeriodDays = big.NewInt(1 << 9)
+	invoiceLineItemFieldUnitAmount      = big.NewInt(1 << 10)
+	invoiceLineItemFieldVariantID       = big.NewInt(1 << 11)
 )
 
 // invoiceLineItemNullableFields maps the wire names of InvoiceLineItem's nullable fields (required or optional) to their field bits.
 var invoiceLineItemNullableFields = map[string]*big.Int{
-	"description":     invoiceLineItemFieldDescription,
-	"discount_amount": invoiceLineItemFieldDiscountAmount,
-	"id":              invoiceLineItemFieldID,
-	"initial_price":   invoiceLineItemFieldInitialPrice,
-	"label":           invoiceLineItemFieldLabel,
-	"product_id":      invoiceLineItemFieldProductID,
-	"subtotal":        invoiceLineItemFieldSubtotal,
-	"tax_amount":      invoiceLineItemFieldTaxAmount,
-	"unit_amount":     invoiceLineItemFieldUnitAmount,
-	"variant_id":      invoiceLineItemFieldVariantID,
+	"description":       invoiceLineItemFieldDescription,
+	"discount_amount":   invoiceLineItemFieldDiscountAmount,
+	"id":                invoiceLineItemFieldID,
+	"initial_price":     invoiceLineItemFieldInitialPrice,
+	"label":             invoiceLineItemFieldLabel,
+	"product_id":        invoiceLineItemFieldProductID,
+	"subtotal":          invoiceLineItemFieldSubtotal,
+	"tax_amount":        invoiceLineItemFieldTaxAmount,
+	"trial_period_days": invoiceLineItemFieldTrialPeriodDays,
+	"unit_amount":       invoiceLineItemFieldUnitAmount,
+	"variant_id":        invoiceLineItemFieldVariantID,
 }
 
 type InvoiceLineItem struct {
@@ -1464,7 +1466,7 @@ type InvoiceLineItem struct {
 	DiscountAmount *Money `json:"discount_amount,omitempty" url:"discount_amount,omitempty"`
 	// Line item ID, prefixed `li_`. Null when the payment predates item snapshots and the item is read from the payment's variant.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
-	// The part of `unit_amount` that is a recurring variant's one-time upfront fee, the variant's `initial_price`, charged on this invoice only. The rest of `unit_amount` is the first billing period. Null for one-time items, renewal invoices, items with no upfront fee, and items whose variant prices changed after the invoice was priced.
+	// The part of `unit_amount` that is a recurring variant's one-time upfront fee, the variant's `initial_price`, charged on this invoice only. The rest of `unit_amount` is the first billing period. A trial has no first-period charge. Null for one-time items, renewal invoices, items with no upfront fee, and items whose variant prices changed after the invoice was priced.
 	InitialPrice *Money `json:"initial_price,omitempty" url:"initial_price,omitempty"`
 	// The item's name as shown at checkout (the product title, else the variant title).
 	Label *string `json:"label,omitempty" url:"label,omitempty"`
@@ -1476,7 +1478,9 @@ type InvoiceLineItem struct {
 	Subtotal *Money `json:"subtotal,omitempty" url:"subtotal,omitempty"`
 	// The tax collected on this item, in the payment's `currency`. Null when no tax was recorded.
 	TaxAmount *Money `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
-	// The saved price of one unit before discounts, in the payment's `currency`. Creating or replacing recurring items includes the upfront fee and first billing period. Renewal invoices exclude the upfront fee. Other edits preserve saved prices. Null when the payment recorded no price.
+	// Free trial days before this recurring item's first renewal charge, from the variant's `trial_period_days`. The invoice then bills only the variant's `initial_price` for the item. `null` for one-time items and renewal invoices, and when the customer already had a subscription to the variant.
+	TrialPeriodDays *int `json:"trial_period_days,omitempty" url:"trial_period_days,omitempty"`
+	// The saved price of one unit before discounts, in the payment's `currency`. Creating or replacing recurring items includes the upfront fee, plus the first billing period unless the item starts with a trial. Renewal invoices exclude the upfront fee. Other edits preserve saved prices. Null when the payment recorded no price.
 	UnitAmount *Money `json:"unit_amount,omitempty" url:"unit_amount,omitempty"`
 	// The variant bought, prefixed `plan_`. Null when the variant has since been deleted.
 	VariantID *string `json:"variant_id,omitempty" url:"variant_id,omitempty"`
@@ -1549,6 +1553,13 @@ func (i *InvoiceLineItem) GetTaxAmount() *Money {
 		return nil
 	}
 	return i.TaxAmount
+}
+
+func (i *InvoiceLineItem) GetTrialPeriodDays() *int {
+	if i == nil {
+		return nil
+	}
+	return i.TrialPeriodDays
 }
 
 func (i *InvoiceLineItem) GetUnitAmount() *Money {
@@ -1642,6 +1653,13 @@ func (i *InvoiceLineItem) SetSubtotal(subtotal *Money) {
 func (i *InvoiceLineItem) SetTaxAmount(taxAmount *Money) {
 	i.TaxAmount = taxAmount
 	i.require(invoiceLineItemFieldTaxAmount)
+}
+
+// SetTrialPeriodDays sets the TrialPeriodDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *InvoiceLineItem) SetTrialPeriodDays(trialPeriodDays *int) {
+	i.TrialPeriodDays = trialPeriodDays
+	i.require(invoiceLineItemFieldTrialPeriodDays)
 }
 
 // SetUnitAmount sets the UnitAmount field and marks it as non-optional;
@@ -6887,7 +6905,7 @@ type UpdateInvoicesRequest struct {
 	BuyerFeePercentage *float64 `json:"buyer_fee_percentage,omitempty" url:"-"`
 	// When payment is due, as an ISO 8601 timestamp.
 	DueAt *time.Time `json:"due_at,omitempty" url:"-"`
-	// The variants being invoiced, all in the same currency. Each variant may appear once. Use quantity for multiple units. A recurring variant must belong to a product. Its first invoice charges `initial_price` plus `renewal_price`. Later invoices charge only `renewal_price`. Paying the first invoice starts a paid billing period immediately, without the variant's trial. The subscription uses the `collection_method` the invoice was sent or issued with. A finite payment count includes the first paid invoice. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, and access settings.
+	// The variants being invoiced, all in the same currency. Each variant may appear once. Use quantity for multiple units. A recurring variant must belong to a product. Its first invoice charges `initial_price` plus `renewal_price`. Later invoices charge only `renewal_price`. When the variant has `trial_period_days`, the first invoice charges only `initial_price`. Paying it starts the trial, and the first renewal is billed when the trial ends. A customer who already had a subscription to the variant gets no trial, so paying starts a paid billing period immediately. Renewal invoices never start a trial. When the trial leaves nothing due, issuing or sending needs a `payment_method_id` or the `send_invoice` collection method. The subscription uses the `collection_method` the invoice was sent or issued with. A finite payment count includes the first paid invoice. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, access, and trial settings.
 	Items []*UpdateInvoicesRequestItemsItem `json:"items,omitempty" url:"-"`
 	// An address associated with the member. Mutually exclusive with billing_address.
 	MailingAddressID *string `json:"mailing_address_id,omitempty" url:"-"`
