@@ -1614,6 +1614,7 @@ const (
 	PlanCurrencyAwg     PlanCurrency = "awg"
 	PlanCurrencyWhopUsd PlanCurrency = "whop_usd"
 	PlanCurrencyXau     PlanCurrency = "xau"
+	PlanCurrencyHnl     PlanCurrency = "hnl"
 )
 
 func NewPlanCurrencyFromString(s string) (PlanCurrency, error) {
@@ -1798,6 +1799,8 @@ func NewPlanCurrencyFromString(s string) (PlanCurrency, error) {
 		return PlanCurrencyWhopUsd, nil
 	case "xau":
 		return PlanCurrencyXau, nil
+	case "hnl":
+		return PlanCurrencyHnl, nil
 	}
 	var t PlanCurrency
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

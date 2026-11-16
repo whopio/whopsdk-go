@@ -1922,6 +1922,7 @@ const (
 	SearchRecordPromoCodeCurrencyAwg     SearchRecordPromoCodeCurrency = "awg"
 	SearchRecordPromoCodeCurrencyWhopUsd SearchRecordPromoCodeCurrency = "whop_usd"
 	SearchRecordPromoCodeCurrencyXau     SearchRecordPromoCodeCurrency = "xau"
+	SearchRecordPromoCodeCurrencyHnl     SearchRecordPromoCodeCurrency = "hnl"
 )
 
 func NewSearchRecordPromoCodeCurrencyFromString(s string) (SearchRecordPromoCodeCurrency, error) {
@@ -2106,6 +2107,8 @@ func NewSearchRecordPromoCodeCurrencyFromString(s string) (SearchRecordPromoCode
 		return SearchRecordPromoCodeCurrencyWhopUsd, nil
 	case "xau":
 		return SearchRecordPromoCodeCurrencyXau, nil
+	case "hnl":
+		return SearchRecordPromoCodeCurrencyHnl, nil
 	}
 	var t SearchRecordPromoCodeCurrency
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

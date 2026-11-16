@@ -1560,6 +1560,7 @@ const (
 	CreateDirectRequestPlanCurrencyAwg     CreateDirectRequestPlanCurrency = "awg"
 	CreateDirectRequestPlanCurrencyWhopUsd CreateDirectRequestPlanCurrency = "whop_usd"
 	CreateDirectRequestPlanCurrencyXau     CreateDirectRequestPlanCurrency = "xau"
+	CreateDirectRequestPlanCurrencyHnl     CreateDirectRequestPlanCurrency = "hnl"
 )
 
 func NewCreateDirectRequestPlanCurrencyFromString(s string) (CreateDirectRequestPlanCurrency, error) {
@@ -1744,6 +1745,8 @@ func NewCreateDirectRequestPlanCurrencyFromString(s string) (CreateDirectRequest
 		return CreateDirectRequestPlanCurrencyWhopUsd, nil
 	case "xau":
 		return CreateDirectRequestPlanCurrencyXau, nil
+	case "hnl":
+		return CreateDirectRequestPlanCurrencyHnl, nil
 	}
 	var t CreateDirectRequestPlanCurrency
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

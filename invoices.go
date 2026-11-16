@@ -2729,6 +2729,7 @@ const (
 	CreateInvoicesRequestItemsItemVariantCurrencyAwg     CreateInvoicesRequestItemsItemVariantCurrency = "awg"
 	CreateInvoicesRequestItemsItemVariantCurrencyWhopUsd CreateInvoicesRequestItemsItemVariantCurrency = "whop_usd"
 	CreateInvoicesRequestItemsItemVariantCurrencyXau     CreateInvoicesRequestItemsItemVariantCurrency = "xau"
+	CreateInvoicesRequestItemsItemVariantCurrencyHnl     CreateInvoicesRequestItemsItemVariantCurrency = "hnl"
 )
 
 func NewCreateInvoicesRequestItemsItemVariantCurrencyFromString(s string) (CreateInvoicesRequestItemsItemVariantCurrency, error) {
@@ -2913,6 +2914,8 @@ func NewCreateInvoicesRequestItemsItemVariantCurrencyFromString(s string) (Creat
 		return CreateInvoicesRequestItemsItemVariantCurrencyWhopUsd, nil
 	case "xau":
 		return CreateInvoicesRequestItemsItemVariantCurrencyXau, nil
+	case "hnl":
+		return CreateInvoicesRequestItemsItemVariantCurrencyHnl, nil
 	}
 	var t CreateInvoicesRequestItemsItemVariantCurrency
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -6136,6 +6139,7 @@ const (
 	UpdateInvoicesRequestItemsItemVariantCurrencyAwg     UpdateInvoicesRequestItemsItemVariantCurrency = "awg"
 	UpdateInvoicesRequestItemsItemVariantCurrencyWhopUsd UpdateInvoicesRequestItemsItemVariantCurrency = "whop_usd"
 	UpdateInvoicesRequestItemsItemVariantCurrencyXau     UpdateInvoicesRequestItemsItemVariantCurrency = "xau"
+	UpdateInvoicesRequestItemsItemVariantCurrencyHnl     UpdateInvoicesRequestItemsItemVariantCurrency = "hnl"
 )
 
 func NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString(s string) (UpdateInvoicesRequestItemsItemVariantCurrency, error) {
@@ -6320,6 +6324,8 @@ func NewUpdateInvoicesRequestItemsItemVariantCurrencyFromString(s string) (Updat
 		return UpdateInvoicesRequestItemsItemVariantCurrencyWhopUsd, nil
 	case "xau":
 		return UpdateInvoicesRequestItemsItemVariantCurrencyXau, nil
+	case "hnl":
+		return UpdateInvoicesRequestItemsItemVariantCurrencyHnl, nil
 	}
 	var t UpdateInvoicesRequestItemsItemVariantCurrency
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

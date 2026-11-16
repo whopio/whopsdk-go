@@ -881,6 +881,7 @@ const (
 	CreateTransfersRequestBodyClaimLinkCurrencyCny CreateTransfersRequestBodyClaimLinkCurrency = "cny"
 	CreateTransfersRequestBodyClaimLinkCurrencyKzt CreateTransfersRequestBodyClaimLinkCurrency = "kzt"
 	CreateTransfersRequestBodyClaimLinkCurrencyAwg CreateTransfersRequestBodyClaimLinkCurrency = "awg"
+	CreateTransfersRequestBodyClaimLinkCurrencyHnl CreateTransfersRequestBodyClaimLinkCurrency = "hnl"
 )
 
 func NewCreateTransfersRequestBodyClaimLinkCurrencyFromString(s string) (CreateTransfersRequestBodyClaimLinkCurrency, error) {
@@ -1053,6 +1054,8 @@ func NewCreateTransfersRequestBodyClaimLinkCurrencyFromString(s string) (CreateT
 		return CreateTransfersRequestBodyClaimLinkCurrencyKzt, nil
 	case "awg":
 		return CreateTransfersRequestBodyClaimLinkCurrencyAwg, nil
+	case "hnl":
+		return CreateTransfersRequestBodyClaimLinkCurrencyHnl, nil
 	}
 	var t CreateTransfersRequestBodyClaimLinkCurrency
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

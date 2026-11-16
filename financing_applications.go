@@ -2642,6 +2642,7 @@ const (
 	UpdateFinancingApplicationsRequestAnswersItemMoneyCurrencyCny UpdateFinancingApplicationsRequestAnswersItemMoneyCurrency = "cny"
 	UpdateFinancingApplicationsRequestAnswersItemMoneyCurrencyKzt UpdateFinancingApplicationsRequestAnswersItemMoneyCurrency = "kzt"
 	UpdateFinancingApplicationsRequestAnswersItemMoneyCurrencyAwg UpdateFinancingApplicationsRequestAnswersItemMoneyCurrency = "awg"
+	UpdateFinancingApplicationsRequestAnswersItemMoneyCurrencyHnl UpdateFinancingApplicationsRequestAnswersItemMoneyCurrency = "hnl"
 )
 
 func NewUpdateFinancingApplicationsRequestAnswersItemMoneyCurrencyFromString(s string) (UpdateFinancingApplicationsRequestAnswersItemMoneyCurrency, error) {
@@ -2814,6 +2815,8 @@ func NewUpdateFinancingApplicationsRequestAnswersItemMoneyCurrencyFromString(s s
 		return UpdateFinancingApplicationsRequestAnswersItemMoneyCurrencyKzt, nil
 	case "awg":
 		return UpdateFinancingApplicationsRequestAnswersItemMoneyCurrencyAwg, nil
+	case "hnl":
+		return UpdateFinancingApplicationsRequestAnswersItemMoneyCurrencyHnl, nil
 	}
 	var t UpdateFinancingApplicationsRequestAnswersItemMoneyCurrency
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

@@ -1573,6 +1573,7 @@ const (
 	CreateEventsRequestCurrencyAwg     CreateEventsRequestCurrency = "awg"
 	CreateEventsRequestCurrencyWhopUsd CreateEventsRequestCurrency = "whop_usd"
 	CreateEventsRequestCurrencyXau     CreateEventsRequestCurrency = "xau"
+	CreateEventsRequestCurrencyHnl     CreateEventsRequestCurrency = "hnl"
 )
 
 func NewCreateEventsRequestCurrencyFromString(s string) (CreateEventsRequestCurrency, error) {
@@ -1757,6 +1758,8 @@ func NewCreateEventsRequestCurrencyFromString(s string) (CreateEventsRequestCurr
 		return CreateEventsRequestCurrencyWhopUsd, nil
 	case "xau":
 		return CreateEventsRequestCurrencyXau, nil
+	case "hnl":
+		return CreateEventsRequestCurrencyHnl, nil
 	}
 	var t CreateEventsRequestCurrency
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
