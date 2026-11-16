@@ -126,7 +126,7 @@ type ListMembersRequest struct {
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
 	// Only members who joined before this ISO 8601 timestamp.
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
-	// Sort field. `most_recent_action_at` and `last_activity_at` place members without one first when ascending and last when descending.
+	// Sort field. `most_recent_action_at` and `last_activity_at` place members without one first when ascending and last when descending. `needs_reply` lists customers awaiting a support reply first, ordered by their latest qualifying message. Other members follow in last-activity order. Direction applies within each group. Requires `support_chat:read`.
 	Order *ListMembersRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
 	Direction *ListMembersRequestDirection `json:"-" url:"direction,omitempty"`
@@ -1435,6 +1435,7 @@ const (
 	ListMembersRequestOrderLastActivityAt     ListMembersRequestOrder = "last_activity_at"
 	ListMembersRequestOrderMostRecentActionAt ListMembersRequestOrder = "most_recent_action_at"
 	ListMembersRequestOrderUsdTotalSpent      ListMembersRequestOrder = "usd_total_spent"
+	ListMembersRequestOrderNeedsReply         ListMembersRequestOrder = "needs_reply"
 )
 
 func NewListMembersRequestOrderFromString(s string) (ListMembersRequestOrder, error) {
@@ -1451,6 +1452,8 @@ func NewListMembersRequestOrderFromString(s string) (ListMembersRequestOrder, er
 		return ListMembersRequestOrderMostRecentActionAt, nil
 	case "usd_total_spent":
 		return ListMembersRequestOrderUsdTotalSpent, nil
+	case "needs_reply":
+		return ListMembersRequestOrderNeedsReply, nil
 	}
 	var t ListMembersRequestOrder
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
