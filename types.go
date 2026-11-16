@@ -31313,7 +31313,7 @@ type LedgerActivitySource struct {
 	CardBrand *string `json:"card_brand,omitempty" url:"card_brand,omitempty"`
 	// Chain the deposit landed on, for example plasma (onchain_transaction sources only).
 	Chain *string `json:"chain,omitempty" url:"chain,omitempty"`
-	// The airdrop's claim URL. Null unless the caller can manage claim links on the funding company or withdraw from the funding personal balance.
+	// The airdrop's claim URL. Null unless the caller can manage claim links on the funding account or withdraw from the funding personal balance.
 	ClaimURL *string `json:"claim_url,omitempty" url:"claim_url,omitempty"`
 	// Payout creation time as an ISO 8601 timestamp (payout sources only; requires payout:withdrawal:read).
 	CreatedAt *time.Time `json:"created_at,omitempty" url:"created_at,omitempty"`
@@ -46009,7 +46009,7 @@ type Payment struct {
 	RefundedAt *string `json:"refunded_at,omitempty" url:"refunded_at,omitempty"`
 	// When the earliest response is due on a dispute or Resolution Center case awaiting the account's response, as an ISO 8601 timestamp. Null when nothing awaits a response, or without the permission to read that dispute or case.
 	ResponseDueAt *string `json:"response_due_at,omitempty" url:"response_due_at,omitempty"`
-	// True when the payment is `open` and can be retried by hand with `POST /payments/{id}/retry`: its membership is `active`, `trialing`, or `past_due` (or it is a failed first payment on a `drafted` membership), it is not paid through an invoice payment link, and its one manual retry is not used up. A retry can still be refused when the company cannot currently accept payments.
+	// True when the payment can be retried by hand with `POST /payments/{id}/retry`. The payment must be `open` and not paid through an invoice payment link. Its membership must be `active`, `trialing`, or `past_due`, or the payment must be a failed first payment on a `drafted` membership. Its one manual retry must not be used up. A retry can still be refused when the account cannot currently accept payments.
 	Retryable bool `json:"retryable" url:"retryable"`
 	// Whop's published risk index from 0 (lowest) to 100 (highest), including enforced decision floors. This is not a fraud probability. Null when no score is available or you read the payment as its buyer.
 	RiskScore *float64 `json:"risk_score,omitempty" url:"risk_score,omitempty"`
@@ -46042,7 +46042,7 @@ type Payment struct {
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
 	// The total converted to USD at the time of the charge, for reporting across currencies. Excludes the adaptive pricing FX markup, which the account does not keep. Null when you read the payment as its buyer.
 	UsdTotal *Money `json:"usd_total,omitempty" url:"usd_total,omitempty"`
-	// The buyer. Null when the payment belongs to a company buyer rather than a user.
+	// The buyer. Null when the buyer is an account rather than a user.
 	User *UserSummary `json:"user,omitempty" url:"user,omitempty"`
 	// The buyer's browser user agent at checkout. Null when the buyer was not present at checkout, such as a subscription renewal, or without the member:basic:read permission.
 	UserAgent *string `json:"user_agent,omitempty" url:"user_agent,omitempty"`
@@ -69745,7 +69745,7 @@ type SetupIntent struct {
 	ThreeDsVerified bool `json:"three_ds_verified" url:"three_ds_verified"`
 	// When the setup intent was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
-	// The user saving the payment method. Null when the buyer is a company rather than a user.
+	// The user saving the payment method. Null when the buyer is an account rather than a user.
 	User *UserSummary `json:"user,omitempty" url:"user,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

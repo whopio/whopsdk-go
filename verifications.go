@@ -356,7 +356,7 @@ type CreateVerificationsRequestBodyBusiness struct {
 	BusinessName *string `json:"business_name,omitempty" url:"business_name,omitempty"`
 	// Legal entity structure of the business, such as `private_corporation` or `sole_proprietorship`. Supported values vary by country of incorporation — see [Business structures](/developer/verification/business-structures).
 	BusinessStructure *string `json:"business_structure,omitempty" url:"business_structure,omitempty"`
-	// The business ID number of the company, as appropriate for the company's country. Examples are an Employer Identification Number (EIN) in the US, a Business Number in Canada, or a Company Number in the UK.
+	// The business ID number, as appropriate for the business's country. Examples are an Employer Identification Number (EIN) in the US, a Business Number in Canada, or a Company Number in the UK.
 	BusinessTaxIdentificationNumber *string `json:"business_tax_identification_number,omitempty" url:"business_tax_identification_number,omitempty"`
 	// Business website URL. Whop store pages are not accepted.
 	BusinessWebsite *string `json:"business_website,omitempty" url:"business_website,omitempty"`
@@ -372,7 +372,7 @@ type CreateVerificationsRequestBodyBusiness struct {
 	IncorporationDate *time.Time `json:"incorporation_date,omitempty" url:"incorporation_date,omitempty" format:"date"`
 	// Last name of the business representative, used to prefill the verification session.
 	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
-	// Owners of the business, up to 10 per request. Once the company details, the company documents, and the owners are in and every new owner's documents were sent, Create Verification sends the business for review: in the request that completes it, as soon as the last owner's documents finish sending in the background, or when called again after Update Verification. Owners can still be added, changed, or removed while the review waits on them.
+	// Owners of the business, up to 10 per request. Create Verification sends the business for review when the business details, business documents, and owners are in, and every new owner's documents are sent. It does this in the request that completes the set. It also does this when the last owner's documents finish sending in the background, or when you call it again after Update Verification. Owners can still be added, changed, or removed while the review waits on them.
 	Owners []*CreateVerificationsRequestBodyBusinessOwnersItem `json:"owners,omitempty" url:"owners,omitempty"`
 	// State or region where the business is incorporated. Sent to the verification provider and returned in the response; `requested_information` asks for it while it is still missing.
 	PlaceOfIncorporation *string `json:"place_of_incorporation,omitempty" url:"place_of_incorporation,omitempty"`
@@ -1771,7 +1771,7 @@ type CreateVerificationsRequestBodyIndividual struct {
 	BusinessName *string `json:"business_name,omitempty" url:"business_name,omitempty"`
 	// Entity type for sole proprietors, such as `single_member_llc`. Supported values vary by country of incorporation — see [Business structures](/developer/verification/business-structures).
 	BusinessStructure *string `json:"business_structure,omitempty" url:"business_structure,omitempty"`
-	// The business ID number of the company, as appropriate for the company's country. Examples are an Employer Identification Number (EIN) in the US, a Business Number in Canada, or a Company Number in the UK.
+	// The business ID number, as appropriate for the business's country. Examples are an Employer Identification Number (EIN) in the US, a Business Number in Canada, or a Company Number in the UK.
 	BusinessTaxIdentificationNumber *string `json:"business_tax_identification_number,omitempty" url:"business_tax_identification_number,omitempty"`
 	// Business website URL. Whop store pages are not accepted.
 	BusinessWebsite *string `json:"business_website,omitempty" url:"business_website,omitempty"`
@@ -2567,7 +2567,7 @@ type CreateVerificationsResponse struct {
 	PlaceOfIncorporation *string `json:"place_of_incorporation,omitempty" url:"place_of_incorporation,omitempty"`
 	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Business verifications only; as on file for the business verification, or `null` until it is sent.
 	RegistrationNumber *string `json:"registration_number,omitempty" url:"registration_number,omitempty"`
-	// What Whop still needs before review can continue — one requirement per entry. Answer with Update Verification; nothing from the response is echoed back. Keys that don't apply are omitted. For a business verification created with `documents` or `owners`, this includes the company details and documents still missing before it can be sent for review; each owner's documents are listed under that owner.
+	// What Whop still needs before review can continue, with one requirement per entry. Answer with Update Verification. Nothing from the response is echoed back. Keys that don't apply are omitted. For a business verification created with `documents` or `owners`, this includes the business details and documents still missing before it can be sent for review. Each owner's documents are listed under that owner.
 	RequestedInformation []*CreateVerificationsResponseRequestedInformationItem `json:"requested_information,omitempty" url:"requested_information,omitempty"`
 	// Documents for a document-upload verification and their progress. Present only on individual verifications created by sending `documents`. `pending_upload` documents were not accepted yet — send the full set again with another Create Verification call.
 	RequiredDocuments []*CreateVerificationsResponseRequiredDocumentsItem `json:"required_documents,omitempty" url:"required_documents,omitempty"`
@@ -4603,7 +4603,7 @@ type ListVerificationsResponseDataItem struct {
 	PlaceOfIncorporation *string `json:"place_of_incorporation,omitempty" url:"place_of_incorporation,omitempty"`
 	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Business verifications only; as on file for the business verification, or `null` until it is sent.
 	RegistrationNumber *string `json:"registration_number,omitempty" url:"registration_number,omitempty"`
-	// What Whop still needs before review can continue — one requirement per entry. Answer with Update Verification; nothing from the response is echoed back. Keys that don't apply are omitted. For a business verification created with `documents` or `owners`, this includes the company details and documents still missing before it can be sent for review; each owner's documents are listed under that owner.
+	// What Whop still needs before review can continue, with one requirement per entry. Answer with Update Verification. Nothing from the response is echoed back. Keys that don't apply are omitted. For a business verification created with `documents` or `owners`, this includes the business details and documents still missing before it can be sent for review. Each owner's documents are listed under that owner.
 	RequestedInformation []*ListVerificationsResponseDataItemRequestedInformationItem `json:"requested_information,omitempty" url:"requested_information,omitempty"`
 	// Documents for a document-upload verification and their progress. Present only on individual verifications created by sending `documents`. `pending_upload` documents were not accepted yet — send the full set again with another Create Verification call.
 	RequiredDocuments []*ListVerificationsResponseDataItemRequiredDocumentsItem `json:"required_documents,omitempty" url:"required_documents,omitempty"`
@@ -7259,7 +7259,7 @@ type RetrieveVerificationsResponse struct {
 	PlaceOfIncorporation *string `json:"place_of_incorporation,omitempty" url:"place_of_incorporation,omitempty"`
 	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Business verifications only; as on file for the business verification, or `null` until it is sent.
 	RegistrationNumber *string `json:"registration_number,omitempty" url:"registration_number,omitempty"`
-	// What Whop still needs before review can continue — one requirement per entry. Answer with Update Verification; nothing from the response is echoed back. Keys that don't apply are omitted. For a business verification created with `documents` or `owners`, this includes the company details and documents still missing before it can be sent for review; each owner's documents are listed under that owner.
+	// What Whop still needs before review can continue, with one requirement per entry. Answer with Update Verification. Nothing from the response is echoed back. Keys that don't apply are omitted. For a business verification created with `documents` or `owners`, this includes the business details and documents still missing before it can be sent for review. Each owner's documents are listed under that owner.
 	RequestedInformation []*RetrieveVerificationsResponseRequestedInformationItem `json:"requested_information,omitempty" url:"requested_information,omitempty"`
 	// Documents for a document-upload verification and their progress. Present only on individual verifications created by sending `documents`. `pending_upload` documents were not accepted yet — send the full set again with another Create Verification call.
 	RequiredDocuments []*RetrieveVerificationsResponseRequiredDocumentsItem `json:"required_documents,omitempty" url:"required_documents,omitempty"`
@@ -9181,7 +9181,7 @@ type UpdateVerificationsRequestBodyBusinessAddress struct {
 	BusinessName *string `json:"business_name,omitempty" url:"business_name,omitempty"`
 	// Legal entity structure of the business, such as `private_corporation` or `sole_proprietorship`. Supported values vary by country of incorporation — see [Business structures](/developer/verification/business-structures).
 	BusinessStructure *string `json:"business_structure,omitempty" url:"business_structure,omitempty"`
-	// The business ID number of the company, as appropriate for the company's country. Examples are an Employer Identification Number (EIN) in the US, a Business Number in Canada, or a Company Number in the UK.
+	// The business ID number, as appropriate for the business's country. Examples are an Employer Identification Number (EIN) in the US, a Business Number in Canada, or a Company Number in the UK.
 	BusinessTaxIdentificationNumber *string `json:"business_tax_identification_number,omitempty" url:"business_tax_identification_number,omitempty"`
 	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
@@ -9195,7 +9195,7 @@ type UpdateVerificationsRequestBodyBusinessAddress struct {
 	IncorporationDate *time.Time `json:"incorporation_date,omitempty" url:"incorporation_date,omitempty" format:"date"`
 	// Last name of the business representative.
 	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
-	// Owners of the business, up to 10 per request. Once the company details, the company documents, and the owners are in and every new owner's documents were sent, Create Verification sends the business for review: in the request that completes it, as soon as the last owner's documents finish sending in the background, or when called again after Update Verification. Owners can still be added, changed, or removed while the review waits on them.
+	// Owners of the business, up to 10 per request. Create Verification sends the business for review when the business details, business documents, and owners are in, and every new owner's documents are sent. It does this in the request that completes the set. It also does this when the last owner's documents finish sending in the background, or when you call it again after Update Verification. Owners can still be added, changed, or removed while the review waits on them.
 	Owners []*UpdateVerificationsRequestBodyBusinessAddressOwnersItem `json:"owners,omitempty" url:"owners,omitempty"`
 	// State or region where the business is incorporated. Sent to the verification provider and returned in the response; `requested_information` asks for it while it is still missing.
 	PlaceOfIncorporation *string `json:"place_of_incorporation,omitempty" url:"place_of_incorporation,omitempty"`
@@ -11214,7 +11214,7 @@ type UpdateVerificationsRequestBodyPersonalAddress struct {
 	BusinessName *string `json:"business_name,omitempty" url:"business_name,omitempty"`
 	// Entity type for sole proprietors, such as `single_member_llc`. Supported values vary by country of incorporation — see [Business structures](/developer/verification/business-structures).
 	BusinessStructure *string `json:"business_structure,omitempty" url:"business_structure,omitempty"`
-	// The business ID number of the company, as appropriate for the company's country. Examples are an Employer Identification Number (EIN) in the US, a Business Number in Canada, or a Company Number in the UK.
+	// The business ID number, as appropriate for the business's country. Examples are an Employer Identification Number (EIN) in the US, a Business Number in Canada, or a Company Number in the UK.
 	BusinessTaxIdentificationNumber *string `json:"business_tax_identification_number,omitempty" url:"business_tax_identification_number,omitempty"`
 	// Two-letter ISO 3166-1 country code, for example `US`, `DE`, or `GB`.
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
@@ -12322,7 +12322,7 @@ type UpdateVerificationsResponse struct {
 	PlaceOfIncorporation *string `json:"place_of_incorporation,omitempty" url:"place_of_incorporation,omitempty"`
 	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Business verifications only; as on file for the business verification, or `null` until it is sent.
 	RegistrationNumber *string `json:"registration_number,omitempty" url:"registration_number,omitempty"`
-	// What Whop still needs before review can continue — one requirement per entry. Answer with Update Verification; nothing from the response is echoed back. Keys that don't apply are omitted. For a business verification created with `documents` or `owners`, this includes the company details and documents still missing before it can be sent for review; each owner's documents are listed under that owner.
+	// What Whop still needs before review can continue, with one requirement per entry. Answer with Update Verification. Nothing from the response is echoed back. Keys that don't apply are omitted. For a business verification created with `documents` or `owners`, this includes the business details and documents still missing before it can be sent for review. Each owner's documents are listed under that owner.
 	RequestedInformation []*UpdateVerificationsResponseRequestedInformationItem `json:"requested_information,omitempty" url:"requested_information,omitempty"`
 	// Documents for a document-upload verification and their progress. Present only on individual verifications created by sending `documents`. `pending_upload` documents were not accepted yet — send the full set again with another Create Verification call.
 	RequiredDocuments []*UpdateVerificationsResponseRequiredDocumentsItem `json:"required_documents,omitempty" url:"required_documents,omitempty"`
