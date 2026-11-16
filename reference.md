@@ -25414,6 +25414,14 @@ client.Invoices.Create(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**timeZone:** `*string` — The IANA time zone for the dates on the invoice's email and PDF. Set it so the due date reads as the day you picked. When omitted, a new invoice uses the time zone Whop has for the user creating it, else UTC. Can be updated on drafts.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
@@ -25679,6 +25687,14 @@ client.Invoices.Update(
 <dd>
 
 **recipientEmails:** `[]string` — Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**timeZone:** `*string` — The IANA time zone for the dates on the invoice's email and PDF. Set it so the due date reads as the day you picked. When omitted, a new invoice uses the time zone Whop has for the user creating it, else UTC. Can be updated on drafts.
     
 </dd>
 </dl>
