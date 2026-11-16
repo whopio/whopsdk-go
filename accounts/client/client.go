@@ -184,7 +184,7 @@ func (c *Client) Me(
 	return response.Body, nil
 }
 
-// Finds accounts by name among the accounts the credential can list. Support searches cover every company and return only the 50 best matches.
+// Finds accounts by name among the accounts the credential can list. Support searches cover every account and return only the 50 best matches.
 //
 // Example:
 //

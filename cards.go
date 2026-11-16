@@ -26,11 +26,11 @@ var (
 type CreateCardsRequest struct {
 	// The owning account ID (a biz_ identifier). Provide this or user_id.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The account member (a user_ identifier) to assign the card to. Required for business card issuing accounts. When this call files the card application, the member applies with their identity; a company API key that sends neither this nor kind is refused.
+	// The account member (a user_ identifier) to assign the card to. Required for business card issuing accounts. When this call files the card application, the member applies with their identity. An account API key that sends neither this nor kind is refused.
 	AssignedUserID *string `json:"assigned_user_id,omitempty" url:"-"`
-	// The card's initial billing address. On a company card it also registers the assigned member as a cardholder if they are not one yet. For an individual card, region is also required.
+	// The card's initial billing address. On a business card it also registers the assigned member as a cardholder if they are not one yet. For an individual card, region is also required.
 	Billing *CreateCardsRequestBilling `json:"billing,omitempty" url:"-"`
-	// Details for a company card's assigned member when they are not registered as a cardholder yet. Send with billing to register them and start provisioning in one call instead of sending them an onboarding invitation. The legal name comes from the member's approved identity verification when they have one, and from these fields when they do not.
+	// Details for a business card's assigned member when they are not registered as a cardholder yet. Send with billing to register them and start provisioning in one call instead of sending them an onboarding invitation. The legal name comes from the member's approved identity verification when they have one, and from these fields when they do not.
 	Cardholder *CreateCardsRequestCardholder `json:"cardholder,omitempty" url:"-"`
 	// Who the card application verifies, set only on the call that files it; sending it while the account's application is in progress or approved is a 400. `business` applies as the account with its approved KYB. `individual` applies as a person: assigned_user_id when given, otherwise the account owner, using the identity verified on the account. Omit it to apply as the business when its KYB is approved, and as an individual otherwise.
 	Kind *CreateCardsRequestKind `json:"kind,omitempty" url:"-"`
@@ -244,7 +244,7 @@ var (
 	createCardsRequestBillingFieldRegion      = big.NewInt(1 << 5)
 )
 
-// The card's initial billing address. On a company card it also registers the assigned member as a cardholder if they are not one yet. For an individual card, region is also required.
+// The card's initial billing address. On a business card it also registers the assigned member as a cardholder if they are not one yet. For an individual card, region is also required.
 type CreateCardsRequestBilling struct {
 	// Billing city.
 	City string `json:"city" url:"city"`
@@ -415,7 +415,7 @@ var (
 	createCardsRequestCardholderFieldPhone     = big.NewInt(1 << 3)
 )
 
-// Details for a company card's assigned member when they are not registered as a cardholder yet. Send with billing to register them and start provisioning in one call instead of sending them an onboarding invitation. The legal name comes from the member's approved identity verification when they have one, and from these fields when they do not.
+// Details for a business card's assigned member when they are not registered as a cardholder yet. Send with billing to register them and start provisioning in one call instead of sending them an onboarding invitation. The legal name comes from the member's approved identity verification when they have one, and from these fields when they do not.
 type CreateCardsRequestCardholder struct {
 	// The member's email address. Defaults to the email on their user.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`

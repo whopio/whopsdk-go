@@ -35,7 +35,7 @@ type CreateMethodsRequest struct {
 	Nickname *string `json:"nickname,omitempty" url:"-"`
 	// The token your `return_url` received after a Log in with PayPal session started with `POST /payouts/paypal_link_sessions`. Use it for a PayPal supported payout method instead of `fields`. Sending `fields` or `plaid_public_token` alongside it is rejected, and `nickname` is ignored because Whop names the method after the PayPal email. The PayPal holder's name must match the name on the account's payout setup. An account PayPal reports as unverified, or with an unconfirmed email, is saved and flagged on the method's log rather than refused. Single use; expires 15 minutes after the login.
 	PaypalLinkToken *string `json:"paypal_link_token,omitempty" url:"-"`
-	// Creates a recipient payout account linked to the funding ledger as a non-default account, then saves the bank method on it. No Whop user, company, or recipient ledger is created. A valid recipient email is required. Recipient methods cannot be default or recurring methods and cannot use Plaid.
+	// Creates a recipient payout account linked to the funding ledger as a non-default account, then saves the bank method on it. No Whop user, Whop account, or recipient ledger is created. A valid recipient email is required. Recipient methods cannot be default or recurring methods and cannot use Plaid.
 	Recipient *CreateMethodsRequestRecipient `json:"recipient,omitempty" url:"-"`
 	// The supported payout method to save (a podst_ identifier from a previous listing).
 	SupportedPayoutMethodID string `json:"supported_payout_method_id" url:"-"`
@@ -303,7 +303,7 @@ var (
 	createMethodsRequestRecipientFieldLastName  = big.NewInt(1 << 4)
 )
 
-// Creates a recipient payout account linked to the funding ledger as a non-default account, then saves the bank method on it. No Whop user, company, or recipient ledger is created. A valid recipient email is required. Recipient methods cannot be default or recurring methods and cannot use Plaid.
+// Creates a recipient payout account linked to the funding ledger as a non-default account, then saves the bank method on it. No Whop user, Whop account, or recipient ledger is created. A valid recipient email is required. Recipient methods cannot be default or recurring methods and cannot use Plaid.
 type CreateMethodsRequestRecipient struct {
 	// The recipient's address in recipient.country. Saved on the recipient payout account and supplied to bank methods that require address fields. Omit to retain the existing address when reusing a recipient.
 	Address *CreateMethodsRequestRecipientAddress `json:"address,omitempty" url:"address,omitempty"`
