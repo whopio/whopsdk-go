@@ -29,7 +29,6 @@ import (
 	cashbackrules "github.com/whopio/whopsdk-go/v2/cashbackrules"
 	channelmembers "github.com/whopio/whopsdk-go/v2/channelmembers"
 	channels "github.com/whopio/whopsdk-go/v2/channels"
-	chatchannels "github.com/whopio/whopsdk-go/v2/chatchannels"
 	checkoutconfigurations "github.com/whopio/whopsdk-go/v2/checkoutconfigurations"
 	claimlinks "github.com/whopio/whopsdk-go/v2/claimlinks"
 	companytokentransactions "github.com/whopio/whopsdk-go/v2/companytokentransactions"
@@ -43,8 +42,6 @@ import (
 	deposits "github.com/whopio/whopsdk-go/v2/deposits"
 	disputealerts "github.com/whopio/whopsdk-go/v2/disputealerts"
 	disputes "github.com/whopio/whopsdk-go/v2/disputes"
-	dmchannels "github.com/whopio/whopsdk-go/v2/dmchannels"
-	dmmembers "github.com/whopio/whopsdk-go/v2/dmmembers"
 	domains "github.com/whopio/whopsdk-go/v2/domains"
 	economicintelligence "github.com/whopio/whopsdk-go/v2/economicintelligence"
 	emailaddresses "github.com/whopio/whopsdk-go/v2/emailaddresses"
@@ -98,7 +95,6 @@ import (
 	shipments "github.com/whopio/whopsdk-go/v2/shipments"
 	socialaccounts "github.com/whopio/whopsdk-go/v2/socialaccounts"
 	statsclient "github.com/whopio/whopsdk-go/v2/stats/client"
-	supportchannels "github.com/whopio/whopsdk-go/v2/supportchannels"
 	swaps "github.com/whopio/whopsdk-go/v2/swaps"
 	teammembers "github.com/whopio/whopsdk-go/v2/teammembers"
 	tradesclient "github.com/whopio/whopsdk-go/v2/trades/client"
@@ -137,7 +133,6 @@ type Whop struct {
 	CashbackRules            *cashbackrules.Client
 	ChannelMembers           *channelmembers.Client
 	Channels                 *channels.Client
-	ChatChannels             *chatchannels.Client
 	CheckoutConfigurations   *checkoutconfigurations.Client
 	ClaimLinks               *claimlinks.Client
 	CompanyTokenTransactions *companytokentransactions.Client
@@ -150,8 +145,6 @@ type Whop struct {
 	Deposits                 *deposits.Client
 	DisputeAlerts            *disputealerts.Client
 	Disputes                 *disputes.Client
-	DmChannels               *dmchannels.Client
-	DmMembers                *dmmembers.Client
 	Domains                  *domains.Client
 	EconomicIntelligence     *economicintelligence.Client
 	EmailAddresses           *emailaddresses.Client
@@ -203,7 +196,6 @@ type Whop struct {
 	Shipments                *shipments.Client
 	SocialAccounts           *socialaccounts.Client
 	Stats                    *statsclient.Client
-	SupportChannels          *supportchannels.Client
 	Swaps                    *swaps.Client
 	TeamMembers              *teammembers.Client
 	Trades                   *tradesclient.Client
@@ -252,7 +244,6 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		CashbackRules:            cashbackrules.NewClient(options),
 		ChannelMembers:           channelmembers.NewClient(options),
 		Channels:                 channels.NewClient(options),
-		ChatChannels:             chatchannels.NewClient(options),
 		CheckoutConfigurations:   checkoutconfigurations.NewClient(options),
 		ClaimLinks:               claimlinks.NewClient(options),
 		CompanyTokenTransactions: companytokentransactions.NewClient(options),
@@ -265,8 +256,6 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Deposits:                 deposits.NewClient(options),
 		DisputeAlerts:            disputealerts.NewClient(options),
 		Disputes:                 disputes.NewClient(options),
-		DmChannels:               dmchannels.NewClient(options),
-		DmMembers:                dmmembers.NewClient(options),
 		Domains:                  domains.NewClient(options),
 		EconomicIntelligence:     economicintelligence.NewClient(options),
 		EmailAddresses:           emailaddresses.NewClient(options),
@@ -318,7 +307,6 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Shipments:                shipments.NewClient(options),
 		SocialAccounts:           socialaccounts.NewClient(options),
 		Stats:                    statsclient.NewClient(options),
-		SupportChannels:          supportchannels.NewClient(options),
 		Swaps:                    swaps.NewClient(options),
 		TeamMembers:              teammembers.NewClient(options),
 		Trades:                   tradesclient.NewClient(options),
