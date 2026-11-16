@@ -22,7 +22,7 @@ var (
 type ListLivestreamsRequest struct {
 	// ID of a livestreams experience, prefixed `exp_`.
 	ExperienceID string `json:"-" url:"experience_id"`
-	// When `true`, only pinned livestreams, most recently pinned first. When `false`, only livestreams that are not pinned.
+	// When `true`, only pinned livestreams, newest `pinned_at` first. When `false`, only livestreams that are not pinned.
 	Pinned *bool `json:"-" url:"pinned,omitempty"`
 	// When `true`, only ended livestreams that were recorded, including recordings still processing. `false` or omitted lists every livestream.
 	Recorded *bool `json:"-" url:"recorded,omitempty"`
@@ -98,12 +98,18 @@ func (l *ListLivestreamsRequest) SetBefore(before *string) {
 }
 
 var (
-	pinLivestreamsRequestFieldID = big.NewInt(1 << 0)
+	pinLivestreamsRequestFieldID           = big.NewInt(1 << 0)
+	pinLivestreamsRequestFieldExperienceID = big.NewInt(1 << 1)
+	pinLivestreamsRequestFieldPosition     = big.NewInt(1 << 2)
 )
 
 type PinLivestreamsRequest struct {
 	// Livestream ID, prefixed `lfeed_`.
 	ID string `json:"-" url:"-"`
+	// ID of the livestreams experience that `position` counts in, prefixed `exp_`. Required with `position` when the livestream is in more than one experience.
+	ExperienceID *string `json:"experience_id,omitempty" url:"-"`
+	// Zero-based index in the experience's pinned livestreams after the change. Omit it to put a new pin first or keep an existing pin in place.
+	Position *int `json:"position,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -123,6 +129,41 @@ func (p *PinLivestreamsRequest) require(field *big.Int) {
 func (p *PinLivestreamsRequest) SetID(id string) {
 	p.ID = id
 	p.require(pinLivestreamsRequestFieldID)
+}
+
+// SetExperienceID sets the ExperienceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PinLivestreamsRequest) SetExperienceID(experienceID *string) {
+	p.ExperienceID = experienceID
+	p.require(pinLivestreamsRequestFieldExperienceID)
+}
+
+// SetPosition sets the Position field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PinLivestreamsRequest) SetPosition(position *int) {
+	p.Position = position
+	p.require(pinLivestreamsRequestFieldPosition)
+}
+
+func (p *PinLivestreamsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler PinLivestreamsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*p = PinLivestreamsRequest(body)
+	return nil
+}
+
+func (p *PinLivestreamsRequest) MarshalJSON() ([]byte, error) {
+	type embed PinLivestreamsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 var (
@@ -184,7 +225,7 @@ type Livestream struct {
 	EndedAt *string `json:"ended_at,omitempty" url:"ended_at,omitempty"`
 	// Livestream ID, prefixed `lfeed_`.
 	ID string `json:"id" url:"id"`
-	// When a moderator pinned this livestream's recording, as an ISO 8601 timestamp. `null` when it is not pinned.
+	// When the recording was pinned or last moved, as an ISO 8601 timestamp. Pinned livestreams are ordered by it, newest first. `null` when not pinned.
 	PinnedAt *string `json:"pinned_at,omitempty" url:"pinned_at,omitempty"`
 	// When the recording's first frame was captured, as an ISO 8601 timestamp. Offsets into the recording count from here, not from `started_at`. `null` until recording starts.
 	RecordingStartedAt *string `json:"recording_started_at,omitempty" url:"recording_started_at,omitempty"`
