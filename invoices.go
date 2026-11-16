@@ -84,7 +84,8 @@ var (
 	createInvoicesRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 11)
 	createInvoicesRequestFieldPaymentMethodID            = big.NewInt(1 << 12)
 	createInvoicesRequestFieldRecipientEmails            = big.NewInt(1 << 13)
-	createInvoicesRequestFieldTimeZone                   = big.NewInt(1 << 14)
+	createInvoicesRequestFieldSubscriptionStartsAt       = big.NewInt(1 << 14)
+	createInvoicesRequestFieldTimeZone                   = big.NewInt(1 << 15)
 )
 
 type CreateInvoicesRequest struct {
@@ -116,6 +117,8 @@ type CreateInvoicesRequest struct {
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
 	RecipientEmails []string `json:"recipient_emails,omitempty" url:"-"`
+	// When the first billing period of the invoice's recurring items starts, as an ISO 8601 timestamp in the future. Renewals count from this moment. `null` starts the period when the invoice is paid. Needs a recurring item. Can be updated on drafts. A start date replaces a variant's free trial, and the invoice bills the full price.
+	SubscriptionStartsAt *time.Time `json:"subscription_starts_at,omitempty" url:"-"`
 	// The IANA time zone for the dates on the invoice's email and PDF. Set it so the due date reads as the day you picked. When omitted, a new invoice uses the time zone Whop has for the user creating it, else UTC. Can be updated on drafts.
 	TimeZone *string `json:"time_zone,omitempty" url:"-"`
 
@@ -230,6 +233,13 @@ func (c *CreateInvoicesRequest) SetRecipientEmails(recipientEmails []string) {
 	c.require(createInvoicesRequestFieldRecipientEmails)
 }
 
+// SetSubscriptionStartsAt sets the SubscriptionStartsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequest) SetSubscriptionStartsAt(subscriptionStartsAt *time.Time) {
+	c.SubscriptionStartsAt = subscriptionStartsAt
+	c.require(createInvoicesRequestFieldSubscriptionStartsAt)
+}
+
 // SetTimeZone sets the TimeZone field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateInvoicesRequest) SetTimeZone(timeZone *string) {
@@ -241,7 +251,8 @@ func (c *CreateInvoicesRequest) UnmarshalJSON(data []byte) error {
 	type embed CreateInvoicesRequest
 	var body = struct {
 		embed
-		DueAt *internal.DateTime `json:"due_at,omitempty"`
+		DueAt                *internal.DateTime `json:"due_at,omitempty"`
+		SubscriptionStartsAt *internal.DateTime `json:"subscription_starts_at,omitempty"`
 	}{
 		embed: embed(*c),
 	}
@@ -250,6 +261,7 @@ func (c *CreateInvoicesRequest) UnmarshalJSON(data []byte) error {
 	}
 	*c = CreateInvoicesRequest(body.embed)
 	c.DueAt = body.DueAt.TimePtr()
+	c.SubscriptionStartsAt = body.SubscriptionStartsAt.TimePtr()
 	return nil
 }
 
@@ -257,10 +269,12 @@ func (c *CreateInvoicesRequest) MarshalJSON() ([]byte, error) {
 	type embed CreateInvoicesRequest
 	var marshaler = struct {
 		embed
-		DueAt *internal.DateTime `json:"due_at,omitempty"`
+		DueAt                *internal.DateTime `json:"due_at,omitempty"`
+		SubscriptionStartsAt *internal.DateTime `json:"subscription_starts_at,omitempty"`
 	}{
-		embed: embed(*c),
-		DueAt: internal.NewOptionalDateTime(c.DueAt),
+		embed:                embed(*c),
+		DueAt:                internal.NewOptionalDateTime(c.DueAt),
+		SubscriptionStartsAt: internal.NewOptionalDateTime(c.SubscriptionStartsAt),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
 	return json.Marshal(explicitMarshaler)
@@ -789,12 +803,13 @@ var (
 	invoiceFieldScheduledSendAt            = big.NewInt(1 << 28)
 	invoiceFieldSendsOnDueDate             = big.NewInt(1 << 29)
 	invoiceFieldStatus                     = big.NewInt(1 << 30)
-	invoiceFieldSubtotal                   = big.NewInt(1 << 31)
-	invoiceFieldTaxAmount                  = big.NewInt(1 << 32)
-	invoiceFieldTimeZone                   = big.NewInt(1 << 33)
-	invoiceFieldTotal                      = big.NewInt(1 << 34)
-	invoiceFieldTotalsStatus               = big.NewInt(1 << 35)
-	invoiceFieldUpdatedAt                  = big.NewInt(1 << 36)
+	invoiceFieldSubscriptionStartsAt       = big.NewInt(1 << 31)
+	invoiceFieldSubtotal                   = big.NewInt(1 << 32)
+	invoiceFieldTaxAmount                  = big.NewInt(1 << 33)
+	invoiceFieldTimeZone                   = big.NewInt(1 << 34)
+	invoiceFieldTotal                      = big.NewInt(1 << 35)
+	invoiceFieldTotalsStatus               = big.NewInt(1 << 36)
+	invoiceFieldUpdatedAt                  = big.NewInt(1 << 37)
 )
 
 // invoiceNullableFields maps the wire names of Invoice's nullable fields (required or optional) to their field bits.
@@ -815,6 +830,7 @@ var invoiceNullableFields = map[string]*big.Int{
 	"scheduled_charge_at":          invoiceFieldScheduledChargeAt,
 	"scheduled_collection_method":  invoiceFieldScheduledCollectionMethod,
 	"scheduled_send_at":            invoiceFieldScheduledSendAt,
+	"subscription_starts_at":       invoiceFieldSubscriptionStartsAt,
 	"tax_amount":                   invoiceFieldTaxAmount,
 }
 
@@ -858,8 +874,10 @@ type Invoice struct {
 	// Whether this draft is issued automatically when its `due_at` arrives. Issuing it charges its `payment_method_id`, or emails its payment link to its `recipient_emails`. `false` for an invoice that is not a draft and for a draft with a scheduled send. `false` while sending the draft would fail for missing recipients or an unavailable payment link. `false` for a draft that had no future `due_at` when it was last saved. `false` for a draft created before 2026-11-12T22:00:00Z.
 	SendsOnDueDate bool          `json:"sends_on_due_date" url:"sends_on_due_date"`
 	Status         InvoiceStatus `json:"status" url:"status"`
-	Subtotal       *Money        `json:"subtotal" url:"subtotal"`
-	TaxAmount      *Money        `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
+	// When the first billing period of the invoice's recurring items starts, as an ISO 8601 timestamp. Renewals count from this moment. `null` starts the period when the invoice is paid, and so does a time that has passed by then. An invoice with a start date skips its variants' free trial.
+	SubscriptionStartsAt *string `json:"subscription_starts_at,omitempty" url:"subscription_starts_at,omitempty"`
+	Subtotal             *Money  `json:"subtotal" url:"subtotal"`
+	TaxAmount            *Money  `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
 	// The IANA time zone for the dates on the invoice's email and PDF, such as `America/New_York`. `UTC` unless one was set.
 	TimeZone     string              `json:"time_zone" url:"time_zone"`
 	Total        *Money              `json:"total" url:"total"`
@@ -1088,6 +1106,13 @@ func (i *Invoice) GetStatus() InvoiceStatus {
 		return ""
 	}
 	return i.Status
+}
+
+func (i *Invoice) GetSubscriptionStartsAt() *string {
+	if i == nil {
+		return nil
+	}
+	return i.SubscriptionStartsAt
 }
 
 func (i *Invoice) GetSubtotal() *Money {
@@ -1363,6 +1388,13 @@ func (i *Invoice) SetSendsOnDueDate(sendsOnDueDate bool) {
 func (i *Invoice) SetStatus(status InvoiceStatus) {
 	i.Status = status
 	i.require(invoiceFieldStatus)
+}
+
+// SetSubscriptionStartsAt sets the SubscriptionStartsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetSubscriptionStartsAt(subscriptionStartsAt *string) {
+	i.SubscriptionStartsAt = subscriptionStartsAt
+	i.require(invoiceFieldSubscriptionStartsAt)
 }
 
 // SetSubtotal sets the Subtotal field and marks it as non-optional;
@@ -6927,7 +6959,8 @@ var (
 	updateInvoicesRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 9)
 	updateInvoicesRequestFieldPaymentMethodID            = big.NewInt(1 << 10)
 	updateInvoicesRequestFieldRecipientEmails            = big.NewInt(1 << 11)
-	updateInvoicesRequestFieldTimeZone                   = big.NewInt(1 << 12)
+	updateInvoicesRequestFieldSubscriptionStartsAt       = big.NewInt(1 << 12)
+	updateInvoicesRequestFieldTimeZone                   = big.NewInt(1 << 13)
 )
 
 type UpdateInvoicesRequest struct {
@@ -6955,6 +6988,8 @@ type UpdateInvoicesRequest struct {
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
 	RecipientEmails []string `json:"recipient_emails,omitempty" url:"-"`
+	// When the first billing period of the invoice's recurring items starts, as an ISO 8601 timestamp in the future. Renewals count from this moment. `null` starts the period when the invoice is paid. Needs a recurring item. Can be updated on drafts. A start date replaces a variant's free trial, and the invoice bills the full price.
+	SubscriptionStartsAt *time.Time `json:"subscription_starts_at,omitempty" url:"-"`
 	// The IANA time zone for the dates on the invoice's email and PDF. Set it so the due date reads as the day you picked. When omitted, a new invoice uses the time zone Whop has for the user creating it, else UTC. Can be updated on drafts.
 	TimeZone *string `json:"time_zone,omitempty" url:"-"`
 
@@ -7055,6 +7090,13 @@ func (u *UpdateInvoicesRequest) SetRecipientEmails(recipientEmails []string) {
 	u.require(updateInvoicesRequestFieldRecipientEmails)
 }
 
+// SetSubscriptionStartsAt sets the SubscriptionStartsAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequest) SetSubscriptionStartsAt(subscriptionStartsAt *time.Time) {
+	u.SubscriptionStartsAt = subscriptionStartsAt
+	u.require(updateInvoicesRequestFieldSubscriptionStartsAt)
+}
+
 // SetTimeZone sets the TimeZone field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateInvoicesRequest) SetTimeZone(timeZone *string) {
@@ -7066,7 +7108,8 @@ func (u *UpdateInvoicesRequest) UnmarshalJSON(data []byte) error {
 	type embed UpdateInvoicesRequest
 	var body = struct {
 		embed
-		DueAt *internal.DateTime `json:"due_at,omitempty"`
+		DueAt                *internal.DateTime `json:"due_at,omitempty"`
+		SubscriptionStartsAt *internal.DateTime `json:"subscription_starts_at,omitempty"`
 	}{
 		embed: embed(*u),
 	}
@@ -7075,6 +7118,7 @@ func (u *UpdateInvoicesRequest) UnmarshalJSON(data []byte) error {
 	}
 	*u = UpdateInvoicesRequest(body.embed)
 	u.DueAt = body.DueAt.TimePtr()
+	u.SubscriptionStartsAt = body.SubscriptionStartsAt.TimePtr()
 	return nil
 }
 
@@ -7082,10 +7126,12 @@ func (u *UpdateInvoicesRequest) MarshalJSON() ([]byte, error) {
 	type embed UpdateInvoicesRequest
 	var marshaler = struct {
 		embed
-		DueAt *internal.DateTime `json:"due_at,omitempty"`
+		DueAt                *internal.DateTime `json:"due_at,omitempty"`
+		SubscriptionStartsAt *internal.DateTime `json:"subscription_starts_at,omitempty"`
 	}{
-		embed: embed(*u),
-		DueAt: internal.NewOptionalDateTime(u.DueAt),
+		embed:                embed(*u),
+		DueAt:                internal.NewOptionalDateTime(u.DueAt),
+		SubscriptionStartsAt: internal.NewOptionalDateTime(u.SubscriptionStartsAt),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
 	return json.Marshal(explicitMarshaler)

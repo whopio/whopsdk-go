@@ -207,6 +207,14 @@ func TestSettersCreateInvoicesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSubscriptionStartsAt", func(t *testing.T) {
+		obj := &CreateInvoicesRequest{}
+		var fernTestValueSubscriptionStartsAt *time.Time
+		obj.SetSubscriptionStartsAt(fernTestValueSubscriptionStartsAt)
+		assert.Equal(t, fernTestValueSubscriptionStartsAt, obj.SubscriptionStartsAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetTimeZone", func(t *testing.T) {
 		obj := &CreateInvoicesRequest{}
 		var fernTestValueTimeZone *string
@@ -629,6 +637,37 @@ func TestSettersMarkExplicitCreateInvoicesRequest(t *testing.T) {
 
 		// Act
 		obj.SetRecipientEmails(fernTestValueRecipientEmails)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubscriptionStartsAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateInvoicesRequest{}
+		var fernTestValueSubscriptionStartsAt *time.Time
+
+		// Act
+		obj.SetSubscriptionStartsAt(fernTestValueSubscriptionStartsAt)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2107,6 +2146,14 @@ func TestSettersInvoice(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSubscriptionStartsAt", func(t *testing.T) {
+		obj := &Invoice{}
+		var fernTestValueSubscriptionStartsAt *string
+		obj.SetSubscriptionStartsAt(fernTestValueSubscriptionStartsAt)
+		assert.Equal(t, fernTestValueSubscriptionStartsAt, obj.SubscriptionStartsAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSubtotal", func(t *testing.T) {
 		obj := &Invoice{}
 		var fernTestValueSubtotal *Money
@@ -3079,6 +3126,39 @@ func TestGettersInvoice(t *testing.T) {
 			}
 		}()
 		_ = obj.GetStatus() // Should return zero value
+	})
+
+	t.Run("GetSubscriptionStartsAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var expected *string
+		obj.SubscriptionStartsAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSubscriptionStartsAt(), "getter should return the property value")
+	})
+
+	t.Run("GetSubscriptionStartsAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		obj.SubscriptionStartsAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSubscriptionStartsAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSubscriptionStartsAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Invoice
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSubscriptionStartsAt() // Should return zero value
 	})
 
 	t.Run("GetSubtotal", func(t *testing.T) {
@@ -4190,6 +4270,37 @@ func TestSettersMarkExplicitInvoice(t *testing.T) {
 
 		// Act
 		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubscriptionStartsAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var fernTestValueSubscriptionStartsAt *string
+
+		// Act
+		obj.SetSubscriptionStartsAt(fernTestValueSubscriptionStartsAt)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -14993,6 +15104,14 @@ func TestSettersUpdateInvoicesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSubscriptionStartsAt", func(t *testing.T) {
+		obj := &UpdateInvoicesRequest{}
+		var fernTestValueSubscriptionStartsAt *time.Time
+		obj.SetSubscriptionStartsAt(fernTestValueSubscriptionStartsAt)
+		assert.Equal(t, fernTestValueSubscriptionStartsAt, obj.SubscriptionStartsAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetTimeZone", func(t *testing.T) {
 		obj := &UpdateInvoicesRequest{}
 		var fernTestValueTimeZone *string
@@ -15353,6 +15472,37 @@ func TestSettersMarkExplicitUpdateInvoicesRequest(t *testing.T) {
 
 		// Act
 		obj.SetRecipientEmails(fernTestValueRecipientEmails)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubscriptionStartsAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateInvoicesRequest{}
+		var fernTestValueSubscriptionStartsAt *time.Time
+
+		// Act
+		obj.SetSubscriptionStartsAt(fernTestValueSubscriptionStartsAt)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -16099,6 +16249,7 @@ func TestRequiredNullableRoundTripInvoice(t *testing.T) {
 		"scheduled_charge_at",
 		"scheduled_collection_method",
 		"scheduled_send_at",
+		"subscription_starts_at",
 		"tax_amount",
 	}
 	marshalToMap := func(t *testing.T, obj *Invoice) map[string]json.RawMessage {
@@ -16112,7 +16263,7 @@ func TestRequiredNullableRoundTripInvoice(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Invoice
-		require.NoError(t, json.Unmarshal([]byte(`{"billing_address":null,"checkout_link":null,"customer_name":null,"due_at":null,"email_address":null,"invoice_prefix":null,"mailing_address_id":null,"member_id":null,"membership_id":null,"memo":null,"paid_at":null,"payment_method_configuration":null,"payment_method_id":null,"scheduled_charge_at":null,"scheduled_collection_method":null,"scheduled_send_at":null,"tax_amount":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"billing_address":null,"checkout_link":null,"customer_name":null,"due_at":null,"email_address":null,"invoice_prefix":null,"mailing_address_id":null,"member_id":null,"membership_id":null,"memo":null,"paid_at":null,"payment_method_configuration":null,"payment_method_id":null,"scheduled_charge_at":null,"scheduled_collection_method":null,"scheduled_send_at":null,"subscription_starts_at":null,"tax_amount":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
