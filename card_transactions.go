@@ -269,7 +269,7 @@ type CardTransaction struct {
 	ID string `json:"id" url:"id"`
 	// True when the merchant is outside the card's home country.
 	International bool `json:"international" url:"international"`
-	// Whop Levels points this transaction earned for the business. Negative for a refund that takes them back. Null when it earns none: a transaction that hasn't settled or was declined.
+	// Whop Levels points this transaction earned for the business. Negative for a refund that takes them back. For a pending transaction, the points it will earn once it settles. Null when it earns none, such as a declined transaction.
 	LevelsPoints *float64 `json:"levels_points,omitempty" url:"levels_points,omitempty"`
 	// Amount the merchant charged in their own currency. Pair with `currency`.
 	LocalAmount *float64 `json:"local_amount,omitempty" url:"local_amount,omitempty"`
