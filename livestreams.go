@@ -195,16 +195,45 @@ func (r *RetrieveLivestreamsRequest) SetID(id string) {
 }
 
 var (
+	retrieveViewershipLivestreamsRequestFieldID = big.NewInt(1 << 0)
+)
+
+type RetrieveViewershipLivestreamsRequest struct {
+	// Livestream ID, prefixed `lfeed_`.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *RetrieveViewershipLivestreamsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveViewershipLivestreamsRequest) SetID(id string) {
+	r.ID = id
+	r.require(retrieveViewershipLivestreamsRequestFieldID)
+}
+
+var (
 	livestreamFieldCreatedAt          = big.NewInt(1 << 0)
 	livestreamFieldEndedAt            = big.NewInt(1 << 1)
 	livestreamFieldID                 = big.NewInt(1 << 2)
 	livestreamFieldPinnedAt           = big.NewInt(1 << 3)
-	livestreamFieldRecordingStartedAt = big.NewInt(1 << 4)
-	livestreamFieldRecordingStatus    = big.NewInt(1 << 5)
-	livestreamFieldRecordingURL       = big.NewInt(1 << 6)
-	livestreamFieldStartedAt          = big.NewInt(1 << 7)
-	livestreamFieldThumbnailURL       = big.NewInt(1 << 8)
-	livestreamFieldTitle              = big.NewInt(1 << 9)
+	livestreamFieldRecap              = big.NewInt(1 << 4)
+	livestreamFieldRecordingStartedAt = big.NewInt(1 << 5)
+	livestreamFieldRecordingStatus    = big.NewInt(1 << 6)
+	livestreamFieldRecordingURL       = big.NewInt(1 << 7)
+	livestreamFieldStartedAt          = big.NewInt(1 << 8)
+	livestreamFieldThumbnailURL       = big.NewInt(1 << 9)
+	livestreamFieldTitle              = big.NewInt(1 << 10)
 )
 
 // livestreamNullableFields maps the wire names of Livestream's nullable fields (required or optional) to their field bits.
@@ -227,6 +256,8 @@ type Livestream struct {
 	ID string `json:"id" url:"id"`
 	// When the recording was pinned or last moved, as an ISO 8601 timestamp. Pinned livestreams are ordered by it, newest first. `null` when not pinned.
 	PinnedAt *string `json:"pinned_at,omitempty" url:"pinned_at,omitempty"`
+	// Top moments AI picked from chat, and chat activity. Only `retrieve` returns it, and only to callers with the `livestream:moderate` permission.
+	Recap *LivestreamRecap `json:"recap,omitempty" url:"recap,omitempty"`
 	// When the recording's first frame was captured, as an ISO 8601 timestamp. Offsets into the recording count from here, not from `started_at`. `null` until recording starts.
 	RecordingStartedAt *string `json:"recording_started_at,omitempty" url:"recording_started_at,omitempty"`
 	// State of the recording. `null` when the livestream was not recorded.
@@ -273,6 +304,13 @@ func (l *Livestream) GetPinnedAt() *string {
 		return nil
 	}
 	return l.PinnedAt
+}
+
+func (l *Livestream) GetRecap() *LivestreamRecap {
+	if l == nil {
+		return nil
+	}
+	return l.Recap
 }
 
 func (l *Livestream) GetRecordingStartedAt() *string {
@@ -359,6 +397,13 @@ func (l *Livestream) SetID(id string) {
 func (l *Livestream) SetPinnedAt(pinnedAt *string) {
 	l.PinnedAt = pinnedAt
 	l.require(livestreamFieldPinnedAt)
+}
+
+// SetRecap sets the Recap field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *Livestream) SetRecap(recap *LivestreamRecap) {
+	l.Recap = recap
+	l.require(livestreamFieldRecap)
 }
 
 // SetRecordingStartedAt sets the RecordingStartedAt field and marks it as non-optional;
@@ -452,6 +497,572 @@ func (l *Livestream) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
+var (
+	livestreamRecapFieldChat    = big.NewInt(1 << 0)
+	livestreamRecapFieldMoments = big.NewInt(1 << 1)
+	livestreamRecapFieldStatus  = big.NewInt(1 << 2)
+)
+
+// livestreamRecapNullableFields maps the wire names of LivestreamRecap's nullable fields (required or optional) to their field bits.
+var livestreamRecapNullableFields = map[string]*big.Int{
+	"chat": livestreamRecapFieldChat,
+}
+
+type LivestreamRecap struct {
+	// Chat activity during the livestream. `null` while `status` is `pending`, before the livestream ends, or when the recap could not be started.
+	Chat    *LivestreamRecapChat     `json:"chat,omitempty" url:"chat,omitempty"`
+	Moments []*LivestreamRecapMoment `json:"moments" url:"moments"`
+	// `pending` while the recap is being generated and `ready` once it is. `unavailable` when the livestream has not ended, had no chat, or the recap could not be started. Retrieve the livestream again later while it is `pending`, or to retry a recap that could not be started.
+	Status LivestreamRecapStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LivestreamRecap) GetChat() *LivestreamRecapChat {
+	if l == nil {
+		return nil
+	}
+	return l.Chat
+}
+
+func (l *LivestreamRecap) GetMoments() []*LivestreamRecapMoment {
+	if l == nil {
+		return nil
+	}
+	return l.Moments
+}
+
+func (l *LivestreamRecap) GetStatus() LivestreamRecapStatus {
+	if l == nil {
+		return ""
+	}
+	return l.Status
+}
+
+func (l *LivestreamRecap) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LivestreamRecap) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetChat sets the Chat field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamRecap) SetChat(chat *LivestreamRecapChat) {
+	l.Chat = chat
+	l.require(livestreamRecapFieldChat)
+}
+
+// SetMoments sets the Moments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamRecap) SetMoments(moments []*LivestreamRecapMoment) {
+	l.Moments = moments
+	l.require(livestreamRecapFieldMoments)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamRecap) SetStatus(status LivestreamRecapStatus) {
+	l.Status = status
+	l.require(livestreamRecapFieldStatus)
+}
+
+func (l *LivestreamRecap) UnmarshalJSON(data []byte) error {
+	type unmarshaler LivestreamRecap
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LivestreamRecap(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, livestreamRecapNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LivestreamRecap) MarshalJSON() ([]byte, error) {
+	type embed LivestreamRecap
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LivestreamRecap) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	livestreamRecapChatFieldChatterCount = big.NewInt(1 << 0)
+	livestreamRecapChatFieldMessageCount = big.NewInt(1 << 1)
+	livestreamRecapChatFieldPerMinute    = big.NewInt(1 << 2)
+)
+
+type LivestreamRecapChat struct {
+	// How many different people sent those messages.
+	ChatterCount int `json:"chatter_count" url:"chatter_count"`
+	// Chat messages sent from a minute before `recording_started_at`, or `started_at` when the livestream was not recorded, to a minute after `ended_at`.
+	MessageCount int   `json:"message_count" url:"message_count"`
+	PerMinute    []int `json:"per_minute" url:"per_minute"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LivestreamRecapChat) GetChatterCount() int {
+	if l == nil {
+		return 0
+	}
+	return l.ChatterCount
+}
+
+func (l *LivestreamRecapChat) GetMessageCount() int {
+	if l == nil {
+		return 0
+	}
+	return l.MessageCount
+}
+
+func (l *LivestreamRecapChat) GetPerMinute() []int {
+	if l == nil {
+		return nil
+	}
+	return l.PerMinute
+}
+
+func (l *LivestreamRecapChat) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LivestreamRecapChat) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetChatterCount sets the ChatterCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamRecapChat) SetChatterCount(chatterCount int) {
+	l.ChatterCount = chatterCount
+	l.require(livestreamRecapChatFieldChatterCount)
+}
+
+// SetMessageCount sets the MessageCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamRecapChat) SetMessageCount(messageCount int) {
+	l.MessageCount = messageCount
+	l.require(livestreamRecapChatFieldMessageCount)
+}
+
+// SetPerMinute sets the PerMinute field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamRecapChat) SetPerMinute(perMinute []int) {
+	l.PerMinute = perMinute
+	l.require(livestreamRecapChatFieldPerMinute)
+}
+
+func (l *LivestreamRecapChat) UnmarshalJSON(data []byte) error {
+	type unmarshaler LivestreamRecapChat
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LivestreamRecapChat(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LivestreamRecapChat) MarshalJSON() ([]byte, error) {
+	type embed LivestreamRecapChat
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LivestreamRecapChat) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	livestreamRecapMessageFieldContent  = big.NewInt(1 << 0)
+	livestreamRecapMessageFieldID       = big.NewInt(1 << 1)
+	livestreamRecapMessageFieldUserName = big.NewInt(1 << 2)
+)
+
+// livestreamRecapMessageNullableFields maps the wire names of LivestreamRecapMessage's nullable fields (required or optional) to their field bits.
+var livestreamRecapMessageNullableFields = map[string]*big.Int{
+	"user_name": livestreamRecapMessageFieldUserName,
+}
+
+type LivestreamRecapMessage struct {
+	// Message text, with whitespace collapsed and cut to at most 280 characters.
+	Content string `json:"content" url:"content"`
+	// ID of the chat message.
+	ID string `json:"id" url:"id"`
+	// Display name of the person who sent the message. `null` when their account no longer exists.
+	UserName *string `json:"user_name,omitempty" url:"user_name,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LivestreamRecapMessage) GetContent() string {
+	if l == nil {
+		return ""
+	}
+	return l.Content
+}
+
+func (l *LivestreamRecapMessage) GetID() string {
+	if l == nil {
+		return ""
+	}
+	return l.ID
+}
+
+func (l *LivestreamRecapMessage) GetUserName() *string {
+	if l == nil {
+		return nil
+	}
+	return l.UserName
+}
+
+func (l *LivestreamRecapMessage) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LivestreamRecapMessage) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetContent sets the Content field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamRecapMessage) SetContent(content string) {
+	l.Content = content
+	l.require(livestreamRecapMessageFieldContent)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamRecapMessage) SetID(id string) {
+	l.ID = id
+	l.require(livestreamRecapMessageFieldID)
+}
+
+// SetUserName sets the UserName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamRecapMessage) SetUserName(userName *string) {
+	l.UserName = userName
+	l.require(livestreamRecapMessageFieldUserName)
+}
+
+func (l *LivestreamRecapMessage) UnmarshalJSON(data []byte) error {
+	type unmarshaler LivestreamRecapMessage
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LivestreamRecapMessage(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, livestreamRecapMessageNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LivestreamRecapMessage) MarshalJSON() ([]byte, error) {
+	type embed LivestreamRecapMessage
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LivestreamRecapMessage) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	livestreamRecapMomentFieldDescription      = big.NewInt(1 << 0)
+	livestreamRecapMomentFieldEndOffsetSeconds = big.NewInt(1 << 1)
+	livestreamRecapMomentFieldMessage          = big.NewInt(1 << 2)
+	livestreamRecapMomentFieldOffsetSeconds    = big.NewInt(1 << 3)
+	livestreamRecapMomentFieldTitle            = big.NewInt(1 << 4)
+)
+
+type LivestreamRecapMoment struct {
+	// One sentence on what happened and how chat reacted, in at most 140 characters.
+	Description string `json:"description" url:"description"`
+	// Where chat's reaction to the moment ends, in seconds from the same point as `offset_seconds`. Never before `offset_seconds`, and never after the next moment's `offset_seconds`.
+	EndOffsetSeconds int `json:"end_offset_seconds" url:"end_offset_seconds"`
+	// Chat message that best sums up the moment.
+	Message *LivestreamRecapMessage `json:"message" url:"message"`
+	// Where the moment starts, shortly before chat reacted, in seconds from `recording_started_at`, or from `started_at` when the livestream was not recorded.
+	OffsetSeconds int `json:"offset_seconds" url:"offset_seconds"`
+	// What happened on stream, in at most 60 characters.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LivestreamRecapMoment) GetDescription() string {
+	if l == nil {
+		return ""
+	}
+	return l.Description
+}
+
+func (l *LivestreamRecapMoment) GetEndOffsetSeconds() int {
+	if l == nil {
+		return 0
+	}
+	return l.EndOffsetSeconds
+}
+
+func (l *LivestreamRecapMoment) GetMessage() *LivestreamRecapMessage {
+	if l == nil {
+		return nil
+	}
+	return l.Message
+}
+
+func (l *LivestreamRecapMoment) GetOffsetSeconds() int {
+	if l == nil {
+		return 0
+	}
+	return l.OffsetSeconds
+}
+
+func (l *LivestreamRecapMoment) GetTitle() string {
+	if l == nil {
+		return ""
+	}
+	return l.Title
+}
+
+func (l *LivestreamRecapMoment) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LivestreamRecapMoment) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetDescription sets the Description field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamRecapMoment) SetDescription(description string) {
+	l.Description = description
+	l.require(livestreamRecapMomentFieldDescription)
+}
+
+// SetEndOffsetSeconds sets the EndOffsetSeconds field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamRecapMoment) SetEndOffsetSeconds(endOffsetSeconds int) {
+	l.EndOffsetSeconds = endOffsetSeconds
+	l.require(livestreamRecapMomentFieldEndOffsetSeconds)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamRecapMoment) SetMessage(message *LivestreamRecapMessage) {
+	l.Message = message
+	l.require(livestreamRecapMomentFieldMessage)
+}
+
+// SetOffsetSeconds sets the OffsetSeconds field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamRecapMoment) SetOffsetSeconds(offsetSeconds int) {
+	l.OffsetSeconds = offsetSeconds
+	l.require(livestreamRecapMomentFieldOffsetSeconds)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamRecapMoment) SetTitle(title string) {
+	l.Title = title
+	l.require(livestreamRecapMomentFieldTitle)
+}
+
+func (l *LivestreamRecapMoment) UnmarshalJSON(data []byte) error {
+	type unmarshaler LivestreamRecapMoment
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LivestreamRecapMoment(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LivestreamRecapMoment) MarshalJSON() ([]byte, error) {
+	type embed LivestreamRecapMoment
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LivestreamRecapMoment) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// `pending` while the recap is being generated and `ready` once it is. `unavailable` when the livestream has not ended, had no chat, or the recap could not be started. Retrieve the livestream again later while it is `pending`, or to retry a recap that could not be started.
+type LivestreamRecapStatus string
+
+const (
+	LivestreamRecapStatusPending     LivestreamRecapStatus = "pending"
+	LivestreamRecapStatusReady       LivestreamRecapStatus = "ready"
+	LivestreamRecapStatusUnavailable LivestreamRecapStatus = "unavailable"
+)
+
+func NewLivestreamRecapStatusFromString(s string) (LivestreamRecapStatus, error) {
+	switch s {
+	case "pending":
+		return LivestreamRecapStatusPending, nil
+	case "ready":
+		return LivestreamRecapStatusReady, nil
+	case "unavailable":
+		return LivestreamRecapStatusUnavailable, nil
+	}
+	var t LivestreamRecapStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l LivestreamRecapStatus) Ptr() *LivestreamRecapStatus {
+	return &l
+}
+
 // State of the recording. `null` when the livestream was not recorded.
 type LivestreamRecordingStatus string
 
@@ -479,6 +1090,327 @@ func NewLivestreamRecordingStatusFromString(s string) (LivestreamRecordingStatus
 
 func (l LivestreamRecordingStatus) Ptr() *LivestreamRecordingStatus {
 	return &l
+}
+
+var (
+	livestreamViewersPointFieldOffsetSeconds = big.NewInt(1 << 0)
+	livestreamViewersPointFieldViewers       = big.NewInt(1 << 1)
+)
+
+type LivestreamViewersPoint struct {
+	// Seconds from the start of the livestream to the start of this minute.
+	OffsetSeconds int `json:"offset_seconds" url:"offset_seconds"`
+	// Highest number of viewers watching at once during this minute, not counting the host.
+	Viewers int `json:"viewers" url:"viewers"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LivestreamViewersPoint) GetOffsetSeconds() int {
+	if l == nil {
+		return 0
+	}
+	return l.OffsetSeconds
+}
+
+func (l *LivestreamViewersPoint) GetViewers() int {
+	if l == nil {
+		return 0
+	}
+	return l.Viewers
+}
+
+func (l *LivestreamViewersPoint) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LivestreamViewersPoint) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetOffsetSeconds sets the OffsetSeconds field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamViewersPoint) SetOffsetSeconds(offsetSeconds int) {
+	l.OffsetSeconds = offsetSeconds
+	l.require(livestreamViewersPointFieldOffsetSeconds)
+}
+
+// SetViewers sets the Viewers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamViewersPoint) SetViewers(viewers int) {
+	l.Viewers = viewers
+	l.require(livestreamViewersPointFieldViewers)
+}
+
+func (l *LivestreamViewersPoint) UnmarshalJSON(data []byte) error {
+	type unmarshaler LivestreamViewersPoint
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LivestreamViewersPoint(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LivestreamViewersPoint) MarshalJSON() ([]byte, error) {
+	type embed LivestreamViewersPoint
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LivestreamViewersPoint) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	livestreamViewershipFieldAverageViewers   = big.NewInt(1 << 0)
+	livestreamViewershipFieldNewMembers       = big.NewInt(1 << 1)
+	livestreamViewershipFieldPeakViewers      = big.NewInt(1 << 2)
+	livestreamViewershipFieldPeakViewersAt    = big.NewInt(1 << 3)
+	livestreamViewershipFieldTracked          = big.NewInt(1 << 4)
+	livestreamViewershipFieldUniqueViewers    = big.NewInt(1 << 5)
+	livestreamViewershipFieldViewers          = big.NewInt(1 << 6)
+	livestreamViewershipFieldWatchTimeSeconds = big.NewInt(1 << 7)
+)
+
+// livestreamViewershipNullableFields maps the wire names of LivestreamViewership's nullable fields (required or optional) to their field bits.
+var livestreamViewershipNullableFields = map[string]*big.Int{
+	"peak_viewers_at": livestreamViewershipFieldPeakViewersAt,
+}
+
+type LivestreamViewership struct {
+	// Average number of viewers watching at once, not counting the host: `watch_time_seconds` divided by how long the livestream has run, rounded to one decimal place.
+	AverageViewers float64 `json:"average_viewers" url:"average_viewers"`
+	// Number of members who joined the account between the start of the livestream and its end, or now while it is live. Team members are not counted.
+	NewMembers int `json:"new_members" url:"new_members"`
+	// Highest number of viewers watching at once, not counting the host.
+	PeakViewers int `json:"peak_viewers" url:"peak_viewers"`
+	// When the livestream first reached `peak_viewers`, as an ISO 8601 timestamp. `null` when nobody watched.
+	PeakViewersAt *string `json:"peak_viewers_at,omitempty" url:"peak_viewers_at,omitempty"`
+	// Whether viewer activity was tracked for this livestream. `false` before it starts, and after it ends when nothing was recorded, such as for livestreams from before viewer tracking existed. Every viewer count is then `0`.
+	Tracked bool `json:"tracked" url:"tracked"`
+	// Number of distinct people who watched, not counting the host. A signed-out guest counts once per visit.
+	UniqueViewers int                       `json:"unique_viewers" url:"unique_viewers"`
+	Viewers       []*LivestreamViewersPoint `json:"viewers" url:"viewers"`
+	// Total time viewers spent watching, in seconds, not counting the host.
+	WatchTimeSeconds int `json:"watch_time_seconds" url:"watch_time_seconds"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *LivestreamViewership) GetAverageViewers() float64 {
+	if l == nil {
+		return 0
+	}
+	return l.AverageViewers
+}
+
+func (l *LivestreamViewership) GetNewMembers() int {
+	if l == nil {
+		return 0
+	}
+	return l.NewMembers
+}
+
+func (l *LivestreamViewership) GetPeakViewers() int {
+	if l == nil {
+		return 0
+	}
+	return l.PeakViewers
+}
+
+func (l *LivestreamViewership) GetPeakViewersAt() *string {
+	if l == nil {
+		return nil
+	}
+	return l.PeakViewersAt
+}
+
+func (l *LivestreamViewership) GetTracked() bool {
+	if l == nil {
+		return false
+	}
+	return l.Tracked
+}
+
+func (l *LivestreamViewership) GetUniqueViewers() int {
+	if l == nil {
+		return 0
+	}
+	return l.UniqueViewers
+}
+
+func (l *LivestreamViewership) GetViewers() []*LivestreamViewersPoint {
+	if l == nil {
+		return nil
+	}
+	return l.Viewers
+}
+
+func (l *LivestreamViewership) GetWatchTimeSeconds() int {
+	if l == nil {
+		return 0
+	}
+	return l.WatchTimeSeconds
+}
+
+func (l *LivestreamViewership) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *LivestreamViewership) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetAverageViewers sets the AverageViewers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamViewership) SetAverageViewers(averageViewers float64) {
+	l.AverageViewers = averageViewers
+	l.require(livestreamViewershipFieldAverageViewers)
+}
+
+// SetNewMembers sets the NewMembers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamViewership) SetNewMembers(newMembers int) {
+	l.NewMembers = newMembers
+	l.require(livestreamViewershipFieldNewMembers)
+}
+
+// SetPeakViewers sets the PeakViewers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamViewership) SetPeakViewers(peakViewers int) {
+	l.PeakViewers = peakViewers
+	l.require(livestreamViewershipFieldPeakViewers)
+}
+
+// SetPeakViewersAt sets the PeakViewersAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamViewership) SetPeakViewersAt(peakViewersAt *string) {
+	l.PeakViewersAt = peakViewersAt
+	l.require(livestreamViewershipFieldPeakViewersAt)
+}
+
+// SetTracked sets the Tracked field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamViewership) SetTracked(tracked bool) {
+	l.Tracked = tracked
+	l.require(livestreamViewershipFieldTracked)
+}
+
+// SetUniqueViewers sets the UniqueViewers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamViewership) SetUniqueViewers(uniqueViewers int) {
+	l.UniqueViewers = uniqueViewers
+	l.require(livestreamViewershipFieldUniqueViewers)
+}
+
+// SetViewers sets the Viewers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamViewership) SetViewers(viewers []*LivestreamViewersPoint) {
+	l.Viewers = viewers
+	l.require(livestreamViewershipFieldViewers)
+}
+
+// SetWatchTimeSeconds sets the WatchTimeSeconds field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LivestreamViewership) SetWatchTimeSeconds(watchTimeSeconds int) {
+	l.WatchTimeSeconds = watchTimeSeconds
+	l.require(livestreamViewershipFieldWatchTimeSeconds)
+}
+
+func (l *LivestreamViewership) UnmarshalJSON(data []byte) error {
+	type unmarshaler LivestreamViewership
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = LivestreamViewership(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, livestreamViewershipNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *LivestreamViewership) MarshalJSON() ([]byte, error) {
+	type embed LivestreamViewership
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *LivestreamViewership) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
 }
 
 var (
