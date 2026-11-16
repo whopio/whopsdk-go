@@ -1215,6 +1215,7 @@ const (
 	CreateDepositsResponseMethodsCryptoItemNameEthereum      CreateDepositsResponseMethodsCryptoItemName = "Ethereum"
 	CreateDepositsResponseMethodsCryptoItemNameSolana        CreateDepositsResponseMethodsCryptoItemName = "Solana"
 	CreateDepositsResponseMethodsCryptoItemNameBitcoin       CreateDepositsResponseMethodsCryptoItemName = "Bitcoin"
+	CreateDepositsResponseMethodsCryptoItemNameTron          CreateDepositsResponseMethodsCryptoItemName = "Tron"
 	CreateDepositsResponseMethodsCryptoItemNameBase          CreateDepositsResponseMethodsCryptoItemName = "Base"
 	CreateDepositsResponseMethodsCryptoItemNameBnbSmartChain CreateDepositsResponseMethodsCryptoItemName = "BNB Smart Chain"
 	CreateDepositsResponseMethodsCryptoItemNameHyperliquid   CreateDepositsResponseMethodsCryptoItemName = "Hyperliquid"
@@ -1233,6 +1234,8 @@ func NewCreateDepositsResponseMethodsCryptoItemNameFromString(s string) (CreateD
 		return CreateDepositsResponseMethodsCryptoItemNameSolana, nil
 	case "Bitcoin":
 		return CreateDepositsResponseMethodsCryptoItemNameBitcoin, nil
+	case "Tron":
+		return CreateDepositsResponseMethodsCryptoItemNameTron, nil
 	case "Base":
 		return CreateDepositsResponseMethodsCryptoItemNameBase, nil
 	case "BNB Smart Chain":
@@ -1386,6 +1389,7 @@ const (
 	CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameHype  CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName = "HYPE"
 	CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNamePyusd CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName = "PYUSD"
 	CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameSol   CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName = "SOL"
+	CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameTrx   CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName = "TRX"
 	CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameUsd1  CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName = "USD1"
 	CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameUsdc  CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName = "USDC"
 	CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameUsdcE CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName = "USDC.e"
@@ -1418,6 +1422,8 @@ func NewCreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameFromSt
 		return CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNamePyusd, nil
 	case "SOL":
 		return CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameSol, nil
+	case "TRX":
+		return CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameTrx, nil
 	case "USD1":
 		return CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameUsd1, nil
 	case "USDC":

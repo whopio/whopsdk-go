@@ -16392,7 +16392,7 @@ client.Courses.Update(
 <dl>
 <dd>
 
-Returns the deposit methods for an account or user, including crypto addresses, bank transfer instructions, and, for a business, a hosted deposit page. Bitcoin deposits are converted to USDT on Plasma in the destination's wallet. Business destinations require no authentication. Pass `payment_method_id` to also charge a business's saved payment method for `amount` in USD and add it to the business's balance; that requires authentication with the `payment:charge` scope. The charge has no fees or taxes and does not count as revenue.
+Returns the deposit methods for an account or user, including crypto addresses, bank transfer instructions, and, for a business, a hosted deposit page. Bitcoin and Tron deposits are converted to USDT on Plasma in the destination's wallet. Business destinations require no authentication. Pass `payment_method_id` to also charge a business's saved payment method for `amount` in USD and add it to the business's balance. That requires authentication with the `payment:charge` scope. The charge has no fees or taxes and does not count as revenue.
 </dd>
 </dl>
 </dd>
@@ -31705,7 +31705,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**setupFutureUsage:** `*whopsdk.CreatePaymentsRequestSetupFutureUsage` — Attests that the buyer was told the payment method will be saved for later charges, and saves it once they approve, so it can be charged with `member_id` and `payment_method_id`. PayPal shows the buyer the agreement to future charges on its approval page. Omit it for a one-time payment that saves nothing. Ignored unless a `paypal` `payment_method` is provided.
+**setupFutureUsage:** `*whopsdk.CreatePaymentsRequestSetupFutureUsage` — Attests that the buyer was told the payment method will be saved for later charges. A `paypal` method is saved once the buyer approves on PayPal's page, and can then be charged with `member_id` and `payment_method_id`. A `card_present` method saves the tapped card when the reader collects it. The payment's `payment_method_id` then names the saved card. The point of sale must also pass the buyer's consent to the Terminal SDK as `allow_redisplay`. Omit it for a one-time payment that saves nothing. Other payment methods ignore it.
     
 </dd>
 </dl>

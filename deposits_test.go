@@ -3826,6 +3826,13 @@ func TestEnumCreateDepositsResponseMethodsCryptoItemName(t *testing.T) {
 		assert.Equal(t, CreateDepositsResponseMethodsCryptoItemName("Bitcoin"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_Tron", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateDepositsResponseMethodsCryptoItemNameFromString("Tron")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateDepositsResponseMethodsCryptoItemName("Tron"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Base", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCreateDepositsResponseMethodsCryptoItemNameFromString("Base")
@@ -3951,6 +3958,13 @@ func TestEnumCreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName(
 		val, err := NewCreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameFromString("SOL")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName("SOL"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_TRX", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemNameFromString("TRX")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateDepositsResponseMethodsCryptoItemSupportedCurrenciesItemName("TRX"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_USD1", func(t *testing.T) {
