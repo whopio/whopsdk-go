@@ -9947,7 +9947,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"lfeed_xxxxxxxxxxxxxxxxxxxxxx\",\n      \"pinned_at\": \"2026-01-01T12:00:00.000Z\",\n      \"recording_started_at\": \"2026-01-01T12:00:00.000Z\",\n      \"recording_status\": \"recording\",\n      \"recording_url\": \"https://whop-livestreams-example.s3.amazonaws.com/room/lfeed_xxxxxxxxxxxxxxxxxxxxxx.mp4\",\n      \"started_at\": \"2026-01-01T12:00:00.000Z\",\n      \"thumbnail_url\": \"https://img.whop.com/livestreams/lfeed_xxxxxxxxxxxxxxxxxxxxxx.jpg\",\n      \"title\": \"Live edit: blue hour\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n      \"id\": \"lfeed_xxxxxxxxxxxxxxxxxxxxxx\",\n      \"pinned_at\": \"2026-01-01T12:00:00.000Z\",\n      \"recap\": {\n        \"chat\": {\n          \"chatter_count\": 87,\n          \"message_count\": 412,\n          \"per_minute\": [\n            4\n          ]\n        },\n        \"moments\": [\n          {\n            \"description\": \"Elena showed her new preset pack and chat asked how to get it.\",\n            \"end_offset_seconds\": 1461,\n            \"message\": {\n              \"content\": \"how do I get these presets??\",\n              \"id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n              \"user_name\": \"Maya Chen\"\n            },\n            \"offset_seconds\": 1412,\n            \"title\": \"Elena reveals the blue hour preset pack\"\n          }\n        ],\n        \"status\": \"pending\"\n      },\n      \"recording_started_at\": \"2026-01-01T12:00:00.000Z\",\n      \"recording_status\": \"recording\",\n      \"recording_url\": \"https://whop-livestreams-example.s3.amazonaws.com/room/lfeed_xxxxxxxxxxxxxxxxxxxxxx.mp4\",\n      \"started_at\": \"2026-01-01T12:00:00.000Z\",\n      \"thumbnail_url\": \"https://img.whop.com/livestreams/lfeed_xxxxxxxxxxxxxxxxxxxxxx.jpg\",\n      \"title\": \"Live edit: blue hour\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -9984,7 +9984,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"lfeed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"pinned_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recording_started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recording_status\": \"recording\",\n  \"recording_url\": \"https://whop-livestreams-example.s3.amazonaws.com/room/lfeed_xxxxxxxxxxxxxxxxxxxxxx.mp4\",\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"thumbnail_url\": \"https://img.whop.com/livestreams/lfeed_xxxxxxxxxxxxxxxxxxxxxx.jpg\",\n  \"title\": \"Live edit: blue hour\"\n}",
+        "body": "{\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"lfeed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"pinned_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recap\": {\n    \"chat\": {\n      \"chatter_count\": 87,\n      \"message_count\": 412,\n      \"per_minute\": [\n        4\n      ]\n    },\n    \"moments\": [\n      {\n        \"description\": \"Elena showed her new preset pack and chat asked how to get it.\",\n        \"end_offset_seconds\": 1461,\n        \"message\": {\n          \"content\": \"how do I get these presets??\",\n          \"id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n          \"user_name\": \"Maya Chen\"\n        },\n        \"offset_seconds\": 1412,\n        \"title\": \"Elena reveals the blue hour preset pack\"\n      }\n    ],\n    \"status\": \"pending\"\n  },\n  \"recording_started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recording_status\": \"recording\",\n  \"recording_url\": \"https://whop-livestreams-example.s3.amazonaws.com/room/lfeed_xxxxxxxxxxxxxxxxxxxxxx.mp4\",\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"thumbnail_url\": \"https://img.whop.com/livestreams/lfeed_xxxxxxxxxxxxxxxxxxxxxx.jpg\",\n  \"title\": \"Live edit: blue hour\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10020,7 +10020,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"lfeed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"pinned_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recording_started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recording_status\": \"recording\",\n  \"recording_url\": \"https://whop-livestreams-example.s3.amazonaws.com/room/lfeed_xxxxxxxxxxxxxxxxxxxxxx.mp4\",\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"thumbnail_url\": \"https://img.whop.com/livestreams/lfeed_xxxxxxxxxxxxxxxxxxxxxx.jpg\",\n  \"title\": \"Live edit: blue hour\"\n}",
+        "body": "{\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"lfeed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"pinned_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recap\": {\n    \"chat\": {\n      \"chatter_count\": 87,\n      \"message_count\": 412,\n      \"per_minute\": [\n        4\n      ]\n    },\n    \"moments\": [\n      {\n        \"description\": \"Elena showed her new preset pack and chat asked how to get it.\",\n        \"end_offset_seconds\": 1461,\n        \"message\": {\n          \"content\": \"how do I get these presets??\",\n          \"id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n          \"user_name\": \"Maya Chen\"\n        },\n        \"offset_seconds\": 1412,\n        \"title\": \"Elena reveals the blue hour preset pack\"\n      }\n    ],\n    \"status\": \"pending\"\n  },\n  \"recording_started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recording_status\": \"recording\",\n  \"recording_url\": \"https://whop-livestreams-example.s3.amazonaws.com/room/lfeed_xxxxxxxxxxxxxxxxxxxxxx.mp4\",\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"thumbnail_url\": \"https://img.whop.com/livestreams/lfeed_xxxxxxxxxxxxxxxxxxxxxx.jpg\",\n  \"title\": \"Live edit: blue hour\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -10056,12 +10056,48 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"lfeed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"pinned_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recording_started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recording_status\": \"recording\",\n  \"recording_url\": \"https://whop-livestreams-example.s3.amazonaws.com/room/lfeed_xxxxxxxxxxxxxxxxxxxxxx.mp4\",\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"thumbnail_url\": \"https://img.whop.com/livestreams/lfeed_xxxxxxxxxxxxxxxxxxxxxx.jpg\",\n  \"title\": \"Live edit: blue hour\"\n}",
+        "body": "{\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"lfeed_xxxxxxxxxxxxxxxxxxxxxx\",\n  \"pinned_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recap\": {\n    \"chat\": {\n      \"chatter_count\": 87,\n      \"message_count\": 412,\n      \"per_minute\": [\n        4\n      ]\n    },\n    \"moments\": [\n      {\n        \"description\": \"Elena showed her new preset pack and chat asked how to get it.\",\n        \"end_offset_seconds\": 1461,\n        \"message\": {\n          \"content\": \"how do I get these presets??\",\n          \"id\": \"post_xxxxxxxxxxxxxxxxxxxxxx\",\n          \"user_name\": \"Maya Chen\"\n        },\n        \"offset_seconds\": 1412,\n        \"title\": \"Elena reveals the blue hour preset pack\"\n      }\n    ],\n    \"status\": \"pending\"\n  },\n  \"recording_started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"recording_status\": \"recording\",\n  \"recording_url\": \"https://whop-livestreams-example.s3.amazonaws.com/room/lfeed_xxxxxxxxxxxxxxxxxxxxxx.mp4\",\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"thumbnail_url\": \"https://img.whop.com/livestreams/lfeed_xxxxxxxxxxxxxxxxxxxxxx.jpg\",\n  \"title\": \"Live edit: blue hour\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
       "uuid": "efa26701-5552-4561-a379-ae95a3f9c0fe",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "685a7043-2dcc-4dfc-8a88-1af4b05e7c08",
+      "name": "Retrieve Livestream Viewership - default",
+      "request": {
+        "urlPathTemplate": "/livestreams/{id}/viewership",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"average_viewers\": 31.1,\n  \"new_members\": 1,\n  \"peak_viewers\": 164,\n  \"peak_viewers_at\": \"2026-01-01T12:00:00.000Z\",\n  \"tracked\": true,\n  \"unique_viewers\": 182,\n  \"viewers\": [\n    {\n      \"offset_seconds\": 0,\n      \"viewers\": 38\n    }\n  ],\n  \"watch_time_seconds\": 197340\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "685a7043-2dcc-4dfc-8a88-1af4b05e7c08",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -19300,6 +19336,6 @@
     }
   ],
   "meta": {
-    "total": 540
+    "total": 541
   }
 }

@@ -121,7 +121,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Retrieves a livestream by ID.
+// Retrieves a livestream by ID. Callers with the `livestream:moderate` permission also get its `recap`: the top moments AI picked from chat, and chat activity.
 //
 // Example:
 //
@@ -192,6 +192,33 @@ func (c *Client) Unpin(
 	opts ...option.RequestOption,
 ) (*whopsdk.Livestream, error) {
 	response, err := c.WithRawResponse.Unpin(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Retrieves a livestream's viewership: peak, average, and unique viewers, total watch time, viewers for each minute, and how many members joined the account during it. Counts update while the livestream is live and settle about five minutes after it ends.
+//
+// Example:
+//
+//	request := &whopsdk.RetrieveViewershipLivestreamsRequest{
+//	    ID: "id",
+//	}
+//	client.Livestreams.RetrieveViewership(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) RetrieveViewership(
+	ctx context.Context,
+	request *whopsdk.RetrieveViewershipLivestreamsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.LivestreamViewership, error) {
+	response, err := c.WithRawResponse.RetrieveViewership(
 		ctx,
 		request,
 		opts...,
