@@ -61107,6 +61107,7 @@ const (
 	PaymentMethodTypesPaytoPhone             PaymentMethodTypes = "payto_phone"
 	PaymentMethodTypesPaytoBankAccount       PaymentMethodTypes = "payto_bank_account"
 	PaymentMethodTypesPix                    PaymentMethodTypes = "pix"
+	PaymentMethodTypesPixAutomatico          PaymentMethodTypes = "pix_automatico"
 	PaymentMethodTypesPlatformBalance        PaymentMethodTypes = "platform_balance"
 	PaymentMethodTypesPromptpay              PaymentMethodTypes = "promptpay"
 	PaymentMethodTypesQris                   PaymentMethodTypes = "qris"
@@ -61348,6 +61349,8 @@ func NewPaymentMethodTypesFromString(s string) (PaymentMethodTypes, error) {
 		return PaymentMethodTypesPaytoBankAccount, nil
 	case "pix":
 		return PaymentMethodTypesPix, nil
+	case "pix_automatico":
+		return PaymentMethodTypesPixAutomatico, nil
 	case "platform_balance":
 		return PaymentMethodTypesPlatformBalance, nil
 	case "promptpay":

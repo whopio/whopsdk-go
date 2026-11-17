@@ -203226,6 +203226,13 @@ func TestEnumPaymentMethodTypes(t *testing.T) {
 		assert.Equal(t, PaymentMethodTypes("pix"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_pix_automatico", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentMethodTypesFromString("pix_automatico")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentMethodTypes("pix_automatico"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_platform_balance", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPaymentMethodTypesFromString("platform_balance")

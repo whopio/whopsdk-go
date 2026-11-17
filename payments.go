@@ -4952,6 +4952,7 @@ const (
 	ListPaymentsRequestPaymentMethodsItemPaytoPhone             ListPaymentsRequestPaymentMethodsItem = "payto_phone"
 	ListPaymentsRequestPaymentMethodsItemPaytoBankAccount       ListPaymentsRequestPaymentMethodsItem = "payto_bank_account"
 	ListPaymentsRequestPaymentMethodsItemPix                    ListPaymentsRequestPaymentMethodsItem = "pix"
+	ListPaymentsRequestPaymentMethodsItemPixAutomatico          ListPaymentsRequestPaymentMethodsItem = "pix_automatico"
 	ListPaymentsRequestPaymentMethodsItemPlatformBalance        ListPaymentsRequestPaymentMethodsItem = "platform_balance"
 	ListPaymentsRequestPaymentMethodsItemPromptpay              ListPaymentsRequestPaymentMethodsItem = "promptpay"
 	ListPaymentsRequestPaymentMethodsItemQris                   ListPaymentsRequestPaymentMethodsItem = "qris"
@@ -5290,6 +5291,8 @@ func NewListPaymentsRequestPaymentMethodsItemFromString(s string) (ListPaymentsR
 		return ListPaymentsRequestPaymentMethodsItemPaytoBankAccount, nil
 	case "pix":
 		return ListPaymentsRequestPaymentMethodsItemPix, nil
+	case "pix_automatico":
+		return ListPaymentsRequestPaymentMethodsItemPixAutomatico, nil
 	case "platform_balance":
 		return ListPaymentsRequestPaymentMethodsItemPlatformBalance, nil
 	case "promptpay":
@@ -8453,6 +8456,7 @@ const (
 	SummaryPaymentsRequestPaymentMethodsItemPaytoPhone             SummaryPaymentsRequestPaymentMethodsItem = "payto_phone"
 	SummaryPaymentsRequestPaymentMethodsItemPaytoBankAccount       SummaryPaymentsRequestPaymentMethodsItem = "payto_bank_account"
 	SummaryPaymentsRequestPaymentMethodsItemPix                    SummaryPaymentsRequestPaymentMethodsItem = "pix"
+	SummaryPaymentsRequestPaymentMethodsItemPixAutomatico          SummaryPaymentsRequestPaymentMethodsItem = "pix_automatico"
 	SummaryPaymentsRequestPaymentMethodsItemPlatformBalance        SummaryPaymentsRequestPaymentMethodsItem = "platform_balance"
 	SummaryPaymentsRequestPaymentMethodsItemPromptpay              SummaryPaymentsRequestPaymentMethodsItem = "promptpay"
 	SummaryPaymentsRequestPaymentMethodsItemQris                   SummaryPaymentsRequestPaymentMethodsItem = "qris"
@@ -8791,6 +8795,8 @@ func NewSummaryPaymentsRequestPaymentMethodsItemFromString(s string) (SummaryPay
 		return SummaryPaymentsRequestPaymentMethodsItemPaytoBankAccount, nil
 	case "pix":
 		return SummaryPaymentsRequestPaymentMethodsItemPix, nil
+	case "pix_automatico":
+		return SummaryPaymentsRequestPaymentMethodsItemPixAutomatico, nil
 	case "platform_balance":
 		return SummaryPaymentsRequestPaymentMethodsItemPlatformBalance, nil
 	case "promptpay":
