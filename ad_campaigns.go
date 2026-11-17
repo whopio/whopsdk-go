@@ -1866,6 +1866,7 @@ const (
 	AdCampaignDeliveryStatusInReview       AdCampaignDeliveryStatus = "in_review"
 	AdCampaignDeliveryStatusLearning       AdCampaignDeliveryStatus = "learning"
 	AdCampaignDeliveryStatusProcessing     AdCampaignDeliveryStatus = "processing"
+	AdCampaignDeliveryStatusReviseContent  AdCampaignDeliveryStatus = "revise_content"
 	AdCampaignDeliveryStatusIssues         AdCampaignDeliveryStatus = "issues"
 	AdCampaignDeliveryStatusScheduled      AdCampaignDeliveryStatus = "scheduled"
 	AdCampaignDeliveryStatusCompleted      AdCampaignDeliveryStatus = "completed"
@@ -1888,6 +1889,8 @@ func NewAdCampaignDeliveryStatusFromString(s string) (AdCampaignDeliveryStatus, 
 		return AdCampaignDeliveryStatusLearning, nil
 	case "processing":
 		return AdCampaignDeliveryStatusProcessing, nil
+	case "revise_content":
+		return AdCampaignDeliveryStatusReviseContent, nil
 	case "issues":
 		return AdCampaignDeliveryStatusIssues, nil
 	case "scheduled":
@@ -3541,6 +3544,7 @@ const (
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusInReview       PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "in_review"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusLearning       PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "learning"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusProcessing     PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "processing"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusReviseContent  PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "revise_content"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusIssues         PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "issues"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusScheduled      PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "scheduled"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusCompleted      PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "completed"
@@ -3563,6 +3567,8 @@ func NewPostAdCampaignPaymentFailedPayloadDataDeliveryStatusFromString(s string)
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusLearning, nil
 	case "processing":
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusProcessing, nil
+	case "revise_content":
+		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusReviseContent, nil
 	case "issues":
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusIssues, nil
 	case "scheduled":
@@ -4469,6 +4475,7 @@ const (
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusInReview       PostAdCampaignUpdatedPayloadDataDeliveryStatus = "in_review"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusLearning       PostAdCampaignUpdatedPayloadDataDeliveryStatus = "learning"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusProcessing     PostAdCampaignUpdatedPayloadDataDeliveryStatus = "processing"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusReviseContent  PostAdCampaignUpdatedPayloadDataDeliveryStatus = "revise_content"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusIssues         PostAdCampaignUpdatedPayloadDataDeliveryStatus = "issues"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusScheduled      PostAdCampaignUpdatedPayloadDataDeliveryStatus = "scheduled"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusCompleted      PostAdCampaignUpdatedPayloadDataDeliveryStatus = "completed"
@@ -4491,6 +4498,8 @@ func NewPostAdCampaignUpdatedPayloadDataDeliveryStatusFromString(s string) (Post
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusLearning, nil
 	case "processing":
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusProcessing, nil
+	case "revise_content":
+		return PostAdCampaignUpdatedPayloadDataDeliveryStatusReviseContent, nil
 	case "issues":
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusIssues, nil
 	case "scheduled":

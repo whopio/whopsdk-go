@@ -1171,7 +1171,7 @@ var accountCardsNullableFields = map[string]*big.Int{
 }
 
 type AccountCards struct {
-	// Reason the card issuer declined the application. `compliance` covers sanctions, politically exposed person, and adverse media checks. `other` covers reasons that are not in this list. `null` when `status` is not `denied`, or when the issuer did not decline the application.
+	// Reason the card issuer declined the application. `unsupported_state` replaces `unsupported_region` for a verified person or business in the United States. `compliance` covers sanctions, politically exposed person, and adverse media checks. `other` covers reasons that are not in this list. `null` when `status` is not `denied`, or when the issuer did not decline the application.
 	DeclineReason *AccountCardsDeclineReason `json:"decline_reason,omitempty" url:"decline_reason,omitempty"`
 	// Whether the card application verifies a business (`business`, KYB) or a person (`individual`, consumer identity). `null` when the application is not yet linked to a verification.
 	Kind *AccountCardsKind `json:"kind,omitempty" url:"kind,omitempty"`
@@ -1292,7 +1292,7 @@ func (a *AccountCards) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Reason the card issuer declined the application. `compliance` covers sanctions, politically exposed person, and adverse media checks. `other` covers reasons that are not in this list. `null` when `status` is not `denied`, or when the issuer did not decline the application.
+// Reason the card issuer declined the application. `unsupported_state` replaces `unsupported_region` for a verified person or business in the United States. `compliance` covers sanctions, politically exposed person, and adverse media checks. `other` covers reasons that are not in this list. `null` when `status` is not `denied`, or when the issuer did not decline the application.
 type AccountCardsDeclineReason string
 
 const (
@@ -1302,6 +1302,7 @@ const (
 	AccountCardsDeclineReasonCompliance          AccountCardsDeclineReason = "compliance"
 	AccountCardsDeclineReasonFraud               AccountCardsDeclineReason = "fraud"
 	AccountCardsDeclineReasonVerificationFailed  AccountCardsDeclineReason = "verification_failed"
+	AccountCardsDeclineReasonUnsupportedState    AccountCardsDeclineReason = "unsupported_state"
 	AccountCardsDeclineReasonOther               AccountCardsDeclineReason = "other"
 )
 
@@ -1319,6 +1320,8 @@ func NewAccountCardsDeclineReasonFromString(s string) (AccountCardsDeclineReason
 		return AccountCardsDeclineReasonFraud, nil
 	case "verification_failed":
 		return AccountCardsDeclineReasonVerificationFailed, nil
+	case "unsupported_state":
+		return AccountCardsDeclineReasonUnsupportedState, nil
 	case "other":
 		return AccountCardsDeclineReasonOther, nil
 	}
@@ -74897,7 +74900,7 @@ type StorefrontAccount struct {
 	ID string `json:"id" url:"id"`
 	// Account logo image URL. `null` when the account has not set one.
 	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
-	// Account public route identifier — the `whop.com/{route}` storefront path.
+	// Account public route identifier, used in the `whop.com/{route}` storefront path.
 	Route string `json:"route" url:"route"`
 	// Account display name.
 	Title string `json:"title" url:"title"`

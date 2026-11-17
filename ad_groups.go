@@ -2651,6 +2651,7 @@ const (
 	AdGroupDeliveryStatusPaused         AdGroupDeliveryStatus = "paused"
 	AdGroupDeliveryStatusInReview       AdGroupDeliveryStatus = "in_review"
 	AdGroupDeliveryStatusProcessing     AdGroupDeliveryStatus = "processing"
+	AdGroupDeliveryStatusReviseContent  AdGroupDeliveryStatus = "revise_content"
 	AdGroupDeliveryStatusIssues         AdGroupDeliveryStatus = "issues"
 	AdGroupDeliveryStatusScheduled      AdGroupDeliveryStatus = "scheduled"
 	AdGroupDeliveryStatusCompleted      AdGroupDeliveryStatus = "completed"
@@ -2674,6 +2675,8 @@ func NewAdGroupDeliveryStatusFromString(s string) (AdGroupDeliveryStatus, error)
 		return AdGroupDeliveryStatusInReview, nil
 	case "processing":
 		return AdGroupDeliveryStatusProcessing, nil
+	case "revise_content":
+		return AdGroupDeliveryStatusReviseContent, nil
 	case "issues":
 		return AdGroupDeliveryStatusIssues, nil
 	case "scheduled":
@@ -7655,6 +7658,7 @@ const (
 	PostAdGroupUpdatedPayloadDataDeliveryStatusPaused         PostAdGroupUpdatedPayloadDataDeliveryStatus = "paused"
 	PostAdGroupUpdatedPayloadDataDeliveryStatusInReview       PostAdGroupUpdatedPayloadDataDeliveryStatus = "in_review"
 	PostAdGroupUpdatedPayloadDataDeliveryStatusProcessing     PostAdGroupUpdatedPayloadDataDeliveryStatus = "processing"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusReviseContent  PostAdGroupUpdatedPayloadDataDeliveryStatus = "revise_content"
 	PostAdGroupUpdatedPayloadDataDeliveryStatusIssues         PostAdGroupUpdatedPayloadDataDeliveryStatus = "issues"
 	PostAdGroupUpdatedPayloadDataDeliveryStatusScheduled      PostAdGroupUpdatedPayloadDataDeliveryStatus = "scheduled"
 	PostAdGroupUpdatedPayloadDataDeliveryStatusCompleted      PostAdGroupUpdatedPayloadDataDeliveryStatus = "completed"
@@ -7678,6 +7682,8 @@ func NewPostAdGroupUpdatedPayloadDataDeliveryStatusFromString(s string) (PostAdG
 		return PostAdGroupUpdatedPayloadDataDeliveryStatusInReview, nil
 	case "processing":
 		return PostAdGroupUpdatedPayloadDataDeliveryStatusProcessing, nil
+	case "revise_content":
+		return PostAdGroupUpdatedPayloadDataDeliveryStatusReviseContent, nil
 	case "issues":
 		return PostAdGroupUpdatedPayloadDataDeliveryStatusIssues, nil
 	case "scheduled":

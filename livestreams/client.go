@@ -148,6 +148,34 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
+// Makes someone in a live livestream a co-host until it ends. Co-hosts can change chat settings, manage the stage, and moderate chat, but can't end the livestream.
+//
+// Example:
+//
+//	request := &whopsdk.AddCoHostLivestreamsRequest{
+//	    ID: "id",
+//	    UserID: "user_xxxxxxxxxxxxxx",
+//	}
+//	client.Livestreams.AddCoHost(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) AddCoHost(
+	ctx context.Context,
+	request *whopsdk.AddCoHostLivestreamsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Livestream, error) {
+	response, err := c.WithRawResponse.AddCoHost(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Pins an ended livestream's recording so everyone in the experience sees it featured, up to 3 per experience. Without `position`, a new pin goes first and an existing pin keeps its place. With `position`, the pin moves there and every pinned livestream in that experience gets a new `pinned_at` in the new order.
 //
 // Example:
@@ -165,6 +193,34 @@ func (c *Client) Pin(
 	opts ...option.RequestOption,
 ) (*whopsdk.Livestream, error) {
 	response, err := c.WithRawResponse.Pin(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
+// Removes a co-host from a live livestream.
+//
+// Example:
+//
+//	request := &whopsdk.RemoveCoHostLivestreamsRequest{
+//	    ID: "id",
+//	    UserID: "user_xxxxxxxxxxxxxx",
+//	}
+//	client.Livestreams.RemoveCoHost(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) RemoveCoHost(
+	ctx context.Context,
+	request *whopsdk.RemoveCoHostLivestreamsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Livestream, error) {
+	response, err := c.WithRawResponse.RemoveCoHost(
 		ctx,
 		request,
 		opts...,

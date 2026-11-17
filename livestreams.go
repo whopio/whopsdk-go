@@ -10,6 +10,65 @@ import (
 )
 
 var (
+	addCoHostLivestreamsRequestFieldID     = big.NewInt(1 << 0)
+	addCoHostLivestreamsRequestFieldUserID = big.NewInt(1 << 1)
+)
+
+type AddCoHostLivestreamsRequest struct {
+	// Livestream ID, prefixed `lfeed_`.
+	ID string `json:"-" url:"-"`
+	// User ID, prefixed `user_`. The user needs access to the livestream.
+	UserID string `json:"user_id" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (a *AddCoHostLivestreamsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddCoHostLivestreamsRequest) SetID(id string) {
+	a.ID = id
+	a.require(addCoHostLivestreamsRequestFieldID)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AddCoHostLivestreamsRequest) SetUserID(userID string) {
+	a.UserID = userID
+	a.require(addCoHostLivestreamsRequestFieldUserID)
+}
+
+func (a *AddCoHostLivestreamsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler AddCoHostLivestreamsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*a = AddCoHostLivestreamsRequest(body)
+	return nil
+}
+
+func (a *AddCoHostLivestreamsRequest) MarshalJSON() ([]byte, error) {
+	type embed AddCoHostLivestreamsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	listLivestreamsRequestFieldExperienceID = big.NewInt(1 << 0)
 	listLivestreamsRequestFieldPinned       = big.NewInt(1 << 1)
 	listLivestreamsRequestFieldRecorded     = big.NewInt(1 << 2)
@@ -163,6 +222,65 @@ func (p *PinLivestreamsRequest) MarshalJSON() ([]byte, error) {
 		embed: embed(*p),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
+	removeCoHostLivestreamsRequestFieldID     = big.NewInt(1 << 0)
+	removeCoHostLivestreamsRequestFieldUserID = big.NewInt(1 << 1)
+)
+
+type RemoveCoHostLivestreamsRequest struct {
+	// Livestream ID, prefixed `lfeed_`.
+	ID string `json:"-" url:"-"`
+	// User ID, prefixed `user_`.
+	UserID string `json:"user_id" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *RemoveCoHostLivestreamsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RemoveCoHostLivestreamsRequest) SetID(id string) {
+	r.ID = id
+	r.require(removeCoHostLivestreamsRequestFieldID)
+}
+
+// SetUserID sets the UserID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RemoveCoHostLivestreamsRequest) SetUserID(userID string) {
+	r.UserID = userID
+	r.require(removeCoHostLivestreamsRequestFieldUserID)
+}
+
+func (r *RemoveCoHostLivestreamsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler RemoveCoHostLivestreamsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*r = RemoveCoHostLivestreamsRequest(body)
+	return nil
+}
+
+func (r *RemoveCoHostLivestreamsRequest) MarshalJSON() ([]byte, error) {
+	type embed RemoveCoHostLivestreamsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
 	return json.Marshal(explicitMarshaler)
 }
 

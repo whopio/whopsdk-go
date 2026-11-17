@@ -231,15 +231,16 @@ func (r *RetrieveAdPixelsRequest) SetID(id string) {
 }
 
 var (
-	adPixelFieldAccountID    = big.NewInt(1 << 0)
-	adPixelFieldCreatedAt    = big.NewInt(1 << 1)
-	adPixelFieldErrorMessage = big.NewInt(1 << 2)
-	adPixelFieldExternalID   = big.NewInt(1 << 3)
-	adPixelFieldID           = big.NewInt(1 << 4)
-	adPixelFieldName         = big.NewInt(1 << 5)
-	adPixelFieldPlatform     = big.NewInt(1 << 6)
-	adPixelFieldStatus       = big.NewInt(1 << 7)
-	adPixelFieldUpdatedAt    = big.NewInt(1 << 8)
+	adPixelFieldAccount      = big.NewInt(1 << 0)
+	adPixelFieldAccountID    = big.NewInt(1 << 1)
+	adPixelFieldCreatedAt    = big.NewInt(1 << 2)
+	adPixelFieldErrorMessage = big.NewInt(1 << 3)
+	adPixelFieldExternalID   = big.NewInt(1 << 4)
+	adPixelFieldID           = big.NewInt(1 << 5)
+	adPixelFieldName         = big.NewInt(1 << 6)
+	adPixelFieldPlatform     = big.NewInt(1 << 7)
+	adPixelFieldStatus       = big.NewInt(1 << 8)
+	adPixelFieldUpdatedAt    = big.NewInt(1 << 9)
 )
 
 // adPixelNullableFields maps the wire names of AdPixel's nullable fields (required or optional) to their field bits.
@@ -249,6 +250,8 @@ var adPixelNullableFields = map[string]*big.Int{
 }
 
 type AdPixel struct {
+	// The business whose claimed campaigns send conversions to this pixel, with its name and logo.
+	Account *StorefrontAccount `json:"account" url:"account"`
 	// The business whose claimed campaigns send conversions to this pixel, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"account_id"`
 	// When the pixel was added, as an ISO 8601 timestamp.
@@ -273,6 +276,13 @@ type AdPixel struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AdPixel) GetAccount() *StorefrontAccount {
+	if a == nil {
+		return nil
+	}
+	return a.Account
 }
 
 func (a *AdPixel) GetAccountID() string {
@@ -352,6 +362,13 @@ func (a *AdPixel) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	a.explicitFields = next
+}
+
+// SetAccount sets the Account field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdPixel) SetAccount(account *StorefrontAccount) {
+	a.Account = account
+	a.require(adPixelFieldAccount)
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;

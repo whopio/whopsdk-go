@@ -129,6 +129,33 @@ func TestLivestreamsRetrieveWithWireMock(
 	VerifyRequestCount(t, "TestLivestreamsRetrieveWithWireMock", "GET", "/livestreams/id", nil, 1)
 }
 
+func TestLivestreamsAddCoHostWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.AddCoHostLivestreamsRequest{
+		ID:     "id",
+		UserID: "user_xxxxxxxxxxxxxx",
+	}
+	_, invocationErr := client.Livestreams.AddCoHost(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestLivestreamsAddCoHostWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestLivestreamsAddCoHostWithWireMock", "POST", "/livestreams/id/add_co_host", nil, 1)
+}
+
 func TestLivestreamsPinWithWireMock(
 	t *testing.T,
 ) {
@@ -153,6 +180,33 @@ func TestLivestreamsPinWithWireMock(
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestLivestreamsPinWithWireMock", "POST", "/livestreams/id/pin", nil, 1)
+}
+
+func TestLivestreamsRemoveCoHostWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.RemoveCoHostLivestreamsRequest{
+		ID:     "id",
+		UserID: "user_xxxxxxxxxxxxxx",
+	}
+	_, invocationErr := client.Livestreams.RemoveCoHost(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestLivestreamsRemoveCoHostWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestLivestreamsRemoveCoHostWithWireMock", "POST", "/livestreams/id/remove_co_host", nil, 1)
 }
 
 func TestLivestreamsUnpinWithWireMock(
