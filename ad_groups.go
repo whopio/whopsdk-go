@@ -5085,8 +5085,8 @@ const (
 	ConversionEventZeroCompleteRegistration ConversionEventZero = "complete_registration"
 	ConversionEventZeroLead                 ConversionEventZero = "lead"
 	ConversionEventZeroContentView          ConversionEventZero = "content_view"
-	ConversionEventZeroSearch               ConversionEventZero = "search"
 	ConversionEventZeroContact              ConversionEventZero = "contact"
+	ConversionEventZeroSearch               ConversionEventZero = "search"
 	ConversionEventZeroCustomizeProduct     ConversionEventZero = "customize_product"
 	ConversionEventZeroDonate               ConversionEventZero = "donate"
 	ConversionEventZeroFindLocation         ConversionEventZero = "find_location"
@@ -5112,10 +5112,10 @@ func NewConversionEventZeroFromString(s string) (ConversionEventZero, error) {
 		return ConversionEventZeroLead, nil
 	case "content_view":
 		return ConversionEventZeroContentView, nil
-	case "search":
-		return ConversionEventZeroSearch, nil
 	case "contact":
 		return ConversionEventZeroContact, nil
+	case "search":
+		return ConversionEventZeroSearch, nil
 	case "customize_product":
 		return ConversionEventZeroCustomizeProduct, nil
 	case "donate":
