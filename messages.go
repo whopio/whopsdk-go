@@ -177,23 +177,24 @@ func (d *DeleteMessagesRequest) SetID(id string) {
 }
 
 var (
-	listMessagesRequestFieldChannelID           = big.NewInt(1 << 0)
-	listMessagesRequestFieldReplyingToMessageID = big.NewInt(1 << 1)
-	listMessagesRequestFieldPinned              = big.NewInt(1 << 2)
-	listMessagesRequestFieldIncludeDeleted      = big.NewInt(1 << 3)
-	listMessagesRequestFieldCreatedAfter        = big.NewInt(1 << 4)
-	listMessagesRequestFieldCreatedBefore       = big.NewInt(1 << 5)
-	listMessagesRequestFieldUpdatedAfter        = big.NewInt(1 << 6)
-	listMessagesRequestFieldBeforeMessageID     = big.NewInt(1 << 7)
-	listMessagesRequestFieldAfterMessageID      = big.NewInt(1 << 8)
-	listMessagesRequestFieldAroundMessageID     = big.NewInt(1 << 9)
-	listMessagesRequestFieldAroundTimestamp     = big.NewInt(1 << 10)
-	listMessagesRequestFieldOrder               = big.NewInt(1 << 11)
-	listMessagesRequestFieldDirection           = big.NewInt(1 << 12)
-	listMessagesRequestFieldFirst               = big.NewInt(1 << 13)
-	listMessagesRequestFieldAfter               = big.NewInt(1 << 14)
-	listMessagesRequestFieldLast                = big.NewInt(1 << 15)
-	listMessagesRequestFieldBefore              = big.NewInt(1 << 16)
+	listMessagesRequestFieldChannelID                = big.NewInt(1 << 0)
+	listMessagesRequestFieldReplyingToMessageID      = big.NewInt(1 << 1)
+	listMessagesRequestFieldPinned                   = big.NewInt(1 << 2)
+	listMessagesRequestFieldIncludeDeleted           = big.NewInt(1 << 3)
+	listMessagesRequestFieldIncludeReplyingToMessage = big.NewInt(1 << 4)
+	listMessagesRequestFieldCreatedAfter             = big.NewInt(1 << 5)
+	listMessagesRequestFieldCreatedBefore            = big.NewInt(1 << 6)
+	listMessagesRequestFieldUpdatedAfter             = big.NewInt(1 << 7)
+	listMessagesRequestFieldBeforeMessageID          = big.NewInt(1 << 8)
+	listMessagesRequestFieldAfterMessageID           = big.NewInt(1 << 9)
+	listMessagesRequestFieldAroundMessageID          = big.NewInt(1 << 10)
+	listMessagesRequestFieldAroundTimestamp          = big.NewInt(1 << 11)
+	listMessagesRequestFieldOrder                    = big.NewInt(1 << 12)
+	listMessagesRequestFieldDirection                = big.NewInt(1 << 13)
+	listMessagesRequestFieldFirst                    = big.NewInt(1 << 14)
+	listMessagesRequestFieldAfter                    = big.NewInt(1 << 15)
+	listMessagesRequestFieldLast                     = big.NewInt(1 << 16)
+	listMessagesRequestFieldBefore                   = big.NewInt(1 << 17)
 )
 
 type ListMessagesRequest struct {
@@ -205,6 +206,8 @@ type ListMessagesRequest struct {
 	Pinned *bool `json:"-" url:"pinned,omitempty"`
 	// Include redacted deletion entries for cache synchronization.
 	IncludeDeleted *bool `json:"-" url:"include_deleted,omitempty"`
+	// Include the full replied-to message. Nested replies are not included.
+	IncludeReplyingToMessage *bool `json:"-" url:"include_replying_to_message,omitempty"`
 	// Return messages created strictly after this ISO 8601 timestamp.
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
 	// Return messages created strictly before this ISO 8601 timestamp.
@@ -271,6 +274,13 @@ func (l *ListMessagesRequest) SetPinned(pinned *bool) {
 func (l *ListMessagesRequest) SetIncludeDeleted(includeDeleted *bool) {
 	l.IncludeDeleted = includeDeleted
 	l.require(listMessagesRequestFieldIncludeDeleted)
+}
+
+// SetIncludeReplyingToMessage sets the IncludeReplyingToMessage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMessagesRequest) SetIncludeReplyingToMessage(includeReplyingToMessage *bool) {
+	l.IncludeReplyingToMessage = includeReplyingToMessage
+	l.require(listMessagesRequestFieldIncludeReplyingToMessage)
 }
 
 // SetCreatedAfter sets the CreatedAfter field and marks it as non-optional;
@@ -530,12 +540,15 @@ func (r *ReactMessagesRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	retrieveMessagesRequestFieldID = big.NewInt(1 << 0)
+	retrieveMessagesRequestFieldID                       = big.NewInt(1 << 0)
+	retrieveMessagesRequestFieldIncludeReplyingToMessage = big.NewInt(1 << 1)
 )
 
 type RetrieveMessagesRequest struct {
 	// Existing public message ID.
 	ID string `json:"-" url:"-"`
+	// Include the full replied-to message. Nested replies are not included.
+	IncludeReplyingToMessage *bool `json:"-" url:"include_replying_to_message,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -555,6 +568,13 @@ func (r *RetrieveMessagesRequest) require(field *big.Int) {
 func (r *RetrieveMessagesRequest) SetID(id string) {
 	r.ID = id
 	r.require(retrieveMessagesRequestFieldID)
+}
+
+// SetIncludeReplyingToMessage sets the IncludeReplyingToMessage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveMessagesRequest) SetIncludeReplyingToMessage(includeReplyingToMessage *bool) {
+	r.IncludeReplyingToMessage = includeReplyingToMessage
+	r.require(retrieveMessagesRequestFieldIncludeReplyingToMessage)
 }
 
 var (

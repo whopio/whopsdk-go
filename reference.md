@@ -27573,6 +27573,14 @@ client.Messages.List(
 <dl>
 <dd>
 
+**includeReplyingToMessage:** `*bool` — Include the full replied-to message. Nested replies are not included.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **createdAfter:** `*string` — Return messages created strictly after this ISO 8601 timestamp.
     
 </dd>
@@ -27863,6 +27871,14 @@ client.Messages.Retrieve(
 <dd>
 
 **id:** `string` — Existing public message ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeReplyingToMessage:** `*bool` — Include the full replied-to message. Nested replies are not included.
     
 </dd>
 </dl>
