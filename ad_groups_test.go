@@ -21704,18 +21704,18 @@ func TestEnumConversionEventZero(t *testing.T) {
 		assert.Equal(t, ConversionEventZero("content_view"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_search", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewConversionEventZeroFromString("search")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ConversionEventZero("search"), val, "enum value should match expected wire value")
-	})
-
 	t.Run("NewFromString_contact", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewConversionEventZeroFromString("contact")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ConversionEventZero("contact"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_search", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewConversionEventZeroFromString("search")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ConversionEventZero("search"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_customize_product", func(t *testing.T) {
