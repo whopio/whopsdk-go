@@ -1860,12 +1860,8 @@ type AdCampaignDeliveryStatus string
 
 const (
 	AdCampaignDeliveryStatusPaymentFailed  AdCampaignDeliveryStatus = "payment_failed"
-	AdCampaignDeliveryStatusWaitingForEin  AdCampaignDeliveryStatus = "waiting_for_ein"
-	AdCampaignDeliveryStatusInAppeal       AdCampaignDeliveryStatus = "in_appeal"
 	AdCampaignDeliveryStatusAllAdsRejected AdCampaignDeliveryStatus = "all_ads_rejected"
 	AdCampaignDeliveryStatusDraft          AdCampaignDeliveryStatus = "draft"
-	AdCampaignDeliveryStatusNoAdGroups     AdCampaignDeliveryStatus = "no_ad_groups"
-	AdCampaignDeliveryStatusNoAds          AdCampaignDeliveryStatus = "no_ads"
 	AdCampaignDeliveryStatusPaused         AdCampaignDeliveryStatus = "paused"
 	AdCampaignDeliveryStatusInReview       AdCampaignDeliveryStatus = "in_review"
 	AdCampaignDeliveryStatusLearning       AdCampaignDeliveryStatus = "learning"
@@ -1873,7 +1869,6 @@ const (
 	AdCampaignDeliveryStatusIssues         AdCampaignDeliveryStatus = "issues"
 	AdCampaignDeliveryStatusScheduled      AdCampaignDeliveryStatus = "scheduled"
 	AdCampaignDeliveryStatusCompleted      AdCampaignDeliveryStatus = "completed"
-	AdCampaignDeliveryStatusAdGroupsOff    AdCampaignDeliveryStatus = "ad_groups_off"
 	AdCampaignDeliveryStatusActive         AdCampaignDeliveryStatus = "active"
 )
 
@@ -1881,18 +1876,10 @@ func NewAdCampaignDeliveryStatusFromString(s string) (AdCampaignDeliveryStatus, 
 	switch s {
 	case "payment_failed":
 		return AdCampaignDeliveryStatusPaymentFailed, nil
-	case "waiting_for_ein":
-		return AdCampaignDeliveryStatusWaitingForEin, nil
-	case "in_appeal":
-		return AdCampaignDeliveryStatusInAppeal, nil
 	case "all_ads_rejected":
 		return AdCampaignDeliveryStatusAllAdsRejected, nil
 	case "draft":
 		return AdCampaignDeliveryStatusDraft, nil
-	case "no_ad_groups":
-		return AdCampaignDeliveryStatusNoAdGroups, nil
-	case "no_ads":
-		return AdCampaignDeliveryStatusNoAds, nil
 	case "paused":
 		return AdCampaignDeliveryStatusPaused, nil
 	case "in_review":
@@ -1907,8 +1894,6 @@ func NewAdCampaignDeliveryStatusFromString(s string) (AdCampaignDeliveryStatus, 
 		return AdCampaignDeliveryStatusScheduled, nil
 	case "completed":
 		return AdCampaignDeliveryStatusCompleted, nil
-	case "ad_groups_off":
-		return AdCampaignDeliveryStatusAdGroupsOff, nil
 	case "active":
 		return AdCampaignDeliveryStatusActive, nil
 	}
@@ -3550,12 +3535,8 @@ type PostAdCampaignPaymentFailedPayloadDataDeliveryStatus string
 
 const (
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaymentFailed  PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "payment_failed"
-	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusWaitingForEin  PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "waiting_for_ein"
-	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusInAppeal       PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "in_appeal"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusAllAdsRejected PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "all_ads_rejected"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusDraft          PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "draft"
-	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusNoAdGroups     PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "no_ad_groups"
-	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusNoAds          PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "no_ads"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaused         PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "paused"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusInReview       PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "in_review"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusLearning       PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "learning"
@@ -3563,7 +3544,6 @@ const (
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusIssues         PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "issues"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusScheduled      PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "scheduled"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusCompleted      PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "completed"
-	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusAdGroupsOff    PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "ad_groups_off"
 	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusActive         PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "active"
 )
 
@@ -3571,18 +3551,10 @@ func NewPostAdCampaignPaymentFailedPayloadDataDeliveryStatusFromString(s string)
 	switch s {
 	case "payment_failed":
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaymentFailed, nil
-	case "waiting_for_ein":
-		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusWaitingForEin, nil
-	case "in_appeal":
-		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusInAppeal, nil
 	case "all_ads_rejected":
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusAllAdsRejected, nil
 	case "draft":
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusDraft, nil
-	case "no_ad_groups":
-		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusNoAdGroups, nil
-	case "no_ads":
-		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusNoAds, nil
 	case "paused":
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaused, nil
 	case "in_review":
@@ -3597,8 +3569,6 @@ func NewPostAdCampaignPaymentFailedPayloadDataDeliveryStatusFromString(s string)
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusScheduled, nil
 	case "completed":
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusCompleted, nil
-	case "ad_groups_off":
-		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusAdGroupsOff, nil
 	case "active":
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusActive, nil
 	}
@@ -4493,12 +4463,8 @@ type PostAdCampaignUpdatedPayloadDataDeliveryStatus string
 
 const (
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusPaymentFailed  PostAdCampaignUpdatedPayloadDataDeliveryStatus = "payment_failed"
-	PostAdCampaignUpdatedPayloadDataDeliveryStatusWaitingForEin  PostAdCampaignUpdatedPayloadDataDeliveryStatus = "waiting_for_ein"
-	PostAdCampaignUpdatedPayloadDataDeliveryStatusInAppeal       PostAdCampaignUpdatedPayloadDataDeliveryStatus = "in_appeal"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusAllAdsRejected PostAdCampaignUpdatedPayloadDataDeliveryStatus = "all_ads_rejected"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusDraft          PostAdCampaignUpdatedPayloadDataDeliveryStatus = "draft"
-	PostAdCampaignUpdatedPayloadDataDeliveryStatusNoAdGroups     PostAdCampaignUpdatedPayloadDataDeliveryStatus = "no_ad_groups"
-	PostAdCampaignUpdatedPayloadDataDeliveryStatusNoAds          PostAdCampaignUpdatedPayloadDataDeliveryStatus = "no_ads"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusPaused         PostAdCampaignUpdatedPayloadDataDeliveryStatus = "paused"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusInReview       PostAdCampaignUpdatedPayloadDataDeliveryStatus = "in_review"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusLearning       PostAdCampaignUpdatedPayloadDataDeliveryStatus = "learning"
@@ -4506,7 +4472,6 @@ const (
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusIssues         PostAdCampaignUpdatedPayloadDataDeliveryStatus = "issues"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusScheduled      PostAdCampaignUpdatedPayloadDataDeliveryStatus = "scheduled"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusCompleted      PostAdCampaignUpdatedPayloadDataDeliveryStatus = "completed"
-	PostAdCampaignUpdatedPayloadDataDeliveryStatusAdGroupsOff    PostAdCampaignUpdatedPayloadDataDeliveryStatus = "ad_groups_off"
 	PostAdCampaignUpdatedPayloadDataDeliveryStatusActive         PostAdCampaignUpdatedPayloadDataDeliveryStatus = "active"
 )
 
@@ -4514,18 +4479,10 @@ func NewPostAdCampaignUpdatedPayloadDataDeliveryStatusFromString(s string) (Post
 	switch s {
 	case "payment_failed":
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusPaymentFailed, nil
-	case "waiting_for_ein":
-		return PostAdCampaignUpdatedPayloadDataDeliveryStatusWaitingForEin, nil
-	case "in_appeal":
-		return PostAdCampaignUpdatedPayloadDataDeliveryStatusInAppeal, nil
 	case "all_ads_rejected":
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusAllAdsRejected, nil
 	case "draft":
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusDraft, nil
-	case "no_ad_groups":
-		return PostAdCampaignUpdatedPayloadDataDeliveryStatusNoAdGroups, nil
-	case "no_ads":
-		return PostAdCampaignUpdatedPayloadDataDeliveryStatusNoAds, nil
 	case "paused":
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusPaused, nil
 	case "in_review":
@@ -4540,8 +4497,6 @@ func NewPostAdCampaignUpdatedPayloadDataDeliveryStatusFromString(s string) (Post
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusScheduled, nil
 	case "completed":
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusCompleted, nil
-	case "ad_groups_off":
-		return PostAdCampaignUpdatedPayloadDataDeliveryStatusAdGroupsOff, nil
 	case "active":
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusActive, nil
 	}
