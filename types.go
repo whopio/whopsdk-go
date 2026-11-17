@@ -1159,16 +1159,20 @@ func (a AccountCapabilitiesTransfer) Ptr() *AccountCapabilitiesTransfer {
 }
 
 var (
-	accountCardsFieldKind   = big.NewInt(1 << 0)
-	accountCardsFieldStatus = big.NewInt(1 << 1)
+	accountCardsFieldDeclineReason = big.NewInt(1 << 0)
+	accountCardsFieldKind          = big.NewInt(1 << 1)
+	accountCardsFieldStatus        = big.NewInt(1 << 2)
 )
 
 // accountCardsNullableFields maps the wire names of AccountCards's nullable fields (required or optional) to their field bits.
 var accountCardsNullableFields = map[string]*big.Int{
-	"kind": accountCardsFieldKind,
+	"decline_reason": accountCardsFieldDeclineReason,
+	"kind":           accountCardsFieldKind,
 }
 
 type AccountCards struct {
+	// Reason the card issuer declined the application. `compliance` covers sanctions, politically exposed person, and adverse media checks. `other` covers reasons that are not in this list. `null` when `status` is not `denied`, or when the issuer did not decline the application.
+	DeclineReason *AccountCardsDeclineReason `json:"decline_reason,omitempty" url:"decline_reason,omitempty"`
 	// Whether the card application verifies a business (`business`, KYB) or a person (`individual`, consumer identity). `null` when the application is not yet linked to a verification.
 	Kind *AccountCardsKind `json:"kind,omitempty" url:"kind,omitempty"`
 	// Where the card application stands. `approved` means cards can be issued. `needs_verification` means the applicant has not completed identity verification yet; `needs_information` means they did, but the documents were rejected for a fixable reason and must be resubmitted. `pending` and `manual_review` are in flight. `denied`, `locked`, and `canceled` are terminal.
@@ -1179,6 +1183,13 @@ type AccountCards struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AccountCards) GetDeclineReason() *AccountCardsDeclineReason {
+	if a == nil {
+		return nil
+	}
+	return a.DeclineReason
 }
 
 func (a *AccountCards) GetKind() *AccountCardsKind {
@@ -1209,6 +1220,13 @@ func (a *AccountCards) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	a.explicitFields = next
+}
+
+// SetDeclineReason sets the DeclineReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountCards) SetDeclineReason(declineReason *AccountCardsDeclineReason) {
+	a.DeclineReason = declineReason
+	a.require(accountCardsFieldDeclineReason)
 }
 
 // SetKind sets the Kind field and marks it as non-optional;
@@ -1272,6 +1290,44 @@ func (a *AccountCards) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
+}
+
+// Reason the card issuer declined the application. `compliance` covers sanctions, politically exposed person, and adverse media checks. `other` covers reasons that are not in this list. `null` when `status` is not `denied`, or when the issuer did not decline the application.
+type AccountCardsDeclineReason string
+
+const (
+	AccountCardsDeclineReasonCompromisedIdentity AccountCardsDeclineReason = "compromised_identity"
+	AccountCardsDeclineReasonDuplicate           AccountCardsDeclineReason = "duplicate"
+	AccountCardsDeclineReasonUnsupportedRegion   AccountCardsDeclineReason = "unsupported_region"
+	AccountCardsDeclineReasonCompliance          AccountCardsDeclineReason = "compliance"
+	AccountCardsDeclineReasonFraud               AccountCardsDeclineReason = "fraud"
+	AccountCardsDeclineReasonVerificationFailed  AccountCardsDeclineReason = "verification_failed"
+	AccountCardsDeclineReasonOther               AccountCardsDeclineReason = "other"
+)
+
+func NewAccountCardsDeclineReasonFromString(s string) (AccountCardsDeclineReason, error) {
+	switch s {
+	case "compromised_identity":
+		return AccountCardsDeclineReasonCompromisedIdentity, nil
+	case "duplicate":
+		return AccountCardsDeclineReasonDuplicate, nil
+	case "unsupported_region":
+		return AccountCardsDeclineReasonUnsupportedRegion, nil
+	case "compliance":
+		return AccountCardsDeclineReasonCompliance, nil
+	case "fraud":
+		return AccountCardsDeclineReasonFraud, nil
+	case "verification_failed":
+		return AccountCardsDeclineReasonVerificationFailed, nil
+	case "other":
+		return AccountCardsDeclineReasonOther, nil
+	}
+	var t AccountCardsDeclineReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountCardsDeclineReason) Ptr() *AccountCardsDeclineReason {
+	return &a
 }
 
 // Whether the card application verifies a business (`business`, KYB) or a person (`individual`, consumer identity). `null` when the application is not yet linked to a verification.

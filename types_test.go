@@ -1771,6 +1771,14 @@ func TestSettersMarkExplicitAccountCapabilities(t *testing.T) {
 }
 
 func TestSettersAccountCards(t *testing.T) {
+	t.Run("SetDeclineReason", func(t *testing.T) {
+		obj := &AccountCards{}
+		var fernTestValueDeclineReason *AccountCardsDeclineReason
+		obj.SetDeclineReason(fernTestValueDeclineReason)
+		assert.Equal(t, fernTestValueDeclineReason, obj.DeclineReason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetKind", func(t *testing.T) {
 		obj := &AccountCards{}
 		var fernTestValueKind *AccountCardsKind
@@ -1790,6 +1798,39 @@ func TestSettersAccountCards(t *testing.T) {
 }
 
 func TestGettersAccountCards(t *testing.T) {
+	t.Run("GetDeclineReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountCards{}
+		var expected *AccountCardsDeclineReason
+		obj.DeclineReason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDeclineReason(), "getter should return the property value")
+	})
+
+	t.Run("GetDeclineReason_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountCards{}
+		obj.DeclineReason = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDeclineReason(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDeclineReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountCards
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDeclineReason() // Should return zero value
+	})
+
 	t.Run("GetKind", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1849,6 +1890,37 @@ func TestGettersAccountCards(t *testing.T) {
 }
 
 func TestSettersMarkExplicitAccountCards(t *testing.T) {
+	t.Run("SetDeclineReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountCards{}
+		var fernTestValueDeclineReason *AccountCardsDeclineReason
+
+		// Act
+		obj.SetDeclineReason(fernTestValueDeclineReason)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetKind_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -172789,6 +172861,7 @@ func TestRequiredNullableRoundTripAccountBalanceToken(t *testing.T) {
 
 func TestRequiredNullableRoundTripAccountCards(t *testing.T) {
 	requiredNullableKeys := []string{
+		"decline_reason",
 		"kind",
 	}
 	marshalToMap := func(t *testing.T, obj *AccountCards) map[string]json.RawMessage {
@@ -172802,7 +172875,7 @@ func TestRequiredNullableRoundTripAccountCards(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj AccountCards
-		require.NoError(t, json.Unmarshal([]byte(`{"kind":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"decline_reason":null,"kind":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -190411,6 +190484,70 @@ func TestEnumAccountCapabilitiesTransfer(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewAccountCapabilitiesTransferFromString("active")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumAccountCardsDeclineReason(t *testing.T) {
+	t.Run("NewFromString_compromised_identity", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountCardsDeclineReasonFromString("compromised_identity")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountCardsDeclineReason("compromised_identity"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_duplicate", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountCardsDeclineReasonFromString("duplicate")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountCardsDeclineReason("duplicate"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_unsupported_region", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountCardsDeclineReasonFromString("unsupported_region")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountCardsDeclineReason("unsupported_region"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_compliance", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountCardsDeclineReasonFromString("compliance")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountCardsDeclineReason("compliance"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_fraud", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountCardsDeclineReasonFromString("fraud")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountCardsDeclineReason("fraud"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_verification_failed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountCardsDeclineReasonFromString("verification_failed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountCardsDeclineReason("verification_failed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_other", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountCardsDeclineReasonFromString("other")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountCardsDeclineReason("other"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewAccountCardsDeclineReasonFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewAccountCardsDeclineReasonFromString("compromised_identity")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
