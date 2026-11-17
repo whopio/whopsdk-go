@@ -1139,7 +1139,7 @@ type RetrieveFinancialReportsResponseRowsItem struct {
 	Amount        float64 `json:"amount" url:"amount"`
 	// The family the row's `line_category` rolls up into. Balance summary rows are always `balance`.
 	Grouping RetrieveFinancialReportsResponseRowsItemGrouping `json:"grouping" url:"grouping"`
-	// The ledger line category the row aggregates. Balance summary rows carry the balance bucket instead.
+	// The ledger line category the row aggregates. Balance summary rows carry the balance bucket instead. A `savings_revaluation` row is the change in the value of savings shares above one dollar each.
 	LineCategory RetrieveFinancialReportsResponseRowsItemLineCategory `json:"line_category" url:"line_category"`
 	LineCount    *int                                                 `json:"line_count,omitempty" url:"line_count,omitempty"`
 	// Start of the time bucket this row covers, truncated to `group_by`.
@@ -1434,7 +1434,7 @@ func (r RetrieveFinancialReportsResponseRowsItemGrouping) Ptr() *RetrieveFinanci
 	return &r
 }
 
-// The ledger line category the row aggregates. Balance summary rows carry the balance bucket instead.
+// The ledger line category the row aggregates. Balance summary rows carry the balance bucket instead. A `savings_revaluation` row is the change in the value of savings shares above one dollar each.
 type RetrieveFinancialReportsResponseRowsItemLineCategory string
 
 const (
@@ -1736,6 +1736,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategorySalesTaxRemittance                        RetrieveFinancialReportsResponseRowsItemLineCategory = "sales_tax_remittance"
 	RetrieveFinancialReportsResponseRowsItemLineCategorySalesTaxRemittanceReversal                RetrieveFinancialReportsResponseRowsItemLineCategory = "sales_tax_remittance_reversal"
 	RetrieveFinancialReportsResponseRowsItemLineCategorySalesTaxRemitted                          RetrieveFinancialReportsResponseRowsItemLineCategory = "sales_tax_remitted"
+	RetrieveFinancialReportsResponseRowsItemLineCategorySavingsRevaluation                        RetrieveFinancialReportsResponseRowsItemLineCategory = "savings_revaluation"
 	RetrieveFinancialReportsResponseRowsItemLineCategorySettlementRoundingVariance                RetrieveFinancialReportsResponseRowsItemLineCategory = "settlement_rounding_variance"
 	RetrieveFinancialReportsResponseRowsItemLineCategorySettlementShortfallLoss                   RetrieveFinancialReportsResponseRowsItemLineCategory = "settlement_shortfall_loss"
 	RetrieveFinancialReportsResponseRowsItemLineCategorySoftwareRentalRevshare                    RetrieveFinancialReportsResponseRowsItemLineCategory = "software_rental_revshare"
@@ -2374,6 +2375,8 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategorySalesTaxRemittanceReversal, nil
 	case "sales_tax_remitted":
 		return RetrieveFinancialReportsResponseRowsItemLineCategorySalesTaxRemitted, nil
+	case "savings_revaluation":
+		return RetrieveFinancialReportsResponseRowsItemLineCategorySavingsRevaluation, nil
 	case "settlement_rounding_variance":
 		return RetrieveFinancialReportsResponseRowsItemLineCategorySettlementRoundingVariance, nil
 	case "settlement_shortfall_loss":

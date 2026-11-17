@@ -198114,6 +198114,13 @@ func TestEnumLedgerActivityLineType(t *testing.T) {
 		assert.Equal(t, LedgerActivityLineType("onchain_swap_target"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_savings_revaluation", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("savings_revaluation")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("savings_revaluation"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_onchain_swap_offset", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewLedgerActivityLineTypeFromString("onchain_swap_offset")
