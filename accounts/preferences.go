@@ -59,13 +59,14 @@ var (
 	retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 17)
 	retrievePreferencesResponseFieldFailedPaymentEmails                     = big.NewInt(1 << 18)
 	retrievePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 19)
-	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 20)
-	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 21)
-	retrievePreferencesResponseFieldRenewalReminderEmails                   = big.NewInt(1 << 22)
-	retrievePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 23)
-	retrievePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 24)
-	retrievePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 25)
-	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 26)
+	retrievePreferencesResponseFieldMerchantOfRecord                        = big.NewInt(1 << 20)
+	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 21)
+	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 22)
+	retrievePreferencesResponseFieldRenewalReminderEmails                   = big.NewInt(1 << 23)
+	retrievePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 24)
+	retrievePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 25)
+	retrievePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 26)
+	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 27)
 )
 
 // retrievePreferencesResponseNullableFields maps the wire names of RetrievePreferencesResponse's nullable fields (required or optional) to their field bits.
@@ -77,6 +78,7 @@ var retrievePreferencesResponseNullableFields = map[string]*big.Int{
 	"economic_intelligence_fee_percentage":        retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage,
 	"economic_intelligence_first_renewal_at":      retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt,
 	"economic_intelligence_previous_period":       retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod,
+	"merchant_of_record":                          retrievePreferencesResponseFieldMerchantOfRecord,
 	"preferred_settlement_currency":               retrievePreferencesResponseFieldPreferredSettlementCurrency,
 	"preferred_settlement_currency_changeable_at": retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt,
 	"subaccount_notifications":                    retrievePreferencesResponseFieldSubaccountNotifications,
@@ -124,6 +126,8 @@ type RetrievePreferencesResponse struct {
 	FailedPaymentEmails bool `json:"failed_payment_emails" url:"failed_payment_emails"`
 	// The account's own cancel reasons, in the order members see them when they cancel. Each is filed under a standard category, saved as the membership's `cancel_option`, so reports keep grouping cancellations. Empty when the account uses Whop's default reasons.
 	FeedbackOptions []*RetrievePreferencesResponseFeedbackOptionsItem `json:"feedback_options" url:"feedback_options"`
+	// The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account's business category cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `account` means the account is the merchant of record.
+	MerchantOfRecord *RetrievePreferencesResponseMerchantOfRecord `json:"merchant_of_record,omitempty" url:"merchant_of_record,omitempty"`
 	// Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
 	PreferredSettlementCurrency *RetrievePreferencesResponsePreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"preferred_settlement_currency,omitempty"`
 	// When `preferred_settlement_currency` may next be changed or turned off, as an ISO 8601 timestamp. It can change at most once a day. `null` when it may change now.
@@ -284,6 +288,13 @@ func (r *RetrievePreferencesResponse) GetFeedbackOptions() []*RetrievePreference
 		return nil
 	}
 	return r.FeedbackOptions
+}
+
+func (r *RetrievePreferencesResponse) GetMerchantOfRecord() *RetrievePreferencesResponseMerchantOfRecord {
+	if r == nil {
+		return nil
+	}
+	return r.MerchantOfRecord
 }
 
 func (r *RetrievePreferencesResponse) GetPreferredSettlementCurrency() *RetrievePreferencesResponsePreferredSettlementCurrency {
@@ -489,6 +500,13 @@ func (r *RetrievePreferencesResponse) SetFailedPaymentEmails(failedPaymentEmails
 func (r *RetrievePreferencesResponse) SetFeedbackOptions(feedbackOptions []*RetrievePreferencesResponseFeedbackOptionsItem) {
 	r.FeedbackOptions = feedbackOptions
 	r.require(retrievePreferencesResponseFieldFeedbackOptions)
+}
+
+// SetMerchantOfRecord sets the MerchantOfRecord field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetMerchantOfRecord(merchantOfRecord *RetrievePreferencesResponseMerchantOfRecord) {
+	r.MerchantOfRecord = merchantOfRecord
+	r.require(retrievePreferencesResponseFieldMerchantOfRecord)
 }
 
 // SetPreferredSettlementCurrency sets the PreferredSettlementCurrency field and marks it as non-optional;
@@ -2028,6 +2046,32 @@ func (r RetrievePreferencesResponseFeedbackOptionsItemCategory) Ptr() *RetrieveP
 	return &r
 }
 
+// The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account's business category cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `account` means the account is the merchant of record.
+type RetrievePreferencesResponseMerchantOfRecord string
+
+const (
+	RetrievePreferencesResponseMerchantOfRecordWhop    RetrievePreferencesResponseMerchantOfRecord = "whop"
+	RetrievePreferencesResponseMerchantOfRecordPending RetrievePreferencesResponseMerchantOfRecord = "pending"
+	RetrievePreferencesResponseMerchantOfRecordAccount RetrievePreferencesResponseMerchantOfRecord = "account"
+)
+
+func NewRetrievePreferencesResponseMerchantOfRecordFromString(s string) (RetrievePreferencesResponseMerchantOfRecord, error) {
+	switch s {
+	case "whop":
+		return RetrievePreferencesResponseMerchantOfRecordWhop, nil
+	case "pending":
+		return RetrievePreferencesResponseMerchantOfRecordPending, nil
+	case "account":
+		return RetrievePreferencesResponseMerchantOfRecordAccount, nil
+	}
+	var t RetrievePreferencesResponseMerchantOfRecord
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePreferencesResponseMerchantOfRecord) Ptr() *RetrievePreferencesResponseMerchantOfRecord {
+	return &r
+}
+
 // Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
 type RetrievePreferencesResponsePreferredSettlementCurrency string
 
@@ -2940,6 +2984,26 @@ func (u UpdatePreferencesRequestFeedbackOptionsItemCategory) Ptr() *UpdatePrefer
 	return &u
 }
 
+// Set it to `account` to make the account the merchant of record. Only some business categories can switch. The business must be verified. The switch cannot be undone. The response shows `pending` until approval. Checkout takes no payments until then. After the switch, the account accepts only card, Apple Pay, Google Pay and crypto payments. PayPal, buy now pay later and local payment methods stop. Requires the `payout:account:update` scope on your API key.
+type UpdatePreferencesRequestMerchantOfRecord string
+
+const (
+	UpdatePreferencesRequestMerchantOfRecordAccount UpdatePreferencesRequestMerchantOfRecord = "account"
+)
+
+func NewUpdatePreferencesRequestMerchantOfRecordFromString(s string) (UpdatePreferencesRequestMerchantOfRecord, error) {
+	switch s {
+	case "account":
+		return UpdatePreferencesRequestMerchantOfRecordAccount, nil
+	}
+	var t UpdatePreferencesRequestMerchantOfRecord
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesRequestMerchantOfRecord) Ptr() *UpdatePreferencesRequestMerchantOfRecord {
+	return &u
+}
+
 // Settle every new sale into this currency, regardless of the plan's currency or what the buyer paid in; sales converted this way carry an additional 0.5% FX fee. Pass `null` to go back to settling each sale in its plan's currency. Changing it never converts money already in your balances, and it can change at most once a day (see `preferred_settlement_currency_changeable_at`). Requires the `payout:account:update` scope on your API key.
 type UpdatePreferencesRequestPreferredSettlementCurrency string
 
@@ -3016,13 +3080,14 @@ var (
 	updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 17)
 	updatePreferencesResponseFieldFailedPaymentEmails                     = big.NewInt(1 << 18)
 	updatePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 19)
-	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 20)
-	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 21)
-	updatePreferencesResponseFieldRenewalReminderEmails                   = big.NewInt(1 << 22)
-	updatePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 23)
-	updatePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 24)
-	updatePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 25)
-	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 26)
+	updatePreferencesResponseFieldMerchantOfRecord                        = big.NewInt(1 << 20)
+	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 21)
+	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 22)
+	updatePreferencesResponseFieldRenewalReminderEmails                   = big.NewInt(1 << 23)
+	updatePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 24)
+	updatePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 25)
+	updatePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 26)
+	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 27)
 )
 
 // updatePreferencesResponseNullableFields maps the wire names of UpdatePreferencesResponse's nullable fields (required or optional) to their field bits.
@@ -3034,6 +3099,7 @@ var updatePreferencesResponseNullableFields = map[string]*big.Int{
 	"economic_intelligence_fee_percentage":        updatePreferencesResponseFieldEconomicIntelligenceFeePercentage,
 	"economic_intelligence_first_renewal_at":      updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt,
 	"economic_intelligence_previous_period":       updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod,
+	"merchant_of_record":                          updatePreferencesResponseFieldMerchantOfRecord,
 	"preferred_settlement_currency":               updatePreferencesResponseFieldPreferredSettlementCurrency,
 	"preferred_settlement_currency_changeable_at": updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt,
 	"subaccount_notifications":                    updatePreferencesResponseFieldSubaccountNotifications,
@@ -3081,6 +3147,8 @@ type UpdatePreferencesResponse struct {
 	FailedPaymentEmails bool `json:"failed_payment_emails" url:"failed_payment_emails"`
 	// The account's own cancel reasons, in the order members see them when they cancel. Each is filed under a standard category, saved as the membership's `cancel_option`, so reports keep grouping cancellations. Empty when the account uses Whop's default reasons.
 	FeedbackOptions []*UpdatePreferencesResponseFeedbackOptionsItem `json:"feedback_options" url:"feedback_options"`
+	// The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account's business category cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `account` means the account is the merchant of record.
+	MerchantOfRecord *UpdatePreferencesResponseMerchantOfRecord `json:"merchant_of_record,omitempty" url:"merchant_of_record,omitempty"`
 	// Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
 	PreferredSettlementCurrency *UpdatePreferencesResponsePreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"preferred_settlement_currency,omitempty"`
 	// When `preferred_settlement_currency` may next be changed or turned off, as an ISO 8601 timestamp. It can change at most once a day. `null` when it may change now.
@@ -3241,6 +3309,13 @@ func (u *UpdatePreferencesResponse) GetFeedbackOptions() []*UpdatePreferencesRes
 		return nil
 	}
 	return u.FeedbackOptions
+}
+
+func (u *UpdatePreferencesResponse) GetMerchantOfRecord() *UpdatePreferencesResponseMerchantOfRecord {
+	if u == nil {
+		return nil
+	}
+	return u.MerchantOfRecord
 }
 
 func (u *UpdatePreferencesResponse) GetPreferredSettlementCurrency() *UpdatePreferencesResponsePreferredSettlementCurrency {
@@ -3446,6 +3521,13 @@ func (u *UpdatePreferencesResponse) SetFailedPaymentEmails(failedPaymentEmails b
 func (u *UpdatePreferencesResponse) SetFeedbackOptions(feedbackOptions []*UpdatePreferencesResponseFeedbackOptionsItem) {
 	u.FeedbackOptions = feedbackOptions
 	u.require(updatePreferencesResponseFieldFeedbackOptions)
+}
+
+// SetMerchantOfRecord sets the MerchantOfRecord field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetMerchantOfRecord(merchantOfRecord *UpdatePreferencesResponseMerchantOfRecord) {
+	u.MerchantOfRecord = merchantOfRecord
+	u.require(updatePreferencesResponseFieldMerchantOfRecord)
 }
 
 // SetPreferredSettlementCurrency sets the PreferredSettlementCurrency field and marks it as non-optional;
@@ -4985,6 +5067,32 @@ func (u UpdatePreferencesResponseFeedbackOptionsItemCategory) Ptr() *UpdatePrefe
 	return &u
 }
 
+// The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account's business category cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `account` means the account is the merchant of record.
+type UpdatePreferencesResponseMerchantOfRecord string
+
+const (
+	UpdatePreferencesResponseMerchantOfRecordWhop    UpdatePreferencesResponseMerchantOfRecord = "whop"
+	UpdatePreferencesResponseMerchantOfRecordPending UpdatePreferencesResponseMerchantOfRecord = "pending"
+	UpdatePreferencesResponseMerchantOfRecordAccount UpdatePreferencesResponseMerchantOfRecord = "account"
+)
+
+func NewUpdatePreferencesResponseMerchantOfRecordFromString(s string) (UpdatePreferencesResponseMerchantOfRecord, error) {
+	switch s {
+	case "whop":
+		return UpdatePreferencesResponseMerchantOfRecordWhop, nil
+	case "pending":
+		return UpdatePreferencesResponseMerchantOfRecordPending, nil
+	case "account":
+		return UpdatePreferencesResponseMerchantOfRecordAccount, nil
+	}
+	var t UpdatePreferencesResponseMerchantOfRecord
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesResponseMerchantOfRecord) Ptr() *UpdatePreferencesResponseMerchantOfRecord {
+	return &u
+}
+
 // Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
 type UpdatePreferencesResponsePreferredSettlementCurrency string
 
@@ -5056,12 +5164,13 @@ var (
 	updatePreferencesRequestFieldEconomicIntelligenceDurationKey  = big.NewInt(1 << 12)
 	updatePreferencesRequestFieldFailedPaymentEmails              = big.NewInt(1 << 13)
 	updatePreferencesRequestFieldFeedbackOptions                  = big.NewInt(1 << 14)
-	updatePreferencesRequestFieldPreferredSettlementCurrency      = big.NewInt(1 << 15)
-	updatePreferencesRequestFieldRenewalReminderEmails            = big.NewInt(1 << 16)
-	updatePreferencesRequestFieldReviewRequestEmails              = big.NewInt(1 << 17)
-	updatePreferencesRequestFieldSubaccountNotifications          = big.NewInt(1 << 18)
-	updatePreferencesRequestFieldSubaccountTeamViewOnly           = big.NewInt(1 << 19)
-	updatePreferencesRequestFieldSubscriptionFailureBehavior      = big.NewInt(1 << 20)
+	updatePreferencesRequestFieldMerchantOfRecord                 = big.NewInt(1 << 15)
+	updatePreferencesRequestFieldPreferredSettlementCurrency      = big.NewInt(1 << 16)
+	updatePreferencesRequestFieldRenewalReminderEmails            = big.NewInt(1 << 17)
+	updatePreferencesRequestFieldReviewRequestEmails              = big.NewInt(1 << 18)
+	updatePreferencesRequestFieldSubaccountNotifications          = big.NewInt(1 << 19)
+	updatePreferencesRequestFieldSubaccountTeamViewOnly           = big.NewInt(1 << 20)
+	updatePreferencesRequestFieldSubscriptionFailureBehavior      = big.NewInt(1 << 21)
 )
 
 type UpdatePreferencesRequest struct {
@@ -5095,6 +5204,8 @@ type UpdatePreferencesRequest struct {
 	FailedPaymentEmails *bool `json:"failed_payment_emails,omitempty" url:"-"`
 	// Replaces the account's own cancel reasons, shown to members in this order when they cancel. Pass an option's `id` to keep it, for example when renaming it; options without an `id` are added, and options left out are removed. Pass an empty array to go back to Whop's default reasons. Members who already picked an option keep the label they saw. Requires the `company:manage_checkout` scope on your API key.
 	FeedbackOptions []*UpdatePreferencesRequestFeedbackOptionsItem `json:"feedback_options,omitempty" url:"-"`
+	// Set it to `account` to make the account the merchant of record. Only some business categories can switch. The business must be verified. The switch cannot be undone. The response shows `pending` until approval. Checkout takes no payments until then. After the switch, the account accepts only card, Apple Pay, Google Pay and crypto payments. PayPal, buy now pay later and local payment methods stop. Requires the `payout:account:update` scope on your API key.
+	MerchantOfRecord *UpdatePreferencesRequestMerchantOfRecord `json:"merchant_of_record,omitempty" url:"-"`
 	// Settle every new sale into this currency, regardless of the plan's currency or what the buyer paid in; sales converted this way carry an additional 0.5% FX fee. Pass `null` to go back to settling each sale in its plan's currency. Changing it never converts money already in your balances, and it can change at most once a day (see `preferred_settlement_currency_changeable_at`). Requires the `payout:account:update` scope on your API key.
 	PreferredSettlementCurrency *UpdatePreferencesRequestPreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"-"`
 	// Whether Whop emails members the day before their membership renews or their free trial converts. Set it to `false` to stop that reminder. Members still get the reminders card networks require. Requires the `company:update` scope on your API key.
@@ -5224,6 +5335,13 @@ func (u *UpdatePreferencesRequest) SetFailedPaymentEmails(failedPaymentEmails *b
 func (u *UpdatePreferencesRequest) SetFeedbackOptions(feedbackOptions []*UpdatePreferencesRequestFeedbackOptionsItem) {
 	u.FeedbackOptions = feedbackOptions
 	u.require(updatePreferencesRequestFieldFeedbackOptions)
+}
+
+// SetMerchantOfRecord sets the MerchantOfRecord field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetMerchantOfRecord(merchantOfRecord *UpdatePreferencesRequestMerchantOfRecord) {
+	u.MerchantOfRecord = merchantOfRecord
+	u.require(updatePreferencesRequestFieldMerchantOfRecord)
 }
 
 // SetPreferredSettlementCurrency sets the PreferredSettlementCurrency field and marks it as non-optional;

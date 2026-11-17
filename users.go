@@ -441,7 +441,7 @@ type User struct {
 	FollowersCount int `json:"followers_count" url:"followers_count"`
 	// User ID, prefixed `user_`.
 	ID string `json:"id" url:"id"`
-	// The user's Whop Level, counted across every account they own. `applied_level` is public. The points and spend fields are populated only when you retrieve yourself with the reserved id `me` and have balance-read scope. `null` on lists, and when none of their accounts are in Whop Levels.
+	// The user's Whop Level, counted across every account they own. `current` is public. The points and spend fields are populated only when you retrieve yourself with the reserved id `me` and have balance-read scope. `null` on lists, and when none of their accounts are in Whop Levels.
 	Level *UserLevel `json:"level,omitempty" url:"level,omitempty"`
 	// The user's display name
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
@@ -2205,7 +2205,7 @@ func (u *UserEarnings) String() string {
 }
 
 var (
-	userLevelFieldAppliedLevel           = big.NewInt(1 << 0)
+	userLevelFieldCurrent                = big.NewInt(1 << 0)
 	userLevelFieldLevels                 = big.NewInt(1 << 1)
 	userLevelFieldMonthlyAdsSpend        = big.NewInt(1 << 2)
 	userLevelFieldMonthlyCardSpend       = big.NewInt(1 << 3)
@@ -2232,8 +2232,8 @@ var userLevelNullableFields = map[string]*big.Int{
 
 type UserLevel struct {
 	// The level that applies: the highest the user reached this month or in the 5 months before, from `0` up to `10`. Public.
-	AppliedLevel int                            `json:"applied_level" url:"applied_level"`
-	Levels       []*AccountProcessingOfferLevel `json:"levels,omitempty" url:"levels,omitempty"`
+	Current int                            `json:"current" url:"current"`
+	Levels  []*AccountProcessingOfferLevel `json:"levels,omitempty" url:"levels,omitempty"`
 	// Whop Ads charges paid this calendar month across every account the user owns, net of refunds, in USD, so it can be negative. An account whose month nets to zero or below is left out. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
 	MonthlyAdsSpend *Money `json:"monthly_ads_spend,omitempty" url:"monthly_ads_spend,omitempty"`
 	// Captured Whop Card spend this calendar month across every account the user owns, net of refunds, in USD, so it can be negative. An account whose month nets to zero or below is left out. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
@@ -2258,11 +2258,11 @@ type UserLevel struct {
 	rawJSON         json.RawMessage
 }
 
-func (u *UserLevel) GetAppliedLevel() int {
+func (u *UserLevel) GetCurrent() int {
 	if u == nil {
 		return 0
 	}
-	return u.AppliedLevel
+	return u.Current
 }
 
 func (u *UserLevel) GetLevels() []*AccountProcessingOfferLevel {
@@ -2344,11 +2344,11 @@ func (u *UserLevel) require(field *big.Int) {
 	u.explicitFields = next
 }
 
-// SetAppliedLevel sets the AppliedLevel field and marks it as non-optional;
+// SetCurrent sets the Current field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserLevel) SetAppliedLevel(appliedLevel int) {
-	u.AppliedLevel = appliedLevel
-	u.require(userLevelFieldAppliedLevel)
+func (u *UserLevel) SetCurrent(current int) {
+	u.Current = current
+	u.require(userLevelFieldCurrent)
 }
 
 // SetLevels sets the Levels field and marks it as non-optional;

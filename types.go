@@ -4361,13 +4361,14 @@ var (
 	accountPreferencesFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 17)
 	accountPreferencesFieldFailedPaymentEmails                     = big.NewInt(1 << 18)
 	accountPreferencesFieldFeedbackOptions                         = big.NewInt(1 << 19)
-	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 20)
-	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 21)
-	accountPreferencesFieldRenewalReminderEmails                   = big.NewInt(1 << 22)
-	accountPreferencesFieldReviewRequestEmails                     = big.NewInt(1 << 23)
-	accountPreferencesFieldSubaccountNotifications                 = big.NewInt(1 << 24)
-	accountPreferencesFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 25)
-	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 26)
+	accountPreferencesFieldMerchantOfRecord                        = big.NewInt(1 << 20)
+	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 21)
+	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 22)
+	accountPreferencesFieldRenewalReminderEmails                   = big.NewInt(1 << 23)
+	accountPreferencesFieldReviewRequestEmails                     = big.NewInt(1 << 24)
+	accountPreferencesFieldSubaccountNotifications                 = big.NewInt(1 << 25)
+	accountPreferencesFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 26)
+	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 27)
 )
 
 // accountPreferencesNullableFields maps the wire names of AccountPreferences's nullable fields (required or optional) to their field bits.
@@ -4379,6 +4380,7 @@ var accountPreferencesNullableFields = map[string]*big.Int{
 	"economic_intelligence_fee_percentage":        accountPreferencesFieldEconomicIntelligenceFeePercentage,
 	"economic_intelligence_first_renewal_at":      accountPreferencesFieldEconomicIntelligenceFirstRenewalAt,
 	"economic_intelligence_previous_period":       accountPreferencesFieldEconomicIntelligencePreviousPeriod,
+	"merchant_of_record":                          accountPreferencesFieldMerchantOfRecord,
 	"preferred_settlement_currency":               accountPreferencesFieldPreferredSettlementCurrency,
 	"preferred_settlement_currency_changeable_at": accountPreferencesFieldPreferredSettlementCurrencyChangeableAt,
 	"subaccount_notifications":                    accountPreferencesFieldSubaccountNotifications,
@@ -4424,6 +4426,8 @@ type AccountPreferences struct {
 	// Whether Whop emails members when a renewal payment fails or needs them to verify it. `true` by default. Set it to `false` to stop these emails while keeping the account's other customer emails. Subscriptions billed by invoice still get the invoice and its past-due reminders, since that is how the member pays. These emails also stop while the account's `send_customer_emails` is `false`.
 	FailedPaymentEmails bool              `json:"failed_payment_emails" url:"failed_payment_emails"`
 	FeedbackOptions     []*FeedbackOption `json:"feedback_options" url:"feedback_options"`
+	// The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account's business category cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `account` means the account is the merchant of record.
+	MerchantOfRecord *AccountPreferencesMerchantOfRecord `json:"merchant_of_record,omitempty" url:"merchant_of_record,omitempty"`
 	// Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
 	PreferredSettlementCurrency *AccountPreferencesPreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"preferred_settlement_currency,omitempty"`
 	// When `preferred_settlement_currency` may next be changed or turned off, as an ISO 8601 timestamp. It can change at most once a day. `null` when it may change now.
@@ -4584,6 +4588,13 @@ func (a *AccountPreferences) GetFeedbackOptions() []*FeedbackOption {
 		return nil
 	}
 	return a.FeedbackOptions
+}
+
+func (a *AccountPreferences) GetMerchantOfRecord() *AccountPreferencesMerchantOfRecord {
+	if a == nil {
+		return nil
+	}
+	return a.MerchantOfRecord
 }
 
 func (a *AccountPreferences) GetPreferredSettlementCurrency() *AccountPreferencesPreferredSettlementCurrency {
@@ -4791,6 +4802,13 @@ func (a *AccountPreferences) SetFeedbackOptions(feedbackOptions []*FeedbackOptio
 	a.require(accountPreferencesFieldFeedbackOptions)
 }
 
+// SetMerchantOfRecord sets the MerchantOfRecord field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetMerchantOfRecord(merchantOfRecord *AccountPreferencesMerchantOfRecord) {
+	a.MerchantOfRecord = merchantOfRecord
+	a.require(accountPreferencesFieldMerchantOfRecord)
+}
+
 // SetPreferredSettlementCurrency sets the PreferredSettlementCurrency field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AccountPreferences) SetPreferredSettlementCurrency(preferredSettlementCurrency *AccountPreferencesPreferredSettlementCurrency) {
@@ -4887,6 +4905,32 @@ func (a *AccountPreferences) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
+}
+
+// The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account's business category cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `account` means the account is the merchant of record.
+type AccountPreferencesMerchantOfRecord string
+
+const (
+	AccountPreferencesMerchantOfRecordWhop    AccountPreferencesMerchantOfRecord = "whop"
+	AccountPreferencesMerchantOfRecordPending AccountPreferencesMerchantOfRecord = "pending"
+	AccountPreferencesMerchantOfRecordAccount AccountPreferencesMerchantOfRecord = "account"
+)
+
+func NewAccountPreferencesMerchantOfRecordFromString(s string) (AccountPreferencesMerchantOfRecord, error) {
+	switch s {
+	case "whop":
+		return AccountPreferencesMerchantOfRecordWhop, nil
+	case "pending":
+		return AccountPreferencesMerchantOfRecordPending, nil
+	case "account":
+		return AccountPreferencesMerchantOfRecordAccount, nil
+	}
+	var t AccountPreferencesMerchantOfRecord
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountPreferencesMerchantOfRecord) Ptr() *AccountPreferencesMerchantOfRecord {
+	return &a
 }
 
 // Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
@@ -43216,7 +43260,7 @@ func (o *OauthGrant) String() string {
 }
 
 var (
-	ownerLevelFieldAppliedLevel           = big.NewInt(1 << 0)
+	ownerLevelFieldCurrent                = big.NewInt(1 << 0)
 	ownerLevelFieldLevels                 = big.NewInt(1 << 1)
 	ownerLevelFieldMonthlyAdsSpend        = big.NewInt(1 << 2)
 	ownerLevelFieldMonthlyCardSpend       = big.NewInt(1 << 3)
@@ -43235,8 +43279,8 @@ var ownerLevelNullableFields = map[string]*big.Int{
 
 type OwnerLevel struct {
 	// The level that applies: the highest the owner reached this month or in the 5 months before, from `0` up to `10`.
-	AppliedLevel int                            `json:"applied_level" url:"applied_level"`
-	Levels       []*AccountProcessingOfferLevel `json:"levels" url:"levels"`
+	Current int                            `json:"current" url:"current"`
+	Levels  []*AccountProcessingOfferLevel `json:"levels" url:"levels"`
 	// Whop Ads charges paid this calendar month across every account the owner owns, net of refunds, in USD, so it can be negative. An account whose month nets to zero or below is left out.
 	MonthlyAdsSpend *Money `json:"monthly_ads_spend" url:"monthly_ads_spend"`
 	// Captured Whop Card spend this calendar month across every account the owner owns, net of refunds, in USD, so it can be negative. An account whose month nets to zero or below is left out.
@@ -43261,11 +43305,11 @@ type OwnerLevel struct {
 	rawJSON         json.RawMessage
 }
 
-func (o *OwnerLevel) GetAppliedLevel() int {
+func (o *OwnerLevel) GetCurrent() int {
 	if o == nil {
 		return 0
 	}
-	return o.AppliedLevel
+	return o.Current
 }
 
 func (o *OwnerLevel) GetLevels() []*AccountProcessingOfferLevel {
@@ -43347,11 +43391,11 @@ func (o *OwnerLevel) require(field *big.Int) {
 	o.explicitFields = next
 }
 
-// SetAppliedLevel sets the AppliedLevel field and marks it as non-optional;
+// SetCurrent sets the Current field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetAppliedLevel(appliedLevel int) {
-	o.AppliedLevel = appliedLevel
-	o.require(ownerLevelFieldAppliedLevel)
+func (o *OwnerLevel) SetCurrent(current int) {
+	o.Current = current
+	o.require(ownerLevelFieldCurrent)
 }
 
 // SetLevels sets the Levels field and marks it as non-optional;

@@ -216,6 +216,14 @@ func TestSettersRetrievePreferencesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMerchantOfRecord", func(t *testing.T) {
+		obj := &RetrievePreferencesResponse{}
+		var fernTestValueMerchantOfRecord *RetrievePreferencesResponseMerchantOfRecord
+		obj.SetMerchantOfRecord(fernTestValueMerchantOfRecord)
+		assert.Equal(t, fernTestValueMerchantOfRecord, obj.MerchantOfRecord)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPreferredSettlementCurrency", func(t *testing.T) {
 		obj := &RetrievePreferencesResponse{}
 		var fernTestValuePreferredSettlementCurrency *RetrievePreferencesResponsePreferredSettlementCurrency
@@ -843,6 +851,39 @@ func TestGettersRetrievePreferencesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetFeedbackOptions() // Should return zero value
+	})
+
+	t.Run("GetMerchantOfRecord", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		var expected *RetrievePreferencesResponseMerchantOfRecord
+		obj.MerchantOfRecord = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMerchantOfRecord(), "getter should return the property value")
+	})
+
+	t.Run("GetMerchantOfRecord_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		obj.MerchantOfRecord = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMerchantOfRecord(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMerchantOfRecord_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrievePreferencesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMerchantOfRecord() // Should return zero value
 	})
 
 	t.Run("GetPreferredSettlementCurrency", func(t *testing.T) {
@@ -1646,6 +1687,37 @@ func TestSettersMarkExplicitRetrievePreferencesResponse(t *testing.T) {
 
 		// Act
 		obj.SetFeedbackOptions(fernTestValueFeedbackOptions)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMerchantOfRecord_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		var fernTestValueMerchantOfRecord *RetrievePreferencesResponseMerchantOfRecord
+
+		// Act
+		obj.SetMerchantOfRecord(fernTestValueMerchantOfRecord)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5781,6 +5853,14 @@ func TestSettersUpdatePreferencesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMerchantOfRecord", func(t *testing.T) {
+		obj := &UpdatePreferencesResponse{}
+		var fernTestValueMerchantOfRecord *UpdatePreferencesResponseMerchantOfRecord
+		obj.SetMerchantOfRecord(fernTestValueMerchantOfRecord)
+		assert.Equal(t, fernTestValueMerchantOfRecord, obj.MerchantOfRecord)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPreferredSettlementCurrency", func(t *testing.T) {
 		obj := &UpdatePreferencesResponse{}
 		var fernTestValuePreferredSettlementCurrency *UpdatePreferencesResponsePreferredSettlementCurrency
@@ -6408,6 +6488,39 @@ func TestGettersUpdatePreferencesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetFeedbackOptions() // Should return zero value
+	})
+
+	t.Run("GetMerchantOfRecord", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		var expected *UpdatePreferencesResponseMerchantOfRecord
+		obj.MerchantOfRecord = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMerchantOfRecord(), "getter should return the property value")
+	})
+
+	t.Run("GetMerchantOfRecord_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		obj.MerchantOfRecord = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMerchantOfRecord(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMerchantOfRecord_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdatePreferencesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMerchantOfRecord() // Should return zero value
 	})
 
 	t.Run("GetPreferredSettlementCurrency", func(t *testing.T) {
@@ -7211,6 +7324,37 @@ func TestSettersMarkExplicitUpdatePreferencesResponse(t *testing.T) {
 
 		// Act
 		obj.SetFeedbackOptions(fernTestValueFeedbackOptions)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMerchantOfRecord_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		var fernTestValueMerchantOfRecord *UpdatePreferencesResponseMerchantOfRecord
+
+		// Act
+		obj.SetMerchantOfRecord(fernTestValueMerchantOfRecord)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -10068,6 +10212,14 @@ func TestSettersUpdatePreferencesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMerchantOfRecord", func(t *testing.T) {
+		obj := &UpdatePreferencesRequest{}
+		var fernTestValueMerchantOfRecord *UpdatePreferencesRequestMerchantOfRecord
+		obj.SetMerchantOfRecord(fernTestValueMerchantOfRecord)
+		assert.Equal(t, fernTestValueMerchantOfRecord, obj.MerchantOfRecord)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPreferredSettlementCurrency", func(t *testing.T) {
 		obj := &UpdatePreferencesRequest{}
 		var fernTestValuePreferredSettlementCurrency *UpdatePreferencesRequestPreferredSettlementCurrency
@@ -10561,6 +10713,37 @@ func TestSettersMarkExplicitUpdatePreferencesRequest(t *testing.T) {
 
 		// Act
 		obj.SetFeedbackOptions(fernTestValueFeedbackOptions)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMerchantOfRecord_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesRequest{}
+		var fernTestValueMerchantOfRecord *UpdatePreferencesRequestMerchantOfRecord
+
+		// Act
+		obj.SetMerchantOfRecord(fernTestValueMerchantOfRecord)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -11573,6 +11756,7 @@ func TestRequiredNullableRoundTripRetrievePreferencesResponse(t *testing.T) {
 		"economic_intelligence_fee_percentage",
 		"economic_intelligence_first_renewal_at",
 		"economic_intelligence_previous_period",
+		"merchant_of_record",
 		"preferred_settlement_currency",
 		"preferred_settlement_currency_changeable_at",
 		"subaccount_notifications",
@@ -11589,7 +11773,7 @@ func TestRequiredNullableRoundTripRetrievePreferencesResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrievePreferencesResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"covers_subaccount_negative_balances":null,"customer_tracking":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_first_renewal_at":null,"economic_intelligence_previous_period":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null,"subaccount_notifications":null,"subaccount_team_view_only":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"covers_subaccount_negative_balances":null,"customer_tracking":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_first_renewal_at":null,"economic_intelligence_previous_period":null,"merchant_of_record":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null,"subaccount_notifications":null,"subaccount_team_view_only":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -11759,6 +11943,7 @@ func TestRequiredNullableRoundTripUpdatePreferencesResponse(t *testing.T) {
 		"economic_intelligence_fee_percentage",
 		"economic_intelligence_first_renewal_at",
 		"economic_intelligence_previous_period",
+		"merchant_of_record",
 		"preferred_settlement_currency",
 		"preferred_settlement_currency_changeable_at",
 		"subaccount_notifications",
@@ -11775,7 +11960,7 @@ func TestRequiredNullableRoundTripUpdatePreferencesResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj UpdatePreferencesResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"covers_subaccount_negative_balances":null,"customer_tracking":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_first_renewal_at":null,"economic_intelligence_previous_period":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null,"subaccount_notifications":null,"subaccount_team_view_only":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"ads_payment_methods":null,"covers_subaccount_negative_balances":null,"customer_tracking":null,"economic_intelligence_ends_at":null,"economic_intelligence_fee_percentage":null,"economic_intelligence_first_renewal_at":null,"economic_intelligence_previous_period":null,"merchant_of_record":null,"preferred_settlement_currency":null,"preferred_settlement_currency_changeable_at":null,"subaccount_notifications":null,"subaccount_team_view_only":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -12876,6 +13061,42 @@ func TestEnumRetrievePreferencesResponseFeedbackOptionsItemCategory(t *testing.T
 	})
 }
 
+func TestEnumRetrievePreferencesResponseMerchantOfRecord(t *testing.T) {
+	t.Run("NewFromString_whop", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePreferencesResponseMerchantOfRecordFromString("whop")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePreferencesResponseMerchantOfRecord("whop"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePreferencesResponseMerchantOfRecordFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePreferencesResponseMerchantOfRecord("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_account", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePreferencesResponseMerchantOfRecordFromString("account")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePreferencesResponseMerchantOfRecord("account"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRetrievePreferencesResponseMerchantOfRecordFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRetrievePreferencesResponseMerchantOfRecordFromString("whop")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumRetrievePreferencesResponsePreferredSettlementCurrency(t *testing.T) {
 	t.Run("NewFromString_usd", func(t *testing.T) {
 		t.Parallel()
@@ -13120,6 +13341,28 @@ func TestEnumUpdatePreferencesRequestFeedbackOptionsItemCategory(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdatePreferencesRequestFeedbackOptionsItemCategoryFromString("too_expensive")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdatePreferencesRequestMerchantOfRecord(t *testing.T) {
+	t.Run("NewFromString_account", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesRequestMerchantOfRecordFromString("account")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesRequestMerchantOfRecord("account"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdatePreferencesRequestMerchantOfRecordFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdatePreferencesRequestMerchantOfRecordFromString("account")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -13472,6 +13715,42 @@ func TestEnumUpdatePreferencesResponseFeedbackOptionsItemCategory(t *testing.T) 
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdatePreferencesResponseFeedbackOptionsItemCategoryFromString("too_expensive")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdatePreferencesResponseMerchantOfRecord(t *testing.T) {
+	t.Run("NewFromString_whop", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesResponseMerchantOfRecordFromString("whop")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesResponseMerchantOfRecord("whop"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesResponseMerchantOfRecordFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesResponseMerchantOfRecord("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_account", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesResponseMerchantOfRecordFromString("account")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesResponseMerchantOfRecord("account"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdatePreferencesResponseMerchantOfRecordFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdatePreferencesResponseMerchantOfRecordFromString("whop")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
