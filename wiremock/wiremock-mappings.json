@@ -17883,7 +17883,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"amount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"covered_share\": 1,\n  \"effective_rate_percentage\": 2.7,\n  \"ineligible_reason\": \"not_card_payment\",\n  \"level\": 3,\n  \"month_started_at\": \"2026-10-01T00:00:00.000Z\",\n  \"payment_id\": \"pay_xxxxxxxxxxxxxx\",\n  \"processing_rate_percentage\": 2.1,\n  \"region\": \"us_and_canada\",\n  \"status\": \"rebated\"\n}",
+        "body": "{\n  \"amount\": {\n    \"amount\": \"-1234.56\",\n    \"currency\": \"usd\",\n    \"decimals\": 2,\n    \"display_decimals\": 2\n  },\n  \"covered_share\": 1,\n  \"effective_rate_percentage\": 2.7,\n  \"estimate\": {\n    \"amount\": {\n      \"amount\": \"-1234.56\",\n      \"currency\": \"usd\",\n      \"decimals\": 2,\n      \"display_decimals\": 2\n    },\n    \"covered_share\": 1,\n    \"effective_rate_percentage\": 2.9,\n    \"level\": 5,\n    \"processing_rate_percentage\": 1.5,\n    \"region\": \"us_and_canada\"\n  },\n  \"ineligible_reason\": \"not_card_payment\",\n  \"level\": 3,\n  \"month_started_at\": \"2026-10-01T00:00:00.000Z\",\n  \"payment_id\": \"pay_xxxxxxxxxxxxxx\",\n  \"processing_rate_percentage\": 2.1,\n  \"region\": \"us_and_canada\",\n  \"status\": \"rebated\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }

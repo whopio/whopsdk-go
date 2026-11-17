@@ -55854,13 +55854,14 @@ var (
 	paymentLevelsRebateFieldAmount                   = big.NewInt(1 << 0)
 	paymentLevelsRebateFieldCoveredShare             = big.NewInt(1 << 1)
 	paymentLevelsRebateFieldEffectiveRatePercentage  = big.NewInt(1 << 2)
-	paymentLevelsRebateFieldIneligibleReason         = big.NewInt(1 << 3)
-	paymentLevelsRebateFieldLevel                    = big.NewInt(1 << 4)
-	paymentLevelsRebateFieldMonthStartedAt           = big.NewInt(1 << 5)
-	paymentLevelsRebateFieldPaymentID                = big.NewInt(1 << 6)
-	paymentLevelsRebateFieldProcessingRatePercentage = big.NewInt(1 << 7)
-	paymentLevelsRebateFieldRegion                   = big.NewInt(1 << 8)
-	paymentLevelsRebateFieldStatus                   = big.NewInt(1 << 9)
+	paymentLevelsRebateFieldEstimate                 = big.NewInt(1 << 3)
+	paymentLevelsRebateFieldIneligibleReason         = big.NewInt(1 << 4)
+	paymentLevelsRebateFieldLevel                    = big.NewInt(1 << 5)
+	paymentLevelsRebateFieldMonthStartedAt           = big.NewInt(1 << 6)
+	paymentLevelsRebateFieldPaymentID                = big.NewInt(1 << 7)
+	paymentLevelsRebateFieldProcessingRatePercentage = big.NewInt(1 << 8)
+	paymentLevelsRebateFieldRegion                   = big.NewInt(1 << 9)
+	paymentLevelsRebateFieldStatus                   = big.NewInt(1 << 10)
 )
 
 // paymentLevelsRebateNullableFields maps the wire names of PaymentLevelsRebate's nullable fields (required or optional) to their field bits.
@@ -55868,6 +55869,7 @@ var paymentLevelsRebateNullableFields = map[string]*big.Int{
 	"amount":                     paymentLevelsRebateFieldAmount,
 	"covered_share":              paymentLevelsRebateFieldCoveredShare,
 	"effective_rate_percentage":  paymentLevelsRebateFieldEffectiveRatePercentage,
+	"estimate":                   paymentLevelsRebateFieldEstimate,
 	"ineligible_reason":          paymentLevelsRebateFieldIneligibleReason,
 	"level":                      paymentLevelsRebateFieldLevel,
 	"month_started_at":           paymentLevelsRebateFieldMonthStartedAt,
@@ -55882,6 +55884,8 @@ type PaymentLevelsRebate struct {
 	CoveredShare *float64 `json:"covered_share,omitempty" url:"covered_share,omitempty"`
 	// Processing fee as a percentage of the amount it was charged on, before the rebate, where `2.7` means 2.7%. `null` unless `status` is `rebated`.
 	EffectiveRatePercentage *float64 `json:"effective_rate_percentage,omitempty" url:"effective_rate_percentage,omitempty"`
+	// Estimate of the payment's part of its account's monthly rebate, as if its month closed now. It uses the account's level so far and the share of the payment that its spend so far covers. Both can change until the month closes. `null` unless `status` is `pending` with the processing fee posted, and when estimates are unavailable.
+	Estimate *PaymentLevelsRebateEstimate `json:"estimate,omitempty" url:"estimate,omitempty"`
 	// Why the payment can't earn a rebate: `not_card_payment`, `before_levels` (made before Whop Levels started), `not_in_levels` (its account wasn't in Whop Levels that month), `fee_not_posted`, `fee_at_level_rate` (its fee was already at or below the level's rate) or `no_level_rate` (its fee matched no level rate). `null` unless `status` is `ineligible`.
 	IneligibleReason *PaymentLevelsRebateIneligibleReason `json:"ineligible_reason,omitempty" url:"ineligible_reason,omitempty"`
 	// Level the account's month closed at, from `0` up to `10`. `null` until that month's close has applied to the payment, and for a payment that can't earn a rebate before then, such as a non-card payment.
@@ -55923,6 +55927,13 @@ func (p *PaymentLevelsRebate) GetEffectiveRatePercentage() *float64 {
 		return nil
 	}
 	return p.EffectiveRatePercentage
+}
+
+func (p *PaymentLevelsRebate) GetEstimate() *PaymentLevelsRebateEstimate {
+	if p == nil {
+		return nil
+	}
+	return p.Estimate
 }
 
 func (p *PaymentLevelsRebate) GetIneligibleReason() *PaymentLevelsRebateIneligibleReason {
@@ -56009,6 +56020,13 @@ func (p *PaymentLevelsRebate) SetCoveredShare(coveredShare *float64) {
 func (p *PaymentLevelsRebate) SetEffectiveRatePercentage(effectiveRatePercentage *float64) {
 	p.EffectiveRatePercentage = effectiveRatePercentage
 	p.require(paymentLevelsRebateFieldEffectiveRatePercentage)
+}
+
+// SetEstimate sets the Estimate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLevelsRebate) SetEstimate(estimate *PaymentLevelsRebateEstimate) {
+	p.Estimate = estimate
+	p.require(paymentLevelsRebateFieldEstimate)
 }
 
 // SetIneligibleReason sets the IneligibleReason field and marks it as non-optional;
@@ -56107,6 +56125,224 @@ func (p *PaymentLevelsRebate) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	paymentLevelsRebateEstimateFieldAmount                   = big.NewInt(1 << 0)
+	paymentLevelsRebateEstimateFieldCoveredShare             = big.NewInt(1 << 1)
+	paymentLevelsRebateEstimateFieldEffectiveRatePercentage  = big.NewInt(1 << 2)
+	paymentLevelsRebateEstimateFieldLevel                    = big.NewInt(1 << 3)
+	paymentLevelsRebateEstimateFieldProcessingRatePercentage = big.NewInt(1 << 4)
+	paymentLevelsRebateEstimateFieldRegion                   = big.NewInt(1 << 5)
+)
+
+// paymentLevelsRebateEstimateNullableFields maps the wire names of PaymentLevelsRebateEstimate's nullable fields (required or optional) to their field bits.
+var paymentLevelsRebateEstimateNullableFields = map[string]*big.Int{
+	"effective_rate_percentage":  paymentLevelsRebateEstimateFieldEffectiveRatePercentage,
+	"processing_rate_percentage": paymentLevelsRebateEstimateFieldProcessingRatePercentage,
+	"region":                     paymentLevelsRebateEstimateFieldRegion,
+}
+
+type PaymentLevelsRebateEstimate struct {
+	// Estimated part of the account's monthly rebate for this payment, in the currency it settled in. `0` when the account's spend so far doesn't cover it, or its fee is already at or below the level's rate.
+	Amount *Money `json:"amount" url:"amount"`
+	// How much of the payment the account's spend so far covers, from `0` to `1`. The month's earliest card payments are covered first.
+	CoveredShare float64 `json:"covered_share" url:"covered_share"`
+	// Processing fee as a percentage of the amount it was charged on, before the rebate, where `2.7` means 2.7%.
+	EffectiveRatePercentage *float64 `json:"effective_rate_percentage,omitempty" url:"effective_rate_percentage,omitempty"`
+	// The account's level so far this month, from `0` up to `10`. The month closes at the highest level the account reaches.
+	Level int `json:"level" url:"level"`
+	// Card processing percentage at `level` for cards from `region`, where `2.1` means 2.1%. `null` when the fee matched no level rate.
+	ProcessingRatePercentage *float64 `json:"processing_rate_percentage,omitempty" url:"processing_rate_percentage,omitempty"`
+	// Card region the processing fee was charged in, which sets `processing_rate_percentage`. `null` when the fee matched no level rate.
+	Region *PaymentLevelsRebateEstimateRegion `json:"region,omitempty" url:"region,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentLevelsRebateEstimate) GetAmount() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.Amount
+}
+
+func (p *PaymentLevelsRebateEstimate) GetCoveredShare() float64 {
+	if p == nil {
+		return 0
+	}
+	return p.CoveredShare
+}
+
+func (p *PaymentLevelsRebateEstimate) GetEffectiveRatePercentage() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.EffectiveRatePercentage
+}
+
+func (p *PaymentLevelsRebateEstimate) GetLevel() int {
+	if p == nil {
+		return 0
+	}
+	return p.Level
+}
+
+func (p *PaymentLevelsRebateEstimate) GetProcessingRatePercentage() *float64 {
+	if p == nil {
+		return nil
+	}
+	return p.ProcessingRatePercentage
+}
+
+func (p *PaymentLevelsRebateEstimate) GetRegion() *PaymentLevelsRebateEstimateRegion {
+	if p == nil {
+		return nil
+	}
+	return p.Region
+}
+
+func (p *PaymentLevelsRebateEstimate) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaymentLevelsRebateEstimate) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLevelsRebateEstimate) SetAmount(amount *Money) {
+	p.Amount = amount
+	p.require(paymentLevelsRebateEstimateFieldAmount)
+}
+
+// SetCoveredShare sets the CoveredShare field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLevelsRebateEstimate) SetCoveredShare(coveredShare float64) {
+	p.CoveredShare = coveredShare
+	p.require(paymentLevelsRebateEstimateFieldCoveredShare)
+}
+
+// SetEffectiveRatePercentage sets the EffectiveRatePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLevelsRebateEstimate) SetEffectiveRatePercentage(effectiveRatePercentage *float64) {
+	p.EffectiveRatePercentage = effectiveRatePercentage
+	p.require(paymentLevelsRebateEstimateFieldEffectiveRatePercentage)
+}
+
+// SetLevel sets the Level field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLevelsRebateEstimate) SetLevel(level int) {
+	p.Level = level
+	p.require(paymentLevelsRebateEstimateFieldLevel)
+}
+
+// SetProcessingRatePercentage sets the ProcessingRatePercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLevelsRebateEstimate) SetProcessingRatePercentage(processingRatePercentage *float64) {
+	p.ProcessingRatePercentage = processingRatePercentage
+	p.require(paymentLevelsRebateEstimateFieldProcessingRatePercentage)
+}
+
+// SetRegion sets the Region field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentLevelsRebateEstimate) SetRegion(region *PaymentLevelsRebateEstimateRegion) {
+	p.Region = region
+	p.require(paymentLevelsRebateEstimateFieldRegion)
+}
+
+func (p *PaymentLevelsRebateEstimate) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentLevelsRebateEstimate
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentLevelsRebateEstimate(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentLevelsRebateEstimateNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentLevelsRebateEstimate) MarshalJSON() ([]byte, error) {
+	type embed PaymentLevelsRebateEstimate
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaymentLevelsRebateEstimate) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// Card region the processing fee was charged in, which sets `processing_rate_percentage`. `null` when the fee matched no level rate.
+type PaymentLevelsRebateEstimateRegion string
+
+const (
+	PaymentLevelsRebateEstimateRegionUsAndCanada          PaymentLevelsRebateEstimateRegion = "us_and_canada"
+	PaymentLevelsRebateEstimateRegionEuropeUkAndAustralia PaymentLevelsRebateEstimateRegion = "europe_uk_and_australia"
+	PaymentLevelsRebateEstimateRegionLatinAmerica         PaymentLevelsRebateEstimateRegion = "latin_america"
+	PaymentLevelsRebateEstimateRegionPeru                 PaymentLevelsRebateEstimateRegion = "peru"
+	PaymentLevelsRebateEstimateRegionBrazil               PaymentLevelsRebateEstimateRegion = "brazil"
+)
+
+func NewPaymentLevelsRebateEstimateRegionFromString(s string) (PaymentLevelsRebateEstimateRegion, error) {
+	switch s {
+	case "us_and_canada":
+		return PaymentLevelsRebateEstimateRegionUsAndCanada, nil
+	case "europe_uk_and_australia":
+		return PaymentLevelsRebateEstimateRegionEuropeUkAndAustralia, nil
+	case "latin_america":
+		return PaymentLevelsRebateEstimateRegionLatinAmerica, nil
+	case "peru":
+		return PaymentLevelsRebateEstimateRegionPeru, nil
+	case "brazil":
+		return PaymentLevelsRebateEstimateRegionBrazil, nil
+	}
+	var t PaymentLevelsRebateEstimateRegion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentLevelsRebateEstimateRegion) Ptr() *PaymentLevelsRebateEstimateRegion {
+	return &p
 }
 
 // Why the payment can't earn a rebate: `not_card_payment`, `before_levels` (made before Whop Levels started), `not_in_levels` (its account wasn't in Whop Levels that month), `fee_not_posted`, `fee_at_level_rate` (its fee was already at or below the level's rate) or `no_level_rate` (its fee matched no level rate). `null` unless `status` is `ineligible`.
