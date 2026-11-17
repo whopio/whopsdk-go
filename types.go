@@ -45717,7 +45717,7 @@ type Payment struct {
 	Holds                      []*PaymentHold `json:"holds" url:"holds"`
 	// Payment ID, prefixed `pay_`.
 	ID string `json:"id" url:"id"`
-	// The buyer's IP address at checkout: the one Whop's fraud screening identified, otherwise the one Whop captured from the buyer's browser at checkout. Null when the buyer was not present at checkout, such as a subscription renewal or a charge made without the buyer present, or when you read the payment as its buyer.
+	// IP address that Whop captured from the buyer's browser at checkout. Null when the buyer was not present at checkout, for example a subscription renewal or a charge made without the buyer. Also null when you read the payment as its buyer.
 	IPAddress *string `json:"ip_address,omitempty" url:"ip_address,omitempty"`
 	// When the most recent charge attempt ran, or null.
 	LastPaymentAttemptAt *string            `json:"last_payment_attempt_at,omitempty" url:"last_payment_attempt_at,omitempty"`
