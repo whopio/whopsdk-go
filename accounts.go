@@ -1079,7 +1079,7 @@ type Account struct {
 	SocialLinks       []*AccountSocialLink `json:"social_links" url:"social_links"`
 	// Whether the account can operate on Whop: `active` or `suspended`. Computed on `list`, `retrieve`, `me`, and `suspend`; `null` otherwise.
 	Status *string `json:"status,omitempty" url:"status,omitempty"`
-	// Why the account was suspended, as the label shown to the account owner, such as `Suspended - Fraudulent activity`. Computed on `retrieve`, `me`, and `suspend`; `null` otherwise, when `status` is not `suspended`, and when the suspension was recorded without a reason.
+	// Why the account was suspended, as a label such as `Suspended - Fraudulent activity`. `Suspended` when no reason is recorded. Computed on `retrieve`, `me`, and `suspend`. `null` otherwise, or when `status` is not `suspended`.
 	StatusReason *string `json:"status_reason,omitempty" url:"status_reason,omitempty"`
 	// Account store page display configuration.
 	StorePageConfig *AccountStorePageConfig `json:"store_page_config" url:"store_page_config"`
