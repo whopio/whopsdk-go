@@ -25376,6 +25376,75 @@ client.Livestreams.Retrieve(
 </dl>
 </details>
 
+<details><summary><code>client.Livestreams.AddCoHost(ID, request) -> *whopsdk.Livestream</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Makes someone in a live livestream a co-host until it ends. Co-hosts can change chat settings, manage the stage, and moderate chat, but can't end the livestream.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.AddCoHostLivestreamsRequest{
+    ID: "id",
+    UserID: "user_xxxxxxxxxxxxxx",
+}
+client.Livestreams.AddCoHost(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Livestream ID, prefixed `lfeed_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userID:** `string` — User ID, prefixed `user_`. The user needs access to the livestream.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Livestreams.Pin(ID, request) -> *whopsdk.Livestream</code></summary>
 <dl>
 <dd>
@@ -25441,6 +25510,75 @@ client.Livestreams.Pin(
 <dd>
 
 **position:** `*int` — Zero-based index in the experience's pinned livestreams after the change. Omit it to put a new pin first or keep an existing pin in place.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Livestreams.RemoveCoHost(ID, request) -> *whopsdk.Livestream</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Removes a co-host from a live livestream.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.RemoveCoHostLivestreamsRequest{
+    ID: "id",
+    UserID: "user_xxxxxxxxxxxxxx",
+}
+client.Livestreams.RemoveCoHost(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Livestream ID, prefixed `lfeed_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**userID:** `string` — User ID, prefixed `user_`.
     
 </dd>
 </dl>

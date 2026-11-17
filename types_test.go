@@ -191195,6 +191195,13 @@ func TestEnumAccountCardsDeclineReason(t *testing.T) {
 		assert.Equal(t, AccountCardsDeclineReason("verification_failed"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_unsupported_state", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountCardsDeclineReasonFromString("unsupported_state")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountCardsDeclineReason("unsupported_state"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_other", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewAccountCardsDeclineReasonFromString("other")

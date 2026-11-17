@@ -85,6 +85,61 @@ func (r *RawClient) Retrieve(
 	}, nil
 }
 
+func (r *RawClient) AddCoHost(
+	ctx context.Context,
+	request *whopsdk.AddCoHostLivestreamsRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*whopsdk.Livestream], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
+		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/livestreams/%v/add_co_host",
+		request.ID,
+	)
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	headers.Add("Content-Type", "application/json")
+	var response *whopsdk.Livestream
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Request:         request,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*whopsdk.Livestream]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
 func (r *RawClient) Pin(
 	ctx context.Context,
 	request *whopsdk.PinLivestreamsRequest,
@@ -106,6 +161,61 @@ func (r *RawClient) Pin(
 	)
 	endpointURL := internal.EncodeURL(
 		baseURL+"/livestreams/%v/pin",
+		request.ID,
+	)
+	headers := internal.MergeHeaders(
+		r.options.ToHeader(),
+		options.ToHeader(),
+	)
+	headers.Add("Content-Type", "application/json")
+	var response *whopsdk.Livestream
+	raw, err := r.caller.Call(
+		ctx,
+		&internal.CallParams{
+			URL:             endpointURL,
+			Method:          http.MethodPost,
+			Headers:         headers,
+			MaxAttempts:     options.MaxAttempts,
+			DisableRetries:  options.DisableRetries,
+			BodyProperties:  options.BodyProperties,
+			QueryParameters: options.QueryParameters,
+			Client:          options.HTTPClient,
+			Request:         request,
+			Response:        &response,
+			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &core.Response[*whopsdk.Livestream]{
+		StatusCode: raw.StatusCode,
+		Header:     raw.Header,
+		Body:       response,
+	}, nil
+}
+
+func (r *RawClient) RemoveCoHost(
+	ctx context.Context,
+	request *whopsdk.RemoveCoHostLivestreamsRequest,
+	opts ...option.RequestOption,
+) (*core.Response[*whopsdk.Livestream], error) {
+	options := core.NewRequestOptions(opts...)
+	baseURL := internal.ResolveBaseURL(
+		options.BaseURL,
+		internal.ResolveEnvironmentBaseURL(
+			options.Environment,
+			"API",
+		),
+		r.baseURL,
+		internal.ResolveEnvironmentBaseURL(
+			r.options.Environment,
+			"API",
+		),
+		"https://api.whop.com/api/v1",
+	)
+	endpointURL := internal.EncodeURL(
+		baseURL+"/livestreams/%v/remove_co_host",
 		request.ID,
 	)
 	headers := internal.MergeHeaders(

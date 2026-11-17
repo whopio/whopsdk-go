@@ -2718,6 +2718,7 @@ const (
 	AdDeliveryStatusCampaignPaused AdDeliveryStatus = "campaign_paused"
 	AdDeliveryStatusPaused         AdDeliveryStatus = "paused"
 	AdDeliveryStatusProcessing     AdDeliveryStatus = "processing"
+	AdDeliveryStatusReviseContent  AdDeliveryStatus = "revise_content"
 	AdDeliveryStatusIssues         AdDeliveryStatus = "issues"
 	AdDeliveryStatusScheduled      AdDeliveryStatus = "scheduled"
 	AdDeliveryStatusLearning       AdDeliveryStatus = "learning"
@@ -2738,6 +2739,8 @@ func NewAdDeliveryStatusFromString(s string) (AdDeliveryStatus, error) {
 		return AdDeliveryStatusPaused, nil
 	case "processing":
 		return AdDeliveryStatusProcessing, nil
+	case "revise_content":
+		return AdDeliveryStatusReviseContent, nil
 	case "issues":
 		return AdDeliveryStatusIssues, nil
 	case "scheduled":
@@ -5402,6 +5405,7 @@ const (
 	PostAdUpdatedPayloadDataDeliveryStatusCampaignPaused PostAdUpdatedPayloadDataDeliveryStatus = "campaign_paused"
 	PostAdUpdatedPayloadDataDeliveryStatusPaused         PostAdUpdatedPayloadDataDeliveryStatus = "paused"
 	PostAdUpdatedPayloadDataDeliveryStatusProcessing     PostAdUpdatedPayloadDataDeliveryStatus = "processing"
+	PostAdUpdatedPayloadDataDeliveryStatusReviseContent  PostAdUpdatedPayloadDataDeliveryStatus = "revise_content"
 	PostAdUpdatedPayloadDataDeliveryStatusIssues         PostAdUpdatedPayloadDataDeliveryStatus = "issues"
 	PostAdUpdatedPayloadDataDeliveryStatusScheduled      PostAdUpdatedPayloadDataDeliveryStatus = "scheduled"
 	PostAdUpdatedPayloadDataDeliveryStatusLearning       PostAdUpdatedPayloadDataDeliveryStatus = "learning"
@@ -5422,6 +5426,8 @@ func NewPostAdUpdatedPayloadDataDeliveryStatusFromString(s string) (PostAdUpdate
 		return PostAdUpdatedPayloadDataDeliveryStatusPaused, nil
 	case "processing":
 		return PostAdUpdatedPayloadDataDeliveryStatusProcessing, nil
+	case "revise_content":
+		return PostAdUpdatedPayloadDataDeliveryStatusReviseContent, nil
 	case "issues":
 		return PostAdUpdatedPayloadDataDeliveryStatusIssues, nil
 	case "scheduled":
