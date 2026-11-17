@@ -31827,7 +31827,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**paymentMethodID:** `*string` — The stored payment method to charge, prefixed `payt_`. It must belong to the member. Required unless `confirmation_token` is provided.
+**paymentMethodID:** `*string` — The stored payment method to charge, prefixed `payt_`. It must belong to the member. Required unless `confirmation_token` is provided. With a card saved from a tap, Whop treats an inline `variant` as the sale's tip. It files the tip as a one-time Tip under a hidden Tip product, from the variant's `currency` and `initial_price` alone. Charging it needs only `payment:charge`.
     
 </dd>
 </dl>

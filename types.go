@@ -27199,6 +27199,7 @@ const (
 	LedgerActivityLineTypeOnchainInternalTransferIncoming           LedgerActivityLineType = "onchain_internal_transfer_incoming"
 	LedgerActivityLineTypeOnchainSwapSource                         LedgerActivityLineType = "onchain_swap_source"
 	LedgerActivityLineTypeOnchainSwapTarget                         LedgerActivityLineType = "onchain_swap_target"
+	LedgerActivityLineTypeSavingsRevaluation                        LedgerActivityLineType = "savings_revaluation"
 	LedgerActivityLineTypeOnchainSwapOffset                         LedgerActivityLineType = "onchain_swap_offset"
 	LedgerActivityLineTypeWhopSwapFeeReceived                       LedgerActivityLineType = "whop_swap_fee_received"
 	LedgerActivityLineTypeSwapFee                                   LedgerActivityLineType = "swap_fee"
@@ -27647,6 +27648,8 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeOnchainSwapSource, nil
 	case "onchain_swap_target":
 		return LedgerActivityLineTypeOnchainSwapTarget, nil
+	case "savings_revaluation":
+		return LedgerActivityLineTypeSavingsRevaluation, nil
 	case "onchain_swap_offset":
 		return LedgerActivityLineTypeOnchainSwapOffset, nil
 	case "whop_swap_fee_received":
