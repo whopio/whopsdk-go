@@ -198464,6 +198464,13 @@ func TestEnumLedgerActivityLineType(t *testing.T) {
 		assert.Equal(t, LedgerActivityLineType("levels_points_partner"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_levels_points_action", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("levels_points_action")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("levels_points_action"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_levels_points_burned", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewLedgerActivityLineTypeFromString("levels_points_burned")
@@ -208059,6 +208066,20 @@ func TestEnumWebhookEvent(t *testing.T) {
 		val, err := NewWebhookEventFromString("domain.deleted")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, WebhookEvent("domain.deleted"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_capital_created", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookEventFromString("capital.created")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookEvent("capital.created"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_capital_updated", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookEventFromString("capital.updated")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookEvent("capital.updated"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_payout_method_created", func(t *testing.T) {

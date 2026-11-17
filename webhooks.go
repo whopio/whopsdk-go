@@ -1369,6 +1369,8 @@ const (
 	WebhookEventsItemDomainCreated                         WebhookEventsItem = "domain.created"
 	WebhookEventsItemDomainUpdated                         WebhookEventsItem = "domain.updated"
 	WebhookEventsItemDomainDeleted                         WebhookEventsItem = "domain.deleted"
+	WebhookEventsItemCapitalCreated                        WebhookEventsItem = "capital.created"
+	WebhookEventsItemCapitalUpdated                        WebhookEventsItem = "capital.updated"
 	WebhookEventsItemPayoutMethodCreated                   WebhookEventsItem = "payout_method.created"
 	WebhookEventsItemVerificationSucceeded                 WebhookEventsItem = "verification.succeeded"
 	WebhookEventsItemIdentityProfileApproved               WebhookEventsItem = "identity_profile.approved"
@@ -1545,6 +1547,10 @@ func NewWebhookEventsItemFromString(s string) (WebhookEventsItem, error) {
 		return WebhookEventsItemDomainUpdated, nil
 	case "domain.deleted":
 		return WebhookEventsItemDomainDeleted, nil
+	case "capital.created":
+		return WebhookEventsItemCapitalCreated, nil
+	case "capital.updated":
+		return WebhookEventsItemCapitalUpdated, nil
 	case "payout_method.created":
 		return WebhookEventsItemPayoutMethodCreated, nil
 	case "verification.succeeded":
@@ -2151,6 +2157,8 @@ const (
 	WebhookListItemEventsItemDomainCreated                         WebhookListItemEventsItem = "domain.created"
 	WebhookListItemEventsItemDomainUpdated                         WebhookListItemEventsItem = "domain.updated"
 	WebhookListItemEventsItemDomainDeleted                         WebhookListItemEventsItem = "domain.deleted"
+	WebhookListItemEventsItemCapitalCreated                        WebhookListItemEventsItem = "capital.created"
+	WebhookListItemEventsItemCapitalUpdated                        WebhookListItemEventsItem = "capital.updated"
 	WebhookListItemEventsItemPayoutMethodCreated                   WebhookListItemEventsItem = "payout_method.created"
 	WebhookListItemEventsItemVerificationSucceeded                 WebhookListItemEventsItem = "verification.succeeded"
 	WebhookListItemEventsItemIdentityProfileApproved               WebhookListItemEventsItem = "identity_profile.approved"
@@ -2327,6 +2335,10 @@ func NewWebhookListItemEventsItemFromString(s string) (WebhookListItemEventsItem
 		return WebhookListItemEventsItemDomainUpdated, nil
 	case "domain.deleted":
 		return WebhookListItemEventsItemDomainDeleted, nil
+	case "capital.created":
+		return WebhookListItemEventsItemCapitalCreated, nil
+	case "capital.updated":
+		return WebhookListItemEventsItemCapitalUpdated, nil
 	case "payout_method.created":
 		return WebhookListItemEventsItemPayoutMethodCreated, nil
 	case "verification.succeeded":
@@ -2528,6 +2540,8 @@ const (
 	WebhookTestableEventsItemDomainCreated                         WebhookTestableEventsItem = "domain.created"
 	WebhookTestableEventsItemDomainUpdated                         WebhookTestableEventsItem = "domain.updated"
 	WebhookTestableEventsItemDomainDeleted                         WebhookTestableEventsItem = "domain.deleted"
+	WebhookTestableEventsItemCapitalCreated                        WebhookTestableEventsItem = "capital.created"
+	WebhookTestableEventsItemCapitalUpdated                        WebhookTestableEventsItem = "capital.updated"
 	WebhookTestableEventsItemPayoutMethodCreated                   WebhookTestableEventsItem = "payout_method.created"
 	WebhookTestableEventsItemVerificationSucceeded                 WebhookTestableEventsItem = "verification.succeeded"
 	WebhookTestableEventsItemIdentityProfileApproved               WebhookTestableEventsItem = "identity_profile.approved"
@@ -2704,6 +2718,10 @@ func NewWebhookTestableEventsItemFromString(s string) (WebhookTestableEventsItem
 		return WebhookTestableEventsItemDomainUpdated, nil
 	case "domain.deleted":
 		return WebhookTestableEventsItemDomainDeleted, nil
+	case "capital.created":
+		return WebhookTestableEventsItemCapitalCreated, nil
+	case "capital.updated":
+		return WebhookTestableEventsItemCapitalUpdated, nil
 	case "payout_method.created":
 		return WebhookTestableEventsItemPayoutMethodCreated, nil
 	case "verification.succeeded":
@@ -2901,6 +2919,8 @@ const (
 	CreateWebhooksRequestEventsItemDomainCreated                      CreateWebhooksRequestEventsItem = "domain.created"
 	CreateWebhooksRequestEventsItemDomainUpdated                      CreateWebhooksRequestEventsItem = "domain.updated"
 	CreateWebhooksRequestEventsItemDomainDeleted                      CreateWebhooksRequestEventsItem = "domain.deleted"
+	CreateWebhooksRequestEventsItemCapitalCreated                     CreateWebhooksRequestEventsItem = "capital.created"
+	CreateWebhooksRequestEventsItemCapitalUpdated                     CreateWebhooksRequestEventsItem = "capital.updated"
 	CreateWebhooksRequestEventsItemPayoutMethodCreated                CreateWebhooksRequestEventsItem = "payout_method.created"
 	CreateWebhooksRequestEventsItemVerificationSucceeded              CreateWebhooksRequestEventsItem = "verification.succeeded"
 	CreateWebhooksRequestEventsItemIdentityProfileApproved            CreateWebhooksRequestEventsItem = "identity_profile.approved"
@@ -3055,6 +3075,10 @@ func NewCreateWebhooksRequestEventsItemFromString(s string) (CreateWebhooksReque
 		return CreateWebhooksRequestEventsItemDomainUpdated, nil
 	case "domain.deleted":
 		return CreateWebhooksRequestEventsItemDomainDeleted, nil
+	case "capital.created":
+		return CreateWebhooksRequestEventsItemCapitalCreated, nil
+	case "capital.updated":
+		return CreateWebhooksRequestEventsItemCapitalUpdated, nil
 	case "payout_method.created":
 		return CreateWebhooksRequestEventsItemPayoutMethodCreated, nil
 	case "verification.succeeded":
@@ -3327,6 +3351,8 @@ const (
 	ListDeliveriesWebhooksRequestEventsItemDomainCreated                         ListDeliveriesWebhooksRequestEventsItem = "domain.created"
 	ListDeliveriesWebhooksRequestEventsItemDomainUpdated                         ListDeliveriesWebhooksRequestEventsItem = "domain.updated"
 	ListDeliveriesWebhooksRequestEventsItemDomainDeleted                         ListDeliveriesWebhooksRequestEventsItem = "domain.deleted"
+	ListDeliveriesWebhooksRequestEventsItemCapitalCreated                        ListDeliveriesWebhooksRequestEventsItem = "capital.created"
+	ListDeliveriesWebhooksRequestEventsItemCapitalUpdated                        ListDeliveriesWebhooksRequestEventsItem = "capital.updated"
 	ListDeliveriesWebhooksRequestEventsItemPayoutMethodCreated                   ListDeliveriesWebhooksRequestEventsItem = "payout_method.created"
 	ListDeliveriesWebhooksRequestEventsItemVerificationSucceeded                 ListDeliveriesWebhooksRequestEventsItem = "verification.succeeded"
 	ListDeliveriesWebhooksRequestEventsItemIdentityProfileApproved               ListDeliveriesWebhooksRequestEventsItem = "identity_profile.approved"
@@ -3503,6 +3529,10 @@ func NewListDeliveriesWebhooksRequestEventsItemFromString(s string) (ListDeliver
 		return ListDeliveriesWebhooksRequestEventsItemDomainUpdated, nil
 	case "domain.deleted":
 		return ListDeliveriesWebhooksRequestEventsItemDomainDeleted, nil
+	case "capital.created":
+		return ListDeliveriesWebhooksRequestEventsItemCapitalCreated, nil
+	case "capital.updated":
+		return ListDeliveriesWebhooksRequestEventsItemCapitalUpdated, nil
 	case "payout_method.created":
 		return ListDeliveriesWebhooksRequestEventsItemPayoutMethodCreated, nil
 	case "verification.succeeded":
@@ -4548,6 +4578,8 @@ const (
 	UpdateWebhooksRequestEventsItemDomainCreated                      UpdateWebhooksRequestEventsItem = "domain.created"
 	UpdateWebhooksRequestEventsItemDomainUpdated                      UpdateWebhooksRequestEventsItem = "domain.updated"
 	UpdateWebhooksRequestEventsItemDomainDeleted                      UpdateWebhooksRequestEventsItem = "domain.deleted"
+	UpdateWebhooksRequestEventsItemCapitalCreated                     UpdateWebhooksRequestEventsItem = "capital.created"
+	UpdateWebhooksRequestEventsItemCapitalUpdated                     UpdateWebhooksRequestEventsItem = "capital.updated"
 	UpdateWebhooksRequestEventsItemPayoutMethodCreated                UpdateWebhooksRequestEventsItem = "payout_method.created"
 	UpdateWebhooksRequestEventsItemVerificationSucceeded              UpdateWebhooksRequestEventsItem = "verification.succeeded"
 	UpdateWebhooksRequestEventsItemIdentityProfileApproved            UpdateWebhooksRequestEventsItem = "identity_profile.approved"
@@ -4702,6 +4734,10 @@ func NewUpdateWebhooksRequestEventsItemFromString(s string) (UpdateWebhooksReque
 		return UpdateWebhooksRequestEventsItemDomainUpdated, nil
 	case "domain.deleted":
 		return UpdateWebhooksRequestEventsItemDomainDeleted, nil
+	case "capital.created":
+		return UpdateWebhooksRequestEventsItemCapitalCreated, nil
+	case "capital.updated":
+		return UpdateWebhooksRequestEventsItemCapitalUpdated, nil
 	case "payout_method.created":
 		return UpdateWebhooksRequestEventsItemPayoutMethodCreated, nil
 	case "verification.succeeded":
