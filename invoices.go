@@ -453,15 +453,16 @@ var (
 	listInvoicesRequestFieldMemberID          = big.NewInt(1 << 5)
 	listInvoicesRequestFieldProductID         = big.NewInt(1 << 6)
 	listInvoicesRequestFieldVariantID         = big.NewInt(1 << 7)
-	listInvoicesRequestFieldCreatedAfter      = big.NewInt(1 << 8)
-	listInvoicesRequestFieldCreatedBefore     = big.NewInt(1 << 9)
-	listInvoicesRequestFieldOrder             = big.NewInt(1 << 10)
-	listInvoicesRequestFieldDirection         = big.NewInt(1 << 11)
-	listInvoicesRequestFieldFirst             = big.NewInt(1 << 12)
-	listInvoicesRequestFieldAfter             = big.NewInt(1 << 13)
-	listInvoicesRequestFieldLast              = big.NewInt(1 << 14)
-	listInvoicesRequestFieldBefore            = big.NewInt(1 << 15)
-	listInvoicesRequestFieldIncludeTotalCount = big.NewInt(1 << 16)
+	listInvoicesRequestFieldQuery             = big.NewInt(1 << 8)
+	listInvoicesRequestFieldCreatedAfter      = big.NewInt(1 << 9)
+	listInvoicesRequestFieldCreatedBefore     = big.NewInt(1 << 10)
+	listInvoicesRequestFieldOrder             = big.NewInt(1 << 11)
+	listInvoicesRequestFieldDirection         = big.NewInt(1 << 12)
+	listInvoicesRequestFieldFirst             = big.NewInt(1 << 13)
+	listInvoicesRequestFieldAfter             = big.NewInt(1 << 14)
+	listInvoicesRequestFieldLast              = big.NewInt(1 << 15)
+	listInvoicesRequestFieldBefore            = big.NewInt(1 << 16)
+	listInvoicesRequestFieldIncludeTotalCount = big.NewInt(1 << 17)
 )
 
 type ListInvoicesRequest struct {
@@ -475,7 +476,9 @@ type ListInvoicesRequest struct {
 	MemberID  *string `json:"-" url:"member_id,omitempty"`
 	ProductID *string `json:"-" url:"product_id,omitempty"`
 	// Only invoices that bill this variant, prefixed `plan_`. An invoice matches when the variant is any of its items.
-	VariantID     *string    `json:"-" url:"variant_id,omitempty"`
+	VariantID *string `json:"-" url:"variant_id,omitempty"`
+	// Text to find invoices by. It matches the invoice number, the invoice ID, and the customer's name, username, or email address. A number matches with or without its prefix and leading zeros. A name matches on any part. An email address matches from its start. The match ignores letter case. `%` and `_` match literally. Combined with the other filters. Name matches need `member:basic:read`. Email matches need `member:email:read`.
+	Query         *string    `json:"-" url:"query,omitempty"`
 	CreatedAfter  *time.Time `json:"-" url:"created_after,omitempty"`
 	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
 	// Field to sort by. Sorting by `due_at` or `scheduled_send_at` puts invoices without that date last in both directions.
@@ -559,6 +562,13 @@ func (l *ListInvoicesRequest) SetProductID(productID *string) {
 func (l *ListInvoicesRequest) SetVariantID(variantID *string) {
 	l.VariantID = variantID
 	l.require(listInvoicesRequestFieldVariantID)
+}
+
+// SetQuery sets the Query field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListInvoicesRequest) SetQuery(query *string) {
+	l.Query = query
+	l.require(listInvoicesRequestFieldQuery)
 }
 
 // SetCreatedAfter sets the CreatedAfter field and marks it as non-optional;
