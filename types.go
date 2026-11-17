@@ -49817,7 +49817,7 @@ var paymentInstrumentNullableFields = map[string]*big.Int{
 }
 
 type PaymentInstrument struct {
-	// Card payments only: the card's network, last four, issuer identification number, expiry, and network transaction id.
+	// Card, Apple Pay, and Google Pay payments only: the card's network, last four, issuer identification number, expiry, and network transaction id.
 	Card *PaymentInstrumentCard `json:"card,omitempty" url:"card,omitempty"`
 	// Buyer-facing instrument name — "Visa •••• 4242" when the card surfaced, else the method's own name ("Klarna").
 	DisplayName string `json:"display_name" url:"display_name"`
