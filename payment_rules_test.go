@@ -4954,6 +4954,27 @@ func TestEnumCreatePaymentRulesRequestConditionsAllItemField(t *testing.T) {
 		assert.Equal(t, CreatePaymentRulesRequestConditionsAllItemField("ip_country"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_postal_code_check", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreatePaymentRulesRequestConditionsAllItemFieldFromString("postal_code_check")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreatePaymentRulesRequestConditionsAllItemField("postal_code_check"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_address_line1_check", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreatePaymentRulesRequestConditionsAllItemFieldFromString("address_line1_check")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreatePaymentRulesRequestConditionsAllItemField("address_line1_check"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cvv_check", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreatePaymentRulesRequestConditionsAllItemFieldFromString("cvv_check")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreatePaymentRulesRequestConditionsAllItemField("cvv_check"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewCreatePaymentRulesRequestConditionsAllItemFieldFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -5332,6 +5353,27 @@ func TestEnumPaymentRuleConditionField(t *testing.T) {
 		assert.Equal(t, PaymentRuleConditionField("ip_country"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_postal_code_check", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentRuleConditionFieldFromString("postal_code_check")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentRuleConditionField("postal_code_check"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_address_line1_check", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentRuleConditionFieldFromString("address_line1_check")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentRuleConditionField("address_line1_check"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cvv_check", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentRuleConditionFieldFromString("cvv_check")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentRuleConditionField("cvv_check"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewPaymentRuleConditionFieldFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -5535,6 +5577,27 @@ func TestEnumPaymentRuleFieldField(t *testing.T) {
 		val, err := NewPaymentRuleFieldFieldFromString("ip_country")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PaymentRuleFieldField("ip_country"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_postal_code_check", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentRuleFieldFieldFromString("postal_code_check")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentRuleFieldField("postal_code_check"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_address_line1_check", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentRuleFieldFieldFromString("address_line1_check")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentRuleFieldField("address_line1_check"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cvv_check", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentRuleFieldFieldFromString("cvv_check")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentRuleFieldField("cvv_check"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -5855,6 +5918,27 @@ func TestEnumReplacePaymentRulesRequestConditionsAllItemField(t *testing.T) {
 		val, err := NewReplacePaymentRulesRequestConditionsAllItemFieldFromString("ip_country")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ReplacePaymentRulesRequestConditionsAllItemField("ip_country"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_postal_code_check", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewReplacePaymentRulesRequestConditionsAllItemFieldFromString("postal_code_check")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ReplacePaymentRulesRequestConditionsAllItemField("postal_code_check"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_address_line1_check", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewReplacePaymentRulesRequestConditionsAllItemFieldFromString("address_line1_check")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ReplacePaymentRulesRequestConditionsAllItemField("address_line1_check"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_cvv_check", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewReplacePaymentRulesRequestConditionsAllItemFieldFromString("cvv_check")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ReplacePaymentRulesRequestConditionsAllItemField("cvv_check"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

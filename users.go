@@ -2205,49 +2205,26 @@ func (u *UserEarnings) String() string {
 }
 
 var (
-	userLevelFieldCurrent                = big.NewInt(1 << 0)
-	userLevelFieldLevels                 = big.NewInt(1 << 1)
-	userLevelFieldMonthlyAdsSpend        = big.NewInt(1 << 2)
-	userLevelFieldMonthlyCardSpend       = big.NewInt(1 << 3)
-	userLevelFieldMonthlyQualifyingSpend = big.NewInt(1 << 4)
-	userLevelFieldMonthlyTradingVolume   = big.NewInt(1 << 5)
-	userLevelFieldPoints                 = big.NewInt(1 << 6)
-	userLevelFieldPointsBySource         = big.NewInt(1 << 7)
-	userLevelFieldPointsToNext           = big.NewInt(1 << 8)
-	userLevelFieldResetsAt               = big.NewInt(1 << 9)
+	userLevelFieldCurrent        = big.NewInt(1 << 0)
+	userLevelFieldPoints         = big.NewInt(1 << 1)
+	userLevelFieldPointsBySource = big.NewInt(1 << 2)
+	userLevelFieldResetsAt       = big.NewInt(1 << 3)
 )
 
 // userLevelNullableFields maps the wire names of UserLevel's nullable fields (required or optional) to their field bits.
 var userLevelNullableFields = map[string]*big.Int{
-	"levels":                   userLevelFieldLevels,
-	"monthly_ads_spend":        userLevelFieldMonthlyAdsSpend,
-	"monthly_card_spend":       userLevelFieldMonthlyCardSpend,
-	"monthly_qualifying_spend": userLevelFieldMonthlyQualifyingSpend,
-	"monthly_trading_volume":   userLevelFieldMonthlyTradingVolume,
-	"points":                   userLevelFieldPoints,
-	"points_by_source":         userLevelFieldPointsBySource,
-	"points_to_next":           userLevelFieldPointsToNext,
-	"resets_at":                userLevelFieldResetsAt,
+	"points":           userLevelFieldPoints,
+	"points_by_source": userLevelFieldPointsBySource,
+	"resets_at":        userLevelFieldResetsAt,
 }
 
 type UserLevel struct {
 	// The level that applies: the highest the user reached this month or in the 5 months before, from `0` up to `10`. Public.
-	Current int                            `json:"current" url:"current"`
-	Levels  []*AccountProcessingOfferLevel `json:"levels,omitempty" url:"levels,omitempty"`
-	// Whop Ads charges paid this calendar month across every account the user owns, net of refunds, in USD, so it can be negative. An account whose month nets to zero or below is left out. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
-	MonthlyAdsSpend *Money `json:"monthly_ads_spend,omitempty" url:"monthly_ads_spend,omitempty"`
-	// Captured Whop Card spend this calendar month across every account the user owns, net of refunds, in USD, so it can be negative. An account whose month nets to zero or below is left out. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
-	MonthlyCardSpend *Money `json:"monthly_card_spend,omitempty" url:"monthly_card_spend,omitempty"`
-	// Qualifying spend this calendar month across every account the user owns, plus their personal trading and partner points, in USD: `points` divided by 10. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
-	MonthlyQualifyingSpend *Money `json:"monthly_qualifying_spend,omitempty" url:"monthly_qualifying_spend,omitempty"`
-	// Perpetual trading volume filled through Whop this calendar month across every account the user owns and their personal wallet, in USD. An account whose month nets to zero or below is left out. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
-	MonthlyTradingVolume *Money `json:"monthly_trading_volume,omitempty" url:"monthly_trading_volume,omitempty"`
+	Current int `json:"current" url:"current"`
 	// Points earned this month across every account the user owns, plus their partner points, rounded down. An account whose month nets below zero counts as zero. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
 	Points *int `json:"points,omitempty" url:"points,omitempty"`
 	// This month's points, split by where they were earned. Each source is net of its refunds, so one can be negative. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
 	PointsBySource *OwnerLevelPoints `json:"points_by_source,omitempty" url:"points_by_source,omitempty"`
-	// Points still needed this month to reach the next level. `null` at level `10`, and unless you retrieve yourself with the reserved id `me` and have balance-read scope.
-	PointsToNext *int `json:"points_to_next,omitempty" url:"points_to_next,omitempty"`
 	// When this month's points reset to zero, as an ISO 8601 timestamp. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
 	ResetsAt *string `json:"resets_at,omitempty" url:"resets_at,omitempty"`
 
@@ -2265,41 +2242,6 @@ func (u *UserLevel) GetCurrent() int {
 	return u.Current
 }
 
-func (u *UserLevel) GetLevels() []*AccountProcessingOfferLevel {
-	if u == nil {
-		return nil
-	}
-	return u.Levels
-}
-
-func (u *UserLevel) GetMonthlyAdsSpend() *Money {
-	if u == nil {
-		return nil
-	}
-	return u.MonthlyAdsSpend
-}
-
-func (u *UserLevel) GetMonthlyCardSpend() *Money {
-	if u == nil {
-		return nil
-	}
-	return u.MonthlyCardSpend
-}
-
-func (u *UserLevel) GetMonthlyQualifyingSpend() *Money {
-	if u == nil {
-		return nil
-	}
-	return u.MonthlyQualifyingSpend
-}
-
-func (u *UserLevel) GetMonthlyTradingVolume() *Money {
-	if u == nil {
-		return nil
-	}
-	return u.MonthlyTradingVolume
-}
-
 func (u *UserLevel) GetPoints() *int {
 	if u == nil {
 		return nil
@@ -2312,13 +2254,6 @@ func (u *UserLevel) GetPointsBySource() *OwnerLevelPoints {
 		return nil
 	}
 	return u.PointsBySource
-}
-
-func (u *UserLevel) GetPointsToNext() *int {
-	if u == nil {
-		return nil
-	}
-	return u.PointsToNext
 }
 
 func (u *UserLevel) GetResetsAt() *string {
@@ -2351,41 +2286,6 @@ func (u *UserLevel) SetCurrent(current int) {
 	u.require(userLevelFieldCurrent)
 }
 
-// SetLevels sets the Levels field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserLevel) SetLevels(levels []*AccountProcessingOfferLevel) {
-	u.Levels = levels
-	u.require(userLevelFieldLevels)
-}
-
-// SetMonthlyAdsSpend sets the MonthlyAdsSpend field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserLevel) SetMonthlyAdsSpend(monthlyAdsSpend *Money) {
-	u.MonthlyAdsSpend = monthlyAdsSpend
-	u.require(userLevelFieldMonthlyAdsSpend)
-}
-
-// SetMonthlyCardSpend sets the MonthlyCardSpend field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserLevel) SetMonthlyCardSpend(monthlyCardSpend *Money) {
-	u.MonthlyCardSpend = monthlyCardSpend
-	u.require(userLevelFieldMonthlyCardSpend)
-}
-
-// SetMonthlyQualifyingSpend sets the MonthlyQualifyingSpend field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserLevel) SetMonthlyQualifyingSpend(monthlyQualifyingSpend *Money) {
-	u.MonthlyQualifyingSpend = monthlyQualifyingSpend
-	u.require(userLevelFieldMonthlyQualifyingSpend)
-}
-
-// SetMonthlyTradingVolume sets the MonthlyTradingVolume field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserLevel) SetMonthlyTradingVolume(monthlyTradingVolume *Money) {
-	u.MonthlyTradingVolume = monthlyTradingVolume
-	u.require(userLevelFieldMonthlyTradingVolume)
-}
-
 // SetPoints sets the Points field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UserLevel) SetPoints(points *int) {
@@ -2398,13 +2298,6 @@ func (u *UserLevel) SetPoints(points *int) {
 func (u *UserLevel) SetPointsBySource(pointsBySource *OwnerLevelPoints) {
 	u.PointsBySource = pointsBySource
 	u.require(userLevelFieldPointsBySource)
-}
-
-// SetPointsToNext sets the PointsToNext field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserLevel) SetPointsToNext(pointsToNext *int) {
-	u.PointsToNext = pointsToNext
-	u.require(userLevelFieldPointsToNext)
 }
 
 // SetResetsAt sets the ResetsAt field and marks it as non-optional;

@@ -23356,6 +23356,13 @@ func TestEnumPaymentLastPaymentErrorDeclineCode(t *testing.T) {
 		assert.Equal(t, PaymentLastPaymentErrorDeclineCode("invalid_zip"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_invalid_billing_address", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentLastPaymentErrorDeclineCodeFromString("invalid_billing_address")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentLastPaymentErrorDeclineCode("invalid_billing_address"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_invalid_expiry_month", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewPaymentLastPaymentErrorDeclineCodeFromString("invalid_expiry_month")
