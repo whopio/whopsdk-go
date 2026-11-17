@@ -9158,19 +9158,19 @@ func TestSettersAccountLevel(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetAppliedLevel", func(t *testing.T) {
-		obj := &AccountLevel{}
-		var fernTestValueAppliedLevel int
-		obj.SetAppliedLevel(fernTestValueAppliedLevel)
-		assert.Equal(t, fernTestValueAppliedLevel, obj.AppliedLevel)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetBoosted", func(t *testing.T) {
 		obj := &AccountLevel{}
 		var fernTestValueBoosted bool
 		obj.SetBoosted(fernTestValueBoosted)
 		assert.Equal(t, fernTestValueBoosted, obj.Boosted)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetCurrent", func(t *testing.T) {
+		obj := &AccountLevel{}
+		var fernTestValueCurrent int
+		obj.SetCurrent(fernTestValueCurrent)
+		assert.Equal(t, fernTestValueCurrent, obj.Current)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -9272,29 +9272,6 @@ func TestGettersAccountLevel(t *testing.T) {
 		_ = obj.GetAccountLevel() // Should return zero value
 	})
 
-	t.Run("GetAppliedLevel", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &AccountLevel{}
-		var expected int
-		obj.AppliedLevel = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetAppliedLevel(), "getter should return the property value")
-	})
-
-	t.Run("GetAppliedLevel_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *AccountLevel
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetAppliedLevel() // Should return zero value
-	})
-
 	t.Run("GetBoosted", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -9316,6 +9293,29 @@ func TestGettersAccountLevel(t *testing.T) {
 			}
 		}()
 		_ = obj.GetBoosted() // Should return zero value
+	})
+
+	t.Run("GetCurrent", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountLevel{}
+		var expected int
+		obj.Current = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCurrent(), "getter should return the property value")
+	})
+
+	t.Run("GetCurrent_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountLevel
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCurrent() // Should return zero value
 	})
 
 	t.Run("GetLevels", func(t *testing.T) {
@@ -9629,14 +9629,14 @@ func TestSettersMarkExplicitAccountLevel(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetAppliedLevel_MarksExplicit", func(t *testing.T) {
+	t.Run("SetBoosted_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &AccountLevel{}
-		var fernTestValueAppliedLevel int
+		var fernTestValueBoosted bool
 
 		// Act
-		obj.SetAppliedLevel(fernTestValueAppliedLevel)
+		obj.SetBoosted(fernTestValueBoosted)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9660,14 +9660,14 @@ func TestSettersMarkExplicitAccountLevel(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetBoosted_MarksExplicit", func(t *testing.T) {
+	t.Run("SetCurrent_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &AccountLevel{}
-		var fernTestValueBoosted bool
+		var fernTestValueCurrent int
 
 		// Act
-		obj.SetBoosted(fernTestValueBoosted)
+		obj.SetCurrent(fernTestValueCurrent)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

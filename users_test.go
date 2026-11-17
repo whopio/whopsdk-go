@@ -5680,11 +5680,11 @@ func TestSettersMarkExplicitUserEarnings(t *testing.T) {
 }
 
 func TestSettersUserLevel(t *testing.T) {
-	t.Run("SetAppliedLevel", func(t *testing.T) {
+	t.Run("SetCurrent", func(t *testing.T) {
 		obj := &UserLevel{}
-		var fernTestValueAppliedLevel int
-		obj.SetAppliedLevel(fernTestValueAppliedLevel)
-		assert.Equal(t, fernTestValueAppliedLevel, obj.AppliedLevel)
+		var fernTestValueCurrent int
+		obj.SetCurrent(fernTestValueCurrent)
+		assert.Equal(t, fernTestValueCurrent, obj.Current)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -5763,18 +5763,18 @@ func TestSettersUserLevel(t *testing.T) {
 }
 
 func TestGettersUserLevel(t *testing.T) {
-	t.Run("GetAppliedLevel", func(t *testing.T) {
+	t.Run("GetCurrent", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UserLevel{}
 		var expected int
-		obj.AppliedLevel = expected
+		obj.Current = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetAppliedLevel(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetCurrent(), "getter should return the property value")
 	})
 
-	t.Run("GetAppliedLevel_NilReceiver", func(t *testing.T) {
+	t.Run("GetCurrent_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *UserLevel
 		// Should not panic - getters should handle nil receiver gracefully
@@ -5783,7 +5783,7 @@ func TestGettersUserLevel(t *testing.T) {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetAppliedLevel() // Should return zero value
+		_ = obj.GetCurrent() // Should return zero value
 	})
 
 	t.Run("GetLevels", func(t *testing.T) {
@@ -6086,14 +6086,14 @@ func TestGettersUserLevel(t *testing.T) {
 }
 
 func TestSettersMarkExplicitUserLevel(t *testing.T) {
-	t.Run("SetAppliedLevel_MarksExplicit", func(t *testing.T) {
+	t.Run("SetCurrent_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &UserLevel{}
-		var fernTestValueAppliedLevel int
+		var fernTestValueCurrent int
 
 		// Act
-		obj.SetAppliedLevel(fernTestValueAppliedLevel)
+		obj.SetCurrent(fernTestValueCurrent)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
