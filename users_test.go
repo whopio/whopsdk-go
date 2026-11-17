@@ -5688,46 +5688,6 @@ func TestSettersUserLevel(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetLevels", func(t *testing.T) {
-		obj := &UserLevel{}
-		var fernTestValueLevels []*AccountProcessingOfferLevel
-		obj.SetLevels(fernTestValueLevels)
-		assert.Equal(t, fernTestValueLevels, obj.Levels)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetMonthlyAdsSpend", func(t *testing.T) {
-		obj := &UserLevel{}
-		var fernTestValueMonthlyAdsSpend *Money
-		obj.SetMonthlyAdsSpend(fernTestValueMonthlyAdsSpend)
-		assert.Equal(t, fernTestValueMonthlyAdsSpend, obj.MonthlyAdsSpend)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetMonthlyCardSpend", func(t *testing.T) {
-		obj := &UserLevel{}
-		var fernTestValueMonthlyCardSpend *Money
-		obj.SetMonthlyCardSpend(fernTestValueMonthlyCardSpend)
-		assert.Equal(t, fernTestValueMonthlyCardSpend, obj.MonthlyCardSpend)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetMonthlyQualifyingSpend", func(t *testing.T) {
-		obj := &UserLevel{}
-		var fernTestValueMonthlyQualifyingSpend *Money
-		obj.SetMonthlyQualifyingSpend(fernTestValueMonthlyQualifyingSpend)
-		assert.Equal(t, fernTestValueMonthlyQualifyingSpend, obj.MonthlyQualifyingSpend)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetMonthlyTradingVolume", func(t *testing.T) {
-		obj := &UserLevel{}
-		var fernTestValueMonthlyTradingVolume *Money
-		obj.SetMonthlyTradingVolume(fernTestValueMonthlyTradingVolume)
-		assert.Equal(t, fernTestValueMonthlyTradingVolume, obj.MonthlyTradingVolume)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetPoints", func(t *testing.T) {
 		obj := &UserLevel{}
 		var fernTestValuePoints *int
@@ -5741,14 +5701,6 @@ func TestSettersUserLevel(t *testing.T) {
 		var fernTestValuePointsBySource *OwnerLevelPoints
 		obj.SetPointsBySource(fernTestValuePointsBySource)
 		assert.Equal(t, fernTestValuePointsBySource, obj.PointsBySource)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetPointsToNext", func(t *testing.T) {
-		obj := &UserLevel{}
-		var fernTestValuePointsToNext *int
-		obj.SetPointsToNext(fernTestValuePointsToNext)
-		assert.Equal(t, fernTestValuePointsToNext, obj.PointsToNext)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -5784,171 +5736,6 @@ func TestGettersUserLevel(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCurrent() // Should return zero value
-	})
-
-	t.Run("GetLevels", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		var expected []*AccountProcessingOfferLevel
-		obj.Levels = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetLevels(), "getter should return the property value")
-	})
-
-	t.Run("GetLevels_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		obj.Levels = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetLevels(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetLevels_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *UserLevel
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetLevels() // Should return zero value
-	})
-
-	t.Run("GetMonthlyAdsSpend", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		var expected *Money
-		obj.MonthlyAdsSpend = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetMonthlyAdsSpend(), "getter should return the property value")
-	})
-
-	t.Run("GetMonthlyAdsSpend_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		obj.MonthlyAdsSpend = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetMonthlyAdsSpend(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetMonthlyAdsSpend_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *UserLevel
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetMonthlyAdsSpend() // Should return zero value
-	})
-
-	t.Run("GetMonthlyCardSpend", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		var expected *Money
-		obj.MonthlyCardSpend = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetMonthlyCardSpend(), "getter should return the property value")
-	})
-
-	t.Run("GetMonthlyCardSpend_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		obj.MonthlyCardSpend = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetMonthlyCardSpend(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetMonthlyCardSpend_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *UserLevel
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetMonthlyCardSpend() // Should return zero value
-	})
-
-	t.Run("GetMonthlyQualifyingSpend", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		var expected *Money
-		obj.MonthlyQualifyingSpend = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetMonthlyQualifyingSpend(), "getter should return the property value")
-	})
-
-	t.Run("GetMonthlyQualifyingSpend_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		obj.MonthlyQualifyingSpend = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetMonthlyQualifyingSpend(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetMonthlyQualifyingSpend_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *UserLevel
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetMonthlyQualifyingSpend() // Should return zero value
-	})
-
-	t.Run("GetMonthlyTradingVolume", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		var expected *Money
-		obj.MonthlyTradingVolume = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetMonthlyTradingVolume(), "getter should return the property value")
-	})
-
-	t.Run("GetMonthlyTradingVolume_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		obj.MonthlyTradingVolume = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetMonthlyTradingVolume(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetMonthlyTradingVolume_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *UserLevel
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetMonthlyTradingVolume() // Should return zero value
 	})
 
 	t.Run("GetPoints", func(t *testing.T) {
@@ -6015,39 +5802,6 @@ func TestGettersUserLevel(t *testing.T) {
 			}
 		}()
 		_ = obj.GetPointsBySource() // Should return zero value
-	})
-
-	t.Run("GetPointsToNext", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		var expected *int
-		obj.PointsToNext = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetPointsToNext(), "getter should return the property value")
-	})
-
-	t.Run("GetPointsToNext_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		obj.PointsToNext = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetPointsToNext(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetPointsToNext_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *UserLevel
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetPointsToNext() // Should return zero value
 	})
 
 	t.Run("GetResetsAt", func(t *testing.T) {
@@ -6117,161 +5871,6 @@ func TestSettersMarkExplicitUserLevel(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetLevels_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		var fernTestValueLevels []*AccountProcessingOfferLevel
-
-		// Act
-		obj.SetLevels(fernTestValueLevels)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetMonthlyAdsSpend_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		var fernTestValueMonthlyAdsSpend *Money
-
-		// Act
-		obj.SetMonthlyAdsSpend(fernTestValueMonthlyAdsSpend)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetMonthlyCardSpend_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		var fernTestValueMonthlyCardSpend *Money
-
-		// Act
-		obj.SetMonthlyCardSpend(fernTestValueMonthlyCardSpend)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetMonthlyQualifyingSpend_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		var fernTestValueMonthlyQualifyingSpend *Money
-
-		// Act
-		obj.SetMonthlyQualifyingSpend(fernTestValueMonthlyQualifyingSpend)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetMonthlyTradingVolume_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		var fernTestValueMonthlyTradingVolume *Money
-
-		// Act
-		obj.SetMonthlyTradingVolume(fernTestValueMonthlyTradingVolume)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetPoints_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -6311,37 +5910,6 @@ func TestSettersMarkExplicitUserLevel(t *testing.T) {
 
 		// Act
 		obj.SetPointsBySource(fernTestValuePointsBySource)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetPointsToNext_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &UserLevel{}
-		var fernTestValuePointsToNext *int
-
-		// Act
-		obj.SetPointsToNext(fernTestValuePointsToNext)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -10273,14 +9841,8 @@ func TestRequiredNullableRoundTripUserEarnings(t *testing.T) {
 
 func TestRequiredNullableRoundTripUserLevel(t *testing.T) {
 	requiredNullableKeys := []string{
-		"levels",
-		"monthly_ads_spend",
-		"monthly_card_spend",
-		"monthly_qualifying_spend",
-		"monthly_trading_volume",
 		"points",
 		"points_by_source",
-		"points_to_next",
 		"resets_at",
 	}
 	marshalToMap := func(t *testing.T, obj *UserLevel) map[string]json.RawMessage {
@@ -10294,7 +9856,7 @@ func TestRequiredNullableRoundTripUserLevel(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj UserLevel
-		require.NoError(t, json.Unmarshal([]byte(`{"levels":null,"monthly_ads_spend":null,"monthly_card_spend":null,"monthly_qualifying_spend":null,"monthly_trading_volume":null,"points":null,"points_by_source":null,"points_to_next":null,"resets_at":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"points":null,"points_by_source":null,"resets_at":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

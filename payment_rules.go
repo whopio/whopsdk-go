@@ -48,7 +48,7 @@ var (
 type CreatePaymentRulesRequest struct {
 	// The account to create the rule on. Defaults to the account the request is acting for.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization; capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply.
+	// What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization. Capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply. A rule on `postal_code_check`, `address_line1_check`, or `cvv_check` accepts `block` or `review`. Whop authorizes a freshly entered card first. When the rule matches the bank's result, `block` voids and declines the payment. A `review` holds it for you to capture or void, with the same automatic capture.
 	Action CreatePaymentRulesRequestAction `json:"action" url:"-"`
 	// The conditions a payment is matched against. Up to 10 conditions, and 8 KiB once serialized.
 	Conditions *CreatePaymentRulesRequestConditions `json:"conditions" url:"-"`
@@ -299,7 +299,7 @@ var (
 type ReplacePaymentRulesRequest struct {
 	// The payment rule ID.
 	ID string `json:"-" url:"-"`
-	// What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization; capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply.
+	// What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization. Capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply. A rule on `postal_code_check`, `address_line1_check`, or `cvv_check` accepts `block` or `review`. Whop authorizes a freshly entered card first. When the rule matches the bank's result, `block` voids and declines the payment. A `review` holds it for you to capture or void, with the same automatic capture.
 	Action ReplacePaymentRulesRequestAction `json:"action" url:"-"`
 	// The conditions a payment is matched against. Up to 10 conditions, and 8 KiB once serialized.
 	Conditions *ReplacePaymentRulesRequestConditions `json:"conditions" url:"-"`
@@ -408,7 +408,7 @@ var paymentRuleNullableFields = map[string]*big.Int{
 type PaymentRule struct {
 	// Account ID, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"account_id"`
-	// What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization; capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply.
+	// What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization. Capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply. A rule on `postal_code_check`, `address_line1_check`, or `cvv_check` accepts `block` or `review`. Whop authorizes a freshly entered card first. When the rule matches the bank's result, `block` voids and declines the payment. A `review` holds it for you to capture or void, with the same automatic capture.
 	Action PaymentRuleAction `json:"action" url:"action"`
 	// The conditions a payment is matched against. Up to 10 conditions, and 8 KiB once serialized.
 	Conditions *PaymentRuleConditions `json:"conditions" url:"conditions"`
@@ -639,7 +639,7 @@ func (p *PaymentRule) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization; capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply.
+// What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization. Capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply. A rule on `postal_code_check`, `address_line1_check`, or `cvv_check` accepts `block` or `review`. Whop authorizes a freshly entered card first. When the rule matches the bank's result, `block` voids and declines the payment. A `review` holds it for you to capture or void, with the same automatic capture.
 type PaymentRuleAction string
 
 const (
@@ -806,6 +806,9 @@ const (
 	PaymentRuleConditionFieldEmailDomain       PaymentRuleConditionField = "email_domain"
 	PaymentRuleConditionFieldIPAddress         PaymentRuleConditionField = "ip_address"
 	PaymentRuleConditionFieldIPCountry         PaymentRuleConditionField = "ip_country"
+	PaymentRuleConditionFieldPostalCodeCheck   PaymentRuleConditionField = "postal_code_check"
+	PaymentRuleConditionFieldAddressLine1Check PaymentRuleConditionField = "address_line1_check"
+	PaymentRuleConditionFieldCvvCheck          PaymentRuleConditionField = "cvv_check"
 )
 
 func NewPaymentRuleConditionFieldFromString(s string) (PaymentRuleConditionField, error) {
@@ -836,6 +839,12 @@ func NewPaymentRuleConditionFieldFromString(s string) (PaymentRuleConditionField
 		return PaymentRuleConditionFieldIPAddress, nil
 	case "ip_country":
 		return PaymentRuleConditionFieldIPCountry, nil
+	case "postal_code_check":
+		return PaymentRuleConditionFieldPostalCodeCheck, nil
+	case "address_line1_check":
+		return PaymentRuleConditionFieldAddressLine1Check, nil
+	case "cvv_check":
+		return PaymentRuleConditionFieldCvvCheck, nil
 	}
 	var t PaymentRuleConditionField
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -898,7 +907,7 @@ func (p PaymentRuleConditionOperator) Ptr() *PaymentRuleConditionOperator {
 	return &p
 }
 
-// The value to compare against. A whole number from 0 to 100 for `risk_score`, a number of at least 0 for `amount_in_usd`, a string for the other fields, and an array of strings for the `in` and `not_in` operators.
+// The value to compare against. `risk_score` takes a whole number from 0 to 100, and `amount_in_usd` a number of at least 0. The `in` and `not_in` operators take an array of strings. Other fields take a string. The check fields accept `PASS`, `FAIL`, `UNAVAILABLE`, and `UNCHECKED`.
 type PaymentRuleConditionValue struct {
 	Double     float64
 	String     string
@@ -1269,6 +1278,9 @@ const (
 	PaymentRuleFieldFieldEmailDomain       PaymentRuleFieldField = "email_domain"
 	PaymentRuleFieldFieldIPAddress         PaymentRuleFieldField = "ip_address"
 	PaymentRuleFieldFieldIPCountry         PaymentRuleFieldField = "ip_country"
+	PaymentRuleFieldFieldPostalCodeCheck   PaymentRuleFieldField = "postal_code_check"
+	PaymentRuleFieldFieldAddressLine1Check PaymentRuleFieldField = "address_line1_check"
+	PaymentRuleFieldFieldCvvCheck          PaymentRuleFieldField = "cvv_check"
 )
 
 func NewPaymentRuleFieldFieldFromString(s string) (PaymentRuleFieldField, error) {
@@ -1299,6 +1311,12 @@ func NewPaymentRuleFieldFieldFromString(s string) (PaymentRuleFieldField, error)
 		return PaymentRuleFieldFieldIPAddress, nil
 	case "ip_country":
 		return PaymentRuleFieldFieldIPCountry, nil
+	case "postal_code_check":
+		return PaymentRuleFieldFieldPostalCodeCheck, nil
+	case "address_line1_check":
+		return PaymentRuleFieldFieldAddressLine1Check, nil
+	case "cvv_check":
+		return PaymentRuleFieldFieldCvvCheck, nil
 	}
 	var t PaymentRuleFieldField
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1517,7 +1535,7 @@ func (p PaymentRuleStatus) Ptr() *PaymentRuleStatus {
 	return &p
 }
 
-// What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization; capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply.
+// What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization. Capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply. A rule on `postal_code_check`, `address_line1_check`, or `cvv_check` accepts `block` or `review`. Whop authorizes a freshly entered card first. When the rule matches the bank's result, `block` voids and declines the payment. A `review` holds it for you to capture or void, with the same automatic capture.
 type CreatePaymentRulesRequestAction string
 
 const (
@@ -1770,6 +1788,9 @@ const (
 	CreatePaymentRulesRequestConditionsAllItemFieldEmailDomain       CreatePaymentRulesRequestConditionsAllItemField = "email_domain"
 	CreatePaymentRulesRequestConditionsAllItemFieldIPAddress         CreatePaymentRulesRequestConditionsAllItemField = "ip_address"
 	CreatePaymentRulesRequestConditionsAllItemFieldIPCountry         CreatePaymentRulesRequestConditionsAllItemField = "ip_country"
+	CreatePaymentRulesRequestConditionsAllItemFieldPostalCodeCheck   CreatePaymentRulesRequestConditionsAllItemField = "postal_code_check"
+	CreatePaymentRulesRequestConditionsAllItemFieldAddressLine1Check CreatePaymentRulesRequestConditionsAllItemField = "address_line1_check"
+	CreatePaymentRulesRequestConditionsAllItemFieldCvvCheck          CreatePaymentRulesRequestConditionsAllItemField = "cvv_check"
 )
 
 func NewCreatePaymentRulesRequestConditionsAllItemFieldFromString(s string) (CreatePaymentRulesRequestConditionsAllItemField, error) {
@@ -1800,6 +1821,12 @@ func NewCreatePaymentRulesRequestConditionsAllItemFieldFromString(s string) (Cre
 		return CreatePaymentRulesRequestConditionsAllItemFieldIPAddress, nil
 	case "ip_country":
 		return CreatePaymentRulesRequestConditionsAllItemFieldIPCountry, nil
+	case "postal_code_check":
+		return CreatePaymentRulesRequestConditionsAllItemFieldPostalCodeCheck, nil
+	case "address_line1_check":
+		return CreatePaymentRulesRequestConditionsAllItemFieldAddressLine1Check, nil
+	case "cvv_check":
+		return CreatePaymentRulesRequestConditionsAllItemFieldCvvCheck, nil
 	}
 	var t CreatePaymentRulesRequestConditionsAllItemField
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2454,7 +2481,7 @@ func (l *ListPaymentRulesResponsePageInfo) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization; capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply.
+// What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization. Capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply. A rule on `postal_code_check`, `address_line1_check`, or `cvv_check` accepts `block` or `review`. Whop authorizes a freshly entered card first. When the rule matches the bank's result, `block` voids and declines the payment. A `review` holds it for you to capture or void, with the same automatic capture.
 type ReplacePaymentRulesRequestAction string
 
 const (
@@ -2707,6 +2734,9 @@ const (
 	ReplacePaymentRulesRequestConditionsAllItemFieldEmailDomain       ReplacePaymentRulesRequestConditionsAllItemField = "email_domain"
 	ReplacePaymentRulesRequestConditionsAllItemFieldIPAddress         ReplacePaymentRulesRequestConditionsAllItemField = "ip_address"
 	ReplacePaymentRulesRequestConditionsAllItemFieldIPCountry         ReplacePaymentRulesRequestConditionsAllItemField = "ip_country"
+	ReplacePaymentRulesRequestConditionsAllItemFieldPostalCodeCheck   ReplacePaymentRulesRequestConditionsAllItemField = "postal_code_check"
+	ReplacePaymentRulesRequestConditionsAllItemFieldAddressLine1Check ReplacePaymentRulesRequestConditionsAllItemField = "address_line1_check"
+	ReplacePaymentRulesRequestConditionsAllItemFieldCvvCheck          ReplacePaymentRulesRequestConditionsAllItemField = "cvv_check"
 )
 
 func NewReplacePaymentRulesRequestConditionsAllItemFieldFromString(s string) (ReplacePaymentRulesRequestConditionsAllItemField, error) {
@@ -2737,6 +2767,12 @@ func NewReplacePaymentRulesRequestConditionsAllItemFieldFromString(s string) (Re
 		return ReplacePaymentRulesRequestConditionsAllItemFieldIPAddress, nil
 	case "ip_country":
 		return ReplacePaymentRulesRequestConditionsAllItemFieldIPCountry, nil
+	case "postal_code_check":
+		return ReplacePaymentRulesRequestConditionsAllItemFieldPostalCodeCheck, nil
+	case "address_line1_check":
+		return ReplacePaymentRulesRequestConditionsAllItemFieldAddressLine1Check, nil
+	case "cvv_check":
+		return ReplacePaymentRulesRequestConditionsAllItemFieldCvvCheck, nil
 	}
 	var t ReplacePaymentRulesRequestConditionsAllItemField
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

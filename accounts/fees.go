@@ -1550,13 +1550,14 @@ func (u *UpdateFeesRequestCardProcessingRegionsValue) String() string {
 }
 
 var (
-	updateFeesRequestChildMarkupsFieldCardSpend      = big.NewInt(1 << 0)
-	updateFeesRequestChildMarkupsFieldCryptoSwaps    = big.NewInt(1 << 1)
-	updateFeesRequestChildMarkupsFieldDeposits       = big.NewInt(1 << 2)
-	updateFeesRequestChildMarkupsFieldPaymentMethods = big.NewInt(1 << 3)
-	updateFeesRequestChildMarkupsFieldPayments       = big.NewInt(1 << 4)
-	updateFeesRequestChildMarkupsFieldPayouts        = big.NewInt(1 << 5)
-	updateFeesRequestChildMarkupsFieldTransfers      = big.NewInt(1 << 6)
+	updateFeesRequestChildMarkupsFieldCardRegions    = big.NewInt(1 << 0)
+	updateFeesRequestChildMarkupsFieldCardSpend      = big.NewInt(1 << 1)
+	updateFeesRequestChildMarkupsFieldCryptoSwaps    = big.NewInt(1 << 2)
+	updateFeesRequestChildMarkupsFieldDeposits       = big.NewInt(1 << 3)
+	updateFeesRequestChildMarkupsFieldPaymentMethods = big.NewInt(1 << 4)
+	updateFeesRequestChildMarkupsFieldPayments       = big.NewInt(1 << 5)
+	updateFeesRequestChildMarkupsFieldPayouts        = big.NewInt(1 << 6)
+	updateFeesRequestChildMarkupsFieldTransfers      = big.NewInt(1 << 7)
 )
 
 // updateFeesRequestChildMarkupsNullableFields maps the wire names of UpdateFeesRequestChildMarkups's nullable fields (required or optional) to their field bits.
@@ -1569,6 +1570,8 @@ var updateFeesRequestChildMarkupsNullableFields = map[string]*big.Int{
 
 // Default markups for subaccounts. Available on accounts without a parent, even before any accounts connect.
 type UpdateFeesRequestChildMarkups struct {
+	// Markups on card payments, keyed by acquiring region: `usa`, `eu`, `uk`, `ca`, or `au`. `null` clears a region's markup so it uses `payment_methods.card`.
+	CardRegions map[string]*UpdateFeesRequestChildMarkupsCardRegionsValue `json:"card_regions,omitempty" url:"card_regions,omitempty"`
 	// The markup on card purchases settled by the subaccount. `null` clears the custom markup.
 	CardSpend *UpdateFeesRequestChildMarkupsCardSpend `json:"card_spend,omitempty" url:"card_spend,omitempty"`
 	// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
@@ -1589,6 +1592,13 @@ type UpdateFeesRequestChildMarkups struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (u *UpdateFeesRequestChildMarkups) GetCardRegions() map[string]*UpdateFeesRequestChildMarkupsCardRegionsValue {
+	if u == nil {
+		return nil
+	}
+	return u.CardRegions
 }
 
 func (u *UpdateFeesRequestChildMarkups) GetCardSpend() *UpdateFeesRequestChildMarkupsCardSpend {
@@ -1654,6 +1664,13 @@ func (u *UpdateFeesRequestChildMarkups) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	u.explicitFields = next
+}
+
+// SetCardRegions sets the CardRegions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestChildMarkups) SetCardRegions(cardRegions map[string]*UpdateFeesRequestChildMarkupsCardRegionsValue) {
+	u.CardRegions = cardRegions
+	u.require(updateFeesRequestChildMarkupsFieldCardRegions)
 }
 
 // SetCardSpend sets the CardSpend field and marks it as non-optional;
@@ -1740,6 +1757,111 @@ func (u *UpdateFeesRequestChildMarkups) MarshalJSON() ([]byte, error) {
 }
 
 func (u *UpdateFeesRequestChildMarkups) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateFeesRequestChildMarkupsCardRegionsValueFieldFixed      = big.NewInt(1 << 0)
+	updateFeesRequestChildMarkupsCardRegionsValueFieldPercentage = big.NewInt(1 << 1)
+)
+
+// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
+type UpdateFeesRequestChildMarkupsCardRegionsValue struct {
+	// The amount the platform adds per event, in US dollars.
+	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
+	// The percentage of the transaction the platform adds, where `2` means 2%.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateFeesRequestChildMarkupsCardRegionsValue) GetFixed() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Fixed
+}
+
+func (u *UpdateFeesRequestChildMarkupsCardRegionsValue) GetPercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Percentage
+}
+
+func (u *UpdateFeesRequestChildMarkupsCardRegionsValue) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateFeesRequestChildMarkupsCardRegionsValue) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestChildMarkupsCardRegionsValue) SetFixed(fixed *float64) {
+	u.Fixed = fixed
+	u.require(updateFeesRequestChildMarkupsCardRegionsValueFieldFixed)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestChildMarkupsCardRegionsValue) SetPercentage(percentage *float64) {
+	u.Percentage = percentage
+	u.require(updateFeesRequestChildMarkupsCardRegionsValueFieldPercentage)
+}
+
+func (u *UpdateFeesRequestChildMarkupsCardRegionsValue) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateFeesRequestChildMarkupsCardRegionsValue
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateFeesRequestChildMarkupsCardRegionsValue(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateFeesRequestChildMarkupsCardRegionsValue) MarshalJSON() ([]byte, error) {
+	type embed UpdateFeesRequestChildMarkupsCardRegionsValue
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateFeesRequestChildMarkupsCardRegionsValue) String() string {
 	if u == nil {
 		return "<nil>"
 	}
@@ -5429,13 +5551,14 @@ func (u *UpdateFeesRequestMarketplaceRegionsValue) String() string {
 }
 
 var (
-	updateFeesRequestMarkupsFieldCardSpend      = big.NewInt(1 << 0)
-	updateFeesRequestMarkupsFieldCryptoSwaps    = big.NewInt(1 << 1)
-	updateFeesRequestMarkupsFieldDeposits       = big.NewInt(1 << 2)
-	updateFeesRequestMarkupsFieldPaymentMethods = big.NewInt(1 << 3)
-	updateFeesRequestMarkupsFieldPayments       = big.NewInt(1 << 4)
-	updateFeesRequestMarkupsFieldPayouts        = big.NewInt(1 << 5)
-	updateFeesRequestMarkupsFieldTransfers      = big.NewInt(1 << 6)
+	updateFeesRequestMarkupsFieldCardRegions    = big.NewInt(1 << 0)
+	updateFeesRequestMarkupsFieldCardSpend      = big.NewInt(1 << 1)
+	updateFeesRequestMarkupsFieldCryptoSwaps    = big.NewInt(1 << 2)
+	updateFeesRequestMarkupsFieldDeposits       = big.NewInt(1 << 3)
+	updateFeesRequestMarkupsFieldPaymentMethods = big.NewInt(1 << 4)
+	updateFeesRequestMarkupsFieldPayments       = big.NewInt(1 << 5)
+	updateFeesRequestMarkupsFieldPayouts        = big.NewInt(1 << 6)
+	updateFeesRequestMarkupsFieldTransfers      = big.NewInt(1 << 7)
 )
 
 // updateFeesRequestMarkupsNullableFields maps the wire names of UpdateFeesRequestMarkups's nullable fields (required or optional) to their field bits.
@@ -5448,6 +5571,8 @@ var updateFeesRequestMarkupsNullableFields = map[string]*big.Int{
 
 // Markups on this subaccount, set by the platform it is connected to.
 type UpdateFeesRequestMarkups struct {
+	// Markups on card payments, keyed by acquiring region: `usa`, `eu`, `uk`, `ca`, or `au`. `null` clears a region's markup so it uses `payment_methods.card`.
+	CardRegions map[string]*UpdateFeesRequestMarkupsCardRegionsValue `json:"card_regions,omitempty" url:"card_regions,omitempty"`
 	// The markup on card purchases settled by the subaccount. `null` clears the custom markup.
 	CardSpend *UpdateFeesRequestMarkupsCardSpend `json:"card_spend,omitempty" url:"card_spend,omitempty"`
 	// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
@@ -5468,6 +5593,13 @@ type UpdateFeesRequestMarkups struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (u *UpdateFeesRequestMarkups) GetCardRegions() map[string]*UpdateFeesRequestMarkupsCardRegionsValue {
+	if u == nil {
+		return nil
+	}
+	return u.CardRegions
 }
 
 func (u *UpdateFeesRequestMarkups) GetCardSpend() *UpdateFeesRequestMarkupsCardSpend {
@@ -5533,6 +5665,13 @@ func (u *UpdateFeesRequestMarkups) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	u.explicitFields = next
+}
+
+// SetCardRegions sets the CardRegions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestMarkups) SetCardRegions(cardRegions map[string]*UpdateFeesRequestMarkupsCardRegionsValue) {
+	u.CardRegions = cardRegions
+	u.require(updateFeesRequestMarkupsFieldCardRegions)
 }
 
 // SetCardSpend sets the CardSpend field and marks it as non-optional;
@@ -5619,6 +5758,111 @@ func (u *UpdateFeesRequestMarkups) MarshalJSON() ([]byte, error) {
 }
 
 func (u *UpdateFeesRequestMarkups) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateFeesRequestMarkupsCardRegionsValueFieldFixed      = big.NewInt(1 << 0)
+	updateFeesRequestMarkupsCardRegionsValueFieldPercentage = big.NewInt(1 << 1)
+)
+
+// The new markup. Fields left out keep their current value. `null` clears the row so the markup returns to its default.
+type UpdateFeesRequestMarkupsCardRegionsValue struct {
+	// The amount the platform adds per event, in US dollars.
+	Fixed *float64 `json:"fixed,omitempty" url:"fixed,omitempty"`
+	// The percentage of the transaction the platform adds, where `2` means 2%.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateFeesRequestMarkupsCardRegionsValue) GetFixed() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Fixed
+}
+
+func (u *UpdateFeesRequestMarkupsCardRegionsValue) GetPercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Percentage
+}
+
+func (u *UpdateFeesRequestMarkupsCardRegionsValue) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateFeesRequestMarkupsCardRegionsValue) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetFixed sets the Fixed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestMarkupsCardRegionsValue) SetFixed(fixed *float64) {
+	u.Fixed = fixed
+	u.require(updateFeesRequestMarkupsCardRegionsValueFieldFixed)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestMarkupsCardRegionsValue) SetPercentage(percentage *float64) {
+	u.Percentage = percentage
+	u.require(updateFeesRequestMarkupsCardRegionsValueFieldPercentage)
+}
+
+func (u *UpdateFeesRequestMarkupsCardRegionsValue) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateFeesRequestMarkupsCardRegionsValue
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateFeesRequestMarkupsCardRegionsValue(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateFeesRequestMarkupsCardRegionsValue) MarshalJSON() ([]byte, error) {
+	type embed UpdateFeesRequestMarkupsCardRegionsValue
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateFeesRequestMarkupsCardRegionsValue) String() string {
 	if u == nil {
 		return "<nil>"
 	}

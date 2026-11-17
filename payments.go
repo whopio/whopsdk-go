@@ -1713,6 +1713,7 @@ const (
 	PaymentLastPaymentErrorDeclineCodeClosedAccount                    PaymentLastPaymentErrorDeclineCode = "closed_account"
 	PaymentLastPaymentErrorDeclineCodeIssuerUnavailable                PaymentLastPaymentErrorDeclineCode = "issuer_unavailable"
 	PaymentLastPaymentErrorDeclineCodeInvalidZip                       PaymentLastPaymentErrorDeclineCode = "invalid_zip"
+	PaymentLastPaymentErrorDeclineCodeInvalidBillingAddress            PaymentLastPaymentErrorDeclineCode = "invalid_billing_address"
 	PaymentLastPaymentErrorDeclineCodeInvalidExpiryMonth               PaymentLastPaymentErrorDeclineCode = "invalid_expiry_month"
 	PaymentLastPaymentErrorDeclineCodeInvalidExpiryYear                PaymentLastPaymentErrorDeclineCode = "invalid_expiry_year"
 	PaymentLastPaymentErrorDeclineCodeInvalidExpiry                    PaymentLastPaymentErrorDeclineCode = "invalid_expiry"
@@ -1834,6 +1835,8 @@ func NewPaymentLastPaymentErrorDeclineCodeFromString(s string) (PaymentLastPayme
 		return PaymentLastPaymentErrorDeclineCodeIssuerUnavailable, nil
 	case "invalid_zip":
 		return PaymentLastPaymentErrorDeclineCodeInvalidZip, nil
+	case "invalid_billing_address":
+		return PaymentLastPaymentErrorDeclineCodeInvalidBillingAddress, nil
 	case "invalid_expiry_month":
 		return PaymentLastPaymentErrorDeclineCodeInvalidExpiryMonth, nil
 	case "invalid_expiry_year":

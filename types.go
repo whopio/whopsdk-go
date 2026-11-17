@@ -2194,7 +2194,7 @@ type AccountFee struct {
 	Regions map[string]*AccountFeeRegionalRate `json:"regions" url:"regions"`
 	// The rate that takes effect when this account's custom rate is cleared, including inherited pricing. Its `percentage` and `fixed` are `null` when a subaccount's fees are read without access to its parent account.
 	Reset *AccountFeeRate `json:"reset" url:"reset"`
-	// Where the rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to. `null` when a subaccount's fees are read without access to its parent account.
+	// Where the rate in effect comes from. `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by this account's platform. `null` when a subaccount's fees are read without access to its parent account.
 	Source *AccountFeeSource `json:"source,omitempty" url:"source,omitempty"`
 	// Why the caller may not change this fee, or `null` when `adjustable`. `not_permitted` when the caller has no say over it.
 	UnadjustableReason *AccountFeeUnadjustableReason `json:"unadjustable_reason,omitempty" url:"unadjustable_reason,omitempty"`
@@ -2731,16 +2731,19 @@ func (a AccountFeeMarkupUnadjustableReason) Ptr() *AccountFeeMarkupUnadjustableR
 }
 
 var (
-	accountFeeMarkupsFieldCardSpend      = big.NewInt(1 << 0)
-	accountFeeMarkupsFieldCryptoSwaps    = big.NewInt(1 << 1)
-	accountFeeMarkupsFieldDeposits       = big.NewInt(1 << 2)
-	accountFeeMarkupsFieldPaymentMethods = big.NewInt(1 << 3)
-	accountFeeMarkupsFieldPayments       = big.NewInt(1 << 4)
-	accountFeeMarkupsFieldPayouts        = big.NewInt(1 << 5)
-	accountFeeMarkupsFieldTransfers      = big.NewInt(1 << 6)
+	accountFeeMarkupsFieldCardRegions    = big.NewInt(1 << 0)
+	accountFeeMarkupsFieldCardSpend      = big.NewInt(1 << 1)
+	accountFeeMarkupsFieldCryptoSwaps    = big.NewInt(1 << 2)
+	accountFeeMarkupsFieldDeposits       = big.NewInt(1 << 3)
+	accountFeeMarkupsFieldPaymentMethods = big.NewInt(1 << 4)
+	accountFeeMarkupsFieldPayments       = big.NewInt(1 << 5)
+	accountFeeMarkupsFieldPayouts        = big.NewInt(1 << 6)
+	accountFeeMarkupsFieldTransfers      = big.NewInt(1 << 7)
 )
 
 type AccountFeeMarkups struct {
+	// Markups on card payments, keyed by acquiring region (`usa`, `eu`, `uk`, `ca`, or `au`). A region without its own markup uses `payment_methods.card`.
+	CardRegions map[string]*AccountFeeMarkup `json:"card_regions" url:"card_regions"`
 	// The markup on card purchases settled by the subaccount.
 	CardSpend *AccountFeeMarkup `json:"card_spend" url:"card_spend"`
 	// The markup on cryptocurrency token swaps.
@@ -2761,6 +2764,13 @@ type AccountFeeMarkups struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AccountFeeMarkups) GetCardRegions() map[string]*AccountFeeMarkup {
+	if a == nil {
+		return nil
+	}
+	return a.CardRegions
 }
 
 func (a *AccountFeeMarkups) GetCardSpend() *AccountFeeMarkup {
@@ -2826,6 +2836,13 @@ func (a *AccountFeeMarkups) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	a.explicitFields = next
+}
+
+// SetCardRegions sets the CardRegions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFeeMarkups) SetCardRegions(cardRegions map[string]*AccountFeeMarkup) {
+	a.CardRegions = cardRegions
+	a.require(accountFeeMarkupsFieldCardRegions)
 }
 
 // SetCardSpend sets the CardSpend field and marks it as non-optional;
@@ -3347,7 +3364,7 @@ func (a AccountFeeRegionalRateSource) Ptr() *AccountFeeRegionalRateSource {
 	return &a
 }
 
-// Where the rate in effect comes from: `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by the platform this account is connected to. `null` when a subaccount's fees are read without access to its parent account.
+// Where the rate in effect comes from. `default` is the platform rate, `custom` a rate negotiated for this account, and `inherited` a rate negotiated by this account's platform. `null` when a subaccount's fees are read without access to its parent account.
 type AccountFeeSource string
 
 const (
@@ -4988,279 +5005,6 @@ func NewAccountPreferencesSubscriptionFailureBehaviorFromString(s string) (Accou
 }
 
 func (a AccountPreferencesSubscriptionFailureBehavior) Ptr() *AccountPreferencesSubscriptionFailureBehavior {
-	return &a
-}
-
-var (
-	accountProcessingOfferLevelFieldLevel                    = big.NewInt(1 << 0)
-	accountProcessingOfferLevelFieldMinimumSpend             = big.NewInt(1 << 1)
-	accountProcessingOfferLevelFieldProcessingRatePercentage = big.NewInt(1 << 2)
-	accountProcessingOfferLevelFieldRegionalRates            = big.NewInt(1 << 3)
-)
-
-type AccountProcessingOfferLevel struct {
-	// The processing level.
-	Level int `json:"level" url:"level"`
-	// The monthly qualifying spend required to reach this level.
-	MinimumSpend *Money `json:"minimum_spend" url:"minimum_spend"`
-	// The standard US and Canada card processing percentage at this level, regardless of the account's custom rate.
-	ProcessingRatePercentage float64                               `json:"processing_rate_percentage" url:"processing_rate_percentage"`
-	RegionalRates            []*AccountProcessingOfferRegionalRate `json:"regional_rates" url:"regional_rates"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AccountProcessingOfferLevel) GetLevel() int {
-	if a == nil {
-		return 0
-	}
-	return a.Level
-}
-
-func (a *AccountProcessingOfferLevel) GetMinimumSpend() *Money {
-	if a == nil {
-		return nil
-	}
-	return a.MinimumSpend
-}
-
-func (a *AccountProcessingOfferLevel) GetProcessingRatePercentage() float64 {
-	if a == nil {
-		return 0
-	}
-	return a.ProcessingRatePercentage
-}
-
-func (a *AccountProcessingOfferLevel) GetRegionalRates() []*AccountProcessingOfferRegionalRate {
-	if a == nil {
-		return nil
-	}
-	return a.RegionalRates
-}
-
-func (a *AccountProcessingOfferLevel) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AccountProcessingOfferLevel) require(field *big.Int) {
-	next := new(big.Int)
-	if a.explicitFields != nil {
-		next.Set(a.explicitFields)
-	}
-	next.Or(next, field)
-	a.explicitFields = next
-}
-
-// SetLevel sets the Level field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountProcessingOfferLevel) SetLevel(level int) {
-	a.Level = level
-	a.require(accountProcessingOfferLevelFieldLevel)
-}
-
-// SetMinimumSpend sets the MinimumSpend field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountProcessingOfferLevel) SetMinimumSpend(minimumSpend *Money) {
-	a.MinimumSpend = minimumSpend
-	a.require(accountProcessingOfferLevelFieldMinimumSpend)
-}
-
-// SetProcessingRatePercentage sets the ProcessingRatePercentage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountProcessingOfferLevel) SetProcessingRatePercentage(processingRatePercentage float64) {
-	a.ProcessingRatePercentage = processingRatePercentage
-	a.require(accountProcessingOfferLevelFieldProcessingRatePercentage)
-}
-
-// SetRegionalRates sets the RegionalRates field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountProcessingOfferLevel) SetRegionalRates(regionalRates []*AccountProcessingOfferRegionalRate) {
-	a.RegionalRates = regionalRates
-	a.require(accountProcessingOfferLevelFieldRegionalRates)
-}
-
-func (a *AccountProcessingOfferLevel) UnmarshalJSON(data []byte) error {
-	type unmarshaler AccountProcessingOfferLevel
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AccountProcessingOfferLevel(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AccountProcessingOfferLevel) MarshalJSON() ([]byte, error) {
-	type embed AccountProcessingOfferLevel
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AccountProcessingOfferLevel) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-var (
-	accountProcessingOfferRegionalRateFieldProcessingRatePercentage = big.NewInt(1 << 0)
-	accountProcessingOfferRegionalRateFieldRegion                   = big.NewInt(1 << 1)
-)
-
-type AccountProcessingOfferRegionalRate struct {
-	// The standard card processing percentage at this level for cards from this region, regardless of the account's custom rate.
-	ProcessingRatePercentage float64 `json:"processing_rate_percentage" url:"processing_rate_percentage"`
-	// The card region this fee applies to.
-	Region AccountProcessingOfferRegionalRateRegion `json:"region" url:"region"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AccountProcessingOfferRegionalRate) GetProcessingRatePercentage() float64 {
-	if a == nil {
-		return 0
-	}
-	return a.ProcessingRatePercentage
-}
-
-func (a *AccountProcessingOfferRegionalRate) GetRegion() AccountProcessingOfferRegionalRateRegion {
-	if a == nil {
-		return ""
-	}
-	return a.Region
-}
-
-func (a *AccountProcessingOfferRegionalRate) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AccountProcessingOfferRegionalRate) require(field *big.Int) {
-	next := new(big.Int)
-	if a.explicitFields != nil {
-		next.Set(a.explicitFields)
-	}
-	next.Or(next, field)
-	a.explicitFields = next
-}
-
-// SetProcessingRatePercentage sets the ProcessingRatePercentage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountProcessingOfferRegionalRate) SetProcessingRatePercentage(processingRatePercentage float64) {
-	a.ProcessingRatePercentage = processingRatePercentage
-	a.require(accountProcessingOfferRegionalRateFieldProcessingRatePercentage)
-}
-
-// SetRegion sets the Region field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AccountProcessingOfferRegionalRate) SetRegion(region AccountProcessingOfferRegionalRateRegion) {
-	a.Region = region
-	a.require(accountProcessingOfferRegionalRateFieldRegion)
-}
-
-func (a *AccountProcessingOfferRegionalRate) UnmarshalJSON(data []byte) error {
-	type unmarshaler AccountProcessingOfferRegionalRate
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AccountProcessingOfferRegionalRate(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AccountProcessingOfferRegionalRate) MarshalJSON() ([]byte, error) {
-	type embed AccountProcessingOfferRegionalRate
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AccountProcessingOfferRegionalRate) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-// The card region this fee applies to.
-type AccountProcessingOfferRegionalRateRegion string
-
-const (
-	AccountProcessingOfferRegionalRateRegionUsAndCanada          AccountProcessingOfferRegionalRateRegion = "us_and_canada"
-	AccountProcessingOfferRegionalRateRegionEuropeUkAndAustralia AccountProcessingOfferRegionalRateRegion = "europe_uk_and_australia"
-	AccountProcessingOfferRegionalRateRegionLatinAmerica         AccountProcessingOfferRegionalRateRegion = "latin_america"
-	AccountProcessingOfferRegionalRateRegionPeru                 AccountProcessingOfferRegionalRateRegion = "peru"
-	AccountProcessingOfferRegionalRateRegionBrazil               AccountProcessingOfferRegionalRateRegion = "brazil"
-)
-
-func NewAccountProcessingOfferRegionalRateRegionFromString(s string) (AccountProcessingOfferRegionalRateRegion, error) {
-	switch s {
-	case "us_and_canada":
-		return AccountProcessingOfferRegionalRateRegionUsAndCanada, nil
-	case "europe_uk_and_australia":
-		return AccountProcessingOfferRegionalRateRegionEuropeUkAndAustralia, nil
-	case "latin_america":
-		return AccountProcessingOfferRegionalRateRegionLatinAmerica, nil
-	case "peru":
-		return AccountProcessingOfferRegionalRateRegionPeru, nil
-	case "brazil":
-		return AccountProcessingOfferRegionalRateRegionBrazil, nil
-	}
-	var t AccountProcessingOfferRegionalRateRegion
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AccountProcessingOfferRegionalRateRegion) Ptr() *AccountProcessingOfferRegionalRateRegion {
 	return &a
 }
 
@@ -43287,41 +43031,19 @@ func (o *OauthGrant) String() string {
 }
 
 var (
-	ownerLevelFieldCurrent                = big.NewInt(1 << 0)
-	ownerLevelFieldLevels                 = big.NewInt(1 << 1)
-	ownerLevelFieldMonthlyAdsSpend        = big.NewInt(1 << 2)
-	ownerLevelFieldMonthlyCardSpend       = big.NewInt(1 << 3)
-	ownerLevelFieldMonthlyQualifyingSpend = big.NewInt(1 << 4)
-	ownerLevelFieldMonthlyTradingVolume   = big.NewInt(1 << 5)
-	ownerLevelFieldPoints                 = big.NewInt(1 << 6)
-	ownerLevelFieldPointsBySource         = big.NewInt(1 << 7)
-	ownerLevelFieldPointsToNext           = big.NewInt(1 << 8)
-	ownerLevelFieldResetsAt               = big.NewInt(1 << 9)
+	ownerLevelFieldCurrent        = big.NewInt(1 << 0)
+	ownerLevelFieldPoints         = big.NewInt(1 << 1)
+	ownerLevelFieldPointsBySource = big.NewInt(1 << 2)
+	ownerLevelFieldResetsAt       = big.NewInt(1 << 3)
 )
-
-// ownerLevelNullableFields maps the wire names of OwnerLevel's nullable fields (required or optional) to their field bits.
-var ownerLevelNullableFields = map[string]*big.Int{
-	"points_to_next": ownerLevelFieldPointsToNext,
-}
 
 type OwnerLevel struct {
 	// The level that applies: the highest the owner reached this month or in the 5 months before, from `0` up to `10`.
-	Current int                            `json:"current" url:"current"`
-	Levels  []*AccountProcessingOfferLevel `json:"levels" url:"levels"`
-	// Whop Ads charges paid this calendar month across every account the owner owns, net of refunds, in USD, so it can be negative. An account whose month nets to zero or below is left out.
-	MonthlyAdsSpend *Money `json:"monthly_ads_spend" url:"monthly_ads_spend"`
-	// Captured Whop Card spend this calendar month across every account the owner owns, net of refunds, in USD, so it can be negative. An account whose month nets to zero or below is left out.
-	MonthlyCardSpend *Money `json:"monthly_card_spend" url:"monthly_card_spend"`
-	// Qualifying spend this calendar month across every account the owner owns, plus the owner's personal trading and partner points, in USD: `points` divided by 10.
-	MonthlyQualifyingSpend *Money `json:"monthly_qualifying_spend" url:"monthly_qualifying_spend"`
-	// Perpetual trading volume filled through Whop this calendar month across every account the owner owns and their personal wallet, in USD. An account whose month nets to zero or below is left out.
-	MonthlyTradingVolume *Money `json:"monthly_trading_volume" url:"monthly_trading_volume"`
+	Current int `json:"current" url:"current"`
 	// Points earned this month across every account the owner owns, plus the owner's partner points, rounded down. An account whose month nets below zero counts as zero.
 	Points int `json:"points" url:"points"`
 	// This month's points, split by where they were earned. Each source is net of its refunds, so one can be negative.
 	PointsBySource *OwnerLevelPoints `json:"points_by_source" url:"points_by_source"`
-	// Points still needed this month to reach the next level, or `null` at level `10`.
-	PointsToNext *int `json:"points_to_next,omitempty" url:"points_to_next,omitempty"`
 	// When this month's points reset to zero, as an ISO 8601 timestamp.
 	ResetsAt string `json:"resets_at" url:"resets_at"`
 
@@ -43339,41 +43061,6 @@ func (o *OwnerLevel) GetCurrent() int {
 	return o.Current
 }
 
-func (o *OwnerLevel) GetLevels() []*AccountProcessingOfferLevel {
-	if o == nil {
-		return nil
-	}
-	return o.Levels
-}
-
-func (o *OwnerLevel) GetMonthlyAdsSpend() *Money {
-	if o == nil {
-		return nil
-	}
-	return o.MonthlyAdsSpend
-}
-
-func (o *OwnerLevel) GetMonthlyCardSpend() *Money {
-	if o == nil {
-		return nil
-	}
-	return o.MonthlyCardSpend
-}
-
-func (o *OwnerLevel) GetMonthlyQualifyingSpend() *Money {
-	if o == nil {
-		return nil
-	}
-	return o.MonthlyQualifyingSpend
-}
-
-func (o *OwnerLevel) GetMonthlyTradingVolume() *Money {
-	if o == nil {
-		return nil
-	}
-	return o.MonthlyTradingVolume
-}
-
 func (o *OwnerLevel) GetPoints() int {
 	if o == nil {
 		return 0
@@ -43386,13 +43073,6 @@ func (o *OwnerLevel) GetPointsBySource() *OwnerLevelPoints {
 		return nil
 	}
 	return o.PointsBySource
-}
-
-func (o *OwnerLevel) GetPointsToNext() *int {
-	if o == nil {
-		return nil
-	}
-	return o.PointsToNext
 }
 
 func (o *OwnerLevel) GetResetsAt() string {
@@ -43425,41 +43105,6 @@ func (o *OwnerLevel) SetCurrent(current int) {
 	o.require(ownerLevelFieldCurrent)
 }
 
-// SetLevels sets the Levels field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetLevels(levels []*AccountProcessingOfferLevel) {
-	o.Levels = levels
-	o.require(ownerLevelFieldLevels)
-}
-
-// SetMonthlyAdsSpend sets the MonthlyAdsSpend field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetMonthlyAdsSpend(monthlyAdsSpend *Money) {
-	o.MonthlyAdsSpend = monthlyAdsSpend
-	o.require(ownerLevelFieldMonthlyAdsSpend)
-}
-
-// SetMonthlyCardSpend sets the MonthlyCardSpend field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetMonthlyCardSpend(monthlyCardSpend *Money) {
-	o.MonthlyCardSpend = monthlyCardSpend
-	o.require(ownerLevelFieldMonthlyCardSpend)
-}
-
-// SetMonthlyQualifyingSpend sets the MonthlyQualifyingSpend field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetMonthlyQualifyingSpend(monthlyQualifyingSpend *Money) {
-	o.MonthlyQualifyingSpend = monthlyQualifyingSpend
-	o.require(ownerLevelFieldMonthlyQualifyingSpend)
-}
-
-// SetMonthlyTradingVolume sets the MonthlyTradingVolume field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetMonthlyTradingVolume(monthlyTradingVolume *Money) {
-	o.MonthlyTradingVolume = monthlyTradingVolume
-	o.require(ownerLevelFieldMonthlyTradingVolume)
-}
-
 // SetPoints sets the Points field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (o *OwnerLevel) SetPoints(points int) {
@@ -43472,13 +43117,6 @@ func (o *OwnerLevel) SetPoints(points int) {
 func (o *OwnerLevel) SetPointsBySource(pointsBySource *OwnerLevelPoints) {
 	o.PointsBySource = pointsBySource
 	o.require(ownerLevelFieldPointsBySource)
-}
-
-// SetPointsToNext sets the PointsToNext field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (o *OwnerLevel) SetPointsToNext(pointsToNext *int) {
-	o.PointsToNext = pointsToNext
-	o.require(ownerLevelFieldPointsToNext)
 }
 
 // SetResetsAt sets the ResetsAt field and marks it as non-optional;
@@ -43500,13 +43138,6 @@ func (o *OwnerLevel) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	o.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, ownerLevelNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		o.require(presentFields)
-	}
 	o.rawJSON = json.RawMessage(data)
 	return nil
 }
@@ -48044,6 +47675,7 @@ const (
 	PaymentDeclineCodesClosedAccount                    PaymentDeclineCodes = "closed_account"
 	PaymentDeclineCodesIssuerUnavailable                PaymentDeclineCodes = "issuer_unavailable"
 	PaymentDeclineCodesInvalidZip                       PaymentDeclineCodes = "invalid_zip"
+	PaymentDeclineCodesInvalidBillingAddress            PaymentDeclineCodes = "invalid_billing_address"
 	PaymentDeclineCodesInvalidExpiryMonth               PaymentDeclineCodes = "invalid_expiry_month"
 	PaymentDeclineCodesInvalidExpiryYear                PaymentDeclineCodes = "invalid_expiry_year"
 	PaymentDeclineCodesInvalidExpiry                    PaymentDeclineCodes = "invalid_expiry"
@@ -48165,6 +47797,8 @@ func NewPaymentDeclineCodesFromString(s string) (PaymentDeclineCodes, error) {
 		return PaymentDeclineCodesIssuerUnavailable, nil
 	case "invalid_zip":
 		return PaymentDeclineCodesInvalidZip, nil
+	case "invalid_billing_address":
+		return PaymentDeclineCodesInvalidBillingAddress, nil
 	case "invalid_expiry_month":
 		return PaymentDeclineCodesInvalidExpiryMonth, nil
 	case "invalid_expiry_year":
