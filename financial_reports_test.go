@@ -4475,6 +4475,13 @@ func TestEnumRetrieveFinancialReportsResponseRowsItemLineCategory(t *testing.T) 
 		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("legacy_payment_refund"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_levels_points_action", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("levels_points_action")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("levels_points_action"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_levels_points_ads", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("levels_points_ads")

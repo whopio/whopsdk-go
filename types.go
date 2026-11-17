@@ -27247,6 +27247,7 @@ const (
 	LedgerActivityLineTypeLevelsPointsAds                           LedgerActivityLineType = "levels_points_ads"
 	LedgerActivityLineTypeLevelsPointsTrading                       LedgerActivityLineType = "levels_points_trading"
 	LedgerActivityLineTypeLevelsPointsPartner                       LedgerActivityLineType = "levels_points_partner"
+	LedgerActivityLineTypeLevelsPointsAction                        LedgerActivityLineType = "levels_points_action"
 	LedgerActivityLineTypeLevelsPointsBurned                        LedgerActivityLineType = "levels_points_burned"
 	LedgerActivityLineTypeLevelsPointsIssued                        LedgerActivityLineType = "levels_points_issued"
 	LedgerActivityLineTypeLevelsRebate                              LedgerActivityLineType = "levels_rebate"
@@ -27745,6 +27746,8 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeLevelsPointsTrading, nil
 	case "levels_points_partner":
 		return LedgerActivityLineTypeLevelsPointsPartner, nil
+	case "levels_points_action":
+		return LedgerActivityLineTypeLevelsPointsAction, nil
 	case "levels_points_burned":
 		return LedgerActivityLineTypeLevelsPointsBurned, nil
 	case "levels_points_issued":
@@ -80968,6 +80971,8 @@ const (
 	WebhookEventDomainCreated                      WebhookEvent = "domain.created"
 	WebhookEventDomainUpdated                      WebhookEvent = "domain.updated"
 	WebhookEventDomainDeleted                      WebhookEvent = "domain.deleted"
+	WebhookEventCapitalCreated                     WebhookEvent = "capital.created"
+	WebhookEventCapitalUpdated                     WebhookEvent = "capital.updated"
 	WebhookEventPayoutMethodCreated                WebhookEvent = "payout_method.created"
 	WebhookEventVerificationSucceeded              WebhookEvent = "verification.succeeded"
 	WebhookEventIdentityProfileApproved            WebhookEvent = "identity_profile.approved"
@@ -81128,6 +81133,10 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventDomainUpdated, nil
 	case "domain.deleted":
 		return WebhookEventDomainDeleted, nil
+	case "capital.created":
+		return WebhookEventCapitalCreated, nil
+	case "capital.updated":
+		return WebhookEventCapitalUpdated, nil
 	case "payout_method.created":
 		return WebhookEventPayoutMethodCreated, nil
 	case "verification.succeeded":

@@ -1557,6 +1557,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLegacyCryptoPayment                       RetrieveFinancialReportsResponseRowsItemLineCategory = "legacy_crypto_payment"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLegacyPayment                             RetrieveFinancialReportsResponseRowsItemLineCategory = "legacy_payment"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLegacyPaymentRefund                       RetrieveFinancialReportsResponseRowsItemLineCategory = "legacy_payment_refund"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsAction                        RetrieveFinancialReportsResponseRowsItemLineCategory = "levels_points_action"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsAds                           RetrieveFinancialReportsResponseRowsItemLineCategory = "levels_points_ads"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsBurned                        RetrieveFinancialReportsResponseRowsItemLineCategory = "levels_points_burned"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsCard                          RetrieveFinancialReportsResponseRowsItemLineCategory = "levels_points_card"
@@ -2015,6 +2016,8 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryLegacyPayment, nil
 	case "legacy_payment_refund":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryLegacyPaymentRefund, nil
+	case "levels_points_action":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsAction, nil
 	case "levels_points_ads":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryLevelsPointsAds, nil
 	case "levels_points_burned":

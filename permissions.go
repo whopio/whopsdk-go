@@ -318,6 +318,7 @@ const (
 	PermissionActionWebhookReceiveAppInstallations    PermissionAction = "webhook_receive:app_installations"
 	PermissionActionWebhookReceiveAppMemberships      PermissionAction = "webhook_receive:app_memberships"
 	PermissionActionWebhookReceiveAppPayments         PermissionAction = "webhook_receive:app_payments"
+	PermissionActionWebhookReceiveCapital             PermissionAction = "webhook_receive:capital"
 	PermissionActionWebhookReceiveCardApplications    PermissionAction = "webhook_receive:card_applications"
 	PermissionActionWebhookReceiveCardTransactions    PermissionAction = "webhook_receive:card_transactions"
 	PermissionActionWebhookReceiveCards               PermissionAction = "webhook_receive:cards"
@@ -886,6 +887,8 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionWebhookReceiveAppMemberships, nil
 	case "webhook_receive:app_payments":
 		return PermissionActionWebhookReceiveAppPayments, nil
+	case "webhook_receive:capital":
+		return PermissionActionWebhookReceiveCapital, nil
 	case "webhook_receive:card_applications":
 		return PermissionActionWebhookReceiveCardApplications, nil
 	case "webhook_receive:card_transactions":
