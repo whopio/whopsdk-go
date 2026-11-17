@@ -9952,10 +9952,11 @@ var (
 	chatMessageFieldPlainContent        = big.NewInt(1 << 17)
 	chatMessageFieldPoll                = big.NewInt(1 << 18)
 	chatMessageFieldReactionCounts      = big.NewInt(1 << 19)
-	chatMessageFieldReplyingToMessageID = big.NewInt(1 << 20)
-	chatMessageFieldReplyingToUserID    = big.NewInt(1 << 21)
-	chatMessageFieldUpdatedAt           = big.NewInt(1 << 22)
-	chatMessageFieldViewCount           = big.NewInt(1 << 23)
+	chatMessageFieldReplyingToMessage   = big.NewInt(1 << 20)
+	chatMessageFieldReplyingToMessageID = big.NewInt(1 << 21)
+	chatMessageFieldReplyingToUserID    = big.NewInt(1 << 22)
+	chatMessageFieldUpdatedAt           = big.NewInt(1 << 23)
+	chatMessageFieldViewCount           = big.NewInt(1 << 24)
 )
 
 // chatMessageNullableFields maps the wire names of ChatMessage's nullable fields (required or optional) to their field bits.
@@ -9967,6 +9968,7 @@ var chatMessageNullableFields = map[string]*big.Int{
 	"deleted_at":             chatMessageFieldDeletedAt,
 	"plain_content":          chatMessageFieldPlainContent,
 	"poll":                   chatMessageFieldPoll,
+	"replying_to_message":    chatMessageFieldReplyingToMessage,
 	"replying_to_message_id": chatMessageFieldReplyingToMessageID,
 	"replying_to_user_id":    chatMessageFieldReplyingToUserID,
 	"view_count":             chatMessageFieldViewCount,
@@ -9996,10 +9998,12 @@ type ChatMessage struct {
 	MessageType      ChatMessageMessageType `json:"message_type" url:"message_type"`
 	Pinned           bool                   `json:"pinned" url:"pinned"`
 	// Unformatted message text. null when the text is absent or the message is deleted
-	PlainContent        *string                 `json:"plain_content,omitempty" url:"plain_content,omitempty"`
-	Poll                *ChatMessagePoll        `json:"poll,omitempty" url:"poll,omitempty"`
-	ReactionCounts      []*MessageReactionCount `json:"reaction_counts" url:"reaction_counts"`
-	ReplyingToMessageID *string                 `json:"replying_to_message_id,omitempty" url:"replying_to_message_id,omitempty"`
+	PlainContent   *string                 `json:"plain_content,omitempty" url:"plain_content,omitempty"`
+	Poll           *ChatMessagePoll        `json:"poll,omitempty" url:"poll,omitempty"`
+	ReactionCounts []*MessageReactionCount `json:"reaction_counts" url:"reaction_counts"`
+	// The replied-to message. Omitted unless `include_replying_to_message=true`. Includes all message fields except `replying_to_message`. `null` when this message is deleted or no same-channel target exists.
+	ReplyingToMessage   *ChatMessage `json:"replying_to_message,omitempty" url:"replying_to_message,omitempty"`
+	ReplyingToMessageID *string      `json:"replying_to_message_id,omitempty" url:"replying_to_message_id,omitempty"`
 	// User ID of the replied-to message's author, prefixed `user_`. `null` without a reply in this channel, or when either message is deleted.
 	ReplyingToUserID *string `json:"replying_to_user_id,omitempty" url:"replying_to_user_id,omitempty"`
 	// Last message change as an ISO 8601 timestamp.
@@ -10152,6 +10156,13 @@ func (c *ChatMessage) GetReactionCounts() []*MessageReactionCount {
 		return nil
 	}
 	return c.ReactionCounts
+}
+
+func (c *ChatMessage) GetReplyingToMessage() *ChatMessage {
+	if c == nil {
+		return nil
+	}
+	return c.ReplyingToMessage
 }
 
 func (c *ChatMessage) GetReplyingToMessageID() *string {
@@ -10336,6 +10347,13 @@ func (c *ChatMessage) SetPoll(poll *ChatMessagePoll) {
 func (c *ChatMessage) SetReactionCounts(reactionCounts []*MessageReactionCount) {
 	c.ReactionCounts = reactionCounts
 	c.require(chatMessageFieldReactionCounts)
+}
+
+// SetReplyingToMessage sets the ReplyingToMessage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ChatMessage) SetReplyingToMessage(replyingToMessage *ChatMessage) {
+	c.ReplyingToMessage = replyingToMessage
+	c.require(chatMessageFieldReplyingToMessage)
 }
 
 // SetReplyingToMessageID sets the ReplyingToMessageID field and marks it as non-optional;
