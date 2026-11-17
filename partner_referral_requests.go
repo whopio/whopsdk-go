@@ -114,7 +114,7 @@ var (
 type ListPartnerReferralRequestsRequest struct {
 	// Only requests for this business ID, prefixed `biz_`.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// Only requests received by this user ID, prefixed `user_`.
+	// Deprecated: requests to a user have ended. Returns no requests.
 	TargetUserID *string `json:"-" url:"target_user_id,omitempty"`
 	// Only requests sent by this partner's user ID, prefixed `user_`.
 	PartnerID *string `json:"-" url:"partner_id,omitempty"`
@@ -344,7 +344,8 @@ type PartnerReferralRequest struct {
 	Status *PartnerReferralRequestStatus `json:"status,omitempty" url:"status,omitempty"`
 	// When the request last changed, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
-	// User receiving the attribution request, or null for a business request or referral link.
+	// The user an attribution request was sent to. Deprecated: requests to a user have ended. Always `null`.
+	// DEPRECATED: No longer populated. Always null.
 	User *UserSummary `json:"user,omitempty" url:"user,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1603,7 +1604,7 @@ type CreatePartnerReferralRequestsRequestBodyTargetEmail struct {
 	AuthorizedUserID *string `json:"authorized_user_id,omitempty" url:"authorized_user_id,omitempty"`
 	// Your member record on the business this referral is made for, prefixed `mber_`, when your role there is held on your member record. Send this or `authorized_user_id`, not both.
 	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
-	// Email address on an existing user's account. Matching is case-insensitive. The user does not need to be enrolled in the partner program.
+	// Deprecated: requests to a user have ended. The API rejects this field with a `400`.
 	TargetEmail string `json:"target_email" url:"target_email"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1724,7 +1725,7 @@ type CreatePartnerReferralRequestsRequestBodyTargetUserID struct {
 	AuthorizedUserID *string `json:"authorized_user_id,omitempty" url:"authorized_user_id,omitempty"`
 	// Your member record on the business this referral is made for, prefixed `mber_`, when your role there is held on your member record. Send this or `authorized_user_id`, not both.
 	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
-	// User to request attribution for, prefixed `user_`.
+	// Deprecated: requests to a user have ended. The API rejects this field with a `400`.
 	TargetUserID string `json:"target_user_id" url:"target_user_id"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1845,7 +1846,7 @@ type CreatePartnerReferralRequestsRequestBodyTargetUsername struct {
 	AuthorizedUserID *string `json:"authorized_user_id,omitempty" url:"authorized_user_id,omitempty"`
 	// Your member record on the business this referral is made for, prefixed `mber_`, when your role there is held on your member record. Send this or `authorized_user_id`, not both.
 	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
-	// Username of the user to request attribution for, with or without a leading @.
+	// Deprecated: requests to a user have ended. The API rejects this field with a `400`.
 	TargetUsername string `json:"target_username" url:"target_username"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted

@@ -28734,7 +28734,7 @@ client.Notifications.Retrieve(
 <dl>
 <dd>
 
-Lists your referral links and attribution requests, including incoming requests for you or businesses you own, with filters for recipient, partner, type, and status.
+Lists your referral links and attribution requests, including incoming requests for businesses you own, with filters for business, partner, type, and status.
 </dd>
 </dl>
 </dd>
@@ -28776,7 +28776,7 @@ client.PartnerReferralRequests.List(
 <dl>
 <dd>
 
-**targetUserID:** `*string` — Only requests received by this user ID, prefixed `user_`.
+**targetUserID:** `*string` — Deprecated: requests to a user have ended. Returns no requests.
     
 </dd>
 </dl>
@@ -28904,7 +28904,7 @@ client.PartnerReferralRequests.List(
 <dl>
 <dd>
 
-Creates a referral link, or sends an attribution request to an existing business or user for approval. Links require an enrolled partner who is not suspended; attribution requests require an enrolled, verified partner. Recipients do not need to join the partner program.
+Creates a referral link, or sends an attribution request to an existing business for approval. Links require an enrolled partner who is not suspended. Attribution requests require an enrolled, verified partner. Recipients do not need to join the partner program.
 </dd>
 </dl>
 </dd>
