@@ -24,7 +24,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-16"
+		apiVersionDateDefault := "2026-11-16-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -109,7 +109,7 @@ func (c *Client) Leaderboard(
 	return response.Body, nil
 }
 
-// Lists the users the caller referred onto Whop, newest first by default, each with the caller's total affiliate earnings from that user across all tiers. Deprecated: this list is retired and no longer appears in the API reference. It keeps responding for existing integrations and has no replacement.
+// Lists the users the caller referred onto Whop, newest first by default, each with the caller's total affiliate earnings from that user across all tiers. Deprecated: this list is retired and no longer appears in the API reference. It stops responding after 2026-11-17 and has no replacement.
 //
 // Example:
 //
