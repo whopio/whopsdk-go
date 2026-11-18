@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-17"
+		apiVersionDateDefault := "2026-11-17-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -231,7 +231,7 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Accept a direct-message request.
+// Accept a direct-message request or restore a hidden conversation. Your membership must not have been removed.
 //
 // Example:
 //
