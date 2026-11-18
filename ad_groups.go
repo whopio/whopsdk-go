@@ -2644,31 +2644,25 @@ func (a *AdGroupDeliverySchedule) String() string {
 type AdGroupDeliveryStatus string
 
 const (
-	AdGroupDeliveryStatusAllAdsRejected AdGroupDeliveryStatus = "all_ads_rejected"
-	AdGroupDeliveryStatusRejected       AdGroupDeliveryStatus = "rejected"
-	AdGroupDeliveryStatusDraft          AdGroupDeliveryStatus = "draft"
-	AdGroupDeliveryStatusCampaignPaused AdGroupDeliveryStatus = "campaign_paused"
-	AdGroupDeliveryStatusPaused         AdGroupDeliveryStatus = "paused"
-	AdGroupDeliveryStatusInReview       AdGroupDeliveryStatus = "in_review"
-	AdGroupDeliveryStatusProcessing     AdGroupDeliveryStatus = "processing"
-	AdGroupDeliveryStatusReviseContent  AdGroupDeliveryStatus = "revise_content"
-	AdGroupDeliveryStatusIssues         AdGroupDeliveryStatus = "issues"
-	AdGroupDeliveryStatusScheduled      AdGroupDeliveryStatus = "scheduled"
-	AdGroupDeliveryStatusCompleted      AdGroupDeliveryStatus = "completed"
-	AdGroupDeliveryStatusLearning       AdGroupDeliveryStatus = "learning"
-	AdGroupDeliveryStatusActive         AdGroupDeliveryStatus = "active"
+	AdGroupDeliveryStatusRejected      AdGroupDeliveryStatus = "rejected"
+	AdGroupDeliveryStatusDraft         AdGroupDeliveryStatus = "draft"
+	AdGroupDeliveryStatusPaused        AdGroupDeliveryStatus = "paused"
+	AdGroupDeliveryStatusInReview      AdGroupDeliveryStatus = "in_review"
+	AdGroupDeliveryStatusProcessing    AdGroupDeliveryStatus = "processing"
+	AdGroupDeliveryStatusReviseContent AdGroupDeliveryStatus = "revise_content"
+	AdGroupDeliveryStatusIssues        AdGroupDeliveryStatus = "issues"
+	AdGroupDeliveryStatusScheduled     AdGroupDeliveryStatus = "scheduled"
+	AdGroupDeliveryStatusCompleted     AdGroupDeliveryStatus = "completed"
+	AdGroupDeliveryStatusLearning      AdGroupDeliveryStatus = "learning"
+	AdGroupDeliveryStatusActive        AdGroupDeliveryStatus = "active"
 )
 
 func NewAdGroupDeliveryStatusFromString(s string) (AdGroupDeliveryStatus, error) {
 	switch s {
-	case "all_ads_rejected":
-		return AdGroupDeliveryStatusAllAdsRejected, nil
 	case "rejected":
 		return AdGroupDeliveryStatusRejected, nil
 	case "draft":
 		return AdGroupDeliveryStatusDraft, nil
-	case "campaign_paused":
-		return AdGroupDeliveryStatusCampaignPaused, nil
 	case "paused":
 		return AdGroupDeliveryStatusPaused, nil
 	case "in_review":
@@ -7651,31 +7645,25 @@ func (p PostAdGroupUpdatedPayloadDataBudgetType) Ptr() *PostAdGroupUpdatedPayloa
 type PostAdGroupUpdatedPayloadDataDeliveryStatus string
 
 const (
-	PostAdGroupUpdatedPayloadDataDeliveryStatusAllAdsRejected PostAdGroupUpdatedPayloadDataDeliveryStatus = "all_ads_rejected"
-	PostAdGroupUpdatedPayloadDataDeliveryStatusRejected       PostAdGroupUpdatedPayloadDataDeliveryStatus = "rejected"
-	PostAdGroupUpdatedPayloadDataDeliveryStatusDraft          PostAdGroupUpdatedPayloadDataDeliveryStatus = "draft"
-	PostAdGroupUpdatedPayloadDataDeliveryStatusCampaignPaused PostAdGroupUpdatedPayloadDataDeliveryStatus = "campaign_paused"
-	PostAdGroupUpdatedPayloadDataDeliveryStatusPaused         PostAdGroupUpdatedPayloadDataDeliveryStatus = "paused"
-	PostAdGroupUpdatedPayloadDataDeliveryStatusInReview       PostAdGroupUpdatedPayloadDataDeliveryStatus = "in_review"
-	PostAdGroupUpdatedPayloadDataDeliveryStatusProcessing     PostAdGroupUpdatedPayloadDataDeliveryStatus = "processing"
-	PostAdGroupUpdatedPayloadDataDeliveryStatusReviseContent  PostAdGroupUpdatedPayloadDataDeliveryStatus = "revise_content"
-	PostAdGroupUpdatedPayloadDataDeliveryStatusIssues         PostAdGroupUpdatedPayloadDataDeliveryStatus = "issues"
-	PostAdGroupUpdatedPayloadDataDeliveryStatusScheduled      PostAdGroupUpdatedPayloadDataDeliveryStatus = "scheduled"
-	PostAdGroupUpdatedPayloadDataDeliveryStatusCompleted      PostAdGroupUpdatedPayloadDataDeliveryStatus = "completed"
-	PostAdGroupUpdatedPayloadDataDeliveryStatusLearning       PostAdGroupUpdatedPayloadDataDeliveryStatus = "learning"
-	PostAdGroupUpdatedPayloadDataDeliveryStatusActive         PostAdGroupUpdatedPayloadDataDeliveryStatus = "active"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusRejected      PostAdGroupUpdatedPayloadDataDeliveryStatus = "rejected"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusDraft         PostAdGroupUpdatedPayloadDataDeliveryStatus = "draft"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusPaused        PostAdGroupUpdatedPayloadDataDeliveryStatus = "paused"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusInReview      PostAdGroupUpdatedPayloadDataDeliveryStatus = "in_review"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusProcessing    PostAdGroupUpdatedPayloadDataDeliveryStatus = "processing"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusReviseContent PostAdGroupUpdatedPayloadDataDeliveryStatus = "revise_content"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusIssues        PostAdGroupUpdatedPayloadDataDeliveryStatus = "issues"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusScheduled     PostAdGroupUpdatedPayloadDataDeliveryStatus = "scheduled"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusCompleted     PostAdGroupUpdatedPayloadDataDeliveryStatus = "completed"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusLearning      PostAdGroupUpdatedPayloadDataDeliveryStatus = "learning"
+	PostAdGroupUpdatedPayloadDataDeliveryStatusActive        PostAdGroupUpdatedPayloadDataDeliveryStatus = "active"
 )
 
 func NewPostAdGroupUpdatedPayloadDataDeliveryStatusFromString(s string) (PostAdGroupUpdatedPayloadDataDeliveryStatus, error) {
 	switch s {
-	case "all_ads_rejected":
-		return PostAdGroupUpdatedPayloadDataDeliveryStatusAllAdsRejected, nil
 	case "rejected":
 		return PostAdGroupUpdatedPayloadDataDeliveryStatusRejected, nil
 	case "draft":
 		return PostAdGroupUpdatedPayloadDataDeliveryStatusDraft, nil
-	case "campaign_paused":
-		return PostAdGroupUpdatedPayloadDataDeliveryStatusCampaignPaused, nil
 	case "paused":
 		return PostAdGroupUpdatedPayloadDataDeliveryStatusPaused, nil
 	case "in_review":

@@ -2712,17 +2712,16 @@ func (a AdCreativeFormat) Ptr() *AdCreativeFormat {
 type AdDeliveryStatus string
 
 const (
-	AdDeliveryStatusRejected       AdDeliveryStatus = "rejected"
-	AdDeliveryStatusInReview       AdDeliveryStatus = "in_review"
-	AdDeliveryStatusDraft          AdDeliveryStatus = "draft"
-	AdDeliveryStatusCampaignPaused AdDeliveryStatus = "campaign_paused"
-	AdDeliveryStatusPaused         AdDeliveryStatus = "paused"
-	AdDeliveryStatusProcessing     AdDeliveryStatus = "processing"
-	AdDeliveryStatusReviseContent  AdDeliveryStatus = "revise_content"
-	AdDeliveryStatusIssues         AdDeliveryStatus = "issues"
-	AdDeliveryStatusScheduled      AdDeliveryStatus = "scheduled"
-	AdDeliveryStatusLearning       AdDeliveryStatus = "learning"
-	AdDeliveryStatusActive         AdDeliveryStatus = "active"
+	AdDeliveryStatusRejected      AdDeliveryStatus = "rejected"
+	AdDeliveryStatusInReview      AdDeliveryStatus = "in_review"
+	AdDeliveryStatusDraft         AdDeliveryStatus = "draft"
+	AdDeliveryStatusPaused        AdDeliveryStatus = "paused"
+	AdDeliveryStatusProcessing    AdDeliveryStatus = "processing"
+	AdDeliveryStatusReviseContent AdDeliveryStatus = "revise_content"
+	AdDeliveryStatusIssues        AdDeliveryStatus = "issues"
+	AdDeliveryStatusScheduled     AdDeliveryStatus = "scheduled"
+	AdDeliveryStatusLearning      AdDeliveryStatus = "learning"
+	AdDeliveryStatusActive        AdDeliveryStatus = "active"
 )
 
 func NewAdDeliveryStatusFromString(s string) (AdDeliveryStatus, error) {
@@ -2733,8 +2732,6 @@ func NewAdDeliveryStatusFromString(s string) (AdDeliveryStatus, error) {
 		return AdDeliveryStatusInReview, nil
 	case "draft":
 		return AdDeliveryStatusDraft, nil
-	case "campaign_paused":
-		return AdDeliveryStatusCampaignPaused, nil
 	case "paused":
 		return AdDeliveryStatusPaused, nil
 	case "processing":
@@ -5399,17 +5396,16 @@ func (p PostAdUpdatedPayloadDataCallToAction) Ptr() *PostAdUpdatedPayloadDataCal
 type PostAdUpdatedPayloadDataDeliveryStatus string
 
 const (
-	PostAdUpdatedPayloadDataDeliveryStatusRejected       PostAdUpdatedPayloadDataDeliveryStatus = "rejected"
-	PostAdUpdatedPayloadDataDeliveryStatusInReview       PostAdUpdatedPayloadDataDeliveryStatus = "in_review"
-	PostAdUpdatedPayloadDataDeliveryStatusDraft          PostAdUpdatedPayloadDataDeliveryStatus = "draft"
-	PostAdUpdatedPayloadDataDeliveryStatusCampaignPaused PostAdUpdatedPayloadDataDeliveryStatus = "campaign_paused"
-	PostAdUpdatedPayloadDataDeliveryStatusPaused         PostAdUpdatedPayloadDataDeliveryStatus = "paused"
-	PostAdUpdatedPayloadDataDeliveryStatusProcessing     PostAdUpdatedPayloadDataDeliveryStatus = "processing"
-	PostAdUpdatedPayloadDataDeliveryStatusReviseContent  PostAdUpdatedPayloadDataDeliveryStatus = "revise_content"
-	PostAdUpdatedPayloadDataDeliveryStatusIssues         PostAdUpdatedPayloadDataDeliveryStatus = "issues"
-	PostAdUpdatedPayloadDataDeliveryStatusScheduled      PostAdUpdatedPayloadDataDeliveryStatus = "scheduled"
-	PostAdUpdatedPayloadDataDeliveryStatusLearning       PostAdUpdatedPayloadDataDeliveryStatus = "learning"
-	PostAdUpdatedPayloadDataDeliveryStatusActive         PostAdUpdatedPayloadDataDeliveryStatus = "active"
+	PostAdUpdatedPayloadDataDeliveryStatusRejected      PostAdUpdatedPayloadDataDeliveryStatus = "rejected"
+	PostAdUpdatedPayloadDataDeliveryStatusInReview      PostAdUpdatedPayloadDataDeliveryStatus = "in_review"
+	PostAdUpdatedPayloadDataDeliveryStatusDraft         PostAdUpdatedPayloadDataDeliveryStatus = "draft"
+	PostAdUpdatedPayloadDataDeliveryStatusPaused        PostAdUpdatedPayloadDataDeliveryStatus = "paused"
+	PostAdUpdatedPayloadDataDeliveryStatusProcessing    PostAdUpdatedPayloadDataDeliveryStatus = "processing"
+	PostAdUpdatedPayloadDataDeliveryStatusReviseContent PostAdUpdatedPayloadDataDeliveryStatus = "revise_content"
+	PostAdUpdatedPayloadDataDeliveryStatusIssues        PostAdUpdatedPayloadDataDeliveryStatus = "issues"
+	PostAdUpdatedPayloadDataDeliveryStatusScheduled     PostAdUpdatedPayloadDataDeliveryStatus = "scheduled"
+	PostAdUpdatedPayloadDataDeliveryStatusLearning      PostAdUpdatedPayloadDataDeliveryStatus = "learning"
+	PostAdUpdatedPayloadDataDeliveryStatusActive        PostAdUpdatedPayloadDataDeliveryStatus = "active"
 )
 
 func NewPostAdUpdatedPayloadDataDeliveryStatusFromString(s string) (PostAdUpdatedPayloadDataDeliveryStatus, error) {
@@ -5420,8 +5416,6 @@ func NewPostAdUpdatedPayloadDataDeliveryStatusFromString(s string) (PostAdUpdate
 		return PostAdUpdatedPayloadDataDeliveryStatusInReview, nil
 	case "draft":
 		return PostAdUpdatedPayloadDataDeliveryStatusDraft, nil
-	case "campaign_paused":
-		return PostAdUpdatedPayloadDataDeliveryStatusCampaignPaused, nil
 	case "paused":
 		return PostAdUpdatedPayloadDataDeliveryStatusPaused, nil
 	case "processing":
