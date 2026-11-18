@@ -39,11 +39,22 @@ func NewClient(options *core.RequestOptions) *Client {
 	}
 }
 
-// Lists resolution center cases. Without `account_id` you get every case you can read — the ones you opened as a buyer and every account you are a team member of; the filters narrow that list.
+// Lists resolution center cases. Without `account_id` you get every case you can read: cases you opened as a buyer, and cases on accounts where you are on the team. The filters narrow that list.
 //
 // Example:
 //
-//	request := &whopsdk.ListResolutionCenterCasesRequest{}
+//	request := &whopsdk.ListResolutionCenterCasesRequest{
+//	    ProductIDs: []*string{
+//	        whopsdk.String(
+//	            "prod_xxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	    PaymentID: []*string{
+//	        whopsdk.String(
+//	            "pay_xxxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	}
 //	client.ResolutionCenterCases.List(
 //	    context.TODO(),
 //	    request,
@@ -152,7 +163,18 @@ func (c *Client) Create(
 //
 // Example:
 //
-//	request := &whopsdk.SummaryResolutionCenterCasesRequest{}
+//	request := &whopsdk.SummaryResolutionCenterCasesRequest{
+//	    ProductIDs: []*string{
+//	        whopsdk.String(
+//	            "prod_xxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	    PaymentID: []*string{
+//	        whopsdk.String(
+//	            "pay_xxxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	}
 //	client.ResolutionCenterCases.Summary(
 //	    context.TODO(),
 //	    request,

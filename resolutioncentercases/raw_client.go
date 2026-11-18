@@ -496,6 +496,7 @@ func (r *RawClient) Withdraw(
 		r.options.ToHeader(),
 		options.ToHeader(),
 	)
+	headers.Add("Content-Type", "application/json")
 	var response *whopsdk.ResolutionCenterCase
 	raw, err := r.caller.Call(
 		ctx,
@@ -508,6 +509,7 @@ func (r *RawClient) Withdraw(
 			BodyProperties:  options.BodyProperties,
 			QueryParameters: options.QueryParameters,
 			Client:          options.HTTPClient,
+			Request:         request,
 			Response:        &response,
 			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
 		},

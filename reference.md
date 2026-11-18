@@ -1021,6 +1021,14 @@ client.Accounts.Update(
 <dl>
 <dd>
 
+**paymentControls:** `*whopsdk.UpdateAccountsRequestPaymentControls` — Payment controls to change. Only `resolution_center_auto_refund` can change. Whop ignores the other fields, so you can send back the object from `GET`. Requires the `payment:resolution_center` and `company:balance:read` scopes.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **privacyPolicy:** `*whopsdk.UpdateAccountsRequestPrivacyPolicy` — The account's privacy policy document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
     
 </dd>
@@ -37185,7 +37193,7 @@ client.Refunds.Retrieve(
 <dl>
 <dd>
 
-Lists resolution center cases. Without `account_id` you get every case you can read — the ones you opened as a buyer and every account you are a team member of; the filters narrow that list.
+Lists resolution center cases. Without `account_id` you get every case you can read: cases you opened as a buyer, and cases on accounts where you are on the team. The filters narrow that list.
 </dd>
 </dl>
 </dd>
@@ -37200,7 +37208,18 @@ Lists resolution center cases. Without `account_id` you get every case you can r
 <dd>
 
 ```go
-request := &whopsdk.ListResolutionCenterCasesRequest{}
+request := &whopsdk.ListResolutionCenterCasesRequest{
+    ProductIDs: []*string{
+        whopsdk.String(
+            "prod_xxxxxxxxxxxxx",
+        ),
+    },
+    PaymentID: []*string{
+        whopsdk.String(
+            "pay_xxxxxxxxxxxxxx",
+        ),
+    },
+}
 client.ResolutionCenterCases.List(
     context.TODO(),
     request,
@@ -37227,7 +37246,7 @@ client.ResolutionCenterCases.List(
 <dl>
 <dd>
 
-**userID:** `*string` — Only cases opened by this customer — a `user_` tag, or `me` for the calling user. It narrows what you can already read, so `me` lists the cases you opened without the ones on accounts you are a team member of.
+**userID:** `*string` — Only cases opened by this customer: a `user_` tag, or `me` for the calling user. It narrows what you can already read, so `me` lists the cases you opened without the ones on accounts you are a team member of.
     
 </dd>
 </dl>
@@ -37283,7 +37302,7 @@ client.ResolutionCenterCases.List(
 <dl>
 <dd>
 
-**status:** `*whopsdk.ListResolutionCenterCasesRequestStatusItem` — Only cases in these statuses. Repeat the parameter to pass several — one paginated list covers all of them.
+**status:** `*whopsdk.ListResolutionCenterCasesRequestStatusItem` — Only cases in these statuses. Repeat the parameter to pass several. One paginated list covers all of them.
     
 </dd>
 </dl>
@@ -37316,6 +37335,38 @@ client.ResolutionCenterCases.List(
 <dd>
 
 **createdAfter:** `*string` — Only cases created after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**productIDs:** `*string` — Only cases about a payment for these products, each prefixed `prod_`. A case matches when any item on its payment is one of them. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentID:** `*string` — Only cases opened on these payments, each prefixed `pay_`. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentMethods:** `*whopsdk.ListResolutionCenterCasesRequestPaymentMethodsItem` — Only cases about a payment made with one of these methods. Takes card brands such as `amex`, wallets such as `apple_pay`, and types such as `paypal`. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**query:** `*string` — Search cases by case ID, payment ID, user ID, membership ID, user email, name, or username. Email search requires the member:email:read permission.
     
 </dd>
 </dl>
@@ -37440,7 +37491,18 @@ Aggregates the same cases `GET /resolution_center_cases` lists, using the same f
 <dd>
 
 ```go
-request := &whopsdk.SummaryResolutionCenterCasesRequest{}
+request := &whopsdk.SummaryResolutionCenterCasesRequest{
+    ProductIDs: []*string{
+        whopsdk.String(
+            "prod_xxxxxxxxxxxxx",
+        ),
+    },
+    PaymentID: []*string{
+        whopsdk.String(
+            "pay_xxxxxxxxxxxxxx",
+        ),
+    },
+}
 client.ResolutionCenterCases.Summary(
     context.TODO(),
     request,
@@ -37475,7 +37537,7 @@ client.ResolutionCenterCases.Summary(
 <dl>
 <dd>
 
-**userID:** `*string` — Only cases opened by this customer — a `user_` tag, or `me` for the calling user.
+**userID:** `*string` — Only cases opened by this customer: a `user_` tag, or `me` for the calling user.
     
 </dd>
 </dl>
@@ -37516,6 +37578,38 @@ client.ResolutionCenterCases.Summary(
 <dd>
 
 **createdAfter:** `*string` — Only count cases created after this ISO 8601 timestamp.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**productIDs:** `*string` — Only count cases about a payment for these products, each prefixed `prod_`. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentID:** `*string` — Only count cases opened on these payments, each prefixed `pay_`. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**paymentMethods:** `*whopsdk.SummaryResolutionCenterCasesRequestPaymentMethodsItem` — Only count cases about a payment paid with any of these methods. Repeat the parameter to pass several.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**query:** `*string` — Only count cases that match this search, as on the list.
     
 </dd>
 </dl>
@@ -38070,7 +38164,7 @@ client.ResolutionCenterCases.RequestInfo(
 </dl>
 </details>
 
-<details><summary><code>client.ResolutionCenterCases.Withdraw(ID) -> *whopsdk.ResolutionCenterCase</code></summary>
+<details><summary><code>client.ResolutionCenterCases.Withdraw(ID, request) -> *whopsdk.ResolutionCenterCase</code></summary>
 <dl>
 <dd>
 
@@ -38119,6 +38213,14 @@ client.ResolutionCenterCases.Withdraw(
 <dd>
 
 **id:** `string` — The resolution center case ID (`reso_` tag).
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**message:** `*string` — Why you are withdrawing the case, recorded on the case timeline where the merchant can read it. Without one, the timeline says the customer withdrew.
     
 </dd>
 </dl>
