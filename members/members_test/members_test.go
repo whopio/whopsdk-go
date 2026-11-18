@@ -109,6 +109,14 @@ func TestMembersListWithWireMock(
 				"promo_xxxxxxxxxxxx",
 			),
 		},
+		AffiliateID: whopsdk.String(
+			"aff_xxxxxxxxxxxxxx",
+		),
+		BuyerAccountIDs: []*string{
+			whopsdk.String(
+				"biz_xxxxxxxxxxxxxx",
+			),
+		},
 	}
 	_, invocationErr := client.Members.List(
 		context.TODO(),
@@ -119,7 +127,7 @@ func TestMembersListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestMembersListWithWireMock", "GET", "/members", map[string]interface{}{"user_ids": "user_xxxxxxxxxxxxxx", "product_ids": "prod_xxxxxxxxxxxxx", "variant_ids": "plan_xxxxxxxxxxxxx", "promo_code_ids": "promo_xxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestMembersListWithWireMock", "GET", "/members", map[string]interface{}{"user_ids": "user_xxxxxxxxxxxxxx", "product_ids": "prod_xxxxxxxxxxxxx", "variant_ids": "plan_xxxxxxxxxxxxx", "promo_code_ids": "promo_xxxxxxxxxxxx", "affiliate_id": "aff_xxxxxxxxxxxxxx", "buyer_account_ids": "biz_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestMembersCreateWithWireMock(

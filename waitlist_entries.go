@@ -232,20 +232,21 @@ func (d *DenyWaitlistEntriesRequest) SetID(id string) {
 }
 
 var (
-	listWaitlistEntriesRequestFieldFirst          = big.NewInt(1 << 0)
-	listWaitlistEntriesRequestFieldAfter          = big.NewInt(1 << 1)
-	listWaitlistEntriesRequestFieldLast           = big.NewInt(1 << 2)
-	listWaitlistEntriesRequestFieldBefore         = big.NewInt(1 << 3)
-	listWaitlistEntriesRequestFieldVariantID      = big.NewInt(1 << 4)
-	listWaitlistEntriesRequestFieldAccountID      = big.NewInt(1 << 5)
-	listWaitlistEntriesRequestFieldProductID      = big.NewInt(1 << 6)
-	listWaitlistEntriesRequestFieldBuyerAccountID = big.NewInt(1 << 7)
-	listWaitlistEntriesRequestFieldStatus         = big.NewInt(1 << 8)
-	listWaitlistEntriesRequestFieldQuery          = big.NewInt(1 << 9)
-	listWaitlistEntriesRequestFieldCreatedBefore  = big.NewInt(1 << 10)
-	listWaitlistEntriesRequestFieldCreatedAfter   = big.NewInt(1 << 11)
-	listWaitlistEntriesRequestFieldOrder          = big.NewInt(1 << 12)
-	listWaitlistEntriesRequestFieldDirection      = big.NewInt(1 << 13)
+	listWaitlistEntriesRequestFieldFirst             = big.NewInt(1 << 0)
+	listWaitlistEntriesRequestFieldAfter             = big.NewInt(1 << 1)
+	listWaitlistEntriesRequestFieldLast              = big.NewInt(1 << 2)
+	listWaitlistEntriesRequestFieldBefore            = big.NewInt(1 << 3)
+	listWaitlistEntriesRequestFieldIncludeTotalCount = big.NewInt(1 << 4)
+	listWaitlistEntriesRequestFieldVariantID         = big.NewInt(1 << 5)
+	listWaitlistEntriesRequestFieldAccountID         = big.NewInt(1 << 6)
+	listWaitlistEntriesRequestFieldProductID         = big.NewInt(1 << 7)
+	listWaitlistEntriesRequestFieldBuyerAccountID    = big.NewInt(1 << 8)
+	listWaitlistEntriesRequestFieldStatus            = big.NewInt(1 << 9)
+	listWaitlistEntriesRequestFieldQuery             = big.NewInt(1 << 10)
+	listWaitlistEntriesRequestFieldCreatedBefore     = big.NewInt(1 << 11)
+	listWaitlistEntriesRequestFieldCreatedAfter      = big.NewInt(1 << 12)
+	listWaitlistEntriesRequestFieldOrder             = big.NewInt(1 << 13)
+	listWaitlistEntriesRequestFieldDirection         = big.NewInt(1 << 14)
 )
 
 type ListWaitlistEntriesRequest struct {
@@ -257,6 +258,8 @@ type ListWaitlistEntriesRequest struct {
 	Last *int `json:"-" url:"last,omitempty"`
 	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
+	// Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+	IncludeTotalCount *bool `json:"-" url:"include_total_count,omitempty"`
 	// Only return signups for this variant, prefixed `plan_`.
 	VariantID *string `json:"-" url:"variant_id,omitempty"`
 	// Only return signups submitted to this seller account, prefixed `biz_`.
@@ -317,6 +320,13 @@ func (l *ListWaitlistEntriesRequest) SetLast(last *int) {
 func (l *ListWaitlistEntriesRequest) SetBefore(before *string) {
 	l.Before = before
 	l.require(listWaitlistEntriesRequestFieldBefore)
+}
+
+// SetIncludeTotalCount sets the IncludeTotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListWaitlistEntriesRequest) SetIncludeTotalCount(includeTotalCount *bool) {
+	l.IncludeTotalCount = includeTotalCount
+	l.require(listWaitlistEntriesRequestFieldIncludeTotalCount)
 }
 
 // SetVariantID sets the VariantID field and marks it as non-optional;
@@ -1728,16 +1738,19 @@ func (l *ListWaitlistEntriesResponse) String() string {
 }
 
 var (
-	listWaitlistEntriesResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
-	listWaitlistEntriesResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
-	listWaitlistEntriesResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
-	listWaitlistEntriesResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+	listWaitlistEntriesResponsePageInfoFieldEndCursor        = big.NewInt(1 << 0)
+	listWaitlistEntriesResponsePageInfoFieldHasNextPage      = big.NewInt(1 << 1)
+	listWaitlistEntriesResponsePageInfoFieldHasPreviousPage  = big.NewInt(1 << 2)
+	listWaitlistEntriesResponsePageInfoFieldStartCursor      = big.NewInt(1 << 3)
+	listWaitlistEntriesResponsePageInfoFieldTotalCount       = big.NewInt(1 << 4)
+	listWaitlistEntriesResponsePageInfoFieldTotalCountCapped = big.NewInt(1 << 5)
 )
 
 // listWaitlistEntriesResponsePageInfoNullableFields maps the wire names of ListWaitlistEntriesResponsePageInfo's nullable fields (required or optional) to their field bits.
 var listWaitlistEntriesResponsePageInfoNullableFields = map[string]*big.Int{
 	"end_cursor":   listWaitlistEntriesResponsePageInfoFieldEndCursor,
 	"start_cursor": listWaitlistEntriesResponsePageInfoFieldStartCursor,
+	"total_count":  listWaitlistEntriesResponsePageInfoFieldTotalCount,
 }
 
 type ListWaitlistEntriesResponsePageInfo struct {
@@ -1745,6 +1758,10 @@ type ListWaitlistEntriesResponsePageInfo struct {
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
 	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
 	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+	// Number of results matching the filters, across every page. Counting stops at 10,000. `null` when `include_total_count` isn't `true`, or when the count ran out of time.
+	TotalCount *int `json:"total_count,omitempty" url:"total_count,omitempty"`
+	// Whether counting stopped at the limit. `true` means `total_count` is 10,000 or more.
+	TotalCountCapped bool `json:"total_count_capped" url:"total_count_capped"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1779,6 +1796,20 @@ func (l *ListWaitlistEntriesResponsePageInfo) GetStartCursor() *string {
 		return nil
 	}
 	return l.StartCursor
+}
+
+func (l *ListWaitlistEntriesResponsePageInfo) GetTotalCount() *int {
+	if l == nil {
+		return nil
+	}
+	return l.TotalCount
+}
+
+func (l *ListWaitlistEntriesResponsePageInfo) GetTotalCountCapped() bool {
+	if l == nil {
+		return false
+	}
+	return l.TotalCountCapped
 }
 
 func (l *ListWaitlistEntriesResponsePageInfo) GetExtraProperties() map[string]interface{} {
@@ -1823,6 +1854,20 @@ func (l *ListWaitlistEntriesResponsePageInfo) SetHasPreviousPage(hasPreviousPage
 func (l *ListWaitlistEntriesResponsePageInfo) SetStartCursor(startCursor *string) {
 	l.StartCursor = startCursor
 	l.require(listWaitlistEntriesResponsePageInfoFieldStartCursor)
+}
+
+// SetTotalCount sets the TotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListWaitlistEntriesResponsePageInfo) SetTotalCount(totalCount *int) {
+	l.TotalCount = totalCount
+	l.require(listWaitlistEntriesResponsePageInfoFieldTotalCount)
+}
+
+// SetTotalCountCapped sets the TotalCountCapped field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListWaitlistEntriesResponsePageInfo) SetTotalCountCapped(totalCountCapped bool) {
+	l.TotalCountCapped = totalCountCapped
+	l.require(listWaitlistEntriesResponsePageInfoFieldTotalCountCapped)
 }
 
 func (l *ListWaitlistEntriesResponsePageInfo) UnmarshalJSON(data []byte) error {

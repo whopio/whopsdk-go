@@ -70,6 +70,44 @@ func (c *CreateNotesRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	deleteNotesRequestFieldMemberID = big.NewInt(1 << 0)
+	deleteNotesRequestFieldID       = big.NewInt(1 << 1)
+)
+
+type DeleteNotesRequest struct {
+	// The member the note is about, prefixed `mber_`.
+	MemberID string `json:"-" url:"-"`
+	// The ID of the note to delete, prefixed `note_`.
+	ID string `json:"-" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (d *DeleteNotesRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
+	}
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetMemberID sets the MemberID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteNotesRequest) SetMemberID(memberID string) {
+	d.MemberID = memberID
+	d.require(deleteNotesRequestFieldMemberID)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteNotesRequest) SetID(id string) {
+	d.ID = id
+	d.require(deleteNotesRequestFieldID)
+}
+
+var (
 	listNotesRequestFieldMemberID          = big.NewInt(1 << 0)
 	listNotesRequestFieldFirst             = big.NewInt(1 << 1)
 	listNotesRequestFieldAfter             = big.NewInt(1 << 2)
@@ -145,6 +183,110 @@ func (l *ListNotesRequest) SetBefore(before *string) {
 func (l *ListNotesRequest) SetIncludeTotalCount(includeTotalCount *bool) {
 	l.IncludeTotalCount = includeTotalCount
 	l.require(listNotesRequestFieldIncludeTotalCount)
+}
+
+var (
+	deleteNotesResponseFieldDeleted = big.NewInt(1 << 0)
+	deleteNotesResponseFieldID      = big.NewInt(1 << 1)
+)
+
+type DeleteNotesResponse struct {
+	// Always `true`.
+	Deleted bool `json:"deleted" url:"deleted"`
+	// The ID of the deleted note, prefixed `note_`.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (d *DeleteNotesResponse) GetDeleted() bool {
+	if d == nil {
+		return false
+	}
+	return d.Deleted
+}
+
+func (d *DeleteNotesResponse) GetID() string {
+	if d == nil {
+		return ""
+	}
+	return d.ID
+}
+
+func (d *DeleteNotesResponse) GetExtraProperties() map[string]interface{} {
+	if d == nil {
+		return nil
+	}
+	return d.extraProperties
+}
+
+func (d *DeleteNotesResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if d.explicitFields != nil {
+		next.Set(d.explicitFields)
+	}
+	next.Or(next, field)
+	d.explicitFields = next
+}
+
+// SetDeleted sets the Deleted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteNotesResponse) SetDeleted(deleted bool) {
+	d.Deleted = deleted
+	d.require(deleteNotesResponseFieldDeleted)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DeleteNotesResponse) SetID(id string) {
+	d.ID = id
+	d.require(deleteNotesResponseFieldID)
+}
+
+func (d *DeleteNotesResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler DeleteNotesResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*d = DeleteNotesResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *d)
+	if err != nil {
+		return err
+	}
+	d.extraProperties = extraProperties
+	d.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (d *DeleteNotesResponse) MarshalJSON() ([]byte, error) {
+	type embed DeleteNotesResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*d),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, d.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (d *DeleteNotesResponse) String() string {
+	if d == nil {
+		return "<nil>"
+	}
+	if len(d.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(d.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(d); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", d)
 }
 
 var (

@@ -152,3 +152,31 @@ func (c *Client) Create(
 	}
 	return response.Body, nil
 }
+
+// Deletes a note from a member, whoever wrote it. A deleted note's ID returns a `404`. Deleting can't be undone.
+//
+// Example:
+//
+//	request := &members.DeleteNotesRequest{
+//	    MemberID: "member_id",
+//	    ID: "id",
+//	}
+//	client.Members.Notes.Delete(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Delete(
+	ctx context.Context,
+	request *members.DeleteNotesRequest,
+	opts ...option.RequestOption,
+) (*members.DeleteNotesResponse, error) {
+	response, err := c.WithRawResponse.Delete(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}

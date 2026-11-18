@@ -423,6 +423,14 @@ func TestSettersListWaitlistEntriesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIncludeTotalCount", func(t *testing.T) {
+		obj := &ListWaitlistEntriesRequest{}
+		var fernTestValueIncludeTotalCount *bool
+		obj.SetIncludeTotalCount(fernTestValueIncludeTotalCount)
+		assert.Equal(t, fernTestValueIncludeTotalCount, obj.IncludeTotalCount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetVariantID", func(t *testing.T) {
 		obj := &ListWaitlistEntriesRequest{}
 		var fernTestValueVariantID *string
@@ -607,6 +615,37 @@ func TestSettersMarkExplicitListWaitlistEntriesRequest(t *testing.T) {
 
 		// Act
 		obj.SetBefore(fernTestValueBefore)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIncludeTotalCount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListWaitlistEntriesRequest{}
+		var fernTestValueIncludeTotalCount *bool
+
+		// Act
+		obj.SetIncludeTotalCount(fernTestValueIncludeTotalCount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3567,6 +3606,22 @@ func TestSettersListWaitlistEntriesResponsePageInfo(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetTotalCount", func(t *testing.T) {
+		obj := &ListWaitlistEntriesResponsePageInfo{}
+		var fernTestValueTotalCount *int
+		obj.SetTotalCount(fernTestValueTotalCount)
+		assert.Equal(t, fernTestValueTotalCount, obj.TotalCount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTotalCountCapped", func(t *testing.T) {
+		obj := &ListWaitlistEntriesResponsePageInfo{}
+		var fernTestValueTotalCountCapped bool
+		obj.SetTotalCountCapped(fernTestValueTotalCountCapped)
+		assert.Equal(t, fernTestValueTotalCountCapped, obj.TotalCountCapped)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersListWaitlistEntriesResponsePageInfo(t *testing.T) {
@@ -3682,6 +3737,62 @@ func TestGettersListWaitlistEntriesResponsePageInfo(t *testing.T) {
 		_ = obj.GetStartCursor() // Should return zero value
 	})
 
+	t.Run("GetTotalCount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListWaitlistEntriesResponsePageInfo{}
+		var expected *int
+		obj.TotalCount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTotalCount(), "getter should return the property value")
+	})
+
+	t.Run("GetTotalCount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListWaitlistEntriesResponsePageInfo{}
+		obj.TotalCount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTotalCount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTotalCount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListWaitlistEntriesResponsePageInfo
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTotalCount() // Should return zero value
+	})
+
+	t.Run("GetTotalCountCapped", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListWaitlistEntriesResponsePageInfo{}
+		var expected bool
+		obj.TotalCountCapped = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTotalCountCapped(), "getter should return the property value")
+	})
+
+	t.Run("GetTotalCountCapped_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListWaitlistEntriesResponsePageInfo
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTotalCountCapped() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitListWaitlistEntriesResponsePageInfo(t *testing.T) {
@@ -3786,6 +3897,68 @@ func TestSettersMarkExplicitListWaitlistEntriesResponsePageInfo(t *testing.T) {
 
 		// Act
 		obj.SetStartCursor(fernTestValueStartCursor)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTotalCount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListWaitlistEntriesResponsePageInfo{}
+		var fernTestValueTotalCount *int
+
+		// Act
+		obj.SetTotalCount(fernTestValueTotalCount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTotalCountCapped_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListWaitlistEntriesResponsePageInfo{}
+		var fernTestValueTotalCountCapped bool
+
+		// Act
+		obj.SetTotalCountCapped(fernTestValueTotalCountCapped)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4122,6 +4295,7 @@ func TestRequiredNullableRoundTripListWaitlistEntriesResponsePageInfo(t *testing
 	requiredNullableKeys := []string{
 		"end_cursor",
 		"start_cursor",
+		"total_count",
 	}
 	marshalToMap := func(t *testing.T, obj *ListWaitlistEntriesResponsePageInfo) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -4134,7 +4308,7 @@ func TestRequiredNullableRoundTripListWaitlistEntriesResponsePageInfo(t *testing
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ListWaitlistEntriesResponsePageInfo
-		require.NoError(t, json.Unmarshal([]byte(`{"end_cursor":null,"start_cursor":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"end_cursor":null,"start_cursor":null,"total_count":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
