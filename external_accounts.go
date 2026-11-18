@@ -324,23 +324,21 @@ func (r *RefreshExternalAccountsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	externalAccountFieldError                 = big.NewInt(1 << 0)
-	externalAccountFieldExternalID            = big.NewInt(1 << 1)
-	externalAccountFieldID                    = big.NewInt(1 << 2)
-	externalAccountFieldName                  = big.NewInt(1 << 3)
-	externalAccountFieldParentExternalAccount = big.NewInt(1 << 4)
-	externalAccountFieldPartnershipStatus     = big.NewInt(1 << 5)
-	externalAccountFieldPlatform              = big.NewInt(1 << 6)
-	externalAccountFieldProfilePictureURL     = big.NewInt(1 << 7)
-	externalAccountFieldScopes                = big.NewInt(1 << 8)
-	externalAccountFieldURL                   = big.NewInt(1 << 9)
-	externalAccountFieldUsername              = big.NewInt(1 << 10)
-	externalAccountFieldVerified              = big.NewInt(1 << 11)
+	externalAccountFieldExternalID            = big.NewInt(1 << 0)
+	externalAccountFieldID                    = big.NewInt(1 << 1)
+	externalAccountFieldName                  = big.NewInt(1 << 2)
+	externalAccountFieldParentExternalAccount = big.NewInt(1 << 3)
+	externalAccountFieldPartnershipStatus     = big.NewInt(1 << 4)
+	externalAccountFieldPlatform              = big.NewInt(1 << 5)
+	externalAccountFieldProfilePictureURL     = big.NewInt(1 << 6)
+	externalAccountFieldScopes                = big.NewInt(1 << 7)
+	externalAccountFieldURL                   = big.NewInt(1 << 8)
+	externalAccountFieldUsername              = big.NewInt(1 << 9)
+	externalAccountFieldVerified              = big.NewInt(1 << 10)
 )
 
 // externalAccountNullableFields maps the wire names of ExternalAccount's nullable fields (required or optional) to their field bits.
 var externalAccountNullableFields = map[string]*big.Int{
-	"error":                   externalAccountFieldError,
 	"external_id":             externalAccountFieldExternalID,
 	"name":                    externalAccountFieldName,
 	"parent_external_account": externalAccountFieldParentExternalAccount,
@@ -351,8 +349,6 @@ var externalAccountNullableFields = map[string]*big.Int{
 }
 
 type ExternalAccount struct {
-	// Why this external account currently can't be used for advertising — a failed share or a Meta-side restriction. Null when the account is healthy.
-	Error *string `json:"error,omitempty" url:"error,omitempty"`
 	// The platform-specific ID for this external account.
 	ExternalID *string `json:"external_id,omitempty" url:"external_id,omitempty"`
 	// Unique identifier for the external account.
@@ -380,13 +376,6 @@ type ExternalAccount struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
-}
-
-func (e *ExternalAccount) GetError() *string {
-	if e == nil {
-		return nil
-	}
-	return e.Error
 }
 
 func (e *ExternalAccount) GetExternalID() *string {
@@ -480,13 +469,6 @@ func (e *ExternalAccount) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	e.explicitFields = next
-}
-
-// SetError sets the Error field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *ExternalAccount) SetError(error_ *string) {
-	e.Error = error_
-	e.require(externalAccountFieldError)
 }
 
 // SetExternalID sets the ExternalID field and marks it as non-optional;

@@ -322,23 +322,21 @@ func (r *RefreshSocialAccountsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	socialAccountFieldError               = big.NewInt(1 << 0)
-	socialAccountFieldExternalID          = big.NewInt(1 << 1)
-	socialAccountFieldID                  = big.NewInt(1 << 2)
-	socialAccountFieldName                = big.NewInt(1 << 3)
-	socialAccountFieldParentSocialAccount = big.NewInt(1 << 4)
-	socialAccountFieldPartnershipStatus   = big.NewInt(1 << 5)
-	socialAccountFieldPlatform            = big.NewInt(1 << 6)
-	socialAccountFieldProfilePictureURL   = big.NewInt(1 << 7)
-	socialAccountFieldScopes              = big.NewInt(1 << 8)
-	socialAccountFieldURL                 = big.NewInt(1 << 9)
-	socialAccountFieldUsername            = big.NewInt(1 << 10)
-	socialAccountFieldVerified            = big.NewInt(1 << 11)
+	socialAccountFieldExternalID          = big.NewInt(1 << 0)
+	socialAccountFieldID                  = big.NewInt(1 << 1)
+	socialAccountFieldName                = big.NewInt(1 << 2)
+	socialAccountFieldParentSocialAccount = big.NewInt(1 << 3)
+	socialAccountFieldPartnershipStatus   = big.NewInt(1 << 4)
+	socialAccountFieldPlatform            = big.NewInt(1 << 5)
+	socialAccountFieldProfilePictureURL   = big.NewInt(1 << 6)
+	socialAccountFieldScopes              = big.NewInt(1 << 7)
+	socialAccountFieldURL                 = big.NewInt(1 << 8)
+	socialAccountFieldUsername            = big.NewInt(1 << 9)
+	socialAccountFieldVerified            = big.NewInt(1 << 10)
 )
 
 // socialAccountNullableFields maps the wire names of SocialAccount's nullable fields (required or optional) to their field bits.
 var socialAccountNullableFields = map[string]*big.Int{
-	"error":                 socialAccountFieldError,
 	"external_id":           socialAccountFieldExternalID,
 	"name":                  socialAccountFieldName,
 	"parent_social_account": socialAccountFieldParentSocialAccount,
@@ -349,8 +347,6 @@ var socialAccountNullableFields = map[string]*big.Int{
 }
 
 type SocialAccount struct {
-	// Why this social account currently can't be used for advertising — a failed share or a Meta-side restriction. Null when the account is healthy.
-	Error *string `json:"error,omitempty" url:"error,omitempty"`
 	// The platform-specific ID for this social account.
 	ExternalID *string `json:"external_id,omitempty" url:"external_id,omitempty"`
 	// Unique identifier for the social account.
@@ -378,13 +374,6 @@ type SocialAccount struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
-}
-
-func (s *SocialAccount) GetError() *string {
-	if s == nil {
-		return nil
-	}
-	return s.Error
 }
 
 func (s *SocialAccount) GetExternalID() *string {
@@ -478,13 +467,6 @@ func (s *SocialAccount) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	s.explicitFields = next
-}
-
-// SetError sets the Error field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (s *SocialAccount) SetError(error_ *string) {
-	s.Error = error_
-	s.require(socialAccountFieldError)
 }
 
 // SetExternalID sets the ExternalID field and marks it as non-optional;
