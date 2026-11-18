@@ -4382,13 +4382,14 @@ var (
 	accountPreferencesFieldFailedPaymentEmails                     = big.NewInt(1 << 18)
 	accountPreferencesFieldFeedbackOptions                         = big.NewInt(1 << 19)
 	accountPreferencesFieldMerchantOfRecord                        = big.NewInt(1 << 20)
-	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 21)
-	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 22)
-	accountPreferencesFieldRenewalReminderEmails                   = big.NewInt(1 << 23)
-	accountPreferencesFieldReviewRequestEmails                     = big.NewInt(1 << 24)
-	accountPreferencesFieldSubaccountNotifications                 = big.NewInt(1 << 25)
-	accountPreferencesFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 26)
-	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 27)
+	accountPreferencesFieldOffSessionPaymentRules                  = big.NewInt(1 << 21)
+	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 22)
+	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 23)
+	accountPreferencesFieldRenewalReminderEmails                   = big.NewInt(1 << 24)
+	accountPreferencesFieldReviewRequestEmails                     = big.NewInt(1 << 25)
+	accountPreferencesFieldSubaccountNotifications                 = big.NewInt(1 << 26)
+	accountPreferencesFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 27)
+	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 28)
 )
 
 // accountPreferencesNullableFields maps the wire names of AccountPreferences's nullable fields (required or optional) to their field bits.
@@ -4448,6 +4449,8 @@ type AccountPreferences struct {
 	FeedbackOptions     []*FeedbackOption `json:"feedback_options" url:"feedback_options"`
 	// The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account's business category cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `account` means the account is the merchant of record.
 	MerchantOfRecord *AccountPreferencesMerchantOfRecord `json:"merchant_of_record,omitempty" url:"merchant_of_record,omitempty"`
+	// Whether all of this account's payment rules apply to off-session charges, including subscription renewals. Off by default, when renewals skip the rules and other off-session charges use only block and allow rules. Off-session payments still skip 3D Secure rule actions, and review requires an eligible card payment.
+	OffSessionPaymentRules bool `json:"off_session_payment_rules" url:"off_session_payment_rules"`
 	// Lowercase ISO currency code every new sale settles into, regardless of the plan's currency or what the buyer paid in. Sales converted this way carry an additional 0.5% FX fee. `null` when the account settles each sale in its plan's currency.
 	PreferredSettlementCurrency *AccountPreferencesPreferredSettlementCurrency `json:"preferred_settlement_currency,omitempty" url:"preferred_settlement_currency,omitempty"`
 	// When `preferred_settlement_currency` may next be changed or turned off, as an ISO 8601 timestamp. It can change at most once a day. `null` when it may change now.
@@ -4615,6 +4618,13 @@ func (a *AccountPreferences) GetMerchantOfRecord() *AccountPreferencesMerchantOf
 		return nil
 	}
 	return a.MerchantOfRecord
+}
+
+func (a *AccountPreferences) GetOffSessionPaymentRules() bool {
+	if a == nil {
+		return false
+	}
+	return a.OffSessionPaymentRules
 }
 
 func (a *AccountPreferences) GetPreferredSettlementCurrency() *AccountPreferencesPreferredSettlementCurrency {
@@ -4827,6 +4837,13 @@ func (a *AccountPreferences) SetFeedbackOptions(feedbackOptions []*FeedbackOptio
 func (a *AccountPreferences) SetMerchantOfRecord(merchantOfRecord *AccountPreferencesMerchantOfRecord) {
 	a.MerchantOfRecord = merchantOfRecord
 	a.require(accountPreferencesFieldMerchantOfRecord)
+}
+
+// SetOffSessionPaymentRules sets the OffSessionPaymentRules field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetOffSessionPaymentRules(offSessionPaymentRules bool) {
+	a.OffSessionPaymentRules = offSessionPaymentRules
+	a.require(accountPreferencesFieldOffSessionPaymentRules)
 }
 
 // SetPreferredSettlementCurrency sets the PreferredSettlementCurrency field and marks it as non-optional;
@@ -62175,7 +62192,7 @@ var (
 type PaymentQr struct {
 	// Exactly what the buyer must pay, in the charged currency.
 	Amount *Money `json:"amount,omitempty" url:"amount,omitempty"`
-	// The code the buyer pastes into their payment app instead of scanning, such as Pix's copy-and-paste code, so they can pay from the device showing the QR. Only present for methods that accept a pasted code.
+	// The code the buyer pastes into their payment app instead of scanning, such as Pix's copy-and-paste code. This lets them pay from the device showing the QR. Only present for methods that accept a pasted code.
 	CopyCode *string `json:"copy_code,omitempty" url:"copy_code,omitempty"`
 	// A hosted page with the complete, printable instructions. If you would rather not render the details yourself, send the buyer here.
 	DocumentURL *string `json:"document_url,omitempty" url:"document_url,omitempty"`
@@ -62183,7 +62200,7 @@ type PaymentQr struct {
 	ExpiresAt *string `json:"expires_at,omitempty" url:"expires_at,omitempty"`
 	// An account key the buyer can pay to directly (Colombia's Bre-B llave), for apps that take a key instead of a scan.
 	Key *string `json:"key,omitempty" url:"key,omitempty"`
-	// The QR code's contents, ready to render as a scannable image — `qr_format` says how it is encoded.
+	// The QR code's contents, ready to render as a scannable image. `qr_format` says how it is encoded.
 	QrCode *string `json:"qr_code,omitempty" url:"qr_code,omitempty"`
 	// How `qr_code` is encoded.
 	QrFormat *string `json:"qr_format,omitempty" url:"qr_format,omitempty"`

@@ -702,6 +702,51 @@ func TestSettersMarkExplicitListPaymentRulesRequest(t *testing.T) {
 
 }
 
+func TestSettersListFieldsPaymentRulesRequest(t *testing.T) {
+	t.Run("SetAccountID", func(t *testing.T) {
+		obj := &ListFieldsPaymentRulesRequest{}
+		var fernTestValueAccountID *string
+		obj.SetAccountID(fernTestValueAccountID)
+		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestSettersMarkExplicitListFieldsPaymentRulesRequest(t *testing.T) {
+	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListFieldsPaymentRulesRequest{}
+		var fernTestValueAccountID *string
+
+		// Act
+		obj.SetAccountID(fernTestValueAccountID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersReplacePaymentRulesRequest(t *testing.T) {
 	t.Run("SetID", func(t *testing.T) {
 		obj := &ReplacePaymentRulesRequest{}
@@ -1898,6 +1943,14 @@ func TestSettersMarkExplicitPaymentRuleConditions(t *testing.T) {
 }
 
 func TestSettersPaymentRuleField(t *testing.T) {
+	t.Run("SetActions", func(t *testing.T) {
+		obj := &PaymentRuleField{}
+		var fernTestValueActions []PaymentRuleFieldActionsItem
+		obj.SetActions(fernTestValueActions)
+		assert.Equal(t, fernTestValueActions, obj.Actions)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetField", func(t *testing.T) {
 		obj := &PaymentRuleField{}
 		var fernTestValueField PaymentRuleFieldField
@@ -1938,6 +1991,14 @@ func TestSettersPaymentRuleField(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetStage", func(t *testing.T) {
+		obj := &PaymentRuleField{}
+		var fernTestValueStage PaymentRuleFieldStage
+		obj.SetStage(fernTestValueStage)
+		assert.Equal(t, fernTestValueStage, obj.Stage)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetType", func(t *testing.T) {
 		obj := &PaymentRuleField{}
 		var fernTestValueType PaymentRuleFieldType
@@ -1949,6 +2010,39 @@ func TestSettersPaymentRuleField(t *testing.T) {
 }
 
 func TestGettersPaymentRuleField(t *testing.T) {
+	t.Run("GetActions", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentRuleField{}
+		var expected []PaymentRuleFieldActionsItem
+		obj.Actions = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetActions(), "getter should return the property value")
+	})
+
+	t.Run("GetActions_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentRuleField{}
+		obj.Actions = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetActions(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetActions_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentRuleField
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetActions() // Should return zero value
+	})
+
 	t.Run("GetField", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2104,6 +2198,29 @@ func TestGettersPaymentRuleField(t *testing.T) {
 		_ = obj.GetOptions() // Should return zero value
 	})
 
+	t.Run("GetStage", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentRuleField{}
+		var expected PaymentRuleFieldStage
+		obj.Stage = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStage(), "getter should return the property value")
+	})
+
+	t.Run("GetStage_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentRuleField
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStage() // Should return zero value
+	})
+
 	t.Run("GetType", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2130,6 +2247,37 @@ func TestGettersPaymentRuleField(t *testing.T) {
 }
 
 func TestSettersMarkExplicitPaymentRuleField(t *testing.T) {
+	t.Run("SetActions_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentRuleField{}
+		var fernTestValueActions []PaymentRuleFieldActionsItem
+
+		// Act
+		obj.SetActions(fernTestValueActions)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetField_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2262,6 +2410,37 @@ func TestSettersMarkExplicitPaymentRuleField(t *testing.T) {
 
 		// Act
 		obj.SetOptions(fernTestValueOptions)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStage_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentRuleField{}
+		var fernTestValueStage PaymentRuleFieldStage
+
+		// Act
+		obj.SetStage(fernTestValueStage)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4954,18 +5133,11 @@ func TestEnumCreatePaymentRulesRequestConditionsAllItemField(t *testing.T) {
 		assert.Equal(t, CreatePaymentRulesRequestConditionsAllItemField("ip_country"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_postal_code_check", func(t *testing.T) {
+	t.Run("NewFromString_avs_check", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewCreatePaymentRulesRequestConditionsAllItemFieldFromString("postal_code_check")
+		val, err := NewCreatePaymentRulesRequestConditionsAllItemFieldFromString("avs_check")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreatePaymentRulesRequestConditionsAllItemField("postal_code_check"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_address_line1_check", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreatePaymentRulesRequestConditionsAllItemFieldFromString("address_line1_check")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreatePaymentRulesRequestConditionsAllItemField("address_line1_check"), val, "enum value should match expected wire value")
+		assert.Equal(t, CreatePaymentRulesRequestConditionsAllItemField("avs_check"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_cvv_check", func(t *testing.T) {
@@ -5353,18 +5525,11 @@ func TestEnumPaymentRuleConditionField(t *testing.T) {
 		assert.Equal(t, PaymentRuleConditionField("ip_country"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_postal_code_check", func(t *testing.T) {
+	t.Run("NewFromString_avs_check", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPaymentRuleConditionFieldFromString("postal_code_check")
+		val, err := NewPaymentRuleConditionFieldFromString("avs_check")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PaymentRuleConditionField("postal_code_check"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_address_line1_check", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPaymentRuleConditionFieldFromString("address_line1_check")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PaymentRuleConditionField("address_line1_check"), val, "enum value should match expected wire value")
+		assert.Equal(t, PaymentRuleConditionField("avs_check"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_cvv_check", func(t *testing.T) {
@@ -5487,6 +5652,49 @@ func TestEnumPaymentRuleConditionOperator(t *testing.T) {
 	})
 }
 
+func TestEnumPaymentRuleFieldActionsItem(t *testing.T) {
+	t.Run("NewFromString_allow", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentRuleFieldActionsItemFromString("allow")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentRuleFieldActionsItem("allow"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_block", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentRuleFieldActionsItemFromString("block")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentRuleFieldActionsItem("block"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_review", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentRuleFieldActionsItemFromString("review")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentRuleFieldActionsItem("review"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_enforce_3ds", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentRuleFieldActionsItemFromString("enforce_3ds")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentRuleFieldActionsItem("enforce_3ds"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPaymentRuleFieldActionsItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPaymentRuleFieldActionsItemFromString("allow")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumPaymentRuleFieldField(t *testing.T) {
 	t.Run("NewFromString_risk_score", func(t *testing.T) {
 		t.Parallel()
@@ -5579,18 +5787,11 @@ func TestEnumPaymentRuleFieldField(t *testing.T) {
 		assert.Equal(t, PaymentRuleFieldField("ip_country"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_postal_code_check", func(t *testing.T) {
+	t.Run("NewFromString_avs_check", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewPaymentRuleFieldFieldFromString("postal_code_check")
+		val, err := NewPaymentRuleFieldFieldFromString("avs_check")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PaymentRuleFieldField("postal_code_check"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_address_line1_check", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewPaymentRuleFieldFieldFromString("address_line1_check")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, PaymentRuleFieldField("address_line1_check"), val, "enum value should match expected wire value")
+		assert.Equal(t, PaymentRuleFieldField("avs_check"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_cvv_check", func(t *testing.T) {
@@ -5706,6 +5907,35 @@ func TestEnumPaymentRuleFieldOperatorsItem(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewPaymentRuleFieldOperatorsItemFromString("eq")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumPaymentRuleFieldStage(t *testing.T) {
+	t.Run("NewFromString_before_authorization", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentRuleFieldStageFromString("before_authorization")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentRuleFieldStage("before_authorization"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_after_authorization", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentRuleFieldStageFromString("after_authorization")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentRuleFieldStage("after_authorization"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPaymentRuleFieldStageFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPaymentRuleFieldStageFromString("before_authorization")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -5920,18 +6150,11 @@ func TestEnumReplacePaymentRulesRequestConditionsAllItemField(t *testing.T) {
 		assert.Equal(t, ReplacePaymentRulesRequestConditionsAllItemField("ip_country"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_postal_code_check", func(t *testing.T) {
+	t.Run("NewFromString_avs_check", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewReplacePaymentRulesRequestConditionsAllItemFieldFromString("postal_code_check")
+		val, err := NewReplacePaymentRulesRequestConditionsAllItemFieldFromString("avs_check")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ReplacePaymentRulesRequestConditionsAllItemField("postal_code_check"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_address_line1_check", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewReplacePaymentRulesRequestConditionsAllItemFieldFromString("address_line1_check")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, ReplacePaymentRulesRequestConditionsAllItemField("address_line1_check"), val, "enum value should match expected wire value")
+		assert.Equal(t, ReplacePaymentRulesRequestConditionsAllItemField("avs_check"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_cvv_check", func(t *testing.T) {

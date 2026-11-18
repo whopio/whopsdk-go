@@ -224,6 +224,14 @@ func TestSettersRetrievePreferencesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetOffSessionPaymentRules", func(t *testing.T) {
+		obj := &RetrievePreferencesResponse{}
+		var fernTestValueOffSessionPaymentRules bool
+		obj.SetOffSessionPaymentRules(fernTestValueOffSessionPaymentRules)
+		assert.Equal(t, fernTestValueOffSessionPaymentRules, obj.OffSessionPaymentRules)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPreferredSettlementCurrency", func(t *testing.T) {
 		obj := &RetrievePreferencesResponse{}
 		var fernTestValuePreferredSettlementCurrency *RetrievePreferencesResponsePreferredSettlementCurrency
@@ -884,6 +892,29 @@ func TestGettersRetrievePreferencesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetMerchantOfRecord() // Should return zero value
+	})
+
+	t.Run("GetOffSessionPaymentRules", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		var expected bool
+		obj.OffSessionPaymentRules = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetOffSessionPaymentRules(), "getter should return the property value")
+	})
+
+	t.Run("GetOffSessionPaymentRules_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrievePreferencesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetOffSessionPaymentRules() // Should return zero value
 	})
 
 	t.Run("GetPreferredSettlementCurrency", func(t *testing.T) {
@@ -1718,6 +1749,37 @@ func TestSettersMarkExplicitRetrievePreferencesResponse(t *testing.T) {
 
 		// Act
 		obj.SetMerchantOfRecord(fernTestValueMerchantOfRecord)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetOffSessionPaymentRules_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		var fernTestValueOffSessionPaymentRules bool
+
+		// Act
+		obj.SetOffSessionPaymentRules(fernTestValueOffSessionPaymentRules)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5861,6 +5923,14 @@ func TestSettersUpdatePreferencesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetOffSessionPaymentRules", func(t *testing.T) {
+		obj := &UpdatePreferencesResponse{}
+		var fernTestValueOffSessionPaymentRules bool
+		obj.SetOffSessionPaymentRules(fernTestValueOffSessionPaymentRules)
+		assert.Equal(t, fernTestValueOffSessionPaymentRules, obj.OffSessionPaymentRules)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPreferredSettlementCurrency", func(t *testing.T) {
 		obj := &UpdatePreferencesResponse{}
 		var fernTestValuePreferredSettlementCurrency *UpdatePreferencesResponsePreferredSettlementCurrency
@@ -6521,6 +6591,29 @@ func TestGettersUpdatePreferencesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetMerchantOfRecord() // Should return zero value
+	})
+
+	t.Run("GetOffSessionPaymentRules", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		var expected bool
+		obj.OffSessionPaymentRules = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetOffSessionPaymentRules(), "getter should return the property value")
+	})
+
+	t.Run("GetOffSessionPaymentRules_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdatePreferencesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetOffSessionPaymentRules() // Should return zero value
 	})
 
 	t.Run("GetPreferredSettlementCurrency", func(t *testing.T) {
@@ -7355,6 +7448,37 @@ func TestSettersMarkExplicitUpdatePreferencesResponse(t *testing.T) {
 
 		// Act
 		obj.SetMerchantOfRecord(fernTestValueMerchantOfRecord)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetOffSessionPaymentRules_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		var fernTestValueOffSessionPaymentRules bool
+
+		// Act
+		obj.SetOffSessionPaymentRules(fernTestValueOffSessionPaymentRules)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -10220,6 +10344,14 @@ func TestSettersUpdatePreferencesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetOffSessionPaymentRules", func(t *testing.T) {
+		obj := &UpdatePreferencesRequest{}
+		var fernTestValueOffSessionPaymentRules *bool
+		obj.SetOffSessionPaymentRules(fernTestValueOffSessionPaymentRules)
+		assert.Equal(t, fernTestValueOffSessionPaymentRules, obj.OffSessionPaymentRules)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPreferredSettlementCurrency", func(t *testing.T) {
 		obj := &UpdatePreferencesRequest{}
 		var fernTestValuePreferredSettlementCurrency *UpdatePreferencesRequestPreferredSettlementCurrency
@@ -10744,6 +10876,37 @@ func TestSettersMarkExplicitUpdatePreferencesRequest(t *testing.T) {
 
 		// Act
 		obj.SetMerchantOfRecord(fernTestValueMerchantOfRecord)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetOffSessionPaymentRules_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesRequest{}
+		var fernTestValueOffSessionPaymentRules *bool
+
+		// Act
+		obj.SetOffSessionPaymentRules(fernTestValueOffSessionPaymentRules)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)

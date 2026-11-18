@@ -119,7 +119,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates a payment rule. It is created `active` and applies its `action` to new payments that match all of its `conditions`.
+// Creates a payment rule. It is created `active` and applies its `action` to new payments that match all of its `conditions`. A rule on a bank check field applies after the bank authorizes the card.
 //
 // Example:
 //
@@ -162,15 +162,19 @@ func (c *Client) Create(
 //
 // Example:
 //
+//	request := &whopsdk.ListFieldsPaymentRulesRequest{}
 //	client.PaymentRules.ListFields(
 //	    context.TODO(),
+//	    request,
 //	)
 func (c *Client) ListFields(
 	ctx context.Context,
+	request *whopsdk.ListFieldsPaymentRulesRequest,
 	opts ...option.RequestOption,
 ) (*whopsdk.ListFieldsPaymentRulesResponse, error) {
 	response, err := c.WithRawResponse.ListFields(
 		ctx,
+		request,
 		opts...,
 	)
 	if err != nil {
