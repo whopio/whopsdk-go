@@ -69,7 +69,7 @@ type CreateDomainsRequest struct {
 	Registration *CreateDomainsRequestRegistration `json:"registration,omitempty" url:"-"`
 	// Use a subdomain of a domain this account bought through Whop, such as shop.example.com under example.com. It's the default when you add such a subdomain without a capability. Whop publishes its DNS records in the root domain's zone, so it needs nothing from you: it stays `pending` until the root domain is set up, then turns `ready`. Whop releases it, and its website, when the account no longer holds the root domain, and deletes it when the root domain leaves the account. Pass `null` to release it. Can't be combined with `verification` or `registration`.
 	Subdomain *CreateDomainsRequestSubdomain `json:"subdomain,omitempty" url:"-"`
-	// Move a domain registered through Whop to another Whop account. Turning it on returns a code in `transfer.code`; the receiving account enters it as `registration.auth_code` on its own copy of the domain. Whop then removes the domain's email, email addresses and Apple Pay from this account, moves the registration with its expiry, stops charging this account to renew it, and removes the domain from this account. Pass `null` to turn it off and invalidate the code, until another account has entered it.
+	// Move a domain registered through Whop out of this account. For `internal`, turning it on returns a code in `transfer.code`. The receiving account enters it as `registration.auth_code` on its own copy of the domain. Whop then removes the domain's email, email addresses and Apple Pay from this account. It moves the registration with its expiry and stops charging this account to renew it. Then it removes the domain from this account. Pass `null` to turn it off and invalidate the code, until another account has entered it. For `external`, Whop unlocks the domain at its registrar. Then it turns off the domain's website, email, Apple Pay, pixel, subdomains and DNS. After that, `transfer.code` shows the registrar's auth code for the new registrar. The domain leaves this account when the transfer completes. Pass `null` before then to lock the domain again and keep its registration on Whop.
 	Transfer *CreateDomainsRequestTransfer `json:"transfer,omitempty" url:"-"`
 	// Prove you control the domain's DNS: Whop returns a TXT record to publish in `issues`, and whoever publishes it owns the domain on Whop. Pass `null` to release it. Can't be combined with `registration`.
 	Verification *CreateDomainsRequestVerification `json:"verification,omitempty" url:"-"`
@@ -551,7 +551,7 @@ type Domain struct {
 	Status *DomainStatus `json:"status,omitempty" url:"status,omitempty"`
 	// A subdomain of a domain this account bought through Whop, whose DNS Whop runs. Whop removes it when the account no longer holds the root domain. `null` for other domains or when not visible to you.
 	Subdomain *DomainSubdomain `json:"subdomain,omitempty" url:"subdomain,omitempty"`
-	// Moving the domain to another Whop account. `null` when not turned on or not visible to you.
+	// Moving the domain out of this account, to another Whop account or another registrar. `null` when not turned on or not visible to you.
 	Transfer *DomainTransfer `json:"transfer,omitempty" url:"transfer,omitempty"`
 	// When the domain was last updated, as an ISO 8601 timestamp.
 	UpdatedAt *string `json:"updated_at,omitempty" url:"updated_at,omitempty"`
@@ -1732,6 +1732,8 @@ const (
 	DomainIssueCodeTransferRejected          DomainIssueCode = "transfer_rejected"
 	DomainIssueCodeTransferNotCancellable    DomainIssueCode = "transfer_not_cancellable"
 	DomainIssueCodeDomainTransferFailed      DomainIssueCode = "domain_transfer_failed"
+	DomainIssueCodeTransferOutLocked         DomainIssueCode = "transfer_out_locked"
+	DomainIssueCodeRegistrarUnavailable      DomainIssueCode = "registrar_unavailable"
 	DomainIssueCodeApplePayUnverified        DomainIssueCode = "apple_pay_unverified"
 	DomainIssueCodePixelNotSeen              DomainIssueCode = "pixel_not_seen"
 	DomainIssueCodePixelNotInstalled         DomainIssueCode = "pixel_not_installed"
@@ -1797,6 +1799,10 @@ func NewDomainIssueCodeFromString(s string) (DomainIssueCode, error) {
 		return DomainIssueCodeTransferNotCancellable, nil
 	case "domain_transfer_failed":
 		return DomainIssueCodeDomainTransferFailed, nil
+	case "transfer_out_locked":
+		return DomainIssueCodeTransferOutLocked, nil
+	case "registrar_unavailable":
+		return DomainIssueCodeRegistrarUnavailable, nil
 	case "apple_pay_unverified":
 		return DomainIssueCodeApplePayUnverified, nil
 	case "pixel_not_seen":
@@ -1908,7 +1914,7 @@ type DomainListItem struct {
 	Status *DomainListItemStatus `json:"status,omitempty" url:"status,omitempty"`
 	// A subdomain of a domain this account bought through Whop, whose DNS Whop runs. Whop removes it when the account no longer holds the root domain. `null` for other domains or when not visible to you.
 	Subdomain *DomainSubdomain `json:"subdomain,omitempty" url:"subdomain,omitempty"`
-	// Moving the domain to another Whop account. `null` when not turned on or not visible to you.
+	// Moving the domain out of this account, to another Whop account or another registrar. `null` when not turned on or not visible to you.
 	Transfer *DomainTransfer `json:"transfer,omitempty" url:"transfer,omitempty"`
 	// When the domain was last updated, as an ISO 8601 timestamp.
 	UpdatedAt *string `json:"updated_at,omitempty" url:"updated_at,omitempty"`
@@ -3821,11 +3827,11 @@ var domainTransferNullableFields = map[string]*big.Int{
 }
 
 type DomainTransfer struct {
-	// The code that takes the domain. For an `internal` move it starts `whop_dt_`, and the receiving Whop account enters it as `registration.auth_code` when it creates or updates the domain. Returned when the response is a single domain and you can manage it; `null` otherwise.
+	// The code that takes the domain, shown while `state` is `ready`. For an `internal` move it starts `whop_dt_`. The receiving Whop account enters it as `registration.auth_code` when it creates or updates the domain. For an `external` move it is the registrar's auth code, which you give to the new registrar. Only a single-domain response shows it, and only to a caller who can manage the domain. Otherwise it is `null`.
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
-	// Where the domain is moving. `internal` is another Whop account.
+	// Where the domain is moving. `internal` is another Whop account. `external` is another registrar.
 	Destination DomainTransferDestination `json:"destination" url:"destination"`
-	// `ready` while the code waits to be used. `pending` once it has: Whop removes the domain's email, Apple Pay and pixel from this account, then moves the registration and removes the domain from this account.
+	// `ready` while the code waits to be used. For `internal`, `pending` once another account uses it. Whop then removes the domain's email, Apple Pay and pixel from this account. Then it moves the registration and removes the domain from this account. For `external`, `pending` while Whop unlocks the domain at its registrar and turns off everything Whop runs on it. The domain leaves this account when the transfer completes. `releasing` while Whop turns the transfer off.
 	State DomainTransferState `json:"state" url:"state"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3942,17 +3948,20 @@ func (d *DomainTransfer) String() string {
 	return fmt.Sprintf("%#v", d)
 }
 
-// Where the domain is moving. `internal` is another Whop account.
+// Where the domain is moving. `internal` is another Whop account. `external` is another registrar.
 type DomainTransferDestination string
 
 const (
 	DomainTransferDestinationInternal DomainTransferDestination = "internal"
+	DomainTransferDestinationExternal DomainTransferDestination = "external"
 )
 
 func NewDomainTransferDestinationFromString(s string) (DomainTransferDestination, error) {
 	switch s {
 	case "internal":
 		return DomainTransferDestinationInternal, nil
+	case "external":
+		return DomainTransferDestinationExternal, nil
 	}
 	var t DomainTransferDestination
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -3962,12 +3971,13 @@ func (d DomainTransferDestination) Ptr() *DomainTransferDestination {
 	return &d
 }
 
-// `ready` while the code waits to be used. `pending` once it has: Whop removes the domain's email, Apple Pay and pixel from this account, then moves the registration and removes the domain from this account.
+// `ready` while the code waits to be used. For `internal`, `pending` once another account uses it. Whop then removes the domain's email, Apple Pay and pixel from this account. Then it moves the registration and removes the domain from this account. For `external`, `pending` while Whop unlocks the domain at its registrar and turns off everything Whop runs on it. The domain leaves this account when the transfer completes. `releasing` while Whop turns the transfer off.
 type DomainTransferState string
 
 const (
-	DomainTransferStateReady   DomainTransferState = "ready"
-	DomainTransferStatePending DomainTransferState = "pending"
+	DomainTransferStateReady     DomainTransferState = "ready"
+	DomainTransferStatePending   DomainTransferState = "pending"
+	DomainTransferStateReleasing DomainTransferState = "releasing"
 )
 
 func NewDomainTransferStateFromString(s string) (DomainTransferState, error) {
@@ -3976,6 +3986,8 @@ func NewDomainTransferStateFromString(s string) (DomainTransferState, error) {
 		return DomainTransferStateReady, nil
 	case "pending":
 		return DomainTransferStatePending, nil
+	case "releasing":
+		return DomainTransferStateReleasing, nil
 	}
 	var t DomainTransferState
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -4801,9 +4813,9 @@ var (
 	createDomainsRequestTransferFieldDestination = big.NewInt(1 << 0)
 )
 
-// Move a domain registered through Whop to another Whop account. Turning it on returns a code in `transfer.code`; the receiving account enters it as `registration.auth_code` on its own copy of the domain. Whop then removes the domain's email, email addresses and Apple Pay from this account, moves the registration with its expiry, stops charging this account to renew it, and removes the domain from this account. Pass `null` to turn it off and invalidate the code, until another account has entered it.
+// Move a domain registered through Whop out of this account. For `internal`, turning it on returns a code in `transfer.code`. The receiving account enters it as `registration.auth_code` on its own copy of the domain. Whop then removes the domain's email, email addresses and Apple Pay from this account. It moves the registration with its expiry and stops charging this account to renew it. Then it removes the domain from this account. Pass `null` to turn it off and invalidate the code, until another account has entered it. For `external`, Whop unlocks the domain at its registrar. Then it turns off the domain's website, email, Apple Pay, pixel, subdomains and DNS. After that, `transfer.code` shows the registrar's auth code for the new registrar. The domain leaves this account when the transfer completes. Pass `null` before then to lock the domain again and keep its registration on Whop.
 type CreateDomainsRequestTransfer struct {
-	// Where the domain moves. `internal` moves it to another Whop account.
+	// Where the domain moves. `internal` moves it to another Whop account. `external` moves it to another registrar.
 	Destination *CreateDomainsRequestTransferDestination `json:"destination,omitempty" url:"destination,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -4885,17 +4897,20 @@ func (c *CreateDomainsRequestTransfer) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Where the domain moves. `internal` moves it to another Whop account.
+// Where the domain moves. `internal` moves it to another Whop account. `external` moves it to another registrar.
 type CreateDomainsRequestTransferDestination string
 
 const (
 	CreateDomainsRequestTransferDestinationInternal CreateDomainsRequestTransferDestination = "internal"
+	CreateDomainsRequestTransferDestinationExternal CreateDomainsRequestTransferDestination = "external"
 )
 
 func NewCreateDomainsRequestTransferDestinationFromString(s string) (CreateDomainsRequestTransferDestination, error) {
 	switch s {
 	case "internal":
 		return CreateDomainsRequestTransferDestinationInternal, nil
+	case "external":
+		return CreateDomainsRequestTransferDestinationExternal, nil
 	}
 	var t CreateDomainsRequestTransferDestination
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -6890,9 +6905,9 @@ var (
 	updateDomainsRequestTransferFieldDestination = big.NewInt(1 << 0)
 )
 
-// Move a domain registered through Whop to another Whop account. Turning it on returns a code in `transfer.code`; the receiving account enters it as `registration.auth_code` on its own copy of the domain. Whop then removes the domain's email, email addresses and Apple Pay from this account, moves the registration with its expiry, stops charging this account to renew it, and removes the domain from this account. Pass `null` to turn it off and invalidate the code, until another account has entered it.
+// Move a domain registered through Whop out of this account. For `internal`, turning it on returns a code in `transfer.code`. The receiving account enters it as `registration.auth_code` on its own copy of the domain. Whop then removes the domain's email, email addresses and Apple Pay from this account. It moves the registration with its expiry and stops charging this account to renew it. Then it removes the domain from this account. Pass `null` to turn it off and invalidate the code, until another account has entered it. For `external`, Whop unlocks the domain at its registrar. Then it turns off the domain's website, email, Apple Pay, pixel, subdomains and DNS. After that, `transfer.code` shows the registrar's auth code for the new registrar. The domain leaves this account when the transfer completes. Pass `null` before then to lock the domain again and keep its registration on Whop.
 type UpdateDomainsRequestTransfer struct {
-	// Where the domain moves. `internal` moves it to another Whop account.
+	// Where the domain moves. `internal` moves it to another Whop account. `external` moves it to another registrar.
 	Destination *UpdateDomainsRequestTransferDestination `json:"destination,omitempty" url:"destination,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -6974,17 +6989,20 @@ func (u *UpdateDomainsRequestTransfer) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
-// Where the domain moves. `internal` moves it to another Whop account.
+// Where the domain moves. `internal` moves it to another Whop account. `external` moves it to another registrar.
 type UpdateDomainsRequestTransferDestination string
 
 const (
 	UpdateDomainsRequestTransferDestinationInternal UpdateDomainsRequestTransferDestination = "internal"
+	UpdateDomainsRequestTransferDestinationExternal UpdateDomainsRequestTransferDestination = "external"
 )
 
 func NewUpdateDomainsRequestTransferDestinationFromString(s string) (UpdateDomainsRequestTransferDestination, error) {
 	switch s {
 	case "internal":
 		return UpdateDomainsRequestTransferDestinationInternal, nil
+	case "external":
+		return UpdateDomainsRequestTransferDestinationExternal, nil
 	}
 	var t UpdateDomainsRequestTransferDestination
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -7190,7 +7208,7 @@ type UpdateDomainsRequest struct {
 	Registration *UpdateDomainsRequestRegistration `json:"registration,omitempty" url:"-"`
 	// Use a subdomain of a domain this account bought through Whop, such as shop.example.com under example.com. It's the default when you add such a subdomain without a capability. Whop publishes its DNS records in the root domain's zone, so it needs nothing from you: it stays `pending` until the root domain is set up, then turns `ready`. Whop releases it, and its website, when the account no longer holds the root domain, and deletes it when the root domain leaves the account. Pass `null` to release it. Can't be combined with `verification` or `registration`.
 	Subdomain *UpdateDomainsRequestSubdomain `json:"subdomain,omitempty" url:"-"`
-	// Move a domain registered through Whop to another Whop account. Turning it on returns a code in `transfer.code`; the receiving account enters it as `registration.auth_code` on its own copy of the domain. Whop then removes the domain's email, email addresses and Apple Pay from this account, moves the registration with its expiry, stops charging this account to renew it, and removes the domain from this account. Pass `null` to turn it off and invalidate the code, until another account has entered it.
+	// Move a domain registered through Whop out of this account. For `internal`, turning it on returns a code in `transfer.code`. The receiving account enters it as `registration.auth_code` on its own copy of the domain. Whop then removes the domain's email, email addresses and Apple Pay from this account. It moves the registration with its expiry and stops charging this account to renew it. Then it removes the domain from this account. Pass `null` to turn it off and invalidate the code, until another account has entered it. For `external`, Whop unlocks the domain at its registrar. Then it turns off the domain's website, email, Apple Pay, pixel, subdomains and DNS. After that, `transfer.code` shows the registrar's auth code for the new registrar. The domain leaves this account when the transfer completes. Pass `null` before then to lock the domain again and keep its registration on Whop.
 	Transfer *UpdateDomainsRequestTransfer `json:"transfer,omitempty" url:"-"`
 	// Prove you control the domain's DNS: Whop returns a TXT record to publish in `issues`, and whoever publishes it owns the domain on Whop. Pass `null` to release it. Can't be combined with `registration`.
 	Verification *UpdateDomainsRequestVerification `json:"verification,omitempty" url:"-"`
