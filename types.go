@@ -80712,6 +80712,7 @@ const (
 	WebhookEventAdCampaignUpdated                  WebhookEvent = "ad_campaign.updated"
 	WebhookEventAdCampaignEvents                   WebhookEvent = "ad_campaign.events"
 	WebhookEventAdCampaignDeleted                  WebhookEvent = "ad_campaign.deleted"
+	WebhookEventAdCampaignClaimEnded               WebhookEvent = "ad_campaign.claim_ended"
 	WebhookEventAdGroupCreated                     WebhookEvent = "ad_group.created"
 	WebhookEventAdGroupUpdated                     WebhookEvent = "ad_group.updated"
 	WebhookEventAdGroupDeleted                     WebhookEvent = "ad_group.deleted"
@@ -80905,6 +80906,8 @@ func NewWebhookEventFromString(s string) (WebhookEvent, error) {
 		return WebhookEventAdCampaignEvents, nil
 	case "ad_campaign.deleted":
 		return WebhookEventAdCampaignDeleted, nil
+	case "ad_campaign.claim_ended":
+		return WebhookEventAdCampaignClaimEnded, nil
 	case "ad_group.created":
 		return WebhookEventAdGroupCreated, nil
 	case "ad_group.updated":

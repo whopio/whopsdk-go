@@ -1400,6 +1400,7 @@ const (
 	WebhookEventsItemAdCampaignUpdated                     WebhookEventsItem = "ad_campaign.updated"
 	WebhookEventsItemAdCampaignEvents                      WebhookEventsItem = "ad_campaign.events"
 	WebhookEventsItemAdCampaignDeleted                     WebhookEventsItem = "ad_campaign.deleted"
+	WebhookEventsItemAdCampaignClaimEnded                  WebhookEventsItem = "ad_campaign.claim_ended"
 	WebhookEventsItemAdGroupCreated                        WebhookEventsItem = "ad_group.created"
 	WebhookEventsItemAdGroupUpdated                        WebhookEventsItem = "ad_group.updated"
 	WebhookEventsItemAdGroupDeleted                        WebhookEventsItem = "ad_group.deleted"
@@ -1609,6 +1610,8 @@ func NewWebhookEventsItemFromString(s string) (WebhookEventsItem, error) {
 		return WebhookEventsItemAdCampaignEvents, nil
 	case "ad_campaign.deleted":
 		return WebhookEventsItemAdCampaignDeleted, nil
+	case "ad_campaign.claim_ended":
+		return WebhookEventsItemAdCampaignClaimEnded, nil
 	case "ad_group.created":
 		return WebhookEventsItemAdGroupCreated, nil
 	case "ad_group.updated":
@@ -2188,6 +2191,7 @@ const (
 	WebhookListItemEventsItemAdCampaignUpdated                     WebhookListItemEventsItem = "ad_campaign.updated"
 	WebhookListItemEventsItemAdCampaignEvents                      WebhookListItemEventsItem = "ad_campaign.events"
 	WebhookListItemEventsItemAdCampaignDeleted                     WebhookListItemEventsItem = "ad_campaign.deleted"
+	WebhookListItemEventsItemAdCampaignClaimEnded                  WebhookListItemEventsItem = "ad_campaign.claim_ended"
 	WebhookListItemEventsItemAdGroupCreated                        WebhookListItemEventsItem = "ad_group.created"
 	WebhookListItemEventsItemAdGroupUpdated                        WebhookListItemEventsItem = "ad_group.updated"
 	WebhookListItemEventsItemAdGroupDeleted                        WebhookListItemEventsItem = "ad_group.deleted"
@@ -2397,6 +2401,8 @@ func NewWebhookListItemEventsItemFromString(s string) (WebhookListItemEventsItem
 		return WebhookListItemEventsItemAdCampaignEvents, nil
 	case "ad_campaign.deleted":
 		return WebhookListItemEventsItemAdCampaignDeleted, nil
+	case "ad_campaign.claim_ended":
+		return WebhookListItemEventsItemAdCampaignClaimEnded, nil
 	case "ad_group.created":
 		return WebhookListItemEventsItemAdGroupCreated, nil
 	case "ad_group.updated":
@@ -2571,6 +2577,7 @@ const (
 	WebhookTestableEventsItemAdCampaignUpdated                     WebhookTestableEventsItem = "ad_campaign.updated"
 	WebhookTestableEventsItemAdCampaignEvents                      WebhookTestableEventsItem = "ad_campaign.events"
 	WebhookTestableEventsItemAdCampaignDeleted                     WebhookTestableEventsItem = "ad_campaign.deleted"
+	WebhookTestableEventsItemAdCampaignClaimEnded                  WebhookTestableEventsItem = "ad_campaign.claim_ended"
 	WebhookTestableEventsItemAdGroupCreated                        WebhookTestableEventsItem = "ad_group.created"
 	WebhookTestableEventsItemAdGroupUpdated                        WebhookTestableEventsItem = "ad_group.updated"
 	WebhookTestableEventsItemAdGroupDeleted                        WebhookTestableEventsItem = "ad_group.deleted"
@@ -2780,6 +2787,8 @@ func NewWebhookTestableEventsItemFromString(s string) (WebhookTestableEventsItem
 		return WebhookTestableEventsItemAdCampaignEvents, nil
 	case "ad_campaign.deleted":
 		return WebhookTestableEventsItemAdCampaignDeleted, nil
+	case "ad_campaign.claim_ended":
+		return WebhookTestableEventsItemAdCampaignClaimEnded, nil
 	case "ad_group.created":
 		return WebhookTestableEventsItemAdGroupCreated, nil
 	case "ad_group.updated":
@@ -2950,6 +2959,7 @@ const (
 	CreateWebhooksRequestEventsItemAdCampaignUpdated                  CreateWebhooksRequestEventsItem = "ad_campaign.updated"
 	CreateWebhooksRequestEventsItemAdCampaignEvents                   CreateWebhooksRequestEventsItem = "ad_campaign.events"
 	CreateWebhooksRequestEventsItemAdCampaignDeleted                  CreateWebhooksRequestEventsItem = "ad_campaign.deleted"
+	CreateWebhooksRequestEventsItemAdCampaignClaimEnded               CreateWebhooksRequestEventsItem = "ad_campaign.claim_ended"
 	CreateWebhooksRequestEventsItemAdGroupCreated                     CreateWebhooksRequestEventsItem = "ad_group.created"
 	CreateWebhooksRequestEventsItemAdGroupUpdated                     CreateWebhooksRequestEventsItem = "ad_group.updated"
 	CreateWebhooksRequestEventsItemAdGroupDeleted                     CreateWebhooksRequestEventsItem = "ad_group.deleted"
@@ -3137,6 +3147,8 @@ func NewCreateWebhooksRequestEventsItemFromString(s string) (CreateWebhooksReque
 		return CreateWebhooksRequestEventsItemAdCampaignEvents, nil
 	case "ad_campaign.deleted":
 		return CreateWebhooksRequestEventsItemAdCampaignDeleted, nil
+	case "ad_campaign.claim_ended":
+		return CreateWebhooksRequestEventsItemAdCampaignClaimEnded, nil
 	case "ad_group.created":
 		return CreateWebhooksRequestEventsItemAdGroupCreated, nil
 	case "ad_group.updated":
@@ -3382,6 +3394,7 @@ const (
 	ListDeliveriesWebhooksRequestEventsItemAdCampaignUpdated                     ListDeliveriesWebhooksRequestEventsItem = "ad_campaign.updated"
 	ListDeliveriesWebhooksRequestEventsItemAdCampaignEvents                      ListDeliveriesWebhooksRequestEventsItem = "ad_campaign.events"
 	ListDeliveriesWebhooksRequestEventsItemAdCampaignDeleted                     ListDeliveriesWebhooksRequestEventsItem = "ad_campaign.deleted"
+	ListDeliveriesWebhooksRequestEventsItemAdCampaignClaimEnded                  ListDeliveriesWebhooksRequestEventsItem = "ad_campaign.claim_ended"
 	ListDeliveriesWebhooksRequestEventsItemAdGroupCreated                        ListDeliveriesWebhooksRequestEventsItem = "ad_group.created"
 	ListDeliveriesWebhooksRequestEventsItemAdGroupUpdated                        ListDeliveriesWebhooksRequestEventsItem = "ad_group.updated"
 	ListDeliveriesWebhooksRequestEventsItemAdGroupDeleted                        ListDeliveriesWebhooksRequestEventsItem = "ad_group.deleted"
@@ -3591,6 +3604,8 @@ func NewListDeliveriesWebhooksRequestEventsItemFromString(s string) (ListDeliver
 		return ListDeliveriesWebhooksRequestEventsItemAdCampaignEvents, nil
 	case "ad_campaign.deleted":
 		return ListDeliveriesWebhooksRequestEventsItemAdCampaignDeleted, nil
+	case "ad_campaign.claim_ended":
+		return ListDeliveriesWebhooksRequestEventsItemAdCampaignClaimEnded, nil
 	case "ad_group.created":
 		return ListDeliveriesWebhooksRequestEventsItemAdGroupCreated, nil
 	case "ad_group.updated":
@@ -4609,6 +4624,7 @@ const (
 	UpdateWebhooksRequestEventsItemAdCampaignUpdated                  UpdateWebhooksRequestEventsItem = "ad_campaign.updated"
 	UpdateWebhooksRequestEventsItemAdCampaignEvents                   UpdateWebhooksRequestEventsItem = "ad_campaign.events"
 	UpdateWebhooksRequestEventsItemAdCampaignDeleted                  UpdateWebhooksRequestEventsItem = "ad_campaign.deleted"
+	UpdateWebhooksRequestEventsItemAdCampaignClaimEnded               UpdateWebhooksRequestEventsItem = "ad_campaign.claim_ended"
 	UpdateWebhooksRequestEventsItemAdGroupCreated                     UpdateWebhooksRequestEventsItem = "ad_group.created"
 	UpdateWebhooksRequestEventsItemAdGroupUpdated                     UpdateWebhooksRequestEventsItem = "ad_group.updated"
 	UpdateWebhooksRequestEventsItemAdGroupDeleted                     UpdateWebhooksRequestEventsItem = "ad_group.deleted"
@@ -4796,6 +4812,8 @@ func NewUpdateWebhooksRequestEventsItemFromString(s string) (UpdateWebhooksReque
 		return UpdateWebhooksRequestEventsItemAdCampaignEvents, nil
 	case "ad_campaign.deleted":
 		return UpdateWebhooksRequestEventsItemAdCampaignDeleted, nil
+	case "ad_campaign.claim_ended":
+		return UpdateWebhooksRequestEventsItemAdCampaignClaimEnded, nil
 	case "ad_group.created":
 		return UpdateWebhooksRequestEventsItemAdGroupCreated, nil
 	case "ad_group.updated":
