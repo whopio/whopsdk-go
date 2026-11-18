@@ -782,44 +782,45 @@ func (s *SendInvoicesRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	invoiceFieldAccountID                  = big.NewInt(1 << 0)
-	invoiceFieldAmountDue                  = big.NewInt(1 << 1)
-	invoiceFieldBillingAddress             = big.NewInt(1 << 2)
-	invoiceFieldBuyerFeeAmount             = big.NewInt(1 << 3)
-	invoiceFieldBuyerFeePercentage         = big.NewInt(1 << 4)
-	invoiceFieldCheckoutLink               = big.NewInt(1 << 5)
-	invoiceFieldCreatedAt                  = big.NewInt(1 << 6)
-	invoiceFieldCustomerName               = big.NewInt(1 << 7)
-	invoiceFieldDeletable                  = big.NewInt(1 << 8)
-	invoiceFieldDueAt                      = big.NewInt(1 << 9)
-	invoiceFieldEmailAddress               = big.NewInt(1 << 10)
-	invoiceFieldID                         = big.NewInt(1 << 11)
-	invoiceFieldInvoicePrefix              = big.NewInt(1 << 12)
-	invoiceFieldLineItems                  = big.NewInt(1 << 13)
-	invoiceFieldMailingAddressID           = big.NewInt(1 << 14)
-	invoiceFieldMemberID                   = big.NewInt(1 << 15)
-	invoiceFieldMembershipID               = big.NewInt(1 << 16)
-	invoiceFieldMemo                       = big.NewInt(1 << 17)
-	invoiceFieldMetadata                   = big.NewInt(1 << 18)
-	invoiceFieldNumber                     = big.NewInt(1 << 19)
-	invoiceFieldObject                     = big.NewInt(1 << 20)
-	invoiceFieldOverdue                    = big.NewInt(1 << 21)
-	invoiceFieldPaidAt                     = big.NewInt(1 << 22)
-	invoiceFieldPaymentMethodConfiguration = big.NewInt(1 << 23)
-	invoiceFieldPaymentMethodID            = big.NewInt(1 << 24)
-	invoiceFieldRecipientEmails            = big.NewInt(1 << 25)
-	invoiceFieldScheduledChargeAt          = big.NewInt(1 << 26)
-	invoiceFieldScheduledCollectionMethod  = big.NewInt(1 << 27)
-	invoiceFieldScheduledSendAt            = big.NewInt(1 << 28)
-	invoiceFieldSendsOnDueDate             = big.NewInt(1 << 29)
-	invoiceFieldStatus                     = big.NewInt(1 << 30)
-	invoiceFieldSubscriptionStartsAt       = big.NewInt(1 << 31)
-	invoiceFieldSubtotal                   = big.NewInt(1 << 32)
-	invoiceFieldTaxAmount                  = big.NewInt(1 << 33)
-	invoiceFieldTimeZone                   = big.NewInt(1 << 34)
-	invoiceFieldTotal                      = big.NewInt(1 << 35)
-	invoiceFieldTotalsStatus               = big.NewInt(1 << 36)
-	invoiceFieldUpdatedAt                  = big.NewInt(1 << 37)
+	invoiceFieldAccount                    = big.NewInt(1 << 0)
+	invoiceFieldAccountID                  = big.NewInt(1 << 1)
+	invoiceFieldAmountDue                  = big.NewInt(1 << 2)
+	invoiceFieldBillingAddress             = big.NewInt(1 << 3)
+	invoiceFieldBuyerFeeAmount             = big.NewInt(1 << 4)
+	invoiceFieldBuyerFeePercentage         = big.NewInt(1 << 5)
+	invoiceFieldCheckoutLink               = big.NewInt(1 << 6)
+	invoiceFieldCreatedAt                  = big.NewInt(1 << 7)
+	invoiceFieldCustomerName               = big.NewInt(1 << 8)
+	invoiceFieldDeletable                  = big.NewInt(1 << 9)
+	invoiceFieldDueAt                      = big.NewInt(1 << 10)
+	invoiceFieldEmailAddress               = big.NewInt(1 << 11)
+	invoiceFieldID                         = big.NewInt(1 << 12)
+	invoiceFieldInvoicePrefix              = big.NewInt(1 << 13)
+	invoiceFieldLineItems                  = big.NewInt(1 << 14)
+	invoiceFieldMailingAddressID           = big.NewInt(1 << 15)
+	invoiceFieldMemberID                   = big.NewInt(1 << 16)
+	invoiceFieldMembershipID               = big.NewInt(1 << 17)
+	invoiceFieldMemo                       = big.NewInt(1 << 18)
+	invoiceFieldMetadata                   = big.NewInt(1 << 19)
+	invoiceFieldNumber                     = big.NewInt(1 << 20)
+	invoiceFieldObject                     = big.NewInt(1 << 21)
+	invoiceFieldOverdue                    = big.NewInt(1 << 22)
+	invoiceFieldPaidAt                     = big.NewInt(1 << 23)
+	invoiceFieldPaymentMethodConfiguration = big.NewInt(1 << 24)
+	invoiceFieldPaymentMethodID            = big.NewInt(1 << 25)
+	invoiceFieldRecipientEmails            = big.NewInt(1 << 26)
+	invoiceFieldScheduledChargeAt          = big.NewInt(1 << 27)
+	invoiceFieldScheduledCollectionMethod  = big.NewInt(1 << 28)
+	invoiceFieldScheduledSendAt            = big.NewInt(1 << 29)
+	invoiceFieldSendsOnDueDate             = big.NewInt(1 << 30)
+	invoiceFieldStatus                     = big.NewInt(1 << 31)
+	invoiceFieldSubscriptionStartsAt       = big.NewInt(1 << 32)
+	invoiceFieldSubtotal                   = big.NewInt(1 << 33)
+	invoiceFieldTaxAmount                  = big.NewInt(1 << 34)
+	invoiceFieldTimeZone                   = big.NewInt(1 << 35)
+	invoiceFieldTotal                      = big.NewInt(1 << 36)
+	invoiceFieldTotalsStatus               = big.NewInt(1 << 37)
+	invoiceFieldUpdatedAt                  = big.NewInt(1 << 38)
 )
 
 // invoiceNullableFields maps the wire names of Invoice's nullable fields (required or optional) to their field bits.
@@ -845,6 +846,8 @@ var invoiceNullableFields = map[string]*big.Int{
 }
 
 type Invoice struct {
+	// The account that sent the invoice.
+	Account            *AccountSummary `json:"account" url:"account"`
 	AccountID          string          `json:"account_id" url:"account_id"`
 	AmountDue          *Money          `json:"amount_due" url:"amount_due"`
 	BillingAddress     *PaymentAddress `json:"billing_address,omitempty" url:"billing_address,omitempty"`
@@ -866,7 +869,8 @@ type Invoice struct {
 	// The membership this invoice bills, prefixed `mem_`. For a renewal invoice, it is the subscription that renews. For an invoice with a recurring item, it is the membership created when the invoice is issued. Null for one-off invoices, for a draft not yet issued, and without the member:basic:read permission.
 	MembershipID *string `json:"membership_id,omitempty" url:"membership_id,omitempty"`
 	// A note to the customer, shown on the invoice email, PDF, and checkout page with its line breaks kept. `null` when none is set.
-	Memo     *string           `json:"memo,omitempty" url:"memo,omitempty"`
+	Memo *string `json:"memo,omitempty" url:"memo,omitempty"`
+	// Key-value pairs the seller stored on the invoice. Empty when the invoice is read without a credential.
 	Metadata map[string]string `json:"metadata" url:"metadata"`
 	Number   string            `json:"number" url:"number"`
 	Object   InvoiceObject     `json:"object" url:"object"`
@@ -899,6 +903,13 @@ type Invoice struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (i *Invoice) GetAccount() *AccountSummary {
+	if i == nil {
+		return nil
+	}
+	return i.Account
 }
 
 func (i *Invoice) GetAccountID() string {
@@ -1181,6 +1192,13 @@ func (i *Invoice) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	i.explicitFields = next
+}
+
+// SetAccount sets the Account field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetAccount(account *AccountSummary) {
+	i.Account = account
+	i.require(invoiceFieldAccount)
 }
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
