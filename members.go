@@ -89,16 +89,18 @@ var (
 	listMembersRequestFieldProductIDs        = big.NewInt(1 << 6)
 	listMembersRequestFieldVariantIDs        = big.NewInt(1 << 7)
 	listMembersRequestFieldPromoCodeIDs      = big.NewInt(1 << 8)
-	listMembersRequestFieldQuery             = big.NewInt(1 << 9)
-	listMembersRequestFieldCreatedAfter      = big.NewInt(1 << 10)
-	listMembersRequestFieldCreatedBefore     = big.NewInt(1 << 11)
-	listMembersRequestFieldOrder             = big.NewInt(1 << 12)
-	listMembersRequestFieldDirection         = big.NewInt(1 << 13)
-	listMembersRequestFieldFirst             = big.NewInt(1 << 14)
-	listMembersRequestFieldAfter             = big.NewInt(1 << 15)
-	listMembersRequestFieldLast              = big.NewInt(1 << 16)
-	listMembersRequestFieldBefore            = big.NewInt(1 << 17)
-	listMembersRequestFieldIncludeTotalCount = big.NewInt(1 << 18)
+	listMembersRequestFieldAffiliateID       = big.NewInt(1 << 9)
+	listMembersRequestFieldBuyerAccountIDs   = big.NewInt(1 << 10)
+	listMembersRequestFieldQuery             = big.NewInt(1 << 11)
+	listMembersRequestFieldCreatedAfter      = big.NewInt(1 << 12)
+	listMembersRequestFieldCreatedBefore     = big.NewInt(1 << 13)
+	listMembersRequestFieldOrder             = big.NewInt(1 << 14)
+	listMembersRequestFieldDirection         = big.NewInt(1 << 15)
+	listMembersRequestFieldFirst             = big.NewInt(1 << 16)
+	listMembersRequestFieldAfter             = big.NewInt(1 << 17)
+	listMembersRequestFieldLast              = big.NewInt(1 << 18)
+	listMembersRequestFieldBefore            = big.NewInt(1 << 19)
+	listMembersRequestFieldIncludeTotalCount = big.NewInt(1 << 20)
 )
 
 type ListMembersRequest struct {
@@ -120,6 +122,10 @@ type ListMembersRequest struct {
 	VariantIDs []*string `json:"-" url:"variant_ids,omitempty"`
 	// Only return members holding a membership bought with one of these promo codes, prefixed `promo_`. Unknown IDs match nothing.
 	PromoCodeIDs []*string `json:"-" url:"promo_code_ids,omitempty"`
+	// Only return members this affiliate referred, prefixed `aff_`. Requires `affiliate:basic:read` and sorts by `created_at` only. Unknown IDs match nothing.
+	AffiliateID *string `json:"-" url:"affiliate_id,omitempty"`
+	// Only return members bought by these accounts, prefixed `biz_`. Unknown IDs match nothing.
+	BuyerAccountIDs []*string `json:"-" url:"buyer_account_ids,omitempty"`
 	// Search members by name or username. An exact email address also matches when the credential holds the member:email:read scope.
 	Query *string `json:"-" url:"query,omitempty"`
 	// Only members who joined after this ISO 8601 timestamp.
@@ -215,6 +221,20 @@ func (l *ListMembersRequest) SetVariantIDs(variantIDs []*string) {
 func (l *ListMembersRequest) SetPromoCodeIDs(promoCodeIDs []*string) {
 	l.PromoCodeIDs = promoCodeIDs
 	l.require(listMembersRequestFieldPromoCodeIDs)
+}
+
+// SetAffiliateID sets the AffiliateID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembersRequest) SetAffiliateID(affiliateID *string) {
+	l.AffiliateID = affiliateID
+	l.require(listMembersRequestFieldAffiliateID)
+}
+
+// SetBuyerAccountIDs sets the BuyerAccountIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembersRequest) SetBuyerAccountIDs(buyerAccountIDs []*string) {
+	l.BuyerAccountIDs = buyerAccountIDs
+	l.require(listMembersRequestFieldBuyerAccountIDs)
 }
 
 // SetQuery sets the Query field and marks it as non-optional;
@@ -318,29 +338,31 @@ func (r *RetrieveMembersRequest) SetID(id string) {
 var (
 	memberFieldAccessLevel        = big.NewInt(1 << 0)
 	memberFieldAccountID          = big.NewInt(1 << 1)
-	memberFieldCreatedAt          = big.NewInt(1 << 2)
-	memberFieldDisplayName        = big.NewInt(1 << 3)
-	memberFieldEarningsUsd        = big.NewInt(1 << 4)
-	memberFieldEmail              = big.NewInt(1 << 5)
-	memberFieldID                 = big.NewInt(1 << 6)
-	memberFieldJoinedAt           = big.NewInt(1 << 7)
-	memberFieldLastAccessedAt     = big.NewInt(1 << 8)
-	memberFieldLastActivity       = big.NewInt(1 << 9)
-	memberFieldLastActivityAt     = big.NewInt(1 << 10)
-	memberFieldMetadata           = big.NewInt(1 << 11)
-	memberFieldMostRecentAction   = big.NewInt(1 << 12)
-	memberFieldMostRecentActionAt = big.NewInt(1 << 13)
-	memberFieldName               = big.NewInt(1 << 14)
-	memberFieldPhoneNumber        = big.NewInt(1 << 15)
-	memberFieldStatus             = big.NewInt(1 << 16)
-	memberFieldTokenBalance       = big.NewInt(1 << 17)
-	memberFieldUnsubscribeStatus  = big.NewInt(1 << 18)
-	memberFieldUsdTotalSpent      = big.NewInt(1 << 19)
-	memberFieldUser               = big.NewInt(1 << 20)
+	memberFieldBuyerAccountID     = big.NewInt(1 << 2)
+	memberFieldCreatedAt          = big.NewInt(1 << 3)
+	memberFieldDisplayName        = big.NewInt(1 << 4)
+	memberFieldEarningsUsd        = big.NewInt(1 << 5)
+	memberFieldEmail              = big.NewInt(1 << 6)
+	memberFieldID                 = big.NewInt(1 << 7)
+	memberFieldJoinedAt           = big.NewInt(1 << 8)
+	memberFieldLastAccessedAt     = big.NewInt(1 << 9)
+	memberFieldLastActivity       = big.NewInt(1 << 10)
+	memberFieldLastActivityAt     = big.NewInt(1 << 11)
+	memberFieldMetadata           = big.NewInt(1 << 12)
+	memberFieldMostRecentAction   = big.NewInt(1 << 13)
+	memberFieldMostRecentActionAt = big.NewInt(1 << 14)
+	memberFieldName               = big.NewInt(1 << 15)
+	memberFieldPhoneNumber        = big.NewInt(1 << 16)
+	memberFieldStatus             = big.NewInt(1 << 17)
+	memberFieldTokenBalance       = big.NewInt(1 << 18)
+	memberFieldUnsubscribeStatus  = big.NewInt(1 << 19)
+	memberFieldUsdTotalSpent      = big.NewInt(1 << 20)
+	memberFieldUser               = big.NewInt(1 << 21)
 )
 
 // memberNullableFields maps the wire names of Member's nullable fields (required or optional) to their field bits.
 var memberNullableFields = map[string]*big.Int{
+	"buyer_account_id":      memberFieldBuyerAccountID,
 	"earnings_usd":          memberFieldEarningsUsd,
 	"email":                 memberFieldEmail,
 	"last_accessed_at":      memberFieldLastAccessedAt,
@@ -360,6 +382,8 @@ type Member struct {
 	AccessLevel MemberAccessLevel `json:"access_level" url:"access_level"`
 	// The account this member belongs to, prefixed `biz_`.
 	AccountID string `json:"account_id" url:"account_id"`
+	// The business that bought, prefixed `biz_`. `null` when the buyer is a person.
+	BuyerAccountID *string `json:"buyer_account_id,omitempty" url:"buyer_account_id,omitempty"`
 	// When the member record was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// The name to show for this member: the user's name, or their username when they have not set one. The buying business's name when `user` is `null`.
@@ -418,6 +442,13 @@ func (m *Member) GetAccountID() string {
 		return ""
 	}
 	return m.AccountID
+}
+
+func (m *Member) GetBuyerAccountID() *string {
+	if m == nil {
+		return nil
+	}
+	return m.BuyerAccountID
 }
 
 func (m *Member) GetCreatedAt() string {
@@ -581,6 +612,13 @@ func (m *Member) SetAccessLevel(accessLevel MemberAccessLevel) {
 func (m *Member) SetAccountID(accountID string) {
 	m.AccountID = accountID
 	m.require(memberFieldAccountID)
+}
+
+// SetBuyerAccountID sets the BuyerAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *Member) SetBuyerAccountID(buyerAccountID *string) {
+	m.BuyerAccountID = buyerAccountID
+	m.require(memberFieldBuyerAccountID)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;

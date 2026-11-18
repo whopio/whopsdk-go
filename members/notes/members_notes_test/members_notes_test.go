@@ -129,3 +129,30 @@ func TestMembersNotesCreateWithWireMock(
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestMembersNotesCreateWithWireMock", "POST", "/members/member_id/notes", nil, 1)
 }
+
+func TestMembersNotesDeleteWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &members.DeleteNotesRequest{
+		MemberID: "member_id",
+		ID:       "id",
+	}
+	_, invocationErr := client.Members.Notes.Delete(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestMembersNotesDeleteWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestMembersNotesDeleteWithWireMock", "DELETE", "/members/member_id/notes/id", nil, 1)
+}

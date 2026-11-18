@@ -70,6 +70,14 @@ func NewClient(options *core.RequestOptions) *Client {
 //	            "promo_xxxxxxxxxxxx",
 //	        ),
 //	    },
+//	    AffiliateID: whopsdk.String(
+//	        "aff_xxxxxxxxxxxxxx",
+//	    ),
+//	    BuyerAccountIDs: []*string{
+//	        whopsdk.String(
+//	            "biz_xxxxxxxxxxxxxx",
+//	        ),
+//	    },
 //	}
 //	client.Members.List(
 //	    context.TODO(),

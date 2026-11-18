@@ -25929,6 +25929,14 @@ request := &whopsdk.ListMembersRequest{
             "promo_xxxxxxxxxxxx",
         ),
     },
+    AffiliateID: whopsdk.String(
+        "aff_xxxxxxxxxxxxxx",
+    ),
+    BuyerAccountIDs: []*string{
+        whopsdk.String(
+            "biz_xxxxxxxxxxxxxx",
+        ),
+    },
 }
 client.Members.List(
     context.TODO(),
@@ -26013,6 +26021,22 @@ client.Members.List(
 <dd>
 
 **promoCodeIDs:** `*string` — Only return members holding a membership bought with one of these promo codes, prefixed `promo_`. Unknown IDs match nothing.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**affiliateID:** `*string` — Only return members this affiliate referred, prefixed `aff_`. Requires `affiliate:basic:read` and sorts by `created_at` only. Unknown IDs match nothing.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**buyerAccountIDs:** `*string` — Only return members bought by these accounts, prefixed `biz_`. Unknown IDs match nothing.
     
 </dd>
 </dl>
@@ -44522,6 +44546,14 @@ client.WaitlistEntries.List(
 <dl>
 <dd>
 
+**includeTotalCount:** `*bool` — Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **variantID:** `*string` — Only return signups for this variant, prefixed `plan_`.
     
 </dd>
@@ -47939,6 +47971,75 @@ client.Members.Notes.Create(
 <dd>
 
 **content:** `string` — The note text.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Members.Notes.Delete(MemberID, ID) -> *members.DeleteNotesResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Deletes a note from a member, whoever wrote it. A deleted note's ID returns a `404`. Deleting can't be undone.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &members.DeleteNotesRequest{
+    MemberID: "member_id",
+    ID: "id",
+}
+client.Members.Notes.Delete(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**memberID:** `string` — The member the note is about, prefixed `mber_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**id:** `string` — The ID of the note to delete, prefixed `note_`.
     
 </dd>
 </dl>
