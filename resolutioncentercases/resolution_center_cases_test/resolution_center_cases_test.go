@@ -88,7 +88,18 @@ func TestResolutionCenterCasesListWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ListResolutionCenterCasesRequest{}
+	request := &whopsdk.ListResolutionCenterCasesRequest{
+		ProductIDs: []*string{
+			whopsdk.String(
+				"prod_xxxxxxxxxxxxx",
+			),
+		},
+		PaymentID: []*string{
+			whopsdk.String(
+				"pay_xxxxxxxxxxxxxx",
+			),
+		},
+	}
 	_, invocationErr := client.ResolutionCenterCases.List(
 		context.TODO(),
 		request,
@@ -98,7 +109,7 @@ func TestResolutionCenterCasesListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestResolutionCenterCasesListWithWireMock", "GET", "/resolution_center_cases", nil, 1)
+	VerifyRequestCount(t, "TestResolutionCenterCasesListWithWireMock", "GET", "/resolution_center_cases", map[string]interface{}{"product_ids": "prod_xxxxxxxxxxxxx", "payment_id": "pay_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestResolutionCenterCasesCreateWithWireMock(
@@ -140,7 +151,18 @@ func TestResolutionCenterCasesSummaryWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.SummaryResolutionCenterCasesRequest{}
+	request := &whopsdk.SummaryResolutionCenterCasesRequest{
+		ProductIDs: []*string{
+			whopsdk.String(
+				"prod_xxxxxxxxxxxxx",
+			),
+		},
+		PaymentID: []*string{
+			whopsdk.String(
+				"pay_xxxxxxxxxxxxxx",
+			),
+		},
+	}
 	_, invocationErr := client.ResolutionCenterCases.Summary(
 		context.TODO(),
 		request,
@@ -150,7 +172,7 @@ func TestResolutionCenterCasesSummaryWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestResolutionCenterCasesSummaryWithWireMock", "GET", "/resolution_center_cases/summary", nil, 1)
+	VerifyRequestCount(t, "TestResolutionCenterCasesSummaryWithWireMock", "GET", "/resolution_center_cases/summary", map[string]interface{}{"product_ids": "prod_xxxxxxxxxxxxx", "payment_id": "pay_xxxxxxxxxxxxxx"}, 1)
 }
 
 func TestResolutionCenterCasesRetrieveWithWireMock(

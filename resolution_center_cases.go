@@ -374,25 +374,29 @@ func (e *EventsResolutionCenterCasesRequest) SetBefore(before *string) {
 }
 
 var (
-	listResolutionCenterCasesRequestFieldAccountID     = big.NewInt(1 << 0)
-	listResolutionCenterCasesRequestFieldUserID        = big.NewInt(1 << 1)
-	listResolutionCenterCasesRequestFieldFirst         = big.NewInt(1 << 2)
-	listResolutionCenterCasesRequestFieldAfter         = big.NewInt(1 << 3)
-	listResolutionCenterCasesRequestFieldLast          = big.NewInt(1 << 4)
-	listResolutionCenterCasesRequestFieldBefore        = big.NewInt(1 << 5)
-	listResolutionCenterCasesRequestFieldOrder         = big.NewInt(1 << 6)
-	listResolutionCenterCasesRequestFieldDirection     = big.NewInt(1 << 7)
-	listResolutionCenterCasesRequestFieldStatus        = big.NewInt(1 << 8)
-	listResolutionCenterCasesRequestFieldReason        = big.NewInt(1 << 9)
-	listResolutionCenterCasesRequestFieldOutcome       = big.NewInt(1 << 10)
-	listResolutionCenterCasesRequestFieldCreatedBefore = big.NewInt(1 << 11)
-	listResolutionCenterCasesRequestFieldCreatedAfter  = big.NewInt(1 << 12)
+	listResolutionCenterCasesRequestFieldAccountID      = big.NewInt(1 << 0)
+	listResolutionCenterCasesRequestFieldUserID         = big.NewInt(1 << 1)
+	listResolutionCenterCasesRequestFieldFirst          = big.NewInt(1 << 2)
+	listResolutionCenterCasesRequestFieldAfter          = big.NewInt(1 << 3)
+	listResolutionCenterCasesRequestFieldLast           = big.NewInt(1 << 4)
+	listResolutionCenterCasesRequestFieldBefore         = big.NewInt(1 << 5)
+	listResolutionCenterCasesRequestFieldOrder          = big.NewInt(1 << 6)
+	listResolutionCenterCasesRequestFieldDirection      = big.NewInt(1 << 7)
+	listResolutionCenterCasesRequestFieldStatus         = big.NewInt(1 << 8)
+	listResolutionCenterCasesRequestFieldReason         = big.NewInt(1 << 9)
+	listResolutionCenterCasesRequestFieldOutcome        = big.NewInt(1 << 10)
+	listResolutionCenterCasesRequestFieldCreatedBefore  = big.NewInt(1 << 11)
+	listResolutionCenterCasesRequestFieldCreatedAfter   = big.NewInt(1 << 12)
+	listResolutionCenterCasesRequestFieldProductIDs     = big.NewInt(1 << 13)
+	listResolutionCenterCasesRequestFieldPaymentID      = big.NewInt(1 << 14)
+	listResolutionCenterCasesRequestFieldPaymentMethods = big.NewInt(1 << 15)
+	listResolutionCenterCasesRequestFieldQuery          = big.NewInt(1 << 16)
 )
 
 type ListResolutionCenterCasesRequest struct {
 	// Only cases filed against this account (`biz_` tag). With read access to the account this lists its whole queue; without, only the cases you opened against it.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// Only cases opened by this customer — a `user_` tag, or `me` for the calling user. It narrows what you can already read, so `me` lists the cases you opened without the ones on accounts you are a team member of.
+	// Only cases opened by this customer: a `user_` tag, or `me` for the calling user. It narrows what you can already read, so `me` lists the cases you opened without the ones on accounts you are a team member of.
 	UserID *string `json:"-" url:"user_id,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
@@ -406,7 +410,7 @@ type ListResolutionCenterCasesRequest struct {
 	Order *ListResolutionCenterCasesRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
 	Direction *ListResolutionCenterCasesRequestDirection `json:"-" url:"direction,omitempty"`
-	// Only cases in these statuses. Repeat the parameter to pass several — one paginated list covers all of them.
+	// Only cases in these statuses. Repeat the parameter to pass several. One paginated list covers all of them.
 	Status []*ListResolutionCenterCasesRequestStatusItem `json:"-" url:"status,omitempty"`
 	// Only cases opened for these reasons. Repeat the parameter to pass several.
 	Reason []*ListResolutionCenterCasesRequestReasonItem `json:"-" url:"reason,omitempty"`
@@ -416,6 +420,14 @@ type ListResolutionCenterCasesRequest struct {
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only cases created after this ISO 8601 timestamp.
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
+	// Only cases about a payment for these products, each prefixed `prod_`. A case matches when any item on its payment is one of them. Repeat the parameter to pass several.
+	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
+	// Only cases opened on these payments, each prefixed `pay_`. Repeat the parameter to pass several.
+	PaymentID []*string `json:"-" url:"payment_id,omitempty"`
+	// Only cases about a payment made with one of these methods. Takes card brands such as `amex`, wallets such as `apple_pay`, and types such as `paypal`. Repeat the parameter to pass several.
+	PaymentMethods []*ListResolutionCenterCasesRequestPaymentMethodsItem `json:"-" url:"payment_methods,omitempty"`
+	// Search cases by case ID, payment ID, user ID, membership ID, user email, name, or username. Email search requires the member:email:read permission.
+	Query *string `json:"-" url:"query,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -519,6 +531,34 @@ func (l *ListResolutionCenterCasesRequest) SetCreatedBefore(createdBefore *strin
 func (l *ListResolutionCenterCasesRequest) SetCreatedAfter(createdAfter *string) {
 	l.CreatedAfter = createdAfter
 	l.require(listResolutionCenterCasesRequestFieldCreatedAfter)
+}
+
+// SetProductIDs sets the ProductIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListResolutionCenterCasesRequest) SetProductIDs(productIDs []*string) {
+	l.ProductIDs = productIDs
+	l.require(listResolutionCenterCasesRequestFieldProductIDs)
+}
+
+// SetPaymentID sets the PaymentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListResolutionCenterCasesRequest) SetPaymentID(paymentID []*string) {
+	l.PaymentID = paymentID
+	l.require(listResolutionCenterCasesRequestFieldPaymentID)
+}
+
+// SetPaymentMethods sets the PaymentMethods field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListResolutionCenterCasesRequest) SetPaymentMethods(paymentMethods []*ListResolutionCenterCasesRequestPaymentMethodsItem) {
+	l.PaymentMethods = paymentMethods
+	l.require(listResolutionCenterCasesRequestFieldPaymentMethods)
+}
+
+// SetQuery sets the Query field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListResolutionCenterCasesRequest) SetQuery(query *string) {
+	l.Query = query
+	l.require(listResolutionCenterCasesRequestFieldQuery)
 }
 
 var (
@@ -688,14 +728,18 @@ func (r *RetrieveResolutionCenterCasesRequest) SetID(id string) {
 }
 
 var (
-	summaryResolutionCenterCasesRequestFieldGroups        = big.NewInt(1 << 0)
-	summaryResolutionCenterCasesRequestFieldAccountID     = big.NewInt(1 << 1)
-	summaryResolutionCenterCasesRequestFieldUserID        = big.NewInt(1 << 2)
-	summaryResolutionCenterCasesRequestFieldStatus        = big.NewInt(1 << 3)
-	summaryResolutionCenterCasesRequestFieldReason        = big.NewInt(1 << 4)
-	summaryResolutionCenterCasesRequestFieldOutcome       = big.NewInt(1 << 5)
-	summaryResolutionCenterCasesRequestFieldCreatedBefore = big.NewInt(1 << 6)
-	summaryResolutionCenterCasesRequestFieldCreatedAfter  = big.NewInt(1 << 7)
+	summaryResolutionCenterCasesRequestFieldGroups         = big.NewInt(1 << 0)
+	summaryResolutionCenterCasesRequestFieldAccountID      = big.NewInt(1 << 1)
+	summaryResolutionCenterCasesRequestFieldUserID         = big.NewInt(1 << 2)
+	summaryResolutionCenterCasesRequestFieldStatus         = big.NewInt(1 << 3)
+	summaryResolutionCenterCasesRequestFieldReason         = big.NewInt(1 << 4)
+	summaryResolutionCenterCasesRequestFieldOutcome        = big.NewInt(1 << 5)
+	summaryResolutionCenterCasesRequestFieldCreatedBefore  = big.NewInt(1 << 6)
+	summaryResolutionCenterCasesRequestFieldCreatedAfter   = big.NewInt(1 << 7)
+	summaryResolutionCenterCasesRequestFieldProductIDs     = big.NewInt(1 << 8)
+	summaryResolutionCenterCasesRequestFieldPaymentID      = big.NewInt(1 << 9)
+	summaryResolutionCenterCasesRequestFieldPaymentMethods = big.NewInt(1 << 10)
+	summaryResolutionCenterCasesRequestFieldQuery          = big.NewInt(1 << 11)
 )
 
 type SummaryResolutionCenterCasesRequest struct {
@@ -703,7 +747,7 @@ type SummaryResolutionCenterCasesRequest struct {
 	Groups []*SummaryResolutionCenterCasesRequestGroupsItem `json:"-" url:"groups,omitempty"`
 	// The account to summarize cases for (`biz_` tag).
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// Only cases opened by this customer — a `user_` tag, or `me` for the calling user.
+	// Only cases opened by this customer: a `user_` tag, or `me` for the calling user.
 	UserID *string `json:"-" url:"user_id,omitempty"`
 	// Only cases in these statuses.
 	Status []*SummaryResolutionCenterCasesRequestStatusItem `json:"-" url:"status,omitempty"`
@@ -715,6 +759,14 @@ type SummaryResolutionCenterCasesRequest struct {
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only count cases created after this ISO 8601 timestamp.
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
+	// Only count cases about a payment for these products, each prefixed `prod_`. Repeat the parameter to pass several.
+	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
+	// Only count cases opened on these payments, each prefixed `pay_`. Repeat the parameter to pass several.
+	PaymentID []*string `json:"-" url:"payment_id,omitempty"`
+	// Only count cases about a payment paid with any of these methods. Repeat the parameter to pass several.
+	PaymentMethods []*SummaryResolutionCenterCasesRequestPaymentMethodsItem `json:"-" url:"payment_methods,omitempty"`
+	// Only count cases that match this search, as on the list.
+	Query *string `json:"-" url:"query,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -783,6 +835,34 @@ func (s *SummaryResolutionCenterCasesRequest) SetCreatedBefore(createdBefore *st
 func (s *SummaryResolutionCenterCasesRequest) SetCreatedAfter(createdAfter *string) {
 	s.CreatedAfter = createdAfter
 	s.require(summaryResolutionCenterCasesRequestFieldCreatedAfter)
+}
+
+// SetProductIDs sets the ProductIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryResolutionCenterCasesRequest) SetProductIDs(productIDs []*string) {
+	s.ProductIDs = productIDs
+	s.require(summaryResolutionCenterCasesRequestFieldProductIDs)
+}
+
+// SetPaymentID sets the PaymentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryResolutionCenterCasesRequest) SetPaymentID(paymentID []*string) {
+	s.PaymentID = paymentID
+	s.require(summaryResolutionCenterCasesRequestFieldPaymentID)
+}
+
+// SetPaymentMethods sets the PaymentMethods field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryResolutionCenterCasesRequest) SetPaymentMethods(paymentMethods []*SummaryResolutionCenterCasesRequestPaymentMethodsItem) {
+	s.PaymentMethods = paymentMethods
+	s.require(summaryResolutionCenterCasesRequestFieldPaymentMethods)
+}
+
+// SetQuery sets the Query field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryResolutionCenterCasesRequest) SetQuery(query *string) {
+	s.Query = query
+	s.require(summaryResolutionCenterCasesRequestFieldQuery)
 }
 
 var (
@@ -1113,26 +1193,28 @@ var (
 	resolutionCenterCaseFieldAmount           = big.NewInt(1 << 1)
 	resolutionCenterCaseFieldAvailableActions = big.NewInt(1 << 2)
 	resolutionCenterCaseFieldBuyer            = big.NewInt(1 << 3)
-	resolutionCenterCaseFieldCreatedAt        = big.NewInt(1 << 4)
-	resolutionCenterCaseFieldCurrency         = big.NewInt(1 << 5)
-	resolutionCenterCaseFieldCustomerAppealed = big.NewInt(1 << 6)
-	resolutionCenterCaseFieldEscalated        = big.NewInt(1 << 7)
-	resolutionCenterCaseFieldID               = big.NewInt(1 << 8)
-	resolutionCenterCaseFieldLineItems        = big.NewInt(1 << 9)
-	resolutionCenterCaseFieldOutcome          = big.NewInt(1 << 10)
-	resolutionCenterCaseFieldPayment          = big.NewInt(1 << 11)
-	resolutionCenterCaseFieldProductID        = big.NewInt(1 << 12)
-	resolutionCenterCaseFieldReason           = big.NewInt(1 << 13)
-	resolutionCenterCaseFieldRefund           = big.NewInt(1 << 14)
-	resolutionCenterCaseFieldResponseDueAt    = big.NewInt(1 << 15)
-	resolutionCenterCaseFieldStatus           = big.NewInt(1 << 16)
-	resolutionCenterCaseFieldUpdatedAt        = big.NewInt(1 << 17)
-	resolutionCenterCaseFieldVariantID        = big.NewInt(1 << 18)
+	resolutionCenterCaseFieldClosedAt         = big.NewInt(1 << 4)
+	resolutionCenterCaseFieldCreatedAt        = big.NewInt(1 << 5)
+	resolutionCenterCaseFieldCurrency         = big.NewInt(1 << 6)
+	resolutionCenterCaseFieldCustomerAppealed = big.NewInt(1 << 7)
+	resolutionCenterCaseFieldEscalated        = big.NewInt(1 << 8)
+	resolutionCenterCaseFieldID               = big.NewInt(1 << 9)
+	resolutionCenterCaseFieldLineItems        = big.NewInt(1 << 10)
+	resolutionCenterCaseFieldOutcome          = big.NewInt(1 << 11)
+	resolutionCenterCaseFieldPayment          = big.NewInt(1 << 12)
+	resolutionCenterCaseFieldProductID        = big.NewInt(1 << 13)
+	resolutionCenterCaseFieldReason           = big.NewInt(1 << 14)
+	resolutionCenterCaseFieldRefund           = big.NewInt(1 << 15)
+	resolutionCenterCaseFieldResponseDueAt    = big.NewInt(1 << 16)
+	resolutionCenterCaseFieldStatus           = big.NewInt(1 << 17)
+	resolutionCenterCaseFieldUpdatedAt        = big.NewInt(1 << 18)
+	resolutionCenterCaseFieldVariantID        = big.NewInt(1 << 19)
 )
 
 // resolutionCenterCaseNullableFields maps the wire names of ResolutionCenterCase's nullable fields (required or optional) to their field bits.
 var resolutionCenterCaseNullableFields = map[string]*big.Int{
 	"account":         resolutionCenterCaseFieldAccount,
+	"closed_at":       resolutionCenterCaseFieldClosedAt,
 	"currency":        resolutionCenterCaseFieldCurrency,
 	"outcome":         resolutionCenterCaseFieldOutcome,
 	"product_id":      resolutionCenterCaseFieldProductID,
@@ -1149,6 +1231,8 @@ type ResolutionCenterCase struct {
 	AvailableActions []ResolutionCenterCaseAvailableActionsItem `json:"available_actions" url:"available_actions"`
 	// The customer who opened the case.
 	Buyer *ResolutionBuyer `json:"buyer" url:"buyer"`
+	// When the case closed, as an ISO 8601 timestamp. `null` while the case is open, and on older closed cases that predate this being recorded.
+	ClosedAt *string `json:"closed_at,omitempty" url:"closed_at,omitempty"`
 	// When the case was opened, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Three-letter ISO currency code of the amount.
@@ -1212,6 +1296,13 @@ func (r *ResolutionCenterCase) GetBuyer() *ResolutionBuyer {
 		return nil
 	}
 	return r.Buyer
+}
+
+func (r *ResolutionCenterCase) GetClosedAt() *string {
+	if r == nil {
+		return nil
+	}
+	return r.ClosedAt
 }
 
 func (r *ResolutionCenterCase) GetCreatedAt() string {
@@ -1361,6 +1452,13 @@ func (r *ResolutionCenterCase) SetAvailableActions(availableActions []Resolution
 func (r *ResolutionCenterCase) SetBuyer(buyer *ResolutionBuyer) {
 	r.Buyer = buyer
 	r.require(resolutionCenterCaseFieldBuyer)
+}
+
+// SetClosedAt sets the ClosedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResolutionCenterCase) SetClosedAt(closedAt *string) {
+	r.ClosedAt = closedAt
+	r.require(resolutionCenterCaseFieldClosedAt)
 }
 
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
@@ -2888,6 +2986,583 @@ func (l ListResolutionCenterCasesRequestOutcomeItem) Ptr() *ListResolutionCenter
 	return &l
 }
 
+type ListResolutionCenterCasesRequestPaymentMethodsItem string
+
+const (
+	ListResolutionCenterCasesRequestPaymentMethodsItemMastercard             ListResolutionCenterCasesRequestPaymentMethodsItem = "mastercard"
+	ListResolutionCenterCasesRequestPaymentMethodsItemVisa                   ListResolutionCenterCasesRequestPaymentMethodsItem = "visa"
+	ListResolutionCenterCasesRequestPaymentMethodsItemAmex                   ListResolutionCenterCasesRequestPaymentMethodsItem = "amex"
+	ListResolutionCenterCasesRequestPaymentMethodsItemDiscover               ListResolutionCenterCasesRequestPaymentMethodsItem = "discover"
+	ListResolutionCenterCasesRequestPaymentMethodsItemUnionpay               ListResolutionCenterCasesRequestPaymentMethodsItem = "unionpay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemJcb                    ListResolutionCenterCasesRequestPaymentMethodsItem = "jcb"
+	ListResolutionCenterCasesRequestPaymentMethodsItemDiners                 ListResolutionCenterCasesRequestPaymentMethodsItem = "diners"
+	ListResolutionCenterCasesRequestPaymentMethodsItemLink                   ListResolutionCenterCasesRequestPaymentMethodsItem = "link"
+	ListResolutionCenterCasesRequestPaymentMethodsItemTroy                   ListResolutionCenterCasesRequestPaymentMethodsItem = "troy"
+	ListResolutionCenterCasesRequestPaymentMethodsItemVisadankort            ListResolutionCenterCasesRequestPaymentMethodsItem = "visadankort"
+	ListResolutionCenterCasesRequestPaymentMethodsItemVisabancontact         ListResolutionCenterCasesRequestPaymentMethodsItem = "visabancontact"
+	ListResolutionCenterCasesRequestPaymentMethodsItemChinaUnionPay          ListResolutionCenterCasesRequestPaymentMethodsItem = "china_union_pay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemRupay                  ListResolutionCenterCasesRequestPaymentMethodsItem = "rupay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemJcbrupay               ListResolutionCenterCasesRequestPaymentMethodsItem = "jcbrupay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemElo                    ListResolutionCenterCasesRequestPaymentMethodsItem = "elo"
+	ListResolutionCenterCasesRequestPaymentMethodsItemMaestro                ListResolutionCenterCasesRequestPaymentMethodsItem = "maestro"
+	ListResolutionCenterCasesRequestPaymentMethodsItemTarjetaNaranja         ListResolutionCenterCasesRequestPaymentMethodsItem = "tarjeta_naranja"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCirrus                 ListResolutionCenterCasesRequestPaymentMethodsItem = "cirrus"
+	ListResolutionCenterCasesRequestPaymentMethodsItemNspkMir                ListResolutionCenterCasesRequestPaymentMethodsItem = "nspk_mir"
+	ListResolutionCenterCasesRequestPaymentMethodsItemVerve                  ListResolutionCenterCasesRequestPaymentMethodsItem = "verve"
+	ListResolutionCenterCasesRequestPaymentMethodsItemEbt                    ListResolutionCenterCasesRequestPaymentMethodsItem = "ebt"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPrivateLabel           ListResolutionCenterCasesRequestPaymentMethodsItem = "private_label"
+	ListResolutionCenterCasesRequestPaymentMethodsItemLocalBrand             ListResolutionCenterCasesRequestPaymentMethodsItem = "local_brand"
+	ListResolutionCenterCasesRequestPaymentMethodsItemUatp                   ListResolutionCenterCasesRequestPaymentMethodsItem = "uatp"
+	ListResolutionCenterCasesRequestPaymentMethodsItemWexcard                ListResolutionCenterCasesRequestPaymentMethodsItem = "wexcard"
+	ListResolutionCenterCasesRequestPaymentMethodsItemUzcard                 ListResolutionCenterCasesRequestPaymentMethodsItem = "uzcard"
+	ListResolutionCenterCasesRequestPaymentMethodsItemMeeza                  ListResolutionCenterCasesRequestPaymentMethodsItem = "meeza"
+	ListResolutionCenterCasesRequestPaymentMethodsItemHrgStoreCard           ListResolutionCenterCasesRequestPaymentMethodsItem = "hrg_store_card"
+	ListResolutionCenterCasesRequestPaymentMethodsItemGirocard               ListResolutionCenterCasesRequestPaymentMethodsItem = "girocard"
+	ListResolutionCenterCasesRequestPaymentMethodsItemFuelCard               ListResolutionCenterCasesRequestPaymentMethodsItem = "fuel_card"
+	ListResolutionCenterCasesRequestPaymentMethodsItemDankort                ListResolutionCenterCasesRequestPaymentMethodsItem = "dankort"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCarnet                 ListResolutionCenterCasesRequestPaymentMethodsItem = "carnet"
+	ListResolutionCenterCasesRequestPaymentMethodsItemAtmCard                ListResolutionCenterCasesRequestPaymentMethodsItem = "atm_card"
+	ListResolutionCenterCasesRequestPaymentMethodsItemChinaUnionPayuzcard    ListResolutionCenterCasesRequestPaymentMethodsItem = "china_union_payuzcard"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCodensa                ListResolutionCenterCasesRequestPaymentMethodsItem = "codensa"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCabal                  ListResolutionCenterCasesRequestPaymentMethodsItem = "cabal"
+	ListResolutionCenterCasesRequestPaymentMethodsItemHipercard              ListResolutionCenterCasesRequestPaymentMethodsItem = "hipercard"
+	ListResolutionCenterCasesRequestPaymentMethodsItemJcblankapay            ListResolutionCenterCasesRequestPaymentMethodsItem = "jcblankapay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCmi                    ListResolutionCenterCasesRequestPaymentMethodsItem = "cmi"
+	ListResolutionCenterCasesRequestPaymentMethodsItemAura                   ListResolutionCenterCasesRequestPaymentMethodsItem = "aura"
+	ListResolutionCenterCasesRequestPaymentMethodsItemAccel                  ListResolutionCenterCasesRequestPaymentMethodsItem = "accel"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCuliance               ListResolutionCenterCasesRequestPaymentMethodsItem = "culiance"
+	ListResolutionCenterCasesRequestPaymentMethodsItemNyce                   ListResolutionCenterCasesRequestPaymentMethodsItem = "nyce"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPulse                  ListResolutionCenterCasesRequestPaymentMethodsItem = "pulse"
+	ListResolutionCenterCasesRequestPaymentMethodsItemStar                   ListResolutionCenterCasesRequestPaymentMethodsItem = "star"
+	ListResolutionCenterCasesRequestPaymentMethodsItemEftpos                 ListResolutionCenterCasesRequestPaymentMethodsItem = "eftpos"
+	ListResolutionCenterCasesRequestPaymentMethodsItemAlelo                  ListResolutionCenterCasesRequestPaymentMethodsItem = "alelo"
+	ListResolutionCenterCasesRequestPaymentMethodsItemEdenred                ListResolutionCenterCasesRequestPaymentMethodsItem = "edenred"
+	ListResolutionCenterCasesRequestPaymentMethodsItemSodexo                 ListResolutionCenterCasesRequestPaymentMethodsItem = "sodexo"
+	ListResolutionCenterCasesRequestPaymentMethodsItemUnknown                ListResolutionCenterCasesRequestPaymentMethodsItem = "unknown"
+	ListResolutionCenterCasesRequestPaymentMethodsItemAcssDebit              ListResolutionCenterCasesRequestPaymentMethodsItem = "acss_debit"
+	ListResolutionCenterCasesRequestPaymentMethodsItemAddi                   ListResolutionCenterCasesRequestPaymentMethodsItem = "addi"
+	ListResolutionCenterCasesRequestPaymentMethodsItemAffirm                 ListResolutionCenterCasesRequestPaymentMethodsItem = "affirm"
+	ListResolutionCenterCasesRequestPaymentMethodsItemAfterpayClearpay       ListResolutionCenterCasesRequestPaymentMethodsItem = "afterpay_clearpay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemAlipay                 ListResolutionCenterCasesRequestPaymentMethodsItem = "alipay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemAlipayhk               ListResolutionCenterCasesRequestPaymentMethodsItem = "alipayhk"
+	ListResolutionCenterCasesRequestPaymentMethodsItemAlma                   ListResolutionCenterCasesRequestPaymentMethodsItem = "alma"
+	ListResolutionCenterCasesRequestPaymentMethodsItemAmazonPay              ListResolutionCenterCasesRequestPaymentMethodsItem = "amazon_pay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemApple                  ListResolutionCenterCasesRequestPaymentMethodsItem = "apple"
+	ListResolutionCenterCasesRequestPaymentMethodsItemApplePay               ListResolutionCenterCasesRequestPaymentMethodsItem = "apple_pay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemAuBankTransfer         ListResolutionCenterCasesRequestPaymentMethodsItem = "au_bank_transfer"
+	ListResolutionCenterCasesRequestPaymentMethodsItemAuBecsDebit            ListResolutionCenterCasesRequestPaymentMethodsItem = "au_becs_debit"
+	ListResolutionCenterCasesRequestPaymentMethodsItemBacsDebit              ListResolutionCenterCasesRequestPaymentMethodsItem = "bacs_debit"
+	ListResolutionCenterCasesRequestPaymentMethodsItemBancolombia            ListResolutionCenterCasesRequestPaymentMethodsItem = "bancolombia"
+	ListResolutionCenterCasesRequestPaymentMethodsItemBancontact             ListResolutionCenterCasesRequestPaymentMethodsItem = "bancontact"
+	ListResolutionCenterCasesRequestPaymentMethodsItemBankWire               ListResolutionCenterCasesRequestPaymentMethodsItem = "bank_wire"
+	ListResolutionCenterCasesRequestPaymentMethodsItemBillie                 ListResolutionCenterCasesRequestPaymentMethodsItem = "billie"
+	ListResolutionCenterCasesRequestPaymentMethodsItemBlik                   ListResolutionCenterCasesRequestPaymentMethodsItem = "blik"
+	ListResolutionCenterCasesRequestPaymentMethodsItemBoleto                 ListResolutionCenterCasesRequestPaymentMethodsItem = "boleto"
+	ListResolutionCenterCasesRequestPaymentMethodsItemBreB                   ListResolutionCenterCasesRequestPaymentMethodsItem = "bre_b"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCaBankTransfer         ListResolutionCenterCasesRequestPaymentMethodsItem = "ca_bank_transfer"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCapchasePay            ListResolutionCenterCasesRequestPaymentMethodsItem = "capchase_pay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCard                   ListResolutionCenterCasesRequestPaymentMethodsItem = "card"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCardPresent            ListResolutionCenterCasesRequestPaymentMethodsItem = "card_present"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCardInstallmentsThree  ListResolutionCenterCasesRequestPaymentMethodsItem = "card_installments_three"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCardInstallmentsSix    ListResolutionCenterCasesRequestPaymentMethodsItem = "card_installments_six"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCardInstallmentsTwelve ListResolutionCenterCasesRequestPaymentMethodsItem = "card_installments_twelve"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCashapp                ListResolutionCenterCasesRequestPaymentMethodsItem = "cashapp"
+	ListResolutionCenterCasesRequestPaymentMethodsItemClaritypay             ListResolutionCenterCasesRequestPaymentMethodsItem = "claritypay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCoinbase               ListResolutionCenterCasesRequestPaymentMethodsItem = "coinbase"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCrypto                 ListResolutionCenterCasesRequestPaymentMethodsItem = "crypto"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCryptoSubscription     ListResolutionCenterCasesRequestPaymentMethodsItem = "crypto_subscription"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCustom                 ListResolutionCenterCasesRequestPaymentMethodsItem = "custom"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCustomerBalance        ListResolutionCenterCasesRequestPaymentMethodsItem = "customer_balance"
+	ListResolutionCenterCasesRequestPaymentMethodsItemDemoPay                ListResolutionCenterCasesRequestPaymentMethodsItem = "demo_pay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemDuitnowQr              ListResolutionCenterCasesRequestPaymentMethodsItem = "duitnow_qr"
+	ListResolutionCenterCasesRequestPaymentMethodsItemEfecty                 ListResolutionCenterCasesRequestPaymentMethodsItem = "efecty"
+	ListResolutionCenterCasesRequestPaymentMethodsItemEps                    ListResolutionCenterCasesRequestPaymentMethodsItem = "eps"
+	ListResolutionCenterCasesRequestPaymentMethodsItemEuBankTransfer         ListResolutionCenterCasesRequestPaymentMethodsItem = "eu_bank_transfer"
+	ListResolutionCenterCasesRequestPaymentMethodsItemFpx                    ListResolutionCenterCasesRequestPaymentMethodsItem = "fpx"
+	ListResolutionCenterCasesRequestPaymentMethodsItemFlexPay                ListResolutionCenterCasesRequestPaymentMethodsItem = "flex_pay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemGbBankTransfer         ListResolutionCenterCasesRequestPaymentMethodsItem = "gb_bank_transfer"
+	ListResolutionCenterCasesRequestPaymentMethodsItemGcash                  ListResolutionCenterCasesRequestPaymentMethodsItem = "gcash"
+	ListResolutionCenterCasesRequestPaymentMethodsItemGiropay                ListResolutionCenterCasesRequestPaymentMethodsItem = "giropay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemGooglePay              ListResolutionCenterCasesRequestPaymentMethodsItem = "google_pay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemGopay                  ListResolutionCenterCasesRequestPaymentMethodsItem = "gopay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemGrabpay                ListResolutionCenterCasesRequestPaymentMethodsItem = "grabpay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemIDBankTransfer         ListResolutionCenterCasesRequestPaymentMethodsItem = "id_bank_transfer"
+	ListResolutionCenterCasesRequestPaymentMethodsItemIdeal                  ListResolutionCenterCasesRequestPaymentMethodsItem = "ideal"
+	ListResolutionCenterCasesRequestPaymentMethodsItemInterac                ListResolutionCenterCasesRequestPaymentMethodsItem = "interac"
+	ListResolutionCenterCasesRequestPaymentMethodsItemInternationalBankWire  ListResolutionCenterCasesRequestPaymentMethodsItem = "international_bank_wire"
+	ListResolutionCenterCasesRequestPaymentMethodsItemKakaoPay               ListResolutionCenterCasesRequestPaymentMethodsItem = "kakao_pay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemKlarna                 ListResolutionCenterCasesRequestPaymentMethodsItem = "klarna"
+	ListResolutionCenterCasesRequestPaymentMethodsItemKlarnaPayNow           ListResolutionCenterCasesRequestPaymentMethodsItem = "klarna_pay_now"
+	ListResolutionCenterCasesRequestPaymentMethodsItemKonbini                ListResolutionCenterCasesRequestPaymentMethodsItem = "konbini"
+	ListResolutionCenterCasesRequestPaymentMethodsItemKrCard                 ListResolutionCenterCasesRequestPaymentMethodsItem = "kr_card"
+	ListResolutionCenterCasesRequestPaymentMethodsItemKrMarket               ListResolutionCenterCasesRequestPaymentMethodsItem = "kr_market"
+	ListResolutionCenterCasesRequestPaymentMethodsItemKriya                  ListResolutionCenterCasesRequestPaymentMethodsItem = "kriya"
+	ListResolutionCenterCasesRequestPaymentMethodsItemKueski                 ListResolutionCenterCasesRequestPaymentMethodsItem = "kueski"
+	ListResolutionCenterCasesRequestPaymentMethodsItemMbWay                  ListResolutionCenterCasesRequestPaymentMethodsItem = "mb_way"
+	ListResolutionCenterCasesRequestPaymentMethodsItemMPesa                  ListResolutionCenterCasesRequestPaymentMethodsItem = "m_pesa"
+	ListResolutionCenterCasesRequestPaymentMethodsItemMercadoPago            ListResolutionCenterCasesRequestPaymentMethodsItem = "mercado_pago"
+	ListResolutionCenterCasesRequestPaymentMethodsItemMercadoPagoAr          ListResolutionCenterCasesRequestPaymentMethodsItem = "mercado_pago_ar"
+	ListResolutionCenterCasesRequestPaymentMethodsItemMercadoPagoMx          ListResolutionCenterCasesRequestPaymentMethodsItem = "mercado_pago_mx"
+	ListResolutionCenterCasesRequestPaymentMethodsItemMobilepay              ListResolutionCenterCasesRequestPaymentMethodsItem = "mobilepay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemModo                   ListResolutionCenterCasesRequestPaymentMethodsItem = "modo"
+	ListResolutionCenterCasesRequestPaymentMethodsItemMondu                  ListResolutionCenterCasesRequestPaymentMethodsItem = "mondu"
+	ListResolutionCenterCasesRequestPaymentMethodsItemMultibanco             ListResolutionCenterCasesRequestPaymentMethodsItem = "multibanco"
+	ListResolutionCenterCasesRequestPaymentMethodsItemNaverPay               ListResolutionCenterCasesRequestPaymentMethodsItem = "naver_pay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemNequi                  ListResolutionCenterCasesRequestPaymentMethodsItem = "nequi"
+	ListResolutionCenterCasesRequestPaymentMethodsItemNetbanking             ListResolutionCenterCasesRequestPaymentMethodsItem = "netbanking"
+	ListResolutionCenterCasesRequestPaymentMethodsItemNgBank                 ListResolutionCenterCasesRequestPaymentMethodsItem = "ng_bank"
+	ListResolutionCenterCasesRequestPaymentMethodsItemNgBankTransfer         ListResolutionCenterCasesRequestPaymentMethodsItem = "ng_bank_transfer"
+	ListResolutionCenterCasesRequestPaymentMethodsItemNgCard                 ListResolutionCenterCasesRequestPaymentMethodsItem = "ng_card"
+	ListResolutionCenterCasesRequestPaymentMethodsItemNgMarket               ListResolutionCenterCasesRequestPaymentMethodsItem = "ng_market"
+	ListResolutionCenterCasesRequestPaymentMethodsItemNgUssd                 ListResolutionCenterCasesRequestPaymentMethodsItem = "ng_ussd"
+	ListResolutionCenterCasesRequestPaymentMethodsItemNgWallet               ListResolutionCenterCasesRequestPaymentMethodsItem = "ng_wallet"
+	ListResolutionCenterCasesRequestPaymentMethodsItemNupay                  ListResolutionCenterCasesRequestPaymentMethodsItem = "nupay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemNzBankAccount          ListResolutionCenterCasesRequestPaymentMethodsItem = "nz_bank_account"
+	ListResolutionCenterCasesRequestPaymentMethodsItemOney                   ListResolutionCenterCasesRequestPaymentMethodsItem = "oney"
+	ListResolutionCenterCasesRequestPaymentMethodsItemOney3X                 ListResolutionCenterCasesRequestPaymentMethodsItem = "oney_3x"
+	ListResolutionCenterCasesRequestPaymentMethodsItemOney4X                 ListResolutionCenterCasesRequestPaymentMethodsItem = "oney_4x"
+	ListResolutionCenterCasesRequestPaymentMethodsItemOpay                   ListResolutionCenterCasesRequestPaymentMethodsItem = "opay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemOxxo                   ListResolutionCenterCasesRequestPaymentMethodsItem = "oxxo"
+	ListResolutionCenterCasesRequestPaymentMethodsItemP24                    ListResolutionCenterCasesRequestPaymentMethodsItem = "p24"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPagoEfectivo           ListResolutionCenterCasesRequestPaymentMethodsItem = "pago_efectivo"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPse                    ListResolutionCenterCasesRequestPaymentMethodsItem = "pse"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPayByBank              ListResolutionCenterCasesRequestPaymentMethodsItem = "pay_by_bank"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPayco                  ListResolutionCenterCasesRequestPaymentMethodsItem = "payco"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPaynow                 ListResolutionCenterCasesRequestPaymentMethodsItem = "paynow"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPaypal                 ListResolutionCenterCasesRequestPaymentMethodsItem = "paypal"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPaypalExpress          ListResolutionCenterCasesRequestPaymentMethodsItem = "paypal_express"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPaypay                 ListResolutionCenterCasesRequestPaymentMethodsItem = "paypay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPayto                  ListResolutionCenterCasesRequestPaymentMethodsItem = "payto"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPaytoEmail             ListResolutionCenterCasesRequestPaymentMethodsItem = "payto_email"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPaytoPhone             ListResolutionCenterCasesRequestPaymentMethodsItem = "payto_phone"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPaytoBankAccount       ListResolutionCenterCasesRequestPaymentMethodsItem = "payto_bank_account"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPix                    ListResolutionCenterCasesRequestPaymentMethodsItem = "pix"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPixAutomatico          ListResolutionCenterCasesRequestPaymentMethodsItem = "pix_automatico"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPlatformBalance        ListResolutionCenterCasesRequestPaymentMethodsItem = "platform_balance"
+	ListResolutionCenterCasesRequestPaymentMethodsItemPromptpay              ListResolutionCenterCasesRequestPaymentMethodsItem = "promptpay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemQris                   ListResolutionCenterCasesRequestPaymentMethodsItem = "qris"
+	ListResolutionCenterCasesRequestPaymentMethodsItemRapipago               ListResolutionCenterCasesRequestPaymentMethodsItem = "rapipago"
+	ListResolutionCenterCasesRequestPaymentMethodsItemRechnung               ListResolutionCenterCasesRequestPaymentMethodsItem = "rechnung"
+	ListResolutionCenterCasesRequestPaymentMethodsItemRevolutPay             ListResolutionCenterCasesRequestPaymentMethodsItem = "revolut_pay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemSamsungPay             ListResolutionCenterCasesRequestPaymentMethodsItem = "samsung_pay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemSatispay               ListResolutionCenterCasesRequestPaymentMethodsItem = "satispay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemScalapay               ListResolutionCenterCasesRequestPaymentMethodsItem = "scalapay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemSencillito             ListResolutionCenterCasesRequestPaymentMethodsItem = "sencillito"
+	ListResolutionCenterCasesRequestPaymentMethodsItemSepaDebit              ListResolutionCenterCasesRequestPaymentMethodsItem = "sepa_debit"
+	ListResolutionCenterCasesRequestPaymentMethodsItemSequra                 ListResolutionCenterCasesRequestPaymentMethodsItem = "sequra"
+	ListResolutionCenterCasesRequestPaymentMethodsItemServipag               ListResolutionCenterCasesRequestPaymentMethodsItem = "servipag"
+	ListResolutionCenterCasesRequestPaymentMethodsItemSezzle                 ListResolutionCenterCasesRequestPaymentMethodsItem = "sezzle"
+	ListResolutionCenterCasesRequestPaymentMethodsItemShopPay                ListResolutionCenterCasesRequestPaymentMethodsItem = "shop_pay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemShopeepay              ListResolutionCenterCasesRequestPaymentMethodsItem = "shopeepay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemSofort                 ListResolutionCenterCasesRequestPaymentMethodsItem = "sofort"
+	ListResolutionCenterCasesRequestPaymentMethodsItemSouthKoreaMarket       ListResolutionCenterCasesRequestPaymentMethodsItem = "south_korea_market"
+	ListResolutionCenterCasesRequestPaymentMethodsItemSpei                   ListResolutionCenterCasesRequestPaymentMethodsItem = "spei"
+	ListResolutionCenterCasesRequestPaymentMethodsItemSplitit                ListResolutionCenterCasesRequestPaymentMethodsItem = "splitit"
+	ListResolutionCenterCasesRequestPaymentMethodsItemSunbit                 ListResolutionCenterCasesRequestPaymentMethodsItem = "sunbit"
+	ListResolutionCenterCasesRequestPaymentMethodsItemSwish                  ListResolutionCenterCasesRequestPaymentMethodsItem = "swish"
+	ListResolutionCenterCasesRequestPaymentMethodsItemTabby                  ListResolutionCenterCasesRequestPaymentMethodsItem = "tabby"
+	ListResolutionCenterCasesRequestPaymentMethodsItemTamara                 ListResolutionCenterCasesRequestPaymentMethodsItem = "tamara"
+	ListResolutionCenterCasesRequestPaymentMethodsItemTouchNGo               ListResolutionCenterCasesRequestPaymentMethodsItem = "touch_n_go"
+	ListResolutionCenterCasesRequestPaymentMethodsItemTwint                  ListResolutionCenterCasesRequestPaymentMethodsItem = "twint"
+	ListResolutionCenterCasesRequestPaymentMethodsItemUpi                    ListResolutionCenterCasesRequestPaymentMethodsItem = "upi"
+	ListResolutionCenterCasesRequestPaymentMethodsItemUsBankAccount          ListResolutionCenterCasesRequestPaymentMethodsItem = "us_bank_account"
+	ListResolutionCenterCasesRequestPaymentMethodsItemUsBankTransfer         ListResolutionCenterCasesRequestPaymentMethodsItem = "us_bank_transfer"
+	ListResolutionCenterCasesRequestPaymentMethodsItemVenmo                  ListResolutionCenterCasesRequestPaymentMethodsItem = "venmo"
+	ListResolutionCenterCasesRequestPaymentMethodsItemVipps                  ListResolutionCenterCasesRequestPaymentMethodsItem = "vipps"
+	ListResolutionCenterCasesRequestPaymentMethodsItemWebpay                 ListResolutionCenterCasesRequestPaymentMethodsItem = "webpay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemWechatPay              ListResolutionCenterCasesRequestPaymentMethodsItem = "wechat_pay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemWhopPay                ListResolutionCenterCasesRequestPaymentMethodsItem = "whop_pay"
+	ListResolutionCenterCasesRequestPaymentMethodsItemYape                   ListResolutionCenterCasesRequestPaymentMethodsItem = "yape"
+	ListResolutionCenterCasesRequestPaymentMethodsItemZip                    ListResolutionCenterCasesRequestPaymentMethodsItem = "zip"
+	ListResolutionCenterCasesRequestPaymentMethodsItemCoinflow               ListResolutionCenterCasesRequestPaymentMethodsItem = "coinflow"
+	ListResolutionCenterCasesRequestPaymentMethodsItemTapToPay               ListResolutionCenterCasesRequestPaymentMethodsItem = "tap_to_pay"
+)
+
+func NewListResolutionCenterCasesRequestPaymentMethodsItemFromString(s string) (ListResolutionCenterCasesRequestPaymentMethodsItem, error) {
+	switch s {
+	case "mastercard":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemMastercard, nil
+	case "visa":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemVisa, nil
+	case "amex":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemAmex, nil
+	case "discover":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemDiscover, nil
+	case "unionpay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemUnionpay, nil
+	case "jcb":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemJcb, nil
+	case "diners":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemDiners, nil
+	case "link":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemLink, nil
+	case "troy":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemTroy, nil
+	case "visadankort":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemVisadankort, nil
+	case "visabancontact":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemVisabancontact, nil
+	case "china_union_pay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemChinaUnionPay, nil
+	case "rupay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemRupay, nil
+	case "jcbrupay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemJcbrupay, nil
+	case "elo":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemElo, nil
+	case "maestro":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemMaestro, nil
+	case "tarjeta_naranja":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemTarjetaNaranja, nil
+	case "cirrus":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCirrus, nil
+	case "nspk_mir":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemNspkMir, nil
+	case "verve":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemVerve, nil
+	case "ebt":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemEbt, nil
+	case "private_label":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPrivateLabel, nil
+	case "local_brand":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemLocalBrand, nil
+	case "uatp":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemUatp, nil
+	case "wexcard":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemWexcard, nil
+	case "uzcard":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemUzcard, nil
+	case "meeza":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemMeeza, nil
+	case "hrg_store_card":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemHrgStoreCard, nil
+	case "girocard":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemGirocard, nil
+	case "fuel_card":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemFuelCard, nil
+	case "dankort":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemDankort, nil
+	case "carnet":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCarnet, nil
+	case "atm_card":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemAtmCard, nil
+	case "china_union_payuzcard":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemChinaUnionPayuzcard, nil
+	case "codensa":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCodensa, nil
+	case "cabal":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCabal, nil
+	case "hipercard":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemHipercard, nil
+	case "jcblankapay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemJcblankapay, nil
+	case "cmi":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCmi, nil
+	case "aura":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemAura, nil
+	case "accel":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemAccel, nil
+	case "culiance":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCuliance, nil
+	case "nyce":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemNyce, nil
+	case "pulse":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPulse, nil
+	case "star":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemStar, nil
+	case "eftpos":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemEftpos, nil
+	case "alelo":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemAlelo, nil
+	case "edenred":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemEdenred, nil
+	case "sodexo":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemSodexo, nil
+	case "unknown":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemUnknown, nil
+	case "acss_debit":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemAcssDebit, nil
+	case "addi":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemAddi, nil
+	case "affirm":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemAffirm, nil
+	case "afterpay_clearpay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemAfterpayClearpay, nil
+	case "alipay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemAlipay, nil
+	case "alipayhk":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemAlipayhk, nil
+	case "alma":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemAlma, nil
+	case "amazon_pay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemAmazonPay, nil
+	case "apple":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemApple, nil
+	case "apple_pay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemApplePay, nil
+	case "au_bank_transfer":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemAuBankTransfer, nil
+	case "au_becs_debit":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemAuBecsDebit, nil
+	case "bacs_debit":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemBacsDebit, nil
+	case "bancolombia":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemBancolombia, nil
+	case "bancontact":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemBancontact, nil
+	case "bank_wire":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemBankWire, nil
+	case "billie":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemBillie, nil
+	case "blik":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemBlik, nil
+	case "boleto":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemBoleto, nil
+	case "bre_b":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemBreB, nil
+	case "ca_bank_transfer":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCaBankTransfer, nil
+	case "capchase_pay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCapchasePay, nil
+	case "card":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCard, nil
+	case "card_present":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCardPresent, nil
+	case "card_installments_three":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCardInstallmentsThree, nil
+	case "card_installments_six":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCardInstallmentsSix, nil
+	case "card_installments_twelve":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCardInstallmentsTwelve, nil
+	case "cashapp":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCashapp, nil
+	case "claritypay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemClaritypay, nil
+	case "coinbase":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCoinbase, nil
+	case "crypto":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCrypto, nil
+	case "crypto_subscription":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCryptoSubscription, nil
+	case "custom":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCustom, nil
+	case "customer_balance":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCustomerBalance, nil
+	case "demo_pay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemDemoPay, nil
+	case "duitnow_qr":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemDuitnowQr, nil
+	case "efecty":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemEfecty, nil
+	case "eps":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemEps, nil
+	case "eu_bank_transfer":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemEuBankTransfer, nil
+	case "fpx":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemFpx, nil
+	case "flex_pay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemFlexPay, nil
+	case "gb_bank_transfer":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemGbBankTransfer, nil
+	case "gcash":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemGcash, nil
+	case "giropay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemGiropay, nil
+	case "google_pay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemGooglePay, nil
+	case "gopay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemGopay, nil
+	case "grabpay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemGrabpay, nil
+	case "id_bank_transfer":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemIDBankTransfer, nil
+	case "ideal":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemIdeal, nil
+	case "interac":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemInterac, nil
+	case "international_bank_wire":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemInternationalBankWire, nil
+	case "kakao_pay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemKakaoPay, nil
+	case "klarna":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemKlarna, nil
+	case "klarna_pay_now":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemKlarnaPayNow, nil
+	case "konbini":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemKonbini, nil
+	case "kr_card":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemKrCard, nil
+	case "kr_market":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemKrMarket, nil
+	case "kriya":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemKriya, nil
+	case "kueski":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemKueski, nil
+	case "mb_way":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemMbWay, nil
+	case "m_pesa":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemMPesa, nil
+	case "mercado_pago":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemMercadoPago, nil
+	case "mercado_pago_ar":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemMercadoPagoAr, nil
+	case "mercado_pago_mx":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemMercadoPagoMx, nil
+	case "mobilepay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemMobilepay, nil
+	case "modo":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemModo, nil
+	case "mondu":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemMondu, nil
+	case "multibanco":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemMultibanco, nil
+	case "naver_pay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemNaverPay, nil
+	case "nequi":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemNequi, nil
+	case "netbanking":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemNetbanking, nil
+	case "ng_bank":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemNgBank, nil
+	case "ng_bank_transfer":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemNgBankTransfer, nil
+	case "ng_card":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemNgCard, nil
+	case "ng_market":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemNgMarket, nil
+	case "ng_ussd":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemNgUssd, nil
+	case "ng_wallet":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemNgWallet, nil
+	case "nupay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemNupay, nil
+	case "nz_bank_account":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemNzBankAccount, nil
+	case "oney":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemOney, nil
+	case "oney_3x":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemOney3X, nil
+	case "oney_4x":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemOney4X, nil
+	case "opay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemOpay, nil
+	case "oxxo":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemOxxo, nil
+	case "p24":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemP24, nil
+	case "pago_efectivo":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPagoEfectivo, nil
+	case "pse":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPse, nil
+	case "pay_by_bank":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPayByBank, nil
+	case "payco":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPayco, nil
+	case "paynow":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPaynow, nil
+	case "paypal":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPaypal, nil
+	case "paypal_express":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPaypalExpress, nil
+	case "paypay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPaypay, nil
+	case "payto":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPayto, nil
+	case "payto_email":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPaytoEmail, nil
+	case "payto_phone":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPaytoPhone, nil
+	case "payto_bank_account":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPaytoBankAccount, nil
+	case "pix":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPix, nil
+	case "pix_automatico":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPixAutomatico, nil
+	case "platform_balance":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPlatformBalance, nil
+	case "promptpay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemPromptpay, nil
+	case "qris":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemQris, nil
+	case "rapipago":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemRapipago, nil
+	case "rechnung":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemRechnung, nil
+	case "revolut_pay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemRevolutPay, nil
+	case "samsung_pay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemSamsungPay, nil
+	case "satispay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemSatispay, nil
+	case "scalapay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemScalapay, nil
+	case "sencillito":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemSencillito, nil
+	case "sepa_debit":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemSepaDebit, nil
+	case "sequra":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemSequra, nil
+	case "servipag":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemServipag, nil
+	case "sezzle":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemSezzle, nil
+	case "shop_pay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemShopPay, nil
+	case "shopeepay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemShopeepay, nil
+	case "sofort":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemSofort, nil
+	case "south_korea_market":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemSouthKoreaMarket, nil
+	case "spei":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemSpei, nil
+	case "splitit":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemSplitit, nil
+	case "sunbit":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemSunbit, nil
+	case "swish":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemSwish, nil
+	case "tabby":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemTabby, nil
+	case "tamara":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemTamara, nil
+	case "touch_n_go":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemTouchNGo, nil
+	case "twint":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemTwint, nil
+	case "upi":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemUpi, nil
+	case "us_bank_account":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemUsBankAccount, nil
+	case "us_bank_transfer":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemUsBankTransfer, nil
+	case "venmo":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemVenmo, nil
+	case "vipps":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemVipps, nil
+	case "webpay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemWebpay, nil
+	case "wechat_pay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemWechatPay, nil
+	case "whop_pay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemWhopPay, nil
+	case "yape":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemYape, nil
+	case "zip":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemZip, nil
+	case "coinflow":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemCoinflow, nil
+	case "tap_to_pay":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemTapToPay, nil
+	}
+	var t ListResolutionCenterCasesRequestPaymentMethodsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListResolutionCenterCasesRequestPaymentMethodsItem) Ptr() *ListResolutionCenterCasesRequestPaymentMethodsItem {
+	return &l
+}
+
 type ListResolutionCenterCasesRequestReasonItem string
 
 const (
@@ -4248,6 +4923,583 @@ func (s SummaryResolutionCenterCasesRequestOutcomeItem) Ptr() *SummaryResolution
 	return &s
 }
 
+type SummaryResolutionCenterCasesRequestPaymentMethodsItem string
+
+const (
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemMastercard             SummaryResolutionCenterCasesRequestPaymentMethodsItem = "mastercard"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemVisa                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "visa"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemAmex                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "amex"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemDiscover               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "discover"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemUnionpay               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "unionpay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemJcb                    SummaryResolutionCenterCasesRequestPaymentMethodsItem = "jcb"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemDiners                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "diners"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemLink                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "link"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemTroy                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "troy"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemVisadankort            SummaryResolutionCenterCasesRequestPaymentMethodsItem = "visadankort"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemVisabancontact         SummaryResolutionCenterCasesRequestPaymentMethodsItem = "visabancontact"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemChinaUnionPay          SummaryResolutionCenterCasesRequestPaymentMethodsItem = "china_union_pay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemRupay                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "rupay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemJcbrupay               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "jcbrupay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemElo                    SummaryResolutionCenterCasesRequestPaymentMethodsItem = "elo"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemMaestro                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "maestro"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemTarjetaNaranja         SummaryResolutionCenterCasesRequestPaymentMethodsItem = "tarjeta_naranja"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCirrus                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "cirrus"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemNspkMir                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "nspk_mir"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemVerve                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "verve"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemEbt                    SummaryResolutionCenterCasesRequestPaymentMethodsItem = "ebt"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPrivateLabel           SummaryResolutionCenterCasesRequestPaymentMethodsItem = "private_label"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemLocalBrand             SummaryResolutionCenterCasesRequestPaymentMethodsItem = "local_brand"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemUatp                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "uatp"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemWexcard                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "wexcard"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemUzcard                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "uzcard"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemMeeza                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "meeza"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemHrgStoreCard           SummaryResolutionCenterCasesRequestPaymentMethodsItem = "hrg_store_card"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemGirocard               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "girocard"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemFuelCard               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "fuel_card"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemDankort                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "dankort"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCarnet                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "carnet"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemAtmCard                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "atm_card"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemChinaUnionPayuzcard    SummaryResolutionCenterCasesRequestPaymentMethodsItem = "china_union_payuzcard"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCodensa                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "codensa"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCabal                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "cabal"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemHipercard              SummaryResolutionCenterCasesRequestPaymentMethodsItem = "hipercard"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemJcblankapay            SummaryResolutionCenterCasesRequestPaymentMethodsItem = "jcblankapay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCmi                    SummaryResolutionCenterCasesRequestPaymentMethodsItem = "cmi"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemAura                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "aura"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemAccel                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "accel"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCuliance               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "culiance"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemNyce                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "nyce"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPulse                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "pulse"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemStar                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "star"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemEftpos                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "eftpos"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemAlelo                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "alelo"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemEdenred                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "edenred"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemSodexo                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "sodexo"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemUnknown                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "unknown"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemAcssDebit              SummaryResolutionCenterCasesRequestPaymentMethodsItem = "acss_debit"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemAddi                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "addi"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemAffirm                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "affirm"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemAfterpayClearpay       SummaryResolutionCenterCasesRequestPaymentMethodsItem = "afterpay_clearpay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemAlipay                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "alipay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemAlipayhk               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "alipayhk"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemAlma                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "alma"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemAmazonPay              SummaryResolutionCenterCasesRequestPaymentMethodsItem = "amazon_pay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemApple                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "apple"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemApplePay               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "apple_pay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemAuBankTransfer         SummaryResolutionCenterCasesRequestPaymentMethodsItem = "au_bank_transfer"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemAuBecsDebit            SummaryResolutionCenterCasesRequestPaymentMethodsItem = "au_becs_debit"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemBacsDebit              SummaryResolutionCenterCasesRequestPaymentMethodsItem = "bacs_debit"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemBancolombia            SummaryResolutionCenterCasesRequestPaymentMethodsItem = "bancolombia"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemBancontact             SummaryResolutionCenterCasesRequestPaymentMethodsItem = "bancontact"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemBankWire               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "bank_wire"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemBillie                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "billie"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemBlik                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "blik"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemBoleto                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "boleto"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemBreB                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "bre_b"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCaBankTransfer         SummaryResolutionCenterCasesRequestPaymentMethodsItem = "ca_bank_transfer"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCapchasePay            SummaryResolutionCenterCasesRequestPaymentMethodsItem = "capchase_pay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCard                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "card"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCardPresent            SummaryResolutionCenterCasesRequestPaymentMethodsItem = "card_present"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCardInstallmentsThree  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "card_installments_three"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCardInstallmentsSix    SummaryResolutionCenterCasesRequestPaymentMethodsItem = "card_installments_six"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCardInstallmentsTwelve SummaryResolutionCenterCasesRequestPaymentMethodsItem = "card_installments_twelve"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCashapp                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "cashapp"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemClaritypay             SummaryResolutionCenterCasesRequestPaymentMethodsItem = "claritypay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCoinbase               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "coinbase"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCrypto                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "crypto"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCryptoSubscription     SummaryResolutionCenterCasesRequestPaymentMethodsItem = "crypto_subscription"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCustom                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "custom"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCustomerBalance        SummaryResolutionCenterCasesRequestPaymentMethodsItem = "customer_balance"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemDemoPay                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "demo_pay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemDuitnowQr              SummaryResolutionCenterCasesRequestPaymentMethodsItem = "duitnow_qr"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemEfecty                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "efecty"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemEps                    SummaryResolutionCenterCasesRequestPaymentMethodsItem = "eps"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemEuBankTransfer         SummaryResolutionCenterCasesRequestPaymentMethodsItem = "eu_bank_transfer"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemFpx                    SummaryResolutionCenterCasesRequestPaymentMethodsItem = "fpx"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemFlexPay                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "flex_pay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemGbBankTransfer         SummaryResolutionCenterCasesRequestPaymentMethodsItem = "gb_bank_transfer"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemGcash                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "gcash"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemGiropay                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "giropay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemGooglePay              SummaryResolutionCenterCasesRequestPaymentMethodsItem = "google_pay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemGopay                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "gopay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemGrabpay                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "grabpay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemIDBankTransfer         SummaryResolutionCenterCasesRequestPaymentMethodsItem = "id_bank_transfer"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemIdeal                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "ideal"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemInterac                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "interac"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemInternationalBankWire  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "international_bank_wire"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemKakaoPay               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "kakao_pay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemKlarna                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "klarna"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemKlarnaPayNow           SummaryResolutionCenterCasesRequestPaymentMethodsItem = "klarna_pay_now"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemKonbini                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "konbini"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemKrCard                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "kr_card"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemKrMarket               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "kr_market"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemKriya                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "kriya"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemKueski                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "kueski"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemMbWay                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "mb_way"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemMPesa                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "m_pesa"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemMercadoPago            SummaryResolutionCenterCasesRequestPaymentMethodsItem = "mercado_pago"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemMercadoPagoAr          SummaryResolutionCenterCasesRequestPaymentMethodsItem = "mercado_pago_ar"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemMercadoPagoMx          SummaryResolutionCenterCasesRequestPaymentMethodsItem = "mercado_pago_mx"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemMobilepay              SummaryResolutionCenterCasesRequestPaymentMethodsItem = "mobilepay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemModo                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "modo"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemMondu                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "mondu"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemMultibanco             SummaryResolutionCenterCasesRequestPaymentMethodsItem = "multibanco"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemNaverPay               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "naver_pay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemNequi                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "nequi"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemNetbanking             SummaryResolutionCenterCasesRequestPaymentMethodsItem = "netbanking"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemNgBank                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "ng_bank"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemNgBankTransfer         SummaryResolutionCenterCasesRequestPaymentMethodsItem = "ng_bank_transfer"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemNgCard                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "ng_card"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemNgMarket               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "ng_market"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemNgUssd                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "ng_ussd"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemNgWallet               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "ng_wallet"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemNupay                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "nupay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemNzBankAccount          SummaryResolutionCenterCasesRequestPaymentMethodsItem = "nz_bank_account"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemOney                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "oney"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemOney3X                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "oney_3x"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemOney4X                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "oney_4x"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemOpay                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "opay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemOxxo                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "oxxo"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemP24                    SummaryResolutionCenterCasesRequestPaymentMethodsItem = "p24"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPagoEfectivo           SummaryResolutionCenterCasesRequestPaymentMethodsItem = "pago_efectivo"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPse                    SummaryResolutionCenterCasesRequestPaymentMethodsItem = "pse"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPayByBank              SummaryResolutionCenterCasesRequestPaymentMethodsItem = "pay_by_bank"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPayco                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "payco"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPaynow                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "paynow"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPaypal                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "paypal"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPaypalExpress          SummaryResolutionCenterCasesRequestPaymentMethodsItem = "paypal_express"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPaypay                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "paypay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPayto                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "payto"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPaytoEmail             SummaryResolutionCenterCasesRequestPaymentMethodsItem = "payto_email"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPaytoPhone             SummaryResolutionCenterCasesRequestPaymentMethodsItem = "payto_phone"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPaytoBankAccount       SummaryResolutionCenterCasesRequestPaymentMethodsItem = "payto_bank_account"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPix                    SummaryResolutionCenterCasesRequestPaymentMethodsItem = "pix"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPixAutomatico          SummaryResolutionCenterCasesRequestPaymentMethodsItem = "pix_automatico"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPlatformBalance        SummaryResolutionCenterCasesRequestPaymentMethodsItem = "platform_balance"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemPromptpay              SummaryResolutionCenterCasesRequestPaymentMethodsItem = "promptpay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemQris                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "qris"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemRapipago               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "rapipago"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemRechnung               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "rechnung"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemRevolutPay             SummaryResolutionCenterCasesRequestPaymentMethodsItem = "revolut_pay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemSamsungPay             SummaryResolutionCenterCasesRequestPaymentMethodsItem = "samsung_pay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemSatispay               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "satispay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemScalapay               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "scalapay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemSencillito             SummaryResolutionCenterCasesRequestPaymentMethodsItem = "sencillito"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemSepaDebit              SummaryResolutionCenterCasesRequestPaymentMethodsItem = "sepa_debit"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemSequra                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "sequra"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemServipag               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "servipag"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemSezzle                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "sezzle"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemShopPay                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "shop_pay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemShopeepay              SummaryResolutionCenterCasesRequestPaymentMethodsItem = "shopeepay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemSofort                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "sofort"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemSouthKoreaMarket       SummaryResolutionCenterCasesRequestPaymentMethodsItem = "south_korea_market"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemSpei                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "spei"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemSplitit                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "splitit"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemSunbit                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "sunbit"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemSwish                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "swish"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemTabby                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "tabby"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemTamara                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "tamara"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemTouchNGo               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "touch_n_go"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemTwint                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "twint"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemUpi                    SummaryResolutionCenterCasesRequestPaymentMethodsItem = "upi"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemUsBankAccount          SummaryResolutionCenterCasesRequestPaymentMethodsItem = "us_bank_account"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemUsBankTransfer         SummaryResolutionCenterCasesRequestPaymentMethodsItem = "us_bank_transfer"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemVenmo                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "venmo"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemVipps                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "vipps"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemWebpay                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "webpay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemWechatPay              SummaryResolutionCenterCasesRequestPaymentMethodsItem = "wechat_pay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemWhopPay                SummaryResolutionCenterCasesRequestPaymentMethodsItem = "whop_pay"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemYape                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "yape"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemZip                    SummaryResolutionCenterCasesRequestPaymentMethodsItem = "zip"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemCoinflow               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "coinflow"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemTapToPay               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "tap_to_pay"
+)
+
+func NewSummaryResolutionCenterCasesRequestPaymentMethodsItemFromString(s string) (SummaryResolutionCenterCasesRequestPaymentMethodsItem, error) {
+	switch s {
+	case "mastercard":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemMastercard, nil
+	case "visa":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemVisa, nil
+	case "amex":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemAmex, nil
+	case "discover":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemDiscover, nil
+	case "unionpay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemUnionpay, nil
+	case "jcb":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemJcb, nil
+	case "diners":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemDiners, nil
+	case "link":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemLink, nil
+	case "troy":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemTroy, nil
+	case "visadankort":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemVisadankort, nil
+	case "visabancontact":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemVisabancontact, nil
+	case "china_union_pay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemChinaUnionPay, nil
+	case "rupay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemRupay, nil
+	case "jcbrupay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemJcbrupay, nil
+	case "elo":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemElo, nil
+	case "maestro":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemMaestro, nil
+	case "tarjeta_naranja":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemTarjetaNaranja, nil
+	case "cirrus":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCirrus, nil
+	case "nspk_mir":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemNspkMir, nil
+	case "verve":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemVerve, nil
+	case "ebt":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemEbt, nil
+	case "private_label":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPrivateLabel, nil
+	case "local_brand":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemLocalBrand, nil
+	case "uatp":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemUatp, nil
+	case "wexcard":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemWexcard, nil
+	case "uzcard":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemUzcard, nil
+	case "meeza":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemMeeza, nil
+	case "hrg_store_card":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemHrgStoreCard, nil
+	case "girocard":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemGirocard, nil
+	case "fuel_card":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemFuelCard, nil
+	case "dankort":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemDankort, nil
+	case "carnet":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCarnet, nil
+	case "atm_card":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemAtmCard, nil
+	case "china_union_payuzcard":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemChinaUnionPayuzcard, nil
+	case "codensa":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCodensa, nil
+	case "cabal":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCabal, nil
+	case "hipercard":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemHipercard, nil
+	case "jcblankapay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemJcblankapay, nil
+	case "cmi":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCmi, nil
+	case "aura":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemAura, nil
+	case "accel":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemAccel, nil
+	case "culiance":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCuliance, nil
+	case "nyce":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemNyce, nil
+	case "pulse":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPulse, nil
+	case "star":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemStar, nil
+	case "eftpos":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemEftpos, nil
+	case "alelo":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemAlelo, nil
+	case "edenred":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemEdenred, nil
+	case "sodexo":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemSodexo, nil
+	case "unknown":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemUnknown, nil
+	case "acss_debit":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemAcssDebit, nil
+	case "addi":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemAddi, nil
+	case "affirm":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemAffirm, nil
+	case "afterpay_clearpay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemAfterpayClearpay, nil
+	case "alipay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemAlipay, nil
+	case "alipayhk":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemAlipayhk, nil
+	case "alma":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemAlma, nil
+	case "amazon_pay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemAmazonPay, nil
+	case "apple":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemApple, nil
+	case "apple_pay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemApplePay, nil
+	case "au_bank_transfer":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemAuBankTransfer, nil
+	case "au_becs_debit":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemAuBecsDebit, nil
+	case "bacs_debit":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemBacsDebit, nil
+	case "bancolombia":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemBancolombia, nil
+	case "bancontact":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemBancontact, nil
+	case "bank_wire":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemBankWire, nil
+	case "billie":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemBillie, nil
+	case "blik":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemBlik, nil
+	case "boleto":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemBoleto, nil
+	case "bre_b":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemBreB, nil
+	case "ca_bank_transfer":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCaBankTransfer, nil
+	case "capchase_pay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCapchasePay, nil
+	case "card":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCard, nil
+	case "card_present":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCardPresent, nil
+	case "card_installments_three":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCardInstallmentsThree, nil
+	case "card_installments_six":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCardInstallmentsSix, nil
+	case "card_installments_twelve":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCardInstallmentsTwelve, nil
+	case "cashapp":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCashapp, nil
+	case "claritypay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemClaritypay, nil
+	case "coinbase":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCoinbase, nil
+	case "crypto":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCrypto, nil
+	case "crypto_subscription":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCryptoSubscription, nil
+	case "custom":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCustom, nil
+	case "customer_balance":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCustomerBalance, nil
+	case "demo_pay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemDemoPay, nil
+	case "duitnow_qr":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemDuitnowQr, nil
+	case "efecty":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemEfecty, nil
+	case "eps":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemEps, nil
+	case "eu_bank_transfer":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemEuBankTransfer, nil
+	case "fpx":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemFpx, nil
+	case "flex_pay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemFlexPay, nil
+	case "gb_bank_transfer":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemGbBankTransfer, nil
+	case "gcash":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemGcash, nil
+	case "giropay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemGiropay, nil
+	case "google_pay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemGooglePay, nil
+	case "gopay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemGopay, nil
+	case "grabpay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemGrabpay, nil
+	case "id_bank_transfer":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemIDBankTransfer, nil
+	case "ideal":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemIdeal, nil
+	case "interac":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemInterac, nil
+	case "international_bank_wire":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemInternationalBankWire, nil
+	case "kakao_pay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemKakaoPay, nil
+	case "klarna":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemKlarna, nil
+	case "klarna_pay_now":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemKlarnaPayNow, nil
+	case "konbini":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemKonbini, nil
+	case "kr_card":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemKrCard, nil
+	case "kr_market":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemKrMarket, nil
+	case "kriya":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemKriya, nil
+	case "kueski":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemKueski, nil
+	case "mb_way":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemMbWay, nil
+	case "m_pesa":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemMPesa, nil
+	case "mercado_pago":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemMercadoPago, nil
+	case "mercado_pago_ar":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemMercadoPagoAr, nil
+	case "mercado_pago_mx":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemMercadoPagoMx, nil
+	case "mobilepay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemMobilepay, nil
+	case "modo":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemModo, nil
+	case "mondu":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemMondu, nil
+	case "multibanco":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemMultibanco, nil
+	case "naver_pay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemNaverPay, nil
+	case "nequi":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemNequi, nil
+	case "netbanking":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemNetbanking, nil
+	case "ng_bank":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemNgBank, nil
+	case "ng_bank_transfer":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemNgBankTransfer, nil
+	case "ng_card":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemNgCard, nil
+	case "ng_market":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemNgMarket, nil
+	case "ng_ussd":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemNgUssd, nil
+	case "ng_wallet":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemNgWallet, nil
+	case "nupay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemNupay, nil
+	case "nz_bank_account":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemNzBankAccount, nil
+	case "oney":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemOney, nil
+	case "oney_3x":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemOney3X, nil
+	case "oney_4x":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemOney4X, nil
+	case "opay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemOpay, nil
+	case "oxxo":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemOxxo, nil
+	case "p24":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemP24, nil
+	case "pago_efectivo":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPagoEfectivo, nil
+	case "pse":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPse, nil
+	case "pay_by_bank":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPayByBank, nil
+	case "payco":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPayco, nil
+	case "paynow":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPaynow, nil
+	case "paypal":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPaypal, nil
+	case "paypal_express":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPaypalExpress, nil
+	case "paypay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPaypay, nil
+	case "payto":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPayto, nil
+	case "payto_email":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPaytoEmail, nil
+	case "payto_phone":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPaytoPhone, nil
+	case "payto_bank_account":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPaytoBankAccount, nil
+	case "pix":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPix, nil
+	case "pix_automatico":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPixAutomatico, nil
+	case "platform_balance":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPlatformBalance, nil
+	case "promptpay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemPromptpay, nil
+	case "qris":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemQris, nil
+	case "rapipago":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemRapipago, nil
+	case "rechnung":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemRechnung, nil
+	case "revolut_pay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemRevolutPay, nil
+	case "samsung_pay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemSamsungPay, nil
+	case "satispay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemSatispay, nil
+	case "scalapay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemScalapay, nil
+	case "sencillito":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemSencillito, nil
+	case "sepa_debit":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemSepaDebit, nil
+	case "sequra":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemSequra, nil
+	case "servipag":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemServipag, nil
+	case "sezzle":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemSezzle, nil
+	case "shop_pay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemShopPay, nil
+	case "shopeepay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemShopeepay, nil
+	case "sofort":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemSofort, nil
+	case "south_korea_market":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemSouthKoreaMarket, nil
+	case "spei":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemSpei, nil
+	case "splitit":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemSplitit, nil
+	case "sunbit":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemSunbit, nil
+	case "swish":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemSwish, nil
+	case "tabby":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemTabby, nil
+	case "tamara":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemTamara, nil
+	case "touch_n_go":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemTouchNGo, nil
+	case "twint":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemTwint, nil
+	case "upi":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemUpi, nil
+	case "us_bank_account":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemUsBankAccount, nil
+	case "us_bank_transfer":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemUsBankTransfer, nil
+	case "venmo":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemVenmo, nil
+	case "vipps":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemVipps, nil
+	case "webpay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemWebpay, nil
+	case "wechat_pay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemWechatPay, nil
+	case "whop_pay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemWhopPay, nil
+	case "yape":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemYape, nil
+	case "zip":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemZip, nil
+	case "coinflow":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemCoinflow, nil
+	case "tap_to_pay":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemTapToPay, nil
+	}
+	var t SummaryResolutionCenterCasesRequestPaymentMethodsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SummaryResolutionCenterCasesRequestPaymentMethodsItem) Ptr() *SummaryResolutionCenterCasesRequestPaymentMethodsItem {
+	return &s
+}
+
 type SummaryResolutionCenterCasesRequestReasonItem string
 
 const (
@@ -4939,12 +6191,15 @@ func (s *SummaryResolutionCenterCasesResponseGroupsStatus) String() string {
 }
 
 var (
-	withdrawResolutionCenterCasesRequestFieldID = big.NewInt(1 << 0)
+	withdrawResolutionCenterCasesRequestFieldID      = big.NewInt(1 << 0)
+	withdrawResolutionCenterCasesRequestFieldMessage = big.NewInt(1 << 1)
 )
 
 type WithdrawResolutionCenterCasesRequest struct {
 	// The resolution center case ID (`reso_` tag).
 	ID string `json:"-" url:"-"`
+	// Why you are withdrawing the case, recorded on the case timeline where the merchant can read it. Without one, the timeline says the customer withdrew.
+	Message *string `json:"message,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4964,4 +6219,32 @@ func (w *WithdrawResolutionCenterCasesRequest) require(field *big.Int) {
 func (w *WithdrawResolutionCenterCasesRequest) SetID(id string) {
 	w.ID = id
 	w.require(withdrawResolutionCenterCasesRequestFieldID)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (w *WithdrawResolutionCenterCasesRequest) SetMessage(message *string) {
+	w.Message = message
+	w.require(withdrawResolutionCenterCasesRequestFieldMessage)
+}
+
+func (w *WithdrawResolutionCenterCasesRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler WithdrawResolutionCenterCasesRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*w = WithdrawResolutionCenterCasesRequest(body)
+	return nil
+}
+
+func (w *WithdrawResolutionCenterCasesRequest) MarshalJSON() ([]byte, error) {
+	type embed WithdrawResolutionCenterCasesRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*w),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, w.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }

@@ -88066,6 +88066,14 @@ func TestSettersPayment(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetResolutionCenterIneligibleReason", func(t *testing.T) {
+		obj := &Payment{}
+		var fernTestValueResolutionCenterIneligibleReason *PaymentResolutionCenterIneligibleReason
+		obj.SetResolutionCenterIneligibleReason(fernTestValueResolutionCenterIneligibleReason)
+		assert.Equal(t, fernTestValueResolutionCenterIneligibleReason, obj.ResolutionCenterIneligibleReason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetResponseDueAt", func(t *testing.T) {
 		obj := &Payment{}
 		var fernTestValueResponseDueAt *string
@@ -89775,6 +89783,39 @@ func TestGettersPayment(t *testing.T) {
 			}
 		}()
 		_ = obj.GetRefundedAt() // Should return zero value
+	})
+
+	t.Run("GetResolutionCenterIneligibleReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		var expected *PaymentResolutionCenterIneligibleReason
+		obj.ResolutionCenterIneligibleReason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetResolutionCenterIneligibleReason(), "getter should return the property value")
+	})
+
+	t.Run("GetResolutionCenterIneligibleReason_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		obj.ResolutionCenterIneligibleReason = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetResolutionCenterIneligibleReason(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetResolutionCenterIneligibleReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Payment
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetResolutionCenterIneligibleReason() // Should return zero value
 	})
 
 	t.Run("GetResponseDueAt", func(t *testing.T) {
@@ -91944,6 +91985,37 @@ func TestSettersMarkExplicitPayment(t *testing.T) {
 
 		// Act
 		obj.SetRefundedAt(fernTestValueRefundedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetResolutionCenterIneligibleReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Payment{}
+		var fernTestValueResolutionCenterIneligibleReason *PaymentResolutionCenterIneligibleReason
+
+		// Act
+		obj.SetResolutionCenterIneligibleReason(fernTestValueResolutionCenterIneligibleReason)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -178668,6 +178740,7 @@ func TestRequiredNullableRoundTripPayment(t *testing.T) {
 		"recovery_url",
 		"refunded_amount",
 		"refunded_at",
+		"resolution_center_ineligible_reason",
 		"response_due_at",
 		"risk_score",
 		"risk_signals",
@@ -178696,7 +178769,7 @@ func TestRequiredNullableRoundTripPayment(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Payment
-		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"amount_after_fees":null,"auto_capture_at":null,"billing_address":null,"billing_reason":null,"capture_expires_at":null,"checkout_configuration_id":null,"checkout_origin":null,"checkout_surface":null,"client_secret":null,"customer_email":null,"customer_phone":null,"decline_code":null,"dispute_alerted_at":null,"dispute_created_at":null,"failure_message":null,"financing_installments_count":null,"ip_address":null,"last_payment_attempt_at":null,"member_id":null,"membership_id":null,"metadata":null,"missing_tracking":null,"needs_tracking":null,"next_payment_attempt_at":null,"paid_at":null,"payment_instrument":null,"payment_method_id":null,"payment_method_type":null,"presentment_refunded_amount":null,"presentment_tax_amount":null,"presentment_total":null,"product_id":null,"promo_code_id":null,"quote_id":null,"recovery_url":null,"refunded_amount":null,"refunded_at":null,"response_due_at":null,"risk_score":null,"risk_signals":null,"settlement_time_at":null,"shipment_id":null,"shipping_address":null,"subtotal":null,"tax_amount":null,"tax_behavior":null,"total":null,"usd_total":null,"user":null,"user_agent":null,"variant_id":null,"verification_checks":null,"wuid":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"amount_after_fees":null,"auto_capture_at":null,"billing_address":null,"billing_reason":null,"capture_expires_at":null,"checkout_configuration_id":null,"checkout_origin":null,"checkout_surface":null,"client_secret":null,"customer_email":null,"customer_phone":null,"decline_code":null,"dispute_alerted_at":null,"dispute_created_at":null,"failure_message":null,"financing_installments_count":null,"ip_address":null,"last_payment_attempt_at":null,"member_id":null,"membership_id":null,"metadata":null,"missing_tracking":null,"needs_tracking":null,"next_payment_attempt_at":null,"paid_at":null,"payment_instrument":null,"payment_method_id":null,"payment_method_type":null,"presentment_refunded_amount":null,"presentment_tax_amount":null,"presentment_total":null,"product_id":null,"promo_code_id":null,"quote_id":null,"recovery_url":null,"refunded_amount":null,"refunded_at":null,"resolution_center_ineligible_reason":null,"response_due_at":null,"risk_score":null,"risk_signals":null,"settlement_time_at":null,"shipment_id":null,"shipping_address":null,"subtotal":null,"tax_amount":null,"tax_behavior":null,"total":null,"usd_total":null,"user":null,"user_agent":null,"variant_id":null,"verification_checks":null,"wuid":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -203251,6 +203324,63 @@ func TestEnumPaymentRequiredErrorBodyErrorType(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewPaymentRequiredErrorBodyErrorTypeFromString("payment_required")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumPaymentResolutionCenterIneligibleReason(t *testing.T) {
+	t.Run("NewFromString_already_opened", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentResolutionCenterIneligibleReasonFromString("already_opened")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentResolutionCenterIneligibleReason("already_opened"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_unsupported_payment_processor", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentResolutionCenterIneligibleReasonFromString("unsupported_payment_processor")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentResolutionCenterIneligibleReason("unsupported_payment_processor"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_out_of_date", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentResolutionCenterIneligibleReasonFromString("out_of_date")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentResolutionCenterIneligibleReason("out_of_date"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_not_paid", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentResolutionCenterIneligibleReasonFromString("not_paid")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentResolutionCenterIneligibleReason("not_paid"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_free", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentResolutionCenterIneligibleReasonFromString("free")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentResolutionCenterIneligibleReason("free"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_already_refunded", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPaymentResolutionCenterIneligibleReasonFromString("already_refunded")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PaymentResolutionCenterIneligibleReason("already_refunded"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPaymentResolutionCenterIneligibleReasonFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPaymentResolutionCenterIneligibleReasonFromString("already_opened")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

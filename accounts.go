@@ -3844,7 +3844,7 @@ type AccountPaymentControls struct {
 	PendingBalanceDelayDays int `json:"pending_balance_delay_days" url:"pending_balance_delay_days"`
 	// Reserve currently applied to incoming payment volume.
 	Reserve *AccountReserveControl `json:"reserve" url:"reserve"`
-	// Automatic refund settings for resolution center cases.
+	// Settings for automatic refunds of Resolution Center cases. You can change them with `PATCH /accounts/{id}`.
 	ResolutionCenterAutoRefund *AccountResolutionCenterAutoRefundControl            `json:"resolution_center_auto_refund" url:"resolution_center_auto_refund"`
 	RestrictedPaymentMethods   []AccountPaymentControlsRestrictedPaymentMethodsItem `json:"restricted_payment_methods" url:"restricted_payment_methods"`
 	// Why pending funds without a settlement date aren't moving yet. `kyc_incomplete`, `pending_information_request`, and `update_payout_profile` are things the merchant can act on. `compliance_review` means a verification the merchant already submitted is being reviewed, so these funds stay pending until it clears. `withdrawals_disabled` means Whop has blocked withdrawals, so these funds cannot become available. `null` when there's no reason to show — still clearing, or held for a reason that isn't named here.
@@ -4407,24 +4407,28 @@ var (
 	accountResolutionCenterAutoRefundControlFieldCardThresholdUsd      = big.NewInt(1 << 0)
 	accountResolutionCenterAutoRefundControlFieldFinancingThresholdUsd = big.NewInt(1 << 1)
 	accountResolutionCenterAutoRefundControlFieldLocked                = big.NewInt(1 << 2)
-	accountResolutionCenterAutoRefundControlFieldPaypalThresholdUsd    = big.NewInt(1 << 3)
+	accountResolutionCenterAutoRefundControlFieldMessage               = big.NewInt(1 << 3)
+	accountResolutionCenterAutoRefundControlFieldPaypalThresholdUsd    = big.NewInt(1 << 4)
 )
 
 // accountResolutionCenterAutoRefundControlNullableFields maps the wire names of AccountResolutionCenterAutoRefundControl's nullable fields (required or optional) to their field bits.
 var accountResolutionCenterAutoRefundControlNullableFields = map[string]*big.Int{
 	"card_threshold_usd":      accountResolutionCenterAutoRefundControlFieldCardThresholdUsd,
 	"financing_threshold_usd": accountResolutionCenterAutoRefundControlFieldFinancingThresholdUsd,
+	"message":                 accountResolutionCenterAutoRefundControlFieldMessage,
 	"paypal_threshold_usd":    accountResolutionCenterAutoRefundControlFieldPaypalThresholdUsd,
 }
 
 type AccountResolutionCenterAutoRefundControl struct {
-	// Maximum card-funded resolution center case amount automatically refunded in USD. `null` when automatic refunds are disabled for cards.
+	// Whop automatically refunds Resolution Center cases on card payments up to this amount in USD. Card payments include Visa, Mastercard, American Express and Discover. `null` when Whop does not automatically refund card cases. You can change it with `PATCH /accounts/{id}` while `locked` is `false`.
 	CardThresholdUsd *float64 `json:"card_threshold_usd,omitempty" url:"card_threshold_usd,omitempty"`
-	// Maximum financing-funded resolution center case amount automatically refunded in USD. `null` when automatic refunds are disabled for financing.
+	// Whop automatically refunds Resolution Center cases on financing payments up to this amount in USD. Financing payments include Klarna, Affirm, Zip, Afterpay, Splitit and Sezzle. `null` when Whop does not automatically refund financing cases. You can change it with `PATCH /accounts/{id}` while `locked` is `false`.
 	FinancingThresholdUsd *float64 `json:"financing_threshold_usd,omitempty" url:"financing_threshold_usd,omitempty"`
-	// Whether the account owner is prevented from changing these thresholds.
+	// Whether the thresholds are locked. While `true`, `PATCH /accounts/{id}` refuses a threshold change with a `403`. You cannot change this field.
 	Locked bool `json:"locked" url:"locked"`
-	// Maximum PayPal-funded resolution center case amount automatically refunded in USD. `null` when automatic refunds are disabled for PayPal.
+	// Message the customer gets when Whop automatically refunds their case. `null` when no message is set. You can change it with `PATCH /accounts/{id}`. You can also change it while `locked` is `true`.
+	Message *string `json:"message,omitempty" url:"message,omitempty"`
+	// Whop automatically refunds Resolution Center cases on PayPal and Venmo payments up to this amount in USD. `null` when Whop does not automatically refund these cases. You can change it with `PATCH /accounts/{id}` while `locked` is `false`.
 	PaypalThresholdUsd *float64 `json:"paypal_threshold_usd,omitempty" url:"paypal_threshold_usd,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -4453,6 +4457,13 @@ func (a *AccountResolutionCenterAutoRefundControl) GetLocked() bool {
 		return false
 	}
 	return a.Locked
+}
+
+func (a *AccountResolutionCenterAutoRefundControl) GetMessage() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Message
 }
 
 func (a *AccountResolutionCenterAutoRefundControl) GetPaypalThresholdUsd() *float64 {
@@ -4497,6 +4508,13 @@ func (a *AccountResolutionCenterAutoRefundControl) SetFinancingThresholdUsd(fina
 func (a *AccountResolutionCenterAutoRefundControl) SetLocked(locked bool) {
 	a.Locked = locked
 	a.require(accountResolutionCenterAutoRefundControlFieldLocked)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountResolutionCenterAutoRefundControl) SetMessage(message *string) {
+	a.Message = message
+	a.require(accountResolutionCenterAutoRefundControlFieldMessage)
 }
 
 // SetPaypalThresholdUsd sets the PaypalThresholdUsd field and marks it as non-optional;
@@ -9039,6 +9057,265 @@ func (u UpdateAccountsRequestOpengraphImageVariant) Ptr() *UpdateAccountsRequest
 }
 
 var (
+	updateAccountsRequestPaymentControlsFieldResolutionCenterAutoRefund = big.NewInt(1 << 0)
+)
+
+// Payment controls to change. Only `resolution_center_auto_refund` can change. Whop ignores the other fields, so you can send back the object from `GET`. Requires the `payment:resolution_center` and `company:balance:read` scopes.
+type UpdateAccountsRequestPaymentControls struct {
+	// Settings for automatic refunds of Resolution Center cases. Fields you leave out keep their value. A threshold change while `locked` is `true` returns a `403`. You can send back the object from `GET` unchanged.
+	ResolutionCenterAutoRefund *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund `json:"resolution_center_auto_refund,omitempty" url:"resolution_center_auto_refund,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAccountsRequestPaymentControls) GetResolutionCenterAutoRefund() *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund {
+	if u == nil {
+		return nil
+	}
+	return u.ResolutionCenterAutoRefund
+}
+
+func (u *UpdateAccountsRequestPaymentControls) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAccountsRequestPaymentControls) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetResolutionCenterAutoRefund sets the ResolutionCenterAutoRefund field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestPaymentControls) SetResolutionCenterAutoRefund(resolutionCenterAutoRefund *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund) {
+	u.ResolutionCenterAutoRefund = resolutionCenterAutoRefund
+	u.require(updateAccountsRequestPaymentControlsFieldResolutionCenterAutoRefund)
+}
+
+func (u *UpdateAccountsRequestPaymentControls) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAccountsRequestPaymentControls
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAccountsRequestPaymentControls(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAccountsRequestPaymentControls) MarshalJSON() ([]byte, error) {
+	type embed UpdateAccountsRequestPaymentControls
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAccountsRequestPaymentControls) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateAccountsRequestPaymentControlsResolutionCenterAutoRefundFieldCardThresholdUsd      = big.NewInt(1 << 0)
+	updateAccountsRequestPaymentControlsResolutionCenterAutoRefundFieldFinancingThresholdUsd = big.NewInt(1 << 1)
+	updateAccountsRequestPaymentControlsResolutionCenterAutoRefundFieldLocked                = big.NewInt(1 << 2)
+	updateAccountsRequestPaymentControlsResolutionCenterAutoRefundFieldMessage               = big.NewInt(1 << 3)
+	updateAccountsRequestPaymentControlsResolutionCenterAutoRefundFieldPaypalThresholdUsd    = big.NewInt(1 << 4)
+)
+
+// updateAccountsRequestPaymentControlsResolutionCenterAutoRefundNullableFields maps the wire names of UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund's nullable fields (required or optional) to their field bits.
+var updateAccountsRequestPaymentControlsResolutionCenterAutoRefundNullableFields = map[string]*big.Int{
+	"card_threshold_usd":      updateAccountsRequestPaymentControlsResolutionCenterAutoRefundFieldCardThresholdUsd,
+	"financing_threshold_usd": updateAccountsRequestPaymentControlsResolutionCenterAutoRefundFieldFinancingThresholdUsd,
+	"message":                 updateAccountsRequestPaymentControlsResolutionCenterAutoRefundFieldMessage,
+	"paypal_threshold_usd":    updateAccountsRequestPaymentControlsResolutionCenterAutoRefundFieldPaypalThresholdUsd,
+}
+
+// Settings for automatic refunds of Resolution Center cases. Fields you leave out keep their value. A threshold change while `locked` is `true` returns a `403`. You can send back the object from `GET` unchanged.
+type UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund struct {
+	// Whop automatically refunds Resolution Center cases on card payments up to this amount in USD. Card payments include Visa, Mastercard, American Express and Discover. Send `null` or `0` to turn it off. Otherwise it must be at least `1`. Whop rounds it to cents.
+	CardThresholdUsd *float64 `json:"card_threshold_usd,omitempty" url:"card_threshold_usd,omitempty"`
+	// Whop automatically refunds Resolution Center cases on financing payments up to this amount in USD. Financing payments include Klarna, Affirm, Zip, Afterpay, Splitit and Sezzle. Send `null` or `0` to turn it off. Otherwise it must be at least `1`. Whop rounds it to cents.
+	FinancingThresholdUsd *float64 `json:"financing_threshold_usd,omitempty" url:"financing_threshold_usd,omitempty"`
+	// Whether the thresholds are locked. You cannot change this field. Whop ignores it when you send it.
+	Locked *bool `json:"locked,omitempty" url:"locked,omitempty"`
+	// Message the customer gets when Whop automatically refunds their case. A message is required while any threshold is set. You can also change it while `locked` is `true`.
+	Message *string `json:"message,omitempty" url:"message,omitempty"`
+	// Whop automatically refunds Resolution Center cases on PayPal and Venmo payments up to this amount in USD. Send `null` or `0` to turn it off. Otherwise it must be at least `1`. Whop rounds it to cents.
+	PaypalThresholdUsd *float64 `json:"paypal_threshold_usd,omitempty" url:"paypal_threshold_usd,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund) GetCardThresholdUsd() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.CardThresholdUsd
+}
+
+func (u *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund) GetFinancingThresholdUsd() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.FinancingThresholdUsd
+}
+
+func (u *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund) GetLocked() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.Locked
+}
+
+func (u *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund) GetMessage() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Message
+}
+
+func (u *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund) GetPaypalThresholdUsd() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.PaypalThresholdUsd
+}
+
+func (u *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetCardThresholdUsd sets the CardThresholdUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund) SetCardThresholdUsd(cardThresholdUsd *float64) {
+	u.CardThresholdUsd = cardThresholdUsd
+	u.require(updateAccountsRequestPaymentControlsResolutionCenterAutoRefundFieldCardThresholdUsd)
+}
+
+// SetFinancingThresholdUsd sets the FinancingThresholdUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund) SetFinancingThresholdUsd(financingThresholdUsd *float64) {
+	u.FinancingThresholdUsd = financingThresholdUsd
+	u.require(updateAccountsRequestPaymentControlsResolutionCenterAutoRefundFieldFinancingThresholdUsd)
+}
+
+// SetLocked sets the Locked field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund) SetLocked(locked *bool) {
+	u.Locked = locked
+	u.require(updateAccountsRequestPaymentControlsResolutionCenterAutoRefundFieldLocked)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund) SetMessage(message *string) {
+	u.Message = message
+	u.require(updateAccountsRequestPaymentControlsResolutionCenterAutoRefundFieldMessage)
+}
+
+// SetPaypalThresholdUsd sets the PaypalThresholdUsd field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund) SetPaypalThresholdUsd(paypalThresholdUsd *float64) {
+	u.PaypalThresholdUsd = paypalThresholdUsd
+	u.require(updateAccountsRequestPaymentControlsResolutionCenterAutoRefundFieldPaypalThresholdUsd)
+}
+
+func (u *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateAccountsRequestPaymentControlsResolutionCenterAutoRefundNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund) MarshalJSON() ([]byte, error) {
+	type embed UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateAccountsRequestPaymentControlsResolutionCenterAutoRefund) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
 	updateAccountsRequestPrivacyPolicyFieldID = big.NewInt(1 << 0)
 )
 
@@ -10433,30 +10710,31 @@ var (
 	updateAccountsRequestFieldOrchestrationEnabled            = big.NewInt(1 << 21)
 	updateAccountsRequestFieldOtherBusinessDescription        = big.NewInt(1 << 22)
 	updateAccountsRequestFieldOtherIndustryDescription        = big.NewInt(1 << 23)
-	updateAccountsRequestFieldPrivacyPolicy                   = big.NewInt(1 << 24)
-	updateAccountsRequestFieldProductTaxCodeID                = big.NewInt(1 << 25)
-	updateAccountsRequestFieldRequire2Fa                      = big.NewInt(1 << 26)
-	updateAccountsRequestFieldReturnPolicy                    = big.NewInt(1 << 27)
-	updateAccountsRequestFieldRoute                           = big.NewInt(1 << 28)
-	updateAccountsRequestFieldSendCustomerEmails              = big.NewInt(1 << 29)
-	updateAccountsRequestFieldShippingPolicy                  = big.NewInt(1 << 30)
-	updateAccountsRequestFieldShowJoinedWhops                 = big.NewInt(1 << 31)
-	updateAccountsRequestFieldShowReviewsDtc                  = big.NewInt(1 << 32)
-	updateAccountsRequestFieldShowUserDirectory               = big.NewInt(1 << 33)
-	updateAccountsRequestFieldSocialLinks                     = big.NewInt(1 << 34)
-	updateAccountsRequestFieldStorePageConfig                 = big.NewInt(1 << 35)
-	updateAccountsRequestFieldTargetAudience                  = big.NewInt(1 << 36)
-	updateAccountsRequestFieldTaxCollectionEnabledStates      = big.NewInt(1 << 37)
-	updateAccountsRequestFieldTaxIdentifiers                  = big.NewInt(1 << 38)
-	updateAccountsRequestFieldTaxRemittedBy                   = big.NewInt(1 << 39)
-	updateAccountsRequestFieldTaxType                         = big.NewInt(1 << 40)
-	updateAccountsRequestFieldTermsOfService                  = big.NewInt(1 << 41)
-	updateAccountsRequestFieldThreeDsLevel                    = big.NewInt(1 << 42)
-	updateAccountsRequestFieldTitle                           = big.NewInt(1 << 43)
-	updateAccountsRequestFieldUseLogoAsOpengraphImageFallback = big.NewInt(1 << 44)
-	updateAccountsRequestFieldWebsite                         = big.NewInt(1 << 45)
-	updateAccountsRequestFieldWhopPartnerEnabled              = big.NewInt(1 << 46)
-	updateAccountsRequestFieldIndustryType                    = big.NewInt(1 << 47)
+	updateAccountsRequestFieldPaymentControls                 = big.NewInt(1 << 24)
+	updateAccountsRequestFieldPrivacyPolicy                   = big.NewInt(1 << 25)
+	updateAccountsRequestFieldProductTaxCodeID                = big.NewInt(1 << 26)
+	updateAccountsRequestFieldRequire2Fa                      = big.NewInt(1 << 27)
+	updateAccountsRequestFieldReturnPolicy                    = big.NewInt(1 << 28)
+	updateAccountsRequestFieldRoute                           = big.NewInt(1 << 29)
+	updateAccountsRequestFieldSendCustomerEmails              = big.NewInt(1 << 30)
+	updateAccountsRequestFieldShippingPolicy                  = big.NewInt(1 << 31)
+	updateAccountsRequestFieldShowJoinedWhops                 = big.NewInt(1 << 32)
+	updateAccountsRequestFieldShowReviewsDtc                  = big.NewInt(1 << 33)
+	updateAccountsRequestFieldShowUserDirectory               = big.NewInt(1 << 34)
+	updateAccountsRequestFieldSocialLinks                     = big.NewInt(1 << 35)
+	updateAccountsRequestFieldStorePageConfig                 = big.NewInt(1 << 36)
+	updateAccountsRequestFieldTargetAudience                  = big.NewInt(1 << 37)
+	updateAccountsRequestFieldTaxCollectionEnabledStates      = big.NewInt(1 << 38)
+	updateAccountsRequestFieldTaxIdentifiers                  = big.NewInt(1 << 39)
+	updateAccountsRequestFieldTaxRemittedBy                   = big.NewInt(1 << 40)
+	updateAccountsRequestFieldTaxType                         = big.NewInt(1 << 41)
+	updateAccountsRequestFieldTermsOfService                  = big.NewInt(1 << 42)
+	updateAccountsRequestFieldThreeDsLevel                    = big.NewInt(1 << 43)
+	updateAccountsRequestFieldTitle                           = big.NewInt(1 << 44)
+	updateAccountsRequestFieldUseLogoAsOpengraphImageFallback = big.NewInt(1 << 45)
+	updateAccountsRequestFieldWebsite                         = big.NewInt(1 << 46)
+	updateAccountsRequestFieldWhopPartnerEnabled              = big.NewInt(1 << 47)
+	updateAccountsRequestFieldIndustryType                    = big.NewInt(1 << 48)
 )
 
 type UpdateAccountsRequest struct {
@@ -10508,6 +10786,8 @@ type UpdateAccountsRequest struct {
 	OtherBusinessDescription *string `json:"other_business_description,omitempty" url:"-"`
 	// The description of the industry type when industry_type is other.
 	OtherIndustryDescription *string `json:"other_industry_description,omitempty" url:"-"`
+	// Payment controls to change. Only `resolution_center_auto_refund` can change. Whop ignores the other fields, so you can send back the object from `GET`. Requires the `payment:resolution_center` and `company:balance:read` scopes.
+	PaymentControls *UpdateAccountsRequestPaymentControls `json:"payment_controls,omitempty" url:"-"`
 	// The account's privacy policy document. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
 	PrivacyPolicy *UpdateAccountsRequestPrivacyPolicy `json:"privacy_policy,omitempty" url:"-"`
 	// ID of the tax classification code applied by default to the account's products. See the available [product categories](https://docs.numeral.com/essentials/product-categories).
@@ -10735,6 +11015,13 @@ func (u *UpdateAccountsRequest) SetOtherBusinessDescription(otherBusinessDescrip
 func (u *UpdateAccountsRequest) SetOtherIndustryDescription(otherIndustryDescription *string) {
 	u.OtherIndustryDescription = otherIndustryDescription
 	u.require(updateAccountsRequestFieldOtherIndustryDescription)
+}
+
+// SetPaymentControls sets the PaymentControls field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetPaymentControls(paymentControls *UpdateAccountsRequestPaymentControls) {
+	u.PaymentControls = paymentControls
+	u.require(updateAccountsRequestFieldPaymentControls)
 }
 
 // SetPrivacyPolicy sets the PrivacyPolicy field and marks it as non-optional;

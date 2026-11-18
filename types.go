@@ -45592,135 +45592,137 @@ func (p *PasskeyUserEntity) String() string {
 }
 
 var (
-	paymentFieldAccountID                  = big.NewInt(1 << 0)
-	paymentFieldAmountAfterFees            = big.NewInt(1 << 1)
-	paymentFieldAmountCharged              = big.NewInt(1 << 2)
-	paymentFieldAutoCaptureAt              = big.NewInt(1 << 3)
-	paymentFieldAutoRefunded               = big.NewInt(1 << 4)
-	paymentFieldBillingAddress             = big.NewInt(1 << 5)
-	paymentFieldBillingReason              = big.NewInt(1 << 6)
-	paymentFieldCaptureExpiresAt           = big.NewInt(1 << 7)
-	paymentFieldCheckoutConfigurationID    = big.NewInt(1 << 8)
-	paymentFieldCheckoutOrigin             = big.NewInt(1 << 9)
-	paymentFieldCheckoutSurface            = big.NewInt(1 << 10)
-	paymentFieldClientSecret               = big.NewInt(1 << 11)
-	paymentFieldCreatedAt                  = big.NewInt(1 << 12)
-	paymentFieldCurrency                   = big.NewInt(1 << 13)
-	paymentFieldCustomerEmail              = big.NewInt(1 << 14)
-	paymentFieldCustomerPhone              = big.NewInt(1 << 15)
-	paymentFieldDeclineCode                = big.NewInt(1 << 16)
-	paymentFieldDisputeAlertedAt           = big.NewInt(1 << 17)
-	paymentFieldDisputeCreatedAt           = big.NewInt(1 << 18)
-	paymentFieldFailureMessage             = big.NewInt(1 << 19)
-	paymentFieldFinancingInstallmentsCount = big.NewInt(1 << 20)
-	paymentFieldHolds                      = big.NewInt(1 << 21)
-	paymentFieldID                         = big.NewInt(1 << 22)
-	paymentFieldIPAddress                  = big.NewInt(1 << 23)
-	paymentFieldLastPaymentAttemptAt       = big.NewInt(1 << 24)
-	paymentFieldLineItems                  = big.NewInt(1 << 25)
-	paymentFieldMemberID                   = big.NewInt(1 << 26)
-	paymentFieldMembershipID               = big.NewInt(1 << 27)
-	paymentFieldMetadata                   = big.NewInt(1 << 28)
-	paymentFieldMissingTracking            = big.NewInt(1 << 29)
-	paymentFieldNeedsTracking              = big.NewInt(1 << 30)
-	paymentFieldNextPaymentAttemptAt       = big.NewInt(1 << 31)
-	paymentFieldPaidAt                     = big.NewInt(1 << 32)
-	paymentFieldPaymentInstrument          = big.NewInt(1 << 33)
-	paymentFieldPaymentMethodID            = big.NewInt(1 << 34)
-	paymentFieldPaymentMethodType          = big.NewInt(1 << 35)
-	paymentFieldPaymentRuleMatches         = big.NewInt(1 << 36)
-	paymentFieldPaymentsFailed             = big.NewInt(1 << 37)
-	paymentFieldPresentmentRefundedAmount  = big.NewInt(1 << 38)
-	paymentFieldPresentmentTaxAmount       = big.NewInt(1 << 39)
-	paymentFieldPresentmentTotal           = big.NewInt(1 << 40)
-	paymentFieldProductID                  = big.NewInt(1 << 41)
-	paymentFieldPromoCodeID                = big.NewInt(1 << 42)
-	paymentFieldQuoteID                    = big.NewInt(1 << 43)
-	paymentFieldRecoveryURL                = big.NewInt(1 << 44)
-	paymentFieldRefundable                 = big.NewInt(1 << 45)
-	paymentFieldRefundedAmount             = big.NewInt(1 << 46)
-	paymentFieldRefundedAt                 = big.NewInt(1 << 47)
-	paymentFieldResponseDueAt              = big.NewInt(1 << 48)
-	paymentFieldRetryable                  = big.NewInt(1 << 49)
-	paymentFieldRiskScore                  = big.NewInt(1 << 50)
-	paymentFieldRiskSignals                = big.NewInt(1 << 51)
-	paymentFieldSettlementTimeAt           = big.NewInt(1 << 52)
-	paymentFieldShipmentID                 = big.NewInt(1 << 53)
-	paymentFieldShippingAddress            = big.NewInt(1 << 54)
-	paymentFieldStatus                     = big.NewInt(1 << 55)
-	paymentFieldSubstatus                  = big.NewInt(1 << 56)
-	paymentFieldSubtotal                   = big.NewInt(1 << 57)
-	paymentFieldTaxAmount                  = big.NewInt(1 << 58)
-	paymentFieldTaxBehavior                = big.NewInt(1 << 59)
-	paymentFieldTaxRefundedAmount          = big.NewInt(1 << 60)
-	paymentFieldThreeDsVerified            = big.NewInt(1 << 61)
-	paymentFieldTotal                      = big.NewInt(1 << 62)
-	paymentFieldUpdatedAt                  = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	paymentFieldUsdTotal                   = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	paymentFieldUser                       = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	paymentFieldUserAgent                  = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	paymentFieldVariantID                  = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	paymentFieldVerificationChecks         = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	paymentFieldVoidable                   = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	paymentFieldWuid                       = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	paymentFieldAccountID                        = big.NewInt(1 << 0)
+	paymentFieldAmountAfterFees                  = big.NewInt(1 << 1)
+	paymentFieldAmountCharged                    = big.NewInt(1 << 2)
+	paymentFieldAutoCaptureAt                    = big.NewInt(1 << 3)
+	paymentFieldAutoRefunded                     = big.NewInt(1 << 4)
+	paymentFieldBillingAddress                   = big.NewInt(1 << 5)
+	paymentFieldBillingReason                    = big.NewInt(1 << 6)
+	paymentFieldCaptureExpiresAt                 = big.NewInt(1 << 7)
+	paymentFieldCheckoutConfigurationID          = big.NewInt(1 << 8)
+	paymentFieldCheckoutOrigin                   = big.NewInt(1 << 9)
+	paymentFieldCheckoutSurface                  = big.NewInt(1 << 10)
+	paymentFieldClientSecret                     = big.NewInt(1 << 11)
+	paymentFieldCreatedAt                        = big.NewInt(1 << 12)
+	paymentFieldCurrency                         = big.NewInt(1 << 13)
+	paymentFieldCustomerEmail                    = big.NewInt(1 << 14)
+	paymentFieldCustomerPhone                    = big.NewInt(1 << 15)
+	paymentFieldDeclineCode                      = big.NewInt(1 << 16)
+	paymentFieldDisputeAlertedAt                 = big.NewInt(1 << 17)
+	paymentFieldDisputeCreatedAt                 = big.NewInt(1 << 18)
+	paymentFieldFailureMessage                   = big.NewInt(1 << 19)
+	paymentFieldFinancingInstallmentsCount       = big.NewInt(1 << 20)
+	paymentFieldHolds                            = big.NewInt(1 << 21)
+	paymentFieldID                               = big.NewInt(1 << 22)
+	paymentFieldIPAddress                        = big.NewInt(1 << 23)
+	paymentFieldLastPaymentAttemptAt             = big.NewInt(1 << 24)
+	paymentFieldLineItems                        = big.NewInt(1 << 25)
+	paymentFieldMemberID                         = big.NewInt(1 << 26)
+	paymentFieldMembershipID                     = big.NewInt(1 << 27)
+	paymentFieldMetadata                         = big.NewInt(1 << 28)
+	paymentFieldMissingTracking                  = big.NewInt(1 << 29)
+	paymentFieldNeedsTracking                    = big.NewInt(1 << 30)
+	paymentFieldNextPaymentAttemptAt             = big.NewInt(1 << 31)
+	paymentFieldPaidAt                           = big.NewInt(1 << 32)
+	paymentFieldPaymentInstrument                = big.NewInt(1 << 33)
+	paymentFieldPaymentMethodID                  = big.NewInt(1 << 34)
+	paymentFieldPaymentMethodType                = big.NewInt(1 << 35)
+	paymentFieldPaymentRuleMatches               = big.NewInt(1 << 36)
+	paymentFieldPaymentsFailed                   = big.NewInt(1 << 37)
+	paymentFieldPresentmentRefundedAmount        = big.NewInt(1 << 38)
+	paymentFieldPresentmentTaxAmount             = big.NewInt(1 << 39)
+	paymentFieldPresentmentTotal                 = big.NewInt(1 << 40)
+	paymentFieldProductID                        = big.NewInt(1 << 41)
+	paymentFieldPromoCodeID                      = big.NewInt(1 << 42)
+	paymentFieldQuoteID                          = big.NewInt(1 << 43)
+	paymentFieldRecoveryURL                      = big.NewInt(1 << 44)
+	paymentFieldRefundable                       = big.NewInt(1 << 45)
+	paymentFieldRefundedAmount                   = big.NewInt(1 << 46)
+	paymentFieldRefundedAt                       = big.NewInt(1 << 47)
+	paymentFieldResolutionCenterIneligibleReason = big.NewInt(1 << 48)
+	paymentFieldResponseDueAt                    = big.NewInt(1 << 49)
+	paymentFieldRetryable                        = big.NewInt(1 << 50)
+	paymentFieldRiskScore                        = big.NewInt(1 << 51)
+	paymentFieldRiskSignals                      = big.NewInt(1 << 52)
+	paymentFieldSettlementTimeAt                 = big.NewInt(1 << 53)
+	paymentFieldShipmentID                       = big.NewInt(1 << 54)
+	paymentFieldShippingAddress                  = big.NewInt(1 << 55)
+	paymentFieldStatus                           = big.NewInt(1 << 56)
+	paymentFieldSubstatus                        = big.NewInt(1 << 57)
+	paymentFieldSubtotal                         = big.NewInt(1 << 58)
+	paymentFieldTaxAmount                        = big.NewInt(1 << 59)
+	paymentFieldTaxBehavior                      = big.NewInt(1 << 60)
+	paymentFieldTaxRefundedAmount                = big.NewInt(1 << 61)
+	paymentFieldThreeDsVerified                  = big.NewInt(1 << 62)
+	paymentFieldTotal                            = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	paymentFieldUpdatedAt                        = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	paymentFieldUsdTotal                         = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	paymentFieldUser                             = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	paymentFieldUserAgent                        = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	paymentFieldVariantID                        = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	paymentFieldVerificationChecks               = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	paymentFieldVoidable                         = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	paymentFieldWuid                             = big.NewInt(0).Lsh(big.NewInt(1), 71)
 )
 
 // paymentNullableFields maps the wire names of Payment's nullable fields (required or optional) to their field bits.
 var paymentNullableFields = map[string]*big.Int{
-	"account_id":                   paymentFieldAccountID,
-	"amount_after_fees":            paymentFieldAmountAfterFees,
-	"auto_capture_at":              paymentFieldAutoCaptureAt,
-	"billing_address":              paymentFieldBillingAddress,
-	"billing_reason":               paymentFieldBillingReason,
-	"capture_expires_at":           paymentFieldCaptureExpiresAt,
-	"checkout_configuration_id":    paymentFieldCheckoutConfigurationID,
-	"checkout_origin":              paymentFieldCheckoutOrigin,
-	"checkout_surface":             paymentFieldCheckoutSurface,
-	"client_secret":                paymentFieldClientSecret,
-	"customer_email":               paymentFieldCustomerEmail,
-	"customer_phone":               paymentFieldCustomerPhone,
-	"decline_code":                 paymentFieldDeclineCode,
-	"dispute_alerted_at":           paymentFieldDisputeAlertedAt,
-	"dispute_created_at":           paymentFieldDisputeCreatedAt,
-	"failure_message":              paymentFieldFailureMessage,
-	"financing_installments_count": paymentFieldFinancingInstallmentsCount,
-	"ip_address":                   paymentFieldIPAddress,
-	"last_payment_attempt_at":      paymentFieldLastPaymentAttemptAt,
-	"member_id":                    paymentFieldMemberID,
-	"membership_id":                paymentFieldMembershipID,
-	"metadata":                     paymentFieldMetadata,
-	"missing_tracking":             paymentFieldMissingTracking,
-	"needs_tracking":               paymentFieldNeedsTracking,
-	"next_payment_attempt_at":      paymentFieldNextPaymentAttemptAt,
-	"paid_at":                      paymentFieldPaidAt,
-	"payment_instrument":           paymentFieldPaymentInstrument,
-	"payment_method_id":            paymentFieldPaymentMethodID,
-	"payment_method_type":          paymentFieldPaymentMethodType,
-	"presentment_refunded_amount":  paymentFieldPresentmentRefundedAmount,
-	"presentment_tax_amount":       paymentFieldPresentmentTaxAmount,
-	"presentment_total":            paymentFieldPresentmentTotal,
-	"product_id":                   paymentFieldProductID,
-	"promo_code_id":                paymentFieldPromoCodeID,
-	"quote_id":                     paymentFieldQuoteID,
-	"recovery_url":                 paymentFieldRecoveryURL,
-	"refunded_amount":              paymentFieldRefundedAmount,
-	"refunded_at":                  paymentFieldRefundedAt,
-	"response_due_at":              paymentFieldResponseDueAt,
-	"risk_score":                   paymentFieldRiskScore,
-	"risk_signals":                 paymentFieldRiskSignals,
-	"settlement_time_at":           paymentFieldSettlementTimeAt,
-	"shipment_id":                  paymentFieldShipmentID,
-	"shipping_address":             paymentFieldShippingAddress,
-	"subtotal":                     paymentFieldSubtotal,
-	"tax_amount":                   paymentFieldTaxAmount,
-	"tax_behavior":                 paymentFieldTaxBehavior,
-	"total":                        paymentFieldTotal,
-	"usd_total":                    paymentFieldUsdTotal,
-	"user":                         paymentFieldUser,
-	"user_agent":                   paymentFieldUserAgent,
-	"variant_id":                   paymentFieldVariantID,
-	"verification_checks":          paymentFieldVerificationChecks,
-	"wuid":                         paymentFieldWuid,
+	"account_id":                          paymentFieldAccountID,
+	"amount_after_fees":                   paymentFieldAmountAfterFees,
+	"auto_capture_at":                     paymentFieldAutoCaptureAt,
+	"billing_address":                     paymentFieldBillingAddress,
+	"billing_reason":                      paymentFieldBillingReason,
+	"capture_expires_at":                  paymentFieldCaptureExpiresAt,
+	"checkout_configuration_id":           paymentFieldCheckoutConfigurationID,
+	"checkout_origin":                     paymentFieldCheckoutOrigin,
+	"checkout_surface":                    paymentFieldCheckoutSurface,
+	"client_secret":                       paymentFieldClientSecret,
+	"customer_email":                      paymentFieldCustomerEmail,
+	"customer_phone":                      paymentFieldCustomerPhone,
+	"decline_code":                        paymentFieldDeclineCode,
+	"dispute_alerted_at":                  paymentFieldDisputeAlertedAt,
+	"dispute_created_at":                  paymentFieldDisputeCreatedAt,
+	"failure_message":                     paymentFieldFailureMessage,
+	"financing_installments_count":        paymentFieldFinancingInstallmentsCount,
+	"ip_address":                          paymentFieldIPAddress,
+	"last_payment_attempt_at":             paymentFieldLastPaymentAttemptAt,
+	"member_id":                           paymentFieldMemberID,
+	"membership_id":                       paymentFieldMembershipID,
+	"metadata":                            paymentFieldMetadata,
+	"missing_tracking":                    paymentFieldMissingTracking,
+	"needs_tracking":                      paymentFieldNeedsTracking,
+	"next_payment_attempt_at":             paymentFieldNextPaymentAttemptAt,
+	"paid_at":                             paymentFieldPaidAt,
+	"payment_instrument":                  paymentFieldPaymentInstrument,
+	"payment_method_id":                   paymentFieldPaymentMethodID,
+	"payment_method_type":                 paymentFieldPaymentMethodType,
+	"presentment_refunded_amount":         paymentFieldPresentmentRefundedAmount,
+	"presentment_tax_amount":              paymentFieldPresentmentTaxAmount,
+	"presentment_total":                   paymentFieldPresentmentTotal,
+	"product_id":                          paymentFieldProductID,
+	"promo_code_id":                       paymentFieldPromoCodeID,
+	"quote_id":                            paymentFieldQuoteID,
+	"recovery_url":                        paymentFieldRecoveryURL,
+	"refunded_amount":                     paymentFieldRefundedAmount,
+	"refunded_at":                         paymentFieldRefundedAt,
+	"resolution_center_ineligible_reason": paymentFieldResolutionCenterIneligibleReason,
+	"response_due_at":                     paymentFieldResponseDueAt,
+	"risk_score":                          paymentFieldRiskScore,
+	"risk_signals":                        paymentFieldRiskSignals,
+	"settlement_time_at":                  paymentFieldSettlementTimeAt,
+	"shipment_id":                         paymentFieldShipmentID,
+	"shipping_address":                    paymentFieldShippingAddress,
+	"subtotal":                            paymentFieldSubtotal,
+	"tax_amount":                          paymentFieldTaxAmount,
+	"tax_behavior":                        paymentFieldTaxBehavior,
+	"total":                               paymentFieldTotal,
+	"usd_total":                           paymentFieldUsdTotal,
+	"user":                                paymentFieldUser,
+	"user_agent":                          paymentFieldUserAgent,
+	"variant_id":                          paymentFieldVariantID,
+	"verification_checks":                 paymentFieldVerificationChecks,
+	"wuid":                                paymentFieldWuid,
 }
 
 type Payment struct {
@@ -45817,6 +45819,8 @@ type Payment struct {
 	RefundedAmount *Money `json:"refunded_amount,omitempty" url:"refunded_amount,omitempty"`
 	// When the payment was refunded, or null.
 	RefundedAt *string `json:"refunded_at,omitempty" url:"refunded_at,omitempty"`
+	// Why the buyer cannot open a Resolution Center case on this payment with `POST /resolution_center_cases`, or null when they can. `already_opened`: a case is already open or was decided (a withdrawn case does not count). `unsupported_payment_processor`: the payment method does not support cases. `out_of_date`: the window to open a case has passed. `not_paid`: the payment is not `paid`. `free`: nothing was charged. `already_refunded`: some of it has been refunded.
+	ResolutionCenterIneligibleReason *PaymentResolutionCenterIneligibleReason `json:"resolution_center_ineligible_reason,omitempty" url:"resolution_center_ineligible_reason,omitempty"`
 	// When the earliest response is due on a dispute or Resolution Center case awaiting the account's response, as an ISO 8601 timestamp. Null when nothing awaits a response, or without the permission to read that dispute or case.
 	ResponseDueAt *string `json:"response_due_at,omitempty" url:"response_due_at,omitempty"`
 	// True when the payment can be retried by hand with `POST /payments/{id}/retry`. The payment must be `open` and not paid through an invoice payment link. Its membership must be `active`, `trialing`, or `past_due`, or the payment must be a failed first payment on a `drafted` membership. Its one manual retry must not be used up. A retry can still be refused when the account cannot currently accept payments.
@@ -46206,6 +46210,13 @@ func (p *Payment) GetRefundedAt() *string {
 		return nil
 	}
 	return p.RefundedAt
+}
+
+func (p *Payment) GetResolutionCenterIneligibleReason() *PaymentResolutionCenterIneligibleReason {
+	if p == nil {
+		return nil
+	}
+	return p.ResolutionCenterIneligibleReason
 }
 
 func (p *Payment) GetResponseDueAt() *string {
@@ -46719,6 +46730,13 @@ func (p *Payment) SetRefundedAmount(refundedAmount *Money) {
 func (p *Payment) SetRefundedAt(refundedAt *string) {
 	p.RefundedAt = refundedAt
 	p.require(paymentFieldRefundedAt)
+}
+
+// SetResolutionCenterIneligibleReason sets the ResolutionCenterIneligibleReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetResolutionCenterIneligibleReason(resolutionCenterIneligibleReason *PaymentResolutionCenterIneligibleReason) {
+	p.ResolutionCenterIneligibleReason = resolutionCenterIneligibleReason
+	p.require(paymentFieldResolutionCenterIneligibleReason)
 }
 
 // SetResponseDueAt sets the ResponseDueAt field and marks it as non-optional;
@@ -62693,6 +62711,41 @@ func NewPaymentRequiredErrorBodyErrorTypeFromString(s string) (PaymentRequiredEr
 }
 
 func (p PaymentRequiredErrorBodyErrorType) Ptr() *PaymentRequiredErrorBodyErrorType {
+	return &p
+}
+
+// Why the buyer cannot open a Resolution Center case on this payment with `POST /resolution_center_cases`, or null when they can. `already_opened`: a case is already open or was decided (a withdrawn case does not count). `unsupported_payment_processor`: the payment method does not support cases. `out_of_date`: the window to open a case has passed. `not_paid`: the payment is not `paid`. `free`: nothing was charged. `already_refunded`: some of it has been refunded.
+type PaymentResolutionCenterIneligibleReason string
+
+const (
+	PaymentResolutionCenterIneligibleReasonAlreadyOpened               PaymentResolutionCenterIneligibleReason = "already_opened"
+	PaymentResolutionCenterIneligibleReasonUnsupportedPaymentProcessor PaymentResolutionCenterIneligibleReason = "unsupported_payment_processor"
+	PaymentResolutionCenterIneligibleReasonOutOfDate                   PaymentResolutionCenterIneligibleReason = "out_of_date"
+	PaymentResolutionCenterIneligibleReasonNotPaid                     PaymentResolutionCenterIneligibleReason = "not_paid"
+	PaymentResolutionCenterIneligibleReasonFree                        PaymentResolutionCenterIneligibleReason = "free"
+	PaymentResolutionCenterIneligibleReasonAlreadyRefunded             PaymentResolutionCenterIneligibleReason = "already_refunded"
+)
+
+func NewPaymentResolutionCenterIneligibleReasonFromString(s string) (PaymentResolutionCenterIneligibleReason, error) {
+	switch s {
+	case "already_opened":
+		return PaymentResolutionCenterIneligibleReasonAlreadyOpened, nil
+	case "unsupported_payment_processor":
+		return PaymentResolutionCenterIneligibleReasonUnsupportedPaymentProcessor, nil
+	case "out_of_date":
+		return PaymentResolutionCenterIneligibleReasonOutOfDate, nil
+	case "not_paid":
+		return PaymentResolutionCenterIneligibleReasonNotPaid, nil
+	case "free":
+		return PaymentResolutionCenterIneligibleReasonFree, nil
+	case "already_refunded":
+		return PaymentResolutionCenterIneligibleReasonAlreadyRefunded, nil
+	}
+	var t PaymentResolutionCenterIneligibleReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PaymentResolutionCenterIneligibleReason) Ptr() *PaymentResolutionCenterIneligibleReason {
 	return &p
 }
 
