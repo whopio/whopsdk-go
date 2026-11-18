@@ -100,7 +100,8 @@ var (
 	accountBalanceBreakdownFieldInTransit           = big.NewInt(1 << 2)
 	accountBalanceBreakdownFieldPending             = big.NewInt(1 << 3)
 	accountBalanceBreakdownFieldPendingSettlements  = big.NewInt(1 << 4)
-	accountBalanceBreakdownFieldReserve             = big.NewInt(1 << 5)
+	accountBalanceBreakdownFieldPerps               = big.NewInt(1 << 5)
+	accountBalanceBreakdownFieldReserve             = big.NewInt(1 << 6)
 )
 
 type AccountBalanceBreakdown struct {
@@ -113,6 +114,8 @@ type AccountBalanceBreakdown struct {
 	// Amount from recent payments still settling, in native units, as a decimal string.
 	Pending            string                      `json:"pending" url:"pending"`
 	PendingSettlements []*AccountBalanceSettlement `json:"pending_settlements" url:"pending_settlements"`
+	// Amount held for perpetual trading, at what the trading account is worth now, in native units, as a decimal string. It is not part of `available`.
+	Perps string `json:"perps" url:"perps"`
 	// Amount held back, in native units, as a decimal string. Retrieve the account's reserves for why it is held and when it unlocks.
 	Reserve string `json:"reserve" url:"reserve"`
 
@@ -156,6 +159,13 @@ func (a *AccountBalanceBreakdown) GetPendingSettlements() []*AccountBalanceSettl
 		return nil
 	}
 	return a.PendingSettlements
+}
+
+func (a *AccountBalanceBreakdown) GetPerps() string {
+	if a == nil {
+		return ""
+	}
+	return a.Perps
 }
 
 func (a *AccountBalanceBreakdown) GetReserve() string {
@@ -214,6 +224,13 @@ func (a *AccountBalanceBreakdown) SetPending(pending string) {
 func (a *AccountBalanceBreakdown) SetPendingSettlements(pendingSettlements []*AccountBalanceSettlement) {
 	a.PendingSettlements = pendingSettlements
 	a.require(accountBalanceBreakdownFieldPendingSettlements)
+}
+
+// SetPerps sets the Perps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountBalanceBreakdown) SetPerps(perps string) {
+	a.Perps = perps
+	a.require(accountBalanceBreakdownFieldPerps)
 }
 
 // SetReserve sets the Reserve field and marks it as non-optional;
