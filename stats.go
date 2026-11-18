@@ -1543,15 +1543,17 @@ func (r *RetrieveStatsResponse) String() string {
 var (
 	retrieveStatsResponseDataFieldComplete = big.NewInt(1 << 0)
 	retrieveStatsResponseDataFieldCurrency = big.NewInt(1 << 1)
-	retrieveStatsResponseDataFieldPoints   = big.NewInt(1 << 2)
-	retrieveStatsResponseDataFieldTotals   = big.NewInt(1 << 3)
+	retrieveStatsResponseDataFieldDataAsOf = big.NewInt(1 << 2)
+	retrieveStatsResponseDataFieldPoints   = big.NewInt(1 << 3)
+	retrieveStatsResponseDataFieldTotals   = big.NewInt(1 << 4)
 )
 
 // retrieveStatsResponseDataNullableFields maps the wire names of RetrieveStatsResponseData's nullable fields (required or optional) to their field bits.
 var retrieveStatsResponseDataNullableFields = map[string]*big.Int{
-	"complete": retrieveStatsResponseDataFieldComplete,
-	"currency": retrieveStatsResponseDataFieldCurrency,
-	"totals":   retrieveStatsResponseDataFieldTotals,
+	"complete":   retrieveStatsResponseDataFieldComplete,
+	"currency":   retrieveStatsResponseDataFieldCurrency,
+	"data_as_of": retrieveStatsResponseDataFieldDataAsOf,
+	"totals":     retrieveStatsResponseDataFieldTotals,
 }
 
 type RetrieveStatsResponseData struct {
@@ -1559,6 +1561,8 @@ type RetrieveStatsResponseData struct {
 	Complete *bool `json:"complete,omitempty" url:"complete,omitempty"`
 	// ISO currency the values are denominated in. Present for currency-unit metrics: the convert_to currency, or usd.
 	Currency *string `json:"currency,omitempty" url:"currency,omitempty"`
+	// Present for metrics computed on a schedule. When the values were computed, as an ISO 8601 timestamp.
+	DataAsOf *string `json:"data_as_of,omitempty" url:"data_as_of,omitempty"`
 	// One entry per period, oldest first.
 	Points []*RetrieveStatsResponseDataPointsItem `json:"points" url:"points"`
 	// Whole-window aggregates, present when the metric computes them. Don't derive these from `points`: a rate is measured across the whole window, not averaged across its points, and whole-window unique people are distinct across every bucket.
@@ -1583,6 +1587,13 @@ func (r *RetrieveStatsResponseData) GetCurrency() *string {
 		return nil
 	}
 	return r.Currency
+}
+
+func (r *RetrieveStatsResponseData) GetDataAsOf() *string {
+	if r == nil {
+		return nil
+	}
+	return r.DataAsOf
 }
 
 func (r *RetrieveStatsResponseData) GetPoints() []*RetrieveStatsResponseDataPointsItem {
@@ -1627,6 +1638,13 @@ func (r *RetrieveStatsResponseData) SetComplete(complete *bool) {
 func (r *RetrieveStatsResponseData) SetCurrency(currency *string) {
 	r.Currency = currency
 	r.require(retrieveStatsResponseDataFieldCurrency)
+}
+
+// SetDataAsOf sets the DataAsOf field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveStatsResponseData) SetDataAsOf(dataAsOf *string) {
+	r.DataAsOf = dataAsOf
+	r.require(retrieveStatsResponseDataFieldDataAsOf)
 }
 
 // SetPoints sets the Points field and marks it as non-optional;

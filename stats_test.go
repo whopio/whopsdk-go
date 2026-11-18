@@ -4400,6 +4400,14 @@ func TestSettersRetrieveStatsResponseData(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDataAsOf", func(t *testing.T) {
+		obj := &RetrieveStatsResponseData{}
+		var fernTestValueDataAsOf *string
+		obj.SetDataAsOf(fernTestValueDataAsOf)
+		assert.Equal(t, fernTestValueDataAsOf, obj.DataAsOf)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetPoints", func(t *testing.T) {
 		obj := &RetrieveStatsResponseData{}
 		var fernTestValuePoints []*RetrieveStatsResponseDataPointsItem
@@ -4483,6 +4491,39 @@ func TestGettersRetrieveStatsResponseData(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCurrency() // Should return zero value
+	})
+
+	t.Run("GetDataAsOf", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveStatsResponseData{}
+		var expected *string
+		obj.DataAsOf = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDataAsOf(), "getter should return the property value")
+	})
+
+	t.Run("GetDataAsOf_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveStatsResponseData{}
+		obj.DataAsOf = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDataAsOf(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDataAsOf_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveStatsResponseData
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDataAsOf() // Should return zero value
 	})
 
 	t.Run("GetPoints", func(t *testing.T) {
@@ -4593,6 +4634,37 @@ func TestSettersMarkExplicitRetrieveStatsResponseData(t *testing.T) {
 
 		// Act
 		obj.SetCurrency(fernTestValueCurrency)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDataAsOf_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveStatsResponseData{}
+		var fernTestValueDataAsOf *string
+
+		// Act
+		obj.SetDataAsOf(fernTestValueDataAsOf)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5938,6 +6010,7 @@ func TestOptionalNullableRoundTripRetrieveStatsResponseData(t *testing.T) {
 	optionalNullableKeys := []string{
 		"complete",
 		"currency",
+		"data_as_of",
 		"totals",
 	}
 	marshalToMap := func(t *testing.T, obj *RetrieveStatsResponseData) map[string]json.RawMessage {
@@ -5951,7 +6024,7 @@ func TestOptionalNullableRoundTripRetrieveStatsResponseData(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrieveStatsResponseData
-		require.NoError(t, json.Unmarshal([]byte(`{"complete":null,"currency":null,"totals":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"complete":null,"currency":null,"data_as_of":null,"totals":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
