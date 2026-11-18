@@ -13881,6 +13881,146 @@
       }
     },
     {
+      "id": "45040777-936c-4711-a083-f82a21a8a976",
+      "name": "List Recommended Actions - ready_actions",
+      "request": {
+        "urlPathTemplate": "/recommended_actions",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_3xV9cT7rQwLm\",\n      \"created_at\": \"2026-11-17T05:12:44.318Z\",\n      \"id\": \"reca_8kQ2mZtV4nLp\",\n      \"preview\": {\n        \"app_id\": \"app_xxxxxxxxxxxxxx\",\n        \"base_build_id\": \"apbu_xxxxxxxxxxxxxx\",\n        \"changed_resources\": [\n          {\n            \"id\": \"id\",\n            \"object\": \"variant\"\n          }\n        ],\n        \"draft_build_id\": \"apbu_xxxxxxxxxxxxxx\",\n        \"page_paths\": [\n          \"/\"\n        ],\n        \"traffic_percent\": 50,\n        \"type\": \"website_ab_test\"\n      },\n      \"reasoning\": \"Visitors who reach your pricing section buy at 4.1%, but 62% leave the home page before they scroll to it. Moving member results above the fold shows the payoff first.\",\n      \"run_by_user_id\": null,\n      \"run_ended_at\": null,\n      \"run_started_at\": null,\n      \"status\": \"ready\",\n      \"title\": \"Lead your home page with member results\",\n      \"type\": \"improve_landing_page\",\n      \"updated_at\": \"2026-11-17T05:14:02.907Z\",\n      \"workflow\": {\n        \"api_version\": \"2026-11-14\",\n        \"steps\": [\n          {\n            \"arguments\": {\n              \"account_id\": \"biz_3xV9cT7rQwLm\",\n              \"bucket_by\": \"anonymous\",\n              \"control\": {\n                \"related_resource\": {\n                  \"id\": \"apbu_Base7Kp2Vn\",\n                  \"object\": \"app_build\"\n                }\n              },\n              \"flag_key\": \"ei_reca_xxxxxxxxxxxxx\",\n              \"name\": \"Lead your home page with member results\",\n              \"related_resource\": {\n                \"id\": \"app_Wq81LmZr0aXk\",\n                \"object\": \"app\"\n              },\n              \"variants\": [\n                {\n                  \"name\": \"ei_change\",\n                  \"related_resource\": {\n                    \"id\": \"apbu_Draft9Qe4Ls\",\n                    \"object\": \"app_build\"\n                  },\n                  \"weight\": 50\n                }\n              ]\n            },\n            \"error\": null,\n            \"operation\": \"createExperiment\",\n            \"status\": \"pending\",\n            \"title\": \"Lead your home page with member results\"\n          },\n          {\n            \"arguments\": {\n              \"id\": \"{{steps[0].id}}\"\n            },\n            \"error\": null,\n            \"operation\": \"activateExperiment\",\n            \"status\": \"pending\",\n            \"title\": \"Start the A/B test\"\n          }\n        ]\n      }\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"MjAyNi0xMS0xN1QwNToxMjo0NA\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"MjAyNi0xMS0xN1QwNToxMjo0NA\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "45040777-936c-4711-a083-f82a21a8a976",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "5b001021-8af3-46a5-9e26-3f83c6d7c66e",
+      "name": "Retrieve Recommended Action - ready_action",
+      "request": {
+        "urlPathTemplate": "/recommended_actions/{id}",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "reca_xxxxxxxxxxxxx"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_3xV9cT7rQwLm\",\n  \"created_at\": \"2026-11-17T05:12:44.318Z\",\n  \"id\": \"reca_8kQ2mZtV4nLp\",\n  \"preview\": {\n    \"app_id\": \"app_xxxxxxxxxxxxxx\",\n    \"base_build_id\": \"apbu_xxxxxxxxxxxxxx\",\n    \"changed_resources\": [\n      {\n        \"id\": \"id\",\n        \"object\": \"variant\"\n      }\n    ],\n    \"draft_build_id\": \"apbu_xxxxxxxxxxxxxx\",\n    \"page_paths\": [\n      \"/\"\n    ],\n    \"traffic_percent\": 50,\n    \"type\": \"website_ab_test\"\n  },\n  \"reasoning\": \"Visitors who reach your pricing section buy at 4.1%, but 62% leave the home page before they scroll to it. Moving member results above the fold shows the payoff first.\",\n  \"run_by_user_id\": null,\n  \"run_ended_at\": null,\n  \"run_started_at\": null,\n  \"status\": \"ready\",\n  \"title\": \"Lead your home page with member results\",\n  \"type\": \"improve_landing_page\",\n  \"updated_at\": \"2026-11-17T05:14:02.907Z\",\n  \"workflow\": {\n    \"api_version\": \"2026-11-14\",\n    \"steps\": [\n      {\n        \"arguments\": {\n          \"account_id\": \"biz_3xV9cT7rQwLm\",\n          \"bucket_by\": \"anonymous\",\n          \"control\": {\n            \"related_resource\": {\n              \"id\": \"apbu_Base7Kp2Vn\",\n              \"object\": \"app_build\"\n            }\n          },\n          \"flag_key\": \"ei_reca_xxxxxxxxxxxxx\",\n          \"name\": \"Lead your home page with member results\",\n          \"related_resource\": {\n            \"id\": \"app_Wq81LmZr0aXk\",\n            \"object\": \"app\"\n          },\n          \"variants\": [\n            {\n              \"name\": \"ei_change\",\n              \"related_resource\": {\n                \"id\": \"apbu_Draft9Qe4Ls\",\n                \"object\": \"app_build\"\n              },\n              \"weight\": 50\n            }\n          ]\n        },\n        \"error\": null,\n        \"operation\": \"createExperiment\",\n        \"status\": \"pending\",\n        \"title\": \"Lead your home page with member results\"\n      },\n      {\n        \"arguments\": {\n          \"id\": \"{{steps[0].id}}\"\n        },\n        \"error\": null,\n        \"operation\": \"activateExperiment\",\n        \"status\": \"pending\",\n        \"title\": \"Start the A/B test\"\n      }\n    ]\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "5b001021-8af3-46a5-9e26-3f83c6d7c66e",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "2ae3b649-4a20-4939-a731-b47f1caedf6c",
+      "name": "Dismiss Recommended Action - dismissed_action",
+      "request": {
+        "urlPathTemplate": "/recommended_actions/{id}/dismiss",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "reca_xxxxxxxxxxxxx"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_3xV9cT7rQwLm\",\n  \"created_at\": \"2026-11-17T05:12:44.318Z\",\n  \"id\": \"reca_8kQ2mZtV4nLp\",\n  \"preview\": {\n    \"app_id\": \"app_xxxxxxxxxxxxxx\",\n    \"base_build_id\": \"apbu_xxxxxxxxxxxxxx\",\n    \"changed_resources\": [\n      {\n        \"id\": \"id\",\n        \"object\": \"variant\"\n      }\n    ],\n    \"draft_build_id\": \"apbu_xxxxxxxxxxxxxx\",\n    \"page_paths\": [\n      \"/\"\n    ],\n    \"traffic_percent\": 50,\n    \"type\": \"website_ab_test\"\n  },\n  \"reasoning\": \"Visitors who reach your pricing section buy at 4.1%, but 62% leave the home page before they scroll to it. Moving member results above the fold shows the payoff first.\",\n  \"run_by_user_id\": null,\n  \"run_ended_at\": null,\n  \"run_started_at\": null,\n  \"status\": \"dismissed\",\n  \"title\": \"Lead your home page with member results\",\n  \"type\": \"improve_landing_page\",\n  \"updated_at\": \"2026-11-17T15:40:27.006Z\",\n  \"workflow\": {\n    \"api_version\": \"2026-11-14\",\n    \"steps\": [\n      {\n        \"arguments\": {\n          \"account_id\": \"biz_3xV9cT7rQwLm\",\n          \"bucket_by\": \"anonymous\",\n          \"control\": {\n            \"related_resource\": {\n              \"id\": \"apbu_Base7Kp2Vn\",\n              \"object\": \"app_build\"\n            }\n          },\n          \"flag_key\": \"ei_reca_xxxxxxxxxxxxx\",\n          \"name\": \"Lead your home page with member results\",\n          \"related_resource\": {\n            \"id\": \"app_Wq81LmZr0aXk\",\n            \"object\": \"app\"\n          },\n          \"variants\": [\n            {\n              \"name\": \"ei_change\",\n              \"related_resource\": {\n                \"id\": \"apbu_Draft9Qe4Ls\",\n                \"object\": \"app_build\"\n              },\n              \"weight\": 50\n            }\n          ]\n        },\n        \"error\": null,\n        \"operation\": \"createExperiment\",\n        \"status\": \"pending\",\n        \"title\": \"Lead your home page with member results\"\n      },\n      {\n        \"arguments\": {\n          \"id\": \"{{steps[0].id}}\"\n        },\n        \"error\": null,\n        \"operation\": \"activateExperiment\",\n        \"status\": \"pending\",\n        \"title\": \"Start the A/B test\"\n      }\n    ]\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "2ae3b649-4a20-4939-a731-b47f1caedf6c",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "17530a2b-a933-403b-bee9-2f9293cb1496",
+      "name": "Execute Recommended Action - running_action",
+      "request": {
+        "urlPathTemplate": "/recommended_actions/{id}/execute",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "reca_xxxxxxxxxxxxx"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_3xV9cT7rQwLm\",\n  \"created_at\": \"2026-11-17T05:12:44.318Z\",\n  \"id\": \"reca_8kQ2mZtV4nLp\",\n  \"preview\": {\n    \"app_id\": \"app_xxxxxxxxxxxxxx\",\n    \"base_build_id\": \"apbu_xxxxxxxxxxxxxx\",\n    \"changed_resources\": [\n      {\n        \"id\": \"id\",\n        \"object\": \"variant\"\n      }\n    ],\n    \"draft_build_id\": \"apbu_xxxxxxxxxxxxxx\",\n    \"page_paths\": [\n      \"/\"\n    ],\n    \"traffic_percent\": 50,\n    \"type\": \"website_ab_test\"\n  },\n  \"reasoning\": \"Visitors who reach your pricing section buy at 4.1%, but 62% leave the home page before they scroll to it. Moving member results above the fold shows the payoff first.\",\n  \"run_by_user_id\": \"user_Hn4kP0sQ2wEr\",\n  \"run_ended_at\": null,\n  \"run_started_at\": \"2026-11-17T15:02:11.540Z\",\n  \"status\": \"running\",\n  \"title\": \"Lead your home page with member results\",\n  \"type\": \"improve_landing_page\",\n  \"updated_at\": \"2026-11-17T15:02:11.540Z\",\n  \"workflow\": {\n    \"api_version\": \"2026-11-14\",\n    \"steps\": [\n      {\n        \"arguments\": {\n          \"account_id\": \"biz_3xV9cT7rQwLm\",\n          \"bucket_by\": \"anonymous\",\n          \"control\": {\n            \"related_resource\": {\n              \"id\": \"apbu_Base7Kp2Vn\",\n              \"object\": \"app_build\"\n            }\n          },\n          \"flag_key\": \"ei_reca_xxxxxxxxxxxxx\",\n          \"name\": \"Lead your home page with member results\",\n          \"related_resource\": {\n            \"id\": \"app_Wq81LmZr0aXk\",\n            \"object\": \"app\"\n          },\n          \"variants\": [\n            {\n              \"name\": \"ei_change\",\n              \"related_resource\": {\n                \"id\": \"apbu_Draft9Qe4Ls\",\n                \"object\": \"app_build\"\n              },\n              \"weight\": 50\n            }\n          ]\n        },\n        \"error\": null,\n        \"operation\": \"createExperiment\",\n        \"status\": \"running\",\n        \"title\": \"Lead your home page with member results\"\n      },\n      {\n        \"arguments\": {\n          \"id\": \"{{steps[0].id}}\"\n        },\n        \"error\": null,\n        \"operation\": \"activateExperiment\",\n        \"status\": \"pending\",\n        \"title\": \"Start the A/B test\"\n      }\n    ]\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "17530a2b-a933-403b-bee9-2f9293cb1496",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "fc35e70a-a5c2-4191-a1bc-7fb9f42ddae5",
       "name": "List Refunds - default",
       "request": {
@@ -18865,6 +19005,6 @@
     }
   ],
   "meta": {
-    "total": 527
+    "total": 531
   }
 }

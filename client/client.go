@@ -86,6 +86,7 @@ import (
 	products "github.com/whopio/whopsdk-go/v2/products"
 	promocodes "github.com/whopio/whopsdk-go/v2/promocodes"
 	reactions "github.com/whopio/whopsdk-go/v2/reactions"
+	recommendedactions "github.com/whopio/whopsdk-go/v2/recommendedactions"
 	refunds "github.com/whopio/whopsdk-go/v2/refunds"
 	resolutioncentercases "github.com/whopio/whopsdk-go/v2/resolutioncentercases"
 	reviewreports "github.com/whopio/whopsdk-go/v2/reviewreports"
@@ -187,6 +188,7 @@ type Whop struct {
 	Products                 *products.Client
 	PromoCodes               *promocodes.Client
 	Reactions                *reactions.Client
+	RecommendedActions       *recommendedactions.Client
 	Refunds                  *refunds.Client
 	ResolutionCenterCases    *resolutioncentercases.Client
 	ReviewReports            *reviewreports.Client
@@ -298,6 +300,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Products:                 products.NewClient(options),
 		PromoCodes:               promocodes.NewClient(options),
 		Reactions:                reactions.NewClient(options),
+		RecommendedActions:       recommendedactions.NewClient(options),
 		Refunds:                  refunds.NewClient(options),
 		ResolutionCenterCases:    resolutioncentercases.NewClient(options),
 		ReviewReports:            reviewreports.NewClient(options),
