@@ -97,12 +97,13 @@ func (d *DeleteChannelMembersRequest) SetID(id string) {
 }
 
 var (
-	listChannelMembersRequestFieldFirst     = big.NewInt(1 << 0)
-	listChannelMembersRequestFieldAfter     = big.NewInt(1 << 1)
-	listChannelMembersRequestFieldLast      = big.NewInt(1 << 2)
-	listChannelMembersRequestFieldBefore    = big.NewInt(1 << 3)
-	listChannelMembersRequestFieldChannelID = big.NewInt(1 << 4)
-	listChannelMembersRequestFieldQuery     = big.NewInt(1 << 5)
+	listChannelMembersRequestFieldFirst          = big.NewInt(1 << 0)
+	listChannelMembersRequestFieldAfter          = big.NewInt(1 << 1)
+	listChannelMembersRequestFieldLast           = big.NewInt(1 << 2)
+	listChannelMembersRequestFieldBefore         = big.NewInt(1 << 3)
+	listChannelMembersRequestFieldChannelID      = big.NewInt(1 << 4)
+	listChannelMembersRequestFieldQuery          = big.NewInt(1 << 5)
+	listChannelMembersRequestFieldIncludeDeleted = big.NewInt(1 << 6)
 )
 
 type ListChannelMembersRequest struct {
@@ -118,6 +119,8 @@ type ListChannelMembersRequest struct {
 	ChannelID string `json:"-" url:"channel_id"`
 	// Search by name or username.
 	Query *string `json:"-" url:"query,omitempty"`
+	// Include former members with a deleted_at timestamp. Defaults to current members only.
+	IncludeDeleted *bool `json:"-" url:"include_deleted,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -172,6 +175,13 @@ func (l *ListChannelMembersRequest) SetChannelID(channelID string) {
 func (l *ListChannelMembersRequest) SetQuery(query *string) {
 	l.Query = query
 	l.require(listChannelMembersRequestFieldQuery)
+}
+
+// SetIncludeDeleted sets the IncludeDeleted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListChannelMembersRequest) SetIncludeDeleted(includeDeleted *bool) {
+	l.IncludeDeleted = includeDeleted
+	l.require(listChannelMembersRequestFieldIncludeDeleted)
 }
 
 var (

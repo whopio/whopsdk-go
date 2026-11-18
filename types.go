@@ -9355,20 +9355,22 @@ func (c *CardTransactionListItem) String() string {
 var (
 	channelMemberFieldChannelID              = big.NewInt(1 << 0)
 	channelMemberFieldCreatedAt              = big.NewInt(1 << 1)
-	channelMemberFieldID                     = big.NewInt(1 << 2)
-	channelMemberFieldInboxStatus            = big.NewInt(1 << 3)
-	channelMemberFieldLastViewedAt           = big.NewInt(1 << 4)
-	channelMemberFieldNotificationPreference = big.NewInt(1 << 5)
-	channelMemberFieldPinnedPosition         = big.NewInt(1 << 6)
-	channelMemberFieldUnread                 = big.NewInt(1 << 7)
-	channelMemberFieldUpdatedAt              = big.NewInt(1 << 8)
-	channelMemberFieldUser                   = big.NewInt(1 << 9)
-	channelMemberFieldUserID                 = big.NewInt(1 << 10)
+	channelMemberFieldDeletedAt              = big.NewInt(1 << 2)
+	channelMemberFieldID                     = big.NewInt(1 << 3)
+	channelMemberFieldInboxStatus            = big.NewInt(1 << 4)
+	channelMemberFieldLastViewedAt           = big.NewInt(1 << 5)
+	channelMemberFieldNotificationPreference = big.NewInt(1 << 6)
+	channelMemberFieldPinnedPosition         = big.NewInt(1 << 7)
+	channelMemberFieldUnread                 = big.NewInt(1 << 8)
+	channelMemberFieldUpdatedAt              = big.NewInt(1 << 9)
+	channelMemberFieldUser                   = big.NewInt(1 << 10)
+	channelMemberFieldUserID                 = big.NewInt(1 << 11)
 )
 
 // channelMemberNullableFields maps the wire names of ChannelMember's nullable fields (required or optional) to their field bits.
 var channelMemberNullableFields = map[string]*big.Int{
 	"created_at":              channelMemberFieldCreatedAt,
+	"deleted_at":              channelMemberFieldDeletedAt,
 	"id":                      channelMemberFieldID,
 	"inbox_status":            channelMemberFieldInboxStatus,
 	"last_viewed_at":          channelMemberFieldLastViewedAt,
@@ -9382,6 +9384,8 @@ type ChannelMember struct {
 	ChannelID string `json:"channel_id" url:"channel_id"`
 	// When the stored channel membership was created, as an ISO 8601 timestamp. Null for users whose access does not have a stored membership.
 	CreatedAt *string `json:"created_at,omitempty" url:"created_at,omitempty"`
+	// When the membership was removed, as an ISO 8601 timestamp. Null for current members and access-derived users.
+	DeletedAt *string `json:"deleted_at,omitempty" url:"deleted_at,omitempty"`
 	// Stored membership ID, or null for access-derived users.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
 	// Your inbox state for a private channel. `null` for other users and other channel kinds.
@@ -9417,6 +9421,13 @@ func (c *ChannelMember) GetCreatedAt() *string {
 		return nil
 	}
 	return c.CreatedAt
+}
+
+func (c *ChannelMember) GetDeletedAt() *string {
+	if c == nil {
+		return nil
+	}
+	return c.DeletedAt
 }
 
 func (c *ChannelMember) GetID() *string {
@@ -9510,6 +9521,13 @@ func (c *ChannelMember) SetChannelID(channelID string) {
 func (c *ChannelMember) SetCreatedAt(createdAt *string) {
 	c.CreatedAt = createdAt
 	c.require(channelMemberFieldCreatedAt)
+}
+
+// SetDeletedAt sets the DeletedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ChannelMember) SetDeletedAt(deletedAt *string) {
+	c.DeletedAt = deletedAt
+	c.require(channelMemberFieldDeletedAt)
 }
 
 // SetID sets the ID field and marks it as non-optional;

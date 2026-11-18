@@ -633,7 +633,7 @@ func TestSettersListChannelsRequest(t *testing.T) {
 
 	t.Run("SetIncludeMembers", func(t *testing.T) {
 		obj := &ListChannelsRequest{}
-		var fernTestValueIncludeMembers *bool
+		var fernTestValueIncludeMembers *ListChannelsRequestIncludeMembers
 		obj.SetIncludeMembers(fernTestValueIncludeMembers)
 		assert.Equal(t, fernTestValueIncludeMembers, obj.IncludeMembers)
 		assert.NotNil(t, obj.explicitFields)
@@ -1190,7 +1190,7 @@ func TestSettersMarkExplicitListChannelsRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListChannelsRequest{}
-		var fernTestValueIncludeMembers *bool
+		var fernTestValueIncludeMembers *ListChannelsRequestIncludeMembers
 
 		// Act
 		obj.SetIncludeMembers(fernTestValueIncludeMembers)
@@ -7229,6 +7229,35 @@ func TestEnumListChannelsRequestDirection(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewListChannelsRequestDirectionFromString("asc")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListChannelsRequestIncludeMembers(t *testing.T) {
+	t.Run("NewFromString_current", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListChannelsRequestIncludeMembersFromString("current")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListChannelsRequestIncludeMembers("current"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_current_and_deleted", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListChannelsRequestIncludeMembersFromString("current_and_deleted")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListChannelsRequestIncludeMembers("current_and_deleted"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListChannelsRequestIncludeMembersFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListChannelsRequestIncludeMembersFromString("current")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

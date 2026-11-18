@@ -324,8 +324,8 @@ type ListChannelsRequest struct {
 	Requested *bool `json:"-" url:"requested,omitempty"`
 	// The field to sort by. Defaults to `last_viewed_at` for community channels and `last_message_at` for private and support channels. Ties sort in a stable order. Cannot be supplied with updated_after.
 	Order *ListChannelsRequestOrder `json:"-" url:"order,omitempty"`
-	// Include the current members of private and support channels, including you, with their public profiles.
-	IncludeMembers *bool `json:"-" url:"include_members,omitempty"`
+	// Members to include for private and support channels, with their public profiles. `current` includes current members. `current_and_deleted` also includes former members, marked with `deleted_at`. Omit or pass `null` to leave out members.
+	IncludeMembers *ListChannelsRequestIncludeMembers `json:"-" url:"include_members,omitempty"`
 	// Include the most recent message you can see, with its author.
 	IncludeLastMessage *bool `json:"-" url:"include_last_message,omitempty"`
 	// The sort direction. Defaults to `desc`. Cannot be supplied with updated_after.
@@ -466,7 +466,7 @@ func (l *ListChannelsRequest) SetOrder(order *ListChannelsRequestOrder) {
 
 // SetIncludeMembers sets the IncludeMembers field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListChannelsRequest) SetIncludeMembers(includeMembers *bool) {
+func (l *ListChannelsRequest) SetIncludeMembers(includeMembers *ListChannelsRequestIncludeMembers) {
 	l.IncludeMembers = includeMembers
 	l.require(listChannelsRequestFieldIncludeMembers)
 }
@@ -2172,6 +2172,28 @@ func NewListChannelsRequestDirectionFromString(s string) (ListChannelsRequestDir
 }
 
 func (l ListChannelsRequestDirection) Ptr() *ListChannelsRequestDirection {
+	return &l
+}
+
+type ListChannelsRequestIncludeMembers string
+
+const (
+	ListChannelsRequestIncludeMembersCurrent           ListChannelsRequestIncludeMembers = "current"
+	ListChannelsRequestIncludeMembersCurrentAndDeleted ListChannelsRequestIncludeMembers = "current_and_deleted"
+)
+
+func NewListChannelsRequestIncludeMembersFromString(s string) (ListChannelsRequestIncludeMembers, error) {
+	switch s {
+	case "current":
+		return ListChannelsRequestIncludeMembersCurrent, nil
+	case "current_and_deleted":
+		return ListChannelsRequestIncludeMembersCurrentAndDeleted, nil
+	}
+	var t ListChannelsRequestIncludeMembers
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListChannelsRequestIncludeMembers) Ptr() *ListChannelsRequestIncludeMembers {
 	return &l
 }
 
