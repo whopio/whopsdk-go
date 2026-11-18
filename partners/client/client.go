@@ -4,7 +4,6 @@ package client
 
 import (
 	context "context"
-	http "net/http"
 
 	whopsdk "github.com/whopio/whopsdk-go/v2"
 	core "github.com/whopio/whopsdk-go/v2/core"
@@ -107,86 +106,6 @@ func (c *Client) Leaderboard(
 		return nil, err
 	}
 	return response.Body, nil
-}
-
-// Lists the users the caller referred onto Whop, newest first by default, each with the caller's total affiliate earnings from that user across all tiers. Deprecated: this list is retired and no longer appears in the API reference. It stops responding after 2026-11-17 and has no replacement.
-//
-// Example:
-//
-//	request := &whopsdk.ReferredUsersPartnersRequest{}
-//	client.Partners.ReferredUsers(
-//	    context.TODO(),
-//	    request,
-//	)
-func (c *Client) ReferredUsers(
-	ctx context.Context,
-	request *whopsdk.ReferredUsersPartnersRequest,
-	opts ...option.RequestOption,
-) (*core.Page[*string, *whopsdk.ReferredUsersPartnersResponseDataItem, *whopsdk.ReferredUsersPartnersResponse], error) {
-	options := core.NewRequestOptions(opts...)
-	baseURL := internal.ResolveBaseURL(
-		options.BaseURL,
-		internal.ResolveEnvironmentBaseURL(
-			options.Environment,
-			"API",
-		),
-		c.baseURL,
-		internal.ResolveEnvironmentBaseURL(
-			c.options.Environment,
-			"API",
-		),
-		"https://api.whop.com/api/v1",
-	)
-	endpointURL := baseURL + "/partners/referred_users"
-	queryParams, err := internal.QueryValues(request)
-	if err != nil {
-		return nil, err
-	}
-	headers := internal.MergeHeaders(
-		c.options.ToHeader(),
-		options.ToHeader(),
-	)
-	prepareCall := func(pageRequest *core.PageRequest[*string]) *internal.CallParams {
-		if pageRequest.Cursor != nil {
-			queryParams.Set("after", *pageRequest.Cursor)
-		}
-		nextURL := endpointURL
-		if len(queryParams) > 0 {
-			nextURL += "?" + queryParams.Encode()
-		}
-		return &internal.CallParams{
-			URL:             nextURL,
-			Method:          http.MethodGet,
-			Headers:         headers,
-			MaxAttempts:     options.MaxAttempts,
-			DisableRetries:  options.DisableRetries,
-			BodyProperties:  options.BodyProperties,
-			QueryParameters: options.QueryParameters,
-			Client:          options.HTTPClient,
-			Response:        pageRequest.Response,
-			ErrorDecoder:    internal.NewErrorDecoder(whopsdk.ErrorCodes),
-		}
-	}
-	readPageResponse := func(response *whopsdk.ReferredUsersPartnersResponse) *core.PageResponse[*string, *whopsdk.ReferredUsersPartnersResponseDataItem, *whopsdk.ReferredUsersPartnersResponse] {
-		var zeroValue *string
-		var next *string
-		if response.PageInfo != nil {
-			next = response.PageInfo.EndCursor
-		}
-		results := response.GetData()
-		return &core.PageResponse[*string, *whopsdk.ReferredUsersPartnersResponseDataItem, *whopsdk.ReferredUsersPartnersResponse]{
-			Results:  results,
-			Response: response,
-			Next:     next,
-			Done:     next == zeroValue || *next == "",
-		}
-	}
-	pager := internal.NewCursorPager(
-		c.caller,
-		prepareCall,
-		readPageResponse,
-	)
-	return pager.GetPage(ctx, request.After)
 }
 
 // Retrieves the authenticated user's partner profile: enrollment and verification status, certification completion, active direct business referral count, and default payout rates. Other users' profiles are not accessible. To create and manage referral links, use `/partner_referral_requests`.
