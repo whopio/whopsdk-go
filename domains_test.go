@@ -14893,6 +14893,13 @@ func TestEnumCreateDomainsRequestTransferDestination(t *testing.T) {
 		assert.Equal(t, CreateDomainsRequestTransferDestination("internal"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_external", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateDomainsRequestTransferDestinationFromString("external")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateDomainsRequestTransferDestination("external"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewCreateDomainsRequestTransferDestinationFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -15281,6 +15288,20 @@ func TestEnumDomainIssueCode(t *testing.T) {
 		val, err := NewDomainIssueCodeFromString("domain_transfer_failed")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, DomainIssueCode("domain_transfer_failed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_transfer_out_locked", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainIssueCodeFromString("transfer_out_locked")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainIssueCode("transfer_out_locked"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_registrar_unavailable", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainIssueCodeFromString("registrar_unavailable")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainIssueCode("registrar_unavailable"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_apple_pay_unverified", func(t *testing.T) {
@@ -15761,6 +15782,13 @@ func TestEnumDomainTransferDestination(t *testing.T) {
 		assert.Equal(t, DomainTransferDestination("internal"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_external", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainTransferDestinationFromString("external")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainTransferDestination("external"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewDomainTransferDestinationFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -15788,6 +15816,13 @@ func TestEnumDomainTransferState(t *testing.T) {
 		val, err := NewDomainTransferStateFromString("pending")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, DomainTransferState("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_releasing", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewDomainTransferStateFromString("releasing")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, DomainTransferState("releasing"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -16600,6 +16635,13 @@ func TestEnumUpdateDomainsRequestTransferDestination(t *testing.T) {
 		val, err := NewUpdateDomainsRequestTransferDestinationFromString("internal")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, UpdateDomainsRequestTransferDestination("internal"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_external", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateDomainsRequestTransferDestinationFromString("external")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateDomainsRequestTransferDestination("external"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
