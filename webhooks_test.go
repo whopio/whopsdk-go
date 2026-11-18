@@ -7491,6 +7491,13 @@ func TestEnumCreateWebhooksRequestEventsItem(t *testing.T) {
 		assert.Equal(t, CreateWebhooksRequestEventsItem("ad_campaign.deleted"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_ad_campaign_claim_ended", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateWebhooksRequestEventsItemFromString("ad_campaign.claim_ended")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateWebhooksRequestEventsItem("ad_campaign.claim_ended"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_ad_group_created", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCreateWebhooksRequestEventsItemFromString("ad_group.created")
@@ -8246,6 +8253,13 @@ func TestEnumListDeliveriesWebhooksRequestEventsItem(t *testing.T) {
 		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("ad_campaign.deleted")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("ad_campaign.deleted"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_campaign_claim_ended", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListDeliveriesWebhooksRequestEventsItemFromString("ad_campaign.claim_ended")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListDeliveriesWebhooksRequestEventsItem("ad_campaign.claim_ended"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_ad_group_created", func(t *testing.T) {
@@ -9125,6 +9139,13 @@ func TestEnumUpdateWebhooksRequestEventsItem(t *testing.T) {
 		assert.Equal(t, UpdateWebhooksRequestEventsItem("ad_campaign.deleted"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_ad_campaign_claim_ended", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateWebhooksRequestEventsItemFromString("ad_campaign.claim_ended")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateWebhooksRequestEventsItem("ad_campaign.claim_ended"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_ad_group_created", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewUpdateWebhooksRequestEventsItemFromString("ad_group.created")
@@ -9967,6 +9988,13 @@ func TestEnumWebhookEventsItem(t *testing.T) {
 		val, err := NewWebhookEventsItemFromString("ad_campaign.deleted")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, WebhookEventsItem("ad_campaign.deleted"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_campaign_claim_ended", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookEventsItemFromString("ad_campaign.claim_ended")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookEventsItem("ad_campaign.claim_ended"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_ad_group_created", func(t *testing.T) {
@@ -10896,6 +10924,13 @@ func TestEnumWebhookListItemEventsItem(t *testing.T) {
 		assert.Equal(t, WebhookListItemEventsItem("ad_campaign.deleted"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_ad_campaign_claim_ended", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookListItemEventsItemFromString("ad_campaign.claim_ended")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookListItemEventsItem("ad_campaign.claim_ended"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_ad_group_created", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewWebhookListItemEventsItemFromString("ad_group.created")
@@ -11763,6 +11798,13 @@ func TestEnumWebhookTestableEventsItem(t *testing.T) {
 		val, err := NewWebhookTestableEventsItemFromString("ad_campaign.deleted")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, WebhookTestableEventsItem("ad_campaign.deleted"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_campaign_claim_ended", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewWebhookTestableEventsItemFromString("ad_campaign.claim_ended")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, WebhookTestableEventsItem("ad_campaign.claim_ended"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_ad_group_created", func(t *testing.T) {
