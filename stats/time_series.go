@@ -1314,15 +1314,17 @@ func (r *RetrieveTimeSeriesResponse) String() string {
 var (
 	retrieveTimeSeriesResponseDataFieldComplete = big.NewInt(1 << 0)
 	retrieveTimeSeriesResponseDataFieldCurrency = big.NewInt(1 << 1)
-	retrieveTimeSeriesResponseDataFieldPoints   = big.NewInt(1 << 2)
-	retrieveTimeSeriesResponseDataFieldTotals   = big.NewInt(1 << 3)
+	retrieveTimeSeriesResponseDataFieldDataAsOf = big.NewInt(1 << 2)
+	retrieveTimeSeriesResponseDataFieldPoints   = big.NewInt(1 << 3)
+	retrieveTimeSeriesResponseDataFieldTotals   = big.NewInt(1 << 4)
 )
 
 // retrieveTimeSeriesResponseDataNullableFields maps the wire names of RetrieveTimeSeriesResponseData's nullable fields (required or optional) to their field bits.
 var retrieveTimeSeriesResponseDataNullableFields = map[string]*big.Int{
-	"complete": retrieveTimeSeriesResponseDataFieldComplete,
-	"currency": retrieveTimeSeriesResponseDataFieldCurrency,
-	"totals":   retrieveTimeSeriesResponseDataFieldTotals,
+	"complete":   retrieveTimeSeriesResponseDataFieldComplete,
+	"currency":   retrieveTimeSeriesResponseDataFieldCurrency,
+	"data_as_of": retrieveTimeSeriesResponseDataFieldDataAsOf,
+	"totals":     retrieveTimeSeriesResponseDataFieldTotals,
 }
 
 type RetrieveTimeSeriesResponseData struct {
@@ -1330,6 +1332,8 @@ type RetrieveTimeSeriesResponseData struct {
 	Complete *bool `json:"complete,omitempty" url:"complete,omitempty"`
 	// ISO currency the values are denominated in. Present for currency-unit metrics: the convert_to currency, or usd.
 	Currency *string `json:"currency,omitempty" url:"currency,omitempty"`
+	// Present for metrics computed on a schedule. When the values were computed, as an ISO 8601 timestamp.
+	DataAsOf *string `json:"data_as_of,omitempty" url:"data_as_of,omitempty"`
 	// One entry per period, oldest first.
 	Points []*RetrieveTimeSeriesResponseDataPointsItem `json:"points" url:"points"`
 	// Whole-window aggregates, present when the metric computes them. Don't derive these from `points`: a rate is measured across the whole window, not averaged across its points, and whole-window unique people are distinct across every bucket.
@@ -1354,6 +1358,13 @@ func (r *RetrieveTimeSeriesResponseData) GetCurrency() *string {
 		return nil
 	}
 	return r.Currency
+}
+
+func (r *RetrieveTimeSeriesResponseData) GetDataAsOf() *string {
+	if r == nil {
+		return nil
+	}
+	return r.DataAsOf
 }
 
 func (r *RetrieveTimeSeriesResponseData) GetPoints() []*RetrieveTimeSeriesResponseDataPointsItem {
@@ -1398,6 +1409,13 @@ func (r *RetrieveTimeSeriesResponseData) SetComplete(complete *bool) {
 func (r *RetrieveTimeSeriesResponseData) SetCurrency(currency *string) {
 	r.Currency = currency
 	r.require(retrieveTimeSeriesResponseDataFieldCurrency)
+}
+
+// SetDataAsOf sets the DataAsOf field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesResponseData) SetDataAsOf(dataAsOf *string) {
+	r.DataAsOf = dataAsOf
+	r.require(retrieveTimeSeriesResponseDataFieldDataAsOf)
 }
 
 // SetPoints sets the Points field and marks it as non-optional;
