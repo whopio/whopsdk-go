@@ -23,7 +23,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-17-2"
+		apiVersionDateDefault := "2026-11-17-3"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{

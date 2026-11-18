@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-17-2"
+		apiVersionDateDefault := "2026-11-17-3"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -200,7 +200,7 @@ func (c *Client) Delete(
 	return response.Body, nil
 }
 
-// Deprecated compatibility endpoint. Refresh external accounts with `POST /external_accounts/{id}/refresh` instead.
+// Deprecated compatibility endpoint. Returns the social account unchanged.
 //
 // Example:
 //

@@ -814,14 +814,6 @@ func TestSettersMarkExplicitRefreshExternalAccountsRequest(t *testing.T) {
 }
 
 func TestSettersExternalAccount(t *testing.T) {
-	t.Run("SetError", func(t *testing.T) {
-		obj := &ExternalAccount{}
-		var fernTestValueError *string
-		obj.SetError(fernTestValueError)
-		assert.Equal(t, fernTestValueError, obj.Error)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetExternalID", func(t *testing.T) {
 		obj := &ExternalAccount{}
 		var fernTestValueExternalID *string
@@ -913,39 +905,6 @@ func TestSettersExternalAccount(t *testing.T) {
 }
 
 func TestGettersExternalAccount(t *testing.T) {
-	t.Run("GetError", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ExternalAccount{}
-		var expected *string
-		obj.Error = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetError(), "getter should return the property value")
-	})
-
-	t.Run("GetError_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ExternalAccount{}
-		obj.Error = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetError(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetError_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *ExternalAccount
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetError() // Should return zero value
-	})
-
 	t.Run("GetExternalID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1282,37 +1241,6 @@ func TestGettersExternalAccount(t *testing.T) {
 }
 
 func TestSettersMarkExplicitExternalAccount(t *testing.T) {
-	t.Run("SetError_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ExternalAccount{}
-		var fernTestValueError *string
-
-		// Act
-		obj.SetError(fernTestValueError)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
 	t.Run("SetExternalID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3711,7 +3639,6 @@ func TestJSONMarshalingListExternalAccountsResponsePageInfo(t *testing.T) {
 
 func TestRequiredNullableRoundTripExternalAccount(t *testing.T) {
 	requiredNullableKeys := []string{
-		"error",
 		"external_id",
 		"name",
 		"parent_external_account",
@@ -3731,7 +3658,7 @@ func TestRequiredNullableRoundTripExternalAccount(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ExternalAccount
-		require.NoError(t, json.Unmarshal([]byte(`{"error":null,"external_id":null,"name":null,"parent_external_account":null,"partnership_status":null,"profile_picture_url":null,"url":null,"username":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"external_id":null,"name":null,"parent_external_account":null,"partnership_status":null,"profile_picture_url":null,"url":null,"username":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
