@@ -30647,7 +30647,7 @@ client.PaymentRules.List(
 <dl>
 <dd>
 
-Creates a payment rule. It is created `active` and applies its `action` to new payments that match all of its `conditions`.
+Creates a payment rule. It is created `active` and applies its `action` to new payments that match all of its `conditions`. A rule on a bank check field applies after the bank authorizes the card.
 </dd>
 </dl>
 </dd>
@@ -30703,7 +30703,7 @@ client.PaymentRules.Create(
 <dl>
 <dd>
 
-**action:** `whopsdk.CreatePaymentRulesRequestAction` — What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization. Capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply. A rule on `postal_code_check`, `address_line1_check`, or `cvv_check` accepts `block` or `review`. Whop authorizes a freshly entered card first. When the rule matches the bank's result, `block` voids and declines the payment. A `review` holds it for you to capture or void, with the same automatic capture.
+**action:** `whopsdk.CreatePaymentRulesRequestAction` — What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible card payment through Whop Payments. Off-session renewals require `off_session_payment_rules` to be enabled. Automatic capture is scheduled for 48 hours after authorization. Capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, numbered invoice payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply. A rule on `avs_check` or `cvv_check` accepts `block` or `review`. Whop authorizes a freshly entered card first. When the rule matches the bank's result, `block` voids and declines the payment. A `review` holds it for you to capture or void, with the same automatic capture.
     
 </dd>
 </dl>
@@ -30766,10 +30766,27 @@ Lists the payment attributes a rule condition can read, with the operators and v
 <dd>
 
 ```go
+request := &whopsdk.ListFieldsPaymentRulesRequest{}
 client.PaymentRules.ListFields(
     context.TODO(),
+    request,
 )
 ```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**accountID:** `*string` — The account to list fields for. Defaults to the account the request is acting for.
+    
 </dd>
 </dl>
 </dd>
@@ -31164,7 +31181,7 @@ client.PaymentRules.Replace(
 <dl>
 <dd>
 
-**action:** `whopsdk.ReplacePaymentRulesRequestAction` — What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible on-session card payment through Whop Payments. Automatic capture is scheduled for 48 hours after authorization. Capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, off-session payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply. A rule on `postal_code_check`, `address_line1_check`, or `cvv_check` accepts `block` or `review`. Whop authorizes a freshly entered card first. When the rule matches the bank's result, `block` voids and declines the payment. A `review` holds it for you to capture or void, with the same automatic capture.
+**action:** `whopsdk.ReplacePaymentRulesRequestAction` — What this account's rule requests when every condition matches. One applicable account-rule action wins, in this order: `allow`, `block`, `review`, `enforce_3ds`. An `allow` overrides this account's other rules, never Whop's own fraud controls. A `review` requests authorization without capture for an eligible card payment through Whop Payments. Off-session renewals require `off_session_payment_rules` to be enabled. Automatic capture is scheduled for 48 hours after authorization. Capture or void the payment before then to decide sooner. Capture may complete later or fail. Review is skipped for unsupported methods, numbered invoice payments, and payments already configured for manual capture. An `enforce_3ds` is skipped when the account rule cannot apply a challenge. Other 3DS requirements still apply. A rule on `avs_check` or `cvv_check` accepts `block` or `review`. Whop authorizes a freshly entered card first. When the rule matches the bank's result, `block` voids and declines the payment. A `review` holds it for you to capture or void, with the same automatic capture.
     
 </dd>
 </dl>
@@ -46432,6 +46449,7 @@ The required scope depends on which preferences you update.
 
 - `ad_campaign:create`: `ads_payment_methods`, `ads_reporting_currency`, `ads_scheduling_timezone`, `ads_triple_whale_integration`.
 - `payout:account:update`: `cards_auto_top_up`, `cards_notifications`, `covers_subaccount_negative_balances`, `merchant_of_record`.
+- `payment:manage`: `off_session_payment_rules`.
 - `payment:dispute`: `dispute_fighter_enabled`.
 - `company:update`: `economic_intelligence_duration_key`, `economic_intelligence_auto_renew`, `review_request_emails`, `cancellation_emails`, `renewal_reminder_emails`, `failed_payment_emails`, `subaccount_notifications`, `subaccount_team_view_only`.
 - `company:manage_checkout`: `feedback_options`, `customer_tracking`.
@@ -46593,6 +46611,14 @@ client.Accounts.Preferences.Update(
 <dd>
 
 **merchantOfRecord:** `*accounts.UpdatePreferencesRequestMerchantOfRecord` — Set it to `account` to make the account the merchant of record. Only some business categories can switch. The business must be verified. The switch cannot be undone. The response shows `pending` until approval. Checkout takes no payments until then. After the switch, the account accepts only card, Apple Pay, Google Pay and crypto payments. PayPal, buy now pay later and local payment methods stop. Requires the `payout:account:update` scope on your API key.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**offSessionPaymentRules:** `*bool` — Whether this account's active payment rules apply to future off-session charges, including renewals. Off by default. Requires the payment:manage scope on your API key.
     
 </dd>
 </dl>

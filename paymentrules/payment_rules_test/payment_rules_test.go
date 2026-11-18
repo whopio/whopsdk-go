@@ -150,8 +150,10 @@ func TestPaymentRulesListFieldsWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
+	request := &whopsdk.ListFieldsPaymentRulesRequest{}
 	_, invocationErr := client.PaymentRules.ListFields(
 		context.TODO(),
+		request,
 		option.WithHTTPHeader(
 			http.Header{"X-Test-Id": []string{"TestPaymentRulesListFieldsWithWireMock"}},
 		),
