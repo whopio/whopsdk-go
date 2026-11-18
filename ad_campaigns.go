@@ -1859,26 +1859,26 @@ func (a AdCampaignCampaignType) Ptr() *AdCampaignCampaignType {
 type AdCampaignDeliveryStatus string
 
 const (
-	AdCampaignDeliveryStatusPaymentFailed  AdCampaignDeliveryStatus = "payment_failed"
-	AdCampaignDeliveryStatusAllAdsRejected AdCampaignDeliveryStatus = "all_ads_rejected"
-	AdCampaignDeliveryStatusDraft          AdCampaignDeliveryStatus = "draft"
-	AdCampaignDeliveryStatusPaused         AdCampaignDeliveryStatus = "paused"
-	AdCampaignDeliveryStatusInReview       AdCampaignDeliveryStatus = "in_review"
-	AdCampaignDeliveryStatusLearning       AdCampaignDeliveryStatus = "learning"
-	AdCampaignDeliveryStatusProcessing     AdCampaignDeliveryStatus = "processing"
-	AdCampaignDeliveryStatusReviseContent  AdCampaignDeliveryStatus = "revise_content"
-	AdCampaignDeliveryStatusIssues         AdCampaignDeliveryStatus = "issues"
-	AdCampaignDeliveryStatusScheduled      AdCampaignDeliveryStatus = "scheduled"
-	AdCampaignDeliveryStatusCompleted      AdCampaignDeliveryStatus = "completed"
-	AdCampaignDeliveryStatusActive         AdCampaignDeliveryStatus = "active"
+	AdCampaignDeliveryStatusPaymentFailed AdCampaignDeliveryStatus = "payment_failed"
+	AdCampaignDeliveryStatusRejected      AdCampaignDeliveryStatus = "rejected"
+	AdCampaignDeliveryStatusDraft         AdCampaignDeliveryStatus = "draft"
+	AdCampaignDeliveryStatusPaused        AdCampaignDeliveryStatus = "paused"
+	AdCampaignDeliveryStatusInReview      AdCampaignDeliveryStatus = "in_review"
+	AdCampaignDeliveryStatusLearning      AdCampaignDeliveryStatus = "learning"
+	AdCampaignDeliveryStatusProcessing    AdCampaignDeliveryStatus = "processing"
+	AdCampaignDeliveryStatusReviseContent AdCampaignDeliveryStatus = "revise_content"
+	AdCampaignDeliveryStatusIssues        AdCampaignDeliveryStatus = "issues"
+	AdCampaignDeliveryStatusScheduled     AdCampaignDeliveryStatus = "scheduled"
+	AdCampaignDeliveryStatusCompleted     AdCampaignDeliveryStatus = "completed"
+	AdCampaignDeliveryStatusActive        AdCampaignDeliveryStatus = "active"
 )
 
 func NewAdCampaignDeliveryStatusFromString(s string) (AdCampaignDeliveryStatus, error) {
 	switch s {
 	case "payment_failed":
 		return AdCampaignDeliveryStatusPaymentFailed, nil
-	case "all_ads_rejected":
-		return AdCampaignDeliveryStatusAllAdsRejected, nil
+	case "rejected":
+		return AdCampaignDeliveryStatusRejected, nil
 	case "draft":
 		return AdCampaignDeliveryStatusDraft, nil
 	case "paused":
@@ -3537,26 +3537,26 @@ func (p PostAdCampaignPaymentFailedPayloadDataCampaignType) Ptr() *PostAdCampaig
 type PostAdCampaignPaymentFailedPayloadDataDeliveryStatus string
 
 const (
-	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaymentFailed  PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "payment_failed"
-	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusAllAdsRejected PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "all_ads_rejected"
-	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusDraft          PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "draft"
-	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaused         PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "paused"
-	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusInReview       PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "in_review"
-	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusLearning       PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "learning"
-	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusProcessing     PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "processing"
-	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusReviseContent  PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "revise_content"
-	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusIssues         PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "issues"
-	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusScheduled      PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "scheduled"
-	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusCompleted      PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "completed"
-	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusActive         PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "active"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaymentFailed PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "payment_failed"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusRejected      PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "rejected"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusDraft         PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "draft"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaused        PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "paused"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusInReview      PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "in_review"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusLearning      PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "learning"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusProcessing    PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "processing"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusReviseContent PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "revise_content"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusIssues        PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "issues"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusScheduled     PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "scheduled"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusCompleted     PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "completed"
+	PostAdCampaignPaymentFailedPayloadDataDeliveryStatusActive        PostAdCampaignPaymentFailedPayloadDataDeliveryStatus = "active"
 )
 
 func NewPostAdCampaignPaymentFailedPayloadDataDeliveryStatusFromString(s string) (PostAdCampaignPaymentFailedPayloadDataDeliveryStatus, error) {
 	switch s {
 	case "payment_failed":
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusPaymentFailed, nil
-	case "all_ads_rejected":
-		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusAllAdsRejected, nil
+	case "rejected":
+		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusRejected, nil
 	case "draft":
 		return PostAdCampaignPaymentFailedPayloadDataDeliveryStatusDraft, nil
 	case "paused":
@@ -4468,26 +4468,26 @@ func (p PostAdCampaignUpdatedPayloadDataCampaignType) Ptr() *PostAdCampaignUpdat
 type PostAdCampaignUpdatedPayloadDataDeliveryStatus string
 
 const (
-	PostAdCampaignUpdatedPayloadDataDeliveryStatusPaymentFailed  PostAdCampaignUpdatedPayloadDataDeliveryStatus = "payment_failed"
-	PostAdCampaignUpdatedPayloadDataDeliveryStatusAllAdsRejected PostAdCampaignUpdatedPayloadDataDeliveryStatus = "all_ads_rejected"
-	PostAdCampaignUpdatedPayloadDataDeliveryStatusDraft          PostAdCampaignUpdatedPayloadDataDeliveryStatus = "draft"
-	PostAdCampaignUpdatedPayloadDataDeliveryStatusPaused         PostAdCampaignUpdatedPayloadDataDeliveryStatus = "paused"
-	PostAdCampaignUpdatedPayloadDataDeliveryStatusInReview       PostAdCampaignUpdatedPayloadDataDeliveryStatus = "in_review"
-	PostAdCampaignUpdatedPayloadDataDeliveryStatusLearning       PostAdCampaignUpdatedPayloadDataDeliveryStatus = "learning"
-	PostAdCampaignUpdatedPayloadDataDeliveryStatusProcessing     PostAdCampaignUpdatedPayloadDataDeliveryStatus = "processing"
-	PostAdCampaignUpdatedPayloadDataDeliveryStatusReviseContent  PostAdCampaignUpdatedPayloadDataDeliveryStatus = "revise_content"
-	PostAdCampaignUpdatedPayloadDataDeliveryStatusIssues         PostAdCampaignUpdatedPayloadDataDeliveryStatus = "issues"
-	PostAdCampaignUpdatedPayloadDataDeliveryStatusScheduled      PostAdCampaignUpdatedPayloadDataDeliveryStatus = "scheduled"
-	PostAdCampaignUpdatedPayloadDataDeliveryStatusCompleted      PostAdCampaignUpdatedPayloadDataDeliveryStatus = "completed"
-	PostAdCampaignUpdatedPayloadDataDeliveryStatusActive         PostAdCampaignUpdatedPayloadDataDeliveryStatus = "active"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusPaymentFailed PostAdCampaignUpdatedPayloadDataDeliveryStatus = "payment_failed"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusRejected      PostAdCampaignUpdatedPayloadDataDeliveryStatus = "rejected"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusDraft         PostAdCampaignUpdatedPayloadDataDeliveryStatus = "draft"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusPaused        PostAdCampaignUpdatedPayloadDataDeliveryStatus = "paused"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusInReview      PostAdCampaignUpdatedPayloadDataDeliveryStatus = "in_review"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusLearning      PostAdCampaignUpdatedPayloadDataDeliveryStatus = "learning"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusProcessing    PostAdCampaignUpdatedPayloadDataDeliveryStatus = "processing"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusReviseContent PostAdCampaignUpdatedPayloadDataDeliveryStatus = "revise_content"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusIssues        PostAdCampaignUpdatedPayloadDataDeliveryStatus = "issues"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusScheduled     PostAdCampaignUpdatedPayloadDataDeliveryStatus = "scheduled"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusCompleted     PostAdCampaignUpdatedPayloadDataDeliveryStatus = "completed"
+	PostAdCampaignUpdatedPayloadDataDeliveryStatusActive        PostAdCampaignUpdatedPayloadDataDeliveryStatus = "active"
 )
 
 func NewPostAdCampaignUpdatedPayloadDataDeliveryStatusFromString(s string) (PostAdCampaignUpdatedPayloadDataDeliveryStatus, error) {
 	switch s {
 	case "payment_failed":
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusPaymentFailed, nil
-	case "all_ads_rejected":
-		return PostAdCampaignUpdatedPayloadDataDeliveryStatusAllAdsRejected, nil
+	case "rejected":
+		return PostAdCampaignUpdatedPayloadDataDeliveryStatusRejected, nil
 	case "draft":
 		return PostAdCampaignUpdatedPayloadDataDeliveryStatusDraft, nil
 	case "paused":
