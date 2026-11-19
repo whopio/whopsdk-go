@@ -15300,6 +15300,69 @@
       }
     },
     {
+      "id": "1f5d18ee-2b34-4e51-949a-3b6071d590e4",
+      "name": "Submit a Suspension Appeal - default",
+      "request": {
+        "urlPathTemplate": "/suspension_appeals",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{\n  \"accounts\": [\n    {\n      \"display_name\": \"Shine Time Auto Detailing\",\n      \"funds_release_at\": \"funds_release_at\",\n      \"funds_release_days\": 1,\n      \"id\": \"biz_xxxxxxxxxxxxxx\",\n      \"status\": \"pending\",\n      \"suspended_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"decided_at\": \"decided_at\",\n  \"external_reason\": \"external_reason\",\n  \"id\": \"inrq_xxxxxxxxxxxxxx\",\n  \"review_due_at\": \"2026-01-01T12:00:00.000Z\",\n  \"reviewer_note\": \"reviewer_note\",\n  \"status\": \"pending\",\n  \"subject_id\": \"biz_xxxxxxxxxxxxxx\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "1f5d18ee-2b34-4e51-949a-3b6071d590e4",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "cd30a67f-b516-4110-a31a-bd9b7c26da77",
+      "name": "Get Appeal Eligibility - default",
+      "request": {
+        "urlPathTemplate": "/suspension_appeals/context",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"accounts\": [\n    {\n      \"display_name\": \"Shine Time Auto Detailing\",\n      \"funds_release_at\": \"funds_release_at\",\n      \"funds_release_days\": 1,\n      \"id\": \"biz_xxxxxxxxxxxxxx\",\n      \"status\": \"pending\",\n      \"suspended_at\": \"2026-01-01T12:00:00.000Z\"\n    }\n  ],\n  \"can_submit\": true,\n  \"declaration\": \"I acknowledge that I am the account holder or am authorized to act on behalf of the business included in this appeal. I have read the Whop Terms of Service and confirm that the information and evidence I submit are accurate, complete, and authentic to the best of my knowledge. I authorize Whop to verify this information, including by contacting relevant customers. I understand that this is my final submission regarding this decision, that submitting an appeal does not guarantee reinstatement or the release of funds, and that all funds remain subject to the Terms of Service and Whop’s final decision.\\n\\nBy submitting this appeal, I accept the Whop Terms of Service.\",\n  \"form_subject\": \"user\",\n  \"receipts\": [\n    {\n      \"account_name\": \"account_name\",\n      \"customer_email\": \"customer_email\",\n      \"customer_name\": \"customer_name\",\n      \"id\": \"id\",\n      \"paid_at\": \"paid_at\"\n    }\n  ],\n  \"subject\": {\n    \"appeal\": {\n      \"accounts\": [\n        {\n          \"display_name\": \"Shine Time Auto Detailing\",\n          \"funds_release_at\": null,\n          \"funds_release_days\": null,\n          \"id\": \"biz_xxxxxxxxxxxxxx\",\n          \"status\": null,\n          \"suspended_at\": \"2026-01-01T12:00:00.000Z\"\n        }\n      ],\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"decided_at\": \"decided_at\",\n      \"external_reason\": \"external_reason\",\n      \"id\": \"inrq_xxxxxxxxxxxxxx\",\n      \"review_due_at\": \"2026-01-01T12:00:00.000Z\",\n      \"reviewer_note\": \"reviewer_note\",\n      \"status\": \"pending\",\n      \"subject_id\": \"biz_xxxxxxxxxxxxxx\"\n    },\n    \"appeal_deadline\": \"2026-01-01T12:00:00.000Z\",\n    \"display_name\": \"Shine Time Auto Detailing\",\n    \"eligible\": true,\n    \"funds_explanation\": \"funds_explanation\",\n    \"funds_release_at\": \"funds_release_at\",\n    \"id\": \"biz_xxxxxxxxxxxxxx\",\n    \"ineligible_reason\": \"not_suspended\",\n    \"platform_name\": \"platform_name\",\n    \"suspended_at\": \"2026-01-01T12:00:00.000Z\",\n    \"suspension_code\": \"fraudulent_activity\",\n    \"suspension_country\": \"suspension_country\",\n    \"suspension_explanation\": \"The email we sent you explains why.\",\n    \"suspension_reason\": \"We cannot support your business.\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "cd30a67f-b516-4110-a31a-bd9b7c26da77",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
       "id": "feb50df6-ee72-414a-a023-757940c190f4",
       "name": "List Swaps - default",
       "request": {
@@ -19005,6 +19068,6 @@
     }
   ],
   "meta": {
-    "total": 531
+    "total": 533
   }
 }

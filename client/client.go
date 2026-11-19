@@ -96,6 +96,7 @@ import (
 	shipments "github.com/whopio/whopsdk-go/v2/shipments"
 	socialaccounts "github.com/whopio/whopsdk-go/v2/socialaccounts"
 	statsclient "github.com/whopio/whopsdk-go/v2/stats/client"
+	suspensionappeals "github.com/whopio/whopsdk-go/v2/suspensionappeals"
 	swaps "github.com/whopio/whopsdk-go/v2/swaps"
 	teammembers "github.com/whopio/whopsdk-go/v2/teammembers"
 	tradesclient "github.com/whopio/whopsdk-go/v2/trades/client"
@@ -198,6 +199,7 @@ type Whop struct {
 	Shipments                *shipments.Client
 	SocialAccounts           *socialaccounts.Client
 	Stats                    *statsclient.Client
+	SuspensionAppeals        *suspensionappeals.Client
 	Swaps                    *swaps.Client
 	TeamMembers              *teammembers.Client
 	Trades                   *tradesclient.Client
@@ -310,6 +312,7 @@ func NewWhop(opts ...option.RequestOption) *Whop {
 		Shipments:                shipments.NewClient(options),
 		SocialAccounts:           socialaccounts.NewClient(options),
 		Stats:                    statsclient.NewClient(options),
+		SuspensionAppeals:        suspensionappeals.NewClient(options),
 		Swaps:                    swaps.NewClient(options),
 		TeamMembers:              teammembers.NewClient(options),
 		Trades:                   tradesclient.NewClient(options),
