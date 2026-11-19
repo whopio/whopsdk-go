@@ -79126,14 +79126,13 @@ func (u UserNotificationPreferenceObject) Ptr() *UserNotificationPreferenceObjec
 var (
 	userPreferencesFieldBountyWorkerOnboardingDismissed = big.NewInt(1 << 0)
 	userPreferencesFieldCardsAutoTopUp                  = big.NewInt(1 << 1)
-	userPreferencesFieldShowEarnings                    = big.NewInt(1 << 2)
-	userPreferencesFieldShowJoinedWhops                 = big.NewInt(1 << 3)
-	userPreferencesFieldShowLevel                       = big.NewInt(1 << 4)
-	userPreferencesFieldShowLocation                    = big.NewInt(1 << 5)
-	userPreferencesFieldShowOwnedWhops                  = big.NewInt(1 << 6)
-	userPreferencesFieldShowUserRanking                 = big.NewInt(1 << 7)
-	userPreferencesFieldTermsAccepted                   = big.NewInt(1 << 8)
-	userPreferencesFieldTermsAcceptedAt                 = big.NewInt(1 << 9)
+	userPreferencesFieldShowJoinedWhops                 = big.NewInt(1 << 2)
+	userPreferencesFieldShowLevel                       = big.NewInt(1 << 3)
+	userPreferencesFieldShowLocation                    = big.NewInt(1 << 4)
+	userPreferencesFieldShowOwnedWhops                  = big.NewInt(1 << 5)
+	userPreferencesFieldShowUserRanking                 = big.NewInt(1 << 6)
+	userPreferencesFieldTermsAccepted                   = big.NewInt(1 << 7)
+	userPreferencesFieldTermsAcceptedAt                 = big.NewInt(1 << 8)
 )
 
 // userPreferencesNullableFields maps the wire names of UserPreferences's nullable fields (required or optional) to their field bits.
@@ -79146,8 +79145,6 @@ type UserPreferences struct {
 	BountyWorkerOnboardingDismissed bool `json:"bounty_worker_onboarding_dismissed" url:"bounty_worker_onboarding_dismissed"`
 	// Whether incoming funds, including pending balance, are automatically moved to the user's personal cards balance. `false` when the user has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
-	// Whether to show the user's earnings on their profile.
-	ShowEarnings bool `json:"show_earnings" url:"show_earnings"`
 	// Whether to show the whops the user joined on their profile.
 	ShowJoinedWhops bool `json:"show_joined_whops" url:"show_joined_whops"`
 	// Whether other people can see the user's Whop Level. Set to `false` to hide it.
@@ -79182,13 +79179,6 @@ func (u *UserPreferences) GetCardsAutoTopUp() bool {
 		return false
 	}
 	return u.CardsAutoTopUp
-}
-
-func (u *UserPreferences) GetShowEarnings() bool {
-	if u == nil {
-		return false
-	}
-	return u.ShowEarnings
 }
 
 func (u *UserPreferences) GetShowJoinedWhops() bool {
@@ -79268,13 +79258,6 @@ func (u *UserPreferences) SetBountyWorkerOnboardingDismissed(bountyWorkerOnboard
 func (u *UserPreferences) SetCardsAutoTopUp(cardsAutoTopUp bool) {
 	u.CardsAutoTopUp = cardsAutoTopUp
 	u.require(userPreferencesFieldCardsAutoTopUp)
-}
-
-// SetShowEarnings sets the ShowEarnings field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserPreferences) SetShowEarnings(showEarnings bool) {
-	u.ShowEarnings = showEarnings
-	u.require(userPreferencesFieldShowEarnings)
 }
 
 // SetShowJoinedWhops sets the ShowJoinedWhops field and marks it as non-optional;

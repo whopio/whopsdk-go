@@ -52480,14 +52480,6 @@ client.Users.Preferences.Update(
 <dl>
 <dd>
 
-**showEarnings:** `*bool` — Whether to show the user's earnings on their profile.
-    
-</dd>
-</dl>
-
-<dl>
-<dd>
-
 **showJoinedWhops:** `*bool` — Whether to show the whops the user joined on their profile.
     
 </dd>

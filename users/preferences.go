@@ -11,13 +11,12 @@ import (
 var (
 	updatePreferencesRequestFieldBountyWorkerOnboardingDismissed = big.NewInt(1 << 0)
 	updatePreferencesRequestFieldCardsAutoTopUp                  = big.NewInt(1 << 1)
-	updatePreferencesRequestFieldShowEarnings                    = big.NewInt(1 << 2)
-	updatePreferencesRequestFieldShowJoinedWhops                 = big.NewInt(1 << 3)
-	updatePreferencesRequestFieldShowLevel                       = big.NewInt(1 << 4)
-	updatePreferencesRequestFieldShowLocation                    = big.NewInt(1 << 5)
-	updatePreferencesRequestFieldShowOwnedWhops                  = big.NewInt(1 << 6)
-	updatePreferencesRequestFieldShowUserRanking                 = big.NewInt(1 << 7)
-	updatePreferencesRequestFieldTermsAccepted                   = big.NewInt(1 << 8)
+	updatePreferencesRequestFieldShowJoinedWhops                 = big.NewInt(1 << 2)
+	updatePreferencesRequestFieldShowLevel                       = big.NewInt(1 << 3)
+	updatePreferencesRequestFieldShowLocation                    = big.NewInt(1 << 4)
+	updatePreferencesRequestFieldShowOwnedWhops                  = big.NewInt(1 << 5)
+	updatePreferencesRequestFieldShowUserRanking                 = big.NewInt(1 << 6)
+	updatePreferencesRequestFieldTermsAccepted                   = big.NewInt(1 << 7)
 )
 
 type UpdatePreferencesRequest struct {
@@ -25,8 +24,6 @@ type UpdatePreferencesRequest struct {
 	BountyWorkerOnboardingDismissed *bool `json:"bounty_worker_onboarding_dismissed,omitempty" url:"-"`
 	// Whether incoming funds, including pending balance, are automatically moved to the user's personal cards balance. Requires a cards balance and the `payout:account:update` permission.
 	CardsAutoTopUp *bool `json:"cards_auto_top_up,omitempty" url:"-"`
-	// Whether to show the user's earnings on their profile.
-	ShowEarnings *bool `json:"show_earnings,omitempty" url:"-"`
 	// Whether to show the whops the user joined on their profile.
 	ShowJoinedWhops *bool `json:"show_joined_whops,omitempty" url:"-"`
 	// Whether other people can see the user's Whop Level. Set to `false` to hide it.
@@ -65,13 +62,6 @@ func (u *UpdatePreferencesRequest) SetBountyWorkerOnboardingDismissed(bountyWork
 func (u *UpdatePreferencesRequest) SetCardsAutoTopUp(cardsAutoTopUp *bool) {
 	u.CardsAutoTopUp = cardsAutoTopUp
 	u.require(updatePreferencesRequestFieldCardsAutoTopUp)
-}
-
-// SetShowEarnings sets the ShowEarnings field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdatePreferencesRequest) SetShowEarnings(showEarnings *bool) {
-	u.ShowEarnings = showEarnings
-	u.require(updatePreferencesRequestFieldShowEarnings)
 }
 
 // SetShowJoinedWhops sets the ShowJoinedWhops field and marks it as non-optional;
