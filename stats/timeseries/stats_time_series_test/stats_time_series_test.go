@@ -130,6 +130,16 @@ func TestStatsTimeSeriesRetrieveWithWireMock(
 				"ad_xxxxxxxxxxxxxx",
 			),
 		},
+		AccountIDs: []*string{
+			whopsdk.String(
+				"biz_xxxxxxxxxxxxxx",
+			),
+		},
+		RunnerIDs: []*string{
+			whopsdk.String(
+				"user_xxxxxxxxxxxxxx",
+			),
+		},
 	}
 	_, invocationErr := client.Stats.TimeSeries.Retrieve(
 		context.TODO(),
@@ -140,5 +150,5 @@ func TestStatsTimeSeriesRetrieveWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestStatsTimeSeriesRetrieveWithWireMock", "GET", "/stats/time_series/metric", map[string]interface{}{"from": "from", "to": "to", "ad_campaign_ids": "adcamp_xxxxxxxxxxxxxx", "ad_group_ids": "adgrp_xxxxxxxxxxxxxx", "ad_ids": "ad_xxxxxxxxxxxxxx"}, 1)
+	VerifyRequestCount(t, "TestStatsTimeSeriesRetrieveWithWireMock", "GET", "/stats/time_series/metric", map[string]interface{}{"from": "from", "to": "to", "ad_campaign_ids": "adcamp_xxxxxxxxxxxxxx", "ad_group_ids": "adgrp_xxxxxxxxxxxxxx", "ad_ids": "ad_xxxxxxxxxxxxxx", "account_ids": "biz_xxxxxxxxxxxxxx", "runner_ids": "user_xxxxxxxxxxxxxx"}, 1)
 }
