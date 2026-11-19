@@ -1582,6 +1582,14 @@ func TestSettersCreateMethodsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetInstantUnavailableReason", func(t *testing.T) {
+		obj := &CreateMethodsResponse{}
+		var fernTestValueInstantUnavailableReason *CreateMethodsResponseInstantUnavailableReason
+		obj.SetInstantUnavailableReason(fernTestValueInstantUnavailableReason)
+		assert.Equal(t, fernTestValueInstantUnavailableReason, obj.InstantUnavailableReason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetInstitutionName", func(t *testing.T) {
 		obj := &CreateMethodsResponse{}
 		var fernTestValueInstitutionName *string
@@ -1912,6 +1920,39 @@ func TestGettersCreateMethodsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetInstantUnavailableReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateMethodsResponse{}
+		var expected *CreateMethodsResponseInstantUnavailableReason
+		obj.InstantUnavailableReason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInstantUnavailableReason(), "getter should return the property value")
+	})
+
+	t.Run("GetInstantUnavailableReason_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateMethodsResponse{}
+		obj.InstantUnavailableReason = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInstantUnavailableReason(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInstantUnavailableReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateMethodsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInstantUnavailableReason() // Should return zero value
 	})
 
 	t.Run("GetInstitutionName", func(t *testing.T) {
@@ -2609,6 +2650,37 @@ func TestSettersMarkExplicitCreateMethodsResponse(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInstantUnavailableReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateMethodsResponse{}
+		var fernTestValueInstantUnavailableReason *CreateMethodsResponseInstantUnavailableReason
+
+		// Act
+		obj.SetInstantUnavailableReason(fernTestValueInstantUnavailableReason)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4285,6 +4357,14 @@ func TestSettersListMethodsResponseDataItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetInstantUnavailableReason", func(t *testing.T) {
+		obj := &ListMethodsResponseDataItem{}
+		var fernTestValueInstantUnavailableReason *ListMethodsResponseDataItemInstantUnavailableReason
+		obj.SetInstantUnavailableReason(fernTestValueInstantUnavailableReason)
+		assert.Equal(t, fernTestValueInstantUnavailableReason, obj.InstantUnavailableReason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetInstitutionName", func(t *testing.T) {
 		obj := &ListMethodsResponseDataItem{}
 		var fernTestValueInstitutionName *string
@@ -4615,6 +4695,39 @@ func TestGettersListMethodsResponseDataItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetInstantUnavailableReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListMethodsResponseDataItem{}
+		var expected *ListMethodsResponseDataItemInstantUnavailableReason
+		obj.InstantUnavailableReason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInstantUnavailableReason(), "getter should return the property value")
+	})
+
+	t.Run("GetInstantUnavailableReason_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListMethodsResponseDataItem{}
+		obj.InstantUnavailableReason = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInstantUnavailableReason(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInstantUnavailableReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListMethodsResponseDataItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInstantUnavailableReason() // Should return zero value
 	})
 
 	t.Run("GetInstitutionName", func(t *testing.T) {
@@ -5272,6 +5385,37 @@ func TestSettersMarkExplicitListMethodsResponseDataItem(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInstantUnavailableReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListMethodsResponseDataItem{}
+		var fernTestValueInstantUnavailableReason *ListMethodsResponseDataItemInstantUnavailableReason
+
+		// Act
+		obj.SetInstantUnavailableReason(fernTestValueInstantUnavailableReason)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9236,6 +9380,14 @@ func TestSettersUpdateMethodsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetInstantUnavailableReason", func(t *testing.T) {
+		obj := &UpdateMethodsResponse{}
+		var fernTestValueInstantUnavailableReason *UpdateMethodsResponseInstantUnavailableReason
+		obj.SetInstantUnavailableReason(fernTestValueInstantUnavailableReason)
+		assert.Equal(t, fernTestValueInstantUnavailableReason, obj.InstantUnavailableReason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetInstitutionName", func(t *testing.T) {
 		obj := &UpdateMethodsResponse{}
 		var fernTestValueInstitutionName *string
@@ -9566,6 +9718,39 @@ func TestGettersUpdateMethodsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetInstantUnavailableReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateMethodsResponse{}
+		var expected *UpdateMethodsResponseInstantUnavailableReason
+		obj.InstantUnavailableReason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInstantUnavailableReason(), "getter should return the property value")
+	})
+
+	t.Run("GetInstantUnavailableReason_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateMethodsResponse{}
+		obj.InstantUnavailableReason = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInstantUnavailableReason(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInstantUnavailableReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateMethodsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInstantUnavailableReason() // Should return zero value
 	})
 
 	t.Run("GetInstitutionName", func(t *testing.T) {
@@ -10223,6 +10408,37 @@ func TestSettersMarkExplicitUpdateMethodsResponse(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInstantUnavailableReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateMethodsResponse{}
+		var fernTestValueInstantUnavailableReason *UpdateMethodsResponseInstantUnavailableReason
+
+		// Act
+		obj.SetInstantUnavailableReason(fernTestValueInstantUnavailableReason)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -12498,6 +12714,7 @@ func TestRequiredNullableRoundTripListMethodsResponseDataItem(t *testing.T) {
 		"bank_verification_state",
 		"estimated_arrival",
 		"fee_structure",
+		"instant_unavailable_reason",
 		"institution_name",
 		"last_paid_out_at",
 		"nickname",
@@ -12518,7 +12735,7 @@ func TestRequiredNullableRoundTripListMethodsResponseDataItem(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ListMethodsResponseDataItem
-		require.NoError(t, json.Unmarshal([]byte(`{"account_reference":null,"bank_verification_state":null,"estimated_arrival":null,"fee_structure":null,"institution_name":null,"last_paid_out_at":null,"nickname":null,"payer_name":null,"quote":null,"status_reason":null,"supported_payout_method":null,"unavailable_reason":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_reference":null,"bank_verification_state":null,"estimated_arrival":null,"fee_structure":null,"instant_unavailable_reason":null,"institution_name":null,"last_paid_out_at":null,"nickname":null,"payer_name":null,"quote":null,"status_reason":null,"supported_payout_method":null,"unavailable_reason":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -12821,6 +13038,7 @@ func TestRequiredNullableRoundTripUpdateMethodsResponse(t *testing.T) {
 		"bank_verification_state",
 		"estimated_arrival",
 		"fee_structure",
+		"instant_unavailable_reason",
 		"institution_name",
 		"last_paid_out_at",
 		"nickname",
@@ -12841,7 +13059,7 @@ func TestRequiredNullableRoundTripUpdateMethodsResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj UpdateMethodsResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"account_reference":null,"bank_verification_state":null,"estimated_arrival":null,"fee_structure":null,"institution_name":null,"last_paid_out_at":null,"nickname":null,"payer_name":null,"quote":null,"status_reason":null,"supported_payout_method":null,"unavailable_reason":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_reference":null,"bank_verification_state":null,"estimated_arrival":null,"fee_structure":null,"instant_unavailable_reason":null,"institution_name":null,"last_paid_out_at":null,"nickname":null,"payer_name":null,"quote":null,"status_reason":null,"supported_payout_method":null,"unavailable_reason":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -12917,6 +13135,7 @@ func TestRequiredNullableRoundTripUpdateMethodsResponseSupportedPayoutMethod(t *
 func TestOptionalNullableRoundTripCreateMethodsResponse(t *testing.T) {
 	optionalNullableKeys := []string{
 		"bank_verification_state",
+		"instant_unavailable_reason",
 	}
 	marshalToMap := func(t *testing.T, obj *CreateMethodsResponse) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -12929,7 +13148,7 @@ func TestOptionalNullableRoundTripCreateMethodsResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj CreateMethodsResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"bank_verification_state":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"bank_verification_state":null,"instant_unavailable_reason":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -13418,6 +13637,35 @@ func TestEnumCreateMethodsResponseBankVerificationState(t *testing.T) {
 	})
 }
 
+func TestEnumCreateMethodsResponseInstantUnavailableReason(t *testing.T) {
+	t.Run("NewFromString_minimum_crypto_sales_not_met", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateMethodsResponseInstantUnavailableReasonFromString("minimum_crypto_sales_not_met")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateMethodsResponseInstantUnavailableReason("minimum_crypto_sales_not_met"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_new_payout_method_hold", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateMethodsResponseInstantUnavailableReasonFromString("new_payout_method_hold")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateMethodsResponseInstantUnavailableReason("new_payout_method_hold"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateMethodsResponseInstantUnavailableReasonFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateMethodsResponseInstantUnavailableReasonFromString("minimum_crypto_sales_not_met")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumCreateMethodsResponseObject(t *testing.T) {
 	t.Run("NewFromString_payout_method", func(t *testing.T) {
 		t.Parallel()
@@ -13691,6 +13939,35 @@ func TestEnumListMethodsResponseDataItemBankVerificationState(t *testing.T) {
 	})
 }
 
+func TestEnumListMethodsResponseDataItemInstantUnavailableReason(t *testing.T) {
+	t.Run("NewFromString_minimum_crypto_sales_not_met", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMethodsResponseDataItemInstantUnavailableReasonFromString("minimum_crypto_sales_not_met")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMethodsResponseDataItemInstantUnavailableReason("minimum_crypto_sales_not_met"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_new_payout_method_hold", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMethodsResponseDataItemInstantUnavailableReasonFromString("new_payout_method_hold")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMethodsResponseDataItemInstantUnavailableReason("new_payout_method_hold"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListMethodsResponseDataItemInstantUnavailableReasonFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListMethodsResponseDataItemInstantUnavailableReasonFromString("minimum_crypto_sales_not_met")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumListMethodsResponseDataItemObject(t *testing.T) {
 	t.Run("NewFromString_payout_method", func(t *testing.T) {
 		t.Parallel()
@@ -13719,6 +13996,13 @@ func TestEnumListMethodsResponseDataItemQuoteInstantUnavailableReason(t *testing
 		val, err := NewListMethodsResponseDataItemQuoteInstantUnavailableReasonFromString("minimum_crypto_sales_not_met")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListMethodsResponseDataItemQuoteInstantUnavailableReason("minimum_crypto_sales_not_met"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_new_payout_method_hold", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMethodsResponseDataItemQuoteInstantUnavailableReasonFromString("new_payout_method_hold")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMethodsResponseDataItemQuoteInstantUnavailableReason("new_payout_method_hold"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -14100,6 +14384,35 @@ func TestEnumUpdateMethodsResponseBankVerificationState(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdateMethodsResponseBankVerificationStateFromString("checking")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateMethodsResponseInstantUnavailableReason(t *testing.T) {
+	t.Run("NewFromString_minimum_crypto_sales_not_met", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateMethodsResponseInstantUnavailableReasonFromString("minimum_crypto_sales_not_met")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateMethodsResponseInstantUnavailableReason("minimum_crypto_sales_not_met"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_new_payout_method_hold", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateMethodsResponseInstantUnavailableReasonFromString("new_payout_method_hold")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateMethodsResponseInstantUnavailableReason("new_payout_method_hold"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateMethodsResponseInstantUnavailableReasonFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateMethodsResponseInstantUnavailableReasonFromString("minimum_crypto_sales_not_met")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

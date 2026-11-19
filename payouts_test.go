@@ -15563,6 +15563,14 @@ func TestSettersPostPayoutMethodCreatedPayloadData(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetInstantUnavailableReason", func(t *testing.T) {
+		obj := &PostPayoutMethodCreatedPayloadData{}
+		var fernTestValueInstantUnavailableReason *PostPayoutMethodCreatedPayloadDataInstantUnavailableReason
+		obj.SetInstantUnavailableReason(fernTestValueInstantUnavailableReason)
+		assert.Equal(t, fernTestValueInstantUnavailableReason, obj.InstantUnavailableReason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetInstitutionName", func(t *testing.T) {
 		obj := &PostPayoutMethodCreatedPayloadData{}
 		var fernTestValueInstitutionName *string
@@ -15893,6 +15901,39 @@ func TestGettersPostPayoutMethodCreatedPayloadData(t *testing.T) {
 			}
 		}()
 		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetInstantUnavailableReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutMethodCreatedPayloadData{}
+		var expected *PostPayoutMethodCreatedPayloadDataInstantUnavailableReason
+		obj.InstantUnavailableReason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetInstantUnavailableReason(), "getter should return the property value")
+	})
+
+	t.Run("GetInstantUnavailableReason_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutMethodCreatedPayloadData{}
+		obj.InstantUnavailableReason = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetInstantUnavailableReason(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetInstantUnavailableReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PostPayoutMethodCreatedPayloadData
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetInstantUnavailableReason() // Should return zero value
 	})
 
 	t.Run("GetInstitutionName", func(t *testing.T) {
@@ -16550,6 +16591,37 @@ func TestSettersMarkExplicitPostPayoutMethodCreatedPayloadData(t *testing.T) {
 
 		// Act
 		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetInstantUnavailableReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutMethodCreatedPayloadData{}
+		var fernTestValueInstantUnavailableReason *PostPayoutMethodCreatedPayloadDataInstantUnavailableReason
+
+		// Act
+		obj.SetInstantUnavailableReason(fernTestValueInstantUnavailableReason)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -31607,6 +31679,7 @@ func TestRequiredNullableRoundTripPostPayoutMethodCreatedPayloadData(t *testing.
 		"bank_verification_state",
 		"estimated_arrival",
 		"fee_structure",
+		"instant_unavailable_reason",
 		"institution_name",
 		"last_paid_out_at",
 		"nickname",
@@ -31627,7 +31700,7 @@ func TestRequiredNullableRoundTripPostPayoutMethodCreatedPayloadData(t *testing.
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PostPayoutMethodCreatedPayloadData
-		require.NoError(t, json.Unmarshal([]byte(`{"account_reference":null,"bank_verification_state":null,"estimated_arrival":null,"fee_structure":null,"institution_name":null,"last_paid_out_at":null,"nickname":null,"payer_name":null,"quote":null,"status_reason":null,"supported_payout_method":null,"unavailable_reason":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_reference":null,"bank_verification_state":null,"estimated_arrival":null,"fee_structure":null,"instant_unavailable_reason":null,"institution_name":null,"last_paid_out_at":null,"nickname":null,"payer_name":null,"quote":null,"status_reason":null,"supported_payout_method":null,"unavailable_reason":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -35030,6 +35103,35 @@ func TestEnumPostPayoutMethodCreatedPayloadDataBankVerificationState(t *testing.
 	})
 }
 
+func TestEnumPostPayoutMethodCreatedPayloadDataInstantUnavailableReason(t *testing.T) {
+	t.Run("NewFromString_minimum_crypto_sales_not_met", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutMethodCreatedPayloadDataInstantUnavailableReasonFromString("minimum_crypto_sales_not_met")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutMethodCreatedPayloadDataInstantUnavailableReason("minimum_crypto_sales_not_met"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_new_payout_method_hold", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutMethodCreatedPayloadDataInstantUnavailableReasonFromString("new_payout_method_hold")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutMethodCreatedPayloadDataInstantUnavailableReason("new_payout_method_hold"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPostPayoutMethodCreatedPayloadDataInstantUnavailableReasonFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPostPayoutMethodCreatedPayloadDataInstantUnavailableReasonFromString("minimum_crypto_sales_not_met")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumPostPayoutMethodCreatedPayloadDataObject(t *testing.T) {
 	t.Run("NewFromString_payout_method", func(t *testing.T) {
 		t.Parallel()
@@ -35058,6 +35160,13 @@ func TestEnumPostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason(t *
 		val, err := NewPostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReasonFromString("minimum_crypto_sales_not_met")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason("minimum_crypto_sales_not_met"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_new_payout_method_hold", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReasonFromString("new_payout_method_hold")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason("new_payout_method_hold"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
