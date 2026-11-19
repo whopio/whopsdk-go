@@ -13949,6 +13949,42 @@
       }
     },
     {
+      "id": "f7740d26-f1ec-4673-a957-d84d4ebc25a1",
+      "name": "Update Recommended Action - default",
+      "request": {
+        "urlPathTemplate": "/recommended_actions/{id}",
+        "method": "PATCH",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "reca_xxxxxxxxxxxxx"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"id\": \"reca_xxxxxxxxxxxxxx\",\n  \"preview\": {\n    \"app_id\": \"app_xxxxxxxxxxxxxx\",\n    \"base_build_id\": \"apbu_xxxxxxxxxxxxxx\",\n    \"changed_resources\": [\n      {\n        \"id\": \"id\",\n        \"object\": \"variant\"\n      }\n    ],\n    \"draft_build_id\": \"apbu_xxxxxxxxxxxxxx\",\n    \"page_paths\": [\n      \"/\"\n    ],\n    \"traffic_percent\": 50,\n    \"type\": \"website_ab_test\"\n  },\n  \"reasoning\": \"Visitors who reach your pricing section buy, but most leave the home page before they scroll to it.\",\n  \"run_by_user_id\": \"user_xxxxxxxxxxxxxx\",\n  \"run_ended_at\": \"run_ended_at\",\n  \"run_started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"preparing\",\n  \"title\": \"Lead your home page with member results\",\n  \"type\": \"add_cancel_offer\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"workflow\": {\n    \"api_version\": \"2026-01-01\",\n    \"steps\": [\n      {\n        \"arguments\": {\n          \"id\": \"{{steps[0].id}}\"\n        },\n        \"error\": null,\n        \"operation\": \"activateExperiment\",\n        \"status\": \"pending\",\n        \"title\": \"Start the A/B test\"\n      }\n    ]\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "f7740d26-f1ec-4673-a957-d84d4ebc25a1",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "2ae3b649-4a20-4939-a731-b47f1caedf6c",
       "name": "Dismiss Recommended Action - dismissed_action",
       "request": {
@@ -19068,6 +19104,6 @@
     }
   ],
   "meta": {
-    "total": 533
+    "total": 534
   }
 }

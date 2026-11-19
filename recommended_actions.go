@@ -1785,3 +1785,349 @@ func (l *ListRecommendedActionsResponsePageInfo) String() string {
 	}
 	return fmt.Sprintf("%#v", l)
 }
+
+var (
+	updateRecommendedActionsRequestWorkflowFieldSteps = big.NewInt(1 << 0)
+)
+
+// The action's workflow with the arguments to change.
+type UpdateRecommendedActionsRequestWorkflow struct {
+	// One entry for each step of the action, in the same order.
+	Steps []*UpdateRecommendedActionsRequestWorkflowStepsItem `json:"steps" url:"steps"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateRecommendedActionsRequestWorkflow) GetSteps() []*UpdateRecommendedActionsRequestWorkflowStepsItem {
+	if u == nil {
+		return nil
+	}
+	return u.Steps
+}
+
+func (u *UpdateRecommendedActionsRequestWorkflow) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateRecommendedActionsRequestWorkflow) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetSteps sets the Steps field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateRecommendedActionsRequestWorkflow) SetSteps(steps []*UpdateRecommendedActionsRequestWorkflowStepsItem) {
+	u.Steps = steps
+	u.require(updateRecommendedActionsRequestWorkflowFieldSteps)
+}
+
+func (u *UpdateRecommendedActionsRequestWorkflow) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateRecommendedActionsRequestWorkflow
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateRecommendedActionsRequestWorkflow(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateRecommendedActionsRequestWorkflow) MarshalJSON() ([]byte, error) {
+	type embed UpdateRecommendedActionsRequestWorkflow
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateRecommendedActionsRequestWorkflow) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateRecommendedActionsRequestWorkflowStepsItemFieldArguments = big.NewInt(1 << 0)
+	updateRecommendedActionsRequestWorkflowStepsItemFieldError     = big.NewInt(1 << 1)
+	updateRecommendedActionsRequestWorkflowStepsItemFieldOperation = big.NewInt(1 << 2)
+	updateRecommendedActionsRequestWorkflowStepsItemFieldStatus    = big.NewInt(1 << 3)
+	updateRecommendedActionsRequestWorkflowStepsItemFieldTitle     = big.NewInt(1 << 4)
+)
+
+// updateRecommendedActionsRequestWorkflowStepsItemNullableFields maps the wire names of UpdateRecommendedActionsRequestWorkflowStepsItem's nullable fields (required or optional) to their field bits.
+var updateRecommendedActionsRequestWorkflowStepsItemNullableFields = map[string]*big.Int{
+	"error": updateRecommendedActionsRequestWorkflowStepsItemFieldError,
+}
+
+type UpdateRecommendedActionsRequestWorkflowStepsItem struct {
+	// The input of the operation under `api_version`. It holds the path, query and body parameters in one map. A value of the form `{{steps[<index>].<field>}}` reads a field from the response of an earlier step. `<index>` is that step's position in `steps`, counting from 0. The value is replaced before the step is sent.
+	Arguments map[string]any `json:"arguments,omitempty" url:"arguments,omitempty"`
+	// The step's error. It can't be changed.
+	Error *string `json:"error,omitempty" url:"error,omitempty"`
+	// The step's operation. It can't be changed.
+	Operation *string `json:"operation,omitempty" url:"operation,omitempty"`
+	// The step's status. It can't be changed.
+	Status *UpdateRecommendedActionsRequestWorkflowStepsItemStatus `json:"status,omitempty" url:"status,omitempty"`
+	// The step's title. It can't be changed.
+	Title *string `json:"title,omitempty" url:"title,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateRecommendedActionsRequestWorkflowStepsItem) GetArguments() map[string]any {
+	if u == nil {
+		return nil
+	}
+	return u.Arguments
+}
+
+func (u *UpdateRecommendedActionsRequestWorkflowStepsItem) GetError() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Error
+}
+
+func (u *UpdateRecommendedActionsRequestWorkflowStepsItem) GetOperation() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Operation
+}
+
+func (u *UpdateRecommendedActionsRequestWorkflowStepsItem) GetStatus() *UpdateRecommendedActionsRequestWorkflowStepsItemStatus {
+	if u == nil {
+		return nil
+	}
+	return u.Status
+}
+
+func (u *UpdateRecommendedActionsRequestWorkflowStepsItem) GetTitle() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Title
+}
+
+func (u *UpdateRecommendedActionsRequestWorkflowStepsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateRecommendedActionsRequestWorkflowStepsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetArguments sets the Arguments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateRecommendedActionsRequestWorkflowStepsItem) SetArguments(arguments map[string]any) {
+	u.Arguments = arguments
+	u.require(updateRecommendedActionsRequestWorkflowStepsItemFieldArguments)
+}
+
+// SetError sets the Error field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateRecommendedActionsRequestWorkflowStepsItem) SetError(error_ *string) {
+	u.Error = error_
+	u.require(updateRecommendedActionsRequestWorkflowStepsItemFieldError)
+}
+
+// SetOperation sets the Operation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateRecommendedActionsRequestWorkflowStepsItem) SetOperation(operation *string) {
+	u.Operation = operation
+	u.require(updateRecommendedActionsRequestWorkflowStepsItemFieldOperation)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateRecommendedActionsRequestWorkflowStepsItem) SetStatus(status *UpdateRecommendedActionsRequestWorkflowStepsItemStatus) {
+	u.Status = status
+	u.require(updateRecommendedActionsRequestWorkflowStepsItemFieldStatus)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateRecommendedActionsRequestWorkflowStepsItem) SetTitle(title *string) {
+	u.Title = title
+	u.require(updateRecommendedActionsRequestWorkflowStepsItemFieldTitle)
+}
+
+func (u *UpdateRecommendedActionsRequestWorkflowStepsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateRecommendedActionsRequestWorkflowStepsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateRecommendedActionsRequestWorkflowStepsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateRecommendedActionsRequestWorkflowStepsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateRecommendedActionsRequestWorkflowStepsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdateRecommendedActionsRequestWorkflowStepsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateRecommendedActionsRequestWorkflowStepsItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// The step's status. It can't be changed.
+type UpdateRecommendedActionsRequestWorkflowStepsItemStatus string
+
+const (
+	UpdateRecommendedActionsRequestWorkflowStepsItemStatusPending   UpdateRecommendedActionsRequestWorkflowStepsItemStatus = "pending"
+	UpdateRecommendedActionsRequestWorkflowStepsItemStatusRunning   UpdateRecommendedActionsRequestWorkflowStepsItemStatus = "running"
+	UpdateRecommendedActionsRequestWorkflowStepsItemStatusSucceeded UpdateRecommendedActionsRequestWorkflowStepsItemStatus = "succeeded"
+	UpdateRecommendedActionsRequestWorkflowStepsItemStatusFailed    UpdateRecommendedActionsRequestWorkflowStepsItemStatus = "failed"
+	UpdateRecommendedActionsRequestWorkflowStepsItemStatusSkipped   UpdateRecommendedActionsRequestWorkflowStepsItemStatus = "skipped"
+)
+
+func NewUpdateRecommendedActionsRequestWorkflowStepsItemStatusFromString(s string) (UpdateRecommendedActionsRequestWorkflowStepsItemStatus, error) {
+	switch s {
+	case "pending":
+		return UpdateRecommendedActionsRequestWorkflowStepsItemStatusPending, nil
+	case "running":
+		return UpdateRecommendedActionsRequestWorkflowStepsItemStatusRunning, nil
+	case "succeeded":
+		return UpdateRecommendedActionsRequestWorkflowStepsItemStatusSucceeded, nil
+	case "failed":
+		return UpdateRecommendedActionsRequestWorkflowStepsItemStatusFailed, nil
+	case "skipped":
+		return UpdateRecommendedActionsRequestWorkflowStepsItemStatusSkipped, nil
+	}
+	var t UpdateRecommendedActionsRequestWorkflowStepsItemStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateRecommendedActionsRequestWorkflowStepsItemStatus) Ptr() *UpdateRecommendedActionsRequestWorkflowStepsItemStatus {
+	return &u
+}
+
+var (
+	updateRecommendedActionsRequestFieldID       = big.NewInt(1 << 0)
+	updateRecommendedActionsRequestFieldWorkflow = big.NewInt(1 << 1)
+)
+
+type UpdateRecommendedActionsRequest struct {
+	// Recommended action ID, prefixed `reca_`.
+	ID string `json:"-" url:"-"`
+	// The action's workflow with the arguments to change.
+	Workflow *UpdateRecommendedActionsRequestWorkflow `json:"workflow" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (u *UpdateRecommendedActionsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateRecommendedActionsRequest) SetID(id string) {
+	u.ID = id
+	u.require(updateRecommendedActionsRequestFieldID)
+}
+
+// SetWorkflow sets the Workflow field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateRecommendedActionsRequest) SetWorkflow(workflow *UpdateRecommendedActionsRequestWorkflow) {
+	u.Workflow = workflow
+	u.require(updateRecommendedActionsRequestFieldWorkflow)
+}
+
+func (u *UpdateRecommendedActionsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateRecommendedActionsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*u = UpdateRecommendedActionsRequest(body)
+	return nil
+}
+
+func (u *UpdateRecommendedActionsRequest) MarshalJSON() ([]byte, error) {
+	type embed UpdateRecommendedActionsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}

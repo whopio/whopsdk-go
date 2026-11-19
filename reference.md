@@ -37156,6 +37156,79 @@ client.RecommendedActions.Retrieve(
 </dl>
 </details>
 
+<details><summary><code>client.RecommendedActions.Update(ID, request) -> *whopsdk.RecommendedAction</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Edits the arguments of a `ready` action's steps before it runs. Send the action's `workflow` back with one entry for each step, in the same order. An entry with `arguments` replaces that step's arguments. An entry without them leaves the step as it is. Only `arguments` can change. Other step fields can be sent back only with the values the action has.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.UpdateRecommendedActionsRequest{
+    ID: "reca_xxxxxxxxxxxxx",
+    Workflow: &whopsdk.UpdateRecommendedActionsRequestWorkflow{
+        Steps: []*whopsdk.UpdateRecommendedActionsRequestWorkflowStepsItem{
+            &whopsdk.UpdateRecommendedActionsRequestWorkflowStepsItem{},
+        },
+    },
+}
+client.RecommendedActions.Update(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Recommended action ID, prefixed `reca_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**workflow:** `*whopsdk.UpdateRecommendedActionsRequestWorkflow` — The action's workflow with the arguments to change.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.RecommendedActions.Dismiss(ID) -> *whopsdk.RecommendedAction</code></summary>
 <dl>
 <dd>
