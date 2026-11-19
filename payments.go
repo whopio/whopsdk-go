@@ -40,23 +40,24 @@ func (c *CapturePaymentsRequest) SetID(id string) {
 
 var (
 	createPaymentsRequestFieldAffiliateCode           = big.NewInt(1 << 0)
-	createPaymentsRequestFieldAutoCaptureAfterMinutes = big.NewInt(1 << 1)
-	createPaymentsRequestFieldBillingAddress          = big.NewInt(1 << 2)
-	createPaymentsRequestFieldCapture                 = big.NewInt(1 << 3)
-	createPaymentsRequestFieldConfirmationToken       = big.NewInt(1 << 4)
-	createPaymentsRequestFieldEmail                   = big.NewInt(1 << 5)
-	createPaymentsRequestFieldIPAddress               = big.NewInt(1 << 6)
-	createPaymentsRequestFieldLineItems               = big.NewInt(1 << 7)
-	createPaymentsRequestFieldMemberID                = big.NewInt(1 << 8)
-	createPaymentsRequestFieldMetadata                = big.NewInt(1 << 9)
-	createPaymentsRequestFieldOffSession              = big.NewInt(1 << 10)
-	createPaymentsRequestFieldPaymentMethod           = big.NewInt(1 << 11)
-	createPaymentsRequestFieldPaymentMethodID         = big.NewInt(1 << 12)
-	createPaymentsRequestFieldQuoteID                 = big.NewInt(1 << 13)
-	createPaymentsRequestFieldReturnURL               = big.NewInt(1 << 14)
-	createPaymentsRequestFieldSetupFutureUsage        = big.NewInt(1 << 15)
-	createPaymentsRequestFieldShippingAddress         = big.NewInt(1 << 16)
-	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 17)
+	createPaymentsRequestFieldApplySurcharge          = big.NewInt(1 << 1)
+	createPaymentsRequestFieldAutoCaptureAfterMinutes = big.NewInt(1 << 2)
+	createPaymentsRequestFieldBillingAddress          = big.NewInt(1 << 3)
+	createPaymentsRequestFieldCapture                 = big.NewInt(1 << 4)
+	createPaymentsRequestFieldConfirmationToken       = big.NewInt(1 << 5)
+	createPaymentsRequestFieldEmail                   = big.NewInt(1 << 6)
+	createPaymentsRequestFieldIPAddress               = big.NewInt(1 << 7)
+	createPaymentsRequestFieldLineItems               = big.NewInt(1 << 8)
+	createPaymentsRequestFieldMemberID                = big.NewInt(1 << 9)
+	createPaymentsRequestFieldMetadata                = big.NewInt(1 << 10)
+	createPaymentsRequestFieldOffSession              = big.NewInt(1 << 11)
+	createPaymentsRequestFieldPaymentMethod           = big.NewInt(1 << 12)
+	createPaymentsRequestFieldPaymentMethodID         = big.NewInt(1 << 13)
+	createPaymentsRequestFieldQuoteID                 = big.NewInt(1 << 14)
+	createPaymentsRequestFieldReturnURL               = big.NewInt(1 << 15)
+	createPaymentsRequestFieldSetupFutureUsage        = big.NewInt(1 << 16)
+	createPaymentsRequestFieldShippingAddress         = big.NewInt(1 << 17)
+	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 18)
 )
 
 type CreatePaymentsRequest struct {
@@ -72,6 +73,8 @@ type CreatePaymentsRequest struct {
 	VariantID *string `json:"variant_id,omitempty" url:"-"`
 	// The code an affiliate link carries, which is the affiliate's username. The affiliate is credited for this payment as on a checkout session. A code naming no one eligible to earn on the product is ignored, and the payment goes ahead. A promo code with its own affiliate takes precedence. No affiliate is credited on a variant without a product or on a purchase of several variants. At most 255 characters. Not supported with a `card_present` `payment_method`.
 	AffiliateCode *string `json:"affiliate_code,omitempty" url:"-"`
+	// Adds the account's card surcharge, set in `card_surcharge` on the account's preferences, when the card is a credit card. Send it only after you have shown the buyer the surcharge. Whop calculates the amount. You cannot send an amount. With a `confirmation_token`, the surcharge is a line of its own, calculated on the purchase after discounts and before tax. With a `card_present` `payment_method`, the surcharge is added after the reader reads the card, with `POST /payments/{id}/apply_surcharge`. A debit or prepaid card, or an account that cannot surcharge, pays no surcharge. The payment still goes ahead. Only for a one-time purchase, and not with `quote_id`. Defaults to false.
+	ApplySurcharge *bool `json:"apply_surcharge,omitempty" url:"-"`
 	// Minutes after authorization at which Whop captures the hold automatically unless it has been voided. Requires `capture: false`. Between 5 and 5760 (4 days).
 	AutoCaptureAfterMinutes *int `json:"auto_capture_after_minutes,omitempty" url:"-"`
 	// The buyer's billing address, returned on the payment as `billing_address` and used to calculate tax when Whop calculates it for the account. Only with a `paypal` `payment_method`. Only the keys you supply are kept.
@@ -125,6 +128,13 @@ func (c *CreatePaymentsRequest) require(field *big.Int) {
 func (c *CreatePaymentsRequest) SetAffiliateCode(affiliateCode *string) {
 	c.AffiliateCode = affiliateCode
 	c.require(createPaymentsRequestFieldAffiliateCode)
+}
+
+// SetApplySurcharge sets the ApplySurcharge field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetApplySurcharge(applySurcharge *bool) {
+	c.ApplySurcharge = applySurcharge
+	c.require(createPaymentsRequestFieldApplySurcharge)
 }
 
 // SetAutoCaptureAfterMinutes sets the AutoCaptureAfterMinutes field and marks it as non-optional;

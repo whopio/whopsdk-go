@@ -4384,29 +4384,30 @@ var (
 	accountPreferencesFieldAdsSchedulingTimezone                   = big.NewInt(1 << 3)
 	accountPreferencesFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 4)
 	accountPreferencesFieldCancellationEmails                      = big.NewInt(1 << 5)
-	accountPreferencesFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
-	accountPreferencesFieldCardsNotifications                      = big.NewInt(1 << 7)
-	accountPreferencesFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 8)
-	accountPreferencesFieldCustomerTracking                        = big.NewInt(1 << 9)
-	accountPreferencesFieldDisputeFighterEnabled                   = big.NewInt(1 << 10)
-	accountPreferencesFieldEconomicIntelligence                    = big.NewInt(1 << 11)
-	accountPreferencesFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 12)
-	accountPreferencesFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 13)
-	accountPreferencesFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 14)
-	accountPreferencesFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 15)
-	accountPreferencesFieldEconomicIntelligenceOffers              = big.NewInt(1 << 16)
-	accountPreferencesFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 17)
-	accountPreferencesFieldFailedPaymentEmails                     = big.NewInt(1 << 18)
-	accountPreferencesFieldFeedbackOptions                         = big.NewInt(1 << 19)
-	accountPreferencesFieldMerchantOfRecord                        = big.NewInt(1 << 20)
-	accountPreferencesFieldOffSessionPaymentRules                  = big.NewInt(1 << 21)
-	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 22)
-	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 23)
-	accountPreferencesFieldRenewalReminderEmails                   = big.NewInt(1 << 24)
-	accountPreferencesFieldReviewRequestEmails                     = big.NewInt(1 << 25)
-	accountPreferencesFieldSubaccountNotifications                 = big.NewInt(1 << 26)
-	accountPreferencesFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 27)
-	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 28)
+	accountPreferencesFieldCardSurcharge                           = big.NewInt(1 << 6)
+	accountPreferencesFieldCardsAutoTopUp                          = big.NewInt(1 << 7)
+	accountPreferencesFieldCardsNotifications                      = big.NewInt(1 << 8)
+	accountPreferencesFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 9)
+	accountPreferencesFieldCustomerTracking                        = big.NewInt(1 << 10)
+	accountPreferencesFieldDisputeFighterEnabled                   = big.NewInt(1 << 11)
+	accountPreferencesFieldEconomicIntelligence                    = big.NewInt(1 << 12)
+	accountPreferencesFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 13)
+	accountPreferencesFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 14)
+	accountPreferencesFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 15)
+	accountPreferencesFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 16)
+	accountPreferencesFieldEconomicIntelligenceOffers              = big.NewInt(1 << 17)
+	accountPreferencesFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 18)
+	accountPreferencesFieldFailedPaymentEmails                     = big.NewInt(1 << 19)
+	accountPreferencesFieldFeedbackOptions                         = big.NewInt(1 << 20)
+	accountPreferencesFieldMerchantOfRecord                        = big.NewInt(1 << 21)
+	accountPreferencesFieldOffSessionPaymentRules                  = big.NewInt(1 << 22)
+	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 23)
+	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 24)
+	accountPreferencesFieldRenewalReminderEmails                   = big.NewInt(1 << 25)
+	accountPreferencesFieldReviewRequestEmails                     = big.NewInt(1 << 26)
+	accountPreferencesFieldSubaccountNotifications                 = big.NewInt(1 << 27)
+	accountPreferencesFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 28)
+	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 29)
 )
 
 // accountPreferencesNullableFields maps the wire names of AccountPreferences's nullable fields (required or optional) to their field bits.
@@ -4438,6 +4439,8 @@ type AccountPreferences struct {
 	AdsTripleWhaleIntegration map[string]any `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
 	// Whether Whop emails members when their membership is canceled or terminated. `true` by default. Set it to `false` to stop these emails while keeping the account's other customer emails. They also stop while the account's `send_customer_emails` is `false`.
 	CancellationEmails bool `json:"cancellation_emails" url:"cancellation_emails"`
+	// The card surcharge a point of sale adds to credit card payments. Debit and prepaid cards never pay it.
+	CardSurcharge *CardSurchargePreferences `json:"card_surcharge" url:"card_surcharge"`
 	// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
 	// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
@@ -4530,6 +4533,13 @@ func (a *AccountPreferences) GetCancellationEmails() bool {
 		return false
 	}
 	return a.CancellationEmails
+}
+
+func (a *AccountPreferences) GetCardSurcharge() *CardSurchargePreferences {
+	if a == nil {
+		return nil
+	}
+	return a.CardSurcharge
 }
 
 func (a *AccountPreferences) GetCardsAutoTopUp() bool {
@@ -4749,6 +4759,13 @@ func (a *AccountPreferences) SetAdsTripleWhaleIntegration(adsTripleWhaleIntegrat
 func (a *AccountPreferences) SetCancellationEmails(cancellationEmails bool) {
 	a.CancellationEmails = cancellationEmails
 	a.require(accountPreferencesFieldCancellationEmails)
+}
+
+// SetCardSurcharge sets the CardSurcharge field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetCardSurcharge(cardSurcharge *CardSurchargePreferences) {
+	a.CardSurcharge = cardSurcharge
+	a.require(accountPreferencesFieldCardSurcharge)
 }
 
 // SetCardsAutoTopUp sets the CardsAutoTopUp field and marks it as non-optional;
@@ -8560,6 +8577,140 @@ func NewCardIssuingTransactionStatusFromString(s string) (CardIssuingTransaction
 
 func (c CardIssuingTransactionStatus) Ptr() *CardIssuingTransactionStatus {
 	return &c
+}
+
+var (
+	cardSurchargePreferencesFieldEnabled           = big.NewInt(1 << 0)
+	cardSurchargePreferencesFieldMaximumPercentage = big.NewInt(1 << 1)
+	cardSurchargePreferencesFieldPercentage        = big.NewInt(1 << 2)
+)
+
+// cardSurchargePreferencesNullableFields maps the wire names of CardSurchargePreferences's nullable fields (required or optional) to their field bits.
+var cardSurchargePreferencesNullableFields = map[string]*big.Int{
+	"maximum_percentage": cardSurchargePreferencesFieldMaximumPercentage,
+	"percentage":         cardSurchargePreferencesFieldPercentage,
+}
+
+type CardSurchargePreferences struct {
+	// Whether credit card payments with `apply_surcharge` add the surcharge. False when the account cannot surcharge, even if it was turned on.
+	Enabled bool `json:"enabled" url:"enabled"`
+	// The highest percentage this account can set. It is 3, or lower where the business's state sets a lower limit. Null when the account cannot surcharge, such as a business outside the US or in a state that does not allow surcharges.
+	MaximumPercentage *float64 `json:"maximum_percentage,omitempty" url:"maximum_percentage,omitempty"`
+	// The surcharge as a percentage of the purchase after discounts and before tax, such as `3` for 3%. Null while the surcharge is off.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CardSurchargePreferences) GetEnabled() bool {
+	if c == nil {
+		return false
+	}
+	return c.Enabled
+}
+
+func (c *CardSurchargePreferences) GetMaximumPercentage() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.MaximumPercentage
+}
+
+func (c *CardSurchargePreferences) GetPercentage() *float64 {
+	if c == nil {
+		return nil
+	}
+	return c.Percentage
+}
+
+func (c *CardSurchargePreferences) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CardSurchargePreferences) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetEnabled sets the Enabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CardSurchargePreferences) SetEnabled(enabled bool) {
+	c.Enabled = enabled
+	c.require(cardSurchargePreferencesFieldEnabled)
+}
+
+// SetMaximumPercentage sets the MaximumPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CardSurchargePreferences) SetMaximumPercentage(maximumPercentage *float64) {
+	c.MaximumPercentage = maximumPercentage
+	c.require(cardSurchargePreferencesFieldMaximumPercentage)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CardSurchargePreferences) SetPercentage(percentage *float64) {
+	c.Percentage = percentage
+	c.require(cardSurchargePreferencesFieldPercentage)
+}
+
+func (c *CardSurchargePreferences) UnmarshalJSON(data []byte) error {
+	type unmarshaler CardSurchargePreferences
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CardSurchargePreferences(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, cardSurchargePreferencesNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CardSurchargePreferences) MarshalJSON() ([]byte, error) {
+	type embed CardSurchargePreferences
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CardSurchargePreferences) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
 }
 
 var (
@@ -45931,19 +46082,20 @@ var (
 	paymentFieldStatus                           = big.NewInt(1 << 56)
 	paymentFieldSubstatus                        = big.NewInt(1 << 57)
 	paymentFieldSubtotal                         = big.NewInt(1 << 58)
-	paymentFieldTaxAmount                        = big.NewInt(1 << 59)
-	paymentFieldTaxBehavior                      = big.NewInt(1 << 60)
-	paymentFieldTaxRefundedAmount                = big.NewInt(1 << 61)
-	paymentFieldThreeDsVerified                  = big.NewInt(1 << 62)
-	paymentFieldTotal                            = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	paymentFieldUpdatedAt                        = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	paymentFieldUsdTotal                         = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	paymentFieldUser                             = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	paymentFieldUserAgent                        = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	paymentFieldVariantID                        = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	paymentFieldVerificationChecks               = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	paymentFieldVoidable                         = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	paymentFieldWuid                             = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	paymentFieldSurcharge                        = big.NewInt(1 << 59)
+	paymentFieldTaxAmount                        = big.NewInt(1 << 60)
+	paymentFieldTaxBehavior                      = big.NewInt(1 << 61)
+	paymentFieldTaxRefundedAmount                = big.NewInt(1 << 62)
+	paymentFieldThreeDsVerified                  = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	paymentFieldTotal                            = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	paymentFieldUpdatedAt                        = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	paymentFieldUsdTotal                         = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	paymentFieldUser                             = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	paymentFieldUserAgent                        = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	paymentFieldVariantID                        = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	paymentFieldVerificationChecks               = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	paymentFieldVoidable                         = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	paymentFieldWuid                             = big.NewInt(0).Lsh(big.NewInt(1), 72)
 )
 
 // paymentNullableFields maps the wire names of Payment's nullable fields (required or optional) to their field bits.
@@ -45994,6 +46146,7 @@ var paymentNullableFields = map[string]*big.Int{
 	"shipment_id":                         paymentFieldShipmentID,
 	"shipping_address":                    paymentFieldShippingAddress,
 	"subtotal":                            paymentFieldSubtotal,
+	"surcharge":                           paymentFieldSurcharge,
 	"tax_amount":                          paymentFieldTaxAmount,
 	"tax_behavior":                        paymentFieldTaxBehavior,
 	"total":                               paymentFieldTotal,
@@ -46122,6 +46275,8 @@ type Payment struct {
 	Substatus FriendlyReceiptStatus `json:"substatus" url:"substatus"`
 	// The price before discounts, tax and fees.
 	Subtotal *Money `json:"subtotal,omitempty" url:"subtotal,omitempty"`
+	// The card surcharge the buyer pays for paying by credit card. It is included in `total` and `amount_charged`, and appears in `line_items` as a line of its own. Null when the payment has no surcharge.
+	Surcharge *Money `json:"surcharge,omitempty" url:"surcharge,omitempty"`
 	// The sales tax or VAT collected. Null when no tax applied.
 	TaxAmount *Money `json:"tax_amount,omitempty" url:"tax_amount,omitempty"`
 	// Whether `tax_amount` was added on top of the price (`exclusive`) or was already inside it (`inclusive`).
@@ -46567,6 +46722,13 @@ func (p *Payment) GetSubtotal() *Money {
 		return nil
 	}
 	return p.Subtotal
+}
+
+func (p *Payment) GetSurcharge() *Money {
+	if p == nil {
+		return nil
+	}
+	return p.Surcharge
 }
 
 func (p *Payment) GetTaxAmount() *Money {
@@ -47087,6 +47249,13 @@ func (p *Payment) SetSubstatus(substatus FriendlyReceiptStatus) {
 func (p *Payment) SetSubtotal(subtotal *Money) {
 	p.Subtotal = subtotal
 	p.require(paymentFieldSubtotal)
+}
+
+// SetSurcharge sets the Surcharge field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetSurcharge(surcharge *Money) {
+	p.Surcharge = surcharge
+	p.require(paymentFieldSurcharge)
 }
 
 // SetTaxAmount sets the TaxAmount field and marks it as non-optional;
