@@ -11,18 +11,20 @@ import (
 )
 
 var (
-	listAppInstallationsRequestFieldAccountID     = big.NewInt(1 << 0)
-	listAppInstallationsRequestFieldAppID         = big.NewInt(1 << 1)
-	listAppInstallationsRequestFieldViewType      = big.NewInt(1 << 2)
-	listAppInstallationsRequestFieldExternalID    = big.NewInt(1 << 3)
-	listAppInstallationsRequestFieldCreatedBefore = big.NewInt(1 << 4)
-	listAppInstallationsRequestFieldCreatedAfter  = big.NewInt(1 << 5)
-	listAppInstallationsRequestFieldFirst         = big.NewInt(1 << 6)
-	listAppInstallationsRequestFieldAfter         = big.NewInt(1 << 7)
-	listAppInstallationsRequestFieldLast          = big.NewInt(1 << 8)
-	listAppInstallationsRequestFieldBefore        = big.NewInt(1 << 9)
-	listAppInstallationsRequestFieldOrder         = big.NewInt(1 << 10)
-	listAppInstallationsRequestFieldDirection     = big.NewInt(1 << 11)
+	listAppInstallationsRequestFieldAccountID                 = big.NewInt(1 << 0)
+	listAppInstallationsRequestFieldAppID                     = big.NewInt(1 << 1)
+	listAppInstallationsRequestFieldViewType                  = big.NewInt(1 << 2)
+	listAppInstallationsRequestFieldExternalID                = big.NewInt(1 << 3)
+	listAppInstallationsRequestFieldCreatedBefore             = big.NewInt(1 << 4)
+	listAppInstallationsRequestFieldCreatedAfter              = big.NewInt(1 << 5)
+	listAppInstallationsRequestFieldRequestingReauthorization = big.NewInt(1 << 6)
+	listAppInstallationsRequestFieldFirst                     = big.NewInt(1 << 7)
+	listAppInstallationsRequestFieldAfter                     = big.NewInt(1 << 8)
+	listAppInstallationsRequestFieldLast                      = big.NewInt(1 << 9)
+	listAppInstallationsRequestFieldBefore                    = big.NewInt(1 << 10)
+	listAppInstallationsRequestFieldIncludeTotalCount         = big.NewInt(1 << 11)
+	listAppInstallationsRequestFieldOrder                     = big.NewInt(1 << 12)
+	listAppInstallationsRequestFieldDirection                 = big.NewInt(1 << 13)
 )
 
 type ListAppInstallationsRequest struct {
@@ -38,6 +40,8 @@ type ListAppInstallationsRequest struct {
 	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
 	// Only return installations created after this ISO 8601 timestamp.
 	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
+	// When `true`, only return installations whose app asks for permissions the account hasn't approved yet. When `false`, only return the others.
+	RequestingReauthorization *bool `json:"-" url:"requesting_reauthorization,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
@@ -46,6 +50,8 @@ type ListAppInstallationsRequest struct {
 	Last *int `json:"-" url:"last,omitempty"`
 	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
+	// Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
+	IncludeTotalCount *bool `json:"-" url:"include_total_count,omitempty"`
 	// Field to sort installations by. `name` sorts by app name, and only when listing the apps installed on one account.
 	Order *ListAppInstallationsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
@@ -106,6 +112,13 @@ func (l *ListAppInstallationsRequest) SetCreatedAfter(createdAfter *string) {
 	l.require(listAppInstallationsRequestFieldCreatedAfter)
 }
 
+// SetRequestingReauthorization sets the RequestingReauthorization field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAppInstallationsRequest) SetRequestingReauthorization(requestingReauthorization *bool) {
+	l.RequestingReauthorization = requestingReauthorization
+	l.require(listAppInstallationsRequestFieldRequestingReauthorization)
+}
+
 // SetFirst sets the First field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListAppInstallationsRequest) SetFirst(first *int) {
@@ -132,6 +145,13 @@ func (l *ListAppInstallationsRequest) SetLast(last *int) {
 func (l *ListAppInstallationsRequest) SetBefore(before *string) {
 	l.Before = before
 	l.require(listAppInstallationsRequestFieldBefore)
+}
+
+// SetIncludeTotalCount sets the IncludeTotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAppInstallationsRequest) SetIncludeTotalCount(includeTotalCount *bool) {
+	l.IncludeTotalCount = includeTotalCount
+	l.require(listAppInstallationsRequestFieldIncludeTotalCount)
 }
 
 // SetOrder sets the Order field and marks it as non-optional;
@@ -717,16 +737,19 @@ func (l *ListAppInstallationsResponse) String() string {
 }
 
 var (
-	listAppInstallationsResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
-	listAppInstallationsResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
-	listAppInstallationsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
-	listAppInstallationsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+	listAppInstallationsResponsePageInfoFieldEndCursor        = big.NewInt(1 << 0)
+	listAppInstallationsResponsePageInfoFieldHasNextPage      = big.NewInt(1 << 1)
+	listAppInstallationsResponsePageInfoFieldHasPreviousPage  = big.NewInt(1 << 2)
+	listAppInstallationsResponsePageInfoFieldStartCursor      = big.NewInt(1 << 3)
+	listAppInstallationsResponsePageInfoFieldTotalCount       = big.NewInt(1 << 4)
+	listAppInstallationsResponsePageInfoFieldTotalCountCapped = big.NewInt(1 << 5)
 )
 
 // listAppInstallationsResponsePageInfoNullableFields maps the wire names of ListAppInstallationsResponsePageInfo's nullable fields (required or optional) to their field bits.
 var listAppInstallationsResponsePageInfoNullableFields = map[string]*big.Int{
 	"end_cursor":   listAppInstallationsResponsePageInfoFieldEndCursor,
 	"start_cursor": listAppInstallationsResponsePageInfoFieldStartCursor,
+	"total_count":  listAppInstallationsResponsePageInfoFieldTotalCount,
 }
 
 type ListAppInstallationsResponsePageInfo struct {
@@ -734,6 +757,10 @@ type ListAppInstallationsResponsePageInfo struct {
 	HasNextPage     bool    `json:"has_next_page" url:"has_next_page"`
 	HasPreviousPage bool    `json:"has_previous_page" url:"has_previous_page"`
 	StartCursor     *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+	// Number of results matching the filters, across every page. Counting stops at 10,000. `null` when `include_total_count` isn't `true`, or when the count ran out of time.
+	TotalCount *int `json:"total_count,omitempty" url:"total_count,omitempty"`
+	// Whether counting stopped at the limit. `true` means `total_count` is 10,000 or more.
+	TotalCountCapped bool `json:"total_count_capped" url:"total_count_capped"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -768,6 +795,20 @@ func (l *ListAppInstallationsResponsePageInfo) GetStartCursor() *string {
 		return nil
 	}
 	return l.StartCursor
+}
+
+func (l *ListAppInstallationsResponsePageInfo) GetTotalCount() *int {
+	if l == nil {
+		return nil
+	}
+	return l.TotalCount
+}
+
+func (l *ListAppInstallationsResponsePageInfo) GetTotalCountCapped() bool {
+	if l == nil {
+		return false
+	}
+	return l.TotalCountCapped
 }
 
 func (l *ListAppInstallationsResponsePageInfo) GetExtraProperties() map[string]interface{} {
@@ -812,6 +853,20 @@ func (l *ListAppInstallationsResponsePageInfo) SetHasPreviousPage(hasPreviousPag
 func (l *ListAppInstallationsResponsePageInfo) SetStartCursor(startCursor *string) {
 	l.StartCursor = startCursor
 	l.require(listAppInstallationsResponsePageInfoFieldStartCursor)
+}
+
+// SetTotalCount sets the TotalCount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAppInstallationsResponsePageInfo) SetTotalCount(totalCount *int) {
+	l.TotalCount = totalCount
+	l.require(listAppInstallationsResponsePageInfoFieldTotalCount)
+}
+
+// SetTotalCountCapped sets the TotalCountCapped field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListAppInstallationsResponsePageInfo) SetTotalCountCapped(totalCountCapped bool) {
+	l.TotalCountCapped = totalCountCapped
+	l.require(listAppInstallationsResponsePageInfoFieldTotalCountCapped)
 }
 
 func (l *ListAppInstallationsResponsePageInfo) UnmarshalJSON(data []byte) error {

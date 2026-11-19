@@ -59,6 +59,14 @@ func TestSettersListAppInstallationsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetRequestingReauthorization", func(t *testing.T) {
+		obj := &ListAppInstallationsRequest{}
+		var fernTestValueRequestingReauthorization *bool
+		obj.SetRequestingReauthorization(fernTestValueRequestingReauthorization)
+		assert.Equal(t, fernTestValueRequestingReauthorization, obj.RequestingReauthorization)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFirst", func(t *testing.T) {
 		obj := &ListAppInstallationsRequest{}
 		var fernTestValueFirst *int
@@ -88,6 +96,14 @@ func TestSettersListAppInstallationsRequest(t *testing.T) {
 		var fernTestValueBefore *string
 		obj.SetBefore(fernTestValueBefore)
 		assert.Equal(t, fernTestValueBefore, obj.Before)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetIncludeTotalCount", func(t *testing.T) {
+		obj := &ListAppInstallationsRequest{}
+		var fernTestValueIncludeTotalCount *bool
+		obj.SetIncludeTotalCount(fernTestValueIncludeTotalCount)
+		assert.Equal(t, fernTestValueIncludeTotalCount, obj.IncludeTotalCount)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -296,6 +312,37 @@ func TestSettersMarkExplicitListAppInstallationsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetRequestingReauthorization_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListAppInstallationsRequest{}
+		var fernTestValueRequestingReauthorization *bool
+
+		// Act
+		obj.SetRequestingReauthorization(fernTestValueRequestingReauthorization)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetFirst_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -397,6 +444,37 @@ func TestSettersMarkExplicitListAppInstallationsRequest(t *testing.T) {
 
 		// Act
 		obj.SetBefore(fernTestValueBefore)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIncludeTotalCount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListAppInstallationsRequest{}
+		var fernTestValueIncludeTotalCount *bool
+
+		// Act
+		obj.SetIncludeTotalCount(fernTestValueIncludeTotalCount)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1537,6 +1615,22 @@ func TestSettersListAppInstallationsResponsePageInfo(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetTotalCount", func(t *testing.T) {
+		obj := &ListAppInstallationsResponsePageInfo{}
+		var fernTestValueTotalCount *int
+		obj.SetTotalCount(fernTestValueTotalCount)
+		assert.Equal(t, fernTestValueTotalCount, obj.TotalCount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetTotalCountCapped", func(t *testing.T) {
+		obj := &ListAppInstallationsResponsePageInfo{}
+		var fernTestValueTotalCountCapped bool
+		obj.SetTotalCountCapped(fernTestValueTotalCountCapped)
+		assert.Equal(t, fernTestValueTotalCountCapped, obj.TotalCountCapped)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersListAppInstallationsResponsePageInfo(t *testing.T) {
@@ -1652,6 +1746,62 @@ func TestGettersListAppInstallationsResponsePageInfo(t *testing.T) {
 		_ = obj.GetStartCursor() // Should return zero value
 	})
 
+	t.Run("GetTotalCount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListAppInstallationsResponsePageInfo{}
+		var expected *int
+		obj.TotalCount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTotalCount(), "getter should return the property value")
+	})
+
+	t.Run("GetTotalCount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListAppInstallationsResponsePageInfo{}
+		obj.TotalCount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTotalCount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTotalCount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListAppInstallationsResponsePageInfo
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTotalCount() // Should return zero value
+	})
+
+	t.Run("GetTotalCountCapped", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListAppInstallationsResponsePageInfo{}
+		var expected bool
+		obj.TotalCountCapped = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTotalCountCapped(), "getter should return the property value")
+	})
+
+	t.Run("GetTotalCountCapped_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListAppInstallationsResponsePageInfo
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTotalCountCapped() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitListAppInstallationsResponsePageInfo(t *testing.T) {
@@ -1756,6 +1906,68 @@ func TestSettersMarkExplicitListAppInstallationsResponsePageInfo(t *testing.T) {
 
 		// Act
 		obj.SetStartCursor(fernTestValueStartCursor)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTotalCount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListAppInstallationsResponsePageInfo{}
+		var fernTestValueTotalCount *int
+
+		// Act
+		obj.SetTotalCount(fernTestValueTotalCount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTotalCountCapped_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListAppInstallationsResponsePageInfo{}
+		var fernTestValueTotalCountCapped bool
+
+		// Act
+		obj.SetTotalCountCapped(fernTestValueTotalCountCapped)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -3240,6 +3452,7 @@ func TestRequiredNullableRoundTripListAppInstallationsResponsePageInfo(t *testin
 	requiredNullableKeys := []string{
 		"end_cursor",
 		"start_cursor",
+		"total_count",
 	}
 	marshalToMap := func(t *testing.T, obj *ListAppInstallationsResponsePageInfo) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -3252,7 +3465,7 @@ func TestRequiredNullableRoundTripListAppInstallationsResponsePageInfo(t *testin
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ListAppInstallationsResponsePageInfo
-		require.NoError(t, json.Unmarshal([]byte(`{"end_cursor":null,"start_cursor":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"end_cursor":null,"start_cursor":null,"total_count":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
