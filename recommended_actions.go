@@ -194,21 +194,24 @@ func (r *RetrieveRecommendedActionsRequest) SetID(id string) {
 var (
 	recommendedActionFieldAccountID    = big.NewInt(1 << 0)
 	recommendedActionFieldCreatedAt    = big.NewInt(1 << 1)
-	recommendedActionFieldID           = big.NewInt(1 << 2)
-	recommendedActionFieldPreview      = big.NewInt(1 << 3)
-	recommendedActionFieldReasoning    = big.NewInt(1 << 4)
-	recommendedActionFieldRunByUserID  = big.NewInt(1 << 5)
-	recommendedActionFieldRunEndedAt   = big.NewInt(1 << 6)
-	recommendedActionFieldRunStartedAt = big.NewInt(1 << 7)
-	recommendedActionFieldStatus       = big.NewInt(1 << 8)
-	recommendedActionFieldTitle        = big.NewInt(1 << 9)
-	recommendedActionFieldType         = big.NewInt(1 << 10)
-	recommendedActionFieldUpdatedAt    = big.NewInt(1 << 11)
-	recommendedActionFieldWorkflow     = big.NewInt(1 << 12)
+	recommendedActionFieldExperimentID = big.NewInt(1 << 2)
+	recommendedActionFieldID           = big.NewInt(1 << 3)
+	recommendedActionFieldPreview      = big.NewInt(1 << 4)
+	recommendedActionFieldReasoning    = big.NewInt(1 << 5)
+	recommendedActionFieldRunByUserID  = big.NewInt(1 << 6)
+	recommendedActionFieldRunEndedAt   = big.NewInt(1 << 7)
+	recommendedActionFieldRunStartedAt = big.NewInt(1 << 8)
+	recommendedActionFieldStatus       = big.NewInt(1 << 9)
+	recommendedActionFieldTargetStats  = big.NewInt(1 << 10)
+	recommendedActionFieldTitle        = big.NewInt(1 << 11)
+	recommendedActionFieldType         = big.NewInt(1 << 12)
+	recommendedActionFieldUpdatedAt    = big.NewInt(1 << 13)
+	recommendedActionFieldWorkflow     = big.NewInt(1 << 14)
 )
 
 // recommendedActionNullableFields maps the wire names of RecommendedAction's nullable fields (required or optional) to their field bits.
 var recommendedActionNullableFields = map[string]*big.Int{
+	"experiment_id":  recommendedActionFieldExperimentID,
 	"preview":        recommendedActionFieldPreview,
 	"run_by_user_id": recommendedActionFieldRunByUserID,
 	"run_ended_at":   recommendedActionFieldRunEndedAt,
@@ -221,6 +224,8 @@ type RecommendedAction struct {
 	AccountID string `json:"account_id" url:"account_id"`
 	// When the action was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
+	// The experiment measuring the action's outcome, prefixed `expt_`. `null` when there is none.
+	ExperimentID *string `json:"experiment_id,omitempty" url:"experiment_id,omitempty"`
 	// Recommended action ID, prefixed `reca_`.
 	ID string `json:"id" url:"id"`
 	// The website change the action makes when it runs. `type` picks the shape. New types can be added, so skip a preview whose `type` you do not know. `null` while the action is `preparing`, or when the action does not change a website.
@@ -234,7 +239,8 @@ type RecommendedAction struct {
 	// When the run started, as an ISO 8601 timestamp. `null` until the action runs.
 	RunStartedAt *string `json:"run_started_at,omitempty" url:"run_started_at,omitempty"`
 	// Where the action is. `preparing` while its work is built, and it cannot run yet. `ready` when it can run. `running` while its steps are sent. `executed` when every step succeeded. `failed` when the run ended before every step succeeded. `dismissed` when the owner chose not to run it. `superseded` when Whop retired it, such as for a newer action.
-	Status RecommendedActionStatus `json:"status" url:"status"`
+	Status      RecommendedActionStatus  `json:"status" url:"status"`
+	TargetStats []*RecommendedActionStat `json:"target_stats" url:"target_stats"`
 	// What the action does, written for the account owner.
 	Title string `json:"title" url:"title"`
 	// What kind of change the action makes. New values can be added, so skip an action whose type you do not know.
@@ -263,6 +269,13 @@ func (r *RecommendedAction) GetCreatedAt() string {
 		return ""
 	}
 	return r.CreatedAt
+}
+
+func (r *RecommendedAction) GetExperimentID() *string {
+	if r == nil {
+		return nil
+	}
+	return r.ExperimentID
 }
 
 func (r *RecommendedAction) GetID() string {
@@ -312,6 +325,13 @@ func (r *RecommendedAction) GetStatus() RecommendedActionStatus {
 		return ""
 	}
 	return r.Status
+}
+
+func (r *RecommendedAction) GetTargetStats() []*RecommendedActionStat {
+	if r == nil {
+		return nil
+	}
+	return r.TargetStats
 }
 
 func (r *RecommendedAction) GetTitle() string {
@@ -372,6 +392,13 @@ func (r *RecommendedAction) SetCreatedAt(createdAt string) {
 	r.require(recommendedActionFieldCreatedAt)
 }
 
+// SetExperimentID sets the ExperimentID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RecommendedAction) SetExperimentID(experimentID *string) {
+	r.ExperimentID = experimentID
+	r.require(recommendedActionFieldExperimentID)
+}
+
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (r *RecommendedAction) SetID(id string) {
@@ -419,6 +446,13 @@ func (r *RecommendedAction) SetRunStartedAt(runStartedAt *string) {
 func (r *RecommendedAction) SetStatus(status RecommendedActionStatus) {
 	r.Status = status
 	r.require(recommendedActionFieldStatus)
+}
+
+// SetTargetStats sets the TargetStats field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RecommendedAction) SetTargetStats(targetStats []*RecommendedActionStat) {
+	r.TargetStats = targetStats
+	r.require(recommendedActionFieldTargetStats)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
@@ -747,6 +781,179 @@ func (r *RecommendedActionPreview) validate() error {
 		}
 	}
 	return nil
+}
+
+var (
+	recommendedActionStatFieldDirection = big.NewInt(1 << 0)
+	recommendedActionStatFieldEstimate  = big.NewInt(1 << 1)
+	recommendedActionStatFieldMetric    = big.NewInt(1 << 2)
+	recommendedActionStatFieldParams    = big.NewInt(1 << 3)
+)
+
+// recommendedActionStatNullableFields maps the wire names of RecommendedActionStat's nullable fields (required or optional) to their field bits.
+var recommendedActionStatNullableFields = map[string]*big.Int{
+	"estimate": recommendedActionStatFieldEstimate,
+}
+
+type RecommendedActionStat struct {
+	// Which way the measure should move.
+	Direction RecommendedActionStatDirection `json:"direction" url:"direction"`
+	// The value the measure is expected to reach, in its own unit. `null` when there is no estimate.
+	Estimate *float64 `json:"estimate,omitempty" url:"estimate,omitempty"`
+	// The stats metric, the key of `GET /stats/time_series/{metric}`.
+	Metric string `json:"metric" url:"metric"`
+	// The parameters of that metric beyond the account, as the stats API takes them.
+	Params map[string]any `json:"params" url:"params"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RecommendedActionStat) GetDirection() RecommendedActionStatDirection {
+	if r == nil {
+		return ""
+	}
+	return r.Direction
+}
+
+func (r *RecommendedActionStat) GetEstimate() *float64 {
+	if r == nil {
+		return nil
+	}
+	return r.Estimate
+}
+
+func (r *RecommendedActionStat) GetMetric() string {
+	if r == nil {
+		return ""
+	}
+	return r.Metric
+}
+
+func (r *RecommendedActionStat) GetParams() map[string]any {
+	if r == nil {
+		return nil
+	}
+	return r.Params
+}
+
+func (r *RecommendedActionStat) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RecommendedActionStat) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RecommendedActionStat) SetDirection(direction RecommendedActionStatDirection) {
+	r.Direction = direction
+	r.require(recommendedActionStatFieldDirection)
+}
+
+// SetEstimate sets the Estimate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RecommendedActionStat) SetEstimate(estimate *float64) {
+	r.Estimate = estimate
+	r.require(recommendedActionStatFieldEstimate)
+}
+
+// SetMetric sets the Metric field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RecommendedActionStat) SetMetric(metric string) {
+	r.Metric = metric
+	r.require(recommendedActionStatFieldMetric)
+}
+
+// SetParams sets the Params field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RecommendedActionStat) SetParams(params map[string]any) {
+	r.Params = params
+	r.require(recommendedActionStatFieldParams)
+}
+
+func (r *RecommendedActionStat) UnmarshalJSON(data []byte) error {
+	type unmarshaler RecommendedActionStat
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RecommendedActionStat(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, recommendedActionStatNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RecommendedActionStat) MarshalJSON() ([]byte, error) {
+	type embed RecommendedActionStat
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RecommendedActionStat) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+// Which way the measure should move.
+type RecommendedActionStatDirection string
+
+const (
+	RecommendedActionStatDirectionUp   RecommendedActionStatDirection = "up"
+	RecommendedActionStatDirectionDown RecommendedActionStatDirection = "down"
+)
+
+func NewRecommendedActionStatDirectionFromString(s string) (RecommendedActionStatDirection, error) {
+	switch s {
+	case "up":
+		return RecommendedActionStatDirectionUp, nil
+	case "down":
+		return RecommendedActionStatDirectionDown, nil
+	}
+	var t RecommendedActionStatDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RecommendedActionStatDirection) Ptr() *RecommendedActionStatDirection {
+	return &r
 }
 
 // Where the action is. `preparing` while its work is built, and it cannot run yet. `ready` when it can run. `running` while its steps are sent. `executed` when every step succeeded. `failed` when the run ended before every step succeeded. `dismissed` when the owner chose not to run it. `superseded` when Whop retired it, such as for a newer action.
