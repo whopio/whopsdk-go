@@ -11,7 +11,8 @@ import (
 var (
 	updatePreferencesRequestFieldBountyWorkerOnboardingDismissed = big.NewInt(1 << 0)
 	updatePreferencesRequestFieldCardsAutoTopUp                  = big.NewInt(1 << 1)
-	updatePreferencesRequestFieldTermsAccepted                   = big.NewInt(1 << 2)
+	updatePreferencesRequestFieldShowLevel                       = big.NewInt(1 << 2)
+	updatePreferencesRequestFieldTermsAccepted                   = big.NewInt(1 << 3)
 )
 
 type UpdatePreferencesRequest struct {
@@ -19,6 +20,8 @@ type UpdatePreferencesRequest struct {
 	BountyWorkerOnboardingDismissed *bool `json:"bounty_worker_onboarding_dismissed,omitempty" url:"-"`
 	// Whether incoming funds, including pending balance, are automatically moved to the user's personal cards balance. Requires a cards balance and the `payout:account:update` permission.
 	CardsAutoTopUp *bool `json:"cards_auto_top_up,omitempty" url:"-"`
+	// Whether other people can see the user's Whop Level. Set to `false` to hide it.
+	ShowLevel *bool `json:"show_level,omitempty" url:"-"`
 	// Records the user's acceptance of Whop's terms and policies. Only `true` is accepted — the server stamps `terms_accepted_at` and acceptance cannot be withdrawn here.
 	TermsAccepted *bool `json:"terms_accepted,omitempty" url:"-"`
 
@@ -47,6 +50,13 @@ func (u *UpdatePreferencesRequest) SetBountyWorkerOnboardingDismissed(bountyWork
 func (u *UpdatePreferencesRequest) SetCardsAutoTopUp(cardsAutoTopUp *bool) {
 	u.CardsAutoTopUp = cardsAutoTopUp
 	u.require(updatePreferencesRequestFieldCardsAutoTopUp)
+}
+
+// SetShowLevel sets the ShowLevel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetShowLevel(showLevel *bool) {
+	u.ShowLevel = showLevel
+	u.require(updatePreferencesRequestFieldShowLevel)
 }
 
 // SetTermsAccepted sets the TermsAccepted field and marks it as non-optional;

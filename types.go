@@ -79126,8 +79126,9 @@ func (u UserNotificationPreferenceObject) Ptr() *UserNotificationPreferenceObjec
 var (
 	userPreferencesFieldBountyWorkerOnboardingDismissed = big.NewInt(1 << 0)
 	userPreferencesFieldCardsAutoTopUp                  = big.NewInt(1 << 1)
-	userPreferencesFieldTermsAccepted                   = big.NewInt(1 << 2)
-	userPreferencesFieldTermsAcceptedAt                 = big.NewInt(1 << 3)
+	userPreferencesFieldShowLevel                       = big.NewInt(1 << 2)
+	userPreferencesFieldTermsAccepted                   = big.NewInt(1 << 3)
+	userPreferencesFieldTermsAcceptedAt                 = big.NewInt(1 << 4)
 )
 
 // userPreferencesNullableFields maps the wire names of UserPreferences's nullable fields (required or optional) to their field bits.
@@ -79140,6 +79141,8 @@ type UserPreferences struct {
 	BountyWorkerOnboardingDismissed bool `json:"bounty_worker_onboarding_dismissed" url:"bounty_worker_onboarding_dismissed"`
 	// Whether incoming funds, including pending balance, are automatically moved to the user's personal cards balance. `false` when the user has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
+	// Whether other people can see the user's Whop Level. Set to `false` to hide it.
+	ShowLevel bool `json:"show_level" url:"show_level"`
 	// Whether the user has accepted Whop's terms and policies. `false` until recorded via `PATCH` with `terms_accepted: true`.
 	TermsAccepted bool `json:"terms_accepted" url:"terms_accepted"`
 	// When the user most recently accepted Whop's terms and policies, as an ISO 8601 timestamp. `null` until accepted.
@@ -79164,6 +79167,13 @@ func (u *UserPreferences) GetCardsAutoTopUp() bool {
 		return false
 	}
 	return u.CardsAutoTopUp
+}
+
+func (u *UserPreferences) GetShowLevel() bool {
+	if u == nil {
+		return false
+	}
+	return u.ShowLevel
 }
 
 func (u *UserPreferences) GetTermsAccepted() bool {
@@ -79208,6 +79218,13 @@ func (u *UserPreferences) SetBountyWorkerOnboardingDismissed(bountyWorkerOnboard
 func (u *UserPreferences) SetCardsAutoTopUp(cardsAutoTopUp bool) {
 	u.CardsAutoTopUp = cardsAutoTopUp
 	u.require(userPreferencesFieldCardsAutoTopUp)
+}
+
+// SetShowLevel sets the ShowLevel field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserPreferences) SetShowLevel(showLevel bool) {
+	u.ShowLevel = showLevel
+	u.require(userPreferencesFieldShowLevel)
 }
 
 // SetTermsAccepted sets the TermsAccepted field and marks it as non-optional;
