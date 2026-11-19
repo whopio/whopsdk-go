@@ -81,7 +81,7 @@ type ListRecommendedActionsRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Only actions in any of these statuses. Repeat the parameter to pass several.
 	Statuses []*ListRecommendedActionsRequestStatusesItem `json:"-" url:"statuses,omitempty"`
-	// Field to sort by. With `lift`, the list holds only the actions whose experiment has a result. The action with the highest lift on its primary stat is first.
+	// Field to sort by. With `lift`, the list holds only the actions whose experiment has a result.
 	Order *ListRecommendedActionsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
 	Direction *ListRecommendedActionsRequestDirection `json:"-" url:"direction,omitempty"`

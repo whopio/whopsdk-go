@@ -37068,7 +37068,7 @@ client.RecommendedActions.List(
 <dl>
 <dd>
 
-**order:** `*whopsdk.ListRecommendedActionsRequestOrder` — Field to sort by. With `lift`, the list holds only the actions whose experiment has a result. The action with the highest lift on its primary stat is first.
+**order:** `*whopsdk.ListRecommendedActionsRequestOrder` — Field to sort by. With `lift`, the list holds only the actions whose experiment has a result.
     
 </dd>
 </dl>
