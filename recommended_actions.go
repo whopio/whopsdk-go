@@ -81,7 +81,7 @@ type ListRecommendedActionsRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Only actions in any of these statuses. Repeat the parameter to pass several.
 	Statuses []*ListRecommendedActionsRequestStatusesItem `json:"-" url:"statuses,omitempty"`
-	// Field to sort by.
+	// Field to sort by. With `lift`, the list holds only the actions whose experiment has a result. The action with the highest lift on its primary stat is first.
 	Order *ListRecommendedActionsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
 	Direction *ListRecommendedActionsRequestDirection `json:"-" url:"direction,omitempty"`
@@ -1690,6 +1690,7 @@ type ListRecommendedActionsRequestOrder string
 const (
 	ListRecommendedActionsRequestOrderCreatedAt    ListRecommendedActionsRequestOrder = "created_at"
 	ListRecommendedActionsRequestOrderRunStartedAt ListRecommendedActionsRequestOrder = "run_started_at"
+	ListRecommendedActionsRequestOrderLift         ListRecommendedActionsRequestOrder = "lift"
 )
 
 func NewListRecommendedActionsRequestOrderFromString(s string) (ListRecommendedActionsRequestOrder, error) {
@@ -1698,6 +1699,8 @@ func NewListRecommendedActionsRequestOrderFromString(s string) (ListRecommendedA
 		return ListRecommendedActionsRequestOrderCreatedAt, nil
 	case "run_started_at":
 		return ListRecommendedActionsRequestOrderRunStartedAt, nil
+	case "lift":
+		return ListRecommendedActionsRequestOrderLift, nil
 	}
 	var t ListRecommendedActionsRequestOrder
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
