@@ -271,21 +271,22 @@ var (
 	courseFieldCoverImage                        = big.NewInt(1 << 4)
 	courseFieldCreatedAt                         = big.NewInt(1 << 5)
 	courseFieldDescription                       = big.NewInt(1 << 6)
-	courseFieldID                                = big.NewInt(1 << 7)
-	courseFieldLanguage                          = big.NewInt(1 << 8)
-	courseFieldLatestLessonCreatedAt             = big.NewInt(1 << 9)
-	courseFieldLessonUnlockDays                  = big.NewInt(1 << 10)
-	courseFieldOrder                             = big.NewInt(1 << 11)
-	courseFieldRequireCompletingLessonsInOrder   = big.NewInt(1 << 12)
-	courseFieldResumeLesson                      = big.NewInt(1 << 13)
-	courseFieldStartedAt                         = big.NewInt(1 << 14)
-	courseFieldTagline                           = big.NewInt(1 << 15)
-	courseFieldThumbnail                         = big.NewInt(1 << 16)
-	courseFieldTitle                             = big.NewInt(1 << 17)
-	courseFieldTotalDurationSeconds              = big.NewInt(1 << 18)
-	courseFieldTotalLessonsCount                 = big.NewInt(1 << 19)
-	courseFieldUpdatedAt                         = big.NewInt(1 << 20)
-	courseFieldVisibility                        = big.NewInt(1 << 21)
+	courseFieldExperience                        = big.NewInt(1 << 7)
+	courseFieldID                                = big.NewInt(1 << 8)
+	courseFieldLanguage                          = big.NewInt(1 << 9)
+	courseFieldLatestLessonCreatedAt             = big.NewInt(1 << 10)
+	courseFieldLessonUnlockDays                  = big.NewInt(1 << 11)
+	courseFieldOrder                             = big.NewInt(1 << 12)
+	courseFieldRequireCompletingLessonsInOrder   = big.NewInt(1 << 13)
+	courseFieldResumeLesson                      = big.NewInt(1 << 14)
+	courseFieldStartedAt                         = big.NewInt(1 << 15)
+	courseFieldTagline                           = big.NewInt(1 << 16)
+	courseFieldThumbnail                         = big.NewInt(1 << 17)
+	courseFieldTitle                             = big.NewInt(1 << 18)
+	courseFieldTotalDurationSeconds              = big.NewInt(1 << 19)
+	courseFieldTotalLessonsCount                 = big.NewInt(1 << 20)
+	courseFieldUpdatedAt                         = big.NewInt(1 << 21)
+	courseFieldVisibility                        = big.NewInt(1 << 22)
 )
 
 // courseNullableFields maps the wire names of Course's nullable fields (required or optional) to their field bits.
@@ -317,6 +318,8 @@ type Course struct {
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// A brief summary of the course content and objectives. Null if no description has been set.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// The parent experience that this course belongs to.
+	Experience *CourseExperience `json:"experience" url:"experience"`
 	// The unique identifier for the course.
 	ID string `json:"id" url:"id"`
 	// The spoken language of the video content, used to generate accurate closed captions. One of: en, es, it, pt, de, fr, pl, ru, nl, ca, tr, sv, uk, no, fi, sk, el, cs, hr, da, ro, bg.
@@ -402,6 +405,13 @@ func (c *Course) GetDescription() *string {
 		return nil
 	}
 	return c.Description
+}
+
+func (c *Course) GetExperience() *CourseExperience {
+	if c == nil {
+		return nil
+	}
+	return c.Experience
 }
 
 func (c *Course) GetID() string {
@@ -572,6 +582,13 @@ func (c *Course) SetCreatedAt(createdAt time.Time) {
 func (c *Course) SetDescription(description *string) {
 	c.Description = description
 	c.require(courseFieldDescription)
+}
+
+// SetExperience sets the Experience field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *Course) SetExperience(experience *CourseExperience) {
+	c.Experience = experience
+	c.require(courseFieldExperience)
 }
 
 // SetID sets the ID field and marks it as non-optional;
@@ -1310,27 +1327,116 @@ func (c *CourseChaptersItemLessonsItemVideoAsset) String() string {
 }
 
 var (
+	courseExperienceFieldID = big.NewInt(1 << 0)
+)
+
+// The parent experience that this course belongs to.
+type CourseExperience struct {
+	// The unique identifier for the experience.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CourseExperience) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CourseExperience) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CourseExperience) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CourseExperience) SetID(id string) {
+	c.ID = id
+	c.require(courseExperienceFieldID)
+}
+
+func (c *CourseExperience) UnmarshalJSON(data []byte) error {
+	type unmarshaler CourseExperience
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CourseExperience(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CourseExperience) MarshalJSON() ([]byte, error) {
+	type embed CourseExperience
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CourseExperience) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
 	courseListItemFieldCertificateAfterCompletionEnabled = big.NewInt(1 << 0)
 	courseListItemFieldChaptersCount                     = big.NewInt(1 << 1)
 	courseListItemFieldCompletedLessonsCount             = big.NewInt(1 << 2)
 	courseListItemFieldCoverImage                        = big.NewInt(1 << 3)
 	courseListItemFieldCreatedAt                         = big.NewInt(1 << 4)
 	courseListItemFieldDescription                       = big.NewInt(1 << 5)
-	courseListItemFieldID                                = big.NewInt(1 << 6)
-	courseListItemFieldLanguage                          = big.NewInt(1 << 7)
-	courseListItemFieldLatestLessonCreatedAt             = big.NewInt(1 << 8)
-	courseListItemFieldLessonUnlockDays                  = big.NewInt(1 << 9)
-	courseListItemFieldOrder                             = big.NewInt(1 << 10)
-	courseListItemFieldRequireCompletingLessonsInOrder   = big.NewInt(1 << 11)
-	courseListItemFieldResumeLesson                      = big.NewInt(1 << 12)
-	courseListItemFieldStartedAt                         = big.NewInt(1 << 13)
-	courseListItemFieldTagline                           = big.NewInt(1 << 14)
-	courseListItemFieldThumbnail                         = big.NewInt(1 << 15)
-	courseListItemFieldTitle                             = big.NewInt(1 << 16)
-	courseListItemFieldTotalDurationSeconds              = big.NewInt(1 << 17)
-	courseListItemFieldTotalLessonsCount                 = big.NewInt(1 << 18)
-	courseListItemFieldUpdatedAt                         = big.NewInt(1 << 19)
-	courseListItemFieldVisibility                        = big.NewInt(1 << 20)
+	courseListItemFieldExperience                        = big.NewInt(1 << 6)
+	courseListItemFieldID                                = big.NewInt(1 << 7)
+	courseListItemFieldLanguage                          = big.NewInt(1 << 8)
+	courseListItemFieldLatestLessonCreatedAt             = big.NewInt(1 << 9)
+	courseListItemFieldLessonUnlockDays                  = big.NewInt(1 << 10)
+	courseListItemFieldOrder                             = big.NewInt(1 << 11)
+	courseListItemFieldRequireCompletingLessonsInOrder   = big.NewInt(1 << 12)
+	courseListItemFieldResumeLesson                      = big.NewInt(1 << 13)
+	courseListItemFieldStartedAt                         = big.NewInt(1 << 14)
+	courseListItemFieldTagline                           = big.NewInt(1 << 15)
+	courseListItemFieldThumbnail                         = big.NewInt(1 << 16)
+	courseListItemFieldTitle                             = big.NewInt(1 << 17)
+	courseListItemFieldTotalDurationSeconds              = big.NewInt(1 << 18)
+	courseListItemFieldTotalLessonsCount                 = big.NewInt(1 << 19)
+	courseListItemFieldUpdatedAt                         = big.NewInt(1 << 20)
+	courseListItemFieldVisibility                        = big.NewInt(1 << 21)
 )
 
 // courseListItemNullableFields maps the wire names of CourseListItem's nullable fields (required or optional) to their field bits.
@@ -1360,6 +1466,8 @@ type CourseListItem struct {
 	CreatedAt time.Time `json:"created_at" url:"created_at"`
 	// A brief summary of the course content and objectives. Null if no description has been set.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// The parent experience that this course belongs to.
+	Experience *CourseListItemExperience `json:"experience" url:"experience"`
 	// The unique identifier for the course.
 	ID string `json:"id" url:"id"`
 	// The spoken language of the video content, used to generate accurate closed captions. One of: en, es, it, pt, de, fr, pl, ru, nl, ca, tr, sv, uk, no, fi, sk, el, cs, hr, da, ro, bg.
@@ -1438,6 +1546,13 @@ func (c *CourseListItem) GetDescription() *string {
 		return nil
 	}
 	return c.Description
+}
+
+func (c *CourseListItem) GetExperience() *CourseListItemExperience {
+	if c == nil {
+		return nil
+	}
+	return c.Experience
 }
 
 func (c *CourseListItem) GetID() string {
@@ -1603,6 +1718,13 @@ func (c *CourseListItem) SetDescription(description *string) {
 	c.require(courseListItemFieldDescription)
 }
 
+// SetExperience sets the Experience field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CourseListItem) SetExperience(experience *CourseListItemExperience) {
+	c.Experience = experience
+	c.require(courseListItemFieldExperience)
+}
+
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CourseListItem) SetID(id string) {
@@ -1763,6 +1885,94 @@ func (c *CourseListItem) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CourseListItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	courseListItemExperienceFieldID = big.NewInt(1 << 0)
+)
+
+// The parent experience that this course belongs to.
+type CourseListItemExperience struct {
+	// The unique identifier for the experience.
+	ID string `json:"id" url:"id"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CourseListItemExperience) GetID() string {
+	if c == nil {
+		return ""
+	}
+	return c.ID
+}
+
+func (c *CourseListItemExperience) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CourseListItemExperience) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CourseListItemExperience) SetID(id string) {
+	c.ID = id
+	c.require(courseListItemExperienceFieldID)
+}
+
+func (c *CourseListItemExperience) UnmarshalJSON(data []byte) error {
+	type unmarshaler CourseListItemExperience
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CourseListItemExperience(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CourseListItemExperience) MarshalJSON() ([]byte, error) {
+	type embed CourseListItemExperience
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CourseListItemExperience) String() string {
 	if c == nil {
 		return "<nil>"
 	}
