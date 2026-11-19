@@ -2603,7 +2603,8 @@ var (
 	adCreativeFieldID        = big.NewInt(1 << 2)
 	adCreativeFieldLanguage  = big.NewInt(1 << 3)
 	adCreativeFieldMediaType = big.NewInt(1 << 4)
-	adCreativeFieldURL       = big.NewInt(1 << 5)
+	adCreativeFieldSourceID  = big.NewInt(1 << 5)
+	adCreativeFieldURL       = big.NewInt(1 << 6)
 )
 
 // adCreativeNullableFields maps the wire names of AdCreative's nullable fields (required or optional) to their field bits.
@@ -2612,6 +2613,7 @@ var adCreativeNullableFields = map[string]*big.Int{
 	"format":     adCreativeFieldFormat,
 	"language":   adCreativeFieldLanguage,
 	"media_type": adCreativeFieldMediaType,
+	"source_id":  adCreativeFieldSourceID,
 	"url":        adCreativeFieldURL,
 }
 
@@ -2626,6 +2628,8 @@ type AdCreative struct {
 	Language *string `json:"language,omitempty" url:"language,omitempty"`
 	// The kind of asset, image or video.
 	MediaType *string `json:"media_type,omitempty" url:"media_type,omitempty"`
+	// The file this format was cut out of, prefixed `file_`. Null for the original asset or a format uploaded as it is.
+	SourceID *string `json:"source_id,omitempty" url:"source_id,omitempty"`
 	// CDN url of the asset.
 	URL *string `json:"url,omitempty" url:"url,omitempty"`
 
@@ -2669,6 +2673,13 @@ func (a *AdCreative) GetMediaType() *string {
 		return nil
 	}
 	return a.MediaType
+}
+
+func (a *AdCreative) GetSourceID() *string {
+	if a == nil {
+		return nil
+	}
+	return a.SourceID
 }
 
 func (a *AdCreative) GetURL() *string {
@@ -2727,6 +2738,13 @@ func (a *AdCreative) SetLanguage(language *string) {
 func (a *AdCreative) SetMediaType(mediaType *string) {
 	a.MediaType = mediaType
 	a.require(adCreativeFieldMediaType)
+}
+
+// SetSourceID sets the SourceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdCreative) SetSourceID(sourceID *string) {
+	a.SourceID = sourceID
+	a.require(adCreativeFieldSourceID)
 }
 
 // SetURL sets the URL field and marks it as non-optional;
@@ -3788,9 +3806,10 @@ func (c CreateAdsRequestCallToAction) Ptr() *CreateAdsRequestCallToAction {
 }
 
 var (
-	createAdsRequestCreativesItemFieldCrop   = big.NewInt(1 << 0)
-	createAdsRequestCreativesItemFieldFormat = big.NewInt(1 << 1)
-	createAdsRequestCreativesItemFieldID     = big.NewInt(1 << 2)
+	createAdsRequestCreativesItemFieldCrop     = big.NewInt(1 << 0)
+	createAdsRequestCreativesItemFieldFormat   = big.NewInt(1 << 1)
+	createAdsRequestCreativesItemFieldID       = big.NewInt(1 << 2)
+	createAdsRequestCreativesItemFieldSourceID = big.NewInt(1 << 3)
 )
 
 type CreateAdsRequestCreativesItem struct {
@@ -3799,6 +3818,8 @@ type CreateAdsRequestCreativesItem struct {
 	Format *CreateAdsRequestCreativesItemFormat `json:"format,omitempty" url:"format,omitempty"`
 	// Uploaded file ID, prefixed `file_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// The uploaded file to cut this format out of, prefixed `file_`. Whop cuts the `crop` window out of it, in that file's pixels, and makes the slot's file. Omit it to use `id` as uploaded.
+	SourceID *string `json:"source_id,omitempty" url:"source_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -3826,6 +3847,13 @@ func (c *CreateAdsRequestCreativesItem) GetID() *string {
 		return nil
 	}
 	return c.ID
+}
+
+func (c *CreateAdsRequestCreativesItem) GetSourceID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SourceID
 }
 
 func (c *CreateAdsRequestCreativesItem) GetExtraProperties() map[string]interface{} {
@@ -3863,6 +3891,13 @@ func (c *CreateAdsRequestCreativesItem) SetFormat(format *CreateAdsRequestCreati
 func (c *CreateAdsRequestCreativesItem) SetID(id *string) {
 	c.ID = id
 	c.require(createAdsRequestCreativesItemFieldID)
+}
+
+// SetSourceID sets the SourceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdsRequestCreativesItem) SetSourceID(sourceID *string) {
+	c.SourceID = sourceID
+	c.require(createAdsRequestCreativesItemFieldSourceID)
 }
 
 func (c *CreateAdsRequestCreativesItem) UnmarshalJSON(data []byte) error {
@@ -6236,9 +6271,10 @@ func (u UpdateAdsRequestCallToAction) Ptr() *UpdateAdsRequestCallToAction {
 }
 
 var (
-	updateAdsRequestCreativesItemFieldCrop   = big.NewInt(1 << 0)
-	updateAdsRequestCreativesItemFieldFormat = big.NewInt(1 << 1)
-	updateAdsRequestCreativesItemFieldID     = big.NewInt(1 << 2)
+	updateAdsRequestCreativesItemFieldCrop     = big.NewInt(1 << 0)
+	updateAdsRequestCreativesItemFieldFormat   = big.NewInt(1 << 1)
+	updateAdsRequestCreativesItemFieldID       = big.NewInt(1 << 2)
+	updateAdsRequestCreativesItemFieldSourceID = big.NewInt(1 << 3)
 )
 
 type UpdateAdsRequestCreativesItem struct {
@@ -6247,6 +6283,8 @@ type UpdateAdsRequestCreativesItem struct {
 	Format *UpdateAdsRequestCreativesItemFormat `json:"format,omitempty" url:"format,omitempty"`
 	// Uploaded file ID, prefixed `file_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// The uploaded file to cut this format out of, prefixed `file_`. Whop cuts the `crop` window out of it, in that file's pixels, and makes the slot's file. Omit it to use `id` as uploaded.
+	SourceID *string `json:"source_id,omitempty" url:"source_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6274,6 +6312,13 @@ func (u *UpdateAdsRequestCreativesItem) GetID() *string {
 		return nil
 	}
 	return u.ID
+}
+
+func (u *UpdateAdsRequestCreativesItem) GetSourceID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.SourceID
 }
 
 func (u *UpdateAdsRequestCreativesItem) GetExtraProperties() map[string]interface{} {
@@ -6311,6 +6356,13 @@ func (u *UpdateAdsRequestCreativesItem) SetFormat(format *UpdateAdsRequestCreati
 func (u *UpdateAdsRequestCreativesItem) SetID(id *string) {
 	u.ID = id
 	u.require(updateAdsRequestCreativesItemFieldID)
+}
+
+// SetSourceID sets the SourceID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAdsRequestCreativesItem) SetSourceID(sourceID *string) {
+	u.SourceID = sourceID
+	u.require(updateAdsRequestCreativesItemFieldSourceID)
 }
 
 func (u *UpdateAdsRequestCreativesItem) UnmarshalJSON(data []byte) error {
