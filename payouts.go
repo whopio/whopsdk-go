@@ -7322,45 +7322,47 @@ func (p PostPayoutMethodCreatedPayloadAPIVersion) Ptr() *PostPayoutMethodCreated
 }
 
 var (
-	postPayoutMethodCreatedPayloadDataFieldAccountReference      = big.NewInt(1 << 0)
-	postPayoutMethodCreatedPayloadDataFieldBankVerificationState = big.NewInt(1 << 1)
-	postPayoutMethodCreatedPayloadDataFieldCreatedAt             = big.NewInt(1 << 2)
-	postPayoutMethodCreatedPayloadDataFieldDestinationCurrency   = big.NewInt(1 << 3)
-	postPayoutMethodCreatedPayloadDataFieldEstimatedArrival      = big.NewInt(1 << 4)
-	postPayoutMethodCreatedPayloadDataFieldFeeStructure          = big.NewInt(1 << 5)
-	postPayoutMethodCreatedPayloadDataFieldID                    = big.NewInt(1 << 6)
-	postPayoutMethodCreatedPayloadDataFieldInstitutionName       = big.NewInt(1 << 7)
-	postPayoutMethodCreatedPayloadDataFieldIsClone               = big.NewInt(1 << 8)
-	postPayoutMethodCreatedPayloadDataFieldIsDefault             = big.NewInt(1 << 9)
-	postPayoutMethodCreatedPayloadDataFieldLastPaidOutAt         = big.NewInt(1 << 10)
-	postPayoutMethodCreatedPayloadDataFieldLinkedViaPlaid        = big.NewInt(1 << 11)
-	postPayoutMethodCreatedPayloadDataFieldNeedsPlaidReconnect   = big.NewInt(1 << 12)
-	postPayoutMethodCreatedPayloadDataFieldNickname              = big.NewInt(1 << 13)
-	postPayoutMethodCreatedPayloadDataFieldObject                = big.NewInt(1 << 14)
-	postPayoutMethodCreatedPayloadDataFieldPayerName             = big.NewInt(1 << 15)
-	postPayoutMethodCreatedPayloadDataFieldQuote                 = big.NewInt(1 << 16)
-	postPayoutMethodCreatedPayloadDataFieldRecipient             = big.NewInt(1 << 17)
-	postPayoutMethodCreatedPayloadDataFieldStatus                = big.NewInt(1 << 18)
-	postPayoutMethodCreatedPayloadDataFieldStatusReason          = big.NewInt(1 << 19)
-	postPayoutMethodCreatedPayloadDataFieldSupportedPayoutMethod = big.NewInt(1 << 20)
-	postPayoutMethodCreatedPayloadDataFieldType                  = big.NewInt(1 << 21)
-	postPayoutMethodCreatedPayloadDataFieldUnavailableReason     = big.NewInt(1 << 22)
+	postPayoutMethodCreatedPayloadDataFieldAccountReference         = big.NewInt(1 << 0)
+	postPayoutMethodCreatedPayloadDataFieldBankVerificationState    = big.NewInt(1 << 1)
+	postPayoutMethodCreatedPayloadDataFieldCreatedAt                = big.NewInt(1 << 2)
+	postPayoutMethodCreatedPayloadDataFieldDestinationCurrency      = big.NewInt(1 << 3)
+	postPayoutMethodCreatedPayloadDataFieldEstimatedArrival         = big.NewInt(1 << 4)
+	postPayoutMethodCreatedPayloadDataFieldFeeStructure             = big.NewInt(1 << 5)
+	postPayoutMethodCreatedPayloadDataFieldID                       = big.NewInt(1 << 6)
+	postPayoutMethodCreatedPayloadDataFieldInstantUnavailableReason = big.NewInt(1 << 7)
+	postPayoutMethodCreatedPayloadDataFieldInstitutionName          = big.NewInt(1 << 8)
+	postPayoutMethodCreatedPayloadDataFieldIsClone                  = big.NewInt(1 << 9)
+	postPayoutMethodCreatedPayloadDataFieldIsDefault                = big.NewInt(1 << 10)
+	postPayoutMethodCreatedPayloadDataFieldLastPaidOutAt            = big.NewInt(1 << 11)
+	postPayoutMethodCreatedPayloadDataFieldLinkedViaPlaid           = big.NewInt(1 << 12)
+	postPayoutMethodCreatedPayloadDataFieldNeedsPlaidReconnect      = big.NewInt(1 << 13)
+	postPayoutMethodCreatedPayloadDataFieldNickname                 = big.NewInt(1 << 14)
+	postPayoutMethodCreatedPayloadDataFieldObject                   = big.NewInt(1 << 15)
+	postPayoutMethodCreatedPayloadDataFieldPayerName                = big.NewInt(1 << 16)
+	postPayoutMethodCreatedPayloadDataFieldQuote                    = big.NewInt(1 << 17)
+	postPayoutMethodCreatedPayloadDataFieldRecipient                = big.NewInt(1 << 18)
+	postPayoutMethodCreatedPayloadDataFieldStatus                   = big.NewInt(1 << 19)
+	postPayoutMethodCreatedPayloadDataFieldStatusReason             = big.NewInt(1 << 20)
+	postPayoutMethodCreatedPayloadDataFieldSupportedPayoutMethod    = big.NewInt(1 << 21)
+	postPayoutMethodCreatedPayloadDataFieldType                     = big.NewInt(1 << 22)
+	postPayoutMethodCreatedPayloadDataFieldUnavailableReason        = big.NewInt(1 << 23)
 )
 
 // postPayoutMethodCreatedPayloadDataNullableFields maps the wire names of PostPayoutMethodCreatedPayloadData's nullable fields (required or optional) to their field bits.
 var postPayoutMethodCreatedPayloadDataNullableFields = map[string]*big.Int{
-	"account_reference":       postPayoutMethodCreatedPayloadDataFieldAccountReference,
-	"bank_verification_state": postPayoutMethodCreatedPayloadDataFieldBankVerificationState,
-	"estimated_arrival":       postPayoutMethodCreatedPayloadDataFieldEstimatedArrival,
-	"fee_structure":           postPayoutMethodCreatedPayloadDataFieldFeeStructure,
-	"institution_name":        postPayoutMethodCreatedPayloadDataFieldInstitutionName,
-	"last_paid_out_at":        postPayoutMethodCreatedPayloadDataFieldLastPaidOutAt,
-	"nickname":                postPayoutMethodCreatedPayloadDataFieldNickname,
-	"payer_name":              postPayoutMethodCreatedPayloadDataFieldPayerName,
-	"quote":                   postPayoutMethodCreatedPayloadDataFieldQuote,
-	"status_reason":           postPayoutMethodCreatedPayloadDataFieldStatusReason,
-	"supported_payout_method": postPayoutMethodCreatedPayloadDataFieldSupportedPayoutMethod,
-	"unavailable_reason":      postPayoutMethodCreatedPayloadDataFieldUnavailableReason,
+	"account_reference":          postPayoutMethodCreatedPayloadDataFieldAccountReference,
+	"bank_verification_state":    postPayoutMethodCreatedPayloadDataFieldBankVerificationState,
+	"estimated_arrival":          postPayoutMethodCreatedPayloadDataFieldEstimatedArrival,
+	"fee_structure":              postPayoutMethodCreatedPayloadDataFieldFeeStructure,
+	"instant_unavailable_reason": postPayoutMethodCreatedPayloadDataFieldInstantUnavailableReason,
+	"institution_name":           postPayoutMethodCreatedPayloadDataFieldInstitutionName,
+	"last_paid_out_at":           postPayoutMethodCreatedPayloadDataFieldLastPaidOutAt,
+	"nickname":                   postPayoutMethodCreatedPayloadDataFieldNickname,
+	"payer_name":                 postPayoutMethodCreatedPayloadDataFieldPayerName,
+	"quote":                      postPayoutMethodCreatedPayloadDataFieldQuote,
+	"status_reason":              postPayoutMethodCreatedPayloadDataFieldStatusReason,
+	"supported_payout_method":    postPayoutMethodCreatedPayloadDataFieldSupportedPayoutMethod,
+	"unavailable_reason":         postPayoutMethodCreatedPayloadDataFieldUnavailableReason,
 }
 
 type PostPayoutMethodCreatedPayloadData struct {
@@ -7378,6 +7380,8 @@ type PostPayoutMethodCreatedPayloadData struct {
 	FeeStructure *PostPayoutMethodCreatedPayloadDataFeeStructure `json:"fee_structure,omitempty" url:"fee_structure,omitempty"`
 	// Payout method ID.
 	ID string `json:"id" url:"id"`
+	// Why instant delivery is unavailable. `new_payout_method_hold` means the payout method is within its initial instant delivery hold. `minimum_crypto_sales_not_met` means the account has not reached the sales requirement for instant cryptocurrency payouts. `null` means neither restriction applies.
+	InstantUnavailableReason *PostPayoutMethodCreatedPayloadDataInstantUnavailableReason `json:"instant_unavailable_reason,omitempty" url:"instant_unavailable_reason,omitempty"`
 	// Name of the bank or institution receiving payouts.
 	InstitutionName *string `json:"institution_name,omitempty" url:"institution_name,omitempty"`
 	// Whether this method is a copy of one saved on another of the payer's accounts.
@@ -7464,6 +7468,13 @@ func (p *PostPayoutMethodCreatedPayloadData) GetID() string {
 		return ""
 	}
 	return p.ID
+}
+
+func (p *PostPayoutMethodCreatedPayloadData) GetInstantUnavailableReason() *PostPayoutMethodCreatedPayloadDataInstantUnavailableReason {
+	if p == nil {
+		return nil
+	}
+	return p.InstantUnavailableReason
 }
 
 func (p *PostPayoutMethodCreatedPayloadData) GetInstitutionName() *string {
@@ -7641,6 +7652,13 @@ func (p *PostPayoutMethodCreatedPayloadData) SetFeeStructure(feeStructure *PostP
 func (p *PostPayoutMethodCreatedPayloadData) SetID(id string) {
 	p.ID = id
 	p.require(postPayoutMethodCreatedPayloadDataFieldID)
+}
+
+// SetInstantUnavailableReason sets the InstantUnavailableReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutMethodCreatedPayloadData) SetInstantUnavailableReason(instantUnavailableReason *PostPayoutMethodCreatedPayloadDataInstantUnavailableReason) {
+	p.InstantUnavailableReason = instantUnavailableReason
+	p.require(postPayoutMethodCreatedPayloadDataFieldInstantUnavailableReason)
 }
 
 // SetInstitutionName sets the InstitutionName field and marks it as non-optional;
@@ -8100,6 +8118,29 @@ func (p *PostPayoutMethodCreatedPayloadDataFeeStructure) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
+// Why instant delivery is unavailable. `new_payout_method_hold` means the payout method is within its initial instant delivery hold. `minimum_crypto_sales_not_met` means the account has not reached the sales requirement for instant cryptocurrency payouts. `null` means neither restriction applies.
+type PostPayoutMethodCreatedPayloadDataInstantUnavailableReason string
+
+const (
+	PostPayoutMethodCreatedPayloadDataInstantUnavailableReasonMinimumCryptoSalesNotMet PostPayoutMethodCreatedPayloadDataInstantUnavailableReason = "minimum_crypto_sales_not_met"
+	PostPayoutMethodCreatedPayloadDataInstantUnavailableReasonNewPayoutMethodHold      PostPayoutMethodCreatedPayloadDataInstantUnavailableReason = "new_payout_method_hold"
+)
+
+func NewPostPayoutMethodCreatedPayloadDataInstantUnavailableReasonFromString(s string) (PostPayoutMethodCreatedPayloadDataInstantUnavailableReason, error) {
+	switch s {
+	case "minimum_crypto_sales_not_met":
+		return PostPayoutMethodCreatedPayloadDataInstantUnavailableReasonMinimumCryptoSalesNotMet, nil
+	case "new_payout_method_hold":
+		return PostPayoutMethodCreatedPayloadDataInstantUnavailableReasonNewPayoutMethodHold, nil
+	}
+	var t PostPayoutMethodCreatedPayloadDataInstantUnavailableReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPayoutMethodCreatedPayloadDataInstantUnavailableReason) Ptr() *PostPayoutMethodCreatedPayloadDataInstantUnavailableReason {
+	return &p
+}
+
 type PostPayoutMethodCreatedPayloadDataObject string
 
 const (
@@ -8148,7 +8189,7 @@ type PostPayoutMethodCreatedPayloadDataQuote struct {
 	ExchangeRate float64 `json:"exchange_rate" url:"exchange_rate"`
 	// Instant-delivery estimate. Null if the method does not support instant delivery, instant delivery is unavailable for the account, or the amount does not cover the fee.
 	Instant *PostPayoutMethodCreatedPayloadDataQuoteInstant `json:"instant,omitempty" url:"instant,omitempty"`
-	// Why instant delivery is unavailable for this method. `minimum_crypto_sales_not_met` means the account has not reached the total sales required for instant cryptocurrency payouts. `null` when this restriction does not apply.
+	// Why instant delivery is unavailable. `new_payout_method_hold` means the payout method is within its initial instant delivery hold. `minimum_crypto_sales_not_met` means the account has not reached the sales requirement for instant cryptocurrency payouts. `null` means neither restriction applies.
 	InstantUnavailableReason *PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason `json:"instant_unavailable_reason,omitempty" url:"instant_unavailable_reason,omitempty"`
 	// Maximum payout amount for this method, in the payout currency.
 	MaxLimit *float64 `json:"max_limit,omitempty" url:"max_limit,omitempty"`
@@ -8446,17 +8487,20 @@ func (p *PostPayoutMethodCreatedPayloadDataQuoteInstant) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
-// Why instant delivery is unavailable for this method. `minimum_crypto_sales_not_met` means the account has not reached the total sales required for instant cryptocurrency payouts. `null` when this restriction does not apply.
+// Why instant delivery is unavailable. `new_payout_method_hold` means the payout method is within its initial instant delivery hold. `minimum_crypto_sales_not_met` means the account has not reached the sales requirement for instant cryptocurrency payouts. `null` means neither restriction applies.
 type PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason string
 
 const (
 	PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReasonMinimumCryptoSalesNotMet PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason = "minimum_crypto_sales_not_met"
+	PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReasonNewPayoutMethodHold      PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason = "new_payout_method_hold"
 )
 
 func NewPostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReasonFromString(s string) (PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason, error) {
 	switch s {
 	case "minimum_crypto_sales_not_met":
 		return PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReasonMinimumCryptoSalesNotMet, nil
+	case "new_payout_method_hold":
+		return PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReasonNewPayoutMethodHold, nil
 	}
 	var t PostPayoutMethodCreatedPayloadDataQuoteInstantUnavailableReason
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

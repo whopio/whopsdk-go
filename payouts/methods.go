@@ -608,45 +608,47 @@ func (c *CreateMethodsRequestRecipientAddress) String() string {
 }
 
 var (
-	createMethodsResponseFieldAccountReference      = big.NewInt(1 << 0)
-	createMethodsResponseFieldBankVerificationState = big.NewInt(1 << 1)
-	createMethodsResponseFieldCreatedAt             = big.NewInt(1 << 2)
-	createMethodsResponseFieldDestinationCurrency   = big.NewInt(1 << 3)
-	createMethodsResponseFieldEstimatedArrival      = big.NewInt(1 << 4)
-	createMethodsResponseFieldFeeStructure          = big.NewInt(1 << 5)
-	createMethodsResponseFieldID                    = big.NewInt(1 << 6)
-	createMethodsResponseFieldInstitutionName       = big.NewInt(1 << 7)
-	createMethodsResponseFieldIsClone               = big.NewInt(1 << 8)
-	createMethodsResponseFieldIsDefault             = big.NewInt(1 << 9)
-	createMethodsResponseFieldLastPaidOutAt         = big.NewInt(1 << 10)
-	createMethodsResponseFieldLinkedViaPlaid        = big.NewInt(1 << 11)
-	createMethodsResponseFieldNeedsPlaidReconnect   = big.NewInt(1 << 12)
-	createMethodsResponseFieldNickname              = big.NewInt(1 << 13)
-	createMethodsResponseFieldObject                = big.NewInt(1 << 14)
-	createMethodsResponseFieldPayerName             = big.NewInt(1 << 15)
-	createMethodsResponseFieldQuote                 = big.NewInt(1 << 16)
-	createMethodsResponseFieldRecipient             = big.NewInt(1 << 17)
-	createMethodsResponseFieldStatus                = big.NewInt(1 << 18)
-	createMethodsResponseFieldStatusReason          = big.NewInt(1 << 19)
-	createMethodsResponseFieldSupportedPayoutMethod = big.NewInt(1 << 20)
-	createMethodsResponseFieldType                  = big.NewInt(1 << 21)
-	createMethodsResponseFieldUnavailableReason     = big.NewInt(1 << 22)
+	createMethodsResponseFieldAccountReference         = big.NewInt(1 << 0)
+	createMethodsResponseFieldBankVerificationState    = big.NewInt(1 << 1)
+	createMethodsResponseFieldCreatedAt                = big.NewInt(1 << 2)
+	createMethodsResponseFieldDestinationCurrency      = big.NewInt(1 << 3)
+	createMethodsResponseFieldEstimatedArrival         = big.NewInt(1 << 4)
+	createMethodsResponseFieldFeeStructure             = big.NewInt(1 << 5)
+	createMethodsResponseFieldID                       = big.NewInt(1 << 6)
+	createMethodsResponseFieldInstantUnavailableReason = big.NewInt(1 << 7)
+	createMethodsResponseFieldInstitutionName          = big.NewInt(1 << 8)
+	createMethodsResponseFieldIsClone                  = big.NewInt(1 << 9)
+	createMethodsResponseFieldIsDefault                = big.NewInt(1 << 10)
+	createMethodsResponseFieldLastPaidOutAt            = big.NewInt(1 << 11)
+	createMethodsResponseFieldLinkedViaPlaid           = big.NewInt(1 << 12)
+	createMethodsResponseFieldNeedsPlaidReconnect      = big.NewInt(1 << 13)
+	createMethodsResponseFieldNickname                 = big.NewInt(1 << 14)
+	createMethodsResponseFieldObject                   = big.NewInt(1 << 15)
+	createMethodsResponseFieldPayerName                = big.NewInt(1 << 16)
+	createMethodsResponseFieldQuote                    = big.NewInt(1 << 17)
+	createMethodsResponseFieldRecipient                = big.NewInt(1 << 18)
+	createMethodsResponseFieldStatus                   = big.NewInt(1 << 19)
+	createMethodsResponseFieldStatusReason             = big.NewInt(1 << 20)
+	createMethodsResponseFieldSupportedPayoutMethod    = big.NewInt(1 << 21)
+	createMethodsResponseFieldType                     = big.NewInt(1 << 22)
+	createMethodsResponseFieldUnavailableReason        = big.NewInt(1 << 23)
 )
 
 // createMethodsResponseNullableFields maps the wire names of CreateMethodsResponse's nullable fields (required or optional) to their field bits.
 var createMethodsResponseNullableFields = map[string]*big.Int{
-	"account_reference":       createMethodsResponseFieldAccountReference,
-	"bank_verification_state": createMethodsResponseFieldBankVerificationState,
-	"estimated_arrival":       createMethodsResponseFieldEstimatedArrival,
-	"fee_structure":           createMethodsResponseFieldFeeStructure,
-	"institution_name":        createMethodsResponseFieldInstitutionName,
-	"last_paid_out_at":        createMethodsResponseFieldLastPaidOutAt,
-	"nickname":                createMethodsResponseFieldNickname,
-	"payer_name":              createMethodsResponseFieldPayerName,
-	"quote":                   createMethodsResponseFieldQuote,
-	"status_reason":           createMethodsResponseFieldStatusReason,
-	"supported_payout_method": createMethodsResponseFieldSupportedPayoutMethod,
-	"unavailable_reason":      createMethodsResponseFieldUnavailableReason,
+	"account_reference":          createMethodsResponseFieldAccountReference,
+	"bank_verification_state":    createMethodsResponseFieldBankVerificationState,
+	"estimated_arrival":          createMethodsResponseFieldEstimatedArrival,
+	"fee_structure":              createMethodsResponseFieldFeeStructure,
+	"instant_unavailable_reason": createMethodsResponseFieldInstantUnavailableReason,
+	"institution_name":           createMethodsResponseFieldInstitutionName,
+	"last_paid_out_at":           createMethodsResponseFieldLastPaidOutAt,
+	"nickname":                   createMethodsResponseFieldNickname,
+	"payer_name":                 createMethodsResponseFieldPayerName,
+	"quote":                      createMethodsResponseFieldQuote,
+	"status_reason":              createMethodsResponseFieldStatusReason,
+	"supported_payout_method":    createMethodsResponseFieldSupportedPayoutMethod,
+	"unavailable_reason":         createMethodsResponseFieldUnavailableReason,
 }
 
 type CreateMethodsResponse struct {
@@ -661,8 +663,10 @@ type CreateMethodsResponse struct {
 	// Null on create. List payout methods to retrieve the configured fee terms.
 	FeeStructure map[string]any `json:"fee_structure,omitempty" url:"fee_structure,omitempty"`
 	// Payout method ID, usable as payout_method_id on POST /payouts.
-	ID              string  `json:"id" url:"id"`
-	InstitutionName *string `json:"institution_name,omitempty" url:"institution_name,omitempty"`
+	ID string `json:"id" url:"id"`
+	// Why instant delivery is unavailable. `new_payout_method_hold` means the payout method is within its initial instant delivery hold. `minimum_crypto_sales_not_met` means the account has not reached the sales requirement for instant cryptocurrency payouts. `null` means neither restriction applies.
+	InstantUnavailableReason *CreateMethodsResponseInstantUnavailableReason `json:"instant_unavailable_reason,omitempty" url:"instant_unavailable_reason,omitempty"`
+	InstitutionName          *string                                        `json:"institution_name,omitempty" url:"institution_name,omitempty"`
 	// Whether this method is a copy of one saved on another of the payer's accounts.
 	IsClone   *bool `json:"is_clone,omitempty" url:"is_clone,omitempty"`
 	IsDefault bool  `json:"is_default" url:"is_default"`
@@ -744,6 +748,13 @@ func (c *CreateMethodsResponse) GetID() string {
 		return ""
 	}
 	return c.ID
+}
+
+func (c *CreateMethodsResponse) GetInstantUnavailableReason() *CreateMethodsResponseInstantUnavailableReason {
+	if c == nil {
+		return nil
+	}
+	return c.InstantUnavailableReason
 }
 
 func (c *CreateMethodsResponse) GetInstitutionName() *string {
@@ -921,6 +932,13 @@ func (c *CreateMethodsResponse) SetFeeStructure(feeStructure map[string]any) {
 func (c *CreateMethodsResponse) SetID(id string) {
 	c.ID = id
 	c.require(createMethodsResponseFieldID)
+}
+
+// SetInstantUnavailableReason sets the InstantUnavailableReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateMethodsResponse) SetInstantUnavailableReason(instantUnavailableReason *CreateMethodsResponseInstantUnavailableReason) {
+	c.InstantUnavailableReason = instantUnavailableReason
+	c.require(createMethodsResponseFieldInstantUnavailableReason)
 }
 
 // SetInstitutionName sets the InstitutionName field and marks it as non-optional;
@@ -1125,6 +1143,29 @@ func NewCreateMethodsResponseBankVerificationStateFromString(s string) (CreateMe
 }
 
 func (c CreateMethodsResponseBankVerificationState) Ptr() *CreateMethodsResponseBankVerificationState {
+	return &c
+}
+
+// Why instant delivery is unavailable. `new_payout_method_hold` means the payout method is within its initial instant delivery hold. `minimum_crypto_sales_not_met` means the account has not reached the sales requirement for instant cryptocurrency payouts. `null` means neither restriction applies.
+type CreateMethodsResponseInstantUnavailableReason string
+
+const (
+	CreateMethodsResponseInstantUnavailableReasonMinimumCryptoSalesNotMet CreateMethodsResponseInstantUnavailableReason = "minimum_crypto_sales_not_met"
+	CreateMethodsResponseInstantUnavailableReasonNewPayoutMethodHold      CreateMethodsResponseInstantUnavailableReason = "new_payout_method_hold"
+)
+
+func NewCreateMethodsResponseInstantUnavailableReasonFromString(s string) (CreateMethodsResponseInstantUnavailableReason, error) {
+	switch s {
+	case "minimum_crypto_sales_not_met":
+		return CreateMethodsResponseInstantUnavailableReasonMinimumCryptoSalesNotMet, nil
+	case "new_payout_method_hold":
+		return CreateMethodsResponseInstantUnavailableReasonNewPayoutMethodHold, nil
+	}
+	var t CreateMethodsResponseInstantUnavailableReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateMethodsResponseInstantUnavailableReason) Ptr() *CreateMethodsResponseInstantUnavailableReason {
 	return &c
 }
 
@@ -1844,45 +1885,47 @@ func (l *ListMethodsResponse) String() string {
 }
 
 var (
-	listMethodsResponseDataItemFieldAccountReference      = big.NewInt(1 << 0)
-	listMethodsResponseDataItemFieldBankVerificationState = big.NewInt(1 << 1)
-	listMethodsResponseDataItemFieldCreatedAt             = big.NewInt(1 << 2)
-	listMethodsResponseDataItemFieldDestinationCurrency   = big.NewInt(1 << 3)
-	listMethodsResponseDataItemFieldEstimatedArrival      = big.NewInt(1 << 4)
-	listMethodsResponseDataItemFieldFeeStructure          = big.NewInt(1 << 5)
-	listMethodsResponseDataItemFieldID                    = big.NewInt(1 << 6)
-	listMethodsResponseDataItemFieldInstitutionName       = big.NewInt(1 << 7)
-	listMethodsResponseDataItemFieldIsClone               = big.NewInt(1 << 8)
-	listMethodsResponseDataItemFieldIsDefault             = big.NewInt(1 << 9)
-	listMethodsResponseDataItemFieldLastPaidOutAt         = big.NewInt(1 << 10)
-	listMethodsResponseDataItemFieldLinkedViaPlaid        = big.NewInt(1 << 11)
-	listMethodsResponseDataItemFieldNeedsPlaidReconnect   = big.NewInt(1 << 12)
-	listMethodsResponseDataItemFieldNickname              = big.NewInt(1 << 13)
-	listMethodsResponseDataItemFieldObject                = big.NewInt(1 << 14)
-	listMethodsResponseDataItemFieldPayerName             = big.NewInt(1 << 15)
-	listMethodsResponseDataItemFieldQuote                 = big.NewInt(1 << 16)
-	listMethodsResponseDataItemFieldRecipient             = big.NewInt(1 << 17)
-	listMethodsResponseDataItemFieldStatus                = big.NewInt(1 << 18)
-	listMethodsResponseDataItemFieldStatusReason          = big.NewInt(1 << 19)
-	listMethodsResponseDataItemFieldSupportedPayoutMethod = big.NewInt(1 << 20)
-	listMethodsResponseDataItemFieldType                  = big.NewInt(1 << 21)
-	listMethodsResponseDataItemFieldUnavailableReason     = big.NewInt(1 << 22)
+	listMethodsResponseDataItemFieldAccountReference         = big.NewInt(1 << 0)
+	listMethodsResponseDataItemFieldBankVerificationState    = big.NewInt(1 << 1)
+	listMethodsResponseDataItemFieldCreatedAt                = big.NewInt(1 << 2)
+	listMethodsResponseDataItemFieldDestinationCurrency      = big.NewInt(1 << 3)
+	listMethodsResponseDataItemFieldEstimatedArrival         = big.NewInt(1 << 4)
+	listMethodsResponseDataItemFieldFeeStructure             = big.NewInt(1 << 5)
+	listMethodsResponseDataItemFieldID                       = big.NewInt(1 << 6)
+	listMethodsResponseDataItemFieldInstantUnavailableReason = big.NewInt(1 << 7)
+	listMethodsResponseDataItemFieldInstitutionName          = big.NewInt(1 << 8)
+	listMethodsResponseDataItemFieldIsClone                  = big.NewInt(1 << 9)
+	listMethodsResponseDataItemFieldIsDefault                = big.NewInt(1 << 10)
+	listMethodsResponseDataItemFieldLastPaidOutAt            = big.NewInt(1 << 11)
+	listMethodsResponseDataItemFieldLinkedViaPlaid           = big.NewInt(1 << 12)
+	listMethodsResponseDataItemFieldNeedsPlaidReconnect      = big.NewInt(1 << 13)
+	listMethodsResponseDataItemFieldNickname                 = big.NewInt(1 << 14)
+	listMethodsResponseDataItemFieldObject                   = big.NewInt(1 << 15)
+	listMethodsResponseDataItemFieldPayerName                = big.NewInt(1 << 16)
+	listMethodsResponseDataItemFieldQuote                    = big.NewInt(1 << 17)
+	listMethodsResponseDataItemFieldRecipient                = big.NewInt(1 << 18)
+	listMethodsResponseDataItemFieldStatus                   = big.NewInt(1 << 19)
+	listMethodsResponseDataItemFieldStatusReason             = big.NewInt(1 << 20)
+	listMethodsResponseDataItemFieldSupportedPayoutMethod    = big.NewInt(1 << 21)
+	listMethodsResponseDataItemFieldType                     = big.NewInt(1 << 22)
+	listMethodsResponseDataItemFieldUnavailableReason        = big.NewInt(1 << 23)
 )
 
 // listMethodsResponseDataItemNullableFields maps the wire names of ListMethodsResponseDataItem's nullable fields (required or optional) to their field bits.
 var listMethodsResponseDataItemNullableFields = map[string]*big.Int{
-	"account_reference":       listMethodsResponseDataItemFieldAccountReference,
-	"bank_verification_state": listMethodsResponseDataItemFieldBankVerificationState,
-	"estimated_arrival":       listMethodsResponseDataItemFieldEstimatedArrival,
-	"fee_structure":           listMethodsResponseDataItemFieldFeeStructure,
-	"institution_name":        listMethodsResponseDataItemFieldInstitutionName,
-	"last_paid_out_at":        listMethodsResponseDataItemFieldLastPaidOutAt,
-	"nickname":                listMethodsResponseDataItemFieldNickname,
-	"payer_name":              listMethodsResponseDataItemFieldPayerName,
-	"quote":                   listMethodsResponseDataItemFieldQuote,
-	"status_reason":           listMethodsResponseDataItemFieldStatusReason,
-	"supported_payout_method": listMethodsResponseDataItemFieldSupportedPayoutMethod,
-	"unavailable_reason":      listMethodsResponseDataItemFieldUnavailableReason,
+	"account_reference":          listMethodsResponseDataItemFieldAccountReference,
+	"bank_verification_state":    listMethodsResponseDataItemFieldBankVerificationState,
+	"estimated_arrival":          listMethodsResponseDataItemFieldEstimatedArrival,
+	"fee_structure":              listMethodsResponseDataItemFieldFeeStructure,
+	"instant_unavailable_reason": listMethodsResponseDataItemFieldInstantUnavailableReason,
+	"institution_name":           listMethodsResponseDataItemFieldInstitutionName,
+	"last_paid_out_at":           listMethodsResponseDataItemFieldLastPaidOutAt,
+	"nickname":                   listMethodsResponseDataItemFieldNickname,
+	"payer_name":                 listMethodsResponseDataItemFieldPayerName,
+	"quote":                      listMethodsResponseDataItemFieldQuote,
+	"status_reason":              listMethodsResponseDataItemFieldStatusReason,
+	"supported_payout_method":    listMethodsResponseDataItemFieldSupportedPayoutMethod,
+	"unavailable_reason":         listMethodsResponseDataItemFieldUnavailableReason,
 }
 
 type ListMethodsResponseDataItem struct {
@@ -1900,6 +1943,8 @@ type ListMethodsResponseDataItem struct {
 	FeeStructure *ListMethodsResponseDataItemFeeStructure `json:"fee_structure,omitempty" url:"fee_structure,omitempty"`
 	// Payout method ID.
 	ID string `json:"id" url:"id"`
+	// Why instant delivery is unavailable. `new_payout_method_hold` means the payout method is within its initial instant delivery hold. `minimum_crypto_sales_not_met` means the account has not reached the sales requirement for instant cryptocurrency payouts. `null` means neither restriction applies.
+	InstantUnavailableReason *ListMethodsResponseDataItemInstantUnavailableReason `json:"instant_unavailable_reason,omitempty" url:"instant_unavailable_reason,omitempty"`
 	// Name of the bank or institution receiving payouts.
 	InstitutionName *string `json:"institution_name,omitempty" url:"institution_name,omitempty"`
 	// Whether this method is a copy of one saved on another of the payer's accounts.
@@ -1986,6 +2031,13 @@ func (l *ListMethodsResponseDataItem) GetID() string {
 		return ""
 	}
 	return l.ID
+}
+
+func (l *ListMethodsResponseDataItem) GetInstantUnavailableReason() *ListMethodsResponseDataItemInstantUnavailableReason {
+	if l == nil {
+		return nil
+	}
+	return l.InstantUnavailableReason
 }
 
 func (l *ListMethodsResponseDataItem) GetInstitutionName() *string {
@@ -2163,6 +2215,13 @@ func (l *ListMethodsResponseDataItem) SetFeeStructure(feeStructure *ListMethodsR
 func (l *ListMethodsResponseDataItem) SetID(id string) {
 	l.ID = id
 	l.require(listMethodsResponseDataItemFieldID)
+}
+
+// SetInstantUnavailableReason sets the InstantUnavailableReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMethodsResponseDataItem) SetInstantUnavailableReason(instantUnavailableReason *ListMethodsResponseDataItemInstantUnavailableReason) {
+	l.InstantUnavailableReason = instantUnavailableReason
+	l.require(listMethodsResponseDataItemFieldInstantUnavailableReason)
 }
 
 // SetInstitutionName sets the InstitutionName field and marks it as non-optional;
@@ -2622,6 +2681,29 @@ func (l *ListMethodsResponseDataItemFeeStructure) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
+// Why instant delivery is unavailable. `new_payout_method_hold` means the payout method is within its initial instant delivery hold. `minimum_crypto_sales_not_met` means the account has not reached the sales requirement for instant cryptocurrency payouts. `null` means neither restriction applies.
+type ListMethodsResponseDataItemInstantUnavailableReason string
+
+const (
+	ListMethodsResponseDataItemInstantUnavailableReasonMinimumCryptoSalesNotMet ListMethodsResponseDataItemInstantUnavailableReason = "minimum_crypto_sales_not_met"
+	ListMethodsResponseDataItemInstantUnavailableReasonNewPayoutMethodHold      ListMethodsResponseDataItemInstantUnavailableReason = "new_payout_method_hold"
+)
+
+func NewListMethodsResponseDataItemInstantUnavailableReasonFromString(s string) (ListMethodsResponseDataItemInstantUnavailableReason, error) {
+	switch s {
+	case "minimum_crypto_sales_not_met":
+		return ListMethodsResponseDataItemInstantUnavailableReasonMinimumCryptoSalesNotMet, nil
+	case "new_payout_method_hold":
+		return ListMethodsResponseDataItemInstantUnavailableReasonNewPayoutMethodHold, nil
+	}
+	var t ListMethodsResponseDataItemInstantUnavailableReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListMethodsResponseDataItemInstantUnavailableReason) Ptr() *ListMethodsResponseDataItemInstantUnavailableReason {
+	return &l
+}
+
 type ListMethodsResponseDataItemObject string
 
 const (
@@ -2670,7 +2752,7 @@ type ListMethodsResponseDataItemQuote struct {
 	ExchangeRate float64 `json:"exchange_rate" url:"exchange_rate"`
 	// Instant-delivery estimate. Null if the method does not support instant delivery, instant delivery is unavailable for the account, or the amount does not cover the fee.
 	Instant *ListMethodsResponseDataItemQuoteInstant `json:"instant,omitempty" url:"instant,omitempty"`
-	// Why instant delivery is unavailable for this method. `minimum_crypto_sales_not_met` means the account has not reached the total sales required for instant cryptocurrency payouts. `null` when this restriction does not apply.
+	// Why instant delivery is unavailable. `new_payout_method_hold` means the payout method is within its initial instant delivery hold. `minimum_crypto_sales_not_met` means the account has not reached the sales requirement for instant cryptocurrency payouts. `null` means neither restriction applies.
 	InstantUnavailableReason *ListMethodsResponseDataItemQuoteInstantUnavailableReason `json:"instant_unavailable_reason,omitempty" url:"instant_unavailable_reason,omitempty"`
 	// Maximum payout amount for this method, in the payout currency.
 	MaxLimit *float64 `json:"max_limit,omitempty" url:"max_limit,omitempty"`
@@ -2968,17 +3050,20 @@ func (l *ListMethodsResponseDataItemQuoteInstant) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// Why instant delivery is unavailable for this method. `minimum_crypto_sales_not_met` means the account has not reached the total sales required for instant cryptocurrency payouts. `null` when this restriction does not apply.
+// Why instant delivery is unavailable. `new_payout_method_hold` means the payout method is within its initial instant delivery hold. `minimum_crypto_sales_not_met` means the account has not reached the sales requirement for instant cryptocurrency payouts. `null` means neither restriction applies.
 type ListMethodsResponseDataItemQuoteInstantUnavailableReason string
 
 const (
 	ListMethodsResponseDataItemQuoteInstantUnavailableReasonMinimumCryptoSalesNotMet ListMethodsResponseDataItemQuoteInstantUnavailableReason = "minimum_crypto_sales_not_met"
+	ListMethodsResponseDataItemQuoteInstantUnavailableReasonNewPayoutMethodHold      ListMethodsResponseDataItemQuoteInstantUnavailableReason = "new_payout_method_hold"
 )
 
 func NewListMethodsResponseDataItemQuoteInstantUnavailableReasonFromString(s string) (ListMethodsResponseDataItemQuoteInstantUnavailableReason, error) {
 	switch s {
 	case "minimum_crypto_sales_not_met":
 		return ListMethodsResponseDataItemQuoteInstantUnavailableReasonMinimumCryptoSalesNotMet, nil
+	case "new_payout_method_hold":
+		return ListMethodsResponseDataItemQuoteInstantUnavailableReasonNewPayoutMethodHold, nil
 	}
 	var t ListMethodsResponseDataItemQuoteInstantUnavailableReason
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -4398,45 +4483,47 @@ func (u *UpdateMethodsRequestAddress) String() string {
 }
 
 var (
-	updateMethodsResponseFieldAccountReference      = big.NewInt(1 << 0)
-	updateMethodsResponseFieldBankVerificationState = big.NewInt(1 << 1)
-	updateMethodsResponseFieldCreatedAt             = big.NewInt(1 << 2)
-	updateMethodsResponseFieldDestinationCurrency   = big.NewInt(1 << 3)
-	updateMethodsResponseFieldEstimatedArrival      = big.NewInt(1 << 4)
-	updateMethodsResponseFieldFeeStructure          = big.NewInt(1 << 5)
-	updateMethodsResponseFieldID                    = big.NewInt(1 << 6)
-	updateMethodsResponseFieldInstitutionName       = big.NewInt(1 << 7)
-	updateMethodsResponseFieldIsClone               = big.NewInt(1 << 8)
-	updateMethodsResponseFieldIsDefault             = big.NewInt(1 << 9)
-	updateMethodsResponseFieldLastPaidOutAt         = big.NewInt(1 << 10)
-	updateMethodsResponseFieldLinkedViaPlaid        = big.NewInt(1 << 11)
-	updateMethodsResponseFieldNeedsPlaidReconnect   = big.NewInt(1 << 12)
-	updateMethodsResponseFieldNickname              = big.NewInt(1 << 13)
-	updateMethodsResponseFieldObject                = big.NewInt(1 << 14)
-	updateMethodsResponseFieldPayerName             = big.NewInt(1 << 15)
-	updateMethodsResponseFieldQuote                 = big.NewInt(1 << 16)
-	updateMethodsResponseFieldRecipient             = big.NewInt(1 << 17)
-	updateMethodsResponseFieldStatus                = big.NewInt(1 << 18)
-	updateMethodsResponseFieldStatusReason          = big.NewInt(1 << 19)
-	updateMethodsResponseFieldSupportedPayoutMethod = big.NewInt(1 << 20)
-	updateMethodsResponseFieldType                  = big.NewInt(1 << 21)
-	updateMethodsResponseFieldUnavailableReason     = big.NewInt(1 << 22)
+	updateMethodsResponseFieldAccountReference         = big.NewInt(1 << 0)
+	updateMethodsResponseFieldBankVerificationState    = big.NewInt(1 << 1)
+	updateMethodsResponseFieldCreatedAt                = big.NewInt(1 << 2)
+	updateMethodsResponseFieldDestinationCurrency      = big.NewInt(1 << 3)
+	updateMethodsResponseFieldEstimatedArrival         = big.NewInt(1 << 4)
+	updateMethodsResponseFieldFeeStructure             = big.NewInt(1 << 5)
+	updateMethodsResponseFieldID                       = big.NewInt(1 << 6)
+	updateMethodsResponseFieldInstantUnavailableReason = big.NewInt(1 << 7)
+	updateMethodsResponseFieldInstitutionName          = big.NewInt(1 << 8)
+	updateMethodsResponseFieldIsClone                  = big.NewInt(1 << 9)
+	updateMethodsResponseFieldIsDefault                = big.NewInt(1 << 10)
+	updateMethodsResponseFieldLastPaidOutAt            = big.NewInt(1 << 11)
+	updateMethodsResponseFieldLinkedViaPlaid           = big.NewInt(1 << 12)
+	updateMethodsResponseFieldNeedsPlaidReconnect      = big.NewInt(1 << 13)
+	updateMethodsResponseFieldNickname                 = big.NewInt(1 << 14)
+	updateMethodsResponseFieldObject                   = big.NewInt(1 << 15)
+	updateMethodsResponseFieldPayerName                = big.NewInt(1 << 16)
+	updateMethodsResponseFieldQuote                    = big.NewInt(1 << 17)
+	updateMethodsResponseFieldRecipient                = big.NewInt(1 << 18)
+	updateMethodsResponseFieldStatus                   = big.NewInt(1 << 19)
+	updateMethodsResponseFieldStatusReason             = big.NewInt(1 << 20)
+	updateMethodsResponseFieldSupportedPayoutMethod    = big.NewInt(1 << 21)
+	updateMethodsResponseFieldType                     = big.NewInt(1 << 22)
+	updateMethodsResponseFieldUnavailableReason        = big.NewInt(1 << 23)
 )
 
 // updateMethodsResponseNullableFields maps the wire names of UpdateMethodsResponse's nullable fields (required or optional) to their field bits.
 var updateMethodsResponseNullableFields = map[string]*big.Int{
-	"account_reference":       updateMethodsResponseFieldAccountReference,
-	"bank_verification_state": updateMethodsResponseFieldBankVerificationState,
-	"estimated_arrival":       updateMethodsResponseFieldEstimatedArrival,
-	"fee_structure":           updateMethodsResponseFieldFeeStructure,
-	"institution_name":        updateMethodsResponseFieldInstitutionName,
-	"last_paid_out_at":        updateMethodsResponseFieldLastPaidOutAt,
-	"nickname":                updateMethodsResponseFieldNickname,
-	"payer_name":              updateMethodsResponseFieldPayerName,
-	"quote":                   updateMethodsResponseFieldQuote,
-	"status_reason":           updateMethodsResponseFieldStatusReason,
-	"supported_payout_method": updateMethodsResponseFieldSupportedPayoutMethod,
-	"unavailable_reason":      updateMethodsResponseFieldUnavailableReason,
+	"account_reference":          updateMethodsResponseFieldAccountReference,
+	"bank_verification_state":    updateMethodsResponseFieldBankVerificationState,
+	"estimated_arrival":          updateMethodsResponseFieldEstimatedArrival,
+	"fee_structure":              updateMethodsResponseFieldFeeStructure,
+	"instant_unavailable_reason": updateMethodsResponseFieldInstantUnavailableReason,
+	"institution_name":           updateMethodsResponseFieldInstitutionName,
+	"last_paid_out_at":           updateMethodsResponseFieldLastPaidOutAt,
+	"nickname":                   updateMethodsResponseFieldNickname,
+	"payer_name":                 updateMethodsResponseFieldPayerName,
+	"quote":                      updateMethodsResponseFieldQuote,
+	"status_reason":              updateMethodsResponseFieldStatusReason,
+	"supported_payout_method":    updateMethodsResponseFieldSupportedPayoutMethod,
+	"unavailable_reason":         updateMethodsResponseFieldUnavailableReason,
 }
 
 type UpdateMethodsResponse struct {
@@ -4451,8 +4538,10 @@ type UpdateMethodsResponse struct {
 	// `null` after an update. List payout methods to retrieve the configured fee terms.
 	FeeStructure map[string]any `json:"fee_structure,omitempty" url:"fee_structure,omitempty"`
 	// Payout method ID, prefixed `potk_`.
-	ID              string  `json:"id" url:"id"`
-	InstitutionName *string `json:"institution_name,omitempty" url:"institution_name,omitempty"`
+	ID string `json:"id" url:"id"`
+	// Why instant delivery is unavailable. `new_payout_method_hold` means the payout method is within its initial instant delivery hold. `minimum_crypto_sales_not_met` means the account has not reached the sales requirement for instant cryptocurrency payouts. `null` means neither restriction applies.
+	InstantUnavailableReason *UpdateMethodsResponseInstantUnavailableReason `json:"instant_unavailable_reason,omitempty" url:"instant_unavailable_reason,omitempty"`
+	InstitutionName          *string                                        `json:"institution_name,omitempty" url:"institution_name,omitempty"`
 	// Whether this method is a copy of one saved on another of the payer's accounts.
 	IsClone   bool `json:"is_clone" url:"is_clone"`
 	IsDefault bool `json:"is_default" url:"is_default"`
@@ -4534,6 +4623,13 @@ func (u *UpdateMethodsResponse) GetID() string {
 		return ""
 	}
 	return u.ID
+}
+
+func (u *UpdateMethodsResponse) GetInstantUnavailableReason() *UpdateMethodsResponseInstantUnavailableReason {
+	if u == nil {
+		return nil
+	}
+	return u.InstantUnavailableReason
 }
 
 func (u *UpdateMethodsResponse) GetInstitutionName() *string {
@@ -4711,6 +4807,13 @@ func (u *UpdateMethodsResponse) SetFeeStructure(feeStructure map[string]any) {
 func (u *UpdateMethodsResponse) SetID(id string) {
 	u.ID = id
 	u.require(updateMethodsResponseFieldID)
+}
+
+// SetInstantUnavailableReason sets the InstantUnavailableReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateMethodsResponse) SetInstantUnavailableReason(instantUnavailableReason *UpdateMethodsResponseInstantUnavailableReason) {
+	u.InstantUnavailableReason = instantUnavailableReason
+	u.require(updateMethodsResponseFieldInstantUnavailableReason)
 }
 
 // SetInstitutionName sets the InstitutionName field and marks it as non-optional;
@@ -4915,6 +5018,29 @@ func NewUpdateMethodsResponseBankVerificationStateFromString(s string) (UpdateMe
 }
 
 func (u UpdateMethodsResponseBankVerificationState) Ptr() *UpdateMethodsResponseBankVerificationState {
+	return &u
+}
+
+// Why instant delivery is unavailable. `new_payout_method_hold` means the payout method is within its initial instant delivery hold. `minimum_crypto_sales_not_met` means the account has not reached the sales requirement for instant cryptocurrency payouts. `null` means neither restriction applies.
+type UpdateMethodsResponseInstantUnavailableReason string
+
+const (
+	UpdateMethodsResponseInstantUnavailableReasonMinimumCryptoSalesNotMet UpdateMethodsResponseInstantUnavailableReason = "minimum_crypto_sales_not_met"
+	UpdateMethodsResponseInstantUnavailableReasonNewPayoutMethodHold      UpdateMethodsResponseInstantUnavailableReason = "new_payout_method_hold"
+)
+
+func NewUpdateMethodsResponseInstantUnavailableReasonFromString(s string) (UpdateMethodsResponseInstantUnavailableReason, error) {
+	switch s {
+	case "minimum_crypto_sales_not_met":
+		return UpdateMethodsResponseInstantUnavailableReasonMinimumCryptoSalesNotMet, nil
+	case "new_payout_method_hold":
+		return UpdateMethodsResponseInstantUnavailableReasonNewPayoutMethodHold, nil
+	}
+	var t UpdateMethodsResponseInstantUnavailableReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateMethodsResponseInstantUnavailableReason) Ptr() *UpdateMethodsResponseInstantUnavailableReason {
 	return &u
 }
 
