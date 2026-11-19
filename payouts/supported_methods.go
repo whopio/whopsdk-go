@@ -21,10 +21,11 @@ var (
 	listSupportedMethodsRequestFieldDestinationCurrency     = big.NewInt(1 << 6)
 	listSupportedMethodsRequestFieldPartyType               = big.NewInt(1 << 7)
 	listSupportedMethodsRequestFieldIncludeIndividualBanks  = big.NewInt(1 << 8)
-	listSupportedMethodsRequestFieldFirst                   = big.NewInt(1 << 9)
-	listSupportedMethodsRequestFieldAfter                   = big.NewInt(1 << 10)
-	listSupportedMethodsRequestFieldLast                    = big.NewInt(1 << 11)
-	listSupportedMethodsRequestFieldBefore                  = big.NewInt(1 << 12)
+	listSupportedMethodsRequestFieldGenericOnly             = big.NewInt(1 << 9)
+	listSupportedMethodsRequestFieldFirst                   = big.NewInt(1 << 10)
+	listSupportedMethodsRequestFieldAfter                   = big.NewInt(1 << 11)
+	listSupportedMethodsRequestFieldLast                    = big.NewInt(1 << 12)
+	listSupportedMethodsRequestFieldBefore                  = big.NewInt(1 << 13)
 )
 
 type ListSupportedMethodsRequest struct {
@@ -46,6 +47,8 @@ type ListSupportedMethodsRequest struct {
 	PartyType *ListSupportedMethodsRequestPartyType `json:"-" url:"party_type,omitempty"`
 	// Whether to list each bank as its own payout method in countries where people choose a bank by name. Each bank has `parent_id` set to the bank deposit method that lists it. When `false`, these countries list one bank deposit method instead.
 	IncludeIndividualBanks *bool `json:"-" url:"include_individual_banks,omitempty"`
+	// In countries that list methods by payout route, only list one generic method per route and receiving currency. Each is the method that costs least for the amount, and has `category` and `rail` set. Returns an empty list there when no generic method is available. Other countries list as without this parameter.
+	GenericOnly *bool `json:"-" url:"generic_only,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
@@ -129,6 +132,13 @@ func (l *ListSupportedMethodsRequest) SetPartyType(partyType *ListSupportedMetho
 func (l *ListSupportedMethodsRequest) SetIncludeIndividualBanks(includeIndividualBanks *bool) {
 	l.IncludeIndividualBanks = includeIndividualBanks
 	l.require(listSupportedMethodsRequestFieldIncludeIndividualBanks)
+}
+
+// SetGenericOnly sets the GenericOnly field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportedMethodsRequest) SetGenericOnly(genericOnly *bool) {
+	l.GenericOnly = genericOnly
+	l.require(listSupportedMethodsRequestFieldGenericOnly)
 }
 
 // SetFirst sets the First field and marks it as non-optional;
@@ -284,30 +294,36 @@ func (l *ListSupportedMethodsResponse) String() string {
 }
 
 var (
-	listSupportedMethodsResponseDataItemFieldDeliveryType             = big.NewInt(1 << 0)
-	listSupportedMethodsResponseDataItemFieldFeeStructure             = big.NewInt(1 << 1)
-	listSupportedMethodsResponseDataItemFieldIconURL                  = big.NewInt(1 << 2)
-	listSupportedMethodsResponseDataItemFieldID                       = big.NewInt(1 << 3)
-	listSupportedMethodsResponseDataItemFieldName                     = big.NewInt(1 << 4)
-	listSupportedMethodsResponseDataItemFieldObject                   = big.NewInt(1 << 5)
-	listSupportedMethodsResponseDataItemFieldParentID                 = big.NewInt(1 << 6)
-	listSupportedMethodsResponseDataItemFieldQuotes                   = big.NewInt(1 << 7)
-	listSupportedMethodsResponseDataItemFieldRequiredFields           = big.NewInt(1 << 8)
-	listSupportedMethodsResponseDataItemFieldSupportsInstantDelivery  = big.NewInt(1 << 9)
-	listSupportedMethodsResponseDataItemFieldSupportsPaypalLogin      = big.NewInt(1 << 10)
-	listSupportedMethodsResponseDataItemFieldSupportsStandardDelivery = big.NewInt(1 << 11)
+	listSupportedMethodsResponseDataItemFieldCategory                 = big.NewInt(1 << 0)
+	listSupportedMethodsResponseDataItemFieldDeliveryType             = big.NewInt(1 << 1)
+	listSupportedMethodsResponseDataItemFieldFeeStructure             = big.NewInt(1 << 2)
+	listSupportedMethodsResponseDataItemFieldIconURL                  = big.NewInt(1 << 3)
+	listSupportedMethodsResponseDataItemFieldID                       = big.NewInt(1 << 4)
+	listSupportedMethodsResponseDataItemFieldName                     = big.NewInt(1 << 5)
+	listSupportedMethodsResponseDataItemFieldObject                   = big.NewInt(1 << 6)
+	listSupportedMethodsResponseDataItemFieldParentID                 = big.NewInt(1 << 7)
+	listSupportedMethodsResponseDataItemFieldQuotes                   = big.NewInt(1 << 8)
+	listSupportedMethodsResponseDataItemFieldRail                     = big.NewInt(1 << 9)
+	listSupportedMethodsResponseDataItemFieldRequiredFields           = big.NewInt(1 << 10)
+	listSupportedMethodsResponseDataItemFieldSupportsInstantDelivery  = big.NewInt(1 << 11)
+	listSupportedMethodsResponseDataItemFieldSupportsPaypalLogin      = big.NewInt(1 << 12)
+	listSupportedMethodsResponseDataItemFieldSupportsStandardDelivery = big.NewInt(1 << 13)
 )
 
 // listSupportedMethodsResponseDataItemNullableFields maps the wire names of ListSupportedMethodsResponseDataItem's nullable fields (required or optional) to their field bits.
 var listSupportedMethodsResponseDataItemNullableFields = map[string]*big.Int{
+	"category":        listSupportedMethodsResponseDataItemFieldCategory,
 	"icon_url":        listSupportedMethodsResponseDataItemFieldIconURL,
 	"name":            listSupportedMethodsResponseDataItemFieldName,
 	"parent_id":       listSupportedMethodsResponseDataItemFieldParentID,
 	"quotes":          listSupportedMethodsResponseDataItemFieldQuotes,
+	"rail":            listSupportedMethodsResponseDataItemFieldRail,
 	"required_fields": listSupportedMethodsResponseDataItemFieldRequiredFields,
 }
 
 type ListSupportedMethodsResponseDataItem struct {
+	// Category of the payout route that this method belongs to. Set only when `generic_only` is true and this country lists methods by payout route. `null` for every other method.
+	Category *ListSupportedMethodsResponseDataItemCategory `json:"category,omitempty" url:"category,omitempty"`
 	// How funds are delivered, for example `bank_deposit`.
 	DeliveryType ListSupportedMethodsResponseDataItemDeliveryType `json:"delivery_type" url:"delivery_type"`
 	// Fee terms for payouts to this method: a percentage of the payout amount plus a fixed fee. The quotes carry the exact fee for a specific amount.
@@ -323,6 +339,8 @@ type ListSupportedMethodsResponseDataItem struct {
 	ParentID *string `json:"parent_id,omitempty" url:"parent_id,omitempty"`
 	// Fee and delivery estimates for the requested amount, one per destination currency. Null unless an amount was provided.
 	Quotes []*ListSupportedMethodsResponseDataItemQuotesItem `json:"quotes,omitempty" url:"quotes,omitempty"`
+	// Payout rail that this method pays through, for example `ach`, `sepa`, `venmo` or `ethereum`. Set only when `generic_only` is true and this country lists methods by payout route. `null` for every other method.
+	Rail *string `json:"rail,omitempty" url:"rail,omitempty"`
 	// Fields to collect before saving this supported payout method. Present only when supported_payout_method_id narrows the request to one method.
 	RequiredFields          []*ListSupportedMethodsResponseDataItemRequiredFieldsItem `json:"required_fields,omitempty" url:"required_fields,omitempty"`
 	SupportsInstantDelivery bool                                                      `json:"supports_instant_delivery" url:"supports_instant_delivery"`
@@ -335,6 +353,13 @@ type ListSupportedMethodsResponseDataItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (l *ListSupportedMethodsResponseDataItem) GetCategory() *ListSupportedMethodsResponseDataItemCategory {
+	if l == nil {
+		return nil
+	}
+	return l.Category
 }
 
 func (l *ListSupportedMethodsResponseDataItem) GetDeliveryType() ListSupportedMethodsResponseDataItemDeliveryType {
@@ -393,6 +418,13 @@ func (l *ListSupportedMethodsResponseDataItem) GetQuotes() []*ListSupportedMetho
 	return l.Quotes
 }
 
+func (l *ListSupportedMethodsResponseDataItem) GetRail() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Rail
+}
+
 func (l *ListSupportedMethodsResponseDataItem) GetRequiredFields() []*ListSupportedMethodsResponseDataItemRequiredFieldsItem {
 	if l == nil {
 		return nil
@@ -435,6 +467,13 @@ func (l *ListSupportedMethodsResponseDataItem) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	l.explicitFields = next
+}
+
+// SetCategory sets the Category field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportedMethodsResponseDataItem) SetCategory(category *ListSupportedMethodsResponseDataItemCategory) {
+	l.Category = category
+	l.require(listSupportedMethodsResponseDataItemFieldCategory)
 }
 
 // SetDeliveryType sets the DeliveryType field and marks it as non-optional;
@@ -491,6 +530,13 @@ func (l *ListSupportedMethodsResponseDataItem) SetParentID(parentID *string) {
 func (l *ListSupportedMethodsResponseDataItem) SetQuotes(quotes []*ListSupportedMethodsResponseDataItemQuotesItem) {
 	l.Quotes = quotes
 	l.require(listSupportedMethodsResponseDataItemFieldQuotes)
+}
+
+// SetRail sets the Rail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListSupportedMethodsResponseDataItem) SetRail(rail *string) {
+	l.Rail = rail
+	l.require(listSupportedMethodsResponseDataItemFieldRail)
 }
 
 // SetRequiredFields sets the RequiredFields field and marks it as non-optional;
@@ -568,6 +614,32 @@ func (l *ListSupportedMethodsResponseDataItem) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+// Category of the payout route that this method belongs to. Set only when `generic_only` is true and this country lists methods by payout route. `null` for every other method.
+type ListSupportedMethodsResponseDataItemCategory string
+
+const (
+	ListSupportedMethodsResponseDataItemCategoryBankDeposit ListSupportedMethodsResponseDataItemCategory = "bank_deposit"
+	ListSupportedMethodsResponseDataItemCategoryCrypto      ListSupportedMethodsResponseDataItemCategory = "crypto"
+	ListSupportedMethodsResponseDataItemCategoryPaymentApp  ListSupportedMethodsResponseDataItemCategory = "payment_app"
+)
+
+func NewListSupportedMethodsResponseDataItemCategoryFromString(s string) (ListSupportedMethodsResponseDataItemCategory, error) {
+	switch s {
+	case "bank_deposit":
+		return ListSupportedMethodsResponseDataItemCategoryBankDeposit, nil
+	case "crypto":
+		return ListSupportedMethodsResponseDataItemCategoryCrypto, nil
+	case "payment_app":
+		return ListSupportedMethodsResponseDataItemCategoryPaymentApp, nil
+	}
+	var t ListSupportedMethodsResponseDataItemCategory
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListSupportedMethodsResponseDataItemCategory) Ptr() *ListSupportedMethodsResponseDataItemCategory {
+	return &l
 }
 
 // How funds are delivered, for example `bank_deposit`.
