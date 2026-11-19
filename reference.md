@@ -48809,6 +48809,14 @@ client.Partners.Businesses.List(
 <dl>
 <dd>
 
+**countedInNetworkVolume:** `*bool` — When true, only the referrals that the `partner_network_volume` series count today. A referral whose window has ended is left out. Requires `referring_account_id`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
@@ -50448,6 +50456,154 @@ client.Stats.Reports.List(
     context.TODO(),
 )
 ```
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
+<details><summary><code>client.Stats.Reports.PartnerRevenueLines() -> *stats.PartnerRevenueLinesReportsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+The revenue lines charged to the businesses that the team of a partner business referred. Each row shows the commission paid to the partner business on that line. Lines that share an income source show the whole commission of that source. A team member who is not an owner sees only the referrals of their own team. While a day of the window is still being read, `commission` and `paid` are `null` on every row. A line may be missing. The days fill within minutes, so read the report again.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &stats.PartnerRevenueLinesReportsRequest{
+    ReferringAccountID: "referring_account_id",
+}
+client.Stats.Reports.PartnerRevenueLines(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**referringAccountID:** `string` — Partner business to report on, prefixed `biz_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**breakdownBy:** `*stats.PartnerRevenueLinesReportsRequestBreakdownBy` — `revenue_line` for one row per revenue line. Omit it for one row per window with the total commission.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**columns:** `*string` — Comma-separated columns to return on each row. Defaults to `commission,paid`. `income_source` is available on `revenue_line` rows.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**windows:** `*string` — Comma-separated windows of at most 366 days, at most four, in the syntax every report accepts. Each window covers whole days, through the end of its last day. A `prev:` window covers as many days and ends where the window it precedes starts. Defaults to `30d`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**timeZone:** `*string` — IANA zone that the days of each window fall in. Defaults to `Etc/UTC`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**revenueLine:** `*string` — Comma-separated revenue lines to keep.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**incomeSource:** `*string` — Comma-separated income sources to keep.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**order:** `*stats.PartnerRevenueLinesReportsRequestOrder` — The requested metric that ranks rows, by its value in the first window. Defaults to the first requested metric.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**direction:** `*stats.PartnerRevenueLinesReportsRequestDirection` — Ranking direction. Defaults to `desc`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**convertTo:** `*string` — Currency code to return money in. Defaults to `usd`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**first:** `*int` — Number of results to return from the start of the range.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**after:** `*string` — Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+    
 </dd>
 </dl>
 </dd>

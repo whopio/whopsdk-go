@@ -18503,12 +18503,49 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"breakdowns\": [\n        \"breakdowns\"\n      ],\n      \"columns\": [\n        {\n          \"key\": \"key\",\n          \"name\": \"name\",\n          \"type\": \"property\"\n        }\n      ],\n      \"description\": \"description\",\n      \"key\": \"key\",\n      \"path\": \"path\",\n      \"window_field\": \"window_field\",\n      \"window_kind\": \"range\"\n    }\n  ]\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"breakdowns\": [\n        \"revenue_line\"\n      ],\n      \"columns\": [\n        {\n          \"available_on\": [\n            \"revenue_line\"\n          ],\n          \"default\": true,\n          \"key\": \"revenue_line\",\n          \"name\": \"Revenue line\",\n          \"type\": \"property\"\n        }\n      ],\n      \"description\": \"The revenue lines charged to the businesses a partner business's team referred, with the commission the partner business was paid on each. Lines that share an income source show that source's whole commission. A team member who is not an owner sees only their own line. While a day of the window is still being read, commission and paid are null on every row. A line may be missing. The days fill within minutes.\",\n      \"key\": \"partner_revenue_lines\",\n      \"path\": \"/api/v1/stats/reports/partner_revenue_lines\",\n      \"window_field\": \"posted_at\",\n      \"window_kind\": \"range\"\n    }\n  ]\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
       "uuid": "bfec10bb-f87d-4ca0-bc04-46ec33cd03f8",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      },
+      "postServeActions": []
+    },
+    {
+      "id": "297d91f7-e9d8-49d4-bf03-e52d50d418d2",
+      "name": "Retrieve Partner Revenue Lines - default",
+      "request": {
+        "urlPathTemplate": "/stats/reports/partner_revenue_lines",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "queryParameters": {
+          "referring_account_id": {
+            "equalTo": "referring_account_id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"data\": {\n    \"breakdown_by\": \"revenue_line\",\n    \"columns\": [\n      {\n        \"key\": \"revenue_line\",\n        \"name\": \"Revenue line\",\n        \"type\": \"property\"\n      }\n    ],\n    \"data_as_of\": \"2026-01-01T12:00:00.000Z\",\n    \"report\": \"partner_revenue_lines\",\n    \"reports\": [\n      {\n        \"rows\": [\n          {\n            \"commission\": {\n              \"amount\": \"-1234.56\",\n              \"currency\": \"usd\",\n              \"decimals\": 2,\n              \"display_decimals\": 2\n            },\n            \"income_source\": {\n              \"id\": \"sales\",\n              \"name\": \"Sales\"\n            },\n            \"paid\": 1,\n            \"revenue_line\": {\n              \"id\": \"payment_processing_percentage_fee\",\n              \"name\": \"Payment processing percentage fee\"\n            }\n          }\n        ],\n        \"window\": {\n          \"from\": \"2026-01-01T12:00:00.000Z\",\n          \"key\": \"2026-06-01..2026-06-30\",\n          \"kind\": \"range\",\n          \"time_zone\": \"Etc/UTC\",\n          \"to\": \"2026-01-01T12:00:00.000Z\"\n        }\n      }\n    ]\n  },\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"MQ\"\n  }\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "297d91f7-e9d8-49d4-bf03-e52d50d418d2",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -19104,6 +19141,6 @@
     }
   ],
   "meta": {
-    "total": 534
+    "total": 535
   }
 }

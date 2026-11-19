@@ -100,26 +100,27 @@ func (a *AcceptCommissionAdvanceBusinessesRequest) MarshalJSON() ([]byte, error)
 }
 
 var (
-	listBusinessesRequestFieldReferringAccountID  = big.NewInt(1 << 0)
-	listBusinessesRequestFieldAdvanceStatus       = big.NewInt(1 << 1)
-	listBusinessesRequestFieldStatus              = big.NewInt(1 << 2)
-	listBusinessesRequestFieldHasEarnings         = big.NewInt(1 << 3)
-	listBusinessesRequestFieldFirst               = big.NewInt(1 << 4)
-	listBusinessesRequestFieldAfter               = big.NewInt(1 << 5)
-	listBusinessesRequestFieldLast                = big.NewInt(1 << 6)
-	listBusinessesRequestFieldBefore              = big.NewInt(1 << 7)
-	listBusinessesRequestFieldIncludeTotalCount   = big.NewInt(1 << 8)
-	listBusinessesRequestFieldOrder               = big.NewInt(1 << 9)
-	listBusinessesRequestFieldDirection           = big.NewInt(1 << 10)
-	listBusinessesRequestFieldCreatedBefore       = big.NewInt(1 << 11)
-	listBusinessesRequestFieldCreatedAfter        = big.NewInt(1 << 12)
-	listBusinessesRequestFieldFirstSaleBefore     = big.NewInt(1 << 13)
-	listBusinessesRequestFieldFirstSaleAfter      = big.NewInt(1 << 14)
-	listBusinessesRequestFieldReferredUserID      = big.NewInt(1 << 15)
-	listBusinessesRequestFieldReferredUsername    = big.NewInt(1 << 16)
-	listBusinessesRequestFieldTier                = big.NewInt(1 << 17)
-	listBusinessesRequestFieldBusinessPrefixQuery = big.NewInt(1 << 18)
-	listBusinessesRequestFieldEarningPartnerID    = big.NewInt(1 << 19)
+	listBusinessesRequestFieldReferringAccountID     = big.NewInt(1 << 0)
+	listBusinessesRequestFieldAdvanceStatus          = big.NewInt(1 << 1)
+	listBusinessesRequestFieldStatus                 = big.NewInt(1 << 2)
+	listBusinessesRequestFieldHasEarnings            = big.NewInt(1 << 3)
+	listBusinessesRequestFieldCountedInNetworkVolume = big.NewInt(1 << 4)
+	listBusinessesRequestFieldFirst                  = big.NewInt(1 << 5)
+	listBusinessesRequestFieldAfter                  = big.NewInt(1 << 6)
+	listBusinessesRequestFieldLast                   = big.NewInt(1 << 7)
+	listBusinessesRequestFieldBefore                 = big.NewInt(1 << 8)
+	listBusinessesRequestFieldIncludeTotalCount      = big.NewInt(1 << 9)
+	listBusinessesRequestFieldOrder                  = big.NewInt(1 << 10)
+	listBusinessesRequestFieldDirection              = big.NewInt(1 << 11)
+	listBusinessesRequestFieldCreatedBefore          = big.NewInt(1 << 12)
+	listBusinessesRequestFieldCreatedAfter           = big.NewInt(1 << 13)
+	listBusinessesRequestFieldFirstSaleBefore        = big.NewInt(1 << 14)
+	listBusinessesRequestFieldFirstSaleAfter         = big.NewInt(1 << 15)
+	listBusinessesRequestFieldReferredUserID         = big.NewInt(1 << 16)
+	listBusinessesRequestFieldReferredUsername       = big.NewInt(1 << 17)
+	listBusinessesRequestFieldTier                   = big.NewInt(1 << 18)
+	listBusinessesRequestFieldBusinessPrefixQuery    = big.NewInt(1 << 19)
+	listBusinessesRequestFieldEarningPartnerID       = big.NewInt(1 << 20)
 )
 
 type ListBusinessesRequest struct {
@@ -131,6 +132,8 @@ type ListBusinessesRequest struct {
 	Status *ListBusinessesRequestStatus `json:"-" url:"status,omitempty"`
 	// When true, only businesses with pending or completed earnings paid to the caller.
 	HasEarnings *bool `json:"-" url:"has_earnings,omitempty"`
+	// When true, only the referrals that the `partner_network_volume` series count today. A referral whose window has ended is left out. Requires `referring_account_id`.
+	CountedInNetworkVolume *bool `json:"-" url:"counted_in_network_volume,omitempty"`
 	// Number of results to return from the start of the range.
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
@@ -203,6 +206,13 @@ func (l *ListBusinessesRequest) SetStatus(status *ListBusinessesRequestStatus) {
 func (l *ListBusinessesRequest) SetHasEarnings(hasEarnings *bool) {
 	l.HasEarnings = hasEarnings
 	l.require(listBusinessesRequestFieldHasEarnings)
+}
+
+// SetCountedInNetworkVolume sets the CountedInNetworkVolume field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListBusinessesRequest) SetCountedInNetworkVolume(countedInNetworkVolume *bool) {
+	l.CountedInNetworkVolume = countedInNetworkVolume
+	l.require(listBusinessesRequestFieldCountedInNetworkVolume)
 }
 
 // SetFirst sets the First field and marks it as non-optional;
