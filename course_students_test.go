@@ -1576,6 +1576,14 @@ func TestSettersCourseStudentListItemUser(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetProfilePicture", func(t *testing.T) {
+		obj := &CourseStudentListItemUser{}
+		var fernTestValueProfilePicture *CourseStudentListItemUserProfilePicture
+		obj.SetProfilePicture(fernTestValueProfilePicture)
+		assert.Equal(t, fernTestValueProfilePicture, obj.ProfilePicture)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetUsername", func(t *testing.T) {
 		obj := &CourseStudentListItemUser{}
 		var fernTestValueUsername string
@@ -1641,6 +1649,39 @@ func TestGettersCourseStudentListItemUser(t *testing.T) {
 			}
 		}()
 		_ = obj.GetName() // Should return zero value
+	})
+
+	t.Run("GetProfilePicture", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CourseStudentListItemUser{}
+		var expected *CourseStudentListItemUserProfilePicture
+		obj.ProfilePicture = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetProfilePicture(), "getter should return the property value")
+	})
+
+	t.Run("GetProfilePicture_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CourseStudentListItemUser{}
+		obj.ProfilePicture = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetProfilePicture(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetProfilePicture_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CourseStudentListItemUser
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetProfilePicture() // Should return zero value
 	})
 
 	t.Run("GetUsername", func(t *testing.T) {
@@ -1731,6 +1772,37 @@ func TestSettersMarkExplicitCourseStudentListItemUser(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetProfilePicture_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CourseStudentListItemUser{}
+		var fernTestValueProfilePicture *CourseStudentListItemUserProfilePicture
+
+		// Act
+		obj.SetProfilePicture(fernTestValueProfilePicture)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetUsername_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1739,6 +1811,87 @@ func TestSettersMarkExplicitCourseStudentListItemUser(t *testing.T) {
 
 		// Act
 		obj.SetUsername(fernTestValueUsername)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersCourseStudentListItemUserProfilePicture(t *testing.T) {
+	t.Run("SetURL", func(t *testing.T) {
+		obj := &CourseStudentListItemUserProfilePicture{}
+		var fernTestValueURL *string
+		obj.SetURL(fernTestValueURL)
+		assert.Equal(t, fernTestValueURL, obj.URL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCourseStudentListItemUserProfilePicture(t *testing.T) {
+	t.Run("GetURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CourseStudentListItemUserProfilePicture{}
+		var expected *string
+		obj.URL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetURL(), "getter should return the property value")
+	})
+
+	t.Run("GetURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CourseStudentListItemUserProfilePicture{}
+		obj.URL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CourseStudentListItemUserProfilePicture
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetURL() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCourseStudentListItemUserProfilePicture(t *testing.T) {
+	t.Run("SetURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CourseStudentListItemUserProfilePicture{}
+		var fernTestValueURL *string
+
+		// Act
+		obj.SetURL(fernTestValueURL)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1778,6 +1931,14 @@ func TestSettersCourseStudentUser(t *testing.T) {
 		var fernTestValueName *string
 		obj.SetName(fernTestValueName)
 		assert.Equal(t, fernTestValueName, obj.Name)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetProfilePicture", func(t *testing.T) {
+		obj := &CourseStudentUser{}
+		var fernTestValueProfilePicture *CourseStudentUserProfilePicture
+		obj.SetProfilePicture(fernTestValueProfilePicture)
+		assert.Equal(t, fernTestValueProfilePicture, obj.ProfilePicture)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1846,6 +2007,39 @@ func TestGettersCourseStudentUser(t *testing.T) {
 			}
 		}()
 		_ = obj.GetName() // Should return zero value
+	})
+
+	t.Run("GetProfilePicture", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CourseStudentUser{}
+		var expected *CourseStudentUserProfilePicture
+		obj.ProfilePicture = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetProfilePicture(), "getter should return the property value")
+	})
+
+	t.Run("GetProfilePicture_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CourseStudentUser{}
+		obj.ProfilePicture = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetProfilePicture(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetProfilePicture_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CourseStudentUser
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetProfilePicture() // Should return zero value
 	})
 
 	t.Run("GetUsername", func(t *testing.T) {
@@ -1936,6 +2130,37 @@ func TestSettersMarkExplicitCourseStudentUser(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetProfilePicture_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CourseStudentUser{}
+		var fernTestValueProfilePicture *CourseStudentUserProfilePicture
+
+		// Act
+		obj.SetProfilePicture(fernTestValueProfilePicture)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetUsername_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1944,6 +2169,87 @@ func TestSettersMarkExplicitCourseStudentUser(t *testing.T) {
 
 		// Act
 		obj.SetUsername(fernTestValueUsername)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersCourseStudentUserProfilePicture(t *testing.T) {
+	t.Run("SetURL", func(t *testing.T) {
+		obj := &CourseStudentUserProfilePicture{}
+		var fernTestValueURL *string
+		obj.SetURL(fernTestValueURL)
+		assert.Equal(t, fernTestValueURL, obj.URL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCourseStudentUserProfilePicture(t *testing.T) {
+	t.Run("GetURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CourseStudentUserProfilePicture{}
+		var expected *string
+		obj.URL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetURL(), "getter should return the property value")
+	})
+
+	t.Run("GetURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CourseStudentUserProfilePicture{}
+		obj.URL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CourseStudentUserProfilePicture
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetURL() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCourseStudentUserProfilePicture(t *testing.T) {
+	t.Run("SetURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CourseStudentUserProfilePicture{}
+		var fernTestValueURL *string
+
+		// Act
+		obj.SetURL(fernTestValueURL)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2287,6 +2593,39 @@ func TestJSONMarshalingCourseStudentListItemUser(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingCourseStudentListItemUserProfilePicture(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CourseStudentListItemUserProfilePicture{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CourseStudentListItemUserProfilePicture
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CourseStudentListItemUserProfilePicture
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CourseStudentListItemUserProfilePicture
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingCourseStudentUser(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -2315,6 +2654,39 @@ func TestJSONMarshalingCourseStudentUser(t *testing.T) {
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
 		var obj CourseStudentUser
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingCourseStudentUserProfilePicture(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CourseStudentUserProfilePicture{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CourseStudentUserProfilePicture
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CourseStudentUserProfilePicture
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CourseStudentUserProfilePicture
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -2399,6 +2771,7 @@ func TestRequiredNullableRoundTripCourseStudentCourse(t *testing.T) {
 func TestRequiredNullableRoundTripCourseStudentListItemUser(t *testing.T) {
 	requiredNullableKeys := []string{
 		"name",
+		"profile_picture",
 	}
 	marshalToMap := func(t *testing.T, obj *CourseStudentListItemUser) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -2411,7 +2784,7 @@ func TestRequiredNullableRoundTripCourseStudentListItemUser(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj CourseStudentListItemUser
-		require.NoError(t, json.Unmarshal([]byte(`{"name":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"name":null,"profile_picture":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -2439,9 +2812,53 @@ func TestRequiredNullableRoundTripCourseStudentListItemUser(t *testing.T) {
 	})
 }
 
+func TestRequiredNullableRoundTripCourseStudentListItemUserProfilePicture(t *testing.T) {
+	requiredNullableKeys := []string{
+		"url",
+	}
+	marshalToMap := func(t *testing.T, obj *CourseStudentListItemUserProfilePicture) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj CourseStudentListItemUserProfilePicture
+		require.NoError(t, json.Unmarshal([]byte(`{"url":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj CourseStudentListItemUserProfilePicture
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &CourseStudentListItemUserProfilePicture{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestRequiredNullableRoundTripCourseStudentUser(t *testing.T) {
 	requiredNullableKeys := []string{
 		"name",
+		"profile_picture",
 	}
 	marshalToMap := func(t *testing.T, obj *CourseStudentUser) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -2454,7 +2871,7 @@ func TestRequiredNullableRoundTripCourseStudentUser(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj CourseStudentUser
-		require.NoError(t, json.Unmarshal([]byte(`{"name":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"name":null,"profile_picture":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -2476,6 +2893,49 @@ func TestRequiredNullableRoundTripCourseStudentUser(t *testing.T) {
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
 		result := marshalToMap(t, &CourseStudentUser{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripCourseStudentUserProfilePicture(t *testing.T) {
+	requiredNullableKeys := []string{
+		"url",
+	}
+	marshalToMap := func(t *testing.T, obj *CourseStudentUserProfilePicture) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj CourseStudentUserProfilePicture
+		require.NoError(t, json.Unmarshal([]byte(`{"url":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj CourseStudentUserProfilePicture
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &CourseStudentUserProfilePicture{})
 		for _, key := range requiredNullableKeys {
 			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
 		}
@@ -2562,6 +3022,22 @@ func TestStringCourseStudentListItemUser(t *testing.T) {
 	})
 }
 
+func TestStringCourseStudentListItemUserProfilePicture(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CourseStudentListItemUserProfilePicture{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CourseStudentListItemUserProfilePicture
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringCourseStudentUser(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -2573,6 +3049,22 @@ func TestStringCourseStudentUser(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *CourseStudentUser
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringCourseStudentUserProfilePicture(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CourseStudentUserProfilePicture{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CourseStudentUserProfilePicture
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -2709,6 +3201,29 @@ func TestExtraPropertiesCourseStudentListItemUser(t *testing.T) {
 	})
 }
 
+func TestExtraPropertiesCourseStudentListItemUserProfilePicture(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CourseStudentListItemUserProfilePicture{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CourseStudentListItemUserProfilePicture
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
 func TestExtraPropertiesCourseStudentUser(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
@@ -2727,6 +3242,29 @@ func TestExtraPropertiesCourseStudentUser(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *CourseStudentUser
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesCourseStudentUserProfilePicture(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CourseStudentUserProfilePicture{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CourseStudentUserProfilePicture
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

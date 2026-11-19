@@ -760,14 +760,16 @@ func (c *CourseStudentListItem) String() string {
 }
 
 var (
-	courseStudentListItemUserFieldID       = big.NewInt(1 << 0)
-	courseStudentListItemUserFieldName     = big.NewInt(1 << 1)
-	courseStudentListItemUserFieldUsername = big.NewInt(1 << 2)
+	courseStudentListItemUserFieldID             = big.NewInt(1 << 0)
+	courseStudentListItemUserFieldName           = big.NewInt(1 << 1)
+	courseStudentListItemUserFieldProfilePicture = big.NewInt(1 << 2)
+	courseStudentListItemUserFieldUsername       = big.NewInt(1 << 3)
 )
 
 // courseStudentListItemUserNullableFields maps the wire names of CourseStudentListItemUser's nullable fields (required or optional) to their field bits.
 var courseStudentListItemUserNullableFields = map[string]*big.Int{
-	"name": courseStudentListItemUserFieldName,
+	"name":            courseStudentListItemUserFieldName,
+	"profile_picture": courseStudentListItemUserFieldProfilePicture,
 }
 
 // The user profile of the enrolled student.
@@ -776,6 +778,8 @@ type CourseStudentListItemUser struct {
 	ID string `json:"id" url:"id"`
 	// The user's display name shown on their public profile.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The user's profile picture attachment with URL, content type, and file metadata. Null if using a legacy profile picture.
+	ProfilePicture *CourseStudentListItemUserProfilePicture `json:"profile_picture,omitempty" url:"profile_picture,omitempty"`
 	// The user's unique username shown on their public profile.
 	Username string `json:"username" url:"username"`
 
@@ -798,6 +802,13 @@ func (c *CourseStudentListItemUser) GetName() *string {
 		return nil
 	}
 	return c.Name
+}
+
+func (c *CourseStudentListItemUser) GetProfilePicture() *CourseStudentListItemUserProfilePicture {
+	if c == nil {
+		return nil
+	}
+	return c.ProfilePicture
 }
 
 func (c *CourseStudentListItemUser) GetUsername() string {
@@ -835,6 +846,13 @@ func (c *CourseStudentListItemUser) SetID(id string) {
 func (c *CourseStudentListItemUser) SetName(name *string) {
 	c.Name = name
 	c.require(courseStudentListItemUserFieldName)
+}
+
+// SetProfilePicture sets the ProfilePicture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CourseStudentListItemUser) SetProfilePicture(profilePicture *CourseStudentListItemUserProfilePicture) {
+	c.ProfilePicture = profilePicture
+	c.require(courseStudentListItemUserFieldProfilePicture)
 }
 
 // SetUsername sets the Username field and marks it as non-optional;
@@ -894,14 +912,116 @@ func (c *CourseStudentListItemUser) String() string {
 }
 
 var (
-	courseStudentUserFieldID       = big.NewInt(1 << 0)
-	courseStudentUserFieldName     = big.NewInt(1 << 1)
-	courseStudentUserFieldUsername = big.NewInt(1 << 2)
+	courseStudentListItemUserProfilePictureFieldURL = big.NewInt(1 << 0)
+)
+
+// courseStudentListItemUserProfilePictureNullableFields maps the wire names of CourseStudentListItemUserProfilePicture's nullable fields (required or optional) to their field bits.
+var courseStudentListItemUserProfilePictureNullableFields = map[string]*big.Int{
+	"url": courseStudentListItemUserProfilePictureFieldURL,
+}
+
+// The user's profile picture attachment with URL, content type, and file metadata. Null if using a legacy profile picture.
+type CourseStudentListItemUserProfilePicture struct {
+	// A pre-optimized URL for rendering this attachment on the client. This should be used for displaying attachments in apps.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CourseStudentListItemUserProfilePicture) GetURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.URL
+}
+
+func (c *CourseStudentListItemUserProfilePicture) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CourseStudentListItemUserProfilePicture) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CourseStudentListItemUserProfilePicture) SetURL(url *string) {
+	c.URL = url
+	c.require(courseStudentListItemUserProfilePictureFieldURL)
+}
+
+func (c *CourseStudentListItemUserProfilePicture) UnmarshalJSON(data []byte) error {
+	type unmarshaler CourseStudentListItemUserProfilePicture
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CourseStudentListItemUserProfilePicture(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, courseStudentListItemUserProfilePictureNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CourseStudentListItemUserProfilePicture) MarshalJSON() ([]byte, error) {
+	type embed CourseStudentListItemUserProfilePicture
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CourseStudentListItemUserProfilePicture) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	courseStudentUserFieldID             = big.NewInt(1 << 0)
+	courseStudentUserFieldName           = big.NewInt(1 << 1)
+	courseStudentUserFieldProfilePicture = big.NewInt(1 << 2)
+	courseStudentUserFieldUsername       = big.NewInt(1 << 3)
 )
 
 // courseStudentUserNullableFields maps the wire names of CourseStudentUser's nullable fields (required or optional) to their field bits.
 var courseStudentUserNullableFields = map[string]*big.Int{
-	"name": courseStudentUserFieldName,
+	"name":            courseStudentUserFieldName,
+	"profile_picture": courseStudentUserFieldProfilePicture,
 }
 
 // The user profile of the enrolled student.
@@ -910,6 +1030,8 @@ type CourseStudentUser struct {
 	ID string `json:"id" url:"id"`
 	// The user's display name shown on their public profile.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// The user's profile picture attachment with URL, content type, and file metadata. Null if using a legacy profile picture.
+	ProfilePicture *CourseStudentUserProfilePicture `json:"profile_picture,omitempty" url:"profile_picture,omitempty"`
 	// The user's unique username shown on their public profile.
 	Username string `json:"username" url:"username"`
 
@@ -932,6 +1054,13 @@ func (c *CourseStudentUser) GetName() *string {
 		return nil
 	}
 	return c.Name
+}
+
+func (c *CourseStudentUser) GetProfilePicture() *CourseStudentUserProfilePicture {
+	if c == nil {
+		return nil
+	}
+	return c.ProfilePicture
 }
 
 func (c *CourseStudentUser) GetUsername() string {
@@ -969,6 +1098,13 @@ func (c *CourseStudentUser) SetID(id string) {
 func (c *CourseStudentUser) SetName(name *string) {
 	c.Name = name
 	c.require(courseStudentUserFieldName)
+}
+
+// SetProfilePicture sets the ProfilePicture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CourseStudentUser) SetProfilePicture(profilePicture *CourseStudentUserProfilePicture) {
+	c.ProfilePicture = profilePicture
+	c.require(courseStudentUserFieldProfilePicture)
 }
 
 // SetUsername sets the Username field and marks it as non-optional;
@@ -1013,6 +1149,106 @@ func (c *CourseStudentUser) MarshalJSON() ([]byte, error) {
 }
 
 func (c *CourseStudentUser) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	courseStudentUserProfilePictureFieldURL = big.NewInt(1 << 0)
+)
+
+// courseStudentUserProfilePictureNullableFields maps the wire names of CourseStudentUserProfilePicture's nullable fields (required or optional) to their field bits.
+var courseStudentUserProfilePictureNullableFields = map[string]*big.Int{
+	"url": courseStudentUserProfilePictureFieldURL,
+}
+
+// The user's profile picture attachment with URL, content type, and file metadata. Null if using a legacy profile picture.
+type CourseStudentUserProfilePicture struct {
+	// A pre-optimized URL for rendering this attachment on the client. This should be used for displaying attachments in apps.
+	URL *string `json:"url,omitempty" url:"url,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CourseStudentUserProfilePicture) GetURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.URL
+}
+
+func (c *CourseStudentUserProfilePicture) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CourseStudentUserProfilePicture) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CourseStudentUserProfilePicture) SetURL(url *string) {
+	c.URL = url
+	c.require(courseStudentUserProfilePictureFieldURL)
+}
+
+func (c *CourseStudentUserProfilePicture) UnmarshalJSON(data []byte) error {
+	type unmarshaler CourseStudentUserProfilePicture
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CourseStudentUserProfilePicture(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, courseStudentUserProfilePictureNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CourseStudentUserProfilePicture) MarshalJSON() ([]byte, error) {
+	type embed CourseStudentUserProfilePicture
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CourseStudentUserProfilePicture) String() string {
 	if c == nil {
 		return "<nil>"
 	}
