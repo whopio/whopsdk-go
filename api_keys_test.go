@@ -876,6 +876,14 @@ func TestSettersAPIKey(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetLastUsedAt", func(t *testing.T) {
+		obj := &APIKey{}
+		var fernTestValueLastUsedAt *string
+		obj.SetLastUsedAt(fernTestValueLastUsedAt)
+		assert.Equal(t, fernTestValueLastUsedAt, obj.LastUsedAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetName", func(t *testing.T) {
 		obj := &APIKey{}
 		var fernTestValueName *string
@@ -1108,6 +1116,39 @@ func TestGettersAPIKey(t *testing.T) {
 			}
 		}()
 		_ = obj.GetIsDefaultForResource() // Should return zero value
+	})
+
+	t.Run("GetLastUsedAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &APIKey{}
+		var expected *string
+		obj.LastUsedAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetLastUsedAt(), "getter should return the property value")
+	})
+
+	t.Run("GetLastUsedAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &APIKey{}
+		obj.LastUsedAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetLastUsedAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetLastUsedAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *APIKey
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetLastUsedAt() // Should return zero value
 	})
 
 	t.Run("GetName", func(t *testing.T) {
@@ -1452,6 +1493,37 @@ func TestSettersMarkExplicitAPIKey(t *testing.T) {
 
 		// Act
 		obj.SetIsDefaultForResource(fernTestValueIsDefaultForResource)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetLastUsedAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &APIKey{}
+		var fernTestValueLastUsedAt *string
+
+		// Act
+		obj.SetLastUsedAt(fernTestValueLastUsedAt)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4995,6 +5067,7 @@ func TestRequiredNullableRoundTripAPIKey(t *testing.T) {
 	requiredNullableKeys := []string{
 		"expires_at",
 		"ip_allowlist",
+		"last_used_at",
 		"name",
 		"system_role",
 	}
@@ -5009,7 +5082,7 @@ func TestRequiredNullableRoundTripAPIKey(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj APIKey
-		require.NoError(t, json.Unmarshal([]byte(`{"expires_at":null,"ip_allowlist":null,"name":null,"system_role":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"expires_at":null,"ip_allowlist":null,"last_used_at":null,"name":null,"system_role":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

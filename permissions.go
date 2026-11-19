@@ -959,11 +959,15 @@ func (p PermissionAction) Ptr() *PermissionAction {
 }
 
 var (
-	listPermissionsResponseFieldData = big.NewInt(1 << 0)
+	permissionGrantFieldAction  = big.NewInt(1 << 0)
+	permissionGrantFieldGranted = big.NewInt(1 << 1)
 )
 
-type ListPermissionsResponse struct {
-	Data []*ListPermissionsResponseDataItem `json:"data" url:"data"`
+type PermissionGrant struct {
+	// The permission action.
+	Action PermissionAction `json:"action" url:"action"`
+	// Whether the action is granted on the resource.
+	Granted bool `json:"granted" url:"granted"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -972,7 +976,107 @@ type ListPermissionsResponse struct {
 	rawJSON         json.RawMessage
 }
 
-func (l *ListPermissionsResponse) GetData() []*ListPermissionsResponseDataItem {
+func (p *PermissionGrant) GetAction() PermissionAction {
+	if p == nil {
+		return ""
+	}
+	return p.Action
+}
+
+func (p *PermissionGrant) GetGranted() bool {
+	if p == nil {
+		return false
+	}
+	return p.Granted
+}
+
+func (p *PermissionGrant) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PermissionGrant) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAction sets the Action field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PermissionGrant) SetAction(action PermissionAction) {
+	p.Action = action
+	p.require(permissionGrantFieldAction)
+}
+
+// SetGranted sets the Granted field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PermissionGrant) SetGranted(granted bool) {
+	p.Granted = granted
+	p.require(permissionGrantFieldGranted)
+}
+
+func (p *PermissionGrant) UnmarshalJSON(data []byte) error {
+	type unmarshaler PermissionGrant
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PermissionGrant(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PermissionGrant) MarshalJSON() ([]byte, error) {
+	type embed PermissionGrant
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PermissionGrant) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	listPermissionsResponseFieldData = big.NewInt(1 << 0)
+)
+
+type ListPermissionsResponse struct {
+	Data []*PermissionGrant `json:"data" url:"data"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListPermissionsResponse) GetData() []*PermissionGrant {
 	if l == nil {
 		return nil
 	}
@@ -997,7 +1101,7 @@ func (l *ListPermissionsResponse) require(field *big.Int) {
 
 // SetData sets the Data field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPermissionsResponse) SetData(data []*ListPermissionsResponseDataItem) {
+func (l *ListPermissionsResponse) SetData(data []*PermissionGrant) {
 	l.Data = data
 	l.require(listPermissionsResponseFieldData)
 }
@@ -1030,109 +1134,6 @@ func (l *ListPermissionsResponse) MarshalJSON() ([]byte, error) {
 }
 
 func (l *ListPermissionsResponse) String() string {
-	if l == nil {
-		return "<nil>"
-	}
-	if len(l.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(l); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", l)
-}
-
-var (
-	listPermissionsResponseDataItemFieldAction  = big.NewInt(1 << 0)
-	listPermissionsResponseDataItemFieldGranted = big.NewInt(1 << 1)
-)
-
-type ListPermissionsResponseDataItem struct {
-	Action PermissionAction `json:"action" url:"action"`
-	// Whether the credential is granted the action for the resource.
-	Granted bool `json:"granted" url:"granted"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (l *ListPermissionsResponseDataItem) GetAction() PermissionAction {
-	if l == nil {
-		return ""
-	}
-	return l.Action
-}
-
-func (l *ListPermissionsResponseDataItem) GetGranted() bool {
-	if l == nil {
-		return false
-	}
-	return l.Granted
-}
-
-func (l *ListPermissionsResponseDataItem) GetExtraProperties() map[string]interface{} {
-	if l == nil {
-		return nil
-	}
-	return l.extraProperties
-}
-
-func (l *ListPermissionsResponseDataItem) require(field *big.Int) {
-	next := new(big.Int)
-	if l.explicitFields != nil {
-		next.Set(l.explicitFields)
-	}
-	next.Or(next, field)
-	l.explicitFields = next
-}
-
-// SetAction sets the Action field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPermissionsResponseDataItem) SetAction(action PermissionAction) {
-	l.Action = action
-	l.require(listPermissionsResponseDataItemFieldAction)
-}
-
-// SetGranted sets the Granted field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListPermissionsResponseDataItem) SetGranted(granted bool) {
-	l.Granted = granted
-	l.require(listPermissionsResponseDataItemFieldGranted)
-}
-
-func (l *ListPermissionsResponseDataItem) UnmarshalJSON(data []byte) error {
-	type unmarshaler ListPermissionsResponseDataItem
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*l = ListPermissionsResponseDataItem(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *l)
-	if err != nil {
-		return err
-	}
-	l.extraProperties = extraProperties
-	l.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (l *ListPermissionsResponseDataItem) MarshalJSON() ([]byte, error) {
-	type embed ListPermissionsResponseDataItem
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*l),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (l *ListPermissionsResponseDataItem) String() string {
 	if l == nil {
 		return "<nil>"
 	}

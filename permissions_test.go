@@ -93,10 +93,143 @@ func TestSettersMarkExplicitListPermissionsRequest(t *testing.T) {
 
 }
 
+func TestSettersPermissionGrant(t *testing.T) {
+	t.Run("SetAction", func(t *testing.T) {
+		obj := &PermissionGrant{}
+		var fernTestValueAction PermissionAction
+		obj.SetAction(fernTestValueAction)
+		assert.Equal(t, fernTestValueAction, obj.Action)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetGranted", func(t *testing.T) {
+		obj := &PermissionGrant{}
+		var fernTestValueGranted bool
+		obj.SetGranted(fernTestValueGranted)
+		assert.Equal(t, fernTestValueGranted, obj.Granted)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersPermissionGrant(t *testing.T) {
+	t.Run("GetAction", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PermissionGrant{}
+		var expected PermissionAction
+		obj.Action = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAction(), "getter should return the property value")
+	})
+
+	t.Run("GetAction_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PermissionGrant
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAction() // Should return zero value
+	})
+
+	t.Run("GetGranted", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PermissionGrant{}
+		var expected bool
+		obj.Granted = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetGranted(), "getter should return the property value")
+	})
+
+	t.Run("GetGranted_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PermissionGrant
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetGranted() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitPermissionGrant(t *testing.T) {
+	t.Run("SetAction_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PermissionGrant{}
+		var fernTestValueAction PermissionAction
+
+		// Act
+		obj.SetAction(fernTestValueAction)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetGranted_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PermissionGrant{}
+		var fernTestValueGranted bool
+
+		// Act
+		obj.SetGranted(fernTestValueGranted)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersListPermissionsResponse(t *testing.T) {
 	t.Run("SetData", func(t *testing.T) {
 		obj := &ListPermissionsResponse{}
-		var fernTestValueData []*ListPermissionsResponseDataItem
+		var fernTestValueData []*PermissionGrant
 		obj.SetData(fernTestValueData)
 		assert.Equal(t, fernTestValueData, obj.Data)
 		assert.NotNil(t, obj.explicitFields)
@@ -109,7 +242,7 @@ func TestGettersListPermissionsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListPermissionsResponse{}
-		var expected []*ListPermissionsResponseDataItem
+		var expected []*PermissionGrant
 		obj.Data = expected
 
 		// Act & Assert
@@ -145,143 +278,10 @@ func TestSettersMarkExplicitListPermissionsResponse(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListPermissionsResponse{}
-		var fernTestValueData []*ListPermissionsResponseDataItem
+		var fernTestValueData []*PermissionGrant
 
 		// Act
 		obj.SetData(fernTestValueData)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-}
-
-func TestSettersListPermissionsResponseDataItem(t *testing.T) {
-	t.Run("SetAction", func(t *testing.T) {
-		obj := &ListPermissionsResponseDataItem{}
-		var fernTestValueAction PermissionAction
-		obj.SetAction(fernTestValueAction)
-		assert.Equal(t, fernTestValueAction, obj.Action)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetGranted", func(t *testing.T) {
-		obj := &ListPermissionsResponseDataItem{}
-		var fernTestValueGranted bool
-		obj.SetGranted(fernTestValueGranted)
-		assert.Equal(t, fernTestValueGranted, obj.Granted)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-}
-
-func TestGettersListPermissionsResponseDataItem(t *testing.T) {
-	t.Run("GetAction", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ListPermissionsResponseDataItem{}
-		var expected PermissionAction
-		obj.Action = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetAction(), "getter should return the property value")
-	})
-
-	t.Run("GetAction_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *ListPermissionsResponseDataItem
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetAction() // Should return zero value
-	})
-
-	t.Run("GetGranted", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ListPermissionsResponseDataItem{}
-		var expected bool
-		obj.Granted = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetGranted(), "getter should return the property value")
-	})
-
-	t.Run("GetGranted_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *ListPermissionsResponseDataItem
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetGranted() // Should return zero value
-	})
-
-}
-
-func TestSettersMarkExplicitListPermissionsResponseDataItem(t *testing.T) {
-	t.Run("SetAction_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ListPermissionsResponseDataItem{}
-		var fernTestValueAction PermissionAction
-
-		// Act
-		obj.SetAction(fernTestValueAction)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetGranted_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &ListPermissionsResponseDataItem{}
-		var fernTestValueGranted bool
-
-		// Act
-		obj.SetGranted(fernTestValueGranted)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -340,11 +340,11 @@ func TestJSONMarshalingListPermissionsResponse(t *testing.T) {
 	})
 }
 
-func TestJSONMarshalingListPermissionsResponseDataItem(t *testing.T) {
+func TestJSONMarshalingPermissionGrant(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &ListPermissionsResponseDataItem{}
+		obj := &PermissionGrant{}
 
 		// Act - Marshal to JSON
 		data, err := json.Marshal(obj)
@@ -353,21 +353,21 @@ func TestJSONMarshalingListPermissionsResponseDataItem(t *testing.T) {
 		assert.NotEmpty(t, data, "marshaled data should not be empty")
 
 		// Unmarshal back and verify round-trip
-		var unmarshaled ListPermissionsResponseDataItem
+		var unmarshaled PermissionGrant
 		err = json.Unmarshal(data, &unmarshaled)
 		assert.NoError(t, err, "round-trip unmarshal should succeed")
 	})
 
 	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
 		t.Parallel()
-		var obj ListPermissionsResponseDataItem
+		var obj PermissionGrant
 		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
 		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
 	})
 
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
-		var obj ListPermissionsResponseDataItem
+		var obj PermissionGrant
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -389,17 +389,17 @@ func TestStringListPermissionsResponse(t *testing.T) {
 	})
 }
 
-func TestStringListPermissionsResponseDataItem(t *testing.T) {
+func TestStringPermissionGrant(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
-		obj := &ListPermissionsResponseDataItem{}
+		obj := &PermissionGrant{}
 		result := obj.String()
 		assert.NotEmpty(t, result, "String() should return a non-empty representation")
 	})
 
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ListPermissionsResponseDataItem
+		var obj *PermissionGrant
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -2529,10 +2529,10 @@ func TestExtraPropertiesListPermissionsResponse(t *testing.T) {
 	})
 }
 
-func TestExtraPropertiesListPermissionsResponseDataItem(t *testing.T) {
+func TestExtraPropertiesPermissionGrant(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
-		obj := &ListPermissionsResponseDataItem{}
+		obj := &PermissionGrant{}
 		// Should not panic when calling GetExtraProperties()
 		defer func() {
 			if r := recover(); r != nil {
@@ -2546,7 +2546,7 @@ func TestExtraPropertiesListPermissionsResponseDataItem(t *testing.T) {
 
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *ListPermissionsResponseDataItem
+		var obj *PermissionGrant
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
