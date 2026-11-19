@@ -1281,8 +1281,11 @@ type SuspensionAppealSubjectSuspensionCode string
 
 const (
 	SuspensionAppealSubjectSuspensionCodeFraudulentActivity               SuspensionAppealSubjectSuspensionCode = "fraudulent_activity"
+	SuspensionAppealSubjectSuspensionCodeUnauthorizedPayments             SuspensionAppealSubjectSuspensionCode = "unauthorized_payments"
+	SuspensionAppealSubjectSuspensionCodePreviousFraudSuspension          SuspensionAppealSubjectSuspensionCode = "previous_fraud_suspension"
 	SuspensionAppealSubjectSuspensionCodeProhibitedBusinessCategory       SuspensionAppealSubjectSuspensionCode = "prohibited_business_category"
 	SuspensionAppealSubjectSuspensionCodeUnverifiableBusiness             SuspensionAppealSubjectSuspensionCode = "unverifiable_business"
+	SuspensionAppealSubjectSuspensionCodeUnverifiableFulfillment          SuspensionAppealSubjectSuspensionCode = "unverifiable_fulfillment"
 	SuspensionAppealSubjectSuspensionCodeSanctions                        SuspensionAppealSubjectSuspensionCode = "sanctions"
 	SuspensionAppealSubjectSuspensionCodeUnsupportedJurisdiction          SuspensionAppealSubjectSuspensionCode = "unsupported_jurisdiction"
 	SuspensionAppealSubjectSuspensionCodeProhibitedContent                SuspensionAppealSubjectSuspensionCode = "prohibited_content"
@@ -1298,10 +1301,16 @@ func NewSuspensionAppealSubjectSuspensionCodeFromString(s string) (SuspensionApp
 	switch s {
 	case "fraudulent_activity":
 		return SuspensionAppealSubjectSuspensionCodeFraudulentActivity, nil
+	case "unauthorized_payments":
+		return SuspensionAppealSubjectSuspensionCodeUnauthorizedPayments, nil
+	case "previous_fraud_suspension":
+		return SuspensionAppealSubjectSuspensionCodePreviousFraudSuspension, nil
 	case "prohibited_business_category":
 		return SuspensionAppealSubjectSuspensionCodeProhibitedBusinessCategory, nil
 	case "unverifiable_business":
 		return SuspensionAppealSubjectSuspensionCodeUnverifiableBusiness, nil
+	case "unverifiable_fulfillment":
+		return SuspensionAppealSubjectSuspensionCodeUnverifiableFulfillment, nil
 	case "sanctions":
 		return SuspensionAppealSubjectSuspensionCodeSanctions, nil
 	case "unsupported_jurisdiction":
