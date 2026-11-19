@@ -146,6 +146,38 @@ func (c *Client) Retrieve(
 	return response.Body, nil
 }
 
+// Edits the arguments of a `ready` action's steps before it runs. Send the action's `workflow` back with one entry for each step, in the same order. An entry with `arguments` replaces that step's arguments. An entry without them leaves the step as it is. Only `arguments` can change. Other step fields can be sent back only with the values the action has.
+//
+// Example:
+//
+//	request := &whopsdk.UpdateRecommendedActionsRequest{
+//	    ID: "reca_xxxxxxxxxxxxx",
+//	    Workflow: &whopsdk.UpdateRecommendedActionsRequestWorkflow{
+//	        Steps: []*whopsdk.UpdateRecommendedActionsRequestWorkflowStepsItem{
+//	            &whopsdk.UpdateRecommendedActionsRequestWorkflowStepsItem{},
+//	        },
+//	    },
+//	}
+//	client.RecommendedActions.Update(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Update(
+	ctx context.Context,
+	request *whopsdk.UpdateRecommendedActionsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.RecommendedAction, error) {
+	response, err := c.WithRawResponse.Update(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Dismisses a `ready` or `preparing` action, so it does not run.
 //
 // Example:

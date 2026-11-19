@@ -127,6 +127,37 @@ func TestRecommendedActionsRetrieveWithWireMock(
 	VerifyRequestCount(t, "TestRecommendedActionsRetrieveWithWireMock", "GET", "/recommended_actions/reca_xxxxxxxxxxxxx", nil, 1)
 }
 
+func TestRecommendedActionsUpdateWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.UpdateRecommendedActionsRequest{
+		ID: "reca_xxxxxxxxxxxxx",
+		Workflow: &whopsdk.UpdateRecommendedActionsRequestWorkflow{
+			Steps: []*whopsdk.UpdateRecommendedActionsRequestWorkflowStepsItem{
+				&whopsdk.UpdateRecommendedActionsRequestWorkflowStepsItem{},
+			},
+		},
+	}
+	_, invocationErr := client.RecommendedActions.Update(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestRecommendedActionsUpdateWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestRecommendedActionsUpdateWithWireMock", "PATCH", "/recommended_actions/reca_xxxxxxxxxxxxx", nil, 1)
+}
+
 func TestRecommendedActionsDismissWithWireMock(
 	t *testing.T,
 ) {
