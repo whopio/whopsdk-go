@@ -6362,6 +6362,14 @@ func TestSettersAdContentReviewTag(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetRestrictions", func(t *testing.T) {
+		obj := &AdContentReviewTag{}
+		var fernTestValueRestrictions []*AdContentReviewTagRestriction
+		obj.SetRestrictions(fernTestValueRestrictions)
+		assert.Equal(t, fernTestValueRestrictions, obj.Restrictions)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetTitle", func(t *testing.T) {
 		obj := &AdContentReviewTag{}
 		var fernTestValueTitle string
@@ -6394,6 +6402,39 @@ func TestGettersAdContentReviewTag(t *testing.T) {
 			}
 		}()
 		_ = obj.GetMessage() // Should return zero value
+	})
+
+	t.Run("GetRestrictions", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdContentReviewTag{}
+		var expected []*AdContentReviewTagRestriction
+		obj.Restrictions = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetRestrictions(), "getter should return the property value")
+	})
+
+	t.Run("GetRestrictions_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdContentReviewTag{}
+		obj.Restrictions = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetRestrictions(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetRestrictions_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdContentReviewTag
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetRestrictions() // Should return zero value
 	})
 
 	t.Run("GetTitle", func(t *testing.T) {
@@ -6453,6 +6494,37 @@ func TestSettersMarkExplicitAdContentReviewTag(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetRestrictions_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdContentReviewTag{}
+		var fernTestValueRestrictions []*AdContentReviewTagRestriction
+
+		// Act
+		obj.SetRestrictions(fernTestValueRestrictions)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetTitle_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -6461,6 +6533,293 @@ func TestSettersMarkExplicitAdContentReviewTag(t *testing.T) {
 
 		// Act
 		obj.SetTitle(fernTestValueTitle)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersAdContentReviewTagRestriction(t *testing.T) {
+	t.Run("SetCondition", func(t *testing.T) {
+		obj := &AdContentReviewTagRestriction{}
+		var fernTestValueCondition *string
+		obj.SetCondition(fernTestValueCondition)
+		assert.Equal(t, fernTestValueCondition, obj.Condition)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetCountry", func(t *testing.T) {
+		obj := &AdContentReviewTagRestriction{}
+		var fernTestValueCountry *string
+		obj.SetCountry(fernTestValueCountry)
+		assert.Equal(t, fernTestValueCountry, obj.Country)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetKind", func(t *testing.T) {
+		obj := &AdContentReviewTagRestriction{}
+		var fernTestValueKind *AdContentReviewTagRestrictionKind
+		obj.SetKind(fernTestValueKind)
+		assert.Equal(t, fernTestValueKind, obj.Kind)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetNetwork", func(t *testing.T) {
+		obj := &AdContentReviewTagRestriction{}
+		var fernTestValueNetwork AdContentReviewTagRestrictionNetwork
+		obj.SetNetwork(fernTestValueNetwork)
+		assert.Equal(t, fernTestValueNetwork, obj.Network)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersAdContentReviewTagRestriction(t *testing.T) {
+	t.Run("GetCondition", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdContentReviewTagRestriction{}
+		var expected *string
+		obj.Condition = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCondition(), "getter should return the property value")
+	})
+
+	t.Run("GetCondition_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdContentReviewTagRestriction{}
+		obj.Condition = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCondition(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCondition_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdContentReviewTagRestriction
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCondition() // Should return zero value
+	})
+
+	t.Run("GetCountry", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdContentReviewTagRestriction{}
+		var expected *string
+		obj.Country = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCountry(), "getter should return the property value")
+	})
+
+	t.Run("GetCountry_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdContentReviewTagRestriction{}
+		obj.Country = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCountry(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCountry_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdContentReviewTagRestriction
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCountry() // Should return zero value
+	})
+
+	t.Run("GetKind", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdContentReviewTagRestriction{}
+		var expected *AdContentReviewTagRestrictionKind
+		obj.Kind = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetKind(), "getter should return the property value")
+	})
+
+	t.Run("GetKind_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdContentReviewTagRestriction{}
+		obj.Kind = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetKind(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetKind_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdContentReviewTagRestriction
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetKind() // Should return zero value
+	})
+
+	t.Run("GetNetwork", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdContentReviewTagRestriction{}
+		var expected AdContentReviewTagRestrictionNetwork
+		obj.Network = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetNetwork(), "getter should return the property value")
+	})
+
+	t.Run("GetNetwork_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdContentReviewTagRestriction
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetNetwork() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitAdContentReviewTagRestriction(t *testing.T) {
+	t.Run("SetCondition_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdContentReviewTagRestriction{}
+		var fernTestValueCondition *string
+
+		// Act
+		obj.SetCondition(fernTestValueCondition)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCountry_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdContentReviewTagRestriction{}
+		var fernTestValueCountry *string
+
+		// Act
+		obj.SetCountry(fernTestValueCountry)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetKind_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdContentReviewTagRestriction{}
+		var fernTestValueKind *AdContentReviewTagRestrictionKind
+
+		// Act
+		obj.SetKind(fernTestValueKind)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetNetwork_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdContentReviewTagRestriction{}
+		var fernTestValueNetwork AdContentReviewTagRestrictionNetwork
+
+		// Act
+		obj.SetNetwork(fernTestValueNetwork)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -12993,6 +13352,39 @@ func TestJSONMarshalingAdContentReviewTag(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingAdContentReviewTagRestriction(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdContentReviewTagRestriction{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled AdContentReviewTagRestriction
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj AdContentReviewTagRestriction
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj AdContentReviewTagRestriction
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingAdCreative(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -13813,6 +14205,51 @@ func TestRequiredNullableRoundTripAd(t *testing.T) {
 	})
 }
 
+func TestRequiredNullableRoundTripAdContentReviewTagRestriction(t *testing.T) {
+	requiredNullableKeys := []string{
+		"condition",
+		"country",
+		"kind",
+	}
+	marshalToMap := func(t *testing.T, obj *AdContentReviewTagRestriction) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj AdContentReviewTagRestriction
+		require.NoError(t, json.Unmarshal([]byte(`{"condition":null,"country":null,"kind":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj AdContentReviewTagRestriction
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &AdContentReviewTagRestriction{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestRequiredNullableRoundTripAdCreative(t *testing.T) {
 	requiredNullableKeys := []string{
 		"crop",
@@ -14181,6 +14618,22 @@ func TestStringAdContentReviewTag(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *AdContentReviewTag
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringAdContentReviewTagRestriction(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &AdContentReviewTagRestriction{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdContentReviewTagRestriction
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -14879,6 +15332,127 @@ func TestEnumAdContentReviewStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewAdContentReviewStatusFromString("reviewed")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumAdContentReviewTagRestrictionKind(t *testing.T) {
+	t.Run("NewFromString_product", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdContentReviewTagRestrictionKindFromString("product")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdContentReviewTagRestrictionKind("product"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_country", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdContentReviewTagRestrictionKindFromString("country")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdContentReviewTagRestrictionKind("country"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_age", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdContentReviewTagRestrictionKindFromString("age")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdContentReviewTagRestrictionKind("age"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_certification", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdContentReviewTagRestrictionKindFromString("certification")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdContentReviewTagRestrictionKind("certification"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_disclosure", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdContentReviewTagRestrictionKindFromString("disclosure")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdContentReviewTagRestrictionKind("disclosure"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_format", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdContentReviewTagRestrictionKindFromString("ad_format")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdContentReviewTagRestrictionKind("ad_format"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_audience", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdContentReviewTagRestrictionKindFromString("audience")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdContentReviewTagRestrictionKind("audience"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_schedule", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdContentReviewTagRestrictionKindFromString("schedule")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdContentReviewTagRestrictionKind("schedule"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_unconfirmed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdContentReviewTagRestrictionKindFromString("unconfirmed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdContentReviewTagRestrictionKind("unconfirmed"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewAdContentReviewTagRestrictionKindFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewAdContentReviewTagRestrictionKindFromString("product")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumAdContentReviewTagRestrictionNetwork(t *testing.T) {
+	t.Run("NewFromString_whop", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdContentReviewTagRestrictionNetworkFromString("whop")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdContentReviewTagRestrictionNetwork("whop"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_meta", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdContentReviewTagRestrictionNetworkFromString("meta")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdContentReviewTagRestrictionNetwork("meta"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_tiktok", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdContentReviewTagRestrictionNetworkFromString("tiktok")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdContentReviewTagRestrictionNetwork("tiktok"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_google", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdContentReviewTagRestrictionNetworkFromString("google")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdContentReviewTagRestrictionNetwork("google"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewAdContentReviewTagRestrictionNetworkFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewAdContentReviewTagRestrictionNetworkFromString("whop")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -16634,6 +17208,29 @@ func TestExtraPropertiesAdContentReviewTag(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *AdContentReviewTag
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesAdContentReviewTagRestriction(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &AdContentReviewTagRestriction{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdContentReviewTagRestriction
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
