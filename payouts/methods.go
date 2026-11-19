@@ -27,7 +27,7 @@ type CreateMethodsRequest struct {
 	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// Currency the supported payout method delivers payouts in.
 	DestinationCurrency *string `json:"destination_currency,omitempty" url:"-"`
-	// The supported payout method's required field values, keyed by field id — list them with `GET /payouts/supported_methods?supported_payout_method_id=...`. Field ids are stable `fld_` identifiers you may hardcode; they never change for a given field. A Basis Theory token id may be passed in place of a raw value. For a U.S. bank routing-number field, a raw nine-digit value must also pass the ABA checksum. A validation failure returns the method's full required_fields schema alongside the error. Required whenever the account details are supplied directly.
+	// The supported payout method's required field values, keyed by field id. List them with `GET /payouts/supported_methods?supported_payout_method_id=...`. Field ids are stable `fld_` identifiers you may hardcode. They never change for a given field. Card-number fields require a Basis Theory token id. Other fields retain their documented required-field formats. For a U.S. bank routing-number field, a raw nine-digit value must also pass the ABA checksum. A validation failure returns the method's full required_fields schema alongside the error. Required whenever the account details are supplied directly.
 	Fields map[string]string `json:"fields,omitempty" url:"-"`
 	// Whether to make this the account's default payout method.
 	IsDefault *bool `json:"is_default,omitempty" url:"-"`

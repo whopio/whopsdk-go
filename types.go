@@ -9739,20 +9739,21 @@ var (
 	chatMessageFieldDeletedAt           = big.NewInt(1 << 8)
 	chatMessageFieldEdited              = big.NewInt(1 << 9)
 	chatMessageFieldEmbeds              = big.NewInt(1 << 10)
-	chatMessageFieldGifs                = big.NewInt(1 << 11)
-	chatMessageFieldID                  = big.NewInt(1 << 12)
-	chatMessageFieldLinkPreviews        = big.NewInt(1 << 13)
-	chatMessageFieldMentionedUserIDs    = big.NewInt(1 << 14)
-	chatMessageFieldMessageType         = big.NewInt(1 << 15)
-	chatMessageFieldPinned              = big.NewInt(1 << 16)
-	chatMessageFieldPlainContent        = big.NewInt(1 << 17)
-	chatMessageFieldPoll                = big.NewInt(1 << 18)
-	chatMessageFieldReactionCounts      = big.NewInt(1 << 19)
-	chatMessageFieldReplyingToMessage   = big.NewInt(1 << 20)
-	chatMessageFieldReplyingToMessageID = big.NewInt(1 << 21)
-	chatMessageFieldReplyingToUserID    = big.NewInt(1 << 22)
-	chatMessageFieldUpdatedAt           = big.NewInt(1 << 23)
-	chatMessageFieldViewCount           = big.NewInt(1 << 24)
+	chatMessageFieldExternalMessage     = big.NewInt(1 << 11)
+	chatMessageFieldGifs                = big.NewInt(1 << 12)
+	chatMessageFieldID                  = big.NewInt(1 << 13)
+	chatMessageFieldLinkPreviews        = big.NewInt(1 << 14)
+	chatMessageFieldMentionedUserIDs    = big.NewInt(1 << 15)
+	chatMessageFieldMessageType         = big.NewInt(1 << 16)
+	chatMessageFieldPinned              = big.NewInt(1 << 17)
+	chatMessageFieldPlainContent        = big.NewInt(1 << 18)
+	chatMessageFieldPoll                = big.NewInt(1 << 19)
+	chatMessageFieldReactionCounts      = big.NewInt(1 << 20)
+	chatMessageFieldReplyingToMessage   = big.NewInt(1 << 21)
+	chatMessageFieldReplyingToMessageID = big.NewInt(1 << 22)
+	chatMessageFieldReplyingToUserID    = big.NewInt(1 << 23)
+	chatMessageFieldUpdatedAt           = big.NewInt(1 << 24)
+	chatMessageFieldViewCount           = big.NewInt(1 << 25)
 )
 
 // chatMessageNullableFields maps the wire names of ChatMessage's nullable fields (required or optional) to their field bits.
@@ -9762,6 +9763,7 @@ var chatMessageNullableFields = map[string]*big.Int{
 	"content":                chatMessageFieldContent,
 	"custom_author":          chatMessageFieldCustomAuthor,
 	"deleted_at":             chatMessageFieldDeletedAt,
+	"external_message":       chatMessageFieldExternalMessage,
 	"plain_content":          chatMessageFieldPlainContent,
 	"poll":                   chatMessageFieldPoll,
 	"replying_to_message":    chatMessageFieldReplyingToMessage,
@@ -9786,7 +9788,9 @@ type ChatMessage struct {
 	DeletedAt *string  `json:"deleted_at,omitempty" url:"deleted_at,omitempty"`
 	Edited    bool     `json:"edited" url:"edited"`
 	Embeds    []*Embed `json:"embeds" url:"embeds"`
-	Gifs      []*Gif   `json:"gifs" url:"gifs"`
+	// The message outside chat that this message was sent or received as. `object` says which kind it is, such as `email_message`. For an email, the first file in `attachments` named `email.html` holds the email's HTML body. The email's own attachments are also in `attachments`. `null` for a message that exists only in chat, or a deleted message.
+	ExternalMessage *ExternalMessageEmail `json:"external_message,omitempty" url:"external_message,omitempty"`
+	Gifs            []*Gif                `json:"gifs" url:"gifs"`
 	// Message ID, prefixed `post_`. Matches the `id` sent on create, when one was sent.
 	ID               string                 `json:"id" url:"id"`
 	LinkPreviews     []*MessageLinkPreview  `json:"link_previews" url:"link_previews"`
@@ -9889,6 +9893,13 @@ func (c *ChatMessage) GetEmbeds() []*Embed {
 		return nil
 	}
 	return c.Embeds
+}
+
+func (c *ChatMessage) GetExternalMessage() *ExternalMessageEmail {
+	if c == nil {
+		return nil
+	}
+	return c.ExternalMessage
 }
 
 func (c *ChatMessage) GetGifs() []*Gif {
@@ -10080,6 +10091,13 @@ func (c *ChatMessage) SetEdited(edited bool) {
 func (c *ChatMessage) SetEmbeds(embeds []*Embed) {
 	c.Embeds = embeds
 	c.require(chatMessageFieldEmbeds)
+}
+
+// SetExternalMessage sets the ExternalMessage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ChatMessage) SetExternalMessage(externalMessage *ExternalMessageEmail) {
+	c.ExternalMessage = externalMessage
+	c.require(chatMessageFieldExternalMessage)
 }
 
 // SetGifs sets the Gifs field and marks it as non-optional;
@@ -20240,6 +20258,268 @@ func NewExperienceNotificationPreferenceObjectFromString(s string) (ExperienceNo
 }
 
 func (e ExperienceNotificationPreferenceObject) Ptr() *ExperienceNotificationPreferenceObject {
+	return &e
+}
+
+var (
+	externalMessageEmailFieldFromAddress = big.NewInt(1 << 0)
+	externalMessageEmailFieldID          = big.NewInt(1 << 1)
+	externalMessageEmailFieldObject      = big.NewInt(1 << 2)
+	externalMessageEmailFieldStatus      = big.NewInt(1 << 3)
+	externalMessageEmailFieldSubject     = big.NewInt(1 << 4)
+	externalMessageEmailFieldToAddress   = big.NewInt(1 << 5)
+)
+
+// externalMessageEmailNullableFields maps the wire names of ExternalMessageEmail's nullable fields (required or optional) to their field bits.
+var externalMessageEmailNullableFields = map[string]*big.Int{
+	"from_address": externalMessageEmailFieldFromAddress,
+	"subject":      externalMessageEmailFieldSubject,
+	"to_address":   externalMessageEmailFieldToAddress,
+}
+
+type ExternalMessageEmail struct {
+	// The address the email was sent from.
+	FromAddress *string `json:"from_address,omitempty" url:"from_address,omitempty"`
+	// The email's ID, prefixed `emsg_`.
+	ID string `json:"id" url:"id"`
+	// Always `email_message`.
+	Object ExternalMessageEmailObject `json:"object" url:"object"`
+	// The delivery status for this email.
+	Status ExternalMessageEmailStatus `json:"status" url:"status"`
+	// The email's subject.
+	Subject *string `json:"subject,omitempty" url:"subject,omitempty"`
+	// The address of the recipient this message is for.
+	ToAddress *string `json:"to_address,omitempty" url:"to_address,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *ExternalMessageEmail) GetFromAddress() *string {
+	if e == nil {
+		return nil
+	}
+	return e.FromAddress
+}
+
+func (e *ExternalMessageEmail) GetID() string {
+	if e == nil {
+		return ""
+	}
+	return e.ID
+}
+
+func (e *ExternalMessageEmail) GetObject() ExternalMessageEmailObject {
+	if e == nil {
+		return ""
+	}
+	return e.Object
+}
+
+func (e *ExternalMessageEmail) GetStatus() ExternalMessageEmailStatus {
+	if e == nil {
+		return ""
+	}
+	return e.Status
+}
+
+func (e *ExternalMessageEmail) GetSubject() *string {
+	if e == nil {
+		return nil
+	}
+	return e.Subject
+}
+
+func (e *ExternalMessageEmail) GetToAddress() *string {
+	if e == nil {
+		return nil
+	}
+	return e.ToAddress
+}
+
+func (e *ExternalMessageEmail) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *ExternalMessageEmail) require(field *big.Int) {
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
+	}
+	next.Or(next, field)
+	e.explicitFields = next
+}
+
+// SetFromAddress sets the FromAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalMessageEmail) SetFromAddress(fromAddress *string) {
+	e.FromAddress = fromAddress
+	e.require(externalMessageEmailFieldFromAddress)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalMessageEmail) SetID(id string) {
+	e.ID = id
+	e.require(externalMessageEmailFieldID)
+}
+
+// SetObject sets the Object field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalMessageEmail) SetObject(object ExternalMessageEmailObject) {
+	e.Object = object
+	e.require(externalMessageEmailFieldObject)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalMessageEmail) SetStatus(status ExternalMessageEmailStatus) {
+	e.Status = status
+	e.require(externalMessageEmailFieldStatus)
+}
+
+// SetSubject sets the Subject field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalMessageEmail) SetSubject(subject *string) {
+	e.Subject = subject
+	e.require(externalMessageEmailFieldSubject)
+}
+
+// SetToAddress sets the ToAddress field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalMessageEmail) SetToAddress(toAddress *string) {
+	e.ToAddress = toAddress
+	e.require(externalMessageEmailFieldToAddress)
+}
+
+func (e *ExternalMessageEmail) UnmarshalJSON(data []byte) error {
+	type unmarshaler ExternalMessageEmail
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = ExternalMessageEmail(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, externalMessageEmailNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *ExternalMessageEmail) MarshalJSON() ([]byte, error) {
+	type embed ExternalMessageEmail
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *ExternalMessageEmail) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+// Always `email_message`.
+type ExternalMessageEmailObject string
+
+const (
+	ExternalMessageEmailObjectEmailMessage ExternalMessageEmailObject = "email_message"
+)
+
+func NewExternalMessageEmailObjectFromString(s string) (ExternalMessageEmailObject, error) {
+	switch s {
+	case "email_message":
+		return ExternalMessageEmailObjectEmailMessage, nil
+	}
+	var t ExternalMessageEmailObject
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e ExternalMessageEmailObject) Ptr() *ExternalMessageEmailObject {
+	return &e
+}
+
+// The delivery status for this email.
+type ExternalMessageEmailStatus string
+
+const (
+	ExternalMessageEmailStatusReceived            ExternalMessageEmailStatus = "received"
+	ExternalMessageEmailStatusSpam                ExternalMessageEmailStatus = "spam"
+	ExternalMessageEmailStatusVirus               ExternalMessageEmailStatus = "virus"
+	ExternalMessageEmailStatusQueued              ExternalMessageEmailStatus = "queued"
+	ExternalMessageEmailStatusSent                ExternalMessageEmailStatus = "sent"
+	ExternalMessageEmailStatusDelivered           ExternalMessageEmailStatus = "delivered"
+	ExternalMessageEmailStatusBounced             ExternalMessageEmailStatus = "bounced"
+	ExternalMessageEmailStatusComplained          ExternalMessageEmailStatus = "complained"
+	ExternalMessageEmailStatusFailed              ExternalMessageEmailStatus = "failed"
+	ExternalMessageEmailStatusRefusedUnsubscribed ExternalMessageEmailStatus = "refused_unsubscribed"
+	ExternalMessageEmailStatusRefusedRateLimited  ExternalMessageEmailStatus = "refused_rate_limited"
+	ExternalMessageEmailStatusRefusedSpam         ExternalMessageEmailStatus = "refused_spam"
+	ExternalMessageEmailStatusDelayed             ExternalMessageEmailStatus = "delayed"
+)
+
+func NewExternalMessageEmailStatusFromString(s string) (ExternalMessageEmailStatus, error) {
+	switch s {
+	case "received":
+		return ExternalMessageEmailStatusReceived, nil
+	case "spam":
+		return ExternalMessageEmailStatusSpam, nil
+	case "virus":
+		return ExternalMessageEmailStatusVirus, nil
+	case "queued":
+		return ExternalMessageEmailStatusQueued, nil
+	case "sent":
+		return ExternalMessageEmailStatusSent, nil
+	case "delivered":
+		return ExternalMessageEmailStatusDelivered, nil
+	case "bounced":
+		return ExternalMessageEmailStatusBounced, nil
+	case "complained":
+		return ExternalMessageEmailStatusComplained, nil
+	case "failed":
+		return ExternalMessageEmailStatusFailed, nil
+	case "refused_unsubscribed":
+		return ExternalMessageEmailStatusRefusedUnsubscribed, nil
+	case "refused_rate_limited":
+		return ExternalMessageEmailStatusRefusedRateLimited, nil
+	case "refused_spam":
+		return ExternalMessageEmailStatusRefusedSpam, nil
+	case "delayed":
+		return ExternalMessageEmailStatusDelayed, nil
+	}
+	var t ExternalMessageEmailStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e ExternalMessageEmailStatus) Ptr() *ExternalMessageEmailStatus {
 	return &e
 }
 

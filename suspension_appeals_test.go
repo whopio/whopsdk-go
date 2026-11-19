@@ -4570,6 +4570,20 @@ func TestEnumSuspensionAppealSubjectSuspensionCode(t *testing.T) {
 		assert.Equal(t, SuspensionAppealSubjectSuspensionCode("fraudulent_activity"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_unauthorized_payments", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSuspensionAppealSubjectSuspensionCodeFromString("unauthorized_payments")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SuspensionAppealSubjectSuspensionCode("unauthorized_payments"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_previous_fraud_suspension", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSuspensionAppealSubjectSuspensionCodeFromString("previous_fraud_suspension")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SuspensionAppealSubjectSuspensionCode("previous_fraud_suspension"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_prohibited_business_category", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewSuspensionAppealSubjectSuspensionCodeFromString("prohibited_business_category")
@@ -4582,6 +4596,13 @@ func TestEnumSuspensionAppealSubjectSuspensionCode(t *testing.T) {
 		val, err := NewSuspensionAppealSubjectSuspensionCodeFromString("unverifiable_business")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, SuspensionAppealSubjectSuspensionCode("unverifiable_business"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_unverifiable_fulfillment", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSuspensionAppealSubjectSuspensionCodeFromString("unverifiable_fulfillment")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SuspensionAppealSubjectSuspensionCode("unverifiable_fulfillment"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_sanctions", func(t *testing.T) {
