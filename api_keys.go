@@ -329,17 +329,19 @@ var (
 	aPIKeyFieldID                   = big.NewInt(1 << 4)
 	aPIKeyFieldIPAllowlist          = big.NewInt(1 << 5)
 	aPIKeyFieldIsDefaultForResource = big.NewInt(1 << 6)
-	aPIKeyFieldName                 = big.NewInt(1 << 7)
-	aPIKeyFieldObfuscatedSecretKey  = big.NewInt(1 << 8)
-	aPIKeyFieldSecretKey            = big.NewInt(1 << 9)
-	aPIKeyFieldSystemRole           = big.NewInt(1 << 10)
-	aPIKeyFieldUpdatedAt            = big.NewInt(1 << 11)
+	aPIKeyFieldLastUsedAt           = big.NewInt(1 << 7)
+	aPIKeyFieldName                 = big.NewInt(1 << 8)
+	aPIKeyFieldObfuscatedSecretKey  = big.NewInt(1 << 9)
+	aPIKeyFieldSecretKey            = big.NewInt(1 << 10)
+	aPIKeyFieldSystemRole           = big.NewInt(1 << 11)
+	aPIKeyFieldUpdatedAt            = big.NewInt(1 << 12)
 )
 
 // aPIKeyNullableFields maps the wire names of APIKey's nullable fields (required or optional) to their field bits.
 var aPIKeyNullableFields = map[string]*big.Int{
 	"expires_at":   aPIKeyFieldExpiresAt,
 	"ip_allowlist": aPIKeyFieldIPAllowlist,
+	"last_used_at": aPIKeyFieldLastUsedAt,
 	"name":         aPIKeyFieldName,
 	"system_role":  aPIKeyFieldSystemRole,
 }
@@ -357,6 +359,8 @@ type APIKey struct {
 	IPAllowlist []string `json:"ip_allowlist,omitempty" url:"ip_allowlist,omitempty"`
 	// Whether this is the resource's default API key. Default keys cannot be updated or deleted, only rotated.
 	IsDefaultForResource bool `json:"is_default_for_resource" url:"is_default_for_resource"`
+	// When the API key last authenticated a request, as an ISO 8601 timestamp. Recorded at most once an hour, so it can trail the latest request by up to an hour. `null` means the key has not been used since this field was introduced.
+	LastUsedAt *string `json:"last_used_at,omitempty" url:"last_used_at,omitempty"`
 	// Human-readable name identifying the API key, or `null` when none was set.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
 	// Masked version of the secret key, so the key can be recognized without revealing the full secret.
@@ -422,6 +426,13 @@ func (a *APIKey) GetIsDefaultForResource() bool {
 		return false
 	}
 	return a.IsDefaultForResource
+}
+
+func (a *APIKey) GetLastUsedAt() *string {
+	if a == nil {
+		return nil
+	}
+	return a.LastUsedAt
 }
 
 func (a *APIKey) GetName() *string {
@@ -522,6 +533,13 @@ func (a *APIKey) SetIPAllowlist(ipAllowlist []string) {
 func (a *APIKey) SetIsDefaultForResource(isDefaultForResource bool) {
 	a.IsDefaultForResource = isDefaultForResource
 	a.require(aPIKeyFieldIsDefaultForResource)
+}
+
+// SetLastUsedAt sets the LastUsedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *APIKey) SetLastUsedAt(lastUsedAt *string) {
+	a.LastUsedAt = lastUsedAt
+	a.require(aPIKeyFieldLastUsedAt)
 }
 
 // SetName sets the Name field and marks it as non-optional;
