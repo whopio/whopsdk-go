@@ -18959,7 +18959,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"bounty_worker_onboarding_dismissed\": false,\n  \"cards_auto_top_up\": false,\n  \"show_level\": true,\n  \"terms_accepted\": true,\n  \"terms_accepted_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"bounty_worker_onboarding_dismissed\": false,\n  \"cards_auto_top_up\": false,\n  \"show_earnings\": true,\n  \"show_joined_whops\": true,\n  \"show_level\": true,\n  \"show_location\": true,\n  \"show_owned_whops\": true,\n  \"show_user_ranking\": true,\n  \"terms_accepted\": true,\n  \"terms_accepted_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -18991,7 +18991,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"bounty_worker_onboarding_dismissed\": false,\n  \"cards_auto_top_up\": false,\n  \"show_level\": true,\n  \"terms_accepted\": true,\n  \"terms_accepted_at\": \"2026-01-01T12:00:00.000Z\"\n}",
+        "body": "{\n  \"bounty_worker_onboarding_dismissed\": false,\n  \"cards_auto_top_up\": false,\n  \"show_earnings\": true,\n  \"show_joined_whops\": true,\n  \"show_level\": true,\n  \"show_location\": true,\n  \"show_owned_whops\": true,\n  \"show_user_ranking\": true,\n  \"terms_accepted\": true,\n  \"terms_accepted_at\": \"2026-01-01T12:00:00.000Z\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
