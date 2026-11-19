@@ -6582,6 +6582,14 @@ func TestSettersCreateVerificationsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIdentityDocument", func(t *testing.T) {
+		obj := &CreateVerificationsResponse{}
+		var fernTestValueIdentityDocument *CreateVerificationsResponseIdentityDocument
+		obj.SetIdentityDocument(fernTestValueIdentityDocument)
+		assert.Equal(t, fernTestValueIdentityDocument, obj.IdentityDocument)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetIncorporationDate", func(t *testing.T) {
 		obj := &CreateVerificationsResponse{}
 		var fernTestValueIncorporationDate *string
@@ -6651,6 +6659,14 @@ func TestSettersCreateVerificationsResponse(t *testing.T) {
 		var fernTestValueRequiredDocuments []*CreateVerificationsResponseRequiredDocumentsItem
 		obj.SetRequiredDocuments(fernTestValueRequiredDocuments)
 		assert.Equal(t, fernTestValueRequiredDocuments, obj.RequiredDocuments)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSelfie", func(t *testing.T) {
+		obj := &CreateVerificationsResponse{}
+		var fernTestValueSelfie *CreateVerificationsResponseSelfie
+		obj.SetSelfie(fernTestValueSelfie)
+		assert.Equal(t, fernTestValueSelfie, obj.Selfie)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -7011,6 +7027,39 @@ func TestGettersCreateVerificationsResponse(t *testing.T) {
 		_ = obj.GetID() // Should return zero value
 	})
 
+	t.Run("GetIdentityDocument", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponse{}
+		var expected *CreateVerificationsResponseIdentityDocument
+		obj.IdentityDocument = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIdentityDocument(), "getter should return the property value")
+	})
+
+	t.Run("GetIdentityDocument_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponse{}
+		obj.IdentityDocument = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetIdentityDocument(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetIdentityDocument_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIdentityDocument() // Should return zero value
+	})
+
 	t.Run("GetIncorporationDate", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -7306,6 +7355,39 @@ func TestGettersCreateVerificationsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetRequiredDocuments() // Should return zero value
+	})
+
+	t.Run("GetSelfie", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponse{}
+		var expected *CreateVerificationsResponseSelfie
+		obj.Selfie = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSelfie(), "getter should return the property value")
+	})
+
+	t.Run("GetSelfie_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponse{}
+		obj.Selfie = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSelfie(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSelfie_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSelfie() // Should return zero value
 	})
 
 	t.Run("GetSessionURL", func(t *testing.T) {
@@ -7720,6 +7802,37 @@ func TestSettersMarkExplicitCreateVerificationsResponse(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetIdentityDocument_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponse{}
+		var fernTestValueIdentityDocument *CreateVerificationsResponseIdentityDocument
+
+		// Act
+		obj.SetIdentityDocument(fernTestValueIdentityDocument)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetIncorporationDate_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -7976,6 +8089,37 @@ func TestSettersMarkExplicitCreateVerificationsResponse(t *testing.T) {
 
 		// Act
 		obj.SetRequiredDocuments(fernTestValueRequiredDocuments)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSelfie_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponse{}
+		var fernTestValueSelfie *CreateVerificationsResponseSelfie
+
+		// Act
+		obj.SetSelfie(fernTestValueSelfie)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -8510,6 +8654,211 @@ func TestSettersMarkExplicitCreateVerificationsResponseAddress(t *testing.T) {
 
 		// Act
 		obj.SetState(fernTestValueState)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersCreateVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("SetCountry", func(t *testing.T) {
+		obj := &CreateVerificationsResponseIdentityDocument{}
+		var fernTestValueCountry *string
+		obj.SetCountry(fernTestValueCountry)
+		assert.Equal(t, fernTestValueCountry, obj.Country)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStatus", func(t *testing.T) {
+		obj := &CreateVerificationsResponseIdentityDocument{}
+		var fernTestValueStatus CreateVerificationsResponseIdentityDocumentStatus
+		obj.SetStatus(fernTestValueStatus)
+		assert.Equal(t, fernTestValueStatus, obj.Status)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetType", func(t *testing.T) {
+		obj := &CreateVerificationsResponseIdentityDocument{}
+		var fernTestValueType CreateVerificationsResponseIdentityDocumentType
+		obj.SetType(fernTestValueType)
+		assert.Equal(t, fernTestValueType, obj.Type)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCreateVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("GetCountry", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponseIdentityDocument{}
+		var expected *string
+		obj.Country = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCountry(), "getter should return the property value")
+	})
+
+	t.Run("GetCountry_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponseIdentityDocument{}
+		obj.Country = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCountry(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCountry_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsResponseIdentityDocument
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCountry() // Should return zero value
+	})
+
+	t.Run("GetStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponseIdentityDocument{}
+		var expected CreateVerificationsResponseIdentityDocumentStatus
+		obj.Status = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsResponseIdentityDocument
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStatus() // Should return zero value
+	})
+
+	t.Run("GetType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponseIdentityDocument{}
+		var expected CreateVerificationsResponseIdentityDocumentType
+		obj.Type = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetType(), "getter should return the property value")
+	})
+
+	t.Run("GetType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsResponseIdentityDocument
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetType() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCreateVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("SetCountry_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponseIdentityDocument{}
+		var fernTestValueCountry *string
+
+		// Act
+		obj.SetCountry(fernTestValueCountry)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponseIdentityDocument{}
+		var fernTestValueStatus CreateVerificationsResponseIdentityDocumentStatus
+
+		// Act
+		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponseIdentityDocument{}
+		var fernTestValueType CreateVerificationsResponseIdentityDocumentType
+
+		// Act
+		obj.SetType(fernTestValueType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -11040,6 +11389,139 @@ func TestSettersMarkExplicitCreateVerificationsResponseRequiredDocumentsItem(t *
 
 }
 
+func TestSettersCreateVerificationsResponseSelfie(t *testing.T) {
+	t.Run("SetCapture", func(t *testing.T) {
+		obj := &CreateVerificationsResponseSelfie{}
+		var fernTestValueCapture CreateVerificationsResponseSelfieCapture
+		obj.SetCapture(fernTestValueCapture)
+		assert.Equal(t, fernTestValueCapture, obj.Capture)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStatus", func(t *testing.T) {
+		obj := &CreateVerificationsResponseSelfie{}
+		var fernTestValueStatus CreateVerificationsResponseSelfieStatus
+		obj.SetStatus(fernTestValueStatus)
+		assert.Equal(t, fernTestValueStatus, obj.Status)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCreateVerificationsResponseSelfie(t *testing.T) {
+	t.Run("GetCapture", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponseSelfie{}
+		var expected CreateVerificationsResponseSelfieCapture
+		obj.Capture = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCapture(), "getter should return the property value")
+	})
+
+	t.Run("GetCapture_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsResponseSelfie
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCapture() // Should return zero value
+	})
+
+	t.Run("GetStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponseSelfie{}
+		var expected CreateVerificationsResponseSelfieStatus
+		obj.Status = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsResponseSelfie
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStatus() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCreateVerificationsResponseSelfie(t *testing.T) {
+	t.Run("SetCapture_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponseSelfie{}
+		var fernTestValueCapture CreateVerificationsResponseSelfieCapture
+
+		// Act
+		obj.SetCapture(fernTestValueCapture)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponseSelfie{}
+		var fernTestValueStatus CreateVerificationsResponseSelfieStatus
+
+		// Act
+		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersListVerificationsResponse(t *testing.T) {
 	t.Run("SetData", func(t *testing.T) {
 		obj := &ListVerificationsResponse{}
@@ -11274,6 +11756,14 @@ func TestSettersListVerificationsResponseDataItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIdentityDocument", func(t *testing.T) {
+		obj := &ListVerificationsResponseDataItem{}
+		var fernTestValueIdentityDocument *ListVerificationsResponseDataItemIdentityDocument
+		obj.SetIdentityDocument(fernTestValueIdentityDocument)
+		assert.Equal(t, fernTestValueIdentityDocument, obj.IdentityDocument)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetIncorporationDate", func(t *testing.T) {
 		obj := &ListVerificationsResponseDataItem{}
 		var fernTestValueIncorporationDate *string
@@ -11343,6 +11833,14 @@ func TestSettersListVerificationsResponseDataItem(t *testing.T) {
 		var fernTestValueRequiredDocuments []*ListVerificationsResponseDataItemRequiredDocumentsItem
 		obj.SetRequiredDocuments(fernTestValueRequiredDocuments)
 		assert.Equal(t, fernTestValueRequiredDocuments, obj.RequiredDocuments)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSelfie", func(t *testing.T) {
+		obj := &ListVerificationsResponseDataItem{}
+		var fernTestValueSelfie *ListVerificationsResponseDataItemSelfie
+		obj.SetSelfie(fernTestValueSelfie)
+		assert.Equal(t, fernTestValueSelfie, obj.Selfie)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -11703,6 +12201,39 @@ func TestGettersListVerificationsResponseDataItem(t *testing.T) {
 		_ = obj.GetID() // Should return zero value
 	})
 
+	t.Run("GetIdentityDocument", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItem{}
+		var expected *ListVerificationsResponseDataItemIdentityDocument
+		obj.IdentityDocument = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIdentityDocument(), "getter should return the property value")
+	})
+
+	t.Run("GetIdentityDocument_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItem{}
+		obj.IdentityDocument = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetIdentityDocument(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetIdentityDocument_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListVerificationsResponseDataItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIdentityDocument() // Should return zero value
+	})
+
 	t.Run("GetIncorporationDate", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -11998,6 +12529,39 @@ func TestGettersListVerificationsResponseDataItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetRequiredDocuments() // Should return zero value
+	})
+
+	t.Run("GetSelfie", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItem{}
+		var expected *ListVerificationsResponseDataItemSelfie
+		obj.Selfie = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSelfie(), "getter should return the property value")
+	})
+
+	t.Run("GetSelfie_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItem{}
+		obj.Selfie = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSelfie(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSelfie_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListVerificationsResponseDataItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSelfie() // Should return zero value
 	})
 
 	t.Run("GetSessionURL", func(t *testing.T) {
@@ -12412,6 +12976,37 @@ func TestSettersMarkExplicitListVerificationsResponseDataItem(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetIdentityDocument_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItem{}
+		var fernTestValueIdentityDocument *ListVerificationsResponseDataItemIdentityDocument
+
+		// Act
+		obj.SetIdentityDocument(fernTestValueIdentityDocument)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetIncorporationDate_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -12668,6 +13263,37 @@ func TestSettersMarkExplicitListVerificationsResponseDataItem(t *testing.T) {
 
 		// Act
 		obj.SetRequiredDocuments(fernTestValueRequiredDocuments)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSelfie_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItem{}
+		var fernTestValueSelfie *ListVerificationsResponseDataItemSelfie
+
+		// Act
+		obj.SetSelfie(fernTestValueSelfie)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -13202,6 +13828,211 @@ func TestSettersMarkExplicitListVerificationsResponseDataItemAddress(t *testing.
 
 		// Act
 		obj.SetState(fernTestValueState)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersListVerificationsResponseDataItemIdentityDocument(t *testing.T) {
+	t.Run("SetCountry", func(t *testing.T) {
+		obj := &ListVerificationsResponseDataItemIdentityDocument{}
+		var fernTestValueCountry *string
+		obj.SetCountry(fernTestValueCountry)
+		assert.Equal(t, fernTestValueCountry, obj.Country)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStatus", func(t *testing.T) {
+		obj := &ListVerificationsResponseDataItemIdentityDocument{}
+		var fernTestValueStatus ListVerificationsResponseDataItemIdentityDocumentStatus
+		obj.SetStatus(fernTestValueStatus)
+		assert.Equal(t, fernTestValueStatus, obj.Status)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetType", func(t *testing.T) {
+		obj := &ListVerificationsResponseDataItemIdentityDocument{}
+		var fernTestValueType ListVerificationsResponseDataItemIdentityDocumentType
+		obj.SetType(fernTestValueType)
+		assert.Equal(t, fernTestValueType, obj.Type)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersListVerificationsResponseDataItemIdentityDocument(t *testing.T) {
+	t.Run("GetCountry", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItemIdentityDocument{}
+		var expected *string
+		obj.Country = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCountry(), "getter should return the property value")
+	})
+
+	t.Run("GetCountry_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItemIdentityDocument{}
+		obj.Country = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCountry(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCountry_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListVerificationsResponseDataItemIdentityDocument
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCountry() // Should return zero value
+	})
+
+	t.Run("GetStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItemIdentityDocument{}
+		var expected ListVerificationsResponseDataItemIdentityDocumentStatus
+		obj.Status = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListVerificationsResponseDataItemIdentityDocument
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStatus() // Should return zero value
+	})
+
+	t.Run("GetType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItemIdentityDocument{}
+		var expected ListVerificationsResponseDataItemIdentityDocumentType
+		obj.Type = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetType(), "getter should return the property value")
+	})
+
+	t.Run("GetType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListVerificationsResponseDataItemIdentityDocument
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetType() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitListVerificationsResponseDataItemIdentityDocument(t *testing.T) {
+	t.Run("SetCountry_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItemIdentityDocument{}
+		var fernTestValueCountry *string
+
+		// Act
+		obj.SetCountry(fernTestValueCountry)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItemIdentityDocument{}
+		var fernTestValueStatus ListVerificationsResponseDataItemIdentityDocumentStatus
+
+		// Act
+		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItemIdentityDocument{}
+		var fernTestValueType ListVerificationsResponseDataItemIdentityDocumentType
+
+		// Act
+		obj.SetType(fernTestValueType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -15732,6 +16563,139 @@ func TestSettersMarkExplicitListVerificationsResponseDataItemRequiredDocumentsIt
 
 }
 
+func TestSettersListVerificationsResponseDataItemSelfie(t *testing.T) {
+	t.Run("SetCapture", func(t *testing.T) {
+		obj := &ListVerificationsResponseDataItemSelfie{}
+		var fernTestValueCapture ListVerificationsResponseDataItemSelfieCapture
+		obj.SetCapture(fernTestValueCapture)
+		assert.Equal(t, fernTestValueCapture, obj.Capture)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStatus", func(t *testing.T) {
+		obj := &ListVerificationsResponseDataItemSelfie{}
+		var fernTestValueStatus ListVerificationsResponseDataItemSelfieStatus
+		obj.SetStatus(fernTestValueStatus)
+		assert.Equal(t, fernTestValueStatus, obj.Status)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersListVerificationsResponseDataItemSelfie(t *testing.T) {
+	t.Run("GetCapture", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItemSelfie{}
+		var expected ListVerificationsResponseDataItemSelfieCapture
+		obj.Capture = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCapture(), "getter should return the property value")
+	})
+
+	t.Run("GetCapture_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListVerificationsResponseDataItemSelfie
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCapture() // Should return zero value
+	})
+
+	t.Run("GetStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItemSelfie{}
+		var expected ListVerificationsResponseDataItemSelfieStatus
+		obj.Status = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListVerificationsResponseDataItemSelfie
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStatus() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitListVerificationsResponseDataItemSelfie(t *testing.T) {
+	t.Run("SetCapture_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItemSelfie{}
+		var fernTestValueCapture ListVerificationsResponseDataItemSelfieCapture
+
+		// Act
+		obj.SetCapture(fernTestValueCapture)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItemSelfie{}
+		var fernTestValueStatus ListVerificationsResponseDataItemSelfieStatus
+
+		// Act
+		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersListVerificationsResponsePageInfo(t *testing.T) {
 	t.Run("SetEndCursor", func(t *testing.T) {
 		obj := &ListVerificationsResponsePageInfo{}
@@ -17251,6 +18215,14 @@ func TestSettersRetrieveVerificationsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIdentityDocument", func(t *testing.T) {
+		obj := &RetrieveVerificationsResponse{}
+		var fernTestValueIdentityDocument *RetrieveVerificationsResponseIdentityDocument
+		obj.SetIdentityDocument(fernTestValueIdentityDocument)
+		assert.Equal(t, fernTestValueIdentityDocument, obj.IdentityDocument)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetIncorporationDate", func(t *testing.T) {
 		obj := &RetrieveVerificationsResponse{}
 		var fernTestValueIncorporationDate *string
@@ -17320,6 +18292,14 @@ func TestSettersRetrieveVerificationsResponse(t *testing.T) {
 		var fernTestValueRequiredDocuments []*RetrieveVerificationsResponseRequiredDocumentsItem
 		obj.SetRequiredDocuments(fernTestValueRequiredDocuments)
 		assert.Equal(t, fernTestValueRequiredDocuments, obj.RequiredDocuments)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSelfie", func(t *testing.T) {
+		obj := &RetrieveVerificationsResponse{}
+		var fernTestValueSelfie *RetrieveVerificationsResponseSelfie
+		obj.SetSelfie(fernTestValueSelfie)
+		assert.Equal(t, fernTestValueSelfie, obj.Selfie)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -17680,6 +18660,39 @@ func TestGettersRetrieveVerificationsResponse(t *testing.T) {
 		_ = obj.GetID() // Should return zero value
 	})
 
+	t.Run("GetIdentityDocument", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponse{}
+		var expected *RetrieveVerificationsResponseIdentityDocument
+		obj.IdentityDocument = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIdentityDocument(), "getter should return the property value")
+	})
+
+	t.Run("GetIdentityDocument_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponse{}
+		obj.IdentityDocument = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetIdentityDocument(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetIdentityDocument_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveVerificationsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIdentityDocument() // Should return zero value
+	})
+
 	t.Run("GetIncorporationDate", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -17975,6 +18988,39 @@ func TestGettersRetrieveVerificationsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetRequiredDocuments() // Should return zero value
+	})
+
+	t.Run("GetSelfie", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponse{}
+		var expected *RetrieveVerificationsResponseSelfie
+		obj.Selfie = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSelfie(), "getter should return the property value")
+	})
+
+	t.Run("GetSelfie_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponse{}
+		obj.Selfie = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSelfie(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSelfie_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveVerificationsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSelfie() // Should return zero value
 	})
 
 	t.Run("GetSessionURL", func(t *testing.T) {
@@ -18389,6 +19435,37 @@ func TestSettersMarkExplicitRetrieveVerificationsResponse(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetIdentityDocument_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponse{}
+		var fernTestValueIdentityDocument *RetrieveVerificationsResponseIdentityDocument
+
+		// Act
+		obj.SetIdentityDocument(fernTestValueIdentityDocument)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetIncorporationDate_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -18645,6 +19722,37 @@ func TestSettersMarkExplicitRetrieveVerificationsResponse(t *testing.T) {
 
 		// Act
 		obj.SetRequiredDocuments(fernTestValueRequiredDocuments)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSelfie_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponse{}
+		var fernTestValueSelfie *RetrieveVerificationsResponseSelfie
+
+		// Act
+		obj.SetSelfie(fernTestValueSelfie)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -19179,6 +20287,211 @@ func TestSettersMarkExplicitRetrieveVerificationsResponseAddress(t *testing.T) {
 
 		// Act
 		obj.SetState(fernTestValueState)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersRetrieveVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("SetCountry", func(t *testing.T) {
+		obj := &RetrieveVerificationsResponseIdentityDocument{}
+		var fernTestValueCountry *string
+		obj.SetCountry(fernTestValueCountry)
+		assert.Equal(t, fernTestValueCountry, obj.Country)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStatus", func(t *testing.T) {
+		obj := &RetrieveVerificationsResponseIdentityDocument{}
+		var fernTestValueStatus RetrieveVerificationsResponseIdentityDocumentStatus
+		obj.SetStatus(fernTestValueStatus)
+		assert.Equal(t, fernTestValueStatus, obj.Status)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetType", func(t *testing.T) {
+		obj := &RetrieveVerificationsResponseIdentityDocument{}
+		var fernTestValueType RetrieveVerificationsResponseIdentityDocumentType
+		obj.SetType(fernTestValueType)
+		assert.Equal(t, fernTestValueType, obj.Type)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersRetrieveVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("GetCountry", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponseIdentityDocument{}
+		var expected *string
+		obj.Country = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCountry(), "getter should return the property value")
+	})
+
+	t.Run("GetCountry_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponseIdentityDocument{}
+		obj.Country = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCountry(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCountry_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveVerificationsResponseIdentityDocument
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCountry() // Should return zero value
+	})
+
+	t.Run("GetStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponseIdentityDocument{}
+		var expected RetrieveVerificationsResponseIdentityDocumentStatus
+		obj.Status = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveVerificationsResponseIdentityDocument
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStatus() // Should return zero value
+	})
+
+	t.Run("GetType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponseIdentityDocument{}
+		var expected RetrieveVerificationsResponseIdentityDocumentType
+		obj.Type = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetType(), "getter should return the property value")
+	})
+
+	t.Run("GetType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveVerificationsResponseIdentityDocument
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetType() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitRetrieveVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("SetCountry_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponseIdentityDocument{}
+		var fernTestValueCountry *string
+
+		// Act
+		obj.SetCountry(fernTestValueCountry)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponseIdentityDocument{}
+		var fernTestValueStatus RetrieveVerificationsResponseIdentityDocumentStatus
+
+		// Act
+		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponseIdentityDocument{}
+		var fernTestValueType RetrieveVerificationsResponseIdentityDocumentType
+
+		// Act
+		obj.SetType(fernTestValueType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -21681,6 +22994,139 @@ func TestSettersMarkExplicitRetrieveVerificationsResponseRequiredDocumentsItem(t
 		// Arrange
 		obj := &RetrieveVerificationsResponseRequiredDocumentsItem{}
 		var fernTestValueStatus *RetrieveVerificationsResponseRequiredDocumentsItemStatus
+
+		// Act
+		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersRetrieveVerificationsResponseSelfie(t *testing.T) {
+	t.Run("SetCapture", func(t *testing.T) {
+		obj := &RetrieveVerificationsResponseSelfie{}
+		var fernTestValueCapture RetrieveVerificationsResponseSelfieCapture
+		obj.SetCapture(fernTestValueCapture)
+		assert.Equal(t, fernTestValueCapture, obj.Capture)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStatus", func(t *testing.T) {
+		obj := &RetrieveVerificationsResponseSelfie{}
+		var fernTestValueStatus RetrieveVerificationsResponseSelfieStatus
+		obj.SetStatus(fernTestValueStatus)
+		assert.Equal(t, fernTestValueStatus, obj.Status)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersRetrieveVerificationsResponseSelfie(t *testing.T) {
+	t.Run("GetCapture", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponseSelfie{}
+		var expected RetrieveVerificationsResponseSelfieCapture
+		obj.Capture = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCapture(), "getter should return the property value")
+	})
+
+	t.Run("GetCapture_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveVerificationsResponseSelfie
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCapture() // Should return zero value
+	})
+
+	t.Run("GetStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponseSelfie{}
+		var expected RetrieveVerificationsResponseSelfieStatus
+		obj.Status = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveVerificationsResponseSelfie
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStatus() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitRetrieveVerificationsResponseSelfie(t *testing.T) {
+	t.Run("SetCapture_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponseSelfie{}
+		var fernTestValueCapture RetrieveVerificationsResponseSelfieCapture
+
+		// Act
+		obj.SetCapture(fernTestValueCapture)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponseSelfie{}
+		var fernTestValueStatus RetrieveVerificationsResponseSelfieStatus
 
 		// Act
 		obj.SetStatus(fernTestValueStatus)
@@ -30029,6 +31475,14 @@ func TestSettersUpdateVerificationsResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIdentityDocument", func(t *testing.T) {
+		obj := &UpdateVerificationsResponse{}
+		var fernTestValueIdentityDocument *UpdateVerificationsResponseIdentityDocument
+		obj.SetIdentityDocument(fernTestValueIdentityDocument)
+		assert.Equal(t, fernTestValueIdentityDocument, obj.IdentityDocument)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetIncorporationDate", func(t *testing.T) {
 		obj := &UpdateVerificationsResponse{}
 		var fernTestValueIncorporationDate *string
@@ -30098,6 +31552,14 @@ func TestSettersUpdateVerificationsResponse(t *testing.T) {
 		var fernTestValueRequiredDocuments []*UpdateVerificationsResponseRequiredDocumentsItem
 		obj.SetRequiredDocuments(fernTestValueRequiredDocuments)
 		assert.Equal(t, fernTestValueRequiredDocuments, obj.RequiredDocuments)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetSelfie", func(t *testing.T) {
+		obj := &UpdateVerificationsResponse{}
+		var fernTestValueSelfie *UpdateVerificationsResponseSelfie
+		obj.SetSelfie(fernTestValueSelfie)
+		assert.Equal(t, fernTestValueSelfie, obj.Selfie)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -30458,6 +31920,39 @@ func TestGettersUpdateVerificationsResponse(t *testing.T) {
 		_ = obj.GetID() // Should return zero value
 	})
 
+	t.Run("GetIdentityDocument", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponse{}
+		var expected *UpdateVerificationsResponseIdentityDocument
+		obj.IdentityDocument = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIdentityDocument(), "getter should return the property value")
+	})
+
+	t.Run("GetIdentityDocument_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponse{}
+		obj.IdentityDocument = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetIdentityDocument(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetIdentityDocument_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateVerificationsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIdentityDocument() // Should return zero value
+	})
+
 	t.Run("GetIncorporationDate", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -30753,6 +32248,39 @@ func TestGettersUpdateVerificationsResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetRequiredDocuments() // Should return zero value
+	})
+
+	t.Run("GetSelfie", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponse{}
+		var expected *UpdateVerificationsResponseSelfie
+		obj.Selfie = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSelfie(), "getter should return the property value")
+	})
+
+	t.Run("GetSelfie_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponse{}
+		obj.Selfie = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSelfie(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSelfie_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateVerificationsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSelfie() // Should return zero value
 	})
 
 	t.Run("GetSessionURL", func(t *testing.T) {
@@ -31167,6 +32695,37 @@ func TestSettersMarkExplicitUpdateVerificationsResponse(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetIdentityDocument_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponse{}
+		var fernTestValueIdentityDocument *UpdateVerificationsResponseIdentityDocument
+
+		// Act
+		obj.SetIdentityDocument(fernTestValueIdentityDocument)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetIncorporationDate_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -31423,6 +32982,37 @@ func TestSettersMarkExplicitUpdateVerificationsResponse(t *testing.T) {
 
 		// Act
 		obj.SetRequiredDocuments(fernTestValueRequiredDocuments)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSelfie_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponse{}
+		var fernTestValueSelfie *UpdateVerificationsResponseSelfie
+
+		// Act
+		obj.SetSelfie(fernTestValueSelfie)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -31957,6 +33547,211 @@ func TestSettersMarkExplicitUpdateVerificationsResponseAddress(t *testing.T) {
 
 		// Act
 		obj.SetState(fernTestValueState)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersUpdateVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("SetCountry", func(t *testing.T) {
+		obj := &UpdateVerificationsResponseIdentityDocument{}
+		var fernTestValueCountry *string
+		obj.SetCountry(fernTestValueCountry)
+		assert.Equal(t, fernTestValueCountry, obj.Country)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStatus", func(t *testing.T) {
+		obj := &UpdateVerificationsResponseIdentityDocument{}
+		var fernTestValueStatus UpdateVerificationsResponseIdentityDocumentStatus
+		obj.SetStatus(fernTestValueStatus)
+		assert.Equal(t, fernTestValueStatus, obj.Status)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetType", func(t *testing.T) {
+		obj := &UpdateVerificationsResponseIdentityDocument{}
+		var fernTestValueType UpdateVerificationsResponseIdentityDocumentType
+		obj.SetType(fernTestValueType)
+		assert.Equal(t, fernTestValueType, obj.Type)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersUpdateVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("GetCountry", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponseIdentityDocument{}
+		var expected *string
+		obj.Country = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCountry(), "getter should return the property value")
+	})
+
+	t.Run("GetCountry_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponseIdentityDocument{}
+		obj.Country = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCountry(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCountry_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateVerificationsResponseIdentityDocument
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCountry() // Should return zero value
+	})
+
+	t.Run("GetStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponseIdentityDocument{}
+		var expected UpdateVerificationsResponseIdentityDocumentStatus
+		obj.Status = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateVerificationsResponseIdentityDocument
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStatus() // Should return zero value
+	})
+
+	t.Run("GetType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponseIdentityDocument{}
+		var expected UpdateVerificationsResponseIdentityDocumentType
+		obj.Type = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetType(), "getter should return the property value")
+	})
+
+	t.Run("GetType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateVerificationsResponseIdentityDocument
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetType() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitUpdateVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("SetCountry_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponseIdentityDocument{}
+		var fernTestValueCountry *string
+
+		// Act
+		obj.SetCountry(fernTestValueCountry)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponseIdentityDocument{}
+		var fernTestValueStatus UpdateVerificationsResponseIdentityDocumentStatus
+
+		// Act
+		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponseIdentityDocument{}
+		var fernTestValueType UpdateVerificationsResponseIdentityDocumentType
+
+		// Act
+		obj.SetType(fernTestValueType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -34487,6 +36282,139 @@ func TestSettersMarkExplicitUpdateVerificationsResponseRequiredDocumentsItem(t *
 
 }
 
+func TestSettersUpdateVerificationsResponseSelfie(t *testing.T) {
+	t.Run("SetCapture", func(t *testing.T) {
+		obj := &UpdateVerificationsResponseSelfie{}
+		var fernTestValueCapture UpdateVerificationsResponseSelfieCapture
+		obj.SetCapture(fernTestValueCapture)
+		assert.Equal(t, fernTestValueCapture, obj.Capture)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStatus", func(t *testing.T) {
+		obj := &UpdateVerificationsResponseSelfie{}
+		var fernTestValueStatus UpdateVerificationsResponseSelfieStatus
+		obj.SetStatus(fernTestValueStatus)
+		assert.Equal(t, fernTestValueStatus, obj.Status)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersUpdateVerificationsResponseSelfie(t *testing.T) {
+	t.Run("GetCapture", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponseSelfie{}
+		var expected UpdateVerificationsResponseSelfieCapture
+		obj.Capture = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCapture(), "getter should return the property value")
+	})
+
+	t.Run("GetCapture_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateVerificationsResponseSelfie
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCapture() // Should return zero value
+	})
+
+	t.Run("GetStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponseSelfie{}
+		var expected UpdateVerificationsResponseSelfieStatus
+		obj.Status = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateVerificationsResponseSelfie
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStatus() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitUpdateVerificationsResponseSelfie(t *testing.T) {
+	t.Run("SetCapture_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponseSelfie{}
+		var fernTestValueCapture UpdateVerificationsResponseSelfieCapture
+
+		// Act
+		obj.SetCapture(fernTestValueCapture)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponseSelfie{}
+		var fernTestValueStatus UpdateVerificationsResponseSelfieStatus
+
+		// Act
+		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersUpdateVerificationsRequest(t *testing.T) {
 	t.Run("SetID", func(t *testing.T) {
 		obj := &UpdateVerificationsRequest{}
@@ -34895,6 +36823,39 @@ func TestJSONMarshalingCreateVerificationsResponseAddress(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingCreateVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponseIdentityDocument{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreateVerificationsResponseIdentityDocument
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateVerificationsResponseIdentityDocument
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateVerificationsResponseIdentityDocument
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingCreateVerificationsResponseOwnersItem(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -35060,6 +37021,39 @@ func TestJSONMarshalingCreateVerificationsResponseRequiredDocumentsItem(t *testi
 	})
 }
 
+func TestJSONMarshalingCreateVerificationsResponseSelfie(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateVerificationsResponseSelfie{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreateVerificationsResponseSelfie
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateVerificationsResponseSelfie
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateVerificationsResponseSelfie
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingListVerificationsResponse(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -35154,6 +37148,39 @@ func TestJSONMarshalingListVerificationsResponseDataItemAddress(t *testing.T) {
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
 		var obj ListVerificationsResponseDataItemAddress
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingListVerificationsResponseDataItemIdentityDocument(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItemIdentityDocument{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled ListVerificationsResponseDataItemIdentityDocument
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj ListVerificationsResponseDataItemIdentityDocument
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj ListVerificationsResponseDataItemIdentityDocument
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -35319,6 +37346,39 @@ func TestJSONMarshalingListVerificationsResponseDataItemRequiredDocumentsItem(t 
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
 		var obj ListVerificationsResponseDataItemRequiredDocumentsItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingListVerificationsResponseDataItemSelfie(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListVerificationsResponseDataItemSelfie{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled ListVerificationsResponseDataItemSelfie
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj ListVerificationsResponseDataItemSelfie
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj ListVerificationsResponseDataItemSelfie
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -35522,6 +37582,39 @@ func TestJSONMarshalingRetrieveVerificationsResponseAddress(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingRetrieveVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponseIdentityDocument{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled RetrieveVerificationsResponseIdentityDocument
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj RetrieveVerificationsResponseIdentityDocument
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj RetrieveVerificationsResponseIdentityDocument
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingRetrieveVerificationsResponseOwnersItem(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -35682,6 +37775,39 @@ func TestJSONMarshalingRetrieveVerificationsResponseRequiredDocumentsItem(t *tes
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrieveVerificationsResponseRequiredDocumentsItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingRetrieveVerificationsResponseSelfie(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveVerificationsResponseSelfie{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled RetrieveVerificationsResponseSelfie
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj RetrieveVerificationsResponseSelfie
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj RetrieveVerificationsResponseSelfie
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -36215,6 +38341,39 @@ func TestJSONMarshalingUpdateVerificationsResponseAddress(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingUpdateVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponseIdentityDocument{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled UpdateVerificationsResponseIdentityDocument
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateVerificationsResponseIdentityDocument
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateVerificationsResponseIdentityDocument
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingUpdateVerificationsResponseOwnersItem(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -36380,6 +38539,82 @@ func TestJSONMarshalingUpdateVerificationsResponseRequiredDocumentsItem(t *testi
 	})
 }
 
+func TestJSONMarshalingUpdateVerificationsResponseSelfie(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateVerificationsResponseSelfie{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled UpdateVerificationsResponseSelfie
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateVerificationsResponseSelfie
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateVerificationsResponseSelfie
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestRequiredNullableRoundTripCreateVerificationsResponseIdentityDocument(t *testing.T) {
+	requiredNullableKeys := []string{
+		"country",
+	}
+	marshalToMap := func(t *testing.T, obj *CreateVerificationsResponseIdentityDocument) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateVerificationsResponseIdentityDocument
+		require.NoError(t, json.Unmarshal([]byte(`{"country":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateVerificationsResponseIdentityDocument
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &CreateVerificationsResponseIdentityDocument{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestRequiredNullableRoundTripCreateVerificationsResponseOwnersItem(t *testing.T) {
 	requiredNullableKeys := []string{
 		"date_of_birth",
@@ -36420,6 +38655,49 @@ func TestRequiredNullableRoundTripCreateVerificationsResponseOwnersItem(t *testi
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
 		result := marshalToMap(t, &CreateVerificationsResponseOwnersItem{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripListVerificationsResponseDataItemIdentityDocument(t *testing.T) {
+	requiredNullableKeys := []string{
+		"country",
+	}
+	marshalToMap := func(t *testing.T, obj *ListVerificationsResponseDataItemIdentityDocument) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj ListVerificationsResponseDataItemIdentityDocument
+		require.NoError(t, json.Unmarshal([]byte(`{"country":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj ListVerificationsResponseDataItemIdentityDocument
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &ListVerificationsResponseDataItemIdentityDocument{})
 		for _, key := range requiredNullableKeys {
 			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
 		}
@@ -36602,6 +38880,49 @@ func TestRequiredNullableRoundTripPostVerificationSucceededPayload(t *testing.T)
 	})
 }
 
+func TestRequiredNullableRoundTripRetrieveVerificationsResponseIdentityDocument(t *testing.T) {
+	requiredNullableKeys := []string{
+		"country",
+	}
+	marshalToMap := func(t *testing.T, obj *RetrieveVerificationsResponseIdentityDocument) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj RetrieveVerificationsResponseIdentityDocument
+		require.NoError(t, json.Unmarshal([]byte(`{"country":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj RetrieveVerificationsResponseIdentityDocument
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &RetrieveVerificationsResponseIdentityDocument{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestRequiredNullableRoundTripRetrieveVerificationsResponseOwnersItem(t *testing.T) {
 	requiredNullableKeys := []string{
 		"date_of_birth",
@@ -36642,6 +38963,49 @@ func TestRequiredNullableRoundTripRetrieveVerificationsResponseOwnersItem(t *tes
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
 		result := marshalToMap(t, &RetrieveVerificationsResponseOwnersItem{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripUpdateVerificationsResponseIdentityDocument(t *testing.T) {
+	requiredNullableKeys := []string{
+		"country",
+	}
+	marshalToMap := func(t *testing.T, obj *UpdateVerificationsResponseIdentityDocument) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateVerificationsResponseIdentityDocument
+		require.NoError(t, json.Unmarshal([]byte(`{"country":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdateVerificationsResponseIdentityDocument
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &UpdateVerificationsResponseIdentityDocument{})
 		for _, key := range requiredNullableKeys {
 			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
 		}
@@ -36847,11 +39211,13 @@ func TestOptionalNullableRoundTripCreateVerificationsResponse(t *testing.T) {
 		"date_of_birth",
 		"email",
 		"first_name",
+		"identity_document",
 		"incorporation_date",
 		"last_name",
 		"phone",
 		"place_of_incorporation",
 		"registration_number",
+		"selfie",
 		"session_url",
 	}
 	marshalToMap := func(t *testing.T, obj *CreateVerificationsResponse) map[string]json.RawMessage {
@@ -36865,7 +39231,7 @@ func TestOptionalNullableRoundTripCreateVerificationsResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj CreateVerificationsResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"address":null,"business_name":null,"business_structure":null,"country":null,"date_of_birth":null,"email":null,"first_name":null,"incorporation_date":null,"last_name":null,"phone":null,"place_of_incorporation":null,"registration_number":null,"session_url":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"address":null,"business_name":null,"business_structure":null,"country":null,"date_of_birth":null,"email":null,"first_name":null,"identity_document":null,"incorporation_date":null,"last_name":null,"phone":null,"place_of_incorporation":null,"registration_number":null,"selfie":null,"session_url":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -37035,11 +39401,13 @@ func TestOptionalNullableRoundTripListVerificationsResponseDataItem(t *testing.T
 		"date_of_birth",
 		"email",
 		"first_name",
+		"identity_document",
 		"incorporation_date",
 		"last_name",
 		"phone",
 		"place_of_incorporation",
 		"registration_number",
+		"selfie",
 		"session_url",
 	}
 	marshalToMap := func(t *testing.T, obj *ListVerificationsResponseDataItem) map[string]json.RawMessage {
@@ -37053,7 +39421,7 @@ func TestOptionalNullableRoundTripListVerificationsResponseDataItem(t *testing.T
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ListVerificationsResponseDataItem
-		require.NoError(t, json.Unmarshal([]byte(`{"address":null,"business_name":null,"business_structure":null,"country":null,"date_of_birth":null,"email":null,"first_name":null,"incorporation_date":null,"last_name":null,"phone":null,"place_of_incorporation":null,"registration_number":null,"session_url":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"address":null,"business_name":null,"business_structure":null,"country":null,"date_of_birth":null,"email":null,"first_name":null,"identity_document":null,"incorporation_date":null,"last_name":null,"phone":null,"place_of_incorporation":null,"registration_number":null,"selfie":null,"session_url":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -37309,11 +39677,13 @@ func TestOptionalNullableRoundTripRetrieveVerificationsResponse(t *testing.T) {
 		"date_of_birth",
 		"email",
 		"first_name",
+		"identity_document",
 		"incorporation_date",
 		"last_name",
 		"phone",
 		"place_of_incorporation",
 		"registration_number",
+		"selfie",
 		"session_url",
 	}
 	marshalToMap := func(t *testing.T, obj *RetrieveVerificationsResponse) map[string]json.RawMessage {
@@ -37327,7 +39697,7 @@ func TestOptionalNullableRoundTripRetrieveVerificationsResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrieveVerificationsResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"address":null,"business_name":null,"business_structure":null,"country":null,"date_of_birth":null,"email":null,"first_name":null,"incorporation_date":null,"last_name":null,"phone":null,"place_of_incorporation":null,"registration_number":null,"session_url":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"address":null,"business_name":null,"business_structure":null,"country":null,"date_of_birth":null,"email":null,"first_name":null,"identity_document":null,"incorporation_date":null,"last_name":null,"phone":null,"place_of_incorporation":null,"registration_number":null,"selfie":null,"session_url":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -37737,11 +40107,13 @@ func TestOptionalNullableRoundTripUpdateVerificationsResponse(t *testing.T) {
 		"date_of_birth",
 		"email",
 		"first_name",
+		"identity_document",
 		"incorporation_date",
 		"last_name",
 		"phone",
 		"place_of_incorporation",
 		"registration_number",
+		"selfie",
 		"session_url",
 	}
 	marshalToMap := func(t *testing.T, obj *UpdateVerificationsResponse) map[string]json.RawMessage {
@@ -37755,7 +40127,7 @@ func TestOptionalNullableRoundTripUpdateVerificationsResponse(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj UpdateVerificationsResponse
-		require.NoError(t, json.Unmarshal([]byte(`{"address":null,"business_name":null,"business_structure":null,"country":null,"date_of_birth":null,"email":null,"first_name":null,"incorporation_date":null,"last_name":null,"phone":null,"place_of_incorporation":null,"registration_number":null,"session_url":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"address":null,"business_name":null,"business_structure":null,"country":null,"date_of_birth":null,"email":null,"first_name":null,"identity_document":null,"incorporation_date":null,"last_name":null,"phone":null,"place_of_incorporation":null,"registration_number":null,"selfie":null,"session_url":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -38092,6 +40464,22 @@ func TestStringCreateVerificationsResponseAddress(t *testing.T) {
 	})
 }
 
+func TestStringCreateVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateVerificationsResponseIdentityDocument{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsResponseIdentityDocument
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringCreateVerificationsResponseOwnersItem(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -38172,6 +40560,22 @@ func TestStringCreateVerificationsResponseRequiredDocumentsItem(t *testing.T) {
 	})
 }
 
+func TestStringCreateVerificationsResponseSelfie(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateVerificationsResponseSelfie{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsResponseSelfie
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringListVerificationsResponse(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -38215,6 +40619,22 @@ func TestStringListVerificationsResponseDataItemAddress(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ListVerificationsResponseDataItemAddress
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringListVerificationsResponseDataItemIdentityDocument(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &ListVerificationsResponseDataItemIdentityDocument{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListVerificationsResponseDataItemIdentityDocument
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -38295,6 +40715,22 @@ func TestStringListVerificationsResponseDataItemRequiredDocumentsItem(t *testing
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ListVerificationsResponseDataItemRequiredDocumentsItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringListVerificationsResponseDataItemSelfie(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &ListVerificationsResponseDataItemSelfie{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListVerificationsResponseDataItemSelfie
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -38396,6 +40832,22 @@ func TestStringRetrieveVerificationsResponseAddress(t *testing.T) {
 	})
 }
 
+func TestStringRetrieveVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &RetrieveVerificationsResponseIdentityDocument{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveVerificationsResponseIdentityDocument
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringRetrieveVerificationsResponseOwnersItem(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -38471,6 +40923,22 @@ func TestStringRetrieveVerificationsResponseRequiredDocumentsItem(t *testing.T) 
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *RetrieveVerificationsResponseRequiredDocumentsItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringRetrieveVerificationsResponseSelfie(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &RetrieveVerificationsResponseSelfie{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveVerificationsResponseSelfie
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -38732,6 +41200,22 @@ func TestStringUpdateVerificationsResponseAddress(t *testing.T) {
 	})
 }
 
+func TestStringUpdateVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateVerificationsResponseIdentityDocument{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateVerificationsResponseIdentityDocument
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringUpdateVerificationsResponseOwnersItem(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -38807,6 +41291,22 @@ func TestStringUpdateVerificationsResponseRequiredDocumentsItem(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *UpdateVerificationsResponseRequiredDocumentsItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringUpdateVerificationsResponseSelfie(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateVerificationsResponseSelfie{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateVerificationsResponseSelfie
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -38934,6 +41434,85 @@ func TestEnumCreateVerificationsRequestBodyIndividualDocumentType(t *testing.T) 
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewCreateVerificationsRequestBodyIndividualDocumentTypeFromString("id_card")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreateVerificationsResponseIdentityDocumentStatus(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateVerificationsResponseIdentityDocumentStatusFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateVerificationsResponseIdentityDocumentStatus("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_approved", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateVerificationsResponseIdentityDocumentStatusFromString("approved")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateVerificationsResponseIdentityDocumentStatus("approved"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rejected", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateVerificationsResponseIdentityDocumentStatusFromString("rejected")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateVerificationsResponseIdentityDocumentStatus("rejected"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateVerificationsResponseIdentityDocumentStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateVerificationsResponseIdentityDocumentStatusFromString("pending")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreateVerificationsResponseIdentityDocumentType(t *testing.T) {
+	t.Run("NewFromString_id_card", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateVerificationsResponseIdentityDocumentTypeFromString("id_card")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateVerificationsResponseIdentityDocumentType("id_card"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_drivers", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateVerificationsResponseIdentityDocumentTypeFromString("drivers")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateVerificationsResponseIdentityDocumentType("drivers"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_residence_permit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateVerificationsResponseIdentityDocumentTypeFromString("residence_permit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateVerificationsResponseIdentityDocumentType("residence_permit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_passport", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateVerificationsResponseIdentityDocumentTypeFromString("passport")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateVerificationsResponseIdentityDocumentType("passport"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateVerificationsResponseIdentityDocumentTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateVerificationsResponseIdentityDocumentTypeFromString("id_card")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -39257,6 +41836,71 @@ func TestEnumCreateVerificationsResponseRequiredDocumentsItemStatus(t *testing.T
 	})
 }
 
+func TestEnumCreateVerificationsResponseSelfieCapture(t *testing.T) {
+	t.Run("NewFromString_upload", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateVerificationsResponseSelfieCaptureFromString("upload")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateVerificationsResponseSelfieCapture("upload"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_liveness", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateVerificationsResponseSelfieCaptureFromString("liveness")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateVerificationsResponseSelfieCapture("liveness"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateVerificationsResponseSelfieCaptureFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateVerificationsResponseSelfieCaptureFromString("upload")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreateVerificationsResponseSelfieStatus(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateVerificationsResponseSelfieStatusFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateVerificationsResponseSelfieStatus("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_approved", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateVerificationsResponseSelfieStatusFromString("approved")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateVerificationsResponseSelfieStatus("approved"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rejected", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateVerificationsResponseSelfieStatusFromString("rejected")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateVerificationsResponseSelfieStatus("rejected"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateVerificationsResponseSelfieStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateVerificationsResponseSelfieStatusFromString("pending")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumCreateVerificationsResponseStatus(t *testing.T) {
 	t.Run("NewFromString_not_started", func(t *testing.T) {
 		t.Parallel()
@@ -39372,6 +42016,85 @@ func TestEnumListVerificationsRequestOrder(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewListVerificationsRequestOrderFromString("updated_at")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListVerificationsResponseDataItemIdentityDocumentStatus(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListVerificationsResponseDataItemIdentityDocumentStatusFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListVerificationsResponseDataItemIdentityDocumentStatus("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_approved", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListVerificationsResponseDataItemIdentityDocumentStatusFromString("approved")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListVerificationsResponseDataItemIdentityDocumentStatus("approved"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rejected", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListVerificationsResponseDataItemIdentityDocumentStatusFromString("rejected")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListVerificationsResponseDataItemIdentityDocumentStatus("rejected"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListVerificationsResponseDataItemIdentityDocumentStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListVerificationsResponseDataItemIdentityDocumentStatusFromString("pending")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListVerificationsResponseDataItemIdentityDocumentType(t *testing.T) {
+	t.Run("NewFromString_id_card", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListVerificationsResponseDataItemIdentityDocumentTypeFromString("id_card")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListVerificationsResponseDataItemIdentityDocumentType("id_card"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_drivers", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListVerificationsResponseDataItemIdentityDocumentTypeFromString("drivers")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListVerificationsResponseDataItemIdentityDocumentType("drivers"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_residence_permit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListVerificationsResponseDataItemIdentityDocumentTypeFromString("residence_permit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListVerificationsResponseDataItemIdentityDocumentType("residence_permit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_passport", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListVerificationsResponseDataItemIdentityDocumentTypeFromString("passport")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListVerificationsResponseDataItemIdentityDocumentType("passport"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListVerificationsResponseDataItemIdentityDocumentTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListVerificationsResponseDataItemIdentityDocumentTypeFromString("id_card")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -39695,6 +42418,71 @@ func TestEnumListVerificationsResponseDataItemRequiredDocumentsItemStatus(t *tes
 	})
 }
 
+func TestEnumListVerificationsResponseDataItemSelfieCapture(t *testing.T) {
+	t.Run("NewFromString_upload", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListVerificationsResponseDataItemSelfieCaptureFromString("upload")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListVerificationsResponseDataItemSelfieCapture("upload"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_liveness", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListVerificationsResponseDataItemSelfieCaptureFromString("liveness")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListVerificationsResponseDataItemSelfieCapture("liveness"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListVerificationsResponseDataItemSelfieCaptureFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListVerificationsResponseDataItemSelfieCaptureFromString("upload")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumListVerificationsResponseDataItemSelfieStatus(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListVerificationsResponseDataItemSelfieStatusFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListVerificationsResponseDataItemSelfieStatus("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_approved", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListVerificationsResponseDataItemSelfieStatusFromString("approved")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListVerificationsResponseDataItemSelfieStatus("approved"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rejected", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListVerificationsResponseDataItemSelfieStatusFromString("rejected")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListVerificationsResponseDataItemSelfieStatus("rejected"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListVerificationsResponseDataItemSelfieStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListVerificationsResponseDataItemSelfieStatusFromString("pending")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumListVerificationsResponseDataItemStatus(t *testing.T) {
 	t.Run("NewFromString_not_started", func(t *testing.T) {
 		t.Parallel()
@@ -39840,6 +42628,85 @@ func TestEnumPostVerificationSucceededPayloadType(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewPostVerificationSucceededPayloadTypeFromString("verification.succeeded")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumRetrieveVerificationsResponseIdentityDocumentStatus(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveVerificationsResponseIdentityDocumentStatusFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveVerificationsResponseIdentityDocumentStatus("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_approved", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveVerificationsResponseIdentityDocumentStatusFromString("approved")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveVerificationsResponseIdentityDocumentStatus("approved"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rejected", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveVerificationsResponseIdentityDocumentStatusFromString("rejected")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveVerificationsResponseIdentityDocumentStatus("rejected"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRetrieveVerificationsResponseIdentityDocumentStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRetrieveVerificationsResponseIdentityDocumentStatusFromString("pending")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumRetrieveVerificationsResponseIdentityDocumentType(t *testing.T) {
+	t.Run("NewFromString_id_card", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveVerificationsResponseIdentityDocumentTypeFromString("id_card")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveVerificationsResponseIdentityDocumentType("id_card"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_drivers", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveVerificationsResponseIdentityDocumentTypeFromString("drivers")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveVerificationsResponseIdentityDocumentType("drivers"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_residence_permit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveVerificationsResponseIdentityDocumentTypeFromString("residence_permit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveVerificationsResponseIdentityDocumentType("residence_permit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_passport", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveVerificationsResponseIdentityDocumentTypeFromString("passport")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveVerificationsResponseIdentityDocumentType("passport"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRetrieveVerificationsResponseIdentityDocumentTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRetrieveVerificationsResponseIdentityDocumentTypeFromString("id_card")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -40163,6 +43030,71 @@ func TestEnumRetrieveVerificationsResponseRequiredDocumentsItemStatus(t *testing
 	})
 }
 
+func TestEnumRetrieveVerificationsResponseSelfieCapture(t *testing.T) {
+	t.Run("NewFromString_upload", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveVerificationsResponseSelfieCaptureFromString("upload")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveVerificationsResponseSelfieCapture("upload"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_liveness", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveVerificationsResponseSelfieCaptureFromString("liveness")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveVerificationsResponseSelfieCapture("liveness"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRetrieveVerificationsResponseSelfieCaptureFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRetrieveVerificationsResponseSelfieCaptureFromString("upload")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumRetrieveVerificationsResponseSelfieStatus(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveVerificationsResponseSelfieStatusFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveVerificationsResponseSelfieStatus("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_approved", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveVerificationsResponseSelfieStatusFromString("approved")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveVerificationsResponseSelfieStatus("approved"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rejected", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveVerificationsResponseSelfieStatusFromString("rejected")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveVerificationsResponseSelfieStatus("rejected"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRetrieveVerificationsResponseSelfieStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRetrieveVerificationsResponseSelfieStatusFromString("pending")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumRetrieveVerificationsResponseStatus(t *testing.T) {
 	t.Run("NewFromString_not_started", func(t *testing.T) {
 		t.Parallel()
@@ -40364,6 +43296,85 @@ func TestEnumUpdateVerificationsRequestBodyPersonalAddressRequestedInformationIt
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdateVerificationsRequestBodyPersonalAddressRequestedInformationItemValueTypeFromString("raw")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateVerificationsResponseIdentityDocumentStatus(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateVerificationsResponseIdentityDocumentStatusFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateVerificationsResponseIdentityDocumentStatus("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_approved", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateVerificationsResponseIdentityDocumentStatusFromString("approved")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateVerificationsResponseIdentityDocumentStatus("approved"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rejected", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateVerificationsResponseIdentityDocumentStatusFromString("rejected")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateVerificationsResponseIdentityDocumentStatus("rejected"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateVerificationsResponseIdentityDocumentStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateVerificationsResponseIdentityDocumentStatusFromString("pending")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateVerificationsResponseIdentityDocumentType(t *testing.T) {
+	t.Run("NewFromString_id_card", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateVerificationsResponseIdentityDocumentTypeFromString("id_card")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateVerificationsResponseIdentityDocumentType("id_card"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_drivers", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateVerificationsResponseIdentityDocumentTypeFromString("drivers")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateVerificationsResponseIdentityDocumentType("drivers"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_residence_permit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateVerificationsResponseIdentityDocumentTypeFromString("residence_permit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateVerificationsResponseIdentityDocumentType("residence_permit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_passport", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateVerificationsResponseIdentityDocumentTypeFromString("passport")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateVerificationsResponseIdentityDocumentType("passport"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateVerificationsResponseIdentityDocumentTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateVerificationsResponseIdentityDocumentTypeFromString("id_card")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -40680,6 +43691,71 @@ func TestEnumUpdateVerificationsResponseRequiredDocumentsItemStatus(t *testing.T
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdateVerificationsResponseRequiredDocumentsItemStatusFromString("pending_upload")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateVerificationsResponseSelfieCapture(t *testing.T) {
+	t.Run("NewFromString_upload", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateVerificationsResponseSelfieCaptureFromString("upload")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateVerificationsResponseSelfieCapture("upload"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_liveness", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateVerificationsResponseSelfieCaptureFromString("liveness")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateVerificationsResponseSelfieCapture("liveness"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateVerificationsResponseSelfieCaptureFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateVerificationsResponseSelfieCaptureFromString("upload")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateVerificationsResponseSelfieStatus(t *testing.T) {
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateVerificationsResponseSelfieStatusFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateVerificationsResponseSelfieStatus("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_approved", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateVerificationsResponseSelfieStatusFromString("approved")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateVerificationsResponseSelfieStatus("approved"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_rejected", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateVerificationsResponseSelfieStatusFromString("rejected")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateVerificationsResponseSelfieStatus("rejected"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateVerificationsResponseSelfieStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateVerificationsResponseSelfieStatusFromString("pending")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -41004,6 +44080,29 @@ func TestExtraPropertiesCreateVerificationsResponseAddress(t *testing.T) {
 	})
 }
 
+func TestExtraPropertiesCreateVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateVerificationsResponseIdentityDocument{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsResponseIdentityDocument
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
 func TestExtraPropertiesCreateVerificationsResponseOwnersItem(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
@@ -41119,6 +44218,29 @@ func TestExtraPropertiesCreateVerificationsResponseRequiredDocumentsItem(t *test
 	})
 }
 
+func TestExtraPropertiesCreateVerificationsResponseSelfie(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateVerificationsResponseSelfie{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateVerificationsResponseSelfie
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
 func TestExtraPropertiesListVerificationsResponse(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
@@ -41183,6 +44305,29 @@ func TestExtraPropertiesListVerificationsResponseDataItemAddress(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ListVerificationsResponseDataItemAddress
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesListVerificationsResponseDataItemIdentityDocument(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &ListVerificationsResponseDataItemIdentityDocument{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListVerificationsResponseDataItemIdentityDocument
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
@@ -41298,6 +44443,29 @@ func TestExtraPropertiesListVerificationsResponseDataItemRequiredDocumentsItem(t
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ListVerificationsResponseDataItemRequiredDocumentsItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesListVerificationsResponseDataItemSelfie(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &ListVerificationsResponseDataItemSelfie{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListVerificationsResponseDataItemSelfie
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
@@ -41441,6 +44609,29 @@ func TestExtraPropertiesRetrieveVerificationsResponseAddress(t *testing.T) {
 	})
 }
 
+func TestExtraPropertiesRetrieveVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &RetrieveVerificationsResponseIdentityDocument{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveVerificationsResponseIdentityDocument
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
 func TestExtraPropertiesRetrieveVerificationsResponseOwnersItem(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
@@ -41551,6 +44742,29 @@ func TestExtraPropertiesRetrieveVerificationsResponseRequiredDocumentsItem(t *te
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *RetrieveVerificationsResponseRequiredDocumentsItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesRetrieveVerificationsResponseSelfie(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &RetrieveVerificationsResponseSelfie{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrieveVerificationsResponseSelfie
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
@@ -41924,6 +45138,29 @@ func TestExtraPropertiesUpdateVerificationsResponseAddress(t *testing.T) {
 	})
 }
 
+func TestExtraPropertiesUpdateVerificationsResponseIdentityDocument(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateVerificationsResponseIdentityDocument{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateVerificationsResponseIdentityDocument
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
 func TestExtraPropertiesUpdateVerificationsResponseOwnersItem(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
@@ -42034,6 +45271,29 @@ func TestExtraPropertiesUpdateVerificationsResponseRequiredDocumentsItem(t *test
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *UpdateVerificationsResponseRequiredDocumentsItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesUpdateVerificationsResponseSelfie(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdateVerificationsResponseSelfie{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdateVerificationsResponseSelfie
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

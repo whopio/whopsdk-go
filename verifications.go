@@ -2504,18 +2504,20 @@ var (
 	createVerificationsResponseFieldEmail                = big.NewInt(1 << 7)
 	createVerificationsResponseFieldFirstName            = big.NewInt(1 << 8)
 	createVerificationsResponseFieldID                   = big.NewInt(1 << 9)
-	createVerificationsResponseFieldIncorporationDate    = big.NewInt(1 << 10)
-	createVerificationsResponseFieldKind                 = big.NewInt(1 << 11)
-	createVerificationsResponseFieldLastName             = big.NewInt(1 << 12)
-	createVerificationsResponseFieldOwners               = big.NewInt(1 << 13)
-	createVerificationsResponseFieldPhone                = big.NewInt(1 << 14)
-	createVerificationsResponseFieldPlaceOfIncorporation = big.NewInt(1 << 15)
-	createVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 16)
-	createVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 17)
-	createVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 18)
-	createVerificationsResponseFieldSessionURL           = big.NewInt(1 << 19)
-	createVerificationsResponseFieldStatus               = big.NewInt(1 << 20)
-	createVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 21)
+	createVerificationsResponseFieldIdentityDocument     = big.NewInt(1 << 10)
+	createVerificationsResponseFieldIncorporationDate    = big.NewInt(1 << 11)
+	createVerificationsResponseFieldKind                 = big.NewInt(1 << 12)
+	createVerificationsResponseFieldLastName             = big.NewInt(1 << 13)
+	createVerificationsResponseFieldOwners               = big.NewInt(1 << 14)
+	createVerificationsResponseFieldPhone                = big.NewInt(1 << 15)
+	createVerificationsResponseFieldPlaceOfIncorporation = big.NewInt(1 << 16)
+	createVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 17)
+	createVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 18)
+	createVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 19)
+	createVerificationsResponseFieldSelfie               = big.NewInt(1 << 20)
+	createVerificationsResponseFieldSessionURL           = big.NewInt(1 << 21)
+	createVerificationsResponseFieldStatus               = big.NewInt(1 << 22)
+	createVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 23)
 )
 
 // createVerificationsResponseNullableFields maps the wire names of CreateVerificationsResponse's nullable fields (required or optional) to their field bits.
@@ -2527,11 +2529,13 @@ var createVerificationsResponseNullableFields = map[string]*big.Int{
 	"date_of_birth":          createVerificationsResponseFieldDateOfBirth,
 	"email":                  createVerificationsResponseFieldEmail,
 	"first_name":             createVerificationsResponseFieldFirstName,
+	"identity_document":      createVerificationsResponseFieldIdentityDocument,
 	"incorporation_date":     createVerificationsResponseFieldIncorporationDate,
 	"last_name":              createVerificationsResponseFieldLastName,
 	"phone":                  createVerificationsResponseFieldPhone,
 	"place_of_incorporation": createVerificationsResponseFieldPlaceOfIncorporation,
 	"registration_number":    createVerificationsResponseFieldRegistrationNumber,
+	"selfie":                 createVerificationsResponseFieldSelfie,
 	"session_url":            createVerificationsResponseFieldSessionURL,
 }
 
@@ -2555,6 +2559,8 @@ type CreateVerificationsResponse struct {
 	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
 	// Verification profile ID, prefixed `idpf_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// Identity document on file for the person. Individual verifications only. `null` until the person sends a document.
+	IdentityDocument *CreateVerificationsResponseIdentityDocument `json:"identity_document,omitempty" url:"identity_document,omitempty"`
 	// Date the business was incorporated, formatted as `YYYY-MM-DD`, as on file for the business verification. Business verifications only; `null` until it is sent.
 	IncorporationDate *string                          `json:"incorporation_date,omitempty" url:"incorporation_date,omitempty"`
 	Kind              *CreateVerificationsResponseKind `json:"kind,omitempty" url:"kind,omitempty"`
@@ -2571,6 +2577,8 @@ type CreateVerificationsResponse struct {
 	RequestedInformation []*CreateVerificationsResponseRequestedInformationItem `json:"requested_information,omitempty" url:"requested_information,omitempty"`
 	// Documents for a document-upload verification and their progress. Present only on individual verifications created by sending `documents`. `pending_upload` documents were not accepted yet — send the full set again with another Create Verification call.
 	RequiredDocuments []*CreateVerificationsResponseRequiredDocumentsItem `json:"required_documents,omitempty" url:"required_documents,omitempty"`
+	// Selfie check of the person. Individual verifications only. `null` when the verification has no selfie check.
+	Selfie *CreateVerificationsResponseSelfie `json:"selfie,omitempty" url:"selfie,omitempty"`
 	// Hosted verification session URL for the user to complete identity checks. Expires 7 days after creation.
 	SessionURL *string `json:"session_url,omitempty" url:"session_url,omitempty"`
 	// Current verification state. `not_started` before any session exists; `pending` while a session needs the user's input; `processing` while the provider's automated checks run on a fresh submission; `action_required` when `requested_information` needs answers; `manual_review` while information already sent is under review — an audit answer, or a document the payout provider holds — nothing to submit, usually done within 3 business days; `approved` on success; `rejected` on failure. Call Create Verification again to start a new session.
@@ -2655,6 +2663,13 @@ func (c *CreateVerificationsResponse) GetID() *string {
 	return c.ID
 }
 
+func (c *CreateVerificationsResponse) GetIdentityDocument() *CreateVerificationsResponseIdentityDocument {
+	if c == nil {
+		return nil
+	}
+	return c.IdentityDocument
+}
+
 func (c *CreateVerificationsResponse) GetIncorporationDate() *string {
 	if c == nil {
 		return nil
@@ -2716,6 +2731,13 @@ func (c *CreateVerificationsResponse) GetRequiredDocuments() []*CreateVerificati
 		return nil
 	}
 	return c.RequiredDocuments
+}
+
+func (c *CreateVerificationsResponse) GetSelfie() *CreateVerificationsResponseSelfie {
+	if c == nil {
+		return nil
+	}
+	return c.Selfie
 }
 
 func (c *CreateVerificationsResponse) GetSessionURL() *string {
@@ -2825,6 +2847,13 @@ func (c *CreateVerificationsResponse) SetID(id *string) {
 	c.require(createVerificationsResponseFieldID)
 }
 
+// SetIdentityDocument sets the IdentityDocument field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponse) SetIdentityDocument(identityDocument *CreateVerificationsResponseIdentityDocument) {
+	c.IdentityDocument = identityDocument
+	c.require(createVerificationsResponseFieldIdentityDocument)
+}
+
 // SetIncorporationDate sets the IncorporationDate field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateVerificationsResponse) SetIncorporationDate(incorporationDate *string) {
@@ -2886,6 +2915,13 @@ func (c *CreateVerificationsResponse) SetRequestedInformation(requestedInformati
 func (c *CreateVerificationsResponse) SetRequiredDocuments(requiredDocuments []*CreateVerificationsResponseRequiredDocumentsItem) {
 	c.RequiredDocuments = requiredDocuments
 	c.require(createVerificationsResponseFieldRequiredDocuments)
+}
+
+// SetSelfie sets the Selfie field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponse) SetSelfie(selfie *CreateVerificationsResponseSelfie) {
+	c.Selfie = selfie
+	c.require(createVerificationsResponseFieldSelfie)
 }
 
 // SetSessionURL sets the SessionURL field and marks it as non-optional;
@@ -3144,6 +3180,195 @@ func (c *CreateVerificationsResponseAddress) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createVerificationsResponseIdentityDocumentFieldCountry = big.NewInt(1 << 0)
+	createVerificationsResponseIdentityDocumentFieldStatus  = big.NewInt(1 << 1)
+	createVerificationsResponseIdentityDocumentFieldType    = big.NewInt(1 << 2)
+)
+
+// createVerificationsResponseIdentityDocumentNullableFields maps the wire names of CreateVerificationsResponseIdentityDocument's nullable fields (required or optional) to their field bits.
+var createVerificationsResponseIdentityDocumentNullableFields = map[string]*big.Int{
+	"country": createVerificationsResponseIdentityDocumentFieldCountry,
+}
+
+// Identity document on file for the person. Individual verifications only. `null` until the person sends a document.
+type CreateVerificationsResponseIdentityDocument struct {
+	// Two-letter ISO 3166-1 code of the country that issued the document.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// Review result of the document. `pending` until the review ends.
+	Status CreateVerificationsResponseIdentityDocumentStatus `json:"status" url:"status"`
+	// Kind of identity document.
+	Type CreateVerificationsResponseIdentityDocumentType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateVerificationsResponseIdentityDocument) GetCountry() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Country
+}
+
+func (c *CreateVerificationsResponseIdentityDocument) GetStatus() CreateVerificationsResponseIdentityDocumentStatus {
+	if c == nil {
+		return ""
+	}
+	return c.Status
+}
+
+func (c *CreateVerificationsResponseIdentityDocument) GetType() CreateVerificationsResponseIdentityDocumentType {
+	if c == nil {
+		return ""
+	}
+	return c.Type
+}
+
+func (c *CreateVerificationsResponseIdentityDocument) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateVerificationsResponseIdentityDocument) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseIdentityDocument) SetCountry(country *string) {
+	c.Country = country
+	c.require(createVerificationsResponseIdentityDocumentFieldCountry)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseIdentityDocument) SetStatus(status CreateVerificationsResponseIdentityDocumentStatus) {
+	c.Status = status
+	c.require(createVerificationsResponseIdentityDocumentFieldStatus)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseIdentityDocument) SetType(type_ CreateVerificationsResponseIdentityDocumentType) {
+	c.Type = type_
+	c.require(createVerificationsResponseIdentityDocumentFieldType)
+}
+
+func (c *CreateVerificationsResponseIdentityDocument) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateVerificationsResponseIdentityDocument
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateVerificationsResponseIdentityDocument(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, createVerificationsResponseIdentityDocumentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		c.require(presentFields)
+	}
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateVerificationsResponseIdentityDocument) MarshalJSON() ([]byte, error) {
+	type embed CreateVerificationsResponseIdentityDocument
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateVerificationsResponseIdentityDocument) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// Review result of the document. `pending` until the review ends.
+type CreateVerificationsResponseIdentityDocumentStatus string
+
+const (
+	CreateVerificationsResponseIdentityDocumentStatusPending  CreateVerificationsResponseIdentityDocumentStatus = "pending"
+	CreateVerificationsResponseIdentityDocumentStatusApproved CreateVerificationsResponseIdentityDocumentStatus = "approved"
+	CreateVerificationsResponseIdentityDocumentStatusRejected CreateVerificationsResponseIdentityDocumentStatus = "rejected"
+)
+
+func NewCreateVerificationsResponseIdentityDocumentStatusFromString(s string) (CreateVerificationsResponseIdentityDocumentStatus, error) {
+	switch s {
+	case "pending":
+		return CreateVerificationsResponseIdentityDocumentStatusPending, nil
+	case "approved":
+		return CreateVerificationsResponseIdentityDocumentStatusApproved, nil
+	case "rejected":
+		return CreateVerificationsResponseIdentityDocumentStatusRejected, nil
+	}
+	var t CreateVerificationsResponseIdentityDocumentStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateVerificationsResponseIdentityDocumentStatus) Ptr() *CreateVerificationsResponseIdentityDocumentStatus {
+	return &c
+}
+
+// Kind of identity document.
+type CreateVerificationsResponseIdentityDocumentType string
+
+const (
+	CreateVerificationsResponseIdentityDocumentTypeIDCard          CreateVerificationsResponseIdentityDocumentType = "id_card"
+	CreateVerificationsResponseIdentityDocumentTypeDrivers         CreateVerificationsResponseIdentityDocumentType = "drivers"
+	CreateVerificationsResponseIdentityDocumentTypeResidencePermit CreateVerificationsResponseIdentityDocumentType = "residence_permit"
+	CreateVerificationsResponseIdentityDocumentTypePassport        CreateVerificationsResponseIdentityDocumentType = "passport"
+)
+
+func NewCreateVerificationsResponseIdentityDocumentTypeFromString(s string) (CreateVerificationsResponseIdentityDocumentType, error) {
+	switch s {
+	case "id_card":
+		return CreateVerificationsResponseIdentityDocumentTypeIDCard, nil
+	case "drivers":
+		return CreateVerificationsResponseIdentityDocumentTypeDrivers, nil
+	case "residence_permit":
+		return CreateVerificationsResponseIdentityDocumentTypeResidencePermit, nil
+	case "passport":
+		return CreateVerificationsResponseIdentityDocumentTypePassport, nil
+	}
+	var t CreateVerificationsResponseIdentityDocumentType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateVerificationsResponseIdentityDocumentType) Ptr() *CreateVerificationsResponseIdentityDocumentType {
+	return &c
 }
 
 type CreateVerificationsResponseKind string
@@ -4345,6 +4570,160 @@ func (c CreateVerificationsResponseRequiredDocumentsItemStatus) Ptr() *CreateVer
 	return &c
 }
 
+var (
+	createVerificationsResponseSelfieFieldCapture = big.NewInt(1 << 0)
+	createVerificationsResponseSelfieFieldStatus  = big.NewInt(1 << 1)
+)
+
+// Selfie check of the person. Individual verifications only. `null` when the verification has no selfie check.
+type CreateVerificationsResponseSelfie struct {
+	// How the selfie is taken. `liveness` is a live camera check. `upload` is a photo sent as a file.
+	Capture CreateVerificationsResponseSelfieCapture `json:"capture" url:"capture"`
+	// Review result of the selfie check. `pending` until the review ends.
+	Status CreateVerificationsResponseSelfieStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateVerificationsResponseSelfie) GetCapture() CreateVerificationsResponseSelfieCapture {
+	if c == nil {
+		return ""
+	}
+	return c.Capture
+}
+
+func (c *CreateVerificationsResponseSelfie) GetStatus() CreateVerificationsResponseSelfieStatus {
+	if c == nil {
+		return ""
+	}
+	return c.Status
+}
+
+func (c *CreateVerificationsResponseSelfie) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateVerificationsResponseSelfie) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetCapture sets the Capture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseSelfie) SetCapture(capture CreateVerificationsResponseSelfieCapture) {
+	c.Capture = capture
+	c.require(createVerificationsResponseSelfieFieldCapture)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseSelfie) SetStatus(status CreateVerificationsResponseSelfieStatus) {
+	c.Status = status
+	c.require(createVerificationsResponseSelfieFieldStatus)
+}
+
+func (c *CreateVerificationsResponseSelfie) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateVerificationsResponseSelfie
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateVerificationsResponseSelfie(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateVerificationsResponseSelfie) MarshalJSON() ([]byte, error) {
+	type embed CreateVerificationsResponseSelfie
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateVerificationsResponseSelfie) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// How the selfie is taken. `liveness` is a live camera check. `upload` is a photo sent as a file.
+type CreateVerificationsResponseSelfieCapture string
+
+const (
+	CreateVerificationsResponseSelfieCaptureUpload   CreateVerificationsResponseSelfieCapture = "upload"
+	CreateVerificationsResponseSelfieCaptureLiveness CreateVerificationsResponseSelfieCapture = "liveness"
+)
+
+func NewCreateVerificationsResponseSelfieCaptureFromString(s string) (CreateVerificationsResponseSelfieCapture, error) {
+	switch s {
+	case "upload":
+		return CreateVerificationsResponseSelfieCaptureUpload, nil
+	case "liveness":
+		return CreateVerificationsResponseSelfieCaptureLiveness, nil
+	}
+	var t CreateVerificationsResponseSelfieCapture
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateVerificationsResponseSelfieCapture) Ptr() *CreateVerificationsResponseSelfieCapture {
+	return &c
+}
+
+// Review result of the selfie check. `pending` until the review ends.
+type CreateVerificationsResponseSelfieStatus string
+
+const (
+	CreateVerificationsResponseSelfieStatusPending  CreateVerificationsResponseSelfieStatus = "pending"
+	CreateVerificationsResponseSelfieStatusApproved CreateVerificationsResponseSelfieStatus = "approved"
+	CreateVerificationsResponseSelfieStatusRejected CreateVerificationsResponseSelfieStatus = "rejected"
+)
+
+func NewCreateVerificationsResponseSelfieStatusFromString(s string) (CreateVerificationsResponseSelfieStatus, error) {
+	switch s {
+	case "pending":
+		return CreateVerificationsResponseSelfieStatusPending, nil
+	case "approved":
+		return CreateVerificationsResponseSelfieStatusApproved, nil
+	case "rejected":
+		return CreateVerificationsResponseSelfieStatusRejected, nil
+	}
+	var t CreateVerificationsResponseSelfieStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateVerificationsResponseSelfieStatus) Ptr() *CreateVerificationsResponseSelfieStatus {
+	return &c
+}
+
 // Current verification state. `not_started` before any session exists; `pending` while a session needs the user's input; `processing` while the provider's automated checks run on a fresh submission; `action_required` when `requested_information` needs answers; `manual_review` while information already sent is under review — an audit answer, or a document the payout provider holds — nothing to submit, usually done within 3 business days; `approved` on success; `rejected` on failure. Call Create Verification again to start a new session.
 type CreateVerificationsResponseStatus string
 
@@ -4540,18 +4919,20 @@ var (
 	listVerificationsResponseDataItemFieldEmail                = big.NewInt(1 << 7)
 	listVerificationsResponseDataItemFieldFirstName            = big.NewInt(1 << 8)
 	listVerificationsResponseDataItemFieldID                   = big.NewInt(1 << 9)
-	listVerificationsResponseDataItemFieldIncorporationDate    = big.NewInt(1 << 10)
-	listVerificationsResponseDataItemFieldKind                 = big.NewInt(1 << 11)
-	listVerificationsResponseDataItemFieldLastName             = big.NewInt(1 << 12)
-	listVerificationsResponseDataItemFieldOwners               = big.NewInt(1 << 13)
-	listVerificationsResponseDataItemFieldPhone                = big.NewInt(1 << 14)
-	listVerificationsResponseDataItemFieldPlaceOfIncorporation = big.NewInt(1 << 15)
-	listVerificationsResponseDataItemFieldRegistrationNumber   = big.NewInt(1 << 16)
-	listVerificationsResponseDataItemFieldRequestedInformation = big.NewInt(1 << 17)
-	listVerificationsResponseDataItemFieldRequiredDocuments    = big.NewInt(1 << 18)
-	listVerificationsResponseDataItemFieldSessionURL           = big.NewInt(1 << 19)
-	listVerificationsResponseDataItemFieldStatus               = big.NewInt(1 << 20)
-	listVerificationsResponseDataItemFieldUpdatedAt            = big.NewInt(1 << 21)
+	listVerificationsResponseDataItemFieldIdentityDocument     = big.NewInt(1 << 10)
+	listVerificationsResponseDataItemFieldIncorporationDate    = big.NewInt(1 << 11)
+	listVerificationsResponseDataItemFieldKind                 = big.NewInt(1 << 12)
+	listVerificationsResponseDataItemFieldLastName             = big.NewInt(1 << 13)
+	listVerificationsResponseDataItemFieldOwners               = big.NewInt(1 << 14)
+	listVerificationsResponseDataItemFieldPhone                = big.NewInt(1 << 15)
+	listVerificationsResponseDataItemFieldPlaceOfIncorporation = big.NewInt(1 << 16)
+	listVerificationsResponseDataItemFieldRegistrationNumber   = big.NewInt(1 << 17)
+	listVerificationsResponseDataItemFieldRequestedInformation = big.NewInt(1 << 18)
+	listVerificationsResponseDataItemFieldRequiredDocuments    = big.NewInt(1 << 19)
+	listVerificationsResponseDataItemFieldSelfie               = big.NewInt(1 << 20)
+	listVerificationsResponseDataItemFieldSessionURL           = big.NewInt(1 << 21)
+	listVerificationsResponseDataItemFieldStatus               = big.NewInt(1 << 22)
+	listVerificationsResponseDataItemFieldUpdatedAt            = big.NewInt(1 << 23)
 )
 
 // listVerificationsResponseDataItemNullableFields maps the wire names of ListVerificationsResponseDataItem's nullable fields (required or optional) to their field bits.
@@ -4563,11 +4944,13 @@ var listVerificationsResponseDataItemNullableFields = map[string]*big.Int{
 	"date_of_birth":          listVerificationsResponseDataItemFieldDateOfBirth,
 	"email":                  listVerificationsResponseDataItemFieldEmail,
 	"first_name":             listVerificationsResponseDataItemFieldFirstName,
+	"identity_document":      listVerificationsResponseDataItemFieldIdentityDocument,
 	"incorporation_date":     listVerificationsResponseDataItemFieldIncorporationDate,
 	"last_name":              listVerificationsResponseDataItemFieldLastName,
 	"phone":                  listVerificationsResponseDataItemFieldPhone,
 	"place_of_incorporation": listVerificationsResponseDataItemFieldPlaceOfIncorporation,
 	"registration_number":    listVerificationsResponseDataItemFieldRegistrationNumber,
+	"selfie":                 listVerificationsResponseDataItemFieldSelfie,
 	"session_url":            listVerificationsResponseDataItemFieldSessionURL,
 }
 
@@ -4591,6 +4974,8 @@ type ListVerificationsResponseDataItem struct {
 	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
 	// Verification profile ID, prefixed `idpf_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// Identity document on file for the person. Individual verifications only. `null` until the person sends a document.
+	IdentityDocument *ListVerificationsResponseDataItemIdentityDocument `json:"identity_document,omitempty" url:"identity_document,omitempty"`
 	// Date the business was incorporated, formatted as `YYYY-MM-DD`, as on file for the business verification. Business verifications only; `null` until it is sent.
 	IncorporationDate *string                                `json:"incorporation_date,omitempty" url:"incorporation_date,omitempty"`
 	Kind              *ListVerificationsResponseDataItemKind `json:"kind,omitempty" url:"kind,omitempty"`
@@ -4607,6 +4992,8 @@ type ListVerificationsResponseDataItem struct {
 	RequestedInformation []*ListVerificationsResponseDataItemRequestedInformationItem `json:"requested_information,omitempty" url:"requested_information,omitempty"`
 	// Documents for a document-upload verification and their progress. Present only on individual verifications created by sending `documents`. `pending_upload` documents were not accepted yet — send the full set again with another Create Verification call.
 	RequiredDocuments []*ListVerificationsResponseDataItemRequiredDocumentsItem `json:"required_documents,omitempty" url:"required_documents,omitempty"`
+	// Selfie check of the person. Individual verifications only. `null` when the verification has no selfie check.
+	Selfie *ListVerificationsResponseDataItemSelfie `json:"selfie,omitempty" url:"selfie,omitempty"`
 	// Hosted verification session URL for the user to complete identity checks. Expires 7 days after creation.
 	SessionURL *string `json:"session_url,omitempty" url:"session_url,omitempty"`
 	// Current verification state. `not_started` before any session exists; `pending` while a session needs the user's input; `processing` while the provider's automated checks run on a fresh submission; `action_required` when `requested_information` needs answers; `manual_review` while information already sent is under review — an audit answer, or a document the payout provider holds — nothing to submit, usually done within 3 business days; `approved` on success; `rejected` on failure. Call Create Verification again to start a new session.
@@ -4691,6 +5078,13 @@ func (l *ListVerificationsResponseDataItem) GetID() *string {
 	return l.ID
 }
 
+func (l *ListVerificationsResponseDataItem) GetIdentityDocument() *ListVerificationsResponseDataItemIdentityDocument {
+	if l == nil {
+		return nil
+	}
+	return l.IdentityDocument
+}
+
 func (l *ListVerificationsResponseDataItem) GetIncorporationDate() *string {
 	if l == nil {
 		return nil
@@ -4752,6 +5146,13 @@ func (l *ListVerificationsResponseDataItem) GetRequiredDocuments() []*ListVerifi
 		return nil
 	}
 	return l.RequiredDocuments
+}
+
+func (l *ListVerificationsResponseDataItem) GetSelfie() *ListVerificationsResponseDataItemSelfie {
+	if l == nil {
+		return nil
+	}
+	return l.Selfie
 }
 
 func (l *ListVerificationsResponseDataItem) GetSessionURL() *string {
@@ -4861,6 +5262,13 @@ func (l *ListVerificationsResponseDataItem) SetID(id *string) {
 	l.require(listVerificationsResponseDataItemFieldID)
 }
 
+// SetIdentityDocument sets the IdentityDocument field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItem) SetIdentityDocument(identityDocument *ListVerificationsResponseDataItemIdentityDocument) {
+	l.IdentityDocument = identityDocument
+	l.require(listVerificationsResponseDataItemFieldIdentityDocument)
+}
+
 // SetIncorporationDate sets the IncorporationDate field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (l *ListVerificationsResponseDataItem) SetIncorporationDate(incorporationDate *string) {
@@ -4922,6 +5330,13 @@ func (l *ListVerificationsResponseDataItem) SetRequestedInformation(requestedInf
 func (l *ListVerificationsResponseDataItem) SetRequiredDocuments(requiredDocuments []*ListVerificationsResponseDataItemRequiredDocumentsItem) {
 	l.RequiredDocuments = requiredDocuments
 	l.require(listVerificationsResponseDataItemFieldRequiredDocuments)
+}
+
+// SetSelfie sets the Selfie field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItem) SetSelfie(selfie *ListVerificationsResponseDataItemSelfie) {
+	l.Selfie = selfie
+	l.require(listVerificationsResponseDataItemFieldSelfie)
 }
 
 // SetSessionURL sets the SessionURL field and marks it as non-optional;
@@ -5180,6 +5595,195 @@ func (l *ListVerificationsResponseDataItemAddress) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+var (
+	listVerificationsResponseDataItemIdentityDocumentFieldCountry = big.NewInt(1 << 0)
+	listVerificationsResponseDataItemIdentityDocumentFieldStatus  = big.NewInt(1 << 1)
+	listVerificationsResponseDataItemIdentityDocumentFieldType    = big.NewInt(1 << 2)
+)
+
+// listVerificationsResponseDataItemIdentityDocumentNullableFields maps the wire names of ListVerificationsResponseDataItemIdentityDocument's nullable fields (required or optional) to their field bits.
+var listVerificationsResponseDataItemIdentityDocumentNullableFields = map[string]*big.Int{
+	"country": listVerificationsResponseDataItemIdentityDocumentFieldCountry,
+}
+
+// Identity document on file for the person. Individual verifications only. `null` until the person sends a document.
+type ListVerificationsResponseDataItemIdentityDocument struct {
+	// Two-letter ISO 3166-1 code of the country that issued the document.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// Review result of the document. `pending` until the review ends.
+	Status ListVerificationsResponseDataItemIdentityDocumentStatus `json:"status" url:"status"`
+	// Kind of identity document.
+	Type ListVerificationsResponseDataItemIdentityDocumentType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListVerificationsResponseDataItemIdentityDocument) GetCountry() *string {
+	if l == nil {
+		return nil
+	}
+	return l.Country
+}
+
+func (l *ListVerificationsResponseDataItemIdentityDocument) GetStatus() ListVerificationsResponseDataItemIdentityDocumentStatus {
+	if l == nil {
+		return ""
+	}
+	return l.Status
+}
+
+func (l *ListVerificationsResponseDataItemIdentityDocument) GetType() ListVerificationsResponseDataItemIdentityDocumentType {
+	if l == nil {
+		return ""
+	}
+	return l.Type
+}
+
+func (l *ListVerificationsResponseDataItemIdentityDocument) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListVerificationsResponseDataItemIdentityDocument) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemIdentityDocument) SetCountry(country *string) {
+	l.Country = country
+	l.require(listVerificationsResponseDataItemIdentityDocumentFieldCountry)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemIdentityDocument) SetStatus(status ListVerificationsResponseDataItemIdentityDocumentStatus) {
+	l.Status = status
+	l.require(listVerificationsResponseDataItemIdentityDocumentFieldStatus)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemIdentityDocument) SetType(type_ ListVerificationsResponseDataItemIdentityDocumentType) {
+	l.Type = type_
+	l.require(listVerificationsResponseDataItemIdentityDocumentFieldType)
+}
+
+func (l *ListVerificationsResponseDataItemIdentityDocument) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListVerificationsResponseDataItemIdentityDocument
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListVerificationsResponseDataItemIdentityDocument(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, listVerificationsResponseDataItemIdentityDocumentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		l.require(presentFields)
+	}
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListVerificationsResponseDataItemIdentityDocument) MarshalJSON() ([]byte, error) {
+	type embed ListVerificationsResponseDataItemIdentityDocument
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListVerificationsResponseDataItemIdentityDocument) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// Review result of the document. `pending` until the review ends.
+type ListVerificationsResponseDataItemIdentityDocumentStatus string
+
+const (
+	ListVerificationsResponseDataItemIdentityDocumentStatusPending  ListVerificationsResponseDataItemIdentityDocumentStatus = "pending"
+	ListVerificationsResponseDataItemIdentityDocumentStatusApproved ListVerificationsResponseDataItemIdentityDocumentStatus = "approved"
+	ListVerificationsResponseDataItemIdentityDocumentStatusRejected ListVerificationsResponseDataItemIdentityDocumentStatus = "rejected"
+)
+
+func NewListVerificationsResponseDataItemIdentityDocumentStatusFromString(s string) (ListVerificationsResponseDataItemIdentityDocumentStatus, error) {
+	switch s {
+	case "pending":
+		return ListVerificationsResponseDataItemIdentityDocumentStatusPending, nil
+	case "approved":
+		return ListVerificationsResponseDataItemIdentityDocumentStatusApproved, nil
+	case "rejected":
+		return ListVerificationsResponseDataItemIdentityDocumentStatusRejected, nil
+	}
+	var t ListVerificationsResponseDataItemIdentityDocumentStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListVerificationsResponseDataItemIdentityDocumentStatus) Ptr() *ListVerificationsResponseDataItemIdentityDocumentStatus {
+	return &l
+}
+
+// Kind of identity document.
+type ListVerificationsResponseDataItemIdentityDocumentType string
+
+const (
+	ListVerificationsResponseDataItemIdentityDocumentTypeIDCard          ListVerificationsResponseDataItemIdentityDocumentType = "id_card"
+	ListVerificationsResponseDataItemIdentityDocumentTypeDrivers         ListVerificationsResponseDataItemIdentityDocumentType = "drivers"
+	ListVerificationsResponseDataItemIdentityDocumentTypeResidencePermit ListVerificationsResponseDataItemIdentityDocumentType = "residence_permit"
+	ListVerificationsResponseDataItemIdentityDocumentTypePassport        ListVerificationsResponseDataItemIdentityDocumentType = "passport"
+)
+
+func NewListVerificationsResponseDataItemIdentityDocumentTypeFromString(s string) (ListVerificationsResponseDataItemIdentityDocumentType, error) {
+	switch s {
+	case "id_card":
+		return ListVerificationsResponseDataItemIdentityDocumentTypeIDCard, nil
+	case "drivers":
+		return ListVerificationsResponseDataItemIdentityDocumentTypeDrivers, nil
+	case "residence_permit":
+		return ListVerificationsResponseDataItemIdentityDocumentTypeResidencePermit, nil
+	case "passport":
+		return ListVerificationsResponseDataItemIdentityDocumentTypePassport, nil
+	}
+	var t ListVerificationsResponseDataItemIdentityDocumentType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListVerificationsResponseDataItemIdentityDocumentType) Ptr() *ListVerificationsResponseDataItemIdentityDocumentType {
+	return &l
 }
 
 type ListVerificationsResponseDataItemKind string
@@ -6381,6 +6985,160 @@ func (l ListVerificationsResponseDataItemRequiredDocumentsItemStatus) Ptr() *Lis
 	return &l
 }
 
+var (
+	listVerificationsResponseDataItemSelfieFieldCapture = big.NewInt(1 << 0)
+	listVerificationsResponseDataItemSelfieFieldStatus  = big.NewInt(1 << 1)
+)
+
+// Selfie check of the person. Individual verifications only. `null` when the verification has no selfie check.
+type ListVerificationsResponseDataItemSelfie struct {
+	// How the selfie is taken. `liveness` is a live camera check. `upload` is a photo sent as a file.
+	Capture ListVerificationsResponseDataItemSelfieCapture `json:"capture" url:"capture"`
+	// Review result of the selfie check. `pending` until the review ends.
+	Status ListVerificationsResponseDataItemSelfieStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (l *ListVerificationsResponseDataItemSelfie) GetCapture() ListVerificationsResponseDataItemSelfieCapture {
+	if l == nil {
+		return ""
+	}
+	return l.Capture
+}
+
+func (l *ListVerificationsResponseDataItemSelfie) GetStatus() ListVerificationsResponseDataItemSelfieStatus {
+	if l == nil {
+		return ""
+	}
+	return l.Status
+}
+
+func (l *ListVerificationsResponseDataItemSelfie) GetExtraProperties() map[string]interface{} {
+	if l == nil {
+		return nil
+	}
+	return l.extraProperties
+}
+
+func (l *ListVerificationsResponseDataItemSelfie) require(field *big.Int) {
+	next := new(big.Int)
+	if l.explicitFields != nil {
+		next.Set(l.explicitFields)
+	}
+	next.Or(next, field)
+	l.explicitFields = next
+}
+
+// SetCapture sets the Capture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemSelfie) SetCapture(capture ListVerificationsResponseDataItemSelfieCapture) {
+	l.Capture = capture
+	l.require(listVerificationsResponseDataItemSelfieFieldCapture)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemSelfie) SetStatus(status ListVerificationsResponseDataItemSelfieStatus) {
+	l.Status = status
+	l.require(listVerificationsResponseDataItemSelfieFieldStatus)
+}
+
+func (l *ListVerificationsResponseDataItemSelfie) UnmarshalJSON(data []byte) error {
+	type unmarshaler ListVerificationsResponseDataItemSelfie
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*l = ListVerificationsResponseDataItemSelfie(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *l)
+	if err != nil {
+		return err
+	}
+	l.extraProperties = extraProperties
+	l.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (l *ListVerificationsResponseDataItemSelfie) MarshalJSON() ([]byte, error) {
+	type embed ListVerificationsResponseDataItemSelfie
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*l),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, l.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (l *ListVerificationsResponseDataItemSelfie) String() string {
+	if l == nil {
+		return "<nil>"
+	}
+	if len(l.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(l.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(l); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", l)
+}
+
+// How the selfie is taken. `liveness` is a live camera check. `upload` is a photo sent as a file.
+type ListVerificationsResponseDataItemSelfieCapture string
+
+const (
+	ListVerificationsResponseDataItemSelfieCaptureUpload   ListVerificationsResponseDataItemSelfieCapture = "upload"
+	ListVerificationsResponseDataItemSelfieCaptureLiveness ListVerificationsResponseDataItemSelfieCapture = "liveness"
+)
+
+func NewListVerificationsResponseDataItemSelfieCaptureFromString(s string) (ListVerificationsResponseDataItemSelfieCapture, error) {
+	switch s {
+	case "upload":
+		return ListVerificationsResponseDataItemSelfieCaptureUpload, nil
+	case "liveness":
+		return ListVerificationsResponseDataItemSelfieCaptureLiveness, nil
+	}
+	var t ListVerificationsResponseDataItemSelfieCapture
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListVerificationsResponseDataItemSelfieCapture) Ptr() *ListVerificationsResponseDataItemSelfieCapture {
+	return &l
+}
+
+// Review result of the selfie check. `pending` until the review ends.
+type ListVerificationsResponseDataItemSelfieStatus string
+
+const (
+	ListVerificationsResponseDataItemSelfieStatusPending  ListVerificationsResponseDataItemSelfieStatus = "pending"
+	ListVerificationsResponseDataItemSelfieStatusApproved ListVerificationsResponseDataItemSelfieStatus = "approved"
+	ListVerificationsResponseDataItemSelfieStatusRejected ListVerificationsResponseDataItemSelfieStatus = "rejected"
+)
+
+func NewListVerificationsResponseDataItemSelfieStatusFromString(s string) (ListVerificationsResponseDataItemSelfieStatus, error) {
+	switch s {
+	case "pending":
+		return ListVerificationsResponseDataItemSelfieStatusPending, nil
+	case "approved":
+		return ListVerificationsResponseDataItemSelfieStatusApproved, nil
+	case "rejected":
+		return ListVerificationsResponseDataItemSelfieStatusRejected, nil
+	}
+	var t ListVerificationsResponseDataItemSelfieStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListVerificationsResponseDataItemSelfieStatus) Ptr() *ListVerificationsResponseDataItemSelfieStatus {
+	return &l
+}
+
 // Current verification state. `not_started` before any session exists; `pending` while a session needs the user's input; `processing` while the provider's automated checks run on a fresh submission; `action_required` when `requested_information` needs answers; `manual_review` while information already sent is under review — an audit answer, or a document the payout provider holds — nothing to submit, usually done within 3 business days; `approved` on success; `rejected` on failure. Call Create Verification again to start a new session.
 type ListVerificationsResponseDataItemStatus string
 
@@ -7196,18 +7954,20 @@ var (
 	retrieveVerificationsResponseFieldEmail                = big.NewInt(1 << 7)
 	retrieveVerificationsResponseFieldFirstName            = big.NewInt(1 << 8)
 	retrieveVerificationsResponseFieldID                   = big.NewInt(1 << 9)
-	retrieveVerificationsResponseFieldIncorporationDate    = big.NewInt(1 << 10)
-	retrieveVerificationsResponseFieldKind                 = big.NewInt(1 << 11)
-	retrieveVerificationsResponseFieldLastName             = big.NewInt(1 << 12)
-	retrieveVerificationsResponseFieldOwners               = big.NewInt(1 << 13)
-	retrieveVerificationsResponseFieldPhone                = big.NewInt(1 << 14)
-	retrieveVerificationsResponseFieldPlaceOfIncorporation = big.NewInt(1 << 15)
-	retrieveVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 16)
-	retrieveVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 17)
-	retrieveVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 18)
-	retrieveVerificationsResponseFieldSessionURL           = big.NewInt(1 << 19)
-	retrieveVerificationsResponseFieldStatus               = big.NewInt(1 << 20)
-	retrieveVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 21)
+	retrieveVerificationsResponseFieldIdentityDocument     = big.NewInt(1 << 10)
+	retrieveVerificationsResponseFieldIncorporationDate    = big.NewInt(1 << 11)
+	retrieveVerificationsResponseFieldKind                 = big.NewInt(1 << 12)
+	retrieveVerificationsResponseFieldLastName             = big.NewInt(1 << 13)
+	retrieveVerificationsResponseFieldOwners               = big.NewInt(1 << 14)
+	retrieveVerificationsResponseFieldPhone                = big.NewInt(1 << 15)
+	retrieveVerificationsResponseFieldPlaceOfIncorporation = big.NewInt(1 << 16)
+	retrieveVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 17)
+	retrieveVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 18)
+	retrieveVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 19)
+	retrieveVerificationsResponseFieldSelfie               = big.NewInt(1 << 20)
+	retrieveVerificationsResponseFieldSessionURL           = big.NewInt(1 << 21)
+	retrieveVerificationsResponseFieldStatus               = big.NewInt(1 << 22)
+	retrieveVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 23)
 )
 
 // retrieveVerificationsResponseNullableFields maps the wire names of RetrieveVerificationsResponse's nullable fields (required or optional) to their field bits.
@@ -7219,11 +7979,13 @@ var retrieveVerificationsResponseNullableFields = map[string]*big.Int{
 	"date_of_birth":          retrieveVerificationsResponseFieldDateOfBirth,
 	"email":                  retrieveVerificationsResponseFieldEmail,
 	"first_name":             retrieveVerificationsResponseFieldFirstName,
+	"identity_document":      retrieveVerificationsResponseFieldIdentityDocument,
 	"incorporation_date":     retrieveVerificationsResponseFieldIncorporationDate,
 	"last_name":              retrieveVerificationsResponseFieldLastName,
 	"phone":                  retrieveVerificationsResponseFieldPhone,
 	"place_of_incorporation": retrieveVerificationsResponseFieldPlaceOfIncorporation,
 	"registration_number":    retrieveVerificationsResponseFieldRegistrationNumber,
+	"selfie":                 retrieveVerificationsResponseFieldSelfie,
 	"session_url":            retrieveVerificationsResponseFieldSessionURL,
 }
 
@@ -7247,6 +8009,8 @@ type RetrieveVerificationsResponse struct {
 	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
 	// Verification profile ID, prefixed `idpf_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// Identity document on file for the person. Individual verifications only. `null` until the person sends a document.
+	IdentityDocument *RetrieveVerificationsResponseIdentityDocument `json:"identity_document,omitempty" url:"identity_document,omitempty"`
 	// Date the business was incorporated, formatted as `YYYY-MM-DD`, as on file for the business verification. Business verifications only; `null` until it is sent.
 	IncorporationDate *string                            `json:"incorporation_date,omitempty" url:"incorporation_date,omitempty"`
 	Kind              *RetrieveVerificationsResponseKind `json:"kind,omitempty" url:"kind,omitempty"`
@@ -7263,6 +8027,8 @@ type RetrieveVerificationsResponse struct {
 	RequestedInformation []*RetrieveVerificationsResponseRequestedInformationItem `json:"requested_information,omitempty" url:"requested_information,omitempty"`
 	// Documents for a document-upload verification and their progress. Present only on individual verifications created by sending `documents`. `pending_upload` documents were not accepted yet — send the full set again with another Create Verification call.
 	RequiredDocuments []*RetrieveVerificationsResponseRequiredDocumentsItem `json:"required_documents,omitempty" url:"required_documents,omitempty"`
+	// Selfie check of the person. Individual verifications only. `null` when the verification has no selfie check.
+	Selfie *RetrieveVerificationsResponseSelfie `json:"selfie,omitempty" url:"selfie,omitempty"`
 	// Hosted verification session URL for the user to complete identity checks. Expires 7 days after creation.
 	SessionURL *string `json:"session_url,omitempty" url:"session_url,omitempty"`
 	// Current verification state. `not_started` before any session exists; `pending` while a session needs the user's input; `processing` while the provider's automated checks run on a fresh submission; `action_required` when `requested_information` needs answers; `manual_review` while information already sent is under review — an audit answer, or a document the payout provider holds — nothing to submit, usually done within 3 business days; `approved` on success; `rejected` on failure. Call Create Verification again to start a new session.
@@ -7347,6 +8113,13 @@ func (r *RetrieveVerificationsResponse) GetID() *string {
 	return r.ID
 }
 
+func (r *RetrieveVerificationsResponse) GetIdentityDocument() *RetrieveVerificationsResponseIdentityDocument {
+	if r == nil {
+		return nil
+	}
+	return r.IdentityDocument
+}
+
 func (r *RetrieveVerificationsResponse) GetIncorporationDate() *string {
 	if r == nil {
 		return nil
@@ -7408,6 +8181,13 @@ func (r *RetrieveVerificationsResponse) GetRequiredDocuments() []*RetrieveVerifi
 		return nil
 	}
 	return r.RequiredDocuments
+}
+
+func (r *RetrieveVerificationsResponse) GetSelfie() *RetrieveVerificationsResponseSelfie {
+	if r == nil {
+		return nil
+	}
+	return r.Selfie
 }
 
 func (r *RetrieveVerificationsResponse) GetSessionURL() *string {
@@ -7517,6 +8297,13 @@ func (r *RetrieveVerificationsResponse) SetID(id *string) {
 	r.require(retrieveVerificationsResponseFieldID)
 }
 
+// SetIdentityDocument sets the IdentityDocument field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponse) SetIdentityDocument(identityDocument *RetrieveVerificationsResponseIdentityDocument) {
+	r.IdentityDocument = identityDocument
+	r.require(retrieveVerificationsResponseFieldIdentityDocument)
+}
+
 // SetIncorporationDate sets the IncorporationDate field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (r *RetrieveVerificationsResponse) SetIncorporationDate(incorporationDate *string) {
@@ -7578,6 +8365,13 @@ func (r *RetrieveVerificationsResponse) SetRequestedInformation(requestedInforma
 func (r *RetrieveVerificationsResponse) SetRequiredDocuments(requiredDocuments []*RetrieveVerificationsResponseRequiredDocumentsItem) {
 	r.RequiredDocuments = requiredDocuments
 	r.require(retrieveVerificationsResponseFieldRequiredDocuments)
+}
+
+// SetSelfie sets the Selfie field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponse) SetSelfie(selfie *RetrieveVerificationsResponseSelfie) {
+	r.Selfie = selfie
+	r.require(retrieveVerificationsResponseFieldSelfie)
 }
 
 // SetSessionURL sets the SessionURL field and marks it as non-optional;
@@ -7836,6 +8630,195 @@ func (r *RetrieveVerificationsResponseAddress) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", r)
+}
+
+var (
+	retrieveVerificationsResponseIdentityDocumentFieldCountry = big.NewInt(1 << 0)
+	retrieveVerificationsResponseIdentityDocumentFieldStatus  = big.NewInt(1 << 1)
+	retrieveVerificationsResponseIdentityDocumentFieldType    = big.NewInt(1 << 2)
+)
+
+// retrieveVerificationsResponseIdentityDocumentNullableFields maps the wire names of RetrieveVerificationsResponseIdentityDocument's nullable fields (required or optional) to their field bits.
+var retrieveVerificationsResponseIdentityDocumentNullableFields = map[string]*big.Int{
+	"country": retrieveVerificationsResponseIdentityDocumentFieldCountry,
+}
+
+// Identity document on file for the person. Individual verifications only. `null` until the person sends a document.
+type RetrieveVerificationsResponseIdentityDocument struct {
+	// Two-letter ISO 3166-1 code of the country that issued the document.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// Review result of the document. `pending` until the review ends.
+	Status RetrieveVerificationsResponseIdentityDocumentStatus `json:"status" url:"status"`
+	// Kind of identity document.
+	Type RetrieveVerificationsResponseIdentityDocumentType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveVerificationsResponseIdentityDocument) GetCountry() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Country
+}
+
+func (r *RetrieveVerificationsResponseIdentityDocument) GetStatus() RetrieveVerificationsResponseIdentityDocumentStatus {
+	if r == nil {
+		return ""
+	}
+	return r.Status
+}
+
+func (r *RetrieveVerificationsResponseIdentityDocument) GetType() RetrieveVerificationsResponseIdentityDocumentType {
+	if r == nil {
+		return ""
+	}
+	return r.Type
+}
+
+func (r *RetrieveVerificationsResponseIdentityDocument) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrieveVerificationsResponseIdentityDocument) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseIdentityDocument) SetCountry(country *string) {
+	r.Country = country
+	r.require(retrieveVerificationsResponseIdentityDocumentFieldCountry)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseIdentityDocument) SetStatus(status RetrieveVerificationsResponseIdentityDocumentStatus) {
+	r.Status = status
+	r.require(retrieveVerificationsResponseIdentityDocumentFieldStatus)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseIdentityDocument) SetType(type_ RetrieveVerificationsResponseIdentityDocumentType) {
+	r.Type = type_
+	r.require(retrieveVerificationsResponseIdentityDocumentFieldType)
+}
+
+func (r *RetrieveVerificationsResponseIdentityDocument) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrieveVerificationsResponseIdentityDocument
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrieveVerificationsResponseIdentityDocument(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, retrieveVerificationsResponseIdentityDocumentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrieveVerificationsResponseIdentityDocument) MarshalJSON() ([]byte, error) {
+	type embed RetrieveVerificationsResponseIdentityDocument
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrieveVerificationsResponseIdentityDocument) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+// Review result of the document. `pending` until the review ends.
+type RetrieveVerificationsResponseIdentityDocumentStatus string
+
+const (
+	RetrieveVerificationsResponseIdentityDocumentStatusPending  RetrieveVerificationsResponseIdentityDocumentStatus = "pending"
+	RetrieveVerificationsResponseIdentityDocumentStatusApproved RetrieveVerificationsResponseIdentityDocumentStatus = "approved"
+	RetrieveVerificationsResponseIdentityDocumentStatusRejected RetrieveVerificationsResponseIdentityDocumentStatus = "rejected"
+)
+
+func NewRetrieveVerificationsResponseIdentityDocumentStatusFromString(s string) (RetrieveVerificationsResponseIdentityDocumentStatus, error) {
+	switch s {
+	case "pending":
+		return RetrieveVerificationsResponseIdentityDocumentStatusPending, nil
+	case "approved":
+		return RetrieveVerificationsResponseIdentityDocumentStatusApproved, nil
+	case "rejected":
+		return RetrieveVerificationsResponseIdentityDocumentStatusRejected, nil
+	}
+	var t RetrieveVerificationsResponseIdentityDocumentStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrieveVerificationsResponseIdentityDocumentStatus) Ptr() *RetrieveVerificationsResponseIdentityDocumentStatus {
+	return &r
+}
+
+// Kind of identity document.
+type RetrieveVerificationsResponseIdentityDocumentType string
+
+const (
+	RetrieveVerificationsResponseIdentityDocumentTypeIDCard          RetrieveVerificationsResponseIdentityDocumentType = "id_card"
+	RetrieveVerificationsResponseIdentityDocumentTypeDrivers         RetrieveVerificationsResponseIdentityDocumentType = "drivers"
+	RetrieveVerificationsResponseIdentityDocumentTypeResidencePermit RetrieveVerificationsResponseIdentityDocumentType = "residence_permit"
+	RetrieveVerificationsResponseIdentityDocumentTypePassport        RetrieveVerificationsResponseIdentityDocumentType = "passport"
+)
+
+func NewRetrieveVerificationsResponseIdentityDocumentTypeFromString(s string) (RetrieveVerificationsResponseIdentityDocumentType, error) {
+	switch s {
+	case "id_card":
+		return RetrieveVerificationsResponseIdentityDocumentTypeIDCard, nil
+	case "drivers":
+		return RetrieveVerificationsResponseIdentityDocumentTypeDrivers, nil
+	case "residence_permit":
+		return RetrieveVerificationsResponseIdentityDocumentTypeResidencePermit, nil
+	case "passport":
+		return RetrieveVerificationsResponseIdentityDocumentTypePassport, nil
+	}
+	var t RetrieveVerificationsResponseIdentityDocumentType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrieveVerificationsResponseIdentityDocumentType) Ptr() *RetrieveVerificationsResponseIdentityDocumentType {
+	return &r
 }
 
 type RetrieveVerificationsResponseKind string
@@ -9034,6 +10017,160 @@ func NewRetrieveVerificationsResponseRequiredDocumentsItemStatusFromString(s str
 }
 
 func (r RetrieveVerificationsResponseRequiredDocumentsItemStatus) Ptr() *RetrieveVerificationsResponseRequiredDocumentsItemStatus {
+	return &r
+}
+
+var (
+	retrieveVerificationsResponseSelfieFieldCapture = big.NewInt(1 << 0)
+	retrieveVerificationsResponseSelfieFieldStatus  = big.NewInt(1 << 1)
+)
+
+// Selfie check of the person. Individual verifications only. `null` when the verification has no selfie check.
+type RetrieveVerificationsResponseSelfie struct {
+	// How the selfie is taken. `liveness` is a live camera check. `upload` is a photo sent as a file.
+	Capture RetrieveVerificationsResponseSelfieCapture `json:"capture" url:"capture"`
+	// Review result of the selfie check. `pending` until the review ends.
+	Status RetrieveVerificationsResponseSelfieStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveVerificationsResponseSelfie) GetCapture() RetrieveVerificationsResponseSelfieCapture {
+	if r == nil {
+		return ""
+	}
+	return r.Capture
+}
+
+func (r *RetrieveVerificationsResponseSelfie) GetStatus() RetrieveVerificationsResponseSelfieStatus {
+	if r == nil {
+		return ""
+	}
+	return r.Status
+}
+
+func (r *RetrieveVerificationsResponseSelfie) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *RetrieveVerificationsResponseSelfie) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetCapture sets the Capture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseSelfie) SetCapture(capture RetrieveVerificationsResponseSelfieCapture) {
+	r.Capture = capture
+	r.require(retrieveVerificationsResponseSelfieFieldCapture)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseSelfie) SetStatus(status RetrieveVerificationsResponseSelfieStatus) {
+	r.Status = status
+	r.require(retrieveVerificationsResponseSelfieFieldStatus)
+}
+
+func (r *RetrieveVerificationsResponseSelfie) UnmarshalJSON(data []byte) error {
+	type unmarshaler RetrieveVerificationsResponseSelfie
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = RetrieveVerificationsResponseSelfie(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *RetrieveVerificationsResponseSelfie) MarshalJSON() ([]byte, error) {
+	type embed RetrieveVerificationsResponseSelfie
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *RetrieveVerificationsResponseSelfie) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+// How the selfie is taken. `liveness` is a live camera check. `upload` is a photo sent as a file.
+type RetrieveVerificationsResponseSelfieCapture string
+
+const (
+	RetrieveVerificationsResponseSelfieCaptureUpload   RetrieveVerificationsResponseSelfieCapture = "upload"
+	RetrieveVerificationsResponseSelfieCaptureLiveness RetrieveVerificationsResponseSelfieCapture = "liveness"
+)
+
+func NewRetrieveVerificationsResponseSelfieCaptureFromString(s string) (RetrieveVerificationsResponseSelfieCapture, error) {
+	switch s {
+	case "upload":
+		return RetrieveVerificationsResponseSelfieCaptureUpload, nil
+	case "liveness":
+		return RetrieveVerificationsResponseSelfieCaptureLiveness, nil
+	}
+	var t RetrieveVerificationsResponseSelfieCapture
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrieveVerificationsResponseSelfieCapture) Ptr() *RetrieveVerificationsResponseSelfieCapture {
+	return &r
+}
+
+// Review result of the selfie check. `pending` until the review ends.
+type RetrieveVerificationsResponseSelfieStatus string
+
+const (
+	RetrieveVerificationsResponseSelfieStatusPending  RetrieveVerificationsResponseSelfieStatus = "pending"
+	RetrieveVerificationsResponseSelfieStatusApproved RetrieveVerificationsResponseSelfieStatus = "approved"
+	RetrieveVerificationsResponseSelfieStatusRejected RetrieveVerificationsResponseSelfieStatus = "rejected"
+)
+
+func NewRetrieveVerificationsResponseSelfieStatusFromString(s string) (RetrieveVerificationsResponseSelfieStatus, error) {
+	switch s {
+	case "pending":
+		return RetrieveVerificationsResponseSelfieStatusPending, nil
+	case "approved":
+		return RetrieveVerificationsResponseSelfieStatusApproved, nil
+	case "rejected":
+		return RetrieveVerificationsResponseSelfieStatusRejected, nil
+	}
+	var t RetrieveVerificationsResponseSelfieStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrieveVerificationsResponseSelfieStatus) Ptr() *RetrieveVerificationsResponseSelfieStatus {
 	return &r
 }
 
@@ -12259,18 +13396,20 @@ var (
 	updateVerificationsResponseFieldEmail                = big.NewInt(1 << 7)
 	updateVerificationsResponseFieldFirstName            = big.NewInt(1 << 8)
 	updateVerificationsResponseFieldID                   = big.NewInt(1 << 9)
-	updateVerificationsResponseFieldIncorporationDate    = big.NewInt(1 << 10)
-	updateVerificationsResponseFieldKind                 = big.NewInt(1 << 11)
-	updateVerificationsResponseFieldLastName             = big.NewInt(1 << 12)
-	updateVerificationsResponseFieldOwners               = big.NewInt(1 << 13)
-	updateVerificationsResponseFieldPhone                = big.NewInt(1 << 14)
-	updateVerificationsResponseFieldPlaceOfIncorporation = big.NewInt(1 << 15)
-	updateVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 16)
-	updateVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 17)
-	updateVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 18)
-	updateVerificationsResponseFieldSessionURL           = big.NewInt(1 << 19)
-	updateVerificationsResponseFieldStatus               = big.NewInt(1 << 20)
-	updateVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 21)
+	updateVerificationsResponseFieldIdentityDocument     = big.NewInt(1 << 10)
+	updateVerificationsResponseFieldIncorporationDate    = big.NewInt(1 << 11)
+	updateVerificationsResponseFieldKind                 = big.NewInt(1 << 12)
+	updateVerificationsResponseFieldLastName             = big.NewInt(1 << 13)
+	updateVerificationsResponseFieldOwners               = big.NewInt(1 << 14)
+	updateVerificationsResponseFieldPhone                = big.NewInt(1 << 15)
+	updateVerificationsResponseFieldPlaceOfIncorporation = big.NewInt(1 << 16)
+	updateVerificationsResponseFieldRegistrationNumber   = big.NewInt(1 << 17)
+	updateVerificationsResponseFieldRequestedInformation = big.NewInt(1 << 18)
+	updateVerificationsResponseFieldRequiredDocuments    = big.NewInt(1 << 19)
+	updateVerificationsResponseFieldSelfie               = big.NewInt(1 << 20)
+	updateVerificationsResponseFieldSessionURL           = big.NewInt(1 << 21)
+	updateVerificationsResponseFieldStatus               = big.NewInt(1 << 22)
+	updateVerificationsResponseFieldUpdatedAt            = big.NewInt(1 << 23)
 )
 
 // updateVerificationsResponseNullableFields maps the wire names of UpdateVerificationsResponse's nullable fields (required or optional) to their field bits.
@@ -12282,11 +13421,13 @@ var updateVerificationsResponseNullableFields = map[string]*big.Int{
 	"date_of_birth":          updateVerificationsResponseFieldDateOfBirth,
 	"email":                  updateVerificationsResponseFieldEmail,
 	"first_name":             updateVerificationsResponseFieldFirstName,
+	"identity_document":      updateVerificationsResponseFieldIdentityDocument,
 	"incorporation_date":     updateVerificationsResponseFieldIncorporationDate,
 	"last_name":              updateVerificationsResponseFieldLastName,
 	"phone":                  updateVerificationsResponseFieldPhone,
 	"place_of_incorporation": updateVerificationsResponseFieldPlaceOfIncorporation,
 	"registration_number":    updateVerificationsResponseFieldRegistrationNumber,
+	"selfie":                 updateVerificationsResponseFieldSelfie,
 	"session_url":            updateVerificationsResponseFieldSessionURL,
 }
 
@@ -12310,6 +13451,8 @@ type UpdateVerificationsResponse struct {
 	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
 	// Verification profile ID, prefixed `idpf_`.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// Identity document on file for the person. Individual verifications only. `null` until the person sends a document.
+	IdentityDocument *UpdateVerificationsResponseIdentityDocument `json:"identity_document,omitempty" url:"identity_document,omitempty"`
 	// Date the business was incorporated, formatted as `YYYY-MM-DD`, as on file for the business verification. Business verifications only; `null` until it is sent.
 	IncorporationDate *string                          `json:"incorporation_date,omitempty" url:"incorporation_date,omitempty"`
 	Kind              *UpdateVerificationsResponseKind `json:"kind,omitempty" url:"kind,omitempty"`
@@ -12326,6 +13469,8 @@ type UpdateVerificationsResponse struct {
 	RequestedInformation []*UpdateVerificationsResponseRequestedInformationItem `json:"requested_information,omitempty" url:"requested_information,omitempty"`
 	// Documents for a document-upload verification and their progress. Present only on individual verifications created by sending `documents`. `pending_upload` documents were not accepted yet — send the full set again with another Create Verification call.
 	RequiredDocuments []*UpdateVerificationsResponseRequiredDocumentsItem `json:"required_documents,omitempty" url:"required_documents,omitempty"`
+	// Selfie check of the person. Individual verifications only. `null` when the verification has no selfie check.
+	Selfie *UpdateVerificationsResponseSelfie `json:"selfie,omitempty" url:"selfie,omitempty"`
 	// Hosted verification session URL for the user to complete identity checks. Expires 7 days after creation.
 	SessionURL *string `json:"session_url,omitempty" url:"session_url,omitempty"`
 	// Current verification state. `not_started` before any session exists; `pending` while a session needs the user's input; `processing` while the provider's automated checks run on a fresh submission; `action_required` when `requested_information` needs answers; `manual_review` while information already sent is under review — an audit answer, or a document the payout provider holds — nothing to submit, usually done within 3 business days; `approved` on success; `rejected` on failure. Call Create Verification again to start a new session.
@@ -12410,6 +13555,13 @@ func (u *UpdateVerificationsResponse) GetID() *string {
 	return u.ID
 }
 
+func (u *UpdateVerificationsResponse) GetIdentityDocument() *UpdateVerificationsResponseIdentityDocument {
+	if u == nil {
+		return nil
+	}
+	return u.IdentityDocument
+}
+
 func (u *UpdateVerificationsResponse) GetIncorporationDate() *string {
 	if u == nil {
 		return nil
@@ -12471,6 +13623,13 @@ func (u *UpdateVerificationsResponse) GetRequiredDocuments() []*UpdateVerificati
 		return nil
 	}
 	return u.RequiredDocuments
+}
+
+func (u *UpdateVerificationsResponse) GetSelfie() *UpdateVerificationsResponseSelfie {
+	if u == nil {
+		return nil
+	}
+	return u.Selfie
 }
 
 func (u *UpdateVerificationsResponse) GetSessionURL() *string {
@@ -12580,6 +13739,13 @@ func (u *UpdateVerificationsResponse) SetID(id *string) {
 	u.require(updateVerificationsResponseFieldID)
 }
 
+// SetIdentityDocument sets the IdentityDocument field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponse) SetIdentityDocument(identityDocument *UpdateVerificationsResponseIdentityDocument) {
+	u.IdentityDocument = identityDocument
+	u.require(updateVerificationsResponseFieldIdentityDocument)
+}
+
 // SetIncorporationDate sets the IncorporationDate field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdateVerificationsResponse) SetIncorporationDate(incorporationDate *string) {
@@ -12641,6 +13807,13 @@ func (u *UpdateVerificationsResponse) SetRequestedInformation(requestedInformati
 func (u *UpdateVerificationsResponse) SetRequiredDocuments(requiredDocuments []*UpdateVerificationsResponseRequiredDocumentsItem) {
 	u.RequiredDocuments = requiredDocuments
 	u.require(updateVerificationsResponseFieldRequiredDocuments)
+}
+
+// SetSelfie sets the Selfie field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponse) SetSelfie(selfie *UpdateVerificationsResponseSelfie) {
+	u.Selfie = selfie
+	u.require(updateVerificationsResponseFieldSelfie)
 }
 
 // SetSessionURL sets the SessionURL field and marks it as non-optional;
@@ -12899,6 +14072,195 @@ func (u *UpdateVerificationsResponseAddress) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updateVerificationsResponseIdentityDocumentFieldCountry = big.NewInt(1 << 0)
+	updateVerificationsResponseIdentityDocumentFieldStatus  = big.NewInt(1 << 1)
+	updateVerificationsResponseIdentityDocumentFieldType    = big.NewInt(1 << 2)
+)
+
+// updateVerificationsResponseIdentityDocumentNullableFields maps the wire names of UpdateVerificationsResponseIdentityDocument's nullable fields (required or optional) to their field bits.
+var updateVerificationsResponseIdentityDocumentNullableFields = map[string]*big.Int{
+	"country": updateVerificationsResponseIdentityDocumentFieldCountry,
+}
+
+// Identity document on file for the person. Individual verifications only. `null` until the person sends a document.
+type UpdateVerificationsResponseIdentityDocument struct {
+	// Two-letter ISO 3166-1 code of the country that issued the document.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// Review result of the document. `pending` until the review ends.
+	Status UpdateVerificationsResponseIdentityDocumentStatus `json:"status" url:"status"`
+	// Kind of identity document.
+	Type UpdateVerificationsResponseIdentityDocumentType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateVerificationsResponseIdentityDocument) GetCountry() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Country
+}
+
+func (u *UpdateVerificationsResponseIdentityDocument) GetStatus() UpdateVerificationsResponseIdentityDocumentStatus {
+	if u == nil {
+		return ""
+	}
+	return u.Status
+}
+
+func (u *UpdateVerificationsResponseIdentityDocument) GetType() UpdateVerificationsResponseIdentityDocumentType {
+	if u == nil {
+		return ""
+	}
+	return u.Type
+}
+
+func (u *UpdateVerificationsResponseIdentityDocument) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateVerificationsResponseIdentityDocument) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseIdentityDocument) SetCountry(country *string) {
+	u.Country = country
+	u.require(updateVerificationsResponseIdentityDocumentFieldCountry)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseIdentityDocument) SetStatus(status UpdateVerificationsResponseIdentityDocumentStatus) {
+	u.Status = status
+	u.require(updateVerificationsResponseIdentityDocumentFieldStatus)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseIdentityDocument) SetType(type_ UpdateVerificationsResponseIdentityDocumentType) {
+	u.Type = type_
+	u.require(updateVerificationsResponseIdentityDocumentFieldType)
+}
+
+func (u *UpdateVerificationsResponseIdentityDocument) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateVerificationsResponseIdentityDocument
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateVerificationsResponseIdentityDocument(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updateVerificationsResponseIdentityDocumentNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateVerificationsResponseIdentityDocument) MarshalJSON() ([]byte, error) {
+	type embed UpdateVerificationsResponseIdentityDocument
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateVerificationsResponseIdentityDocument) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// Review result of the document. `pending` until the review ends.
+type UpdateVerificationsResponseIdentityDocumentStatus string
+
+const (
+	UpdateVerificationsResponseIdentityDocumentStatusPending  UpdateVerificationsResponseIdentityDocumentStatus = "pending"
+	UpdateVerificationsResponseIdentityDocumentStatusApproved UpdateVerificationsResponseIdentityDocumentStatus = "approved"
+	UpdateVerificationsResponseIdentityDocumentStatusRejected UpdateVerificationsResponseIdentityDocumentStatus = "rejected"
+)
+
+func NewUpdateVerificationsResponseIdentityDocumentStatusFromString(s string) (UpdateVerificationsResponseIdentityDocumentStatus, error) {
+	switch s {
+	case "pending":
+		return UpdateVerificationsResponseIdentityDocumentStatusPending, nil
+	case "approved":
+		return UpdateVerificationsResponseIdentityDocumentStatusApproved, nil
+	case "rejected":
+		return UpdateVerificationsResponseIdentityDocumentStatusRejected, nil
+	}
+	var t UpdateVerificationsResponseIdentityDocumentStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateVerificationsResponseIdentityDocumentStatus) Ptr() *UpdateVerificationsResponseIdentityDocumentStatus {
+	return &u
+}
+
+// Kind of identity document.
+type UpdateVerificationsResponseIdentityDocumentType string
+
+const (
+	UpdateVerificationsResponseIdentityDocumentTypeIDCard          UpdateVerificationsResponseIdentityDocumentType = "id_card"
+	UpdateVerificationsResponseIdentityDocumentTypeDrivers         UpdateVerificationsResponseIdentityDocumentType = "drivers"
+	UpdateVerificationsResponseIdentityDocumentTypeResidencePermit UpdateVerificationsResponseIdentityDocumentType = "residence_permit"
+	UpdateVerificationsResponseIdentityDocumentTypePassport        UpdateVerificationsResponseIdentityDocumentType = "passport"
+)
+
+func NewUpdateVerificationsResponseIdentityDocumentTypeFromString(s string) (UpdateVerificationsResponseIdentityDocumentType, error) {
+	switch s {
+	case "id_card":
+		return UpdateVerificationsResponseIdentityDocumentTypeIDCard, nil
+	case "drivers":
+		return UpdateVerificationsResponseIdentityDocumentTypeDrivers, nil
+	case "residence_permit":
+		return UpdateVerificationsResponseIdentityDocumentTypeResidencePermit, nil
+	case "passport":
+		return UpdateVerificationsResponseIdentityDocumentTypePassport, nil
+	}
+	var t UpdateVerificationsResponseIdentityDocumentType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateVerificationsResponseIdentityDocumentType) Ptr() *UpdateVerificationsResponseIdentityDocumentType {
+	return &u
 }
 
 type UpdateVerificationsResponseKind string
@@ -14097,6 +15459,160 @@ func NewUpdateVerificationsResponseRequiredDocumentsItemStatusFromString(s strin
 }
 
 func (u UpdateVerificationsResponseRequiredDocumentsItemStatus) Ptr() *UpdateVerificationsResponseRequiredDocumentsItemStatus {
+	return &u
+}
+
+var (
+	updateVerificationsResponseSelfieFieldCapture = big.NewInt(1 << 0)
+	updateVerificationsResponseSelfieFieldStatus  = big.NewInt(1 << 1)
+)
+
+// Selfie check of the person. Individual verifications only. `null` when the verification has no selfie check.
+type UpdateVerificationsResponseSelfie struct {
+	// How the selfie is taken. `liveness` is a live camera check. `upload` is a photo sent as a file.
+	Capture UpdateVerificationsResponseSelfieCapture `json:"capture" url:"capture"`
+	// Review result of the selfie check. `pending` until the review ends.
+	Status UpdateVerificationsResponseSelfieStatus `json:"status" url:"status"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateVerificationsResponseSelfie) GetCapture() UpdateVerificationsResponseSelfieCapture {
+	if u == nil {
+		return ""
+	}
+	return u.Capture
+}
+
+func (u *UpdateVerificationsResponseSelfie) GetStatus() UpdateVerificationsResponseSelfieStatus {
+	if u == nil {
+		return ""
+	}
+	return u.Status
+}
+
+func (u *UpdateVerificationsResponseSelfie) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateVerificationsResponseSelfie) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetCapture sets the Capture field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseSelfie) SetCapture(capture UpdateVerificationsResponseSelfieCapture) {
+	u.Capture = capture
+	u.require(updateVerificationsResponseSelfieFieldCapture)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseSelfie) SetStatus(status UpdateVerificationsResponseSelfieStatus) {
+	u.Status = status
+	u.require(updateVerificationsResponseSelfieFieldStatus)
+}
+
+func (u *UpdateVerificationsResponseSelfie) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateVerificationsResponseSelfie
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateVerificationsResponseSelfie(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateVerificationsResponseSelfie) MarshalJSON() ([]byte, error) {
+	type embed UpdateVerificationsResponseSelfie
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateVerificationsResponseSelfie) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// How the selfie is taken. `liveness` is a live camera check. `upload` is a photo sent as a file.
+type UpdateVerificationsResponseSelfieCapture string
+
+const (
+	UpdateVerificationsResponseSelfieCaptureUpload   UpdateVerificationsResponseSelfieCapture = "upload"
+	UpdateVerificationsResponseSelfieCaptureLiveness UpdateVerificationsResponseSelfieCapture = "liveness"
+)
+
+func NewUpdateVerificationsResponseSelfieCaptureFromString(s string) (UpdateVerificationsResponseSelfieCapture, error) {
+	switch s {
+	case "upload":
+		return UpdateVerificationsResponseSelfieCaptureUpload, nil
+	case "liveness":
+		return UpdateVerificationsResponseSelfieCaptureLiveness, nil
+	}
+	var t UpdateVerificationsResponseSelfieCapture
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateVerificationsResponseSelfieCapture) Ptr() *UpdateVerificationsResponseSelfieCapture {
+	return &u
+}
+
+// Review result of the selfie check. `pending` until the review ends.
+type UpdateVerificationsResponseSelfieStatus string
+
+const (
+	UpdateVerificationsResponseSelfieStatusPending  UpdateVerificationsResponseSelfieStatus = "pending"
+	UpdateVerificationsResponseSelfieStatusApproved UpdateVerificationsResponseSelfieStatus = "approved"
+	UpdateVerificationsResponseSelfieStatusRejected UpdateVerificationsResponseSelfieStatus = "rejected"
+)
+
+func NewUpdateVerificationsResponseSelfieStatusFromString(s string) (UpdateVerificationsResponseSelfieStatus, error) {
+	switch s {
+	case "pending":
+		return UpdateVerificationsResponseSelfieStatusPending, nil
+	case "approved":
+		return UpdateVerificationsResponseSelfieStatusApproved, nil
+	case "rejected":
+		return UpdateVerificationsResponseSelfieStatusRejected, nil
+	}
+	var t UpdateVerificationsResponseSelfieStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateVerificationsResponseSelfieStatus) Ptr() *UpdateVerificationsResponseSelfieStatus {
 	return &u
 }
 
