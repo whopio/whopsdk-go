@@ -104,6 +104,14 @@ func TestSettersRetrievePreferencesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetCardSurcharge", func(t *testing.T) {
+		obj := &RetrievePreferencesResponse{}
+		var fernTestValueCardSurcharge *v2.CardSurchargePreferences
+		obj.SetCardSurcharge(fernTestValueCardSurcharge)
+		assert.Equal(t, fernTestValueCardSurcharge, obj.CardSurcharge)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCardsAutoTopUp", func(t *testing.T) {
 		obj := &RetrievePreferencesResponse{}
 		var fernTestValueCardsAutoTopUp bool
@@ -457,6 +465,39 @@ func TestGettersRetrievePreferencesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCancellationEmails() // Should return zero value
+	})
+
+	t.Run("GetCardSurcharge", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		var expected *v2.CardSurchargePreferences
+		obj.CardSurcharge = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCardSurcharge(), "getter should return the property value")
+	})
+
+	t.Run("GetCardSurcharge_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		obj.CardSurcharge = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCardSurcharge(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCardSurcharge_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrievePreferencesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCardSurcharge() // Should return zero value
 	})
 
 	t.Run("GetCardsAutoTopUp", func(t *testing.T) {
@@ -1284,6 +1325,37 @@ func TestSettersMarkExplicitRetrievePreferencesResponse(t *testing.T) {
 
 		// Act
 		obj.SetCancellationEmails(fernTestValueCancellationEmails)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCardSurcharge_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		var fernTestValueCardSurcharge *v2.CardSurchargePreferences
+
+		// Act
+		obj.SetCardSurcharge(fernTestValueCardSurcharge)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5108,6 +5180,149 @@ func TestSettersMarkExplicitUpdatePreferencesRequestAdsTripleWhaleIntegration(t 
 
 }
 
+func TestSettersUpdatePreferencesRequestCardSurcharge(t *testing.T) {
+	t.Run("SetEnabled", func(t *testing.T) {
+		obj := &UpdatePreferencesRequestCardSurcharge{}
+		var fernTestValueEnabled bool
+		obj.SetEnabled(fernTestValueEnabled)
+		assert.Equal(t, fernTestValueEnabled, obj.Enabled)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPercentage", func(t *testing.T) {
+		obj := &UpdatePreferencesRequestCardSurcharge{}
+		var fernTestValuePercentage *float64
+		obj.SetPercentage(fernTestValuePercentage)
+		assert.Equal(t, fernTestValuePercentage, obj.Percentage)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersUpdatePreferencesRequestCardSurcharge(t *testing.T) {
+	t.Run("GetEnabled", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesRequestCardSurcharge{}
+		var expected bool
+		obj.Enabled = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEnabled(), "getter should return the property value")
+	})
+
+	t.Run("GetEnabled_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdatePreferencesRequestCardSurcharge
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEnabled() // Should return zero value
+	})
+
+	t.Run("GetPercentage", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesRequestCardSurcharge{}
+		var expected *float64
+		obj.Percentage = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPercentage(), "getter should return the property value")
+	})
+
+	t.Run("GetPercentage_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesRequestCardSurcharge{}
+		obj.Percentage = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetPercentage(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetPercentage_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdatePreferencesRequestCardSurcharge
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPercentage() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitUpdatePreferencesRequestCardSurcharge(t *testing.T) {
+	t.Run("SetEnabled_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesRequestCardSurcharge{}
+		var fernTestValueEnabled bool
+
+		// Act
+		obj.SetEnabled(fernTestValueEnabled)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPercentage_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesRequestCardSurcharge{}
+		var fernTestValuePercentage *float64
+
+		// Act
+		obj.SetPercentage(fernTestValuePercentage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersUpdatePreferencesRequestCustomerTracking(t *testing.T) {
 	t.Run("SetAccentColor", func(t *testing.T) {
 		obj := &UpdatePreferencesRequestCustomerTracking{}
@@ -5803,6 +6018,14 @@ func TestSettersUpdatePreferencesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetCardSurcharge", func(t *testing.T) {
+		obj := &UpdatePreferencesResponse{}
+		var fernTestValueCardSurcharge *v2.CardSurchargePreferences
+		obj.SetCardSurcharge(fernTestValueCardSurcharge)
+		assert.Equal(t, fernTestValueCardSurcharge, obj.CardSurcharge)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCardsAutoTopUp", func(t *testing.T) {
 		obj := &UpdatePreferencesResponse{}
 		var fernTestValueCardsAutoTopUp bool
@@ -6156,6 +6379,39 @@ func TestGettersUpdatePreferencesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCancellationEmails() // Should return zero value
+	})
+
+	t.Run("GetCardSurcharge", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		var expected *v2.CardSurchargePreferences
+		obj.CardSurcharge = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCardSurcharge(), "getter should return the property value")
+	})
+
+	t.Run("GetCardSurcharge_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		obj.CardSurcharge = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCardSurcharge(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCardSurcharge_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdatePreferencesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCardSurcharge() // Should return zero value
 	})
 
 	t.Run("GetCardsAutoTopUp", func(t *testing.T) {
@@ -6983,6 +7239,37 @@ func TestSettersMarkExplicitUpdatePreferencesResponse(t *testing.T) {
 
 		// Act
 		obj.SetCancellationEmails(fernTestValueCancellationEmails)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCardSurcharge_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		var fernTestValueCardSurcharge *v2.CardSurchargePreferences
+
+		// Act
+		obj.SetCardSurcharge(fernTestValueCardSurcharge)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -10264,6 +10551,14 @@ func TestSettersUpdatePreferencesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetCardSurcharge", func(t *testing.T) {
+		obj := &UpdatePreferencesRequest{}
+		var fernTestValueCardSurcharge *UpdatePreferencesRequestCardSurcharge
+		obj.SetCardSurcharge(fernTestValueCardSurcharge)
+		assert.Equal(t, fernTestValueCardSurcharge, obj.CardSurcharge)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCardsAutoTopUp", func(t *testing.T) {
 		obj := &UpdatePreferencesRequest{}
 		var fernTestValueCardsAutoTopUp *bool
@@ -10566,6 +10861,37 @@ func TestSettersMarkExplicitUpdatePreferencesRequest(t *testing.T) {
 
 		// Act
 		obj.SetCancellationEmails(fernTestValueCancellationEmails)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCardSurcharge_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesRequest{}
+		var fernTestValueCardSurcharge *UpdatePreferencesRequestCardSurcharge
+
+		// Act
+		obj.SetCardSurcharge(fernTestValueCardSurcharge)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -11547,6 +11873,39 @@ func TestJSONMarshalingUpdatePreferencesRequestAdsTripleWhaleIntegration(t *test
 	})
 }
 
+func TestJSONMarshalingUpdatePreferencesRequestCardSurcharge(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesRequestCardSurcharge{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled UpdatePreferencesRequestCardSurcharge
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdatePreferencesRequestCardSurcharge
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdatePreferencesRequestCardSurcharge
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingUpdatePreferencesRequestCustomerTracking(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -12423,6 +12782,49 @@ func TestOptionalNullableRoundTripUpdatePreferencesRequestAdsTripleWhaleIntegrat
 	})
 }
 
+func TestOptionalNullableRoundTripUpdatePreferencesRequestCardSurcharge(t *testing.T) {
+	optionalNullableKeys := []string{
+		"percentage",
+	}
+	marshalToMap := func(t *testing.T, obj *UpdatePreferencesRequestCardSurcharge) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdatePreferencesRequestCardSurcharge
+		require.NoError(t, json.Unmarshal([]byte(`{"percentage":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range optionalNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "optional nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "optional nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj UpdatePreferencesRequestCardSurcharge
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range optionalNullableKeys {
+			assert.NotContains(t, result, key, "optional nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &UpdatePreferencesRequestCardSurcharge{})
+		for _, key := range optionalNullableKeys {
+			assert.NotContains(t, result, key, "optional nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestOptionalNullableRoundTripUpdatePreferencesRequestCustomerTracking(t *testing.T) {
 	optionalNullableKeys := []string{
 		"accent_color",
@@ -12770,6 +13172,22 @@ func TestStringUpdatePreferencesRequestAdsTripleWhaleIntegration(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *UpdatePreferencesRequestAdsTripleWhaleIntegration
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringUpdatePreferencesRequestCardSurcharge(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdatePreferencesRequestCardSurcharge{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdatePreferencesRequestCardSurcharge
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -14294,6 +14712,29 @@ func TestExtraPropertiesUpdatePreferencesRequestAdsTripleWhaleIntegration(t *tes
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *UpdatePreferencesRequestAdsTripleWhaleIntegration
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesUpdatePreferencesRequestCardSurcharge(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &UpdatePreferencesRequestCardSurcharge{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdatePreferencesRequestCardSurcharge
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

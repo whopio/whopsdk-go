@@ -45,29 +45,30 @@ var (
 	retrievePreferencesResponseFieldAdsSchedulingTimezone                   = big.NewInt(1 << 3)
 	retrievePreferencesResponseFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 4)
 	retrievePreferencesResponseFieldCancellationEmails                      = big.NewInt(1 << 5)
-	retrievePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
-	retrievePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 7)
-	retrievePreferencesResponseFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 8)
-	retrievePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 9)
-	retrievePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 10)
-	retrievePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 11)
-	retrievePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 12)
-	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 13)
-	retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 14)
-	retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 15)
-	retrievePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 16)
-	retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 17)
-	retrievePreferencesResponseFieldFailedPaymentEmails                     = big.NewInt(1 << 18)
-	retrievePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 19)
-	retrievePreferencesResponseFieldMerchantOfRecord                        = big.NewInt(1 << 20)
-	retrievePreferencesResponseFieldOffSessionPaymentRules                  = big.NewInt(1 << 21)
-	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 22)
-	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 23)
-	retrievePreferencesResponseFieldRenewalReminderEmails                   = big.NewInt(1 << 24)
-	retrievePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 25)
-	retrievePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 26)
-	retrievePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 27)
-	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 28)
+	retrievePreferencesResponseFieldCardSurcharge                           = big.NewInt(1 << 6)
+	retrievePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 7)
+	retrievePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 8)
+	retrievePreferencesResponseFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 9)
+	retrievePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 10)
+	retrievePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 11)
+	retrievePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 12)
+	retrievePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 13)
+	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 14)
+	retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 15)
+	retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 16)
+	retrievePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 17)
+	retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 18)
+	retrievePreferencesResponseFieldFailedPaymentEmails                     = big.NewInt(1 << 19)
+	retrievePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 20)
+	retrievePreferencesResponseFieldMerchantOfRecord                        = big.NewInt(1 << 21)
+	retrievePreferencesResponseFieldOffSessionPaymentRules                  = big.NewInt(1 << 22)
+	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 23)
+	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 24)
+	retrievePreferencesResponseFieldRenewalReminderEmails                   = big.NewInt(1 << 25)
+	retrievePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 26)
+	retrievePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 27)
+	retrievePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 28)
+	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 29)
 )
 
 // retrievePreferencesResponseNullableFields maps the wire names of RetrievePreferencesResponse's nullable fields (required or optional) to their field bits.
@@ -99,6 +100,8 @@ type RetrievePreferencesResponse struct {
 	AdsTripleWhaleIntegration *RetrievePreferencesResponseAdsTripleWhaleIntegration `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
 	// Whether Whop emails members when their membership is canceled or terminated. `true` by default. Set it to `false` to stop these emails while keeping the account's other customer emails. They also stop while the account's `send_customer_emails` is `false`.
 	CancellationEmails bool `json:"cancellation_emails" url:"cancellation_emails"`
+	// The card surcharge a point of sale adds to credit card payments. Debit and prepaid cards never pay it.
+	CardSurcharge *v2.CardSurchargePreferences `json:"card_surcharge" url:"card_surcharge"`
 	// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
 	// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
@@ -193,6 +196,13 @@ func (r *RetrievePreferencesResponse) GetCancellationEmails() bool {
 		return false
 	}
 	return r.CancellationEmails
+}
+
+func (r *RetrievePreferencesResponse) GetCardSurcharge() *v2.CardSurchargePreferences {
+	if r == nil {
+		return nil
+	}
+	return r.CardSurcharge
 }
 
 func (r *RetrievePreferencesResponse) GetCardsAutoTopUp() bool {
@@ -412,6 +422,13 @@ func (r *RetrievePreferencesResponse) SetAdsTripleWhaleIntegration(adsTripleWhal
 func (r *RetrievePreferencesResponse) SetCancellationEmails(cancellationEmails bool) {
 	r.CancellationEmails = cancellationEmails
 	r.require(retrievePreferencesResponseFieldCancellationEmails)
+}
+
+// SetCardSurcharge sets the CardSurcharge field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetCardSurcharge(cardSurcharge *v2.CardSurchargePreferences) {
+	r.CardSurcharge = cardSurcharge
+	r.require(retrievePreferencesResponseFieldCardSurcharge)
 }
 
 // SetCardsAutoTopUp sets the CardsAutoTopUp field and marks it as non-optional;
@@ -2621,6 +2638,123 @@ func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) String() string {
 }
 
 var (
+	updatePreferencesRequestCardSurchargeFieldEnabled    = big.NewInt(1 << 0)
+	updatePreferencesRequestCardSurchargeFieldPercentage = big.NewInt(1 << 1)
+)
+
+// updatePreferencesRequestCardSurchargeNullableFields maps the wire names of UpdatePreferencesRequestCardSurcharge's nullable fields (required or optional) to their field bits.
+var updatePreferencesRequestCardSurchargeNullableFields = map[string]*big.Int{
+	"percentage": updatePreferencesRequestCardSurchargeFieldPercentage,
+}
+
+// The card surcharge a point of sale adds to credit card payments, replaced as a whole. You can always turn it off. You can turn it on only when `card_surcharge.maximum_percentage` is not null. Requires the `company:update` scope on your API key.
+type UpdatePreferencesRequestCardSurcharge struct {
+	// Whether credit card payments with `apply_surcharge` add the surcharge.
+	Enabled bool `json:"enabled" url:"enabled"`
+	// The surcharge as a percentage, such as `3` for 3%. Greater than 0, with at most 2 decimal places, and at most `maximum_percentage`. Required when `enabled` is true. Turning the surcharge off clears it.
+	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePreferencesRequestCardSurcharge) GetEnabled() bool {
+	if u == nil {
+		return false
+	}
+	return u.Enabled
+}
+
+func (u *UpdatePreferencesRequestCardSurcharge) GetPercentage() *float64 {
+	if u == nil {
+		return nil
+	}
+	return u.Percentage
+}
+
+func (u *UpdatePreferencesRequestCardSurcharge) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePreferencesRequestCardSurcharge) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetEnabled sets the Enabled field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestCardSurcharge) SetEnabled(enabled bool) {
+	u.Enabled = enabled
+	u.require(updatePreferencesRequestCardSurchargeFieldEnabled)
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestCardSurcharge) SetPercentage(percentage *float64) {
+	u.Percentage = percentage
+	u.require(updatePreferencesRequestCardSurchargeFieldPercentage)
+}
+
+func (u *UpdatePreferencesRequestCardSurcharge) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePreferencesRequestCardSurcharge
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePreferencesRequestCardSurcharge(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesRequestCardSurchargeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePreferencesRequestCardSurcharge) MarshalJSON() ([]byte, error) {
+	type embed UpdatePreferencesRequestCardSurcharge
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePreferencesRequestCardSurcharge) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
 	updatePreferencesRequestCustomerTrackingFieldAccentColor      = big.NewInt(1 << 0)
 	updatePreferencesRequestCustomerTrackingFieldEnabled          = big.NewInt(1 << 1)
 	updatePreferencesRequestCustomerTrackingFieldShowBusinessName = big.NewInt(1 << 2)
@@ -3083,29 +3217,30 @@ var (
 	updatePreferencesResponseFieldAdsSchedulingTimezone                   = big.NewInt(1 << 3)
 	updatePreferencesResponseFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 4)
 	updatePreferencesResponseFieldCancellationEmails                      = big.NewInt(1 << 5)
-	updatePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 6)
-	updatePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 7)
-	updatePreferencesResponseFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 8)
-	updatePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 9)
-	updatePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 10)
-	updatePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 11)
-	updatePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 12)
-	updatePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 13)
-	updatePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 14)
-	updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 15)
-	updatePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 16)
-	updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 17)
-	updatePreferencesResponseFieldFailedPaymentEmails                     = big.NewInt(1 << 18)
-	updatePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 19)
-	updatePreferencesResponseFieldMerchantOfRecord                        = big.NewInt(1 << 20)
-	updatePreferencesResponseFieldOffSessionPaymentRules                  = big.NewInt(1 << 21)
-	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 22)
-	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 23)
-	updatePreferencesResponseFieldRenewalReminderEmails                   = big.NewInt(1 << 24)
-	updatePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 25)
-	updatePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 26)
-	updatePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 27)
-	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 28)
+	updatePreferencesResponseFieldCardSurcharge                           = big.NewInt(1 << 6)
+	updatePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 7)
+	updatePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 8)
+	updatePreferencesResponseFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 9)
+	updatePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 10)
+	updatePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 11)
+	updatePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 12)
+	updatePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 13)
+	updatePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 14)
+	updatePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 15)
+	updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 16)
+	updatePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 17)
+	updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 18)
+	updatePreferencesResponseFieldFailedPaymentEmails                     = big.NewInt(1 << 19)
+	updatePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 20)
+	updatePreferencesResponseFieldMerchantOfRecord                        = big.NewInt(1 << 21)
+	updatePreferencesResponseFieldOffSessionPaymentRules                  = big.NewInt(1 << 22)
+	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 23)
+	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 24)
+	updatePreferencesResponseFieldRenewalReminderEmails                   = big.NewInt(1 << 25)
+	updatePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 26)
+	updatePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 27)
+	updatePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 28)
+	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 29)
 )
 
 // updatePreferencesResponseNullableFields maps the wire names of UpdatePreferencesResponse's nullable fields (required or optional) to their field bits.
@@ -3137,6 +3272,8 @@ type UpdatePreferencesResponse struct {
 	AdsTripleWhaleIntegration *UpdatePreferencesResponseAdsTripleWhaleIntegration `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
 	// Whether Whop emails members when their membership is canceled or terminated. `true` by default. Set it to `false` to stop these emails while keeping the account's other customer emails. They also stop while the account's `send_customer_emails` is `false`.
 	CancellationEmails bool `json:"cancellation_emails" url:"cancellation_emails"`
+	// The card surcharge a point of sale adds to credit card payments. Debit and prepaid cards never pay it.
+	CardSurcharge *v2.CardSurchargePreferences `json:"card_surcharge" url:"card_surcharge"`
 	// Whether incoming funds are automatically moved to the account's cards balance. `false` when the account has no cards balance.
 	CardsAutoTopUp bool `json:"cards_auto_top_up" url:"cards_auto_top_up"`
 	// Whether Whop Card notifications reach this account's team. `true` by default, including when the account has no cards balance. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected.
@@ -3231,6 +3368,13 @@ func (u *UpdatePreferencesResponse) GetCancellationEmails() bool {
 		return false
 	}
 	return u.CancellationEmails
+}
+
+func (u *UpdatePreferencesResponse) GetCardSurcharge() *v2.CardSurchargePreferences {
+	if u == nil {
+		return nil
+	}
+	return u.CardSurcharge
 }
 
 func (u *UpdatePreferencesResponse) GetCardsAutoTopUp() bool {
@@ -3450,6 +3594,13 @@ func (u *UpdatePreferencesResponse) SetAdsTripleWhaleIntegration(adsTripleWhaleI
 func (u *UpdatePreferencesResponse) SetCancellationEmails(cancellationEmails bool) {
 	u.CancellationEmails = cancellationEmails
 	u.require(updatePreferencesResponseFieldCancellationEmails)
+}
+
+// SetCardSurcharge sets the CardSurcharge field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetCardSurcharge(cardSurcharge *v2.CardSurchargePreferences) {
+	u.CardSurcharge = cardSurcharge
+	u.require(updatePreferencesResponseFieldCardSurcharge)
 }
 
 // SetCardsAutoTopUp sets the CardsAutoTopUp field and marks it as non-optional;
@@ -5189,23 +5340,24 @@ var (
 	updatePreferencesRequestFieldAdsSchedulingTimezone            = big.NewInt(1 << 3)
 	updatePreferencesRequestFieldAdsTripleWhaleIntegration        = big.NewInt(1 << 4)
 	updatePreferencesRequestFieldCancellationEmails               = big.NewInt(1 << 5)
-	updatePreferencesRequestFieldCardsAutoTopUp                   = big.NewInt(1 << 6)
-	updatePreferencesRequestFieldCardsNotifications               = big.NewInt(1 << 7)
-	updatePreferencesRequestFieldCoversSubaccountNegativeBalances = big.NewInt(1 << 8)
-	updatePreferencesRequestFieldCustomerTracking                 = big.NewInt(1 << 9)
-	updatePreferencesRequestFieldDisputeFighterEnabled            = big.NewInt(1 << 10)
-	updatePreferencesRequestFieldEconomicIntelligenceAutoRenew    = big.NewInt(1 << 11)
-	updatePreferencesRequestFieldEconomicIntelligenceDurationKey  = big.NewInt(1 << 12)
-	updatePreferencesRequestFieldFailedPaymentEmails              = big.NewInt(1 << 13)
-	updatePreferencesRequestFieldFeedbackOptions                  = big.NewInt(1 << 14)
-	updatePreferencesRequestFieldMerchantOfRecord                 = big.NewInt(1 << 15)
-	updatePreferencesRequestFieldOffSessionPaymentRules           = big.NewInt(1 << 16)
-	updatePreferencesRequestFieldPreferredSettlementCurrency      = big.NewInt(1 << 17)
-	updatePreferencesRequestFieldRenewalReminderEmails            = big.NewInt(1 << 18)
-	updatePreferencesRequestFieldReviewRequestEmails              = big.NewInt(1 << 19)
-	updatePreferencesRequestFieldSubaccountNotifications          = big.NewInt(1 << 20)
-	updatePreferencesRequestFieldSubaccountTeamViewOnly           = big.NewInt(1 << 21)
-	updatePreferencesRequestFieldSubscriptionFailureBehavior      = big.NewInt(1 << 22)
+	updatePreferencesRequestFieldCardSurcharge                    = big.NewInt(1 << 6)
+	updatePreferencesRequestFieldCardsAutoTopUp                   = big.NewInt(1 << 7)
+	updatePreferencesRequestFieldCardsNotifications               = big.NewInt(1 << 8)
+	updatePreferencesRequestFieldCoversSubaccountNegativeBalances = big.NewInt(1 << 9)
+	updatePreferencesRequestFieldCustomerTracking                 = big.NewInt(1 << 10)
+	updatePreferencesRequestFieldDisputeFighterEnabled            = big.NewInt(1 << 11)
+	updatePreferencesRequestFieldEconomicIntelligenceAutoRenew    = big.NewInt(1 << 12)
+	updatePreferencesRequestFieldEconomicIntelligenceDurationKey  = big.NewInt(1 << 13)
+	updatePreferencesRequestFieldFailedPaymentEmails              = big.NewInt(1 << 14)
+	updatePreferencesRequestFieldFeedbackOptions                  = big.NewInt(1 << 15)
+	updatePreferencesRequestFieldMerchantOfRecord                 = big.NewInt(1 << 16)
+	updatePreferencesRequestFieldOffSessionPaymentRules           = big.NewInt(1 << 17)
+	updatePreferencesRequestFieldPreferredSettlementCurrency      = big.NewInt(1 << 18)
+	updatePreferencesRequestFieldRenewalReminderEmails            = big.NewInt(1 << 19)
+	updatePreferencesRequestFieldReviewRequestEmails              = big.NewInt(1 << 20)
+	updatePreferencesRequestFieldSubaccountNotifications          = big.NewInt(1 << 21)
+	updatePreferencesRequestFieldSubaccountTeamViewOnly           = big.NewInt(1 << 22)
+	updatePreferencesRequestFieldSubscriptionFailureBehavior      = big.NewInt(1 << 23)
 )
 
 type UpdatePreferencesRequest struct {
@@ -5221,6 +5373,8 @@ type UpdatePreferencesRequest struct {
 	AdsTripleWhaleIntegration *UpdatePreferencesRequestAdsTripleWhaleIntegration `json:"ads_triple_whale_integration,omitempty" url:"-"`
 	// Whether Whop emails members when their membership is canceled or terminated. Set it to `false` to stop these emails while keeping the account's other customer emails. Requires the `company:update` scope on your API key.
 	CancellationEmails *bool `json:"cancellation_emails,omitempty" url:"-"`
+	// The card surcharge a point of sale adds to credit card payments, replaced as a whole. You can always turn it off. You can turn it on only when `card_surcharge.maximum_percentage` is not null. Requires the `company:update` scope on your API key.
+	CardSurcharge *UpdatePreferencesRequestCardSurcharge `json:"card_surcharge,omitempty" url:"-"`
 	// Whether incoming funds are automatically moved to the account's cards balance. Requires a cards balance on the account and the `payout:account:update` scope on your API key.
 	CardsAutoTopUp *bool `json:"cards_auto_top_up,omitempty" url:"-"`
 	// Whether Whop Card notifications reach this account's team. Set it to `false` to stop every card email and push notification for the account — application status, verification and action-required alerts, card-ready alerts, declines, large charges, and cashback summaries. Cardholder onboarding invitations still send, because they carry the only link an invited cardholder can onboard with. Requesting a card is rejected while notifications are off, since the request reaches nobody. Cards on personal accounts are unaffected. Requires a cards balance on the account and the `payout:account:update` scope on your API key.
@@ -5309,6 +5463,13 @@ func (u *UpdatePreferencesRequest) SetAdsTripleWhaleIntegration(adsTripleWhaleIn
 func (u *UpdatePreferencesRequest) SetCancellationEmails(cancellationEmails *bool) {
 	u.CancellationEmails = cancellationEmails
 	u.require(updatePreferencesRequestFieldCancellationEmails)
+}
+
+// SetCardSurcharge sets the CardSurcharge field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetCardSurcharge(cardSurcharge *UpdatePreferencesRequestCardSurcharge) {
+	u.CardSurcharge = cardSurcharge
+	u.require(updatePreferencesRequestFieldCardSurcharge)
 }
 
 // SetCardsAutoTopUp sets the CardsAutoTopUp field and marks it as non-optional;
