@@ -3790,6 +3790,13 @@ func TestEnumCreateDepositsResponseMethodsBankCurrenciesItemRailsItem(t *testing
 		assert.Equal(t, CreateDepositsResponseMethodsBankCurrenciesItemRailsItem("chaps"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_swift", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateDepositsResponseMethodsBankCurrenciesItemRailsItemFromString("swift")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateDepositsResponseMethodsBankCurrenciesItemRailsItem("swift"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewCreateDepositsResponseMethodsBankCurrenciesItemRailsItemFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
