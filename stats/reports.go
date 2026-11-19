@@ -11,6 +11,144 @@ import (
 )
 
 var (
+	partnerRevenueLinesReportsRequestFieldReferringAccountID = big.NewInt(1 << 0)
+	partnerRevenueLinesReportsRequestFieldBreakdownBy        = big.NewInt(1 << 1)
+	partnerRevenueLinesReportsRequestFieldColumns            = big.NewInt(1 << 2)
+	partnerRevenueLinesReportsRequestFieldWindows            = big.NewInt(1 << 3)
+	partnerRevenueLinesReportsRequestFieldTimeZone           = big.NewInt(1 << 4)
+	partnerRevenueLinesReportsRequestFieldRevenueLine        = big.NewInt(1 << 5)
+	partnerRevenueLinesReportsRequestFieldIncomeSource       = big.NewInt(1 << 6)
+	partnerRevenueLinesReportsRequestFieldOrder              = big.NewInt(1 << 7)
+	partnerRevenueLinesReportsRequestFieldDirection          = big.NewInt(1 << 8)
+	partnerRevenueLinesReportsRequestFieldConvertTo          = big.NewInt(1 << 9)
+	partnerRevenueLinesReportsRequestFieldFirst              = big.NewInt(1 << 10)
+	partnerRevenueLinesReportsRequestFieldAfter              = big.NewInt(1 << 11)
+)
+
+type PartnerRevenueLinesReportsRequest struct {
+	// Partner business to report on, prefixed `biz_`.
+	ReferringAccountID string `json:"-" url:"referring_account_id"`
+	// `revenue_line` for one row per revenue line. Omit it for one row per window with the total commission.
+	BreakdownBy *PartnerRevenueLinesReportsRequestBreakdownBy `json:"-" url:"breakdown_by,omitempty"`
+	// Comma-separated columns to return on each row. Defaults to `commission,paid`. `income_source` is available on `revenue_line` rows.
+	Columns *string `json:"-" url:"columns,omitempty"`
+	// Comma-separated windows of at most 366 days, at most four, in the syntax every report accepts. Each window covers whole days, through the end of its last day. A `prev:` window covers as many days and ends where the window it precedes starts. Defaults to `30d`.
+	Windows *string `json:"-" url:"windows,omitempty"`
+	// IANA zone that the days of each window fall in. Defaults to `Etc/UTC`.
+	TimeZone *string `json:"-" url:"time_zone,omitempty"`
+	// Comma-separated revenue lines to keep.
+	RevenueLine *string `json:"-" url:"revenue_line,omitempty"`
+	// Comma-separated income sources to keep.
+	IncomeSource *string `json:"-" url:"income_source,omitempty"`
+	// The requested metric that ranks rows, by its value in the first window. Defaults to the first requested metric.
+	Order *PartnerRevenueLinesReportsRequestOrder `json:"-" url:"order,omitempty"`
+	// Ranking direction. Defaults to `desc`.
+	Direction *PartnerRevenueLinesReportsRequestDirection `json:"-" url:"direction,omitempty"`
+	// Currency code to return money in. Defaults to `usd`.
+	ConvertTo *string `json:"-" url:"convert_to,omitempty"`
+	// Number of results to return from the start of the range.
+	First *int `json:"-" url:"first,omitempty"`
+	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
+	After *string `json:"-" url:"after,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (p *PartnerRevenueLinesReportsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetReferringAccountID sets the ReferringAccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsRequest) SetReferringAccountID(referringAccountID string) {
+	p.ReferringAccountID = referringAccountID
+	p.require(partnerRevenueLinesReportsRequestFieldReferringAccountID)
+}
+
+// SetBreakdownBy sets the BreakdownBy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsRequest) SetBreakdownBy(breakdownBy *PartnerRevenueLinesReportsRequestBreakdownBy) {
+	p.BreakdownBy = breakdownBy
+	p.require(partnerRevenueLinesReportsRequestFieldBreakdownBy)
+}
+
+// SetColumns sets the Columns field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsRequest) SetColumns(columns *string) {
+	p.Columns = columns
+	p.require(partnerRevenueLinesReportsRequestFieldColumns)
+}
+
+// SetWindows sets the Windows field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsRequest) SetWindows(windows *string) {
+	p.Windows = windows
+	p.require(partnerRevenueLinesReportsRequestFieldWindows)
+}
+
+// SetTimeZone sets the TimeZone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsRequest) SetTimeZone(timeZone *string) {
+	p.TimeZone = timeZone
+	p.require(partnerRevenueLinesReportsRequestFieldTimeZone)
+}
+
+// SetRevenueLine sets the RevenueLine field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsRequest) SetRevenueLine(revenueLine *string) {
+	p.RevenueLine = revenueLine
+	p.require(partnerRevenueLinesReportsRequestFieldRevenueLine)
+}
+
+// SetIncomeSource sets the IncomeSource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsRequest) SetIncomeSource(incomeSource *string) {
+	p.IncomeSource = incomeSource
+	p.require(partnerRevenueLinesReportsRequestFieldIncomeSource)
+}
+
+// SetOrder sets the Order field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsRequest) SetOrder(order *PartnerRevenueLinesReportsRequestOrder) {
+	p.Order = order
+	p.require(partnerRevenueLinesReportsRequestFieldOrder)
+}
+
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsRequest) SetDirection(direction *PartnerRevenueLinesReportsRequestDirection) {
+	p.Direction = direction
+	p.require(partnerRevenueLinesReportsRequestFieldDirection)
+}
+
+// SetConvertTo sets the ConvertTo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsRequest) SetConvertTo(convertTo *string) {
+	p.ConvertTo = convertTo
+	p.require(partnerRevenueLinesReportsRequestFieldConvertTo)
+}
+
+// SetFirst sets the First field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsRequest) SetFirst(first *int) {
+	p.First = first
+	p.require(partnerRevenueLinesReportsRequestFieldFirst)
+}
+
+// SetAfter sets the After field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsRequest) SetAfter(after *string) {
+	p.After = after
+	p.require(partnerRevenueLinesReportsRequestFieldAfter)
+}
+
+var (
 	platformTrendsReportsRequestFieldBreakdownBy     = big.NewInt(1 << 0)
 	platformTrendsReportsRequestFieldColumns         = big.NewInt(1 << 1)
 	platformTrendsReportsRequestFieldWindows         = big.NewInt(1 << 2)
@@ -292,7 +430,7 @@ type ListReportsResponseDataItem struct {
 	Path string `json:"path" url:"path"`
 	// The timestamp a range window filters on, such as `paid_at`.
 	WindowField *string `json:"window_field,omitempty" url:"window_field,omitempty"`
-	// `range` reports measure activity in a period; `as_of` reports measure state at a moment.
+	// `range` reports measure activity in a period. `as_of` reports measure state at a moment.
 	WindowKind ListReportsResponseDataItemWindowKind `json:"window_kind" url:"window_kind"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -499,7 +637,7 @@ type ListReportsResponseDataItemColumnsItem struct {
 	Key string `json:"key" url:"key"`
 	// The column's display name.
 	Name string `json:"name" url:"name"`
-	// Properties only. `fixed` breakdowns list every value, zero-filled; `open` ones list values with activity.
+	// Properties only. `fixed` breakdowns list every value, zero-filled. `open` ones list values with activity.
 	Set *ListReportsResponseDataItemColumnsItemSet `json:"set,omitempty" url:"set,omitempty"`
 	// Whether the column is an attribute of the row or a number measured over it.
 	Type ListReportsResponseDataItemColumnsItemType `json:"type" url:"type"`
@@ -762,7 +900,7 @@ func (l ListReportsResponseDataItemColumnsItemAggregate) Ptr() *ListReportsRespo
 	return &l
 }
 
-// Properties only. `fixed` breakdowns list every value, zero-filled; `open` ones list values with activity.
+// Properties only. `fixed` breakdowns list every value, zero-filled. `open` ones list values with activity.
 type ListReportsResponseDataItemColumnsItemSet string
 
 const (
@@ -840,7 +978,7 @@ func (l ListReportsResponseDataItemColumnsItemUnit) Ptr() *ListReportsResponseDa
 	return &l
 }
 
-// `range` reports measure activity in a period; `as_of` reports measure state at a moment.
+// `range` reports measure activity in a period. `as_of` reports measure state at a moment.
 type ListReportsResponseDataItemWindowKind string
 
 const (
@@ -861,6 +999,952 @@ func NewListReportsResponseDataItemWindowKindFromString(s string) (ListReportsRe
 
 func (l ListReportsResponseDataItemWindowKind) Ptr() *ListReportsResponseDataItemWindowKind {
 	return &l
+}
+
+type PartnerRevenueLinesReportsRequestBreakdownBy string
+
+const (
+	PartnerRevenueLinesReportsRequestBreakdownByRevenueLine PartnerRevenueLinesReportsRequestBreakdownBy = "revenue_line"
+)
+
+func NewPartnerRevenueLinesReportsRequestBreakdownByFromString(s string) (PartnerRevenueLinesReportsRequestBreakdownBy, error) {
+	switch s {
+	case "revenue_line":
+		return PartnerRevenueLinesReportsRequestBreakdownByRevenueLine, nil
+	}
+	var t PartnerRevenueLinesReportsRequestBreakdownBy
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PartnerRevenueLinesReportsRequestBreakdownBy) Ptr() *PartnerRevenueLinesReportsRequestBreakdownBy {
+	return &p
+}
+
+type PartnerRevenueLinesReportsRequestDirection string
+
+const (
+	PartnerRevenueLinesReportsRequestDirectionAsc  PartnerRevenueLinesReportsRequestDirection = "asc"
+	PartnerRevenueLinesReportsRequestDirectionDesc PartnerRevenueLinesReportsRequestDirection = "desc"
+)
+
+func NewPartnerRevenueLinesReportsRequestDirectionFromString(s string) (PartnerRevenueLinesReportsRequestDirection, error) {
+	switch s {
+	case "asc":
+		return PartnerRevenueLinesReportsRequestDirectionAsc, nil
+	case "desc":
+		return PartnerRevenueLinesReportsRequestDirectionDesc, nil
+	}
+	var t PartnerRevenueLinesReportsRequestDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PartnerRevenueLinesReportsRequestDirection) Ptr() *PartnerRevenueLinesReportsRequestDirection {
+	return &p
+}
+
+type PartnerRevenueLinesReportsRequestOrder string
+
+const (
+	PartnerRevenueLinesReportsRequestOrderCommission PartnerRevenueLinesReportsRequestOrder = "commission"
+	PartnerRevenueLinesReportsRequestOrderPaid       PartnerRevenueLinesReportsRequestOrder = "paid"
+)
+
+func NewPartnerRevenueLinesReportsRequestOrderFromString(s string) (PartnerRevenueLinesReportsRequestOrder, error) {
+	switch s {
+	case "commission":
+		return PartnerRevenueLinesReportsRequestOrderCommission, nil
+	case "paid":
+		return PartnerRevenueLinesReportsRequestOrderPaid, nil
+	}
+	var t PartnerRevenueLinesReportsRequestOrder
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PartnerRevenueLinesReportsRequestOrder) Ptr() *PartnerRevenueLinesReportsRequestOrder {
+	return &p
+}
+
+var (
+	partnerRevenueLinesReportsResponseFieldData     = big.NewInt(1 << 0)
+	partnerRevenueLinesReportsResponseFieldPageInfo = big.NewInt(1 << 1)
+)
+
+type PartnerRevenueLinesReportsResponse struct {
+	Data     *PartnerRevenueLinesReportsResponseData     `json:"data" url:"data"`
+	PageInfo *PartnerRevenueLinesReportsResponsePageInfo `json:"page_info" url:"page_info"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PartnerRevenueLinesReportsResponse) GetData() *PartnerRevenueLinesReportsResponseData {
+	if p == nil {
+		return nil
+	}
+	return p.Data
+}
+
+func (p *PartnerRevenueLinesReportsResponse) GetPageInfo() *PartnerRevenueLinesReportsResponsePageInfo {
+	if p == nil {
+		return nil
+	}
+	return p.PageInfo
+}
+
+func (p *PartnerRevenueLinesReportsResponse) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PartnerRevenueLinesReportsResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetData sets the Data field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponse) SetData(data *PartnerRevenueLinesReportsResponseData) {
+	p.Data = data
+	p.require(partnerRevenueLinesReportsResponseFieldData)
+}
+
+// SetPageInfo sets the PageInfo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponse) SetPageInfo(pageInfo *PartnerRevenueLinesReportsResponsePageInfo) {
+	p.PageInfo = pageInfo
+	p.require(partnerRevenueLinesReportsResponseFieldPageInfo)
+}
+
+func (p *PartnerRevenueLinesReportsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler PartnerRevenueLinesReportsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PartnerRevenueLinesReportsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PartnerRevenueLinesReportsResponse) MarshalJSON() ([]byte, error) {
+	type embed PartnerRevenueLinesReportsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PartnerRevenueLinesReportsResponse) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	partnerRevenueLinesReportsResponseDataFieldBreakdownBy = big.NewInt(1 << 0)
+	partnerRevenueLinesReportsResponseDataFieldColumns     = big.NewInt(1 << 1)
+	partnerRevenueLinesReportsResponseDataFieldDataAsOf    = big.NewInt(1 << 2)
+	partnerRevenueLinesReportsResponseDataFieldReport      = big.NewInt(1 << 3)
+	partnerRevenueLinesReportsResponseDataFieldReports     = big.NewInt(1 << 4)
+)
+
+// partnerRevenueLinesReportsResponseDataNullableFields maps the wire names of PartnerRevenueLinesReportsResponseData's nullable fields (required or optional) to their field bits.
+var partnerRevenueLinesReportsResponseDataNullableFields = map[string]*big.Int{
+	"breakdown_by": partnerRevenueLinesReportsResponseDataFieldBreakdownBy,
+}
+
+type PartnerRevenueLinesReportsResponseData struct {
+	// What each row is, or `null` for one total row per window.
+	BreakdownBy *string `json:"breakdown_by,omitempty" url:"breakdown_by,omitempty"`
+	// The breakdown first, then each requested column, in row order.
+	Columns []map[string]any `json:"columns" url:"columns"`
+	// When the data was read, as an ISO 8601 timestamp.
+	DataAsOf string `json:"data_as_of" url:"data_as_of"`
+	// The report's key.
+	Report string `json:"report" url:"report"`
+	// One entry per requested window, in request order. Rows line up by index across entries.
+	Reports []*PartnerRevenueLinesReportsResponseDataReportsItem `json:"reports" url:"reports"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PartnerRevenueLinesReportsResponseData) GetBreakdownBy() *string {
+	if p == nil {
+		return nil
+	}
+	return p.BreakdownBy
+}
+
+func (p *PartnerRevenueLinesReportsResponseData) GetColumns() []map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.Columns
+}
+
+func (p *PartnerRevenueLinesReportsResponseData) GetDataAsOf() string {
+	if p == nil {
+		return ""
+	}
+	return p.DataAsOf
+}
+
+func (p *PartnerRevenueLinesReportsResponseData) GetReport() string {
+	if p == nil {
+		return ""
+	}
+	return p.Report
+}
+
+func (p *PartnerRevenueLinesReportsResponseData) GetReports() []*PartnerRevenueLinesReportsResponseDataReportsItem {
+	if p == nil {
+		return nil
+	}
+	return p.Reports
+}
+
+func (p *PartnerRevenueLinesReportsResponseData) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PartnerRevenueLinesReportsResponseData) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetBreakdownBy sets the BreakdownBy field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponseData) SetBreakdownBy(breakdownBy *string) {
+	p.BreakdownBy = breakdownBy
+	p.require(partnerRevenueLinesReportsResponseDataFieldBreakdownBy)
+}
+
+// SetColumns sets the Columns field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponseData) SetColumns(columns []map[string]any) {
+	p.Columns = columns
+	p.require(partnerRevenueLinesReportsResponseDataFieldColumns)
+}
+
+// SetDataAsOf sets the DataAsOf field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponseData) SetDataAsOf(dataAsOf string) {
+	p.DataAsOf = dataAsOf
+	p.require(partnerRevenueLinesReportsResponseDataFieldDataAsOf)
+}
+
+// SetReport sets the Report field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponseData) SetReport(report string) {
+	p.Report = report
+	p.require(partnerRevenueLinesReportsResponseDataFieldReport)
+}
+
+// SetReports sets the Reports field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponseData) SetReports(reports []*PartnerRevenueLinesReportsResponseDataReportsItem) {
+	p.Reports = reports
+	p.require(partnerRevenueLinesReportsResponseDataFieldReports)
+}
+
+func (p *PartnerRevenueLinesReportsResponseData) UnmarshalJSON(data []byte) error {
+	type unmarshaler PartnerRevenueLinesReportsResponseData
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PartnerRevenueLinesReportsResponseData(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, partnerRevenueLinesReportsResponseDataNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PartnerRevenueLinesReportsResponseData) MarshalJSON() ([]byte, error) {
+	type embed PartnerRevenueLinesReportsResponseData
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PartnerRevenueLinesReportsResponseData) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	partnerRevenueLinesReportsResponseDataReportsItemFieldRows   = big.NewInt(1 << 0)
+	partnerRevenueLinesReportsResponseDataReportsItemFieldWindow = big.NewInt(1 << 1)
+)
+
+type PartnerRevenueLinesReportsResponseDataReportsItem struct {
+	// The page of rows. Only the requested columns are present.
+	Rows []*PartnerRevenueLinesReportsResponseDataReportsItemRowsItem `json:"rows" url:"rows"`
+	// The window that answered, with the bounds of its data.
+	Window map[string]any `json:"window" url:"window"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItem) GetRows() []*PartnerRevenueLinesReportsResponseDataReportsItemRowsItem {
+	if p == nil {
+		return nil
+	}
+	return p.Rows
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItem) GetWindow() map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.Window
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItem) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetRows sets the Rows field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponseDataReportsItem) SetRows(rows []*PartnerRevenueLinesReportsResponseDataReportsItemRowsItem) {
+	p.Rows = rows
+	p.require(partnerRevenueLinesReportsResponseDataReportsItemFieldRows)
+}
+
+// SetWindow sets the Window field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponseDataReportsItem) SetWindow(window map[string]any) {
+	p.Window = window
+	p.require(partnerRevenueLinesReportsResponseDataReportsItemFieldWindow)
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler PartnerRevenueLinesReportsResponseDataReportsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PartnerRevenueLinesReportsResponseDataReportsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItem) MarshalJSON() ([]byte, error) {
+	type embed PartnerRevenueLinesReportsResponseDataReportsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItem) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	partnerRevenueLinesReportsResponseDataReportsItemRowsItemFieldCommission   = big.NewInt(1 << 0)
+	partnerRevenueLinesReportsResponseDataReportsItemRowsItemFieldIncomeSource = big.NewInt(1 << 1)
+	partnerRevenueLinesReportsResponseDataReportsItemRowsItemFieldPaid         = big.NewInt(1 << 2)
+	partnerRevenueLinesReportsResponseDataReportsItemRowsItemFieldRevenueLine  = big.NewInt(1 << 3)
+)
+
+// partnerRevenueLinesReportsResponseDataReportsItemRowsItemNullableFields maps the wire names of PartnerRevenueLinesReportsResponseDataReportsItemRowsItem's nullable fields (required or optional) to their field bits.
+var partnerRevenueLinesReportsResponseDataReportsItemRowsItemNullableFields = map[string]*big.Int{
+	"commission":    partnerRevenueLinesReportsResponseDataReportsItemRowsItemFieldCommission,
+	"income_source": partnerRevenueLinesReportsResponseDataReportsItemRowsItemFieldIncomeSource,
+	"paid":          partnerRevenueLinesReportsResponseDataReportsItemRowsItemFieldPaid,
+	"revenue_line":  partnerRevenueLinesReportsResponseDataReportsItemRowsItemFieldRevenueLine,
+}
+
+type PartnerRevenueLinesReportsResponseDataReportsItemRowsItem struct {
+	// Commission paid on the line's income source in the window. `null` while a day of the window is still being read. Also `null` on a line with no known income source.
+	Commission   *v2.Money                                                              `json:"commission,omitempty" url:"commission,omitempty"`
+	IncomeSource *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSource `json:"income_source,omitempty" url:"income_source,omitempty"`
+	// `1` when the line's income source paid commission in the window, else `0`. `null` while a day of the window is still being read.
+	Paid        *int                                                                  `json:"paid,omitempty" url:"paid,omitempty"`
+	RevenueLine *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLine `json:"revenue_line,omitempty" url:"revenue_line,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItem) GetCommission() *v2.Money {
+	if p == nil {
+		return nil
+	}
+	return p.Commission
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItem) GetIncomeSource() *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSource {
+	if p == nil {
+		return nil
+	}
+	return p.IncomeSource
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItem) GetPaid() *int {
+	if p == nil {
+		return nil
+	}
+	return p.Paid
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItem) GetRevenueLine() *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLine {
+	if p == nil {
+		return nil
+	}
+	return p.RevenueLine
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItem) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetCommission sets the Commission field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItem) SetCommission(commission *v2.Money) {
+	p.Commission = commission
+	p.require(partnerRevenueLinesReportsResponseDataReportsItemRowsItemFieldCommission)
+}
+
+// SetIncomeSource sets the IncomeSource field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItem) SetIncomeSource(incomeSource *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSource) {
+	p.IncomeSource = incomeSource
+	p.require(partnerRevenueLinesReportsResponseDataReportsItemRowsItemFieldIncomeSource)
+}
+
+// SetPaid sets the Paid field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItem) SetPaid(paid *int) {
+	p.Paid = paid
+	p.require(partnerRevenueLinesReportsResponseDataReportsItemRowsItemFieldPaid)
+}
+
+// SetRevenueLine sets the RevenueLine field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItem) SetRevenueLine(revenueLine *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLine) {
+	p.RevenueLine = revenueLine
+	p.require(partnerRevenueLinesReportsResponseDataReportsItemRowsItemFieldRevenueLine)
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler PartnerRevenueLinesReportsResponseDataReportsItemRowsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PartnerRevenueLinesReportsResponseDataReportsItemRowsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, partnerRevenueLinesReportsResponseDataReportsItemRowsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItem) MarshalJSON() ([]byte, error) {
+	type embed PartnerRevenueLinesReportsResponseDataReportsItemRowsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItem) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	partnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSourceFieldID   = big.NewInt(1 << 0)
+	partnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSourceFieldName = big.NewInt(1 << 1)
+)
+
+type PartnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSource struct {
+	// The income source that pays commission on this line. `null` when no source pays on it.
+	ID string `json:"id" url:"id"`
+	// Display name.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSource) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSource) GetName() string {
+	if p == nil {
+		return ""
+	}
+	return p.Name
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSource) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSource) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSource) SetID(id string) {
+	p.ID = id
+	p.require(partnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSourceFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSource) SetName(name string) {
+	p.Name = name
+	p.require(partnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSourceFieldName)
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSource) UnmarshalJSON(data []byte) error {
+	type unmarshaler PartnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSource
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PartnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSource(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSource) MarshalJSON() ([]byte, error) {
+	type embed PartnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSource
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemIncomeSource) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	partnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLineFieldID   = big.NewInt(1 << 0)
+	partnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLineFieldName = big.NewInt(1 << 1)
+)
+
+type PartnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLine struct {
+	// The ledger category of the revenue line.
+	ID string `json:"id" url:"id"`
+	// Display name.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLine) GetID() string {
+	if p == nil {
+		return ""
+	}
+	return p.ID
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLine) GetName() string {
+	if p == nil {
+		return ""
+	}
+	return p.Name
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLine) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLine) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLine) SetID(id string) {
+	p.ID = id
+	p.require(partnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLineFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLine) SetName(name string) {
+	p.Name = name
+	p.require(partnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLineFieldName)
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLine) UnmarshalJSON(data []byte) error {
+	type unmarshaler PartnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLine
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PartnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLine(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLine) MarshalJSON() ([]byte, error) {
+	type embed PartnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLine
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PartnerRevenueLinesReportsResponseDataReportsItemRowsItemRevenueLine) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	partnerRevenueLinesReportsResponsePageInfoFieldEndCursor       = big.NewInt(1 << 0)
+	partnerRevenueLinesReportsResponsePageInfoFieldHasNextPage     = big.NewInt(1 << 1)
+	partnerRevenueLinesReportsResponsePageInfoFieldHasPreviousPage = big.NewInt(1 << 2)
+	partnerRevenueLinesReportsResponsePageInfoFieldStartCursor     = big.NewInt(1 << 3)
+)
+
+// partnerRevenueLinesReportsResponsePageInfoNullableFields maps the wire names of PartnerRevenueLinesReportsResponsePageInfo's nullable fields (required or optional) to their field bits.
+var partnerRevenueLinesReportsResponsePageInfoNullableFields = map[string]*big.Int{
+	"end_cursor":   partnerRevenueLinesReportsResponsePageInfoFieldEndCursor,
+	"start_cursor": partnerRevenueLinesReportsResponsePageInfoFieldStartCursor,
+}
+
+type PartnerRevenueLinesReportsResponsePageInfo struct {
+	// Pass as `after` for the next page.
+	EndCursor *string `json:"end_cursor,omitempty" url:"end_cursor,omitempty"`
+	// Whether more rows follow this page.
+	HasNextPage bool `json:"has_next_page" url:"has_next_page"`
+	// Whether rows precede this page.
+	HasPreviousPage bool `json:"has_previous_page" url:"has_previous_page"`
+	// The cursor of the first row on this page.
+	StartCursor *string `json:"start_cursor,omitempty" url:"start_cursor,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PartnerRevenueLinesReportsResponsePageInfo) GetEndCursor() *string {
+	if p == nil {
+		return nil
+	}
+	return p.EndCursor
+}
+
+func (p *PartnerRevenueLinesReportsResponsePageInfo) GetHasNextPage() bool {
+	if p == nil {
+		return false
+	}
+	return p.HasNextPage
+}
+
+func (p *PartnerRevenueLinesReportsResponsePageInfo) GetHasPreviousPage() bool {
+	if p == nil {
+		return false
+	}
+	return p.HasPreviousPage
+}
+
+func (p *PartnerRevenueLinesReportsResponsePageInfo) GetStartCursor() *string {
+	if p == nil {
+		return nil
+	}
+	return p.StartCursor
+}
+
+func (p *PartnerRevenueLinesReportsResponsePageInfo) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PartnerRevenueLinesReportsResponsePageInfo) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetEndCursor sets the EndCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponsePageInfo) SetEndCursor(endCursor *string) {
+	p.EndCursor = endCursor
+	p.require(partnerRevenueLinesReportsResponsePageInfoFieldEndCursor)
+}
+
+// SetHasNextPage sets the HasNextPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponsePageInfo) SetHasNextPage(hasNextPage bool) {
+	p.HasNextPage = hasNextPage
+	p.require(partnerRevenueLinesReportsResponsePageInfoFieldHasNextPage)
+}
+
+// SetHasPreviousPage sets the HasPreviousPage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponsePageInfo) SetHasPreviousPage(hasPreviousPage bool) {
+	p.HasPreviousPage = hasPreviousPage
+	p.require(partnerRevenueLinesReportsResponsePageInfoFieldHasPreviousPage)
+}
+
+// SetStartCursor sets the StartCursor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsResponsePageInfo) SetStartCursor(startCursor *string) {
+	p.StartCursor = startCursor
+	p.require(partnerRevenueLinesReportsResponsePageInfoFieldStartCursor)
+}
+
+func (p *PartnerRevenueLinesReportsResponsePageInfo) UnmarshalJSON(data []byte) error {
+	type unmarshaler PartnerRevenueLinesReportsResponsePageInfo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PartnerRevenueLinesReportsResponsePageInfo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, partnerRevenueLinesReportsResponsePageInfoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PartnerRevenueLinesReportsResponsePageInfo) MarshalJSON() ([]byte, error) {
+	type embed PartnerRevenueLinesReportsResponsePageInfo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PartnerRevenueLinesReportsResponsePageInfo) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
 }
 
 type PlatformTrendsReportsRequestBreakdownBy string

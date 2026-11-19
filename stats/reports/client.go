@@ -59,6 +59,33 @@ func (c *Client) List(
 	return response.Body, nil
 }
 
+// The revenue lines charged to the businesses that the team of a partner business referred. Each row shows the commission paid to the partner business on that line. Lines that share an income source show the whole commission of that source. A team member who is not an owner sees only the referrals of their own team. While a day of the window is still being read, `commission` and `paid` are `null` on every row. A line may be missing. The days fill within minutes, so read the report again.
+//
+// Example:
+//
+//	request := &stats.PartnerRevenueLinesReportsRequest{
+//	    ReferringAccountID: "referring_account_id",
+//	}
+//	client.Stats.Reports.PartnerRevenueLines(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) PartnerRevenueLines(
+	ctx context.Context,
+	request *stats.PartnerRevenueLinesReportsRequest,
+	opts ...option.RequestOption,
+) (*stats.PartnerRevenueLinesReportsResponse, error) {
+	response, err := c.WithRawResponse.PartnerRevenueLines(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Retrieves payments across all of Whop for up to four windows at once. Pass `breakdown_by` to split them by business type, industry type, product category, account country or customer country. The report covers the whole platform, so it takes no `account_id`. Only users with Trends access can read it, from whop.com, the Whop apps, the Whop CLI or the Whop MCP.
 //
 // Example:
