@@ -52480,7 +52480,47 @@ client.Users.Preferences.Update(
 <dl>
 <dd>
 
+**showEarnings:** `*bool` — Whether to show the user's earnings on their profile.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**showJoinedWhops:** `*bool` — Whether to show the whops the user joined on their profile.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **showLevel:** `*bool` — Whether other people can see the user's Whop Level. Set to `false` to hide it.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**showLocation:** `*bool` — Whether to show the user's location on their profile.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**showOwnedWhops:** `*bool` — Whether to show the whops the user owns on their profile.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**showUserRanking:** `*bool` — Whether to show the user's ranking on their profile.
     
 </dd>
 </dl>

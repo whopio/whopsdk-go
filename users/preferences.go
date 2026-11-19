@@ -11,8 +11,13 @@ import (
 var (
 	updatePreferencesRequestFieldBountyWorkerOnboardingDismissed = big.NewInt(1 << 0)
 	updatePreferencesRequestFieldCardsAutoTopUp                  = big.NewInt(1 << 1)
-	updatePreferencesRequestFieldShowLevel                       = big.NewInt(1 << 2)
-	updatePreferencesRequestFieldTermsAccepted                   = big.NewInt(1 << 3)
+	updatePreferencesRequestFieldShowEarnings                    = big.NewInt(1 << 2)
+	updatePreferencesRequestFieldShowJoinedWhops                 = big.NewInt(1 << 3)
+	updatePreferencesRequestFieldShowLevel                       = big.NewInt(1 << 4)
+	updatePreferencesRequestFieldShowLocation                    = big.NewInt(1 << 5)
+	updatePreferencesRequestFieldShowOwnedWhops                  = big.NewInt(1 << 6)
+	updatePreferencesRequestFieldShowUserRanking                 = big.NewInt(1 << 7)
+	updatePreferencesRequestFieldTermsAccepted                   = big.NewInt(1 << 8)
 )
 
 type UpdatePreferencesRequest struct {
@@ -20,8 +25,18 @@ type UpdatePreferencesRequest struct {
 	BountyWorkerOnboardingDismissed *bool `json:"bounty_worker_onboarding_dismissed,omitempty" url:"-"`
 	// Whether incoming funds, including pending balance, are automatically moved to the user's personal cards balance. Requires a cards balance and the `payout:account:update` permission.
 	CardsAutoTopUp *bool `json:"cards_auto_top_up,omitempty" url:"-"`
+	// Whether to show the user's earnings on their profile.
+	ShowEarnings *bool `json:"show_earnings,omitempty" url:"-"`
+	// Whether to show the whops the user joined on their profile.
+	ShowJoinedWhops *bool `json:"show_joined_whops,omitempty" url:"-"`
 	// Whether other people can see the user's Whop Level. Set to `false` to hide it.
 	ShowLevel *bool `json:"show_level,omitempty" url:"-"`
+	// Whether to show the user's location on their profile.
+	ShowLocation *bool `json:"show_location,omitempty" url:"-"`
+	// Whether to show the whops the user owns on their profile.
+	ShowOwnedWhops *bool `json:"show_owned_whops,omitempty" url:"-"`
+	// Whether to show the user's ranking on their profile.
+	ShowUserRanking *bool `json:"show_user_ranking,omitempty" url:"-"`
 	// Records the user's acceptance of Whop's terms and policies. Only `true` is accepted — the server stamps `terms_accepted_at` and acceptance cannot be withdrawn here.
 	TermsAccepted *bool `json:"terms_accepted,omitempty" url:"-"`
 
@@ -52,11 +67,46 @@ func (u *UpdatePreferencesRequest) SetCardsAutoTopUp(cardsAutoTopUp *bool) {
 	u.require(updatePreferencesRequestFieldCardsAutoTopUp)
 }
 
+// SetShowEarnings sets the ShowEarnings field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetShowEarnings(showEarnings *bool) {
+	u.ShowEarnings = showEarnings
+	u.require(updatePreferencesRequestFieldShowEarnings)
+}
+
+// SetShowJoinedWhops sets the ShowJoinedWhops field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetShowJoinedWhops(showJoinedWhops *bool) {
+	u.ShowJoinedWhops = showJoinedWhops
+	u.require(updatePreferencesRequestFieldShowJoinedWhops)
+}
+
 // SetShowLevel sets the ShowLevel field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UpdatePreferencesRequest) SetShowLevel(showLevel *bool) {
 	u.ShowLevel = showLevel
 	u.require(updatePreferencesRequestFieldShowLevel)
+}
+
+// SetShowLocation sets the ShowLocation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetShowLocation(showLocation *bool) {
+	u.ShowLocation = showLocation
+	u.require(updatePreferencesRequestFieldShowLocation)
+}
+
+// SetShowOwnedWhops sets the ShowOwnedWhops field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetShowOwnedWhops(showOwnedWhops *bool) {
+	u.ShowOwnedWhops = showOwnedWhops
+	u.require(updatePreferencesRequestFieldShowOwnedWhops)
+}
+
+// SetShowUserRanking sets the ShowUserRanking field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetShowUserRanking(showUserRanking *bool) {
+	u.ShowUserRanking = showUserRanking
+	u.require(updatePreferencesRequestFieldShowUserRanking)
 }
 
 // SetTermsAccepted sets the TermsAccepted field and marks it as non-optional;
