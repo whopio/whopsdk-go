@@ -900,6 +900,7 @@ const (
 	CreateDepositsResponseMethodsBankCurrenciesItemRailsItemSepa  CreateDepositsResponseMethodsBankCurrenciesItemRailsItem = "sepa"
 	CreateDepositsResponseMethodsBankCurrenciesItemRailsItemFps   CreateDepositsResponseMethodsBankCurrenciesItemRailsItem = "fps"
 	CreateDepositsResponseMethodsBankCurrenciesItemRailsItemChaps CreateDepositsResponseMethodsBankCurrenciesItemRailsItem = "chaps"
+	CreateDepositsResponseMethodsBankCurrenciesItemRailsItemSwift CreateDepositsResponseMethodsBankCurrenciesItemRailsItem = "swift"
 )
 
 func NewCreateDepositsResponseMethodsBankCurrenciesItemRailsItemFromString(s string) (CreateDepositsResponseMethodsBankCurrenciesItemRailsItem, error) {
@@ -914,6 +915,8 @@ func NewCreateDepositsResponseMethodsBankCurrenciesItemRailsItemFromString(s str
 		return CreateDepositsResponseMethodsBankCurrenciesItemRailsItemFps, nil
 	case "chaps":
 		return CreateDepositsResponseMethodsBankCurrenciesItemRailsItemChaps, nil
+	case "swift":
+		return CreateDepositsResponseMethodsBankCurrenciesItemRailsItemSwift, nil
 	}
 	var t CreateDepositsResponseMethodsBankCurrenciesItemRailsItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
