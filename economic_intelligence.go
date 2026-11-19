@@ -12,14 +12,13 @@ import (
 var (
 	listEconomicIntelligenceRequestFieldAccountID = big.NewInt(1 << 0)
 	listEconomicIntelligenceRequestFieldStatus    = big.NewInt(1 << 1)
-	listEconomicIntelligenceRequestFieldInput     = big.NewInt(1 << 2)
-	listEconomicIntelligenceRequestFieldHasRun    = big.NewInt(1 << 3)
-	listEconomicIntelligenceRequestFieldOrder     = big.NewInt(1 << 4)
-	listEconomicIntelligenceRequestFieldDirection = big.NewInt(1 << 5)
-	listEconomicIntelligenceRequestFieldFirst     = big.NewInt(1 << 6)
-	listEconomicIntelligenceRequestFieldAfter     = big.NewInt(1 << 7)
-	listEconomicIntelligenceRequestFieldLast      = big.NewInt(1 << 8)
-	listEconomicIntelligenceRequestFieldBefore    = big.NewInt(1 << 9)
+	listEconomicIntelligenceRequestFieldHasRun    = big.NewInt(1 << 2)
+	listEconomicIntelligenceRequestFieldOrder     = big.NewInt(1 << 3)
+	listEconomicIntelligenceRequestFieldDirection = big.NewInt(1 << 4)
+	listEconomicIntelligenceRequestFieldFirst     = big.NewInt(1 << 5)
+	listEconomicIntelligenceRequestFieldAfter     = big.NewInt(1 << 6)
+	listEconomicIntelligenceRequestFieldLast      = big.NewInt(1 << 7)
+	listEconomicIntelligenceRequestFieldBefore    = big.NewInt(1 << 8)
 )
 
 type ListEconomicIntelligenceRequest struct {
@@ -27,8 +26,6 @@ type ListEconomicIntelligenceRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// `ready` lists the recommendations the account can run now. A run status lists only the runs in that state. `queued`, `pending` and `superseded` are no longer listed and answer nothing.
 	Status *ListEconomicIntelligenceRequestStatus `json:"-" url:"status,omitempty"`
-	// No longer read: recommendations are written for the business as it changes. Up to 1000 characters.
-	Input *string `json:"-" url:"input,omitempty"`
 	// When true, only recommendations someone has started running, by any user. Without `account_id`, covers every account you can read.
 	HasRun *bool `json:"-" url:"has_run,omitempty"`
 	// Sort field.
@@ -69,13 +66,6 @@ func (l *ListEconomicIntelligenceRequest) SetAccountID(accountID *string) {
 func (l *ListEconomicIntelligenceRequest) SetStatus(status *ListEconomicIntelligenceRequestStatus) {
 	l.Status = status
 	l.require(listEconomicIntelligenceRequestFieldStatus)
-}
-
-// SetInput sets the Input field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListEconomicIntelligenceRequest) SetInput(input *string) {
-	l.Input = input
-	l.require(listEconomicIntelligenceRequestFieldInput)
 }
 
 // SetHasRun sets the HasRun field and marks it as non-optional;
@@ -128,96 +118,61 @@ func (l *ListEconomicIntelligenceRequest) SetBefore(before *string) {
 }
 
 var (
-	economicIntelligenceFieldAccountID         = big.NewInt(1 << 0)
-	economicIntelligenceFieldAcknowledgedAt    = big.NewInt(1 << 1)
-	economicIntelligenceFieldActionType        = big.NewInt(1 << 2)
-	economicIntelligenceFieldAiChatID          = big.NewInt(1 << 3)
-	economicIntelligenceFieldCreatedAt         = big.NewInt(1 << 4)
-	economicIntelligenceFieldExecutedAt        = big.NewInt(1 << 5)
-	economicIntelligenceFieldExpectedToolCalls = big.NewInt(1 << 6)
-	economicIntelligenceFieldID                = big.NewInt(1 << 7)
-	economicIntelligenceFieldInput             = big.NewInt(1 << 8)
-	economicIntelligenceFieldInputs            = big.NewInt(1 << 9)
-	economicIntelligenceFieldPrompt            = big.NewInt(1 << 10)
-	economicIntelligenceFieldReasoning         = big.NewInt(1 << 11)
-	economicIntelligenceFieldResultURL         = big.NewInt(1 << 12)
-	economicIntelligenceFieldRunByUserID       = big.NewInt(1 << 13)
-	economicIntelligenceFieldRunEndedAt        = big.NewInt(1 << 14)
-	economicIntelligenceFieldRunStartedAt      = big.NewInt(1 << 15)
-	economicIntelligenceFieldSentiment         = big.NewInt(1 << 16)
-	economicIntelligenceFieldStatus            = big.NewInt(1 << 17)
-	economicIntelligenceFieldSupersededAt      = big.NewInt(1 << 18)
-	economicIntelligenceFieldTargetURL         = big.NewInt(1 << 19)
-	economicIntelligenceFieldTitle             = big.NewInt(1 << 20)
-	economicIntelligenceFieldUserFeedback      = big.NewInt(1 << 21)
+	economicIntelligenceFieldAccountID    = big.NewInt(1 << 0)
+	economicIntelligenceFieldActionType   = big.NewInt(1 << 1)
+	economicIntelligenceFieldCreatedAt    = big.NewInt(1 << 2)
+	economicIntelligenceFieldExecutedAt   = big.NewInt(1 << 3)
+	economicIntelligenceFieldID           = big.NewInt(1 << 4)
+	economicIntelligenceFieldReasoning    = big.NewInt(1 << 5)
+	economicIntelligenceFieldResultURL    = big.NewInt(1 << 6)
+	economicIntelligenceFieldRunByUserID  = big.NewInt(1 << 7)
+	economicIntelligenceFieldRunEndedAt   = big.NewInt(1 << 8)
+	economicIntelligenceFieldRunStartedAt = big.NewInt(1 << 9)
+	economicIntelligenceFieldStatus       = big.NewInt(1 << 10)
+	economicIntelligenceFieldSupersededAt = big.NewInt(1 << 11)
+	economicIntelligenceFieldTitle        = big.NewInt(1 << 12)
 )
 
 // economicIntelligenceNullableFields maps the wire names of EconomicIntelligence's nullable fields (required or optional) to their field bits.
 var economicIntelligenceNullableFields = map[string]*big.Int{
-	"account_id":          economicIntelligenceFieldAccountID,
-	"acknowledged_at":     economicIntelligenceFieldAcknowledgedAt,
-	"action_type":         economicIntelligenceFieldActionType,
-	"ai_chat_id":          economicIntelligenceFieldAiChatID,
-	"created_at":          economicIntelligenceFieldCreatedAt,
-	"executed_at":         economicIntelligenceFieldExecutedAt,
-	"expected_tool_calls": economicIntelligenceFieldExpectedToolCalls,
-	"input":               economicIntelligenceFieldInput,
-	"prompt":              economicIntelligenceFieldPrompt,
-	"reasoning":           economicIntelligenceFieldReasoning,
-	"result_url":          economicIntelligenceFieldResultURL,
-	"run_by_user_id":      economicIntelligenceFieldRunByUserID,
-	"run_ended_at":        economicIntelligenceFieldRunEndedAt,
-	"run_started_at":      economicIntelligenceFieldRunStartedAt,
-	"sentiment":           economicIntelligenceFieldSentiment,
-	"superseded_at":       economicIntelligenceFieldSupersededAt,
-	"target_url":          economicIntelligenceFieldTargetURL,
-	"title":               economicIntelligenceFieldTitle,
-	"user_feedback":       economicIntelligenceFieldUserFeedback,
+	"action_type":    economicIntelligenceFieldActionType,
+	"executed_at":    economicIntelligenceFieldExecutedAt,
+	"reasoning":      economicIntelligenceFieldReasoning,
+	"result_url":     economicIntelligenceFieldResultURL,
+	"run_by_user_id": economicIntelligenceFieldRunByUserID,
+	"run_ended_at":   economicIntelligenceFieldRunEndedAt,
+	"run_started_at": economicIntelligenceFieldRunStartedAt,
+	"superseded_at":  economicIntelligenceFieldSupersededAt,
+	"title":          economicIntelligenceFieldTitle,
 }
 
 type EconomicIntelligence struct {
-	// ID of the account this recommendation is for, prefixed `biz_`, or null for personal onboarding.
-	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// When the executed run was first marked as seen, as an ISO 8601 timestamp, or `null` if it has not been.
-	AcknowledgedAt *string `json:"acknowledged_at,omitempty" url:"acknowledged_at,omitempty"`
+	// ID of the account this recommendation is for, prefixed `biz_`.
+	AccountID string `json:"account_id" url:"account_id"`
 	// Type of action recommended, or `null` when no type is assigned. New values may be added; handle unknown types gracefully.
 	ActionType *string `json:"action_type,omitempty" url:"action_type,omitempty"`
-	// The chat that ran the recommendation, shown only to the user who ran it, or `null` otherwise.
-	AiChatID *string `json:"ai_chat_id,omitempty" url:"ai_chat_id,omitempty"`
-	// When the recommendation was created, as an ISO 8601 timestamp, or null for an unsaved recommendation.
-	CreatedAt *string `json:"created_at,omitempty" url:"created_at,omitempty"`
+	// When the recommendation was created, as an ISO 8601 timestamp.
+	CreatedAt string `json:"created_at" url:"created_at"`
 	// When the recommendation was carried out, as an ISO 8601 timestamp, or `null` if it has not been.
-	ExecutedAt        *string                          `json:"executed_at,omitempty" url:"executed_at,omitempty"`
-	ExpectedToolCalls []*EconomicIntelligenceOperation `json:"expected_tool_calls,omitempty" url:"expected_tool_calls,omitempty"`
-	// Recommendation ID, prefixed `reca_`, or `create_business` for an unsaved setup recommendation. Authenticate and list again before executing an unsaved recommendation.
+	ExecutedAt *string `json:"executed_at,omitempty" url:"executed_at,omitempty"`
+	// Recommendation ID, prefixed `reca_`.
 	ID string `json:"id" url:"id"`
-	// What you requested, in your own words, or `null` for recommendations generated without your input.
-	Input  *string                      `json:"input,omitempty" url:"input,omitempty"`
-	Inputs []*EconomicIntelligenceInput `json:"inputs" url:"inputs"`
-	// Step-by-step instructions for Whop AI, or `null` when no instructions are available.
-	Prompt *string `json:"prompt,omitempty" url:"prompt,omitempty"`
 	// Evidence and metrics supporting the recommendation, or `null` when no reasoning was provided.
 	Reasoning *string `json:"reasoning,omitempty" url:"reasoning,omitempty"`
-	// Where to view what the run produced, such as the published website or created product, or `null` when the result is only in the chat.
+	// Where to view what the run produced, such as the published website or created product, or `null` when there is nothing to view.
 	ResultURL *string `json:"result_url,omitempty" url:"result_url,omitempty"`
 	// The user who started the run, prefixed `user_`, or `null` if it has not run or was started without a user, such as with an API key.
 	RunByUserID *string `json:"run_by_user_id,omitempty" url:"run_by_user_id,omitempty"`
 	// When the run ended, whether executed or incomplete, as an ISO 8601 timestamp, or `null` if it has not ended.
 	RunEndedAt *string `json:"run_ended_at,omitempty" url:"run_ended_at,omitempty"`
-	// When the run started, by Whop AI or the recommendation's API calls, as an ISO 8601 timestamp, or `null` if it has not run.
+	// When the run started, as an ISO 8601 timestamp, or `null` if it has not run.
 	RunStartedAt *string `json:"run_started_at,omitempty" url:"run_started_at,omitempty"`
-	// How the user rated this recommendation, or `null` if they have not rated it
-	Sentiment *EconomicIntelligenceSentiment `json:"sentiment,omitempty" url:"sentiment,omitempty"`
-	// `queued` when awaiting generation; `pending` while generating or preparing its work; `ready` when available to run; `running` while Whop AI or the recommendation's API calls carry it out; `executed` when carried out; `incomplete` when the run ended without carrying it out; `superseded` when rejected or replaced.
+	// `queued` waits for generation. `pending` is being generated or prepared. `ready` can run. `running` is sending its API calls. `executed` was carried out. `incomplete` ended before it was carried out. `superseded` was rejected or replaced.
 	Status EconomicIntelligenceStatus `json:"status" url:"status"`
 	// When the recommendation was rejected or replaced, as an ISO 8601 timestamp, or `null` if neither has occurred.
 	SupersededAt *string `json:"superseded_at,omitempty" url:"superseded_at,omitempty"`
-	// Website URL selected for pixel setup, or `null` when no website was captured for this recommendation.
-	TargetURL *string `json:"target_url,omitempty" url:"target_url,omitempty"`
 	// Recommended action and its expected benefit, or `null` until generated.
 	Title *string `json:"title,omitempty" url:"title,omitempty"`
-	// The user's written feedback, or `null` if they have not provided any.
-	UserFeedback *string `json:"user_feedback,omitempty" url:"user_feedback,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -226,18 +181,11 @@ type EconomicIntelligence struct {
 	rawJSON         json.RawMessage
 }
 
-func (e *EconomicIntelligence) GetAccountID() *string {
+func (e *EconomicIntelligence) GetAccountID() string {
 	if e == nil {
-		return nil
+		return ""
 	}
 	return e.AccountID
-}
-
-func (e *EconomicIntelligence) GetAcknowledgedAt() *string {
-	if e == nil {
-		return nil
-	}
-	return e.AcknowledgedAt
 }
 
 func (e *EconomicIntelligence) GetActionType() *string {
@@ -247,16 +195,9 @@ func (e *EconomicIntelligence) GetActionType() *string {
 	return e.ActionType
 }
 
-func (e *EconomicIntelligence) GetAiChatID() *string {
+func (e *EconomicIntelligence) GetCreatedAt() string {
 	if e == nil {
-		return nil
-	}
-	return e.AiChatID
-}
-
-func (e *EconomicIntelligence) GetCreatedAt() *string {
-	if e == nil {
-		return nil
+		return ""
 	}
 	return e.CreatedAt
 }
@@ -268,39 +209,11 @@ func (e *EconomicIntelligence) GetExecutedAt() *string {
 	return e.ExecutedAt
 }
 
-func (e *EconomicIntelligence) GetExpectedToolCalls() []*EconomicIntelligenceOperation {
-	if e == nil {
-		return nil
-	}
-	return e.ExpectedToolCalls
-}
-
 func (e *EconomicIntelligence) GetID() string {
 	if e == nil {
 		return ""
 	}
 	return e.ID
-}
-
-func (e *EconomicIntelligence) GetInput() *string {
-	if e == nil {
-		return nil
-	}
-	return e.Input
-}
-
-func (e *EconomicIntelligence) GetInputs() []*EconomicIntelligenceInput {
-	if e == nil {
-		return nil
-	}
-	return e.Inputs
-}
-
-func (e *EconomicIntelligence) GetPrompt() *string {
-	if e == nil {
-		return nil
-	}
-	return e.Prompt
 }
 
 func (e *EconomicIntelligence) GetReasoning() *string {
@@ -338,13 +251,6 @@ func (e *EconomicIntelligence) GetRunStartedAt() *string {
 	return e.RunStartedAt
 }
 
-func (e *EconomicIntelligence) GetSentiment() *EconomicIntelligenceSentiment {
-	if e == nil {
-		return nil
-	}
-	return e.Sentiment
-}
-
 func (e *EconomicIntelligence) GetStatus() EconomicIntelligenceStatus {
 	if e == nil {
 		return ""
@@ -359,25 +265,11 @@ func (e *EconomicIntelligence) GetSupersededAt() *string {
 	return e.SupersededAt
 }
 
-func (e *EconomicIntelligence) GetTargetURL() *string {
-	if e == nil {
-		return nil
-	}
-	return e.TargetURL
-}
-
 func (e *EconomicIntelligence) GetTitle() *string {
 	if e == nil {
 		return nil
 	}
 	return e.Title
-}
-
-func (e *EconomicIntelligence) GetUserFeedback() *string {
-	if e == nil {
-		return nil
-	}
-	return e.UserFeedback
 }
 
 func (e *EconomicIntelligence) GetExtraProperties() map[string]interface{} {
@@ -398,16 +290,9 @@ func (e *EconomicIntelligence) require(field *big.Int) {
 
 // SetAccountID sets the AccountID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetAccountID(accountID *string) {
+func (e *EconomicIntelligence) SetAccountID(accountID string) {
 	e.AccountID = accountID
 	e.require(economicIntelligenceFieldAccountID)
-}
-
-// SetAcknowledgedAt sets the AcknowledgedAt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetAcknowledgedAt(acknowledgedAt *string) {
-	e.AcknowledgedAt = acknowledgedAt
-	e.require(economicIntelligenceFieldAcknowledgedAt)
 }
 
 // SetActionType sets the ActionType field and marks it as non-optional;
@@ -417,16 +302,9 @@ func (e *EconomicIntelligence) SetActionType(actionType *string) {
 	e.require(economicIntelligenceFieldActionType)
 }
 
-// SetAiChatID sets the AiChatID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetAiChatID(aiChatID *string) {
-	e.AiChatID = aiChatID
-	e.require(economicIntelligenceFieldAiChatID)
-}
-
 // SetCreatedAt sets the CreatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetCreatedAt(createdAt *string) {
+func (e *EconomicIntelligence) SetCreatedAt(createdAt string) {
 	e.CreatedAt = createdAt
 	e.require(economicIntelligenceFieldCreatedAt)
 }
@@ -438,39 +316,11 @@ func (e *EconomicIntelligence) SetExecutedAt(executedAt *string) {
 	e.require(economicIntelligenceFieldExecutedAt)
 }
 
-// SetExpectedToolCalls sets the ExpectedToolCalls field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetExpectedToolCalls(expectedToolCalls []*EconomicIntelligenceOperation) {
-	e.ExpectedToolCalls = expectedToolCalls
-	e.require(economicIntelligenceFieldExpectedToolCalls)
-}
-
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (e *EconomicIntelligence) SetID(id string) {
 	e.ID = id
 	e.require(economicIntelligenceFieldID)
-}
-
-// SetInput sets the Input field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetInput(input *string) {
-	e.Input = input
-	e.require(economicIntelligenceFieldInput)
-}
-
-// SetInputs sets the Inputs field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetInputs(inputs []*EconomicIntelligenceInput) {
-	e.Inputs = inputs
-	e.require(economicIntelligenceFieldInputs)
-}
-
-// SetPrompt sets the Prompt field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetPrompt(prompt *string) {
-	e.Prompt = prompt
-	e.require(economicIntelligenceFieldPrompt)
 }
 
 // SetReasoning sets the Reasoning field and marks it as non-optional;
@@ -508,13 +358,6 @@ func (e *EconomicIntelligence) SetRunStartedAt(runStartedAt *string) {
 	e.require(economicIntelligenceFieldRunStartedAt)
 }
 
-// SetSentiment sets the Sentiment field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetSentiment(sentiment *EconomicIntelligenceSentiment) {
-	e.Sentiment = sentiment
-	e.require(economicIntelligenceFieldSentiment)
-}
-
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (e *EconomicIntelligence) SetStatus(status EconomicIntelligenceStatus) {
@@ -529,25 +372,11 @@ func (e *EconomicIntelligence) SetSupersededAt(supersededAt *string) {
 	e.require(economicIntelligenceFieldSupersededAt)
 }
 
-// SetTargetURL sets the TargetURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetTargetURL(targetURL *string) {
-	e.TargetURL = targetURL
-	e.require(economicIntelligenceFieldTargetURL)
-}
-
 // SetTitle sets the Title field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (e *EconomicIntelligence) SetTitle(title *string) {
 	e.Title = title
 	e.require(economicIntelligenceFieldTitle)
-}
-
-// SetUserFeedback sets the UserFeedback field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligence) SetUserFeedback(userFeedback *string) {
-	e.UserFeedback = userFeedback
-	e.require(economicIntelligenceFieldUserFeedback)
 }
 
 func (e *EconomicIntelligence) UnmarshalJSON(data []byte) error {
@@ -599,312 +428,7 @@ func (e *EconomicIntelligence) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-var (
-	economicIntelligenceInputFieldAnswer   = big.NewInt(1 << 0)
-	economicIntelligenceInputFieldID       = big.NewInt(1 << 1)
-	economicIntelligenceInputFieldLabel    = big.NewInt(1 << 2)
-	economicIntelligenceInputFieldOptions  = big.NewInt(1 << 3)
-	economicIntelligenceInputFieldTemplate = big.NewInt(1 << 4)
-)
-
-// economicIntelligenceInputNullableFields maps the wire names of EconomicIntelligenceInput's nullable fields (required or optional) to their field bits.
-var economicIntelligenceInputNullableFields = map[string]*big.Int{
-	"answer": economicIntelligenceInputFieldAnswer,
-}
-
-type EconomicIntelligenceInput struct {
-	// What the run used: one of the options, or your own text for a `whop_ai` recommendation. `null` until a run starts.
-	Answer *string `json:"answer,omitempty" url:"answer,omitempty"`
-	// Identifies the input when you answer it.
-	ID string `json:"id" url:"id"`
-	// What you are choosing, such as the daily ad budget.
-	Label   string   `json:"label" url:"label"`
-	Options []string `json:"options" url:"options"`
-	// A plan sentence with one {answer} blank to fill with the selected answer.
-	Template string `json:"template" url:"template"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (e *EconomicIntelligenceInput) GetAnswer() *string {
-	if e == nil {
-		return nil
-	}
-	return e.Answer
-}
-
-func (e *EconomicIntelligenceInput) GetID() string {
-	if e == nil {
-		return ""
-	}
-	return e.ID
-}
-
-func (e *EconomicIntelligenceInput) GetLabel() string {
-	if e == nil {
-		return ""
-	}
-	return e.Label
-}
-
-func (e *EconomicIntelligenceInput) GetOptions() []string {
-	if e == nil {
-		return nil
-	}
-	return e.Options
-}
-
-func (e *EconomicIntelligenceInput) GetTemplate() string {
-	if e == nil {
-		return ""
-	}
-	return e.Template
-}
-
-func (e *EconomicIntelligenceInput) GetExtraProperties() map[string]interface{} {
-	if e == nil {
-		return nil
-	}
-	return e.extraProperties
-}
-
-func (e *EconomicIntelligenceInput) require(field *big.Int) {
-	next := new(big.Int)
-	if e.explicitFields != nil {
-		next.Set(e.explicitFields)
-	}
-	next.Or(next, field)
-	e.explicitFields = next
-}
-
-// SetAnswer sets the Answer field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligenceInput) SetAnswer(answer *string) {
-	e.Answer = answer
-	e.require(economicIntelligenceInputFieldAnswer)
-}
-
-// SetID sets the ID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligenceInput) SetID(id string) {
-	e.ID = id
-	e.require(economicIntelligenceInputFieldID)
-}
-
-// SetLabel sets the Label field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligenceInput) SetLabel(label string) {
-	e.Label = label
-	e.require(economicIntelligenceInputFieldLabel)
-}
-
-// SetOptions sets the Options field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligenceInput) SetOptions(options []string) {
-	e.Options = options
-	e.require(economicIntelligenceInputFieldOptions)
-}
-
-// SetTemplate sets the Template field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligenceInput) SetTemplate(template string) {
-	e.Template = template
-	e.require(economicIntelligenceInputFieldTemplate)
-}
-
-func (e *EconomicIntelligenceInput) UnmarshalJSON(data []byte) error {
-	type unmarshaler EconomicIntelligenceInput
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*e = EconomicIntelligenceInput(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *e)
-	if err != nil {
-		return err
-	}
-	e.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, economicIntelligenceInputNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		e.require(presentFields)
-	}
-	e.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (e *EconomicIntelligenceInput) MarshalJSON() ([]byte, error) {
-	type embed EconomicIntelligenceInput
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*e),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (e *EconomicIntelligenceInput) String() string {
-	if e == nil {
-		return "<nil>"
-	}
-	if len(e.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(e); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", e)
-}
-
-var (
-	economicIntelligenceOperationFieldDescription = big.NewInt(1 << 0)
-	economicIntelligenceOperationFieldToolName    = big.NewInt(1 << 1)
-)
-
-// economicIntelligenceOperationNullableFields maps the wire names of EconomicIntelligenceOperation's nullable fields (required or optional) to their field bits.
-var economicIntelligenceOperationNullableFields = map[string]*big.Int{
-	"description": economicIntelligenceOperationFieldDescription,
-}
-
-type EconomicIntelligenceOperation struct {
-	// Concise description of the operation and affected resource, or null for older recommendations.
-	Description *string `json:"description,omitempty" url:"description,omitempty"`
-	// API operation or assistant tool name.
-	ToolName string `json:"tool_name" url:"tool_name"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (e *EconomicIntelligenceOperation) GetDescription() *string {
-	if e == nil {
-		return nil
-	}
-	return e.Description
-}
-
-func (e *EconomicIntelligenceOperation) GetToolName() string {
-	if e == nil {
-		return ""
-	}
-	return e.ToolName
-}
-
-func (e *EconomicIntelligenceOperation) GetExtraProperties() map[string]interface{} {
-	if e == nil {
-		return nil
-	}
-	return e.extraProperties
-}
-
-func (e *EconomicIntelligenceOperation) require(field *big.Int) {
-	next := new(big.Int)
-	if e.explicitFields != nil {
-		next.Set(e.explicitFields)
-	}
-	next.Or(next, field)
-	e.explicitFields = next
-}
-
-// SetDescription sets the Description field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligenceOperation) SetDescription(description *string) {
-	e.Description = description
-	e.require(economicIntelligenceOperationFieldDescription)
-}
-
-// SetToolName sets the ToolName field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *EconomicIntelligenceOperation) SetToolName(toolName string) {
-	e.ToolName = toolName
-	e.require(economicIntelligenceOperationFieldToolName)
-}
-
-func (e *EconomicIntelligenceOperation) UnmarshalJSON(data []byte) error {
-	type unmarshaler EconomicIntelligenceOperation
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*e = EconomicIntelligenceOperation(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *e)
-	if err != nil {
-		return err
-	}
-	e.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, economicIntelligenceOperationNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		e.require(presentFields)
-	}
-	e.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (e *EconomicIntelligenceOperation) MarshalJSON() ([]byte, error) {
-	type embed EconomicIntelligenceOperation
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*e),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (e *EconomicIntelligenceOperation) String() string {
-	if e == nil {
-		return "<nil>"
-	}
-	if len(e.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(e); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", e)
-}
-
-// How the user rated this recommendation, or `null` if they have not rated it
-type EconomicIntelligenceSentiment string
-
-const (
-	EconomicIntelligenceSentimentPositive EconomicIntelligenceSentiment = "positive"
-	EconomicIntelligenceSentimentNegative EconomicIntelligenceSentiment = "negative"
-)
-
-func NewEconomicIntelligenceSentimentFromString(s string) (EconomicIntelligenceSentiment, error) {
-	switch s {
-	case "positive":
-		return EconomicIntelligenceSentimentPositive, nil
-	case "negative":
-		return EconomicIntelligenceSentimentNegative, nil
-	}
-	var t EconomicIntelligenceSentiment
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (e EconomicIntelligenceSentiment) Ptr() *EconomicIntelligenceSentiment {
-	return &e
-}
-
-// `queued` when awaiting generation; `pending` while generating or preparing its work; `ready` when available to run; `running` while Whop AI or the recommendation's API calls carry it out; `executed` when carried out; `incomplete` when the run ended without carrying it out; `superseded` when rejected or replaced.
+// `queued` waits for generation. `pending` is being generated or prepared. `ready` can run. `running` is sending its API calls. `executed` was carried out. `incomplete` ended before it was carried out. `superseded` was rejected or replaced.
 type EconomicIntelligenceStatus string
 
 const (
@@ -1272,105 +796,17 @@ func (l *ListEconomicIntelligenceResponsePageInfo) String() string {
 	return fmt.Sprintf("%#v", l)
 }
 
-// With `status: executed`, the page where the run's result can be seen when it is not one resource, such as the checkout links list. The recommendation's `result_url` becomes that page on the account's dashboard.
-type UpdateEconomicIntelligenceRequestResultPage string
-
-const (
-	UpdateEconomicIntelligenceRequestResultPageHome          UpdateEconomicIntelligenceRequestResultPage = "home"
-	UpdateEconomicIntelligenceRequestResultPageProducts      UpdateEconomicIntelligenceRequestResultPage = "products"
-	UpdateEconomicIntelligenceRequestResultPageAds           UpdateEconomicIntelligenceRequestResultPage = "ads"
-	UpdateEconomicIntelligenceRequestResultPageWebsites      UpdateEconomicIntelligenceRequestResultPage = "websites"
-	UpdateEconomicIntelligenceRequestResultPageCheckoutLinks UpdateEconomicIntelligenceRequestResultPage = "checkout_links"
-	UpdateEconomicIntelligenceRequestResultPageTrackingLinks UpdateEconomicIntelligenceRequestResultPage = "tracking_links"
-	UpdateEconomicIntelligenceRequestResultPagePromoCodes    UpdateEconomicIntelligenceRequestResultPage = "promo_codes"
-	UpdateEconomicIntelligenceRequestResultPagePayments      UpdateEconomicIntelligenceRequestResultPage = "payments"
-	UpdateEconomicIntelligenceRequestResultPageCustomers     UpdateEconomicIntelligenceRequestResultPage = "customers"
-	UpdateEconomicIntelligenceRequestResultPageAffiliates    UpdateEconomicIntelligenceRequestResultPage = "affiliates"
-	UpdateEconomicIntelligenceRequestResultPageAnalytics     UpdateEconomicIntelligenceRequestResultPage = "analytics"
-	UpdateEconomicIntelligenceRequestResultPageStorePage     UpdateEconomicIntelligenceRequestResultPage = "store_page"
-)
-
-func NewUpdateEconomicIntelligenceRequestResultPageFromString(s string) (UpdateEconomicIntelligenceRequestResultPage, error) {
-	switch s {
-	case "home":
-		return UpdateEconomicIntelligenceRequestResultPageHome, nil
-	case "products":
-		return UpdateEconomicIntelligenceRequestResultPageProducts, nil
-	case "ads":
-		return UpdateEconomicIntelligenceRequestResultPageAds, nil
-	case "websites":
-		return UpdateEconomicIntelligenceRequestResultPageWebsites, nil
-	case "checkout_links":
-		return UpdateEconomicIntelligenceRequestResultPageCheckoutLinks, nil
-	case "tracking_links":
-		return UpdateEconomicIntelligenceRequestResultPageTrackingLinks, nil
-	case "promo_codes":
-		return UpdateEconomicIntelligenceRequestResultPagePromoCodes, nil
-	case "payments":
-		return UpdateEconomicIntelligenceRequestResultPagePayments, nil
-	case "customers":
-		return UpdateEconomicIntelligenceRequestResultPageCustomers, nil
-	case "affiliates":
-		return UpdateEconomicIntelligenceRequestResultPageAffiliates, nil
-	case "analytics":
-		return UpdateEconomicIntelligenceRequestResultPageAnalytics, nil
-	case "store_page":
-		return UpdateEconomicIntelligenceRequestResultPageStorePage, nil
-	}
-	var t UpdateEconomicIntelligenceRequestResultPage
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateEconomicIntelligenceRequestResultPage) Ptr() *UpdateEconomicIntelligenceRequestResultPage {
-	return &u
-}
-
-// A signed-in user can rate a recommendation as `positive` or `negative`. Can be sent alone or together with status.
-type UpdateEconomicIntelligenceRequestSentiment string
-
-const (
-	UpdateEconomicIntelligenceRequestSentimentPositive UpdateEconomicIntelligenceRequestSentiment = "positive"
-	UpdateEconomicIntelligenceRequestSentimentNegative UpdateEconomicIntelligenceRequestSentiment = "negative"
-)
-
-func NewUpdateEconomicIntelligenceRequestSentimentFromString(s string) (UpdateEconomicIntelligenceRequestSentiment, error) {
-	switch s {
-	case "positive":
-		return UpdateEconomicIntelligenceRequestSentimentPositive, nil
-	case "negative":
-		return UpdateEconomicIntelligenceRequestSentimentNegative, nil
-	}
-	var t UpdateEconomicIntelligenceRequestSentiment
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (u UpdateEconomicIntelligenceRequestSentiment) Ptr() *UpdateEconomicIntelligenceRequestSentiment {
-	return &u
-}
-
-// Use `running` to start a run of a ready recommendation, `executed` to record that it was carried out, `incomplete` to record that a running recommendation's run ended without carrying it out, `superseded` to reject a ready recommendation, or `acknowledged` to mark an executed run as seen; the recommendation stays `executed` and records `acknowledged_at`.
+// Use `superseded` to dismiss a ready recommendation.
 type UpdateEconomicIntelligenceRequestStatus string
 
 const (
-	UpdateEconomicIntelligenceRequestStatusRunning      UpdateEconomicIntelligenceRequestStatus = "running"
-	UpdateEconomicIntelligenceRequestStatusExecuted     UpdateEconomicIntelligenceRequestStatus = "executed"
-	UpdateEconomicIntelligenceRequestStatusIncomplete   UpdateEconomicIntelligenceRequestStatus = "incomplete"
-	UpdateEconomicIntelligenceRequestStatusSuperseded   UpdateEconomicIntelligenceRequestStatus = "superseded"
-	UpdateEconomicIntelligenceRequestStatusAcknowledged UpdateEconomicIntelligenceRequestStatus = "acknowledged"
+	UpdateEconomicIntelligenceRequestStatusSuperseded UpdateEconomicIntelligenceRequestStatus = "superseded"
 )
 
 func NewUpdateEconomicIntelligenceRequestStatusFromString(s string) (UpdateEconomicIntelligenceRequestStatus, error) {
 	switch s {
-	case "running":
-		return UpdateEconomicIntelligenceRequestStatusRunning, nil
-	case "executed":
-		return UpdateEconomicIntelligenceRequestStatusExecuted, nil
-	case "incomplete":
-		return UpdateEconomicIntelligenceRequestStatusIncomplete, nil
 	case "superseded":
 		return UpdateEconomicIntelligenceRequestStatusSuperseded, nil
-	case "acknowledged":
-		return UpdateEconomicIntelligenceRequestStatusAcknowledged, nil
 	}
 	var t UpdateEconomicIntelligenceRequestStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1381,15 +817,9 @@ func (u UpdateEconomicIntelligenceRequestStatus) Ptr() *UpdateEconomicIntelligen
 }
 
 var (
-	updateEconomicIntelligenceRequestFieldID           = big.NewInt(1 << 0)
-	updateEconomicIntelligenceRequestFieldAccountID    = big.NewInt(1 << 1)
-	updateEconomicIntelligenceRequestFieldInput        = big.NewInt(1 << 2)
-	updateEconomicIntelligenceRequestFieldResultID     = big.NewInt(1 << 3)
-	updateEconomicIntelligenceRequestFieldResultPage   = big.NewInt(1 << 4)
-	updateEconomicIntelligenceRequestFieldResultURL    = big.NewInt(1 << 5)
-	updateEconomicIntelligenceRequestFieldSentiment    = big.NewInt(1 << 6)
-	updateEconomicIntelligenceRequestFieldStatus       = big.NewInt(1 << 7)
-	updateEconomicIntelligenceRequestFieldUserFeedback = big.NewInt(1 << 8)
+	updateEconomicIntelligenceRequestFieldID        = big.NewInt(1 << 0)
+	updateEconomicIntelligenceRequestFieldAccountID = big.NewInt(1 << 1)
+	updateEconomicIntelligenceRequestFieldStatus    = big.NewInt(1 << 2)
 )
 
 type UpdateEconomicIntelligenceRequest struct {
@@ -1397,20 +827,8 @@ type UpdateEconomicIntelligenceRequest struct {
 	ID string `json:"-" url:"-"`
 	// Account ID, prefixed `biz_`. Defaults to the API key's own account.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
-	// No longer read: recommendations are written for the business as it changes. Up to 1000 characters.
-	Input *string `json:"input,omitempty" url:"-"`
-	// With `status: executed`, the ID of what the run produced or changed, and the recommendation's `result_url` becomes where to view it: an ad (`ad_`), ad group (`adgrp_`) or ad campaign (`adcamp_`), a website (`app_`), a product (`prod_`), a plan (`plan_`), a checkout link (`ch_`), a promo code (`promo_`), or an experience (`exp_`). Without `result_id` or `result_page`, `result_url` links to the resource the recommendation was about, when it names one. Send only one of `result_id`, `result_page` and `result_url`.
-	ResultID *string `json:"result_id,omitempty" url:"-"`
-	// With `status: executed`, the page where the run's result can be seen when it is not one resource, such as the checkout links list. The recommendation's `result_url` becomes that page on the account's dashboard.
-	ResultPage *UpdateEconomicIntelligenceRequestResultPage `json:"result_page,omitempty" url:"-"`
-	// With `status: executed`, where to view what was produced when it is outside Whop. An http or https URL. Prefer `result_id` for anything on Whop.
-	ResultURL *string `json:"result_url,omitempty" url:"-"`
-	// A signed-in user can rate a recommendation as `positive` or `negative`. Can be sent alone or together with status.
-	Sentiment *UpdateEconomicIntelligenceRequestSentiment `json:"sentiment,omitempty" url:"-"`
-	// Use `running` to start a run of a ready recommendation, `executed` to record that it was carried out, `incomplete` to record that a running recommendation's run ended without carrying it out, `superseded` to reject a ready recommendation, or `acknowledged` to mark an executed run as seen; the recommendation stays `executed` and records `acknowledged_at`.
-	Status *UpdateEconomicIntelligenceRequestStatus `json:"status,omitempty" url:"-"`
-	// An optional explanation of the rating or rejection.
-	UserFeedback *string `json:"user_feedback,omitempty" url:"-"`
+	// Use `superseded` to dismiss a ready recommendation.
+	Status UpdateEconomicIntelligenceRequestStatus `json:"status" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1439,53 +857,11 @@ func (u *UpdateEconomicIntelligenceRequest) SetAccountID(accountID *string) {
 	u.require(updateEconomicIntelligenceRequestFieldAccountID)
 }
 
-// SetInput sets the Input field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEconomicIntelligenceRequest) SetInput(input *string) {
-	u.Input = input
-	u.require(updateEconomicIntelligenceRequestFieldInput)
-}
-
-// SetResultID sets the ResultID field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEconomicIntelligenceRequest) SetResultID(resultID *string) {
-	u.ResultID = resultID
-	u.require(updateEconomicIntelligenceRequestFieldResultID)
-}
-
-// SetResultPage sets the ResultPage field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEconomicIntelligenceRequest) SetResultPage(resultPage *UpdateEconomicIntelligenceRequestResultPage) {
-	u.ResultPage = resultPage
-	u.require(updateEconomicIntelligenceRequestFieldResultPage)
-}
-
-// SetResultURL sets the ResultURL field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEconomicIntelligenceRequest) SetResultURL(resultURL *string) {
-	u.ResultURL = resultURL
-	u.require(updateEconomicIntelligenceRequestFieldResultURL)
-}
-
-// SetSentiment sets the Sentiment field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEconomicIntelligenceRequest) SetSentiment(sentiment *UpdateEconomicIntelligenceRequestSentiment) {
-	u.Sentiment = sentiment
-	u.require(updateEconomicIntelligenceRequestFieldSentiment)
-}
-
 // SetStatus sets the Status field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEconomicIntelligenceRequest) SetStatus(status *UpdateEconomicIntelligenceRequestStatus) {
+func (u *UpdateEconomicIntelligenceRequest) SetStatus(status UpdateEconomicIntelligenceRequestStatus) {
 	u.Status = status
 	u.require(updateEconomicIntelligenceRequestFieldStatus)
-}
-
-// SetUserFeedback sets the UserFeedback field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UpdateEconomicIntelligenceRequest) SetUserFeedback(userFeedback *string) {
-	u.UserFeedback = userFeedback
-	u.require(updateEconomicIntelligenceRequestFieldUserFeedback)
 }
 
 func (u *UpdateEconomicIntelligenceRequest) UnmarshalJSON(data []byte) error {
