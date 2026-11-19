@@ -6802,6 +6802,14 @@ client.AppInstallations.List(
 <dl>
 <dd>
 
+**requestingReauthorization:** `*bool` — When `true`, only return installations whose app asks for permissions the account hasn't approved yet. When `false`, only return the others.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **first:** `*int` — Number of results to return from the start of the range.
     
 </dd>
@@ -6827,6 +6835,14 @@ client.AppInstallations.List(
 <dd>
 
 **before:** `*string` — Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**includeTotalCount:** `*bool` — Set to `true` to return the number of matching results in `page_info.total_count`. Send `first=0` as well to return the count without any results.
     
 </dd>
 </dl>
