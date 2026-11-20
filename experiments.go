@@ -15,9 +15,9 @@ var (
 )
 
 type ActivateExperimentsRequest struct {
-	// The experiment identifier — the `expt_` id or the flag_key handle.
+	// The experiment identifier, the `expt_` id or the `flag_key` handle.
 	ID string `json:"-" url:"-"`
-	// Owning account ID. Required when id is a flag key; optional for an expt_ ID.
+	// Owning account ID. Required when `id` is a flag key, optional for an `expt_` ID.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -204,9 +204,9 @@ var (
 )
 
 type EndExperimentsRequest struct {
-	// The experiment identifier — the `expt_` id or the flag_key handle.
+	// The experiment identifier, the `expt_` id or the `flag_key` handle.
 	ID string `json:"-" url:"-"`
-	// Owning account ID. Required when id is a flag key; optional for an expt_ ID.
+	// Owning account ID. Required when `id` is a flag key, optional for an `expt_` ID.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// What you learned and why you chose this outcome. Required.
 	Findings string `json:"findings" url:"-"`
@@ -467,9 +467,9 @@ var (
 )
 
 type PauseExperimentsRequest struct {
-	// The experiment identifier — the `expt_` id or the flag_key handle.
+	// The experiment identifier, the `expt_` id or the `flag_key` handle.
 	ID string `json:"-" url:"-"`
-	// Owning account ID. Required when id is a flag key; optional for an expt_ ID.
+	// Owning account ID. Required when `id` is a flag key, optional for an `expt_` ID.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -500,14 +500,72 @@ func (p *PauseExperimentsRequest) SetAccountID(accountID *string) {
 }
 
 var (
+	resultsExperimentsRequestFieldID        = big.NewInt(1 << 0)
+	resultsExperimentsRequestFieldAccountID = big.NewInt(1 << 1)
+	resultsExperimentsRequestFieldFrom      = big.NewInt(1 << 2)
+	resultsExperimentsRequestFieldTo        = big.NewInt(1 << 3)
+)
+
+type ResultsExperimentsRequest struct {
+	// The experiment identifier, the `expt_` id or the `flag_key` handle.
+	ID string `json:"-" url:"-"`
+	// Owning account ID. Required when `id` is a flag key, optional for an `expt_` ID.
+	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// Start of the reporting window, as an ISO 8601 date or timestamp. Defaults to the experiment's start date.
+	From *string `json:"-" url:"from,omitempty"`
+	// End of the reporting window, as an ISO 8601 date or timestamp. Defaults to today.
+	To *string `json:"-" url:"to,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (r *ResultsExperimentsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResultsExperimentsRequest) SetID(id string) {
+	r.ID = id
+	r.require(resultsExperimentsRequestFieldID)
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResultsExperimentsRequest) SetAccountID(accountID *string) {
+	r.AccountID = accountID
+	r.require(resultsExperimentsRequestFieldAccountID)
+}
+
+// SetFrom sets the From field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResultsExperimentsRequest) SetFrom(from *string) {
+	r.From = from
+	r.require(resultsExperimentsRequestFieldFrom)
+}
+
+// SetTo sets the To field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResultsExperimentsRequest) SetTo(to *string) {
+	r.To = to
+	r.require(resultsExperimentsRequestFieldTo)
+}
+
+var (
 	retrieveExperimentsRequestFieldID        = big.NewInt(1 << 0)
 	retrieveExperimentsRequestFieldAccountID = big.NewInt(1 << 1)
 )
 
 type RetrieveExperimentsRequest struct {
-	// The experiment identifier — the `expt_` id or the flag_key handle.
+	// The experiment identifier, the `expt_` id or the `flag_key` handle.
 	ID string `json:"-" url:"-"`
-	// Owning account ID. Required when id is a flag key; optional for an expt_ ID.
+	// Owning account ID. Required when `id` is a flag key, optional for an `expt_` ID.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -550,27 +608,30 @@ var (
 	experimentFieldFlagKey               = big.NewInt(1 << 9)
 	experimentFieldHypothesis            = big.NewInt(1 << 10)
 	experimentFieldID                    = big.NewInt(1 << 11)
-	experimentFieldMetadata              = big.NewInt(1 << 12)
-	experimentFieldName                  = big.NewInt(1 << 13)
-	experimentFieldRelatedResource       = big.NewInt(1 << 14)
-	experimentFieldStartedAt             = big.NewInt(1 << 15)
-	experimentFieldStatus                = big.NewInt(1 << 16)
-	experimentFieldUpdatedAt             = big.NewInt(1 << 17)
-	experimentFieldVariants              = big.NewInt(1 << 18)
-	experimentFieldWinningArm            = big.NewInt(1 << 19)
+	experimentFieldKind                  = big.NewInt(1 << 12)
+	experimentFieldMetadata              = big.NewInt(1 << 13)
+	experimentFieldName                  = big.NewInt(1 << 14)
+	experimentFieldRelatedResource       = big.NewInt(1 << 15)
+	experimentFieldStartedAt             = big.NewInt(1 << 16)
+	experimentFieldStatus                = big.NewInt(1 << 17)
+	experimentFieldTargetStats           = big.NewInt(1 << 18)
+	experimentFieldUpdatedAt             = big.NewInt(1 << 19)
+	experimentFieldVariants              = big.NewInt(1 << 20)
+	experimentFieldWinningArm            = big.NewInt(1 << 21)
 )
 
 // experimentNullableFields maps the wire names of Experiment's nullable fields (required or optional) to their field bits.
 var experimentNullableFields = map[string]*big.Int{
-	"bucket_by":   experimentFieldBucketBy,
-	"created_at":  experimentFieldCreatedAt,
-	"created_by":  experimentFieldCreatedBy,
-	"ended_at":    experimentFieldEndedAt,
-	"findings":    experimentFieldFindings,
-	"hypothesis":  experimentFieldHypothesis,
-	"started_at":  experimentFieldStartedAt,
-	"updated_at":  experimentFieldUpdatedAt,
-	"winning_arm": experimentFieldWinningArm,
+	"bucket_by":    experimentFieldBucketBy,
+	"created_at":   experimentFieldCreatedAt,
+	"created_by":   experimentFieldCreatedBy,
+	"ended_at":     experimentFieldEndedAt,
+	"findings":     experimentFieldFindings,
+	"hypothesis":   experimentFieldHypothesis,
+	"started_at":   experimentFieldStartedAt,
+	"target_stats": experimentFieldTargetStats,
+	"updated_at":   experimentFieldUpdatedAt,
+	"winning_arm":  experimentFieldWinningArm,
 }
 
 type Experiment struct {
@@ -597,6 +658,8 @@ type Experiment struct {
 	Hypothesis *string `json:"hypothesis,omitempty" url:"hypothesis,omitempty"`
 	// Unique identifier for the experiment, prefixed `expt_`.
 	ID string `json:"id" url:"id"`
+	// The kind of experiment: `boolean` is a feature flag, `experiment` assigns its subjects to arms, `beforeafter` compares a change with the period before it.
+	Kind *ExperimentKind `json:"kind,omitempty" url:"kind,omitempty"`
 	// Key-value pairs attached when the experiment was created. Empty when none were set.
 	Metadata map[string]string `json:"metadata,omitempty" url:"metadata,omitempty"`
 	// Human-readable display name.
@@ -606,8 +669,10 @@ type Experiment struct {
 	// When the experiment began collecting data, as an ISO 8601 timestamp. `null` for drafts.
 	StartedAt *string `json:"started_at,omitempty" url:"started_at,omitempty"`
 	// Lifecycle state. `draft` — not yet live; `active` — currently running; `paused` — traffic paused; `ended` — concluded.
-	Status    ExperimentStatus `json:"status" url:"status"`
-	UpdatedAt *string          `json:"updated_at,omitempty" url:"updated_at,omitempty"`
+	Status ExperimentStatus `json:"status" url:"status"`
+	// The measures the experiment sets out to move, as the stats API reads them. `null` when there are none.
+	TargetStats []*ExperimentStat `json:"target_stats,omitempty" url:"target_stats,omitempty"`
+	UpdatedAt   *string           `json:"updated_at,omitempty" url:"updated_at,omitempty"`
 	// Treatment arms. Users outside every arm's allocation form the implicit `control` group. Weights only ever grow and arms are never removed, so a user moves from control into a treatment at most once.
 	Variants []*ExperimentVariantsItem `json:"variants" url:"variants"`
 	// The treatment that won, set when the experiment was ended. Once set, every evaluation returns this arm to every caller regardless of targeting or allocation, and no further exposures are recorded. `null` means control won — an ended experiment with no winning arm evaluates to `control` for everyone. Always `null` for feature flags, which simply evaluate to disabled once ended.
@@ -704,6 +769,13 @@ func (e *Experiment) GetID() string {
 	return e.ID
 }
 
+func (e *Experiment) GetKind() *ExperimentKind {
+	if e == nil {
+		return nil
+	}
+	return e.Kind
+}
+
 func (e *Experiment) GetMetadata() map[string]string {
 	if e == nil {
 		return nil
@@ -737,6 +809,13 @@ func (e *Experiment) GetStatus() ExperimentStatus {
 		return ""
 	}
 	return e.Status
+}
+
+func (e *Experiment) GetTargetStats() []*ExperimentStat {
+	if e == nil {
+		return nil
+	}
+	return e.TargetStats
 }
 
 func (e *Experiment) GetUpdatedAt() *string {
@@ -860,6 +939,13 @@ func (e *Experiment) SetID(id string) {
 	e.require(experimentFieldID)
 }
 
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *Experiment) SetKind(kind *ExperimentKind) {
+	e.Kind = kind
+	e.require(experimentFieldKind)
+}
+
 // SetMetadata sets the Metadata field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (e *Experiment) SetMetadata(metadata map[string]string) {
@@ -893,6 +979,13 @@ func (e *Experiment) SetStartedAt(startedAt *string) {
 func (e *Experiment) SetStatus(status ExperimentStatus) {
 	e.Status = status
 	e.require(experimentFieldStatus)
+}
+
+// SetTargetStats sets the TargetStats field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *Experiment) SetTargetStats(targetStats []*ExperimentStat) {
+	e.TargetStats = targetStats
+	e.require(experimentFieldTargetStats)
 }
 
 // SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
@@ -951,6 +1044,195 @@ func (e *Experiment) MarshalJSON() ([]byte, error) {
 }
 
 func (e *Experiment) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+var (
+	experimentArmResultsFieldConfidenceInterval     = big.NewInt(1 << 0)
+	experimentArmResultsFieldLiftConfidenceInterval = big.NewInt(1 << 1)
+	experimentArmResultsFieldLiftPercentage         = big.NewInt(1 << 2)
+	experimentArmResultsFieldLiftUnit               = big.NewInt(1 << 3)
+	experimentArmResultsFieldParams                 = big.NewInt(1 << 4)
+	experimentArmResultsFieldValue                  = big.NewInt(1 << 5)
+)
+
+// experimentArmResultsNullableFields maps the wire names of ExperimentArmResults's nullable fields (required or optional) to their field bits.
+var experimentArmResultsNullableFields = map[string]*big.Int{
+	"confidence_interval":      experimentArmResultsFieldConfidenceInterval,
+	"lift_confidence_interval": experimentArmResultsFieldLiftConfidenceInterval,
+	"lift_percentage":          experimentArmResultsFieldLiftPercentage,
+	"lift_unit":                experimentArmResultsFieldLiftUnit,
+	"params":                   experimentArmResultsFieldParams,
+	"value":                    experimentArmResultsFieldValue,
+}
+
+type ExperimentArmResults struct {
+	// The lower and upper bound of the confidence interval around `value`, in the same unit. `null` when unknown.
+	ConfidenceInterval []float64 `json:"confidence_interval,omitempty" url:"confidence_interval,omitempty"`
+	// The lower and upper bound of the confidence interval around `lift_percentage`, in percentage points. `null` when unknown.
+	LiftConfidenceInterval []float64 `json:"lift_confidence_interval,omitempty" url:"lift_confidence_interval,omitempty"`
+	// This arm's change over the control, as a percentage of the control. `null` on the control, or when the control's value is zero.
+	LiftPercentage *float64 `json:"lift_percentage,omitempty" url:"lift_percentage,omitempty"`
+	// This arm's change over the control, in the reading's unit. `null` on the control.
+	LiftUnit *float64 `json:"lift_unit,omitempty" url:"lift_unit,omitempty"`
+	// This arm's own parameters where they differ from the reading's. `null` when they do not.
+	Params map[string]*string `json:"params,omitempty" url:"params,omitempty"`
+	// The measure on this arm, in the reading's unit. `null` when unknown.
+	Value *float64 `json:"value,omitempty" url:"value,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *ExperimentArmResults) GetConfidenceInterval() []float64 {
+	if e == nil {
+		return nil
+	}
+	return e.ConfidenceInterval
+}
+
+func (e *ExperimentArmResults) GetLiftConfidenceInterval() []float64 {
+	if e == nil {
+		return nil
+	}
+	return e.LiftConfidenceInterval
+}
+
+func (e *ExperimentArmResults) GetLiftPercentage() *float64 {
+	if e == nil {
+		return nil
+	}
+	return e.LiftPercentage
+}
+
+func (e *ExperimentArmResults) GetLiftUnit() *float64 {
+	if e == nil {
+		return nil
+	}
+	return e.LiftUnit
+}
+
+func (e *ExperimentArmResults) GetParams() map[string]*string {
+	if e == nil {
+		return nil
+	}
+	return e.Params
+}
+
+func (e *ExperimentArmResults) GetValue() *float64 {
+	if e == nil {
+		return nil
+	}
+	return e.Value
+}
+
+func (e *ExperimentArmResults) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *ExperimentArmResults) require(field *big.Int) {
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
+	}
+	next.Or(next, field)
+	e.explicitFields = next
+}
+
+// SetConfidenceInterval sets the ConfidenceInterval field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentArmResults) SetConfidenceInterval(confidenceInterval []float64) {
+	e.ConfidenceInterval = confidenceInterval
+	e.require(experimentArmResultsFieldConfidenceInterval)
+}
+
+// SetLiftConfidenceInterval sets the LiftConfidenceInterval field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentArmResults) SetLiftConfidenceInterval(liftConfidenceInterval []float64) {
+	e.LiftConfidenceInterval = liftConfidenceInterval
+	e.require(experimentArmResultsFieldLiftConfidenceInterval)
+}
+
+// SetLiftPercentage sets the LiftPercentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentArmResults) SetLiftPercentage(liftPercentage *float64) {
+	e.LiftPercentage = liftPercentage
+	e.require(experimentArmResultsFieldLiftPercentage)
+}
+
+// SetLiftUnit sets the LiftUnit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentArmResults) SetLiftUnit(liftUnit *float64) {
+	e.LiftUnit = liftUnit
+	e.require(experimentArmResultsFieldLiftUnit)
+}
+
+// SetParams sets the Params field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentArmResults) SetParams(params map[string]*string) {
+	e.Params = params
+	e.require(experimentArmResultsFieldParams)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentArmResults) SetValue(value *float64) {
+	e.Value = value
+	e.require(experimentArmResultsFieldValue)
+}
+
+func (e *ExperimentArmResults) UnmarshalJSON(data []byte) error {
+	type unmarshaler ExperimentArmResults
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = ExperimentArmResults(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, experimentArmResultsNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *ExperimentArmResults) MarshalJSON() ([]byte, error) {
+	type embed ExperimentArmResults
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *ExperimentArmResults) String() string {
 	if e == nil {
 		return "<nil>"
 	}
@@ -1345,6 +1627,240 @@ func (e *ExperimentExposureBatch) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
+// The kind of experiment: `boolean` is a feature flag, `experiment` assigns its subjects to arms, `beforeafter` compares a change with the period before it.
+type ExperimentKind string
+
+const (
+	ExperimentKindBoolean     ExperimentKind = "boolean"
+	ExperimentKindExperiment  ExperimentKind = "experiment"
+	ExperimentKindBeforeafter ExperimentKind = "beforeafter"
+)
+
+func NewExperimentKindFromString(s string) (ExperimentKind, error) {
+	switch s {
+	case "boolean":
+		return ExperimentKindBoolean, nil
+	case "experiment":
+		return ExperimentKindExperiment, nil
+	case "beforeafter":
+		return ExperimentKindBeforeafter, nil
+	}
+	var t ExperimentKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e ExperimentKind) Ptr() *ExperimentKind {
+	return &e
+}
+
+var (
+	experimentReadingFieldControl   = big.NewInt(1 << 0)
+	experimentReadingFieldDirection = big.NewInt(1 << 1)
+	experimentReadingFieldEstimate  = big.NewInt(1 << 2)
+	experimentReadingFieldMetric    = big.NewInt(1 << 3)
+	experimentReadingFieldParams    = big.NewInt(1 << 4)
+	experimentReadingFieldUnit      = big.NewInt(1 << 5)
+)
+
+// experimentReadingNullableFields maps the wire names of ExperimentReading's nullable fields (required or optional) to their field bits.
+var experimentReadingNullableFields = map[string]*big.Int{
+	"estimate": experimentReadingFieldEstimate,
+}
+
+// A stat with its unit and its arms. `control` is always present. One more key per variant, named as the experiment's variants are, each with its lift over the control. A stat read against the period before the change has the one arm `after`.
+type ExperimentReading struct {
+	// The control arm, the one arm every reading has: a test's control, or the period before a change.
+	Control *ExperimentArmResults `json:"control" url:"control"`
+	// Which way the measure is expected to move.
+	Direction *ExperimentReadingDirection `json:"direction,omitempty" url:"direction,omitempty"`
+	// The value the measure is expected to reach, in its own unit. `null` when there is no estimate.
+	Estimate *float64 `json:"estimate,omitempty" url:"estimate,omitempty"`
+	// The stats metric, the key of `GET /stats/time_series/{metric}`.
+	Metric string `json:"metric" url:"metric"`
+	// The parameters of that metric beyond the account, as the stats API takes them.
+	Params map[string]string `json:"params" url:"params"`
+	// The unit of every arm's `value`, as the stats API names the metric's unit.
+	Unit string `json:"unit" url:"unit"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *ExperimentReading) GetControl() *ExperimentArmResults {
+	if e == nil {
+		return nil
+	}
+	return e.Control
+}
+
+func (e *ExperimentReading) GetDirection() *ExperimentReadingDirection {
+	if e == nil {
+		return nil
+	}
+	return e.Direction
+}
+
+func (e *ExperimentReading) GetEstimate() *float64 {
+	if e == nil {
+		return nil
+	}
+	return e.Estimate
+}
+
+func (e *ExperimentReading) GetMetric() string {
+	if e == nil {
+		return ""
+	}
+	return e.Metric
+}
+
+func (e *ExperimentReading) GetParams() map[string]string {
+	if e == nil {
+		return nil
+	}
+	return e.Params
+}
+
+func (e *ExperimentReading) GetUnit() string {
+	if e == nil {
+		return ""
+	}
+	return e.Unit
+}
+
+func (e *ExperimentReading) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *ExperimentReading) require(field *big.Int) {
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
+	}
+	next.Or(next, field)
+	e.explicitFields = next
+}
+
+// SetControl sets the Control field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentReading) SetControl(control *ExperimentArmResults) {
+	e.Control = control
+	e.require(experimentReadingFieldControl)
+}
+
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentReading) SetDirection(direction *ExperimentReadingDirection) {
+	e.Direction = direction
+	e.require(experimentReadingFieldDirection)
+}
+
+// SetEstimate sets the Estimate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentReading) SetEstimate(estimate *float64) {
+	e.Estimate = estimate
+	e.require(experimentReadingFieldEstimate)
+}
+
+// SetMetric sets the Metric field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentReading) SetMetric(metric string) {
+	e.Metric = metric
+	e.require(experimentReadingFieldMetric)
+}
+
+// SetParams sets the Params field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentReading) SetParams(params map[string]string) {
+	e.Params = params
+	e.require(experimentReadingFieldParams)
+}
+
+// SetUnit sets the Unit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentReading) SetUnit(unit string) {
+	e.Unit = unit
+	e.require(experimentReadingFieldUnit)
+}
+
+func (e *ExperimentReading) UnmarshalJSON(data []byte) error {
+	type unmarshaler ExperimentReading
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = ExperimentReading(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, experimentReadingNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *ExperimentReading) MarshalJSON() ([]byte, error) {
+	type embed ExperimentReading
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *ExperimentReading) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+// Which way the measure is expected to move.
+type ExperimentReadingDirection string
+
+const (
+	ExperimentReadingDirectionUp   ExperimentReadingDirection = "up"
+	ExperimentReadingDirectionDown ExperimentReadingDirection = "down"
+)
+
+func NewExperimentReadingDirectionFromString(s string) (ExperimentReadingDirection, error) {
+	switch s {
+	case "up":
+		return ExperimentReadingDirectionUp, nil
+	case "down":
+		return ExperimentReadingDirectionDown, nil
+	}
+	var t ExperimentReadingDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e ExperimentReadingDirection) Ptr() *ExperimentReadingDirection {
+	return &e
+}
+
 var (
 	experimentResourceReferenceFieldID     = big.NewInt(1 << 0)
 	experimentResourceReferenceFieldObject = big.NewInt(1 << 1)
@@ -1473,6 +1989,179 @@ func NewExperimentResourceReferenceObjectFromString(s string) (ExperimentResourc
 }
 
 func (e ExperimentResourceReferenceObject) Ptr() *ExperimentResourceReferenceObject {
+	return &e
+}
+
+var (
+	experimentStatFieldDirection = big.NewInt(1 << 0)
+	experimentStatFieldEstimate  = big.NewInt(1 << 1)
+	experimentStatFieldMetric    = big.NewInt(1 << 2)
+	experimentStatFieldParams    = big.NewInt(1 << 3)
+)
+
+// experimentStatNullableFields maps the wire names of ExperimentStat's nullable fields (required or optional) to their field bits.
+var experimentStatNullableFields = map[string]*big.Int{
+	"estimate": experimentStatFieldEstimate,
+}
+
+type ExperimentStat struct {
+	// Which way the measure should move.
+	Direction ExperimentStatDirection `json:"direction" url:"direction"`
+	// The value the measure is expected to reach, in its own unit. `null` when there is no estimate.
+	Estimate *float64 `json:"estimate,omitempty" url:"estimate,omitempty"`
+	// The stats metric, the key of `GET /stats/time_series/{metric}`.
+	Metric string `json:"metric" url:"metric"`
+	// The parameters of that metric beyond the account, as the stats API takes them.
+	Params map[string]string `json:"params" url:"params"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (e *ExperimentStat) GetDirection() ExperimentStatDirection {
+	if e == nil {
+		return ""
+	}
+	return e.Direction
+}
+
+func (e *ExperimentStat) GetEstimate() *float64 {
+	if e == nil {
+		return nil
+	}
+	return e.Estimate
+}
+
+func (e *ExperimentStat) GetMetric() string {
+	if e == nil {
+		return ""
+	}
+	return e.Metric
+}
+
+func (e *ExperimentStat) GetParams() map[string]string {
+	if e == nil {
+		return nil
+	}
+	return e.Params
+}
+
+func (e *ExperimentStat) GetExtraProperties() map[string]interface{} {
+	if e == nil {
+		return nil
+	}
+	return e.extraProperties
+}
+
+func (e *ExperimentStat) require(field *big.Int) {
+	next := new(big.Int)
+	if e.explicitFields != nil {
+		next.Set(e.explicitFields)
+	}
+	next.Or(next, field)
+	e.explicitFields = next
+}
+
+// SetDirection sets the Direction field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentStat) SetDirection(direction ExperimentStatDirection) {
+	e.Direction = direction
+	e.require(experimentStatFieldDirection)
+}
+
+// SetEstimate sets the Estimate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentStat) SetEstimate(estimate *float64) {
+	e.Estimate = estimate
+	e.require(experimentStatFieldEstimate)
+}
+
+// SetMetric sets the Metric field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentStat) SetMetric(metric string) {
+	e.Metric = metric
+	e.require(experimentStatFieldMetric)
+}
+
+// SetParams sets the Params field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentStat) SetParams(params map[string]string) {
+	e.Params = params
+	e.require(experimentStatFieldParams)
+}
+
+func (e *ExperimentStat) UnmarshalJSON(data []byte) error {
+	type unmarshaler ExperimentStat
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*e = ExperimentStat(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *e)
+	if err != nil {
+		return err
+	}
+	e.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, experimentStatNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		e.require(presentFields)
+	}
+	e.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (e *ExperimentStat) MarshalJSON() ([]byte, error) {
+	type embed ExperimentStat
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*e),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (e *ExperimentStat) String() string {
+	if e == nil {
+		return "<nil>"
+	}
+	if len(e.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(e.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(e); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", e)
+}
+
+// Which way the measure should move.
+type ExperimentStatDirection string
+
+const (
+	ExperimentStatDirectionUp   ExperimentStatDirection = "up"
+	ExperimentStatDirectionDown ExperimentStatDirection = "down"
+)
+
+func NewExperimentStatDirectionFromString(s string) (ExperimentStatDirection, error) {
+	switch s {
+	case "up":
+		return ExperimentStatDirectionUp, nil
+	case "down":
+		return ExperimentStatDirectionDown, nil
+	}
+	var t ExperimentStatDirection
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e ExperimentStatDirection) Ptr() *ExperimentStatDirection {
 	return &e
 }
 
@@ -2408,6 +3097,293 @@ func (l *ListExperimentsResponsePageInfo) String() string {
 }
 
 var (
+	resultsExperimentsResponseFieldConclusion  = big.NewInt(1 << 0)
+	resultsExperimentsResponseFieldEndedAt     = big.NewInt(1 << 1)
+	resultsExperimentsResponseFieldFlagKey     = big.NewInt(1 << 2)
+	resultsExperimentsResponseFieldFrom        = big.NewInt(1 << 3)
+	resultsExperimentsResponseFieldName        = big.NewInt(1 << 4)
+	resultsExperimentsResponseFieldPrimaryStat = big.NewInt(1 << 5)
+	resultsExperimentsResponseFieldStartedAt   = big.NewInt(1 << 6)
+	resultsExperimentsResponseFieldStats       = big.NewInt(1 << 7)
+	resultsExperimentsResponseFieldStatus      = big.NewInt(1 << 8)
+	resultsExperimentsResponseFieldTo          = big.NewInt(1 << 9)
+)
+
+// resultsExperimentsResponseNullableFields maps the wire names of ResultsExperimentsResponse's nullable fields (required or optional) to their field bits.
+var resultsExperimentsResponseNullableFields = map[string]*big.Int{
+	"conclusion":   resultsExperimentsResponseFieldConclusion,
+	"ended_at":     resultsExperimentsResponseFieldEndedAt,
+	"from":         resultsExperimentsResponseFieldFrom,
+	"primary_stat": resultsExperimentsResponseFieldPrimaryStat,
+	"started_at":   resultsExperimentsResponseFieldStartedAt,
+	"stats":        resultsExperimentsResponseFieldStats,
+	"to":           resultsExperimentsResponseFieldTo,
+}
+
+type ResultsExperimentsResponse struct {
+	// One sentence that states what the readings show. `null` until a reading exists.
+	Conclusion *string `json:"conclusion,omitempty" url:"conclusion,omitempty"`
+	// When the experiment concluded, as an ISO 8601 timestamp. `null` while still active.
+	EndedAt *string `json:"ended_at,omitempty" url:"ended_at,omitempty"`
+	// The experiment's flag_key.
+	FlagKey string `json:"flag_key" url:"flag_key"`
+	// Start of the reporting window, as an ISO 8601 date.
+	From *string `json:"from,omitempty" url:"from,omitempty"`
+	// Display name.
+	Name string `json:"name" url:"name"`
+	// The metric of the reading the experiment is judged on, one of the `metric` values in `stats`.
+	PrimaryStat *string `json:"primary_stat,omitempty" url:"primary_stat,omitempty"`
+	// When the experiment began, as an ISO 8601 timestamp.
+	StartedAt *string `json:"started_at,omitempty" url:"started_at,omitempty"`
+	// One reading per target stat, with the arms it was read on. `null` when there are none.
+	Stats []*ExperimentReading `json:"stats,omitempty" url:"stats,omitempty"`
+	// Current lifecycle state.
+	Status ResultsExperimentsResponseStatus `json:"status" url:"status"`
+	// End of the reporting window, as an ISO 8601 date.
+	To *string `json:"to,omitempty" url:"to,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResultsExperimentsResponse) GetConclusion() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Conclusion
+}
+
+func (r *ResultsExperimentsResponse) GetEndedAt() *string {
+	if r == nil {
+		return nil
+	}
+	return r.EndedAt
+}
+
+func (r *ResultsExperimentsResponse) GetFlagKey() string {
+	if r == nil {
+		return ""
+	}
+	return r.FlagKey
+}
+
+func (r *ResultsExperimentsResponse) GetFrom() *string {
+	if r == nil {
+		return nil
+	}
+	return r.From
+}
+
+func (r *ResultsExperimentsResponse) GetName() string {
+	if r == nil {
+		return ""
+	}
+	return r.Name
+}
+
+func (r *ResultsExperimentsResponse) GetPrimaryStat() *string {
+	if r == nil {
+		return nil
+	}
+	return r.PrimaryStat
+}
+
+func (r *ResultsExperimentsResponse) GetStartedAt() *string {
+	if r == nil {
+		return nil
+	}
+	return r.StartedAt
+}
+
+func (r *ResultsExperimentsResponse) GetStats() []*ExperimentReading {
+	if r == nil {
+		return nil
+	}
+	return r.Stats
+}
+
+func (r *ResultsExperimentsResponse) GetStatus() ResultsExperimentsResponseStatus {
+	if r == nil {
+		return ""
+	}
+	return r.Status
+}
+
+func (r *ResultsExperimentsResponse) GetTo() *string {
+	if r == nil {
+		return nil
+	}
+	return r.To
+}
+
+func (r *ResultsExperimentsResponse) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResultsExperimentsResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetConclusion sets the Conclusion field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResultsExperimentsResponse) SetConclusion(conclusion *string) {
+	r.Conclusion = conclusion
+	r.require(resultsExperimentsResponseFieldConclusion)
+}
+
+// SetEndedAt sets the EndedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResultsExperimentsResponse) SetEndedAt(endedAt *string) {
+	r.EndedAt = endedAt
+	r.require(resultsExperimentsResponseFieldEndedAt)
+}
+
+// SetFlagKey sets the FlagKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResultsExperimentsResponse) SetFlagKey(flagKey string) {
+	r.FlagKey = flagKey
+	r.require(resultsExperimentsResponseFieldFlagKey)
+}
+
+// SetFrom sets the From field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResultsExperimentsResponse) SetFrom(from *string) {
+	r.From = from
+	r.require(resultsExperimentsResponseFieldFrom)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResultsExperimentsResponse) SetName(name string) {
+	r.Name = name
+	r.require(resultsExperimentsResponseFieldName)
+}
+
+// SetPrimaryStat sets the PrimaryStat field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResultsExperimentsResponse) SetPrimaryStat(primaryStat *string) {
+	r.PrimaryStat = primaryStat
+	r.require(resultsExperimentsResponseFieldPrimaryStat)
+}
+
+// SetStartedAt sets the StartedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResultsExperimentsResponse) SetStartedAt(startedAt *string) {
+	r.StartedAt = startedAt
+	r.require(resultsExperimentsResponseFieldStartedAt)
+}
+
+// SetStats sets the Stats field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResultsExperimentsResponse) SetStats(stats []*ExperimentReading) {
+	r.Stats = stats
+	r.require(resultsExperimentsResponseFieldStats)
+}
+
+// SetStatus sets the Status field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResultsExperimentsResponse) SetStatus(status ResultsExperimentsResponseStatus) {
+	r.Status = status
+	r.require(resultsExperimentsResponseFieldStatus)
+}
+
+// SetTo sets the To field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResultsExperimentsResponse) SetTo(to *string) {
+	r.To = to
+	r.require(resultsExperimentsResponseFieldTo)
+}
+
+func (r *ResultsExperimentsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResultsExperimentsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResultsExperimentsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, resultsExperimentsResponseNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResultsExperimentsResponse) MarshalJSON() ([]byte, error) {
+	type embed ResultsExperimentsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResultsExperimentsResponse) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+// Current lifecycle state.
+type ResultsExperimentsResponseStatus string
+
+const (
+	ResultsExperimentsResponseStatusDraft  ResultsExperimentsResponseStatus = "draft"
+	ResultsExperimentsResponseStatusActive ResultsExperimentsResponseStatus = "active"
+	ResultsExperimentsResponseStatusPaused ResultsExperimentsResponseStatus = "paused"
+	ResultsExperimentsResponseStatusEnded  ResultsExperimentsResponseStatus = "ended"
+)
+
+func NewResultsExperimentsResponseStatusFromString(s string) (ResultsExperimentsResponseStatus, error) {
+	switch s {
+	case "draft":
+		return ResultsExperimentsResponseStatusDraft, nil
+	case "active":
+		return ResultsExperimentsResponseStatusActive, nil
+	case "paused":
+		return ResultsExperimentsResponseStatusPaused, nil
+	case "ended":
+		return ResultsExperimentsResponseStatusEnded, nil
+	}
+	var t ResultsExperimentsResponseStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r ResultsExperimentsResponseStatus) Ptr() *ResultsExperimentsResponseStatus {
+	return &r
+}
+
+var (
 	updateExperimentsRequestControlFieldRelatedResource = big.NewInt(1 << 0)
 )
 
@@ -2623,9 +3599,9 @@ var (
 )
 
 type UpdateExperimentsRequest struct {
-	// The experiment identifier — the `expt_` id or the flag_key handle.
+	// The experiment identifier, the `expt_` id or the `flag_key` handle.
 	ID string `json:"-" url:"-"`
-	// Owning account ID. Required when id is a flag key; optional for an expt_ ID.
+	// Owning account ID. Required when `id` is a flag key, optional for an `expt_` ID.
 	AccountID *string                          `json:"-" url:"account_id,omitempty"`
 	Control   *UpdateExperimentsRequestControl `json:"control,omitempty" url:"-"`
 	// Omit to leave unchanged. Send an empty string to clear it. Not accepted on feature flags. When setting it, structure it as "If we [change] for [cohort], then [measurable behavior] will [increase/decrease], resulting in [business outcome], because [evidence]. Created by [name]." same as on create.

@@ -282,3 +282,29 @@ func TestExperimentsPauseWithWireMock(
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestExperimentsPauseWithWireMock", "POST", "/experiments/id/pause", nil, 1)
 }
+
+func TestExperimentsResultsWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.ResultsExperimentsRequest{
+		ID: "id",
+	}
+	_, invocationErr := client.Experiments.Results(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestExperimentsResultsWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestExperimentsResultsWithWireMock", "GET", "/experiments/id/results", nil, 1)
+}
