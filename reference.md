@@ -28850,6 +28850,14 @@ client.Notifications.Badges(
     
 </dd>
 </dl>
+
+<dl>
+<dd>
+
+**unread:** `*bool` — Only return badges for experiences with unread notifications.
+    
+</dd>
+</dl>
 </dd>
 </dl>
 
