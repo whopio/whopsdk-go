@@ -44,31 +44,32 @@ var (
 	retrievePreferencesResponseFieldAdsReportingCurrency                    = big.NewInt(1 << 2)
 	retrievePreferencesResponseFieldAdsSchedulingTimezone                   = big.NewInt(1 << 3)
 	retrievePreferencesResponseFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 4)
-	retrievePreferencesResponseFieldCancellationEmails                      = big.NewInt(1 << 5)
-	retrievePreferencesResponseFieldCardSurcharge                           = big.NewInt(1 << 6)
-	retrievePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 7)
-	retrievePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 8)
-	retrievePreferencesResponseFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 9)
-	retrievePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 10)
-	retrievePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 11)
-	retrievePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 12)
-	retrievePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 13)
-	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 14)
-	retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 15)
-	retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 16)
-	retrievePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 17)
-	retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 18)
-	retrievePreferencesResponseFieldFailedPaymentEmails                     = big.NewInt(1 << 19)
-	retrievePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 20)
-	retrievePreferencesResponseFieldMerchantOfRecord                        = big.NewInt(1 << 21)
-	retrievePreferencesResponseFieldOffSessionPaymentRules                  = big.NewInt(1 << 22)
-	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 23)
-	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 24)
-	retrievePreferencesResponseFieldRenewalReminderEmails                   = big.NewInt(1 << 25)
-	retrievePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 26)
-	retrievePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 27)
-	retrievePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 28)
-	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 29)
+	retrievePreferencesResponseFieldAffiliateProgram                        = big.NewInt(1 << 5)
+	retrievePreferencesResponseFieldCancellationEmails                      = big.NewInt(1 << 6)
+	retrievePreferencesResponseFieldCardSurcharge                           = big.NewInt(1 << 7)
+	retrievePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 8)
+	retrievePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 9)
+	retrievePreferencesResponseFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 10)
+	retrievePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 11)
+	retrievePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 12)
+	retrievePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 13)
+	retrievePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 14)
+	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 15)
+	retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 16)
+	retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 17)
+	retrievePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 18)
+	retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 19)
+	retrievePreferencesResponseFieldFailedPaymentEmails                     = big.NewInt(1 << 20)
+	retrievePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 21)
+	retrievePreferencesResponseFieldMerchantOfRecord                        = big.NewInt(1 << 22)
+	retrievePreferencesResponseFieldOffSessionPaymentRules                  = big.NewInt(1 << 23)
+	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 24)
+	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 25)
+	retrievePreferencesResponseFieldRenewalReminderEmails                   = big.NewInt(1 << 26)
+	retrievePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 27)
+	retrievePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 28)
+	retrievePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 29)
+	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 30)
 )
 
 // retrievePreferencesResponseNullableFields maps the wire names of RetrievePreferencesResponse's nullable fields (required or optional) to their field bits.
@@ -98,6 +99,8 @@ type RetrievePreferencesResponse struct {
 	AdsSchedulingTimezone string `json:"ads_scheduling_timezone" url:"ads_scheduling_timezone"`
 	// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, or a custom checkout — by setting `shop_domain`. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
 	AdsTripleWhaleIntegration *RetrievePreferencesResponseAdsTripleWhaleIntegration `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
+	// The account's affiliate program: its instructions, its application and the product it features for affiliates. `GET /accounts/{account_id}/affiliate_program` returns the same object without authentication.
+	AffiliateProgram *v2.AccountAffiliateProgram `json:"affiliate_program" url:"affiliate_program"`
 	// Whether Whop emails members when their membership is canceled or terminated. `true` by default. Set it to `false` to stop these emails while keeping the account's other customer emails. They also stop while the account's `send_customer_emails` is `false`.
 	CancellationEmails bool `json:"cancellation_emails" url:"cancellation_emails"`
 	// The card surcharge a point of sale adds to credit card payments. Debit and prepaid cards never pay it.
@@ -189,6 +192,13 @@ func (r *RetrievePreferencesResponse) GetAdsTripleWhaleIntegration() *RetrievePr
 		return nil
 	}
 	return r.AdsTripleWhaleIntegration
+}
+
+func (r *RetrievePreferencesResponse) GetAffiliateProgram() *v2.AccountAffiliateProgram {
+	if r == nil {
+		return nil
+	}
+	return r.AffiliateProgram
 }
 
 func (r *RetrievePreferencesResponse) GetCancellationEmails() bool {
@@ -415,6 +425,13 @@ func (r *RetrievePreferencesResponse) SetAdsSchedulingTimezone(adsSchedulingTime
 func (r *RetrievePreferencesResponse) SetAdsTripleWhaleIntegration(adsTripleWhaleIntegration *RetrievePreferencesResponseAdsTripleWhaleIntegration) {
 	r.AdsTripleWhaleIntegration = adsTripleWhaleIntegration
 	r.require(retrievePreferencesResponseFieldAdsTripleWhaleIntegration)
+}
+
+// SetAffiliateProgram sets the AffiliateProgram field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetAffiliateProgram(affiliateProgram *v2.AccountAffiliateProgram) {
+	r.AffiliateProgram = affiliateProgram
+	r.require(retrievePreferencesResponseFieldAffiliateProgram)
 }
 
 // SetCancellationEmails sets the CancellationEmails field and marks it as non-optional;
@@ -2638,6 +2655,347 @@ func (u *UpdatePreferencesRequestAdsTripleWhaleIntegration) String() string {
 }
 
 var (
+	updatePreferencesRequestAffiliateProgramFieldApplicationQuestions = big.NewInt(1 << 0)
+	updatePreferencesRequestAffiliateProgramFieldApplicationRequired  = big.NewInt(1 << 1)
+	updatePreferencesRequestAffiliateProgramFieldFeaturedProductID    = big.NewInt(1 << 2)
+	updatePreferencesRequestAffiliateProgramFieldInstructions         = big.NewInt(1 << 3)
+)
+
+// updatePreferencesRequestAffiliateProgramNullableFields maps the wire names of UpdatePreferencesRequestAffiliateProgram's nullable fields (required or optional) to their field bits.
+var updatePreferencesRequestAffiliateProgramNullableFields = map[string]*big.Int{
+	"application_questions": updatePreferencesRequestAffiliateProgramFieldApplicationQuestions,
+	"featured_product_id":   updatePreferencesRequestAffiliateProgramFieldFeaturedProductID,
+	"instructions":          updatePreferencesRequestAffiliateProgramFieldInstructions,
+}
+
+// The account's affiliate program. Only the fields you send change, and fields left out keep their current values. To clear a field, set it to `null`. To turn affiliates on or off, set `global_affiliate_status` and `member_affiliate_status` on each product with `PATCH /products/{id}`. Requires the `affiliate:update` scope on your API key.
+type UpdatePreferencesRequestAffiliateProgram struct {
+	// The questions the affiliate application asks, in order. A question with an `id` is updated, a question without one is added, and questions left out are removed. Up to 20 questions. Pass an empty array or `null` to remove every question.
+	ApplicationQuestions []*UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem `json:"application_questions,omitempty" url:"application_questions,omitempty"`
+	// Whether a person must apply and get approval to become an affiliate.
+	ApplicationRequired *bool `json:"application_required,omitempty" url:"application_required,omitempty"`
+	// The product to feature for affiliates, prefixed `prod_`. It must belong to the account and allow global affiliates. Pass `null` to clear it.
+	FeaturedProductID *string `json:"featured_product_id,omitempty" url:"featured_product_id,omitempty"`
+	// The instructions for the account's affiliates. Pass `null` or an empty string to clear them.
+	Instructions *string `json:"instructions,omitempty" url:"instructions,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgram) GetApplicationQuestions() []*UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem {
+	if u == nil {
+		return nil
+	}
+	return u.ApplicationQuestions
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgram) GetApplicationRequired() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.ApplicationRequired
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgram) GetFeaturedProductID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.FeaturedProductID
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgram) GetInstructions() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Instructions
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgram) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgram) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetApplicationQuestions sets the ApplicationQuestions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestAffiliateProgram) SetApplicationQuestions(applicationQuestions []*UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem) {
+	u.ApplicationQuestions = applicationQuestions
+	u.require(updatePreferencesRequestAffiliateProgramFieldApplicationQuestions)
+}
+
+// SetApplicationRequired sets the ApplicationRequired field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestAffiliateProgram) SetApplicationRequired(applicationRequired *bool) {
+	u.ApplicationRequired = applicationRequired
+	u.require(updatePreferencesRequestAffiliateProgramFieldApplicationRequired)
+}
+
+// SetFeaturedProductID sets the FeaturedProductID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestAffiliateProgram) SetFeaturedProductID(featuredProductID *string) {
+	u.FeaturedProductID = featuredProductID
+	u.require(updatePreferencesRequestAffiliateProgramFieldFeaturedProductID)
+}
+
+// SetInstructions sets the Instructions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestAffiliateProgram) SetInstructions(instructions *string) {
+	u.Instructions = instructions
+	u.require(updatePreferencesRequestAffiliateProgramFieldInstructions)
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgram) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePreferencesRequestAffiliateProgram
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePreferencesRequestAffiliateProgram(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesRequestAffiliateProgramNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgram) MarshalJSON() ([]byte, error) {
+	type embed UpdatePreferencesRequestAffiliateProgram
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgram) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldFieldType   = big.NewInt(1 << 0)
+	updatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldID          = big.NewInt(1 << 1)
+	updatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldName        = big.NewInt(1 << 2)
+	updatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldPlaceholder = big.NewInt(1 << 3)
+	updatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldRequired    = big.NewInt(1 << 4)
+)
+
+// updatePreferencesRequestAffiliateProgramApplicationQuestionsItemNullableFields maps the wire names of UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem's nullable fields (required or optional) to their field bits.
+var updatePreferencesRequestAffiliateProgramApplicationQuestionsItemNullableFields = map[string]*big.Int{
+	"id":          updatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldID,
+	"placeholder": updatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldPlaceholder,
+}
+
+type UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem struct {
+	// The input type of the answer. Required for a new question.
+	FieldType *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldType `json:"field_type,omitempty" url:"field_type,omitempty"`
+	// The ID of one of the account's questions, prefixed `field_`. Fields you leave out keep their values. An ID the account doesn't have is a `400`.
+	ID *string `json:"id,omitempty" url:"id,omitempty"`
+	// The question, shown as the field label. Required for a new question.
+	Name *string `json:"name,omitempty" url:"name,omitempty"`
+	// Placeholder text shown in the empty field. Pass `null` to clear it.
+	Placeholder *string `json:"placeholder,omitempty" url:"placeholder,omitempty"`
+	// Whether an answer is required. Defaults to `true` for a new question.
+	Required *bool `json:"required,omitempty" url:"required,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem) GetFieldType() *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldType {
+	if u == nil {
+		return nil
+	}
+	return u.FieldType
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem) GetID() *string {
+	if u == nil {
+		return nil
+	}
+	return u.ID
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem) GetName() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Name
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem) GetPlaceholder() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Placeholder
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem) GetRequired() *bool {
+	if u == nil {
+		return nil
+	}
+	return u.Required
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetFieldType sets the FieldType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem) SetFieldType(fieldType *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldType) {
+	u.FieldType = fieldType
+	u.require(updatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldFieldType)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem) SetID(id *string) {
+	u.ID = id
+	u.require(updatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem) SetName(name *string) {
+	u.Name = name
+	u.require(updatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldName)
+}
+
+// SetPlaceholder sets the Placeholder field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem) SetPlaceholder(placeholder *string) {
+	u.Placeholder = placeholder
+	u.require(updatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldPlaceholder)
+}
+
+// SetRequired sets the Required field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem) SetRequired(required *bool) {
+	u.Required = required
+	u.require(updatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldRequired)
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, updatePreferencesRequestAffiliateProgramApplicationQuestionsItemNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		u.require(presentFields)
+	}
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem) MarshalJSON() ([]byte, error) {
+	type embed UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItem) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// The input type of the answer. Required for a new question.
+type UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldType string
+
+const (
+	UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldTypeText UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldType = "text"
+)
+
+func NewUpdatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldTypeFromString(s string) (UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldType, error) {
+	switch s {
+	case "text":
+		return UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldTypeText, nil
+	}
+	var t UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldType) Ptr() *UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldType {
+	return &u
+}
+
+var (
 	updatePreferencesRequestCardSurchargeFieldEnabled    = big.NewInt(1 << 0)
 	updatePreferencesRequestCardSurchargeFieldPercentage = big.NewInt(1 << 1)
 )
@@ -3216,31 +3574,32 @@ var (
 	updatePreferencesResponseFieldAdsReportingCurrency                    = big.NewInt(1 << 2)
 	updatePreferencesResponseFieldAdsSchedulingTimezone                   = big.NewInt(1 << 3)
 	updatePreferencesResponseFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 4)
-	updatePreferencesResponseFieldCancellationEmails                      = big.NewInt(1 << 5)
-	updatePreferencesResponseFieldCardSurcharge                           = big.NewInt(1 << 6)
-	updatePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 7)
-	updatePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 8)
-	updatePreferencesResponseFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 9)
-	updatePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 10)
-	updatePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 11)
-	updatePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 12)
-	updatePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 13)
-	updatePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 14)
-	updatePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 15)
-	updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 16)
-	updatePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 17)
-	updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 18)
-	updatePreferencesResponseFieldFailedPaymentEmails                     = big.NewInt(1 << 19)
-	updatePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 20)
-	updatePreferencesResponseFieldMerchantOfRecord                        = big.NewInt(1 << 21)
-	updatePreferencesResponseFieldOffSessionPaymentRules                  = big.NewInt(1 << 22)
-	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 23)
-	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 24)
-	updatePreferencesResponseFieldRenewalReminderEmails                   = big.NewInt(1 << 25)
-	updatePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 26)
-	updatePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 27)
-	updatePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 28)
-	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 29)
+	updatePreferencesResponseFieldAffiliateProgram                        = big.NewInt(1 << 5)
+	updatePreferencesResponseFieldCancellationEmails                      = big.NewInt(1 << 6)
+	updatePreferencesResponseFieldCardSurcharge                           = big.NewInt(1 << 7)
+	updatePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 8)
+	updatePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 9)
+	updatePreferencesResponseFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 10)
+	updatePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 11)
+	updatePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 12)
+	updatePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 13)
+	updatePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 14)
+	updatePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 15)
+	updatePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 16)
+	updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 17)
+	updatePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 18)
+	updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 19)
+	updatePreferencesResponseFieldFailedPaymentEmails                     = big.NewInt(1 << 20)
+	updatePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 21)
+	updatePreferencesResponseFieldMerchantOfRecord                        = big.NewInt(1 << 22)
+	updatePreferencesResponseFieldOffSessionPaymentRules                  = big.NewInt(1 << 23)
+	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 24)
+	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 25)
+	updatePreferencesResponseFieldRenewalReminderEmails                   = big.NewInt(1 << 26)
+	updatePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 27)
+	updatePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 28)
+	updatePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 29)
+	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 30)
 )
 
 // updatePreferencesResponseNullableFields maps the wire names of UpdatePreferencesResponse's nullable fields (required or optional) to their field bits.
@@ -3270,6 +3629,8 @@ type UpdatePreferencesResponse struct {
 	AdsSchedulingTimezone string `json:"ads_scheduling_timezone" url:"ads_scheduling_timezone"`
 	// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel. Available to any Triple Whale customer — Shopify, WooCommerce, or a custom checkout — by setting `shop_domain`. Requires the `ad_campaign:create` scope. Once connected, ad click-through URLs Whop serves carry `tw_source=whop` and `tw_adid=<ad id>` query parameters so Triple Whale's pixel attributes conversions back to the originating ad — no destination URL changes are needed.
 	AdsTripleWhaleIntegration *UpdatePreferencesResponseAdsTripleWhaleIntegration `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
+	// The account's affiliate program: its instructions, its application and the product it features for affiliates. `GET /accounts/{account_id}/affiliate_program` returns the same object without authentication.
+	AffiliateProgram *v2.AccountAffiliateProgram `json:"affiliate_program" url:"affiliate_program"`
 	// Whether Whop emails members when their membership is canceled or terminated. `true` by default. Set it to `false` to stop these emails while keeping the account's other customer emails. They also stop while the account's `send_customer_emails` is `false`.
 	CancellationEmails bool `json:"cancellation_emails" url:"cancellation_emails"`
 	// The card surcharge a point of sale adds to credit card payments. Debit and prepaid cards never pay it.
@@ -3361,6 +3722,13 @@ func (u *UpdatePreferencesResponse) GetAdsTripleWhaleIntegration() *UpdatePrefer
 		return nil
 	}
 	return u.AdsTripleWhaleIntegration
+}
+
+func (u *UpdatePreferencesResponse) GetAffiliateProgram() *v2.AccountAffiliateProgram {
+	if u == nil {
+		return nil
+	}
+	return u.AffiliateProgram
 }
 
 func (u *UpdatePreferencesResponse) GetCancellationEmails() bool {
@@ -3587,6 +3955,13 @@ func (u *UpdatePreferencesResponse) SetAdsSchedulingTimezone(adsSchedulingTimezo
 func (u *UpdatePreferencesResponse) SetAdsTripleWhaleIntegration(adsTripleWhaleIntegration *UpdatePreferencesResponseAdsTripleWhaleIntegration) {
 	u.AdsTripleWhaleIntegration = adsTripleWhaleIntegration
 	u.require(updatePreferencesResponseFieldAdsTripleWhaleIntegration)
+}
+
+// SetAffiliateProgram sets the AffiliateProgram field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetAffiliateProgram(affiliateProgram *v2.AccountAffiliateProgram) {
+	u.AffiliateProgram = affiliateProgram
+	u.require(updatePreferencesResponseFieldAffiliateProgram)
 }
 
 // SetCancellationEmails sets the CancellationEmails field and marks it as non-optional;
@@ -5339,25 +5714,26 @@ var (
 	updatePreferencesRequestFieldAdsReportingCurrency             = big.NewInt(1 << 2)
 	updatePreferencesRequestFieldAdsSchedulingTimezone            = big.NewInt(1 << 3)
 	updatePreferencesRequestFieldAdsTripleWhaleIntegration        = big.NewInt(1 << 4)
-	updatePreferencesRequestFieldCancellationEmails               = big.NewInt(1 << 5)
-	updatePreferencesRequestFieldCardSurcharge                    = big.NewInt(1 << 6)
-	updatePreferencesRequestFieldCardsAutoTopUp                   = big.NewInt(1 << 7)
-	updatePreferencesRequestFieldCardsNotifications               = big.NewInt(1 << 8)
-	updatePreferencesRequestFieldCoversSubaccountNegativeBalances = big.NewInt(1 << 9)
-	updatePreferencesRequestFieldCustomerTracking                 = big.NewInt(1 << 10)
-	updatePreferencesRequestFieldDisputeFighterEnabled            = big.NewInt(1 << 11)
-	updatePreferencesRequestFieldEconomicIntelligenceAutoRenew    = big.NewInt(1 << 12)
-	updatePreferencesRequestFieldEconomicIntelligenceDurationKey  = big.NewInt(1 << 13)
-	updatePreferencesRequestFieldFailedPaymentEmails              = big.NewInt(1 << 14)
-	updatePreferencesRequestFieldFeedbackOptions                  = big.NewInt(1 << 15)
-	updatePreferencesRequestFieldMerchantOfRecord                 = big.NewInt(1 << 16)
-	updatePreferencesRequestFieldOffSessionPaymentRules           = big.NewInt(1 << 17)
-	updatePreferencesRequestFieldPreferredSettlementCurrency      = big.NewInt(1 << 18)
-	updatePreferencesRequestFieldRenewalReminderEmails            = big.NewInt(1 << 19)
-	updatePreferencesRequestFieldReviewRequestEmails              = big.NewInt(1 << 20)
-	updatePreferencesRequestFieldSubaccountNotifications          = big.NewInt(1 << 21)
-	updatePreferencesRequestFieldSubaccountTeamViewOnly           = big.NewInt(1 << 22)
-	updatePreferencesRequestFieldSubscriptionFailureBehavior      = big.NewInt(1 << 23)
+	updatePreferencesRequestFieldAffiliateProgram                 = big.NewInt(1 << 5)
+	updatePreferencesRequestFieldCancellationEmails               = big.NewInt(1 << 6)
+	updatePreferencesRequestFieldCardSurcharge                    = big.NewInt(1 << 7)
+	updatePreferencesRequestFieldCardsAutoTopUp                   = big.NewInt(1 << 8)
+	updatePreferencesRequestFieldCardsNotifications               = big.NewInt(1 << 9)
+	updatePreferencesRequestFieldCoversSubaccountNegativeBalances = big.NewInt(1 << 10)
+	updatePreferencesRequestFieldCustomerTracking                 = big.NewInt(1 << 11)
+	updatePreferencesRequestFieldDisputeFighterEnabled            = big.NewInt(1 << 12)
+	updatePreferencesRequestFieldEconomicIntelligenceAutoRenew    = big.NewInt(1 << 13)
+	updatePreferencesRequestFieldEconomicIntelligenceDurationKey  = big.NewInt(1 << 14)
+	updatePreferencesRequestFieldFailedPaymentEmails              = big.NewInt(1 << 15)
+	updatePreferencesRequestFieldFeedbackOptions                  = big.NewInt(1 << 16)
+	updatePreferencesRequestFieldMerchantOfRecord                 = big.NewInt(1 << 17)
+	updatePreferencesRequestFieldOffSessionPaymentRules           = big.NewInt(1 << 18)
+	updatePreferencesRequestFieldPreferredSettlementCurrency      = big.NewInt(1 << 19)
+	updatePreferencesRequestFieldRenewalReminderEmails            = big.NewInt(1 << 20)
+	updatePreferencesRequestFieldReviewRequestEmails              = big.NewInt(1 << 21)
+	updatePreferencesRequestFieldSubaccountNotifications          = big.NewInt(1 << 22)
+	updatePreferencesRequestFieldSubaccountTeamViewOnly           = big.NewInt(1 << 23)
+	updatePreferencesRequestFieldSubscriptionFailureBehavior      = big.NewInt(1 << 24)
 )
 
 type UpdatePreferencesRequest struct {
@@ -5371,6 +5747,8 @@ type UpdatePreferencesRequest struct {
 	AdsSchedulingTimezone *string `json:"ads_scheduling_timezone,omitempty" url:"-"`
 	// Connects or disconnects the Triple Whale integration, or changes the shop it reports to. Requires the `ad_campaign:create` scope on your API key. Connecting requires a `shop_domain` to report spend against.
 	AdsTripleWhaleIntegration *UpdatePreferencesRequestAdsTripleWhaleIntegration `json:"ads_triple_whale_integration,omitempty" url:"-"`
+	// The account's affiliate program. Only the fields you send change, and fields left out keep their current values. To clear a field, set it to `null`. To turn affiliates on or off, set `global_affiliate_status` and `member_affiliate_status` on each product with `PATCH /products/{id}`. Requires the `affiliate:update` scope on your API key.
+	AffiliateProgram *UpdatePreferencesRequestAffiliateProgram `json:"affiliate_program,omitempty" url:"-"`
 	// Whether Whop emails members when their membership is canceled or terminated. Set it to `false` to stop these emails while keeping the account's other customer emails. Requires the `company:update` scope on your API key.
 	CancellationEmails *bool `json:"cancellation_emails,omitempty" url:"-"`
 	// The card surcharge a point of sale adds to credit card payments, replaced as a whole. You can always turn it off. You can turn it on only when `card_surcharge.maximum_percentage` is not null. Requires the `company:update` scope on your API key.
@@ -5391,7 +5769,7 @@ type UpdatePreferencesRequest struct {
 	EconomicIntelligenceDurationKey *UpdatePreferencesRequestEconomicIntelligenceDurationKey `json:"economic_intelligence_duration_key,omitempty" url:"-"`
 	// Whether Whop emails members when a renewal payment fails or needs them to verify it. Set it to `false` to stop these emails while keeping the account's other customer emails. Subscriptions billed by invoice still get their invoice emails. Requires the `company:update` scope on your API key.
 	FailedPaymentEmails *bool `json:"failed_payment_emails,omitempty" url:"-"`
-	// Replaces the account's own cancel reasons, shown to members in this order when they cancel. Pass an option's `id` to keep it, for example when renaming it; options without an `id` are added, and options left out are removed. Pass an empty array to go back to Whop's default reasons. Members who already picked an option keep the label they saw. Requires the `company:manage_checkout` scope on your API key.
+	// Replaces the account's own cancel reasons, shown to members in this order when they cancel. Pass an option's `id` to keep it, for example when renaming it. Options without an `id` are added, and options left out are removed. Pass an empty array to go back to Whop's default reasons. Members who already picked an option keep the label they saw. Requires the `company:manage_checkout` scope on your API key.
 	FeedbackOptions []*UpdatePreferencesRequestFeedbackOptionsItem `json:"feedback_options,omitempty" url:"-"`
 	// Set it to `account` to make the account the merchant of record. Only some business categories can switch. The business must be verified. The switch cannot be undone. The response shows `pending` until approval. Checkout takes no payments until then. After the switch, the account accepts only card, Apple Pay, Google Pay and crypto payments. PayPal, buy now pay later and local payment methods stop. Requires the `payout:account:update` scope on your API key.
 	MerchantOfRecord *UpdatePreferencesRequestMerchantOfRecord `json:"merchant_of_record,omitempty" url:"-"`
@@ -5456,6 +5834,13 @@ func (u *UpdatePreferencesRequest) SetAdsSchedulingTimezone(adsSchedulingTimezon
 func (u *UpdatePreferencesRequest) SetAdsTripleWhaleIntegration(adsTripleWhaleIntegration *UpdatePreferencesRequestAdsTripleWhaleIntegration) {
 	u.AdsTripleWhaleIntegration = adsTripleWhaleIntegration
 	u.require(updatePreferencesRequestFieldAdsTripleWhaleIntegration)
+}
+
+// SetAffiliateProgram sets the AffiliateProgram field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetAffiliateProgram(affiliateProgram *UpdatePreferencesRequestAffiliateProgram) {
+	u.AffiliateProgram = affiliateProgram
+	u.require(updatePreferencesRequestFieldAffiliateProgram)
 }
 
 // SetCancellationEmails sets the CancellationEmails field and marks it as non-optional;

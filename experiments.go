@@ -10,8 +10,9 @@ import (
 )
 
 var (
-	activateExperimentsRequestFieldID        = big.NewInt(1 << 0)
-	activateExperimentsRequestFieldAccountID = big.NewInt(1 << 1)
+	activateExperimentsRequestFieldID           = big.NewInt(1 << 0)
+	activateExperimentsRequestFieldAccountID    = big.NewInt(1 << 1)
+	activateExperimentsRequestFieldDurationDays = big.NewInt(1 << 2)
 )
 
 type ActivateExperimentsRequest struct {
@@ -19,6 +20,8 @@ type ActivateExperimentsRequest struct {
 	ID string `json:"-" url:"-"`
 	// Owning account ID. Required when `id` is a flag key, optional for an `expt_` ID.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
+	// Reporting window length in days, at most 7. Omit to use the default of 7 days. This does not automatically end the experiment.
+	DurationDays *int `json:"duration_days,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -45,6 +48,13 @@ func (a *ActivateExperimentsRequest) SetID(id string) {
 func (a *ActivateExperimentsRequest) SetAccountID(accountID *string) {
 	a.AccountID = accountID
 	a.require(activateExperimentsRequestFieldAccountID)
+}
+
+// SetDurationDays sets the DurationDays field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *ActivateExperimentsRequest) SetDurationDays(durationDays *int) {
+	a.DurationDays = durationDays
+	a.require(activateExperimentsRequestFieldDurationDays)
 }
 
 func (a *ActivateExperimentsRequest) UnmarshalJSON(data []byte) error {

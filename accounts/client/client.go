@@ -7,6 +7,7 @@ import (
 	http "net/http"
 
 	whopsdk "github.com/whopio/whopsdk-go/v2"
+	affiliateprogram "github.com/whopio/whopsdk-go/v2/accounts/affiliateprogram"
 	customertracking "github.com/whopio/whopsdk-go/v2/accounts/customertracking"
 	fees "github.com/whopio/whopsdk-go/v2/accounts/fees"
 	financingproviders "github.com/whopio/whopsdk-go/v2/accounts/financingproviders"
@@ -19,6 +20,7 @@ import (
 
 type Client struct {
 	WithRawResponse    *RawClient
+	AffiliateProgram   *affiliateprogram.Client
 	CustomerTracking   *customertracking.Client
 	Fees               *fees.Client
 	FinancingProviders *financingproviders.Client
@@ -36,6 +38,7 @@ func NewClient(options *core.RequestOptions) *Client {
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
+		AffiliateProgram:   affiliateprogram.NewClient(options),
 		CustomerTracking:   customertracking.NewClient(options),
 		Fees:               fees.NewClient(options),
 		FinancingProviders: financingproviders.NewClient(options),
