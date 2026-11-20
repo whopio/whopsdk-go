@@ -89,6 +89,8 @@ var (
 	retrieveTimeSeriesRequestFieldTeamLeadID          = big.NewInt(0).Lsh(big.NewInt(1), 74)
 	retrieveTimeSeriesRequestFieldActivity            = big.NewInt(0).Lsh(big.NewInt(1), 75)
 	retrieveTimeSeriesRequestFieldBreakdownLimit      = big.NewInt(0).Lsh(big.NewInt(1), 76)
+	retrieveTimeSeriesRequestFieldAccountIDs          = big.NewInt(0).Lsh(big.NewInt(1), 77)
+	retrieveTimeSeriesRequestFieldRunnerIDs           = big.NewInt(0).Lsh(big.NewInt(1), 78)
 )
 
 type RetrieveTimeSeriesRequest struct {
@@ -246,6 +248,10 @@ type RetrieveTimeSeriesRequest struct {
 	Activity *RetrieveTimeSeriesRequestActivity `json:"-" url:"activity,omitempty"`
 	// With a single breakdown_by, keep the groups with the highest whole-range values, up to this many, and fold every other group into one entry named other. A rate or an average ranks its groups by the deals it divides by. The other entry is measured from the underlying rows, so a distinct count or a rate stays exact rather than being added up from groups. Available on partner metrics only.
 	BreakdownLimit *int `json:"-" url:"breakdown_limit,omitempty"`
+	// Business ids (biz_...) to scope the series to; the series sums their figures. Available on metrics that list account_ids.
+	AccountIDs []*string `json:"-" url:"account_ids,omitempty"`
+	// Runner user ids (user_...) to scope the series to; the series sums the figures of the campaigns they hold. Available on metrics that list runner_ids.
+	RunnerIDs []*string `json:"-" url:"runner_ids,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -797,6 +803,20 @@ func (r *RetrieveTimeSeriesRequest) SetActivity(activity *RetrieveTimeSeriesRequ
 func (r *RetrieveTimeSeriesRequest) SetBreakdownLimit(breakdownLimit *int) {
 	r.BreakdownLimit = breakdownLimit
 	r.require(retrieveTimeSeriesRequestFieldBreakdownLimit)
+}
+
+// SetAccountIDs sets the AccountIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesRequest) SetAccountIDs(accountIDs []*string) {
+	r.AccountIDs = accountIDs
+	r.require(retrieveTimeSeriesRequestFieldAccountIDs)
+}
+
+// SetRunnerIDs sets the RunnerIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesRequest) SetRunnerIDs(runnerIDs []*string) {
+	r.RunnerIDs = runnerIDs
+	r.require(retrieveTimeSeriesRequestFieldRunnerIDs)
 }
 
 var (

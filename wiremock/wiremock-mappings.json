@@ -15313,6 +15313,20 @@
                 "equalTo": "ad_xxxxxxxxxxxxxx"
               }
             ]
+          },
+          "account_ids": {
+            "hasExactly": [
+              {
+                "equalTo": "biz_xxxxxxxxxxxxxx"
+              }
+            ]
+          },
+          "runner_ids": {
+            "hasExactly": [
+              {
+                "equalTo": "user_xxxxxxxxxxxxxx"
+              }
+            ]
           }
         }
       },
@@ -18663,6 +18677,20 @@
             "hasExactly": [
               {
                 "equalTo": "ad_xxxxxxxxxxxxxx"
+              }
+            ]
+          },
+          "account_ids": {
+            "hasExactly": [
+              {
+                "equalTo": "biz_xxxxxxxxxxxxxx"
+              }
+            ]
+          },
+          "runner_ids": {
+            "hasExactly": [
+              {
+                "equalTo": "user_xxxxxxxxxxxxxx"
               }
             ]
           }

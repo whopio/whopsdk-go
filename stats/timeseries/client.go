@@ -82,6 +82,16 @@ func (c *Client) List(
 //	            "ad_xxxxxxxxxxxxxx",
 //	        ),
 //	    },
+//	    AccountIDs: []*string{
+//	        whopsdk.String(
+//	            "biz_xxxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	    RunnerIDs: []*string{
+//	        whopsdk.String(
+//	            "user_xxxxxxxxxxxxxx",
+//	        ),
+//	    },
 //	}
 //	client.Stats.TimeSeries.Retrieve(
 //	    context.TODO(),

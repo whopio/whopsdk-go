@@ -40517,6 +40517,16 @@ request := &whopsdk.RetrieveStatsRequest{
             "ad_xxxxxxxxxxxxxx",
         ),
     },
+    AccountIDs: []*string{
+        whopsdk.String(
+            "biz_xxxxxxxxxxxxxx",
+        ),
+    },
+    RunnerIDs: []*string{
+        whopsdk.String(
+            "user_xxxxxxxxxxxxxx",
+        ),
+    },
 }
 client.Stats.Retrieve(
     context.TODO(),
@@ -41145,6 +41155,22 @@ client.Stats.Retrieve(
 <dd>
 
 **breakdownLimit:** `*int` — With a single breakdown_by, keep the groups with the highest whole-range values, up to this many, and fold every other group into one entry named other. A rate or an average ranks its groups by the deals it divides by. The other entry is measured from the underlying rows, so a distinct count or a rate stays exact rather than being added up from groups. Available on partner metrics only.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountIDs:** `*string` — Business ids (biz_...) to scope the series to; the series sums their figures. Available on metrics that list account_ids.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**runnerIDs:** `*string` — Runner user ids (user_...) to scope the series to; the series sums the figures of the campaigns they hold. Available on metrics that list runner_ids.
     
 </dd>
 </dl>
@@ -50857,6 +50883,16 @@ request := &stats.RetrieveTimeSeriesRequest{
             "ad_xxxxxxxxxxxxxx",
         ),
     },
+    AccountIDs: []*string{
+        whopsdk.String(
+            "biz_xxxxxxxxxxxxxx",
+        ),
+    },
+    RunnerIDs: []*string{
+        whopsdk.String(
+            "user_xxxxxxxxxxxxxx",
+        ),
+    },
 }
 client.Stats.TimeSeries.Retrieve(
     context.TODO(),
@@ -51485,6 +51521,22 @@ client.Stats.TimeSeries.Retrieve(
 <dd>
 
 **breakdownLimit:** `*int` — With a single breakdown_by, keep the groups with the highest whole-range values, up to this many, and fold every other group into one entry named other. A rate or an average ranks its groups by the deals it divides by. The other entry is measured from the underlying rows, so a distinct count or a rate stays exact rather than being added up from groups. Available on partner metrics only.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**accountIDs:** `*string` — Business ids (biz_...) to scope the series to; the series sums their figures. Available on metrics that list account_ids.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**runnerIDs:** `*string` — Runner user ids (user_...) to scope the series to; the series sums the figures of the campaigns they hold. Available on metrics that list runner_ids.
     
 </dd>
 </dl>
