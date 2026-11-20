@@ -533,15 +533,15 @@ func (r *RecommendedAction) String() string {
 }
 
 var (
-	recommendedActionChangedResourceFieldID     = big.NewInt(1 << 0)
-	recommendedActionChangedResourceFieldObject = big.NewInt(1 << 1)
+	recommendedActionChangedResourceFieldID           = big.NewInt(1 << 0)
+	recommendedActionChangedResourceFieldResourceType = big.NewInt(1 << 1)
 )
 
 type RecommendedActionChangedResource struct {
 	// ID of the resource. A `variant` ID is prefixed `plan_`.
 	ID string `json:"id" url:"id"`
-	// Type of the resource. New types can be added, so skip an entry whose `object` you do not know.
-	Object RecommendedActionChangedResourceObject `json:"object" url:"object"`
+	// Type of the resource. New types can be added, so skip an entry whose `resource_type` you do not know.
+	ResourceType RecommendedActionChangedResourceResourceType `json:"resource_type" url:"resource_type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -557,11 +557,11 @@ func (r *RecommendedActionChangedResource) GetID() string {
 	return r.ID
 }
 
-func (r *RecommendedActionChangedResource) GetObject() RecommendedActionChangedResourceObject {
+func (r *RecommendedActionChangedResource) GetResourceType() RecommendedActionChangedResourceResourceType {
 	if r == nil {
 		return ""
 	}
-	return r.Object
+	return r.ResourceType
 }
 
 func (r *RecommendedActionChangedResource) GetExtraProperties() map[string]interface{} {
@@ -587,11 +587,11 @@ func (r *RecommendedActionChangedResource) SetID(id string) {
 	r.require(recommendedActionChangedResourceFieldID)
 }
 
-// SetObject sets the Object field and marks it as non-optional;
+// SetResourceType sets the ResourceType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (r *RecommendedActionChangedResource) SetObject(object RecommendedActionChangedResourceObject) {
-	r.Object = object
-	r.require(recommendedActionChangedResourceFieldObject)
+func (r *RecommendedActionChangedResource) SetResourceType(resourceType RecommendedActionChangedResourceResourceType) {
+	r.ResourceType = resourceType
+	r.require(recommendedActionChangedResourceFieldResourceType)
 }
 
 func (r *RecommendedActionChangedResource) UnmarshalJSON(data []byte) error {
@@ -636,23 +636,23 @@ func (r *RecommendedActionChangedResource) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
-// Type of the resource. New types can be added, so skip an entry whose `object` you do not know.
-type RecommendedActionChangedResourceObject string
+// Type of the resource. New types can be added, so skip an entry whose `resource_type` you do not know.
+type RecommendedActionChangedResourceResourceType string
 
 const (
-	RecommendedActionChangedResourceObjectVariant RecommendedActionChangedResourceObject = "variant"
+	RecommendedActionChangedResourceResourceTypeVariant RecommendedActionChangedResourceResourceType = "variant"
 )
 
-func NewRecommendedActionChangedResourceObjectFromString(s string) (RecommendedActionChangedResourceObject, error) {
+func NewRecommendedActionChangedResourceResourceTypeFromString(s string) (RecommendedActionChangedResourceResourceType, error) {
 	switch s {
 	case "variant":
-		return RecommendedActionChangedResourceObjectVariant, nil
+		return RecommendedActionChangedResourceResourceTypeVariant, nil
 	}
-	var t RecommendedActionChangedResourceObject
+	var t RecommendedActionChangedResourceResourceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (r RecommendedActionChangedResourceObject) Ptr() *RecommendedActionChangedResourceObject {
+func (r RecommendedActionChangedResourceResourceType) Ptr() *RecommendedActionChangedResourceResourceType {
 	return &r
 }
 
