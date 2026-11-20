@@ -2165,9 +2165,9 @@ var (
 )
 
 type AdGroupCity struct {
-	// The city's key in the location taxonomy.
+	// The city's key: its US state or country, then its name, such as `US-TX:Austin`. An older ad group can hold a numeric key, which stays valid.
 	Key string `json:"key" url:"key"`
-	// City name, such as `Austin`. Absent when the location taxonomy has none.
+	// City name, such as `Austin`. Absent when the ad group stores none.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3691,7 +3691,7 @@ var (
 )
 
 type AdGroupGeoLocationsBody struct {
-	// Cities, keyed by the location taxonomy.
+	// Cities, each keyed by its US state or country and its name.
 	Cities []*AdGroupGeoLocationsBodyCitiesItem `json:"cities,omitempty" url:"cities,omitempty"`
 	// Countries, as ISO 3166-1 alpha-2 codes such as `US`.
 	Countries []string `json:"countries,omitempty" url:"countries,omitempty"`
@@ -3859,7 +3859,7 @@ var (
 )
 
 type AdGroupGeoLocationsBodyCitiesItem struct {
-	// The city's key in the location taxonomy.
+	// The city's key: its US state or country, then its name, such as `US-TX:Austin`. An older ad group can hold a numeric key, which stays valid.
 	Key string `json:"key" url:"key"`
 	// City name, such as `Austin`.
 	Name *string `json:"name,omitempty" url:"name,omitempty"`
