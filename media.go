@@ -11,20 +11,23 @@ import (
 
 var (
 	generateMediaRequestFieldAccountID       = big.NewInt(1 << 0)
-	generateMediaRequestFieldDurationSeconds = big.NewInt(1 << 1)
-	generateMediaRequestFieldPrompt          = big.NewInt(1 << 2)
-	generateMediaRequestFieldReferenceMedia  = big.NewInt(1 << 3)
-	generateMediaRequestFieldResolution      = big.NewInt(1 << 4)
-	generateMediaRequestFieldType            = big.NewInt(1 << 5)
+	generateMediaRequestFieldAdVideo         = big.NewInt(1 << 1)
+	generateMediaRequestFieldDurationSeconds = big.NewInt(1 << 2)
+	generateMediaRequestFieldPrompt          = big.NewInt(1 << 3)
+	generateMediaRequestFieldReferenceMedia  = big.NewInt(1 << 4)
+	generateMediaRequestFieldResolution      = big.NewInt(1 << 5)
+	generateMediaRequestFieldType            = big.NewInt(1 << 6)
 )
 
 type GenerateMediaRequest struct {
 	// Account ID, prefixed `biz_`. Defaults to the account the API key belongs to.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
+	// Makes a video ad: Whop writes the prompt, picks product photos, and adds a voiceover with captions. The video is 15 seconds at `720p` in 9:16. Video only. Can't be combined with `prompt`, `reference_media`, `duration_seconds` or `resolution`.
+	AdVideo *GenerateMediaRequestAdVideo `json:"ad_video,omitempty" url:"-"`
 	// Video length in seconds. Video only; defaults to 5.
 	DurationSeconds *int `json:"duration_seconds,omitempty" url:"-"`
-	// What to generate. Up to 2,000 characters.
-	Prompt string `json:"prompt" url:"-"`
+	// What to generate. Up to 2,000 characters. Required unless `ad_video` is set.
+	Prompt *string `json:"prompt,omitempty" url:"-"`
 	// Optional reference file IDs (`file_` prefixed), up to 4. Images guide the output: for video, a single image seeds the opening frame; multiple images guide subject and style instead. Include one video to remake it: its motion and scene are kept and the images are swapped in. Video only; needs an image and can't be combined with `duration_seconds`. The output matches the video's length, up to 30 seconds, and is billed on it.
 	ReferenceMedia []string `json:"reference_media,omitempty" url:"-"`
 	// Video resolution. Video only; defaults to `1080p`. `1080p` is not supported by Seedance 2.0 Fast or Mini; `4k` is only supported by Seedance 2.0.
@@ -52,6 +55,13 @@ func (g *GenerateMediaRequest) SetAccountID(accountID *string) {
 	g.require(generateMediaRequestFieldAccountID)
 }
 
+// SetAdVideo sets the AdVideo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateMediaRequest) SetAdVideo(adVideo *GenerateMediaRequestAdVideo) {
+	g.AdVideo = adVideo
+	g.require(generateMediaRequestFieldAdVideo)
+}
+
 // SetDurationSeconds sets the DurationSeconds field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (g *GenerateMediaRequest) SetDurationSeconds(durationSeconds *int) {
@@ -61,7 +71,7 @@ func (g *GenerateMediaRequest) SetDurationSeconds(durationSeconds *int) {
 
 // SetPrompt sets the Prompt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (g *GenerateMediaRequest) SetPrompt(prompt string) {
+func (g *GenerateMediaRequest) SetPrompt(prompt *string) {
 	g.Prompt = prompt
 	g.require(generateMediaRequestFieldPrompt)
 }
@@ -513,22 +523,26 @@ func (m *MediaAssetFile) String() string {
 }
 
 var (
-	mediaAssetGenerationFieldDurationSeconds = big.NewInt(1 << 0)
-	mediaAssetGenerationFieldPrompt          = big.NewInt(1 << 1)
-	mediaAssetGenerationFieldReferenceMedia  = big.NewInt(1 << 2)
-	mediaAssetGenerationFieldResolution      = big.NewInt(1 << 3)
+	mediaAssetGenerationFieldAdVideo         = big.NewInt(1 << 0)
+	mediaAssetGenerationFieldDurationSeconds = big.NewInt(1 << 1)
+	mediaAssetGenerationFieldPrompt          = big.NewInt(1 << 2)
+	mediaAssetGenerationFieldReferenceMedia  = big.NewInt(1 << 3)
+	mediaAssetGenerationFieldResolution      = big.NewInt(1 << 4)
 )
 
 // mediaAssetGenerationNullableFields maps the wire names of MediaAssetGeneration's nullable fields (required or optional) to their field bits.
 var mediaAssetGenerationNullableFields = map[string]*big.Int{
+	"ad_video":         mediaAssetGenerationFieldAdVideo,
 	"duration_seconds": mediaAssetGenerationFieldDurationSeconds,
 	"resolution":       mediaAssetGenerationFieldResolution,
 }
 
 type MediaAssetGeneration struct {
+	// The video ad request. `null` unless the asset was generated with `ad_video`.
+	AdVideo *MediaAssetsAdVideo `json:"ad_video,omitempty" url:"ad_video,omitempty"`
 	// Requested video length in seconds. `null` for images.
 	DurationSeconds *float64 `json:"duration_seconds,omitempty" url:"duration_seconds,omitempty"`
-	// What the asset was generated from.
+	// What the asset was generated from. For a video ad, this is the prompt Whop wrote. It is empty until Whop writes it.
 	Prompt         string   `json:"prompt" url:"prompt"`
 	ReferenceMedia []string `json:"reference_media" url:"reference_media"`
 	// Requested video resolution. `null` for images. `1080p` is not supported by Seedance 2.0 Fast or Mini; `4k` is only supported by Seedance 2.0.
@@ -539,6 +553,13 @@ type MediaAssetGeneration struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (m *MediaAssetGeneration) GetAdVideo() *MediaAssetsAdVideo {
+	if m == nil {
+		return nil
+	}
+	return m.AdVideo
 }
 
 func (m *MediaAssetGeneration) GetDurationSeconds() *float64 {
@@ -583,6 +604,13 @@ func (m *MediaAssetGeneration) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	m.explicitFields = next
+}
+
+// SetAdVideo sets the AdVideo field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MediaAssetGeneration) SetAdVideo(adVideo *MediaAssetsAdVideo) {
+	m.AdVideo = adVideo
+	m.require(mediaAssetGenerationFieldAdVideo)
 }
 
 // SetDurationSeconds sets the DurationSeconds field and marks it as non-optional;
@@ -758,6 +786,193 @@ func NewMediaAssetStatusFromString(s string) (MediaAssetStatus, error) {
 
 func (m MediaAssetStatus) Ptr() *MediaAssetStatus {
 	return &m
+}
+
+var (
+	mediaAssetsAdVideoFieldAdID = big.NewInt(1 << 0)
+)
+
+// mediaAssetsAdVideoNullableFields maps the wire names of MediaAssetsAdVideo's nullable fields (required or optional) to their field bits.
+var mediaAssetsAdVideoNullableFields = map[string]*big.Int{
+	"ad_id": mediaAssetsAdVideoFieldAdID,
+}
+
+type MediaAssetsAdVideo struct {
+	// The ad, prefixed `ad_`, whose landing page the video sells. `null` when the video sells the account's own products.
+	AdID *string `json:"ad_id,omitempty" url:"ad_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MediaAssetsAdVideo) GetAdID() *string {
+	if m == nil {
+		return nil
+	}
+	return m.AdID
+}
+
+func (m *MediaAssetsAdVideo) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MediaAssetsAdVideo) require(field *big.Int) {
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
+	}
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetAdID sets the AdID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MediaAssetsAdVideo) SetAdID(adID *string) {
+	m.AdID = adID
+	m.require(mediaAssetsAdVideoFieldAdID)
+}
+
+func (m *MediaAssetsAdVideo) UnmarshalJSON(data []byte) error {
+	type unmarshaler MediaAssetsAdVideo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MediaAssetsAdVideo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, mediaAssetsAdVideoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		m.require(presentFields)
+	}
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MediaAssetsAdVideo) MarshalJSON() ([]byte, error) {
+	type embed MediaAssetsAdVideo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MediaAssetsAdVideo) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+var (
+	generateMediaRequestAdVideoFieldAdID = big.NewInt(1 << 0)
+)
+
+// Makes a video ad: Whop writes the prompt, picks product photos, and adds a voiceover with captions. The video is 15 seconds at `720p` in 9:16. Video only. Can't be combined with `prompt`, `reference_media`, `duration_seconds` or `resolution`.
+type GenerateMediaRequestAdVideo struct {
+	// An ad of the account, prefixed `ad_`. The video sells that ad's landing page and avoids what content review turned down in it. Omit it to sell the account's own products.
+	AdID *string `json:"ad_id,omitempty" url:"ad_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GenerateMediaRequestAdVideo) GetAdID() *string {
+	if g == nil {
+		return nil
+	}
+	return g.AdID
+}
+
+func (g *GenerateMediaRequestAdVideo) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GenerateMediaRequestAdVideo) require(field *big.Int) {
+	next := new(big.Int)
+	if g.explicitFields != nil {
+		next.Set(g.explicitFields)
+	}
+	next.Or(next, field)
+	g.explicitFields = next
+}
+
+// SetAdID sets the AdID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateMediaRequestAdVideo) SetAdID(adID *string) {
+	g.AdID = adID
+	g.require(generateMediaRequestAdVideoFieldAdID)
+}
+
+func (g *GenerateMediaRequestAdVideo) UnmarshalJSON(data []byte) error {
+	type unmarshaler GenerateMediaRequestAdVideo
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GenerateMediaRequestAdVideo(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GenerateMediaRequestAdVideo) MarshalJSON() ([]byte, error) {
+	type embed GenerateMediaRequestAdVideo
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GenerateMediaRequestAdVideo) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
 }
 
 // Video resolution. Video only; defaults to `1080p`. `1080p` is not supported by Seedance 2.0 Fast or Mini; `4k` is only supported by Seedance 2.0.

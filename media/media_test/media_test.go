@@ -89,8 +89,7 @@ func TestMediaGenerateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.GenerateMediaRequest{
-		Prompt: "A 9:16 product showcase of a cordless power scrubber",
-		Type:   whopsdk.GenerateMediaRequestTypeVideo,
+		Type: whopsdk.GenerateMediaRequestTypeVideo,
 	}
 	_, invocationErr := client.Media.Generate(
 		context.TODO(),
