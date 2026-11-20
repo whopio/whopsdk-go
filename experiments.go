@@ -74,10 +74,12 @@ var (
 	createExperimentsRequestFieldControl         = big.NewInt(1 << 2)
 	createExperimentsRequestFieldFlagKey         = big.NewInt(1 << 3)
 	createExperimentsRequestFieldHypothesis      = big.NewInt(1 << 4)
-	createExperimentsRequestFieldMetadata        = big.NewInt(1 << 5)
-	createExperimentsRequestFieldName            = big.NewInt(1 << 6)
-	createExperimentsRequestFieldRelatedResource = big.NewInt(1 << 7)
-	createExperimentsRequestFieldVariants        = big.NewInt(1 << 8)
+	createExperimentsRequestFieldKind            = big.NewInt(1 << 5)
+	createExperimentsRequestFieldMetadata        = big.NewInt(1 << 6)
+	createExperimentsRequestFieldName            = big.NewInt(1 << 7)
+	createExperimentsRequestFieldRelatedResource = big.NewInt(1 << 8)
+	createExperimentsRequestFieldTargetStats     = big.NewInt(1 << 9)
+	createExperimentsRequestFieldVariants        = big.NewInt(1 << 10)
 )
 
 type CreateExperimentsRequest struct {
@@ -90,12 +92,16 @@ type CreateExperimentsRequest struct {
 	FlagKey string `json:"flag_key" url:"-"`
 	// Required for full experiments; rejected on feature flags. Structure it as "If we [change] for [cohort], then [measurable behavior] will [increase/decrease], resulting in [business outcome], because [evidence]. Created by [name]." Evidence should be something real — a baseline number, a funnel breakdown — not a guess, and [name] is you, not something to leave blank.
 	Hypothesis *string `json:"hypothesis,omitempty" url:"-"`
+	// `experiment` assigns its subjects to arms and takes `variants`. `beforeafter` compares a change with the period before it: it assigns nobody and needs `target_stats`. Defaults to `experiment`.
+	Kind *CreateExperimentsRequestKind `json:"kind,omitempty" url:"-"`
 	// Up to 20 key-value pairs you can attach to the experiment for your own use, such as which pages it changes. Keys are at most 40 characters and values at most 500.
 	Metadata map[string]string `json:"metadata,omitempty" url:"-"`
 	// Human-readable display name. Defaults to `flag_key` when omitted.
 	Name *string `json:"name,omitempty" url:"-"`
 	// Resource owned by the account that this experiment is bound to, such as an app or product. `null` when unbound. Fixed once the experiment first activates.
 	RelatedResource *ExperimentResourceReference `json:"related_resource,omitempty" url:"-"`
+	// The measures the experiment sets out to move, as the stats API reads them. Only an account's experiment takes them.
+	TargetStats []*ExperimentStat `json:"target_stats,omitempty" url:"-"`
 	// Treatment arms to create. Users outside every arm form the implicit `control` group. Required unless `feature_flag_only` is `true`.
 	Variants []*CreateExperimentsRequestVariantsItem `json:"variants,omitempty" url:"-"`
 
@@ -147,6 +153,13 @@ func (c *CreateExperimentsRequest) SetHypothesis(hypothesis *string) {
 	c.require(createExperimentsRequestFieldHypothesis)
 }
 
+// SetKind sets the Kind field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateExperimentsRequest) SetKind(kind *CreateExperimentsRequestKind) {
+	c.Kind = kind
+	c.require(createExperimentsRequestFieldKind)
+}
+
 // SetMetadata sets the Metadata field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateExperimentsRequest) SetMetadata(metadata map[string]string) {
@@ -166,6 +179,13 @@ func (c *CreateExperimentsRequest) SetName(name *string) {
 func (c *CreateExperimentsRequest) SetRelatedResource(relatedResource *ExperimentResourceReference) {
 	c.RelatedResource = relatedResource
 	c.require(createExperimentsRequestFieldRelatedResource)
+}
+
+// SetTargetStats sets the TargetStats field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateExperimentsRequest) SetTargetStats(targetStats []*ExperimentStat) {
+	c.TargetStats = targetStats
+	c.require(createExperimentsRequestFieldTargetStats)
 }
 
 // SetVariants sets the Variants field and marks it as non-optional;
@@ -2577,6 +2597,29 @@ func (c *CreateExperimentsRequestControl) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+// `experiment` assigns its subjects to arms and takes `variants`. `beforeafter` compares a change with the period before it: it assigns nobody and needs `target_stats`. Defaults to `experiment`.
+type CreateExperimentsRequestKind string
+
+const (
+	CreateExperimentsRequestKindExperiment  CreateExperimentsRequestKind = "experiment"
+	CreateExperimentsRequestKindBeforeafter CreateExperimentsRequestKind = "beforeafter"
+)
+
+func NewCreateExperimentsRequestKindFromString(s string) (CreateExperimentsRequestKind, error) {
+	switch s {
+	case "experiment":
+		return CreateExperimentsRequestKindExperiment, nil
+	case "beforeafter":
+		return CreateExperimentsRequestKindBeforeafter, nil
+	}
+	var t CreateExperimentsRequestKind
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateExperimentsRequestKind) Ptr() *CreateExperimentsRequestKind {
+	return &c
 }
 
 var (

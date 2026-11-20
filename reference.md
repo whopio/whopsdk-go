@@ -20256,6 +20256,14 @@ client.Experiments.Create(
 <dl>
 <dd>
 
+**kind:** `*whopsdk.CreateExperimentsRequestKind` — `experiment` assigns its subjects to arms and takes `variants`. `beforeafter` compares a change with the period before it: it assigns nobody and needs `target_stats`. Defaults to `experiment`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **metadata:** `map[string]string` — Up to 20 key-value pairs you can attach to the experiment for your own use, such as which pages it changes. Keys are at most 40 characters and values at most 500.
     
 </dd>
@@ -20273,6 +20281,14 @@ client.Experiments.Create(
 <dd>
 
 **relatedResource:** `*whopsdk.ExperimentResourceReference` — Resource owned by the account that this experiment is bound to, such as an app or product. `null` when unbound. Fixed once the experiment first activates.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**targetStats:** `[]*whopsdk.ExperimentStat` — The measures the experiment sets out to move, as the stats API reads them. Only an account's experiment takes them.
     
 </dd>
 </dl>
