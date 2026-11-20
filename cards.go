@@ -11949,15 +11949,15 @@ var (
 	updateCardsRequestCardholderFieldPhone     = big.NewInt(1 << 3)
 )
 
-// Details for the invited cardholder, accepted only while completing onboarding on an invited card. The legal name comes from an approved identity verification when the invited user has one, and from these fields when they do not.
+// Details for the cardholder. On an invited card, these fields complete onboarding. The legal name comes from an approved identity verification when the invited user has one, and from these fields when they do not. On an issued card, only email and phone can be changed. 3D Secure verification codes go to that email and phone.
 type UpdateCardsRequestCardholder struct {
-	// Email address for the invited cardholder.
+	// Email address for the cardholder.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
-	// Legal first name of the invited cardholder.
+	// Legal first name of the invited cardholder. Only accepted on an invited card.
 	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
-	// Legal last name of the invited cardholder.
+	// Legal last name of the invited cardholder. Only accepted on an invited card.
 	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
-	// Phone number for the invited cardholder.
+	// Phone number for the cardholder, in international format with the country code (for example `+14155550100`).
 	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -13105,7 +13105,7 @@ type UpdateCardsRequest struct {
 	Billing *UpdateCardsRequestBilling `json:"billing,omitempty" url:"-"`
 	// Pass `true` to permanently cancel the card. A canceled card cannot be uncanceled. Cannot be combined with other fields.
 	Canceled *bool `json:"canceled,omitempty" url:"-"`
-	// Details for the invited cardholder, accepted only while completing onboarding on an invited card. The legal name comes from an approved identity verification when the invited user has one, and from these fields when they do not.
+	// Details for the cardholder. On an invited card, these fields complete onboarding. The legal name comes from an approved identity verification when the invited user has one, and from these fields when they do not. On an issued card, only email and phone can be changed. 3D Secure verification codes go to that email and phone.
 	Cardholder *UpdateCardsRequestCardholder `json:"cardholder,omitempty" url:"-"`
 	// Pass `true` to freeze the card, `false` to unfreeze it. The assigned cardholder may freeze their own card without the payout:account:update scope.
 	Frozen *bool `json:"frozen,omitempty" url:"-"`
