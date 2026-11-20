@@ -7505,7 +7505,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"assignment_seed\": \"checkout_redesign_v21768435200\",\n      \"bucket_by\": \"user\",\n      \"configuration_revision\": 1,\n      \"control\": {},\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"created_by\": \"user_xxxxxxxxxxxxxx\",\n      \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n      \"findings\": \"Treatment lifted conversion 8%\",\n      \"flag_key\": \"checkout_redesign_v2\",\n      \"hypothesis\": \"Users will convert more\",\n      \"id\": \"expt_xxxxxxxxxxxxxx\",\n      \"metadata\": {\n        \"key\": \"value\"\n      },\n      \"name\": \"Checkout Redesign V2\",\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"started_at\": \"2026-01-01T12:00:00.000Z\",\n      \"status\": \"draft\",\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"variants\": [\n        {\n          \"name\": \"treatment\",\n          \"weight\": 50\n        }\n      ],\n      \"winning_arm\": \"treatment\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
+        "body": "{\n  \"data\": [\n    {\n      \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n      \"assignment_seed\": \"checkout_redesign_v21768435200\",\n      \"bucket_by\": \"user\",\n      \"configuration_revision\": 1,\n      \"control\": {},\n      \"created_at\": \"2026-01-01T12:00:00.000Z\",\n      \"created_by\": \"user_xxxxxxxxxxxxxx\",\n      \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n      \"findings\": \"Treatment lifted conversion 8%\",\n      \"flag_key\": \"checkout_redesign_v2\",\n      \"hypothesis\": \"Users will convert more\",\n      \"id\": \"expt_xxxxxxxxxxxxxx\",\n      \"kind\": \"boolean\",\n      \"metadata\": {\n        \"key\": \"value\"\n      },\n      \"name\": \"Checkout Redesign V2\",\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"started_at\": \"2026-01-01T12:00:00.000Z\",\n      \"status\": \"draft\",\n      \"target_stats\": [\n        {\n          \"direction\": \"up\",\n          \"estimate\": null,\n          \"metric\": \"metric\",\n          \"params\": {\n            \"key\": \"value\"\n          }\n        }\n      ],\n      \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n      \"variants\": [\n        {\n          \"name\": \"treatment\",\n          \"weight\": 50\n        }\n      ],\n      \"winning_arm\": \"treatment\"\n    }\n  ],\n  \"page_info\": {\n    \"end_cursor\": \"end_cursor\",\n    \"has_next_page\": false,\n    \"has_previous_page\": false,\n    \"start_cursor\": \"WyJjdXJzb3IiLDFd\"\n  }\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7537,7 +7537,7 @@
       },
       "response": {
         "status": 201,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"assignment_seed\": \"checkout_redesign_v21768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 1,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"checkout_redesign_v2\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Checkout Redesign V2\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"assignment_seed\": \"checkout_redesign_v21768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 1,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"checkout_redesign_v2\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"kind\": \"boolean\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Checkout Redesign V2\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"target_stats\": [\n    {\n      \"direction\": \"up\",\n      \"estimate\": 1.1,\n      \"metric\": \"metric\",\n      \"params\": {\n        \"key\": \"value\"\n      }\n    }\n  ],\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7605,7 +7605,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"assignment_seed\": \"checkout_redesign_v21768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 1,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"checkout_redesign_v2\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Checkout Redesign V2\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"assignment_seed\": \"checkout_redesign_v21768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 1,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"checkout_redesign_v2\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"kind\": \"boolean\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Checkout Redesign V2\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"target_stats\": [\n    {\n      \"direction\": \"up\",\n      \"estimate\": 1.1,\n      \"metric\": \"metric\",\n      \"params\": {\n        \"key\": \"value\"\n      }\n    }\n  ],\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7641,7 +7641,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"assignment_seed\": \"checkout_redesign_v21768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 1,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"checkout_redesign_v2\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Checkout Redesign V2\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"assignment_seed\": \"checkout_redesign_v21768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 1,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"checkout_redesign_v2\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"kind\": \"boolean\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Checkout Redesign V2\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"target_stats\": [\n    {\n      \"direction\": \"up\",\n      \"estimate\": 1.1,\n      \"metric\": \"metric\",\n      \"params\": {\n        \"key\": \"value\"\n      }\n    }\n  ],\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7677,7 +7677,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"assignment_seed\": \"checkout_redesign_v21768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 1,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"checkout_redesign_v2\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Checkout Redesign V2\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"assignment_seed\": \"checkout_redesign_v21768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 1,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"checkout_redesign_v2\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"kind\": \"boolean\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Checkout Redesign V2\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"target_stats\": [\n    {\n      \"direction\": \"up\",\n      \"estimate\": 1.1,\n      \"metric\": \"metric\",\n      \"params\": {\n        \"key\": \"value\"\n      }\n    }\n  ],\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7713,7 +7713,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"assignment_seed\": \"checkout_redesign_v21768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 1,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"checkout_redesign_v2\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Checkout Redesign V2\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"assignment_seed\": \"checkout_redesign_v21768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 1,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"checkout_redesign_v2\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"kind\": \"boolean\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Checkout Redesign V2\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"target_stats\": [\n    {\n      \"direction\": \"up\",\n      \"estimate\": 1.1,\n      \"metric\": \"metric\",\n      \"params\": {\n        \"key\": \"value\"\n      }\n    }\n  ],\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
@@ -7749,12 +7749,48 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"assignment_seed\": \"checkout_redesign_v21768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 1,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"checkout_redesign_v2\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Checkout Redesign V2\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
+        "body": "{\n  \"account_id\": \"biz_xxxxxxxxxxxxxx\",\n  \"assignment_seed\": \"checkout_redesign_v21768435200\",\n  \"bucket_by\": \"user\",\n  \"configuration_revision\": 1,\n  \"control\": {\n    \"related_resource\": {\n      \"id\": \"id\",\n      \"object\": \"app\"\n    }\n  },\n  \"created_at\": \"2026-01-01T12:00:00.000Z\",\n  \"created_by\": \"user_xxxxxxxxxxxxxx\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"findings\": \"Treatment lifted conversion 8%\",\n  \"flag_key\": \"checkout_redesign_v2\",\n  \"hypothesis\": \"Users will convert more\",\n  \"id\": \"expt_xxxxxxxxxxxxxx\",\n  \"kind\": \"boolean\",\n  \"metadata\": {\n    \"key\": \"value\"\n  },\n  \"name\": \"Checkout Redesign V2\",\n  \"related_resource\": {\n    \"id\": \"id\",\n    \"object\": \"app\"\n  },\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"status\": \"draft\",\n  \"target_stats\": [\n    {\n      \"direction\": \"up\",\n      \"estimate\": 1.1,\n      \"metric\": \"metric\",\n      \"params\": {\n        \"key\": \"value\"\n      }\n    }\n  ],\n  \"updated_at\": \"2026-01-01T12:00:00.000Z\",\n  \"variants\": [\n    {\n      \"name\": \"treatment\",\n      \"ranges\": [\n        [\n          0,\n          50\n        ]\n      ],\n      \"related_resource\": {\n        \"id\": \"id\",\n        \"object\": \"app\"\n      },\n      \"weight\": 50\n    }\n  ],\n  \"winning_arm\": \"treatment\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
       },
       "uuid": "605f4a53-ba6d-4d3c-ac52-c8d6fd75069b",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
+      "id": "663a9f42-be29-4a15-812a-25d8ccbd16e8",
+      "name": "Get Experiment Results - default",
+      "request": {
+        "urlPathTemplate": "/experiments/{id}/results",
+        "method": "GET",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"conclusion\": \"Gross revenue rose 55.98% against the period before, outside the margin of error.\",\n  \"ended_at\": \"2026-01-01T12:00:00.000Z\",\n  \"flag_key\": \"pricing_page_change\",\n  \"from\": \"from\",\n  \"name\": \"Pricing page change\",\n  \"primary_stat\": \"gross_revenue\",\n  \"started_at\": \"2026-01-01T12:00:00.000Z\",\n  \"stats\": [\n    {\n      \"control\": {\n        \"confidence_interval\": [\n          790.5\n        ],\n        \"params\": {\n          \"from\": \"2026-01-01T12:00:00.000Z\",\n          \"to\": \"2026-01-01T12:00:00.000Z\"\n        },\n        \"value\": 840\n      },\n      \"direction\": \"up\",\n      \"estimate\": 900,\n      \"metric\": \"gross_revenue\",\n      \"params\": {\n        \"from\": \"2026-01-01\",\n        \"to\": \"2026-01-01\"\n      },\n      \"unit\": \"currency\"\n    }\n  ],\n  \"status\": \"draft\",\n  \"to\": \"to\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "663a9f42-be29-4a15-812a-25d8ccbd16e8",
       "persistent": true,
       "priority": 3,
       "metadata": {
@@ -19169,6 +19205,6 @@
     }
   ],
   "meta": {
-    "total": 535
+    "total": 536
   }
 }
