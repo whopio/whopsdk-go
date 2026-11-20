@@ -1059,22 +1059,24 @@ func (e *Experiment) String() string {
 }
 
 var (
-	experimentArmResultsFieldConfidenceInterval     = big.NewInt(1 << 0)
-	experimentArmResultsFieldLiftConfidenceInterval = big.NewInt(1 << 1)
-	experimentArmResultsFieldLiftPercentage         = big.NewInt(1 << 2)
-	experimentArmResultsFieldLiftUnit               = big.NewInt(1 << 3)
-	experimentArmResultsFieldParams                 = big.NewInt(1 << 4)
-	experimentArmResultsFieldValue                  = big.NewInt(1 << 5)
+	experimentArmResultsFieldConfidenceInterval       = big.NewInt(1 << 0)
+	experimentArmResultsFieldLiftConfidenceInterval   = big.NewInt(1 << 1)
+	experimentArmResultsFieldLiftPercentage           = big.NewInt(1 << 2)
+	experimentArmResultsFieldLiftUnit                 = big.NewInt(1 << 3)
+	experimentArmResultsFieldParams                   = big.NewInt(1 << 4)
+	experimentArmResultsFieldStatisticallySignificant = big.NewInt(1 << 5)
+	experimentArmResultsFieldValue                    = big.NewInt(1 << 6)
 )
 
 // experimentArmResultsNullableFields maps the wire names of ExperimentArmResults's nullable fields (required or optional) to their field bits.
 var experimentArmResultsNullableFields = map[string]*big.Int{
-	"confidence_interval":      experimentArmResultsFieldConfidenceInterval,
-	"lift_confidence_interval": experimentArmResultsFieldLiftConfidenceInterval,
-	"lift_percentage":          experimentArmResultsFieldLiftPercentage,
-	"lift_unit":                experimentArmResultsFieldLiftUnit,
-	"params":                   experimentArmResultsFieldParams,
-	"value":                    experimentArmResultsFieldValue,
+	"confidence_interval":       experimentArmResultsFieldConfidenceInterval,
+	"lift_confidence_interval":  experimentArmResultsFieldLiftConfidenceInterval,
+	"lift_percentage":           experimentArmResultsFieldLiftPercentage,
+	"lift_unit":                 experimentArmResultsFieldLiftUnit,
+	"params":                    experimentArmResultsFieldParams,
+	"statistically_significant": experimentArmResultsFieldStatisticallySignificant,
+	"value":                     experimentArmResultsFieldValue,
 }
 
 type ExperimentArmResults struct {
@@ -1088,6 +1090,8 @@ type ExperimentArmResults struct {
 	LiftUnit *float64 `json:"lift_unit,omitempty" url:"lift_unit,omitempty"`
 	// This arm's own parameters where they differ from the reading's. `null` when they do not.
 	Params map[string]*string `json:"params,omitempty" url:"params,omitempty"`
+	// Whether `lift_confidence_interval` excludes zero, so the lift is unlikely to be noise. `false` while the interval is unknown. `null` on the control.
+	StatisticallySignificant *bool `json:"statistically_significant,omitempty" url:"statistically_significant,omitempty"`
 	// The measure on this arm, in the reading's unit. `null` when unknown.
 	Value *float64 `json:"value,omitempty" url:"value,omitempty"`
 
@@ -1131,6 +1135,13 @@ func (e *ExperimentArmResults) GetParams() map[string]*string {
 		return nil
 	}
 	return e.Params
+}
+
+func (e *ExperimentArmResults) GetStatisticallySignificant() *bool {
+	if e == nil {
+		return nil
+	}
+	return e.StatisticallySignificant
 }
 
 func (e *ExperimentArmResults) GetValue() *float64 {
@@ -1189,6 +1200,13 @@ func (e *ExperimentArmResults) SetLiftUnit(liftUnit *float64) {
 func (e *ExperimentArmResults) SetParams(params map[string]*string) {
 	e.Params = params
 	e.require(experimentArmResultsFieldParams)
+}
+
+// SetStatisticallySignificant sets the StatisticallySignificant field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperimentArmResults) SetStatisticallySignificant(statisticallySignificant *bool) {
+	e.StatisticallySignificant = statisticallySignificant
+	e.require(experimentArmResultsFieldStatisticallySignificant)
 }
 
 // SetValue sets the Value field and marks it as non-optional;
