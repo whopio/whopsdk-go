@@ -1480,11 +1480,11 @@ func TestSettersRecommendedActionChangedResource(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetObject", func(t *testing.T) {
+	t.Run("SetResourceType", func(t *testing.T) {
 		obj := &RecommendedActionChangedResource{}
-		var fernTestValueObject RecommendedActionChangedResourceObject
-		obj.SetObject(fernTestValueObject)
-		assert.Equal(t, fernTestValueObject, obj.Object)
+		var fernTestValueResourceType RecommendedActionChangedResourceResourceType
+		obj.SetResourceType(fernTestValueResourceType)
+		assert.Equal(t, fernTestValueResourceType, obj.ResourceType)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1514,18 +1514,18 @@ func TestGettersRecommendedActionChangedResource(t *testing.T) {
 		_ = obj.GetID() // Should return zero value
 	})
 
-	t.Run("GetObject", func(t *testing.T) {
+	t.Run("GetResourceType", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RecommendedActionChangedResource{}
-		var expected RecommendedActionChangedResourceObject
-		obj.Object = expected
+		var expected RecommendedActionChangedResourceResourceType
+		obj.ResourceType = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetObject(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetResourceType(), "getter should return the property value")
 	})
 
-	t.Run("GetObject_NilReceiver", func(t *testing.T) {
+	t.Run("GetResourceType_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *RecommendedActionChangedResource
 		// Should not panic - getters should handle nil receiver gracefully
@@ -1534,7 +1534,7 @@ func TestGettersRecommendedActionChangedResource(t *testing.T) {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetObject() // Should return zero value
+		_ = obj.GetResourceType() // Should return zero value
 	})
 
 }
@@ -1571,14 +1571,14 @@ func TestSettersMarkExplicitRecommendedActionChangedResource(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetObject_MarksExplicit", func(t *testing.T) {
+	t.Run("SetResourceType_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &RecommendedActionChangedResource{}
-		var fernTestValueObject RecommendedActionChangedResourceObject
+		var fernTestValueResourceType RecommendedActionChangedResourceResourceType
 
 		// Act
-		obj.SetObject(fernTestValueObject)
+		obj.SetResourceType(fernTestValueResourceType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5101,21 +5101,21 @@ func TestEnumListRecommendedActionsRequestStatusesItem(t *testing.T) {
 	})
 }
 
-func TestEnumRecommendedActionChangedResourceObject(t *testing.T) {
+func TestEnumRecommendedActionChangedResourceResourceType(t *testing.T) {
 	t.Run("NewFromString_variant", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewRecommendedActionChangedResourceObjectFromString("variant")
+		val, err := NewRecommendedActionChangedResourceResourceTypeFromString("variant")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RecommendedActionChangedResourceObject("variant"), val, "enum value should match expected wire value")
+		assert.Equal(t, RecommendedActionChangedResourceResourceType("variant"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewRecommendedActionChangedResourceObjectFromString("invalid_value_that_does_not_exist")
+		_, err := NewRecommendedActionChangedResourceResourceTypeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewRecommendedActionChangedResourceObjectFromString("variant")
+		val, err := NewRecommendedActionChangedResourceResourceTypeFromString("variant")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
