@@ -9883,34 +9883,36 @@ var (
 	chatMessageFieldAuthor              = big.NewInt(1 << 1)
 	chatMessageFieldAuthorIsTeamMember  = big.NewInt(1 << 2)
 	chatMessageFieldAuthorUserID        = big.NewInt(1 << 3)
-	chatMessageFieldChannelID           = big.NewInt(1 << 4)
-	chatMessageFieldContent             = big.NewInt(1 << 5)
-	chatMessageFieldCreatedAt           = big.NewInt(1 << 6)
-	chatMessageFieldCustomAuthor        = big.NewInt(1 << 7)
-	chatMessageFieldDeletedAt           = big.NewInt(1 << 8)
-	chatMessageFieldEdited              = big.NewInt(1 << 9)
-	chatMessageFieldEmbeds              = big.NewInt(1 << 10)
-	chatMessageFieldExternalMessage     = big.NewInt(1 << 11)
-	chatMessageFieldGifs                = big.NewInt(1 << 12)
-	chatMessageFieldID                  = big.NewInt(1 << 13)
-	chatMessageFieldLinkPreviews        = big.NewInt(1 << 14)
-	chatMessageFieldMentionedUserIDs    = big.NewInt(1 << 15)
-	chatMessageFieldMessageType         = big.NewInt(1 << 16)
-	chatMessageFieldPinned              = big.NewInt(1 << 17)
-	chatMessageFieldPlainContent        = big.NewInt(1 << 18)
-	chatMessageFieldPoll                = big.NewInt(1 << 19)
-	chatMessageFieldReactionCounts      = big.NewInt(1 << 20)
-	chatMessageFieldReplyingToMessage   = big.NewInt(1 << 21)
-	chatMessageFieldReplyingToMessageID = big.NewInt(1 << 22)
-	chatMessageFieldReplyingToUserID    = big.NewInt(1 << 23)
-	chatMessageFieldUpdatedAt           = big.NewInt(1 << 24)
-	chatMessageFieldViewCount           = big.NewInt(1 << 25)
+	chatMessageFieldAutomation          = big.NewInt(1 << 4)
+	chatMessageFieldChannelID           = big.NewInt(1 << 5)
+	chatMessageFieldContent             = big.NewInt(1 << 6)
+	chatMessageFieldCreatedAt           = big.NewInt(1 << 7)
+	chatMessageFieldCustomAuthor        = big.NewInt(1 << 8)
+	chatMessageFieldDeletedAt           = big.NewInt(1 << 9)
+	chatMessageFieldEdited              = big.NewInt(1 << 10)
+	chatMessageFieldEmbeds              = big.NewInt(1 << 11)
+	chatMessageFieldExternalMessage     = big.NewInt(1 << 12)
+	chatMessageFieldGifs                = big.NewInt(1 << 13)
+	chatMessageFieldID                  = big.NewInt(1 << 14)
+	chatMessageFieldLinkPreviews        = big.NewInt(1 << 15)
+	chatMessageFieldMentionedUserIDs    = big.NewInt(1 << 16)
+	chatMessageFieldMessageType         = big.NewInt(1 << 17)
+	chatMessageFieldPinned              = big.NewInt(1 << 18)
+	chatMessageFieldPlainContent        = big.NewInt(1 << 19)
+	chatMessageFieldPoll                = big.NewInt(1 << 20)
+	chatMessageFieldReactionCounts      = big.NewInt(1 << 21)
+	chatMessageFieldReplyingToMessage   = big.NewInt(1 << 22)
+	chatMessageFieldReplyingToMessageID = big.NewInt(1 << 23)
+	chatMessageFieldReplyingToUserID    = big.NewInt(1 << 24)
+	chatMessageFieldUpdatedAt           = big.NewInt(1 << 25)
+	chatMessageFieldViewCount           = big.NewInt(1 << 26)
 )
 
 // chatMessageNullableFields maps the wire names of ChatMessage's nullable fields (required or optional) to their field bits.
 var chatMessageNullableFields = map[string]*big.Int{
 	"author":                 chatMessageFieldAuthor,
 	"author_user_id":         chatMessageFieldAuthorUserID,
+	"automation":             chatMessageFieldAutomation,
 	"content":                chatMessageFieldContent,
 	"custom_author":          chatMessageFieldCustomAuthor,
 	"deleted_at":             chatMessageFieldDeletedAt,
@@ -9929,7 +9931,9 @@ type ChatMessage struct {
 	// `true` if the author is a team member of the account that owns this community channel. `false` for partners, private and support channels, and deleted messages.
 	AuthorIsTeamMember bool    `json:"author_is_team_member" url:"author_is_team_member"`
 	AuthorUserID       *string `json:"author_user_id,omitempty" url:"author_user_id,omitempty"`
-	ChannelID          string  `json:"channel_id" url:"channel_id"`
+	// The automation that sent this message. `null` for a message no automation sent, a deleted message, or a caller without `automation:read` on the automation's account.
+	Automation *MessageAutomation `json:"automation,omitempty" url:"automation,omitempty"`
+	ChannelID  string             `json:"channel_id" url:"channel_id"`
 	// Markdown content. `null` for a deleted message.
 	Content *string `json:"content,omitempty" url:"content,omitempty"`
 	// Creation time as an ISO 8601 timestamp.
@@ -9995,6 +9999,13 @@ func (c *ChatMessage) GetAuthorUserID() *string {
 		return nil
 	}
 	return c.AuthorUserID
+}
+
+func (c *ChatMessage) GetAutomation() *MessageAutomation {
+	if c == nil {
+		return nil
+	}
+	return c.Automation
 }
 
 func (c *ChatMessage) GetChannelID() string {
@@ -10193,6 +10204,13 @@ func (c *ChatMessage) SetAuthorIsTeamMember(authorIsTeamMember bool) {
 func (c *ChatMessage) SetAuthorUserID(authorUserID *string) {
 	c.AuthorUserID = authorUserID
 	c.require(chatMessageFieldAuthorUserID)
+}
+
+// SetAutomation sets the Automation field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *ChatMessage) SetAutomation(automation *MessageAutomation) {
+	c.Automation = automation
+	c.require(chatMessageFieldAutomation)
 }
 
 // SetChannelID sets the ChannelID field and marks it as non-optional;
@@ -40164,6 +40182,110 @@ func (m *Message) MarshalJSON() ([]byte, error) {
 }
 
 func (m *Message) String() string {
+	if m == nil {
+		return "<nil>"
+	}
+	if len(m.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(m.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(m); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", m)
+}
+
+var (
+	messageAutomationFieldID   = big.NewInt(1 << 0)
+	messageAutomationFieldName = big.NewInt(1 << 1)
+)
+
+type MessageAutomation struct {
+	// Automation ID, prefixed `ato_`.
+	ID string `json:"id" url:"id"`
+	// The automation's name.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (m *MessageAutomation) GetID() string {
+	if m == nil {
+		return ""
+	}
+	return m.ID
+}
+
+func (m *MessageAutomation) GetName() string {
+	if m == nil {
+		return ""
+	}
+	return m.Name
+}
+
+func (m *MessageAutomation) GetExtraProperties() map[string]interface{} {
+	if m == nil {
+		return nil
+	}
+	return m.extraProperties
+}
+
+func (m *MessageAutomation) require(field *big.Int) {
+	next := new(big.Int)
+	if m.explicitFields != nil {
+		next.Set(m.explicitFields)
+	}
+	next.Or(next, field)
+	m.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MessageAutomation) SetID(id string) {
+	m.ID = id
+	m.require(messageAutomationFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MessageAutomation) SetName(name string) {
+	m.Name = name
+	m.require(messageAutomationFieldName)
+}
+
+func (m *MessageAutomation) UnmarshalJSON(data []byte) error {
+	type unmarshaler MessageAutomation
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*m = MessageAutomation(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *m)
+	if err != nil {
+		return err
+	}
+	m.extraProperties = extraProperties
+	m.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (m *MessageAutomation) MarshalJSON() ([]byte, error) {
+	type embed MessageAutomation
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*m),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, m.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (m *MessageAutomation) String() string {
 	if m == nil {
 		return "<nil>"
 	}
