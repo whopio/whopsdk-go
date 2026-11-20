@@ -371,12 +371,13 @@ var (
 	teamMemberFieldID                 = big.NewInt(1 << 5)
 	teamMemberFieldIsAgent            = big.NewInt(1 << 6)
 	teamMemberFieldIsPartner          = big.NewInt(1 << 7)
-	teamMemberFieldReportsToChain     = big.NewInt(1 << 8)
-	teamMemberFieldReportsToID        = big.NewInt(1 << 9)
-	teamMemberFieldRole               = big.NewInt(1 << 10)
-	teamMemberFieldStatus             = big.NewInt(1 << 11)
-	teamMemberFieldUpdatedAt          = big.NewInt(1 << 12)
-	teamMemberFieldUser               = big.NewInt(1 << 13)
+	teamMemberFieldLegalName          = big.NewInt(1 << 8)
+	teamMemberFieldReportsToChain     = big.NewInt(1 << 9)
+	teamMemberFieldReportsToID        = big.NewInt(1 << 10)
+	teamMemberFieldRole               = big.NewInt(1 << 11)
+	teamMemberFieldStatus             = big.NewInt(1 << 12)
+	teamMemberFieldUpdatedAt          = big.NewInt(1 << 13)
+	teamMemberFieldUser               = big.NewInt(1 << 14)
 )
 
 // teamMemberNullableFields maps the wire names of TeamMember's nullable fields (required or optional) to their field bits.
@@ -384,6 +385,7 @@ var teamMemberNullableFields = map[string]*big.Int{
 	"authorized_role":      teamMemberFieldAuthorizedRole,
 	"direct_reports_count": teamMemberFieldDirectReportsCount,
 	"email":                teamMemberFieldEmail,
+	"legal_name":           teamMemberFieldLegalName,
 	"reports_to_chain":     teamMemberFieldReportsToChain,
 	"reports_to_id":        teamMemberFieldReportsToID,
 	"user":                 teamMemberFieldUser,
@@ -405,7 +407,9 @@ type TeamMember struct {
 	// Whether this member is an agent (app-controlled account) rather than a human team member. Always `false` for invites.
 	IsAgent bool `json:"is_agent" url:"is_agent"`
 	// Whether this member or invite has the view-only Partner role, directly or through a custom role based on it. A Partner can read only the account's basic details.
-	IsPartner      bool                 `json:"is_partner" url:"is_partner"`
+	IsPartner bool `json:"is_partner" url:"is_partner"`
+	// The legal name from the member's approved identity verification, returned to the account's own API key when listing or retrieving a partner account's team members. `null` when the member has none, for invites, on write responses, and for other callers.
+	LegalName      *string              `json:"legal_name,omitempty" url:"legal_name,omitempty"`
 	ReportsToChain []*TeamMemberManager `json:"reports_to_chain,omitempty" url:"reports_to_chain,omitempty"`
 	// The ID of the team member this member reports to, starting with `ausr_` or `mber_`; treat it as opaque. `null` when the member reports to the business directly, and for invites.
 	ReportsToID *string `json:"reports_to_id,omitempty" url:"reports_to_id,omitempty"`
@@ -479,6 +483,13 @@ func (t *TeamMember) GetIsPartner() bool {
 		return false
 	}
 	return t.IsPartner
+}
+
+func (t *TeamMember) GetLegalName() *string {
+	if t == nil {
+		return nil
+	}
+	return t.LegalName
 }
 
 func (t *TeamMember) GetReportsToChain() []*TeamMemberManager {
@@ -593,6 +604,13 @@ func (t *TeamMember) SetIsAgent(isAgent bool) {
 func (t *TeamMember) SetIsPartner(isPartner bool) {
 	t.IsPartner = isPartner
 	t.require(teamMemberFieldIsPartner)
+}
+
+// SetLegalName sets the LegalName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TeamMember) SetLegalName(legalName *string) {
+	t.LegalName = legalName
+	t.require(teamMemberFieldLegalName)
 }
 
 // SetReportsToChain sets the ReportsToChain field and marks it as non-optional;
@@ -791,13 +809,21 @@ func (t *TeamMemberAuthorizedRole) String() string {
 }
 
 var (
-	teamMemberManagerFieldID   = big.NewInt(1 << 0)
-	teamMemberManagerFieldUser = big.NewInt(1 << 1)
+	teamMemberManagerFieldID        = big.NewInt(1 << 0)
+	teamMemberManagerFieldLegalName = big.NewInt(1 << 1)
+	teamMemberManagerFieldUser      = big.NewInt(1 << 2)
 )
+
+// teamMemberManagerNullableFields maps the wire names of TeamMemberManager's nullable fields (required or optional) to their field bits.
+var teamMemberManagerNullableFields = map[string]*big.Int{
+	"legal_name": teamMemberManagerFieldLegalName,
+}
 
 type TeamMemberManager struct {
 	// The manager's team member ID, starting with `ausr_` or `mber_`; treat it as opaque.
 	ID string `json:"id" url:"id"`
+	// The legal name from the manager's approved identity verification, returned to the account's own API key when listing a partner account's team. `null` when the manager has none, and for other callers.
+	LegalName *string `json:"legal_name,omitempty" url:"legal_name,omitempty"`
 	// The user behind the manager's team membership.
 	User *UserSummary `json:"user" url:"user"`
 
@@ -813,6 +839,13 @@ func (t *TeamMemberManager) GetID() string {
 		return ""
 	}
 	return t.ID
+}
+
+func (t *TeamMemberManager) GetLegalName() *string {
+	if t == nil {
+		return nil
+	}
+	return t.LegalName
 }
 
 func (t *TeamMemberManager) GetUser() *UserSummary {
@@ -845,6 +878,13 @@ func (t *TeamMemberManager) SetID(id string) {
 	t.require(teamMemberManagerFieldID)
 }
 
+// SetLegalName sets the LegalName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (t *TeamMemberManager) SetLegalName(legalName *string) {
+	t.LegalName = legalName
+	t.require(teamMemberManagerFieldLegalName)
+}
+
 // SetUser sets the User field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (t *TeamMemberManager) SetUser(user *UserSummary) {
@@ -864,6 +904,13 @@ func (t *TeamMemberManager) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	t.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, teamMemberManagerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		t.require(presentFields)
+	}
 	t.rawJSON = json.RawMessage(data)
 	return nil
 }
