@@ -95,6 +95,360 @@ func (a AccessPassTypes) Ptr() *AccessPassTypes {
 }
 
 var (
+	accountAffiliateProgramFieldApplicationQuestions = big.NewInt(1 << 0)
+	accountAffiliateProgramFieldApplicationRequired  = big.NewInt(1 << 1)
+	accountAffiliateProgramFieldFeaturedProductID    = big.NewInt(1 << 2)
+	accountAffiliateProgramFieldInstructions         = big.NewInt(1 << 3)
+)
+
+// accountAffiliateProgramNullableFields maps the wire names of AccountAffiliateProgram's nullable fields (required or optional) to their field bits.
+var accountAffiliateProgramNullableFields = map[string]*big.Int{
+	"featured_product_id": accountAffiliateProgramFieldFeaturedProductID,
+	"instructions":        accountAffiliateProgramFieldInstructions,
+}
+
+type AccountAffiliateProgram struct {
+	ApplicationQuestions []*AccountAffiliateProgramQuestion `json:"application_questions" url:"application_questions"`
+	// Whether a person must apply and get approval to become an affiliate of the account.
+	ApplicationRequired bool `json:"application_required" url:"application_required"`
+	// The product the account features for affiliates, prefixed `prod_`. `null` when none is featured.
+	FeaturedProductID *string `json:"featured_product_id,omitempty" url:"featured_product_id,omitempty"`
+	// The instructions the account shows its affiliates on how to promote it. `null` when none are set.
+	Instructions *string `json:"instructions,omitempty" url:"instructions,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountAffiliateProgram) GetApplicationQuestions() []*AccountAffiliateProgramQuestion {
+	if a == nil {
+		return nil
+	}
+	return a.ApplicationQuestions
+}
+
+func (a *AccountAffiliateProgram) GetApplicationRequired() bool {
+	if a == nil {
+		return false
+	}
+	return a.ApplicationRequired
+}
+
+func (a *AccountAffiliateProgram) GetFeaturedProductID() *string {
+	if a == nil {
+		return nil
+	}
+	return a.FeaturedProductID
+}
+
+func (a *AccountAffiliateProgram) GetInstructions() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Instructions
+}
+
+func (a *AccountAffiliateProgram) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountAffiliateProgram) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetApplicationQuestions sets the ApplicationQuestions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountAffiliateProgram) SetApplicationQuestions(applicationQuestions []*AccountAffiliateProgramQuestion) {
+	a.ApplicationQuestions = applicationQuestions
+	a.require(accountAffiliateProgramFieldApplicationQuestions)
+}
+
+// SetApplicationRequired sets the ApplicationRequired field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountAffiliateProgram) SetApplicationRequired(applicationRequired bool) {
+	a.ApplicationRequired = applicationRequired
+	a.require(accountAffiliateProgramFieldApplicationRequired)
+}
+
+// SetFeaturedProductID sets the FeaturedProductID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountAffiliateProgram) SetFeaturedProductID(featuredProductID *string) {
+	a.FeaturedProductID = featuredProductID
+	a.require(accountAffiliateProgramFieldFeaturedProductID)
+}
+
+// SetInstructions sets the Instructions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountAffiliateProgram) SetInstructions(instructions *string) {
+	a.Instructions = instructions
+	a.require(accountAffiliateProgramFieldInstructions)
+}
+
+func (a *AccountAffiliateProgram) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountAffiliateProgram
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountAffiliateProgram(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountAffiliateProgramNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountAffiliateProgram) MarshalJSON() ([]byte, error) {
+	type embed AccountAffiliateProgram
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountAffiliateProgram) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+var (
+	accountAffiliateProgramQuestionFieldFieldType   = big.NewInt(1 << 0)
+	accountAffiliateProgramQuestionFieldID          = big.NewInt(1 << 1)
+	accountAffiliateProgramQuestionFieldName        = big.NewInt(1 << 2)
+	accountAffiliateProgramQuestionFieldOrder       = big.NewInt(1 << 3)
+	accountAffiliateProgramQuestionFieldPlaceholder = big.NewInt(1 << 4)
+	accountAffiliateProgramQuestionFieldRequired    = big.NewInt(1 << 5)
+)
+
+// accountAffiliateProgramQuestionNullableFields maps the wire names of AccountAffiliateProgramQuestion's nullable fields (required or optional) to their field bits.
+var accountAffiliateProgramQuestionNullableFields = map[string]*big.Int{
+	"placeholder": accountAffiliateProgramQuestionFieldPlaceholder,
+}
+
+type AccountAffiliateProgramQuestion struct {
+	// The input type of the answer.
+	FieldType AccountAffiliateProgramQuestionFieldType `json:"field_type" url:"field_type"`
+	// Question ID, prefixed `field_`.
+	ID string `json:"id" url:"id"`
+	// The question, shown as the field label.
+	Name string `json:"name" url:"name"`
+	// The question's position on the application, starting at 0.
+	Order float64 `json:"order" url:"order"`
+	// Placeholder text shown in the empty answer field. `null` if none is set.
+	Placeholder *string `json:"placeholder,omitempty" url:"placeholder,omitempty"`
+	// Whether an applicant must answer this question.
+	Required bool `json:"required" url:"required"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountAffiliateProgramQuestion) GetFieldType() AccountAffiliateProgramQuestionFieldType {
+	if a == nil {
+		return ""
+	}
+	return a.FieldType
+}
+
+func (a *AccountAffiliateProgramQuestion) GetID() string {
+	if a == nil {
+		return ""
+	}
+	return a.ID
+}
+
+func (a *AccountAffiliateProgramQuestion) GetName() string {
+	if a == nil {
+		return ""
+	}
+	return a.Name
+}
+
+func (a *AccountAffiliateProgramQuestion) GetOrder() float64 {
+	if a == nil {
+		return 0
+	}
+	return a.Order
+}
+
+func (a *AccountAffiliateProgramQuestion) GetPlaceholder() *string {
+	if a == nil {
+		return nil
+	}
+	return a.Placeholder
+}
+
+func (a *AccountAffiliateProgramQuestion) GetRequired() bool {
+	if a == nil {
+		return false
+	}
+	return a.Required
+}
+
+func (a *AccountAffiliateProgramQuestion) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountAffiliateProgramQuestion) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetFieldType sets the FieldType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountAffiliateProgramQuestion) SetFieldType(fieldType AccountAffiliateProgramQuestionFieldType) {
+	a.FieldType = fieldType
+	a.require(accountAffiliateProgramQuestionFieldFieldType)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountAffiliateProgramQuestion) SetID(id string) {
+	a.ID = id
+	a.require(accountAffiliateProgramQuestionFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountAffiliateProgramQuestion) SetName(name string) {
+	a.Name = name
+	a.require(accountAffiliateProgramQuestionFieldName)
+}
+
+// SetOrder sets the Order field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountAffiliateProgramQuestion) SetOrder(order float64) {
+	a.Order = order
+	a.require(accountAffiliateProgramQuestionFieldOrder)
+}
+
+// SetPlaceholder sets the Placeholder field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountAffiliateProgramQuestion) SetPlaceholder(placeholder *string) {
+	a.Placeholder = placeholder
+	a.require(accountAffiliateProgramQuestionFieldPlaceholder)
+}
+
+// SetRequired sets the Required field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountAffiliateProgramQuestion) SetRequired(required bool) {
+	a.Required = required
+	a.require(accountAffiliateProgramQuestionFieldRequired)
+}
+
+func (a *AccountAffiliateProgramQuestion) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountAffiliateProgramQuestion
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountAffiliateProgramQuestion(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountAffiliateProgramQuestionNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountAffiliateProgramQuestion) MarshalJSON() ([]byte, error) {
+	type embed AccountAffiliateProgramQuestion
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountAffiliateProgramQuestion) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// The input type of the answer.
+type AccountAffiliateProgramQuestionFieldType string
+
+const (
+	AccountAffiliateProgramQuestionFieldTypeText AccountAffiliateProgramQuestionFieldType = "text"
+)
+
+func NewAccountAffiliateProgramQuestionFieldTypeFromString(s string) (AccountAffiliateProgramQuestionFieldType, error) {
+	switch s {
+	case "text":
+		return AccountAffiliateProgramQuestionFieldTypeText, nil
+	}
+	var t AccountAffiliateProgramQuestionFieldType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountAffiliateProgramQuestionFieldType) Ptr() *AccountAffiliateProgramQuestionFieldType {
+	return &a
+}
+
+var (
 	accountBalanceBreakdownFieldAvailable           = big.NewInt(1 << 0)
 	accountBalanceBreakdownFieldFinishingSettlement = big.NewInt(1 << 1)
 	accountBalanceBreakdownFieldInTransit           = big.NewInt(1 << 2)
@@ -1192,7 +1546,7 @@ type AccountCards struct {
 	DeclineReason *AccountCardsDeclineReason `json:"decline_reason,omitempty" url:"decline_reason,omitempty"`
 	// Whether the card application verifies a business (`business`, KYB) or a person (`individual`, consumer identity). `null` when the application is not yet linked to a verification.
 	Kind *AccountCardsKind `json:"kind,omitempty" url:"kind,omitempty"`
-	// Where the card application stands. `approved` means cards can be issued. `needs_verification` means the applicant has not completed identity verification yet; `needs_information` means they did, but the documents were rejected for a fixable reason and must be resubmitted. `pending` and `manual_review` are in flight. `denied`, `locked`, and `canceled` are terminal.
+	// Where the card application stands. `approved` means cards can be issued. `needs_verification` means the applicant has not completed identity verification yet. `needs_information` means they did, but the documents were rejected for a fixable reason and must be resubmitted. `pending` and `manual_review` are in flight. `denied`, `locked`, and `canceled` are terminal.
 	Status AccountCardsStatus `json:"status" url:"status"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -1373,7 +1727,7 @@ func (a AccountCardsKind) Ptr() *AccountCardsKind {
 	return &a
 }
 
-// Where the card application stands. `approved` means cards can be issued. `needs_verification` means the applicant has not completed identity verification yet; `needs_information` means they did, but the documents were rejected for a fixable reason and must be resubmitted. `pending` and `manual_review` are in flight. `denied`, `locked`, and `canceled` are terminal.
+// Where the card application stands. `approved` means cards can be issued. `needs_verification` means the applicant has not completed identity verification yet. `needs_information` means they did, but the documents were rejected for a fixable reason and must be resubmitted. `pending` and `manual_review` are in flight. `denied`, `locked`, and `canceled` are terminal.
 type AccountCardsStatus string
 
 const (
@@ -4383,31 +4737,32 @@ var (
 	accountPreferencesFieldAdsReportingCurrency                    = big.NewInt(1 << 2)
 	accountPreferencesFieldAdsSchedulingTimezone                   = big.NewInt(1 << 3)
 	accountPreferencesFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 4)
-	accountPreferencesFieldCancellationEmails                      = big.NewInt(1 << 5)
-	accountPreferencesFieldCardSurcharge                           = big.NewInt(1 << 6)
-	accountPreferencesFieldCardsAutoTopUp                          = big.NewInt(1 << 7)
-	accountPreferencesFieldCardsNotifications                      = big.NewInt(1 << 8)
-	accountPreferencesFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 9)
-	accountPreferencesFieldCustomerTracking                        = big.NewInt(1 << 10)
-	accountPreferencesFieldDisputeFighterEnabled                   = big.NewInt(1 << 11)
-	accountPreferencesFieldEconomicIntelligence                    = big.NewInt(1 << 12)
-	accountPreferencesFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 13)
-	accountPreferencesFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 14)
-	accountPreferencesFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 15)
-	accountPreferencesFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 16)
-	accountPreferencesFieldEconomicIntelligenceOffers              = big.NewInt(1 << 17)
-	accountPreferencesFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 18)
-	accountPreferencesFieldFailedPaymentEmails                     = big.NewInt(1 << 19)
-	accountPreferencesFieldFeedbackOptions                         = big.NewInt(1 << 20)
-	accountPreferencesFieldMerchantOfRecord                        = big.NewInt(1 << 21)
-	accountPreferencesFieldOffSessionPaymentRules                  = big.NewInt(1 << 22)
-	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 23)
-	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 24)
-	accountPreferencesFieldRenewalReminderEmails                   = big.NewInt(1 << 25)
-	accountPreferencesFieldReviewRequestEmails                     = big.NewInt(1 << 26)
-	accountPreferencesFieldSubaccountNotifications                 = big.NewInt(1 << 27)
-	accountPreferencesFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 28)
-	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 29)
+	accountPreferencesFieldAffiliateProgram                        = big.NewInt(1 << 5)
+	accountPreferencesFieldCancellationEmails                      = big.NewInt(1 << 6)
+	accountPreferencesFieldCardSurcharge                           = big.NewInt(1 << 7)
+	accountPreferencesFieldCardsAutoTopUp                          = big.NewInt(1 << 8)
+	accountPreferencesFieldCardsNotifications                      = big.NewInt(1 << 9)
+	accountPreferencesFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 10)
+	accountPreferencesFieldCustomerTracking                        = big.NewInt(1 << 11)
+	accountPreferencesFieldDisputeFighterEnabled                   = big.NewInt(1 << 12)
+	accountPreferencesFieldEconomicIntelligence                    = big.NewInt(1 << 13)
+	accountPreferencesFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 14)
+	accountPreferencesFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 15)
+	accountPreferencesFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 16)
+	accountPreferencesFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 17)
+	accountPreferencesFieldEconomicIntelligenceOffers              = big.NewInt(1 << 18)
+	accountPreferencesFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 19)
+	accountPreferencesFieldFailedPaymentEmails                     = big.NewInt(1 << 20)
+	accountPreferencesFieldFeedbackOptions                         = big.NewInt(1 << 21)
+	accountPreferencesFieldMerchantOfRecord                        = big.NewInt(1 << 22)
+	accountPreferencesFieldOffSessionPaymentRules                  = big.NewInt(1 << 23)
+	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 24)
+	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 25)
+	accountPreferencesFieldRenewalReminderEmails                   = big.NewInt(1 << 26)
+	accountPreferencesFieldReviewRequestEmails                     = big.NewInt(1 << 27)
+	accountPreferencesFieldSubaccountNotifications                 = big.NewInt(1 << 28)
+	accountPreferencesFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 29)
+	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 30)
 )
 
 // accountPreferencesNullableFields maps the wire names of AccountPreferences's nullable fields (required or optional) to their field bits.
@@ -4437,6 +4792,8 @@ type AccountPreferences struct {
 	AdsSchedulingTimezone string `json:"ads_scheduling_timezone" url:"ads_scheduling_timezone"`
 	// The account's Triple Whale integration, which pushes Whop ad spend to Triple Whale's Data-In API so it reports as a `whop` channel, and tags ad click-through URLs with `tw_source`/`tw_adid` so Triple Whale's pixel attributes conversions back to the right ad. `status` is `connected`, `not_connected`, or `requires_shop_domain` (Triple Whale keys records by shop, so spend only flows once `shop_domain` is set). `masked_api_key` shows the leading characters of the stored key; the full key is never returned. `shop_domain` is the shop spend is reported for.
 	AdsTripleWhaleIntegration map[string]any `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
+	// The account's affiliate program: its instructions, its application and the product it features for affiliates. `GET /accounts/{account_id}/affiliate_program` returns the same object without authentication.
+	AffiliateProgram *AccountAffiliateProgram `json:"affiliate_program" url:"affiliate_program"`
 	// Whether Whop emails members when their membership is canceled or terminated. `true` by default. Set it to `false` to stop these emails while keeping the account's other customer emails. They also stop while the account's `send_customer_emails` is `false`.
 	CancellationEmails bool `json:"cancellation_emails" url:"cancellation_emails"`
 	// The card surcharge a point of sale adds to credit card payments. Debit and prepaid cards never pay it.
@@ -4526,6 +4883,13 @@ func (a *AccountPreferences) GetAdsTripleWhaleIntegration() map[string]any {
 		return nil
 	}
 	return a.AdsTripleWhaleIntegration
+}
+
+func (a *AccountPreferences) GetAffiliateProgram() *AccountAffiliateProgram {
+	if a == nil {
+		return nil
+	}
+	return a.AffiliateProgram
 }
 
 func (a *AccountPreferences) GetCancellationEmails() bool {
@@ -4752,6 +5116,13 @@ func (a *AccountPreferences) SetAdsSchedulingTimezone(adsSchedulingTimezone stri
 func (a *AccountPreferences) SetAdsTripleWhaleIntegration(adsTripleWhaleIntegration map[string]any) {
 	a.AdsTripleWhaleIntegration = adsTripleWhaleIntegration
 	a.require(accountPreferencesFieldAdsTripleWhaleIntegration)
+}
+
+// SetAffiliateProgram sets the AffiliateProgram field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetAffiliateProgram(affiliateProgram *AccountAffiliateProgram) {
+	a.AffiliateProgram = affiliateProgram
+	a.require(accountPreferencesFieldAffiliateProgram)
 }
 
 // SetCancellationEmails sets the CancellationEmails field and marks it as non-optional;
