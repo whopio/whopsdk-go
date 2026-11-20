@@ -408,7 +408,7 @@ type TeamMember struct {
 	IsAgent bool `json:"is_agent" url:"is_agent"`
 	// Whether this member or invite has the view-only Partner role, directly or through a custom role based on it. A Partner can read only the account's basic details.
 	IsPartner bool `json:"is_partner" url:"is_partner"`
-	// The legal name from the member's approved identity verification, returned to the account's own API key when listing or retrieving a partner account's team members. `null` when the member has none, for invites, on write responses, and for other callers.
+	// The first and last name on the member's approved identity verification, set only when the member has no profile name. Returned to the account's own API key when listing or retrieving a partner account's team members. `null` when the member has a profile name or no approved verification, for invites, on write responses, and for other callers.
 	LegalName      *string              `json:"legal_name,omitempty" url:"legal_name,omitempty"`
 	ReportsToChain []*TeamMemberManager `json:"reports_to_chain,omitempty" url:"reports_to_chain,omitempty"`
 	// The ID of the team member this member reports to, starting with `ausr_` or `mber_`; treat it as opaque. `null` when the member reports to the business directly, and for invites.
@@ -822,7 +822,7 @@ var teamMemberManagerNullableFields = map[string]*big.Int{
 type TeamMemberManager struct {
 	// The manager's team member ID, starting with `ausr_` or `mber_`; treat it as opaque.
 	ID string `json:"id" url:"id"`
-	// The legal name from the manager's approved identity verification, returned to the account's own API key when listing a partner account's team. `null` when the manager has none, and for other callers.
+	// The first and last name on the manager's approved identity verification, set only when the manager has no profile name. Returned to the account's own API key when listing a partner account's team. `null` when the manager has a profile name or no approved verification, and for other callers.
 	LegalName *string `json:"legal_name,omitempty" url:"legal_name,omitempty"`
 	// The user behind the manager's team membership.
 	User *UserSummary `json:"user" url:"user"`
