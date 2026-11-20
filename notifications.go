@@ -12,6 +12,7 @@ import (
 var (
 	badgesNotificationsRequestFieldExperienceIDs = big.NewInt(1 << 0)
 	badgesNotificationsRequestFieldLastFetchedAt = big.NewInt(1 << 1)
+	badgesNotificationsRequestFieldUnread        = big.NewInt(1 << 2)
 )
 
 type BadgesNotificationsRequest struct {
@@ -19,6 +20,8 @@ type BadgesNotificationsRequest struct {
 	ExperienceIDs []*string `json:"-" url:"experience_ids,omitempty"`
 	// The client's last fetched-at ISO 8601 timestamp, used to partially refresh badges after a websocket message.
 	LastFetchedAt *string `json:"-" url:"last_fetched_at,omitempty"`
+	// Only return badges for experiences with unread notifications.
+	Unread *bool `json:"-" url:"unread,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -45,6 +48,13 @@ func (b *BadgesNotificationsRequest) SetExperienceIDs(experienceIDs []*string) {
 func (b *BadgesNotificationsRequest) SetLastFetchedAt(lastFetchedAt *string) {
 	b.LastFetchedAt = lastFetchedAt
 	b.require(badgesNotificationsRequestFieldLastFetchedAt)
+}
+
+// SetUnread sets the Unread field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BadgesNotificationsRequest) SetUnread(unread *bool) {
+	b.Unread = unread
+	b.require(badgesNotificationsRequestFieldUnread)
 }
 
 var (
