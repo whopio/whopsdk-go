@@ -27363,6 +27363,7 @@ const (
 	LedgerActivityLineTypePaymentRefund                             LedgerActivityLineType = "payment_refund"
 	LedgerActivityLineTypePaymentRefundReversal                     LedgerActivityLineType = "payment_refund_reversal"
 	LedgerActivityLineTypePlatformBalancePayment                    LedgerActivityLineType = "platform_balance_payment"
+	LedgerActivityLineTypeFeeRebate                                 LedgerActivityLineType = "fee_rebate"
 	LedgerActivityLineTypePlatformBalancePaymentRefund              LedgerActivityLineType = "platform_balance_payment_refund"
 	LedgerActivityLineTypeAdSpendPurchase                           LedgerActivityLineType = "ad_spend_purchase"
 	LedgerActivityLineTypePspRefundPayable                          LedgerActivityLineType = "psp_refund_payable"
@@ -27713,6 +27714,8 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypePaymentRefundReversal, nil
 	case "platform_balance_payment":
 		return LedgerActivityLineTypePlatformBalancePayment, nil
+	case "fee_rebate":
+		return LedgerActivityLineTypeFeeRebate, nil
 	case "platform_balance_payment_refund":
 		return LedgerActivityLineTypePlatformBalancePaymentRefund, nil
 	case "ad_spend_purchase":
