@@ -988,7 +988,7 @@ type Account struct {
 	Capabilities *AccountCapabilities `json:"capabilities,omitempty" url:"capabilities,omitempty"`
 	// Whop Cards application details for the account. Returned on `list`, `retrieve`, and `me` for callers with `company:balance:read` scope; `null` otherwise, or when the account has no card application or blocking application review.
 	Cards *AccountCards `json:"cards,omitempty" url:"cards,omitempty"`
-	// Whether checkout shows a VAT/tax ID field for buyers to optionally enter. Does not require a VAT ID to purchase.
+	// The account's saved preference for offering optional buyer VAT/tax ID entry. Checkouts where Whop collects and remits tax offer entry automatically, regardless of this preference. Does not require a VAT ID to purchase.
 	CollectVatID bool `json:"collect_vat_id" url:"collect_vat_id"`
 	// Company formation state for the account, managed through [Form Company](/api-reference/accounts/form-company). A `draft` `status` until the formation checkout is paid, then filing progress with downloadable documents and signatures awaiting action. Empty when the formation state is temporarily unavailable.
 	CompanyFormation *AccountCompanyFormation `json:"company_formation" url:"company_formation"`
@@ -10752,7 +10752,7 @@ type UpdateAccountsRequest struct {
 	BusinessName *string `json:"business_name,omitempty" url:"-"`
 	// The account's cancellation policy document. Attached to new disputes as the cancellation policy evidence, with the terms of service as the fallback. PDF only. Pass a JSON object containing an `id` from [Create File](/api-reference/files/create-file), or `null` to remove it.
 	CancellationPolicy *UpdateAccountsRequestCancellationPolicy `json:"cancellation_policy,omitempty" url:"-"`
-	// Whether checkout shows a VAT/tax ID field for buyers to optionally enter. Does not require a VAT ID to purchase.
+	// The account's saved preference for offering optional buyer VAT/tax ID entry. Checkouts where Whop collects and remits tax offer entry automatically, regardless of this preference. Does not require a VAT ID to purchase.
 	CollectVatID *bool `json:"collect_vat_id,omitempty" url:"-"`
 	// Country where the account is located.
 	Country *string `json:"country,omitempty" url:"-"`

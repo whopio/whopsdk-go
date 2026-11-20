@@ -885,7 +885,7 @@ client.Accounts.Update(
 <dl>
 <dd>
 
-**collectVatID:** `*bool` — Whether checkout shows a VAT/tax ID field for buyers to optionally enter. Does not require a VAT ID to purchase.
+**collectVatID:** `*bool` — The account's saved preference for offering optional buyer VAT/tax ID entry. Checkouts where Whop collects and remits tax offer entry automatically, regardless of this preference. Does not require a VAT ID to purchase.
     
 </dd>
 </dl>
