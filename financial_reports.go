@@ -1531,6 +1531,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryExternalAccountConnectionFee              RetrieveFinancialReportsResponseRowsItemLineCategory = "external_account_connection_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryExternalCardLoadDeposit                   RetrieveFinancialReportsResponseRowsItemLineCategory = "external_card_load_deposit"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryExternalCardLoadOffset                    RetrieveFinancialReportsResponseRowsItemLineCategory = "external_card_load_offset"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryFeeRebate                                 RetrieveFinancialReportsResponseRowsItemLineCategory = "fee_rebate"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryFraudPreventionFee                        RetrieveFinancialReportsResponseRowsItemLineCategory = "fraud_prevention_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryFxGainLoss                                RetrieveFinancialReportsResponseRowsItemLineCategory = "fx_gain_loss"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryFxMarkup                                  RetrieveFinancialReportsResponseRowsItemLineCategory = "fx_markup"
@@ -1965,6 +1966,8 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryExternalCardLoadDeposit, nil
 	case "external_card_load_offset":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryExternalCardLoadOffset, nil
+	case "fee_rebate":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryFeeRebate, nil
 	case "fraud_prevention_fee":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryFraudPreventionFee, nil
 	case "fx_gain_loss":
