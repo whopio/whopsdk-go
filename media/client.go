@@ -43,7 +43,6 @@ func NewClient(options *core.RequestOptions) *Client {
 // Example:
 //
 //	request := &whopsdk.GenerateMediaRequest{
-//	    Prompt: "A 9:16 product showcase of a cordless power scrubber",
 //	    Type: whopsdk.GenerateMediaRequestTypeVideo,
 //	}
 //	client.Media.Generate(

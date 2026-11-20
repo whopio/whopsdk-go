@@ -25816,7 +25816,6 @@ Starts an AI media generation job billed from the account's balance. Generation 
 
 ```go
 request := &whopsdk.GenerateMediaRequest{
-    Prompt: "A 9:16 product showcase of a cordless power scrubber",
     Type: whopsdk.GenerateMediaRequestTypeVideo,
 }
 client.Media.Generate(
@@ -25845,6 +25844,14 @@ client.Media.Generate(
 <dl>
 <dd>
 
+**adVideo:** `*whopsdk.GenerateMediaRequestAdVideo` — Makes a video ad: Whop writes the prompt, picks product photos, and adds a voiceover with captions. The video is 15 seconds at `720p` in 9:16. Video only. Can't be combined with `prompt`, `reference_media`, `duration_seconds` or `resolution`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **durationSeconds:** `*int` — Video length in seconds. Video only; defaults to 5.
     
 </dd>
@@ -25853,7 +25860,7 @@ client.Media.Generate(
 <dl>
 <dd>
 
-**prompt:** `string` — What to generate. Up to 2,000 characters.
+**prompt:** `*string` — What to generate. Up to 2,000 characters. Required unless `ad_video` is set.
     
 </dd>
 </dl>

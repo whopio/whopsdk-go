@@ -18,6 +18,14 @@ func TestSettersGenerateMediaRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAdVideo", func(t *testing.T) {
+		obj := &GenerateMediaRequest{}
+		var fernTestValueAdVideo *GenerateMediaRequestAdVideo
+		obj.SetAdVideo(fernTestValueAdVideo)
+		assert.Equal(t, fernTestValueAdVideo, obj.AdVideo)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDurationSeconds", func(t *testing.T) {
 		obj := &GenerateMediaRequest{}
 		var fernTestValueDurationSeconds *int
@@ -28,7 +36,7 @@ func TestSettersGenerateMediaRequest(t *testing.T) {
 
 	t.Run("SetPrompt", func(t *testing.T) {
 		obj := &GenerateMediaRequest{}
-		var fernTestValuePrompt string
+		var fernTestValuePrompt *string
 		obj.SetPrompt(fernTestValuePrompt)
 		assert.Equal(t, fernTestValuePrompt, obj.Prompt)
 		assert.NotNil(t, obj.explicitFields)
@@ -92,6 +100,37 @@ func TestSettersMarkExplicitGenerateMediaRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetAdVideo_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GenerateMediaRequest{}
+		var fernTestValueAdVideo *GenerateMediaRequestAdVideo
+
+		// Act
+		obj.SetAdVideo(fernTestValueAdVideo)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetDurationSeconds_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -127,7 +166,7 @@ func TestSettersMarkExplicitGenerateMediaRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &GenerateMediaRequest{}
-		var fernTestValuePrompt string
+		var fernTestValuePrompt *string
 
 		// Act
 		obj.SetPrompt(fernTestValuePrompt)
@@ -1169,6 +1208,14 @@ func TestSettersMarkExplicitMediaAssetFile(t *testing.T) {
 }
 
 func TestSettersMediaAssetGeneration(t *testing.T) {
+	t.Run("SetAdVideo", func(t *testing.T) {
+		obj := &MediaAssetGeneration{}
+		var fernTestValueAdVideo *MediaAssetsAdVideo
+		obj.SetAdVideo(fernTestValueAdVideo)
+		assert.Equal(t, fernTestValueAdVideo, obj.AdVideo)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDurationSeconds", func(t *testing.T) {
 		obj := &MediaAssetGeneration{}
 		var fernTestValueDurationSeconds *float64
@@ -1204,6 +1251,39 @@ func TestSettersMediaAssetGeneration(t *testing.T) {
 }
 
 func TestGettersMediaAssetGeneration(t *testing.T) {
+	t.Run("GetAdVideo", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &MediaAssetGeneration{}
+		var expected *MediaAssetsAdVideo
+		obj.AdVideo = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAdVideo(), "getter should return the property value")
+	})
+
+	t.Run("GetAdVideo_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &MediaAssetGeneration{}
+		obj.AdVideo = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAdVideo(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAdVideo_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *MediaAssetGeneration
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAdVideo() // Should return zero value
+	})
+
 	t.Run("GetDurationSeconds", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1329,6 +1409,37 @@ func TestGettersMediaAssetGeneration(t *testing.T) {
 }
 
 func TestSettersMarkExplicitMediaAssetGeneration(t *testing.T) {
+	t.Run("SetAdVideo_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &MediaAssetGeneration{}
+		var fernTestValueAdVideo *MediaAssetsAdVideo
+
+		// Act
+		obj.SetAdVideo(fernTestValueAdVideo)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetDurationSeconds_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1455,6 +1566,201 @@ func TestSettersMarkExplicitMediaAssetGeneration(t *testing.T) {
 
 }
 
+func TestSettersMediaAssetsAdVideo(t *testing.T) {
+	t.Run("SetAdID", func(t *testing.T) {
+		obj := &MediaAssetsAdVideo{}
+		var fernTestValueAdID *string
+		obj.SetAdID(fernTestValueAdID)
+		assert.Equal(t, fernTestValueAdID, obj.AdID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersMediaAssetsAdVideo(t *testing.T) {
+	t.Run("GetAdID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &MediaAssetsAdVideo{}
+		var expected *string
+		obj.AdID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAdID(), "getter should return the property value")
+	})
+
+	t.Run("GetAdID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &MediaAssetsAdVideo{}
+		obj.AdID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAdID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAdID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *MediaAssetsAdVideo
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAdID() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitMediaAssetsAdVideo(t *testing.T) {
+	t.Run("SetAdID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &MediaAssetsAdVideo{}
+		var fernTestValueAdID *string
+
+		// Act
+		obj.SetAdID(fernTestValueAdID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersGenerateMediaRequestAdVideo(t *testing.T) {
+	t.Run("SetAdID", func(t *testing.T) {
+		obj := &GenerateMediaRequestAdVideo{}
+		var fernTestValueAdID *string
+		obj.SetAdID(fernTestValueAdID)
+		assert.Equal(t, fernTestValueAdID, obj.AdID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersGenerateMediaRequestAdVideo(t *testing.T) {
+	t.Run("GetAdID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GenerateMediaRequestAdVideo{}
+		var expected *string
+		obj.AdID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAdID(), "getter should return the property value")
+	})
+
+	t.Run("GetAdID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GenerateMediaRequestAdVideo{}
+		obj.AdID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAdID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAdID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GenerateMediaRequestAdVideo
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAdID() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitGenerateMediaRequestAdVideo(t *testing.T) {
+	t.Run("SetAdID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GenerateMediaRequestAdVideo{}
+		var fernTestValueAdID *string
+
+		// Act
+		obj.SetAdID(fernTestValueAdID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestJSONMarshalingGenerateMediaRequestAdVideo(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GenerateMediaRequestAdVideo{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled GenerateMediaRequestAdVideo
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj GenerateMediaRequestAdVideo
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj GenerateMediaRequestAdVideo
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingMediaAsset(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -1554,6 +1860,39 @@ func TestJSONMarshalingMediaAssetGeneration(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingMediaAssetsAdVideo(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &MediaAssetsAdVideo{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled MediaAssetsAdVideo
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj MediaAssetsAdVideo
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj MediaAssetsAdVideo
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestRequiredNullableRoundTripMediaAsset(t *testing.T) {
 	requiredNullableKeys := []string{
 		"amount_charged",
@@ -1602,6 +1941,7 @@ func TestRequiredNullableRoundTripMediaAsset(t *testing.T) {
 
 func TestRequiredNullableRoundTripMediaAssetGeneration(t *testing.T) {
 	requiredNullableKeys := []string{
+		"ad_video",
 		"duration_seconds",
 		"resolution",
 	}
@@ -1616,7 +1956,7 @@ func TestRequiredNullableRoundTripMediaAssetGeneration(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj MediaAssetGeneration
-		require.NoError(t, json.Unmarshal([]byte(`{"duration_seconds":null,"resolution":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"ad_video":null,"duration_seconds":null,"resolution":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -1641,6 +1981,65 @@ func TestRequiredNullableRoundTripMediaAssetGeneration(t *testing.T) {
 		for _, key := range requiredNullableKeys {
 			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
 		}
+	})
+}
+
+func TestRequiredNullableRoundTripMediaAssetsAdVideo(t *testing.T) {
+	requiredNullableKeys := []string{
+		"ad_id",
+	}
+	marshalToMap := func(t *testing.T, obj *MediaAssetsAdVideo) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj MediaAssetsAdVideo
+		require.NoError(t, json.Unmarshal([]byte(`{"ad_id":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj MediaAssetsAdVideo
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &MediaAssetsAdVideo{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestStringGenerateMediaRequestAdVideo(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &GenerateMediaRequestAdVideo{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GenerateMediaRequestAdVideo
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
 }
 
@@ -1687,6 +2086,22 @@ func TestStringMediaAssetGeneration(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *MediaAssetGeneration
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringMediaAssetsAdVideo(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &MediaAssetsAdVideo{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *MediaAssetsAdVideo
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -1894,6 +2309,29 @@ func TestEnumMediaAssetStatus(t *testing.T) {
 	})
 }
 
+func TestExtraPropertiesGenerateMediaRequestAdVideo(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &GenerateMediaRequestAdVideo{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GenerateMediaRequestAdVideo
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
 func TestExtraPropertiesMediaAsset(t *testing.T) {
 	t.Run("GetExtraProperties", func(t *testing.T) {
 		t.Parallel()
@@ -1958,6 +2396,29 @@ func TestExtraPropertiesMediaAssetGeneration(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *MediaAssetGeneration
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesMediaAssetsAdVideo(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &MediaAssetsAdVideo{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *MediaAssetsAdVideo
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
