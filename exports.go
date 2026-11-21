@@ -471,7 +471,6 @@ const (
 	ExportResourcePromoCodes             ExportResource = "promo_codes"
 	ExportResourceResolutions            ExportResource = "resolutions"
 	ExportResourceEntries                ExportResource = "entries"
-	ExportResourceLeads                  ExportResource = "leads"
 	ExportResourceInvoices               ExportResource = "invoices"
 	ExportResourceCancelationReasons     ExportResource = "cancelation_reasons"
 	ExportResourceChildCompanies         ExportResource = "child_companies"
@@ -547,8 +546,6 @@ func NewExportResourceFromString(s string) (ExportResource, error) {
 		return ExportResourceResolutions, nil
 	case "entries":
 		return ExportResourceEntries, nil
-	case "leads":
-		return ExportResourceLeads, nil
 	case "invoices":
 		return ExportResourceInvoices, nil
 	case "cancelation_reasons":
@@ -637,7 +634,6 @@ const (
 	CreateExportsRequestResourcePromoCodes             CreateExportsRequestResource = "promo_codes"
 	CreateExportsRequestResourceResolutions            CreateExportsRequestResource = "resolutions"
 	CreateExportsRequestResourceEntries                CreateExportsRequestResource = "entries"
-	CreateExportsRequestResourceLeads                  CreateExportsRequestResource = "leads"
 	CreateExportsRequestResourceInvoices               CreateExportsRequestResource = "invoices"
 	CreateExportsRequestResourceCancelationReasons     CreateExportsRequestResource = "cancelation_reasons"
 	CreateExportsRequestResourceChildCompanies         CreateExportsRequestResource = "child_companies"
@@ -711,8 +707,6 @@ func NewCreateExportsRequestResourceFromString(s string) (CreateExportsRequestRe
 		return CreateExportsRequestResourceResolutions, nil
 	case "entries":
 		return CreateExportsRequestResourceEntries, nil
-	case "leads":
-		return CreateExportsRequestResourceLeads, nil
 	case "invoices":
 		return CreateExportsRequestResourceInvoices, nil
 	case "cancelation_reasons":
@@ -805,7 +799,6 @@ const (
 	ListExportsRequestResourcePromoCodes             ListExportsRequestResource = "promo_codes"
 	ListExportsRequestResourceResolutions            ListExportsRequestResource = "resolutions"
 	ListExportsRequestResourceEntries                ListExportsRequestResource = "entries"
-	ListExportsRequestResourceLeads                  ListExportsRequestResource = "leads"
 	ListExportsRequestResourceInvoices               ListExportsRequestResource = "invoices"
 	ListExportsRequestResourceCancelationReasons     ListExportsRequestResource = "cancelation_reasons"
 	ListExportsRequestResourceChildCompanies         ListExportsRequestResource = "child_companies"
@@ -881,8 +874,6 @@ func NewListExportsRequestResourceFromString(s string) (ListExportsRequestResour
 		return ListExportsRequestResourceResolutions, nil
 	case "entries":
 		return ListExportsRequestResourceEntries, nil
-	case "leads":
-		return ListExportsRequestResourceLeads, nil
 	case "invoices":
 		return ListExportsRequestResourceInvoices, nil
 	case "cancelation_reasons":
