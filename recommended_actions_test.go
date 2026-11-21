@@ -5109,6 +5109,13 @@ func TestEnumRecommendedActionChangedResourceResourceType(t *testing.T) {
 		assert.Equal(t, RecommendedActionChangedResourceResourceType("variant"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_promo_code", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRecommendedActionChangedResourceResourceTypeFromString("promo_code")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RecommendedActionChangedResourceResourceType("promo_code"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewRecommendedActionChangedResourceResourceTypeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
