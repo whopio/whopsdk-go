@@ -10290,7 +10290,7 @@ func (u *UpdateVerificationsRequestBody) GetUpdateVerificationsRequestBodyBusine
 }
 
 func (u *UpdateVerificationsRequestBody) UnmarshalJSON(data []byte) error {
-	if internal.MatchesObjectKeys(data, []string{"business_name", "business_structure", "business_tax_identification_number", "country", "date_of_birth", "first_name", "last_name", "personal_address", "requested_information", "tax_identification_number"}, []string{}) {
+	if internal.MatchesObjectKeys(data, []string{"business_name", "business_structure", "business_tax_identification_number", "country", "date_of_birth", "first_name", "last_name", "personal_address", "phone", "requested_information", "tax_identification_number"}, []string{}) {
 		valueUpdateVerificationsRequestBodyPersonalAddress := new(UpdateVerificationsRequestBodyPersonalAddress)
 		if err := json.Unmarshal(data, &valueUpdateVerificationsRequestBodyPersonalAddress); err == nil {
 			u.typ = "UpdateVerificationsRequestBodyPersonalAddress"
@@ -10298,7 +10298,7 @@ func (u *UpdateVerificationsRequestBody) UnmarshalJSON(data []byte) error {
 			return nil
 		}
 	}
-	if internal.MatchesObjectKeys(data, []string{"business_address", "business_name", "business_structure", "business_tax_identification_number", "country", "date_of_birth", "documents", "first_name", "incorporation_date", "last_name", "owners", "place_of_incorporation", "registration_number", "requested_information", "tax_identification_number"}, []string{}) {
+	if internal.MatchesObjectKeys(data, []string{"business_address", "business_name", "business_structure", "business_tax_identification_number", "country", "date_of_birth", "documents", "first_name", "incorporation_date", "last_name", "owners", "phone", "place_of_incorporation", "registration_number", "requested_information", "tax_identification_number"}, []string{}) {
 		valueUpdateVerificationsRequestBodyBusinessAddress := new(UpdateVerificationsRequestBodyBusinessAddress)
 		if err := json.Unmarshal(data, &valueUpdateVerificationsRequestBodyBusinessAddress); err == nil {
 			u.typ = "UpdateVerificationsRequestBodyBusinessAddress"
@@ -10358,10 +10358,11 @@ var (
 	updateVerificationsRequestBodyBusinessAddressFieldIncorporationDate               = big.NewInt(1 << 8)
 	updateVerificationsRequestBodyBusinessAddressFieldLastName                        = big.NewInt(1 << 9)
 	updateVerificationsRequestBodyBusinessAddressFieldOwners                          = big.NewInt(1 << 10)
-	updateVerificationsRequestBodyBusinessAddressFieldPlaceOfIncorporation            = big.NewInt(1 << 11)
-	updateVerificationsRequestBodyBusinessAddressFieldRegistrationNumber              = big.NewInt(1 << 12)
-	updateVerificationsRequestBodyBusinessAddressFieldRequestedInformation            = big.NewInt(1 << 13)
-	updateVerificationsRequestBodyBusinessAddressFieldTaxIdentificationNumber         = big.NewInt(1 << 14)
+	updateVerificationsRequestBodyBusinessAddressFieldPhone                           = big.NewInt(1 << 11)
+	updateVerificationsRequestBodyBusinessAddressFieldPlaceOfIncorporation            = big.NewInt(1 << 12)
+	updateVerificationsRequestBodyBusinessAddressFieldRegistrationNumber              = big.NewInt(1 << 13)
+	updateVerificationsRequestBodyBusinessAddressFieldRequestedInformation            = big.NewInt(1 << 14)
+	updateVerificationsRequestBodyBusinessAddressFieldTaxIdentificationNumber         = big.NewInt(1 << 15)
 )
 
 // Fields that can be updated on a business entity (KYB) verification. At least one field is required.
@@ -10388,6 +10389,8 @@ type UpdateVerificationsRequestBodyBusinessAddress struct {
 	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
 	// Owners of the business, up to 10 per request. Create Verification sends the business for review when the business details, business documents, and owners are in, and every new owner's documents are sent. It does this in the request that completes the set. It also does this when the last owner's documents finish sending in the background, or when you call it again after Update Verification. Owners can still be added, changed, or removed while the review waits on them.
 	Owners []*UpdateVerificationsRequestBodyBusinessAddressOwnersItem `json:"owners,omitempty" url:"owners,omitempty"`
+	// Phone number of the business representative, with country code.
+	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
 	// State or region where the business is incorporated. Sent to the verification provider and returned in the response; `requested_information` asks for it while it is still missing.
 	PlaceOfIncorporation *string `json:"place_of_incorporation,omitempty" url:"place_of_incorporation,omitempty"`
 	// Number the business was registered under in its place of incorporation, such as a state file number in the US or a Company Number in the UK. Sent to the verification provider and returned in the response; `requested_information` asks for it while it is still missing.
@@ -10479,6 +10482,13 @@ func (u *UpdateVerificationsRequestBodyBusinessAddress) GetOwners() []*UpdateVer
 		return nil
 	}
 	return u.Owners
+}
+
+func (u *UpdateVerificationsRequestBodyBusinessAddress) GetPhone() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Phone
 }
 
 func (u *UpdateVerificationsRequestBodyBusinessAddress) GetPlaceOfIncorporation() *string {
@@ -10600,6 +10610,13 @@ func (u *UpdateVerificationsRequestBodyBusinessAddress) SetLastName(lastName *st
 func (u *UpdateVerificationsRequestBodyBusinessAddress) SetOwners(owners []*UpdateVerificationsRequestBodyBusinessAddressOwnersItem) {
 	u.Owners = owners
 	u.require(updateVerificationsRequestBodyBusinessAddressFieldOwners)
+}
+
+// SetPhone sets the Phone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyBusinessAddress) SetPhone(phone *string) {
+	u.Phone = phone
+	u.require(updateVerificationsRequestBodyBusinessAddressFieldPhone)
 }
 
 // SetPlaceOfIncorporation sets the PlaceOfIncorporation field and marks it as non-optional;
@@ -12395,8 +12412,9 @@ var (
 	updateVerificationsRequestBodyPersonalAddressFieldFirstName                       = big.NewInt(1 << 5)
 	updateVerificationsRequestBodyPersonalAddressFieldLastName                        = big.NewInt(1 << 6)
 	updateVerificationsRequestBodyPersonalAddressFieldPersonalAddress                 = big.NewInt(1 << 7)
-	updateVerificationsRequestBodyPersonalAddressFieldRequestedInformation            = big.NewInt(1 << 8)
-	updateVerificationsRequestBodyPersonalAddressFieldTaxIdentificationNumber         = big.NewInt(1 << 9)
+	updateVerificationsRequestBodyPersonalAddressFieldPhone                           = big.NewInt(1 << 8)
+	updateVerificationsRequestBodyPersonalAddressFieldRequestedInformation            = big.NewInt(1 << 9)
+	updateVerificationsRequestBodyPersonalAddressFieldTaxIdentificationNumber         = big.NewInt(1 << 10)
 )
 
 // Fields that can be updated on an individual (KYC) verification. At least one field is required.
@@ -12415,6 +12433,8 @@ type UpdateVerificationsRequestBodyPersonalAddress struct {
 	LastName    *string `json:"last_name,omitempty" url:"last_name,omitempty"`
 	// Personal address for the individual.
 	PersonalAddress *UpdateVerificationsRequestBodyPersonalAddressPersonalAddress `json:"personal_address,omitempty" url:"personal_address,omitempty"`
+	// Phone number of the person, with country code.
+	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
 	// Answers to items in `requested_information`. Each entry pairs the item `id` with one answer payload matching its `type`.
 	RequestedInformation []*UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem `json:"requested_information,omitempty" url:"requested_information,omitempty"`
 	// The government-issued ID number of the person being verified — the individual for a KYC verification, or the business representative for a KYB verification — as appropriate for their country. Examples are a Social Security Number (SSN) in the US, or a Social Insurance Number in Canada.
@@ -12481,6 +12501,13 @@ func (u *UpdateVerificationsRequestBodyPersonalAddress) GetPersonalAddress() *Up
 		return nil
 	}
 	return u.PersonalAddress
+}
+
+func (u *UpdateVerificationsRequestBodyPersonalAddress) GetPhone() *string {
+	if u == nil {
+		return nil
+	}
+	return u.Phone
 }
 
 func (u *UpdateVerificationsRequestBodyPersonalAddress) GetRequestedInformation() []*UpdateVerificationsRequestBodyPersonalAddressRequestedInformationItem {
@@ -12567,6 +12594,13 @@ func (u *UpdateVerificationsRequestBodyPersonalAddress) SetLastName(lastName *st
 func (u *UpdateVerificationsRequestBodyPersonalAddress) SetPersonalAddress(personalAddress *UpdateVerificationsRequestBodyPersonalAddressPersonalAddress) {
 	u.PersonalAddress = personalAddress
 	u.require(updateVerificationsRequestBodyPersonalAddressFieldPersonalAddress)
+}
+
+// SetPhone sets the Phone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsRequestBodyPersonalAddress) SetPhone(phone *string) {
+	u.Phone = phone
+	u.require(updateVerificationsRequestBodyPersonalAddressFieldPhone)
 }
 
 // SetRequestedInformation sets the RequestedInformation field and marks it as non-optional;
