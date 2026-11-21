@@ -3682,6 +3682,14 @@ func TestSettersCancelPayoutsResponseFailure(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetNextStep", func(t *testing.T) {
+		obj := &CancelPayoutsResponseFailure{}
+		var fernTestValueNextStep *CancelPayoutsResponseFailureNextStep
+		obj.SetNextStep(fernTestValueNextStep)
+		assert.Equal(t, fernTestValueNextStep, obj.NextStep)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersCancelPayoutsResponseFailure(t *testing.T) {
@@ -3784,6 +3792,39 @@ func TestGettersCancelPayoutsResponseFailure(t *testing.T) {
 		_ = obj.GetMessage() // Should return zero value
 	})
 
+	t.Run("GetNextStep", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CancelPayoutsResponseFailure{}
+		var expected *CancelPayoutsResponseFailureNextStep
+		obj.NextStep = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetNextStep(), "getter should return the property value")
+	})
+
+	t.Run("GetNextStep_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CancelPayoutsResponseFailure{}
+		obj.NextStep = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetNextStep(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetNextStep_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CancelPayoutsResponseFailure
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetNextStep() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitCancelPayoutsResponseFailure(t *testing.T) {
@@ -3857,6 +3898,37 @@ func TestSettersMarkExplicitCancelPayoutsResponseFailure(t *testing.T) {
 
 		// Act
 		obj.SetMessage(fernTestValueMessage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetNextStep_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CancelPayoutsResponseFailure{}
+		var fernTestValueNextStep *CancelPayoutsResponseFailureNextStep
+
+		// Act
+		obj.SetNextStep(fernTestValueNextStep)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -6355,6 +6427,14 @@ func TestSettersCreatePayoutsResponseFailure(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetNextStep", func(t *testing.T) {
+		obj := &CreatePayoutsResponseFailure{}
+		var fernTestValueNextStep *CreatePayoutsResponseFailureNextStep
+		obj.SetNextStep(fernTestValueNextStep)
+		assert.Equal(t, fernTestValueNextStep, obj.NextStep)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersCreatePayoutsResponseFailure(t *testing.T) {
@@ -6457,6 +6537,39 @@ func TestGettersCreatePayoutsResponseFailure(t *testing.T) {
 		_ = obj.GetMessage() // Should return zero value
 	})
 
+	t.Run("GetNextStep", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreatePayoutsResponseFailure{}
+		var expected *CreatePayoutsResponseFailureNextStep
+		obj.NextStep = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetNextStep(), "getter should return the property value")
+	})
+
+	t.Run("GetNextStep_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreatePayoutsResponseFailure{}
+		obj.NextStep = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetNextStep(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetNextStep_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreatePayoutsResponseFailure
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetNextStep() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitCreatePayoutsResponseFailure(t *testing.T) {
@@ -6530,6 +6643,37 @@ func TestSettersMarkExplicitCreatePayoutsResponseFailure(t *testing.T) {
 
 		// Act
 		obj.SetMessage(fernTestValueMessage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetNextStep_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreatePayoutsResponseFailure{}
+		var fernTestValueNextStep *CreatePayoutsResponseFailureNextStep
+
+		// Act
+		obj.SetNextStep(fernTestValueNextStep)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -10836,6 +10980,14 @@ func TestSettersListPayoutsResponseDataItemFailure(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetNextStep", func(t *testing.T) {
+		obj := &ListPayoutsResponseDataItemFailure{}
+		var fernTestValueNextStep *ListPayoutsResponseDataItemFailureNextStep
+		obj.SetNextStep(fernTestValueNextStep)
+		assert.Equal(t, fernTestValueNextStep, obj.NextStep)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersListPayoutsResponseDataItemFailure(t *testing.T) {
@@ -10938,6 +11090,39 @@ func TestGettersListPayoutsResponseDataItemFailure(t *testing.T) {
 		_ = obj.GetMessage() // Should return zero value
 	})
 
+	t.Run("GetNextStep", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListPayoutsResponseDataItemFailure{}
+		var expected *ListPayoutsResponseDataItemFailureNextStep
+		obj.NextStep = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetNextStep(), "getter should return the property value")
+	})
+
+	t.Run("GetNextStep_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListPayoutsResponseDataItemFailure{}
+		obj.NextStep = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetNextStep(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetNextStep_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListPayoutsResponseDataItemFailure
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetNextStep() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitListPayoutsResponseDataItemFailure(t *testing.T) {
@@ -11011,6 +11196,37 @@ func TestSettersMarkExplicitListPayoutsResponseDataItemFailure(t *testing.T) {
 
 		// Act
 		obj.SetMessage(fernTestValueMessage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetNextStep_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListPayoutsResponseDataItemFailure{}
+		var fernTestValueNextStep *ListPayoutsResponseDataItemFailureNextStep
+
+		// Act
+		obj.SetNextStep(fernTestValueNextStep)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -14331,6 +14547,14 @@ func TestSettersPostPayoutCreatedPayloadDataFailure(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetNextStep", func(t *testing.T) {
+		obj := &PostPayoutCreatedPayloadDataFailure{}
+		var fernTestValueNextStep *PostPayoutCreatedPayloadDataFailureNextStep
+		obj.SetNextStep(fernTestValueNextStep)
+		assert.Equal(t, fernTestValueNextStep, obj.NextStep)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersPostPayoutCreatedPayloadDataFailure(t *testing.T) {
@@ -14433,6 +14657,39 @@ func TestGettersPostPayoutCreatedPayloadDataFailure(t *testing.T) {
 		_ = obj.GetMessage() // Should return zero value
 	})
 
+	t.Run("GetNextStep", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutCreatedPayloadDataFailure{}
+		var expected *PostPayoutCreatedPayloadDataFailureNextStep
+		obj.NextStep = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetNextStep(), "getter should return the property value")
+	})
+
+	t.Run("GetNextStep_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutCreatedPayloadDataFailure{}
+		obj.NextStep = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetNextStep(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetNextStep_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PostPayoutCreatedPayloadDataFailure
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetNextStep() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitPostPayoutCreatedPayloadDataFailure(t *testing.T) {
@@ -14506,6 +14763,37 @@ func TestSettersMarkExplicitPostPayoutCreatedPayloadDataFailure(t *testing.T) {
 
 		// Act
 		obj.SetMessage(fernTestValueMessage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetNextStep_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutCreatedPayloadDataFailure{}
+		var fernTestValueNextStep *PostPayoutCreatedPayloadDataFailureNextStep
+
+		// Act
+		obj.SetNextStep(fernTestValueNextStep)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -21620,6 +21908,14 @@ func TestSettersPostPayoutReversedPayloadDataFailure(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetNextStep", func(t *testing.T) {
+		obj := &PostPayoutReversedPayloadDataFailure{}
+		var fernTestValueNextStep *PostPayoutReversedPayloadDataFailureNextStep
+		obj.SetNextStep(fernTestValueNextStep)
+		assert.Equal(t, fernTestValueNextStep, obj.NextStep)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersPostPayoutReversedPayloadDataFailure(t *testing.T) {
@@ -21722,6 +22018,39 @@ func TestGettersPostPayoutReversedPayloadDataFailure(t *testing.T) {
 		_ = obj.GetMessage() // Should return zero value
 	})
 
+	t.Run("GetNextStep", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutReversedPayloadDataFailure{}
+		var expected *PostPayoutReversedPayloadDataFailureNextStep
+		obj.NextStep = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetNextStep(), "getter should return the property value")
+	})
+
+	t.Run("GetNextStep_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutReversedPayloadDataFailure{}
+		obj.NextStep = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetNextStep(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetNextStep_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PostPayoutReversedPayloadDataFailure
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetNextStep() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitPostPayoutReversedPayloadDataFailure(t *testing.T) {
@@ -21795,6 +22124,37 @@ func TestSettersMarkExplicitPostPayoutReversedPayloadDataFailure(t *testing.T) {
 
 		// Act
 		obj.SetMessage(fernTestValueMessage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetNextStep_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutReversedPayloadDataFailure{}
+		var fernTestValueNextStep *PostPayoutReversedPayloadDataFailureNextStep
+
+		// Act
+		obj.SetNextStep(fernTestValueNextStep)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -24838,6 +25198,14 @@ func TestSettersPostPayoutUpdatedPayloadDataFailure(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetNextStep", func(t *testing.T) {
+		obj := &PostPayoutUpdatedPayloadDataFailure{}
+		var fernTestValueNextStep *PostPayoutUpdatedPayloadDataFailureNextStep
+		obj.SetNextStep(fernTestValueNextStep)
+		assert.Equal(t, fernTestValueNextStep, obj.NextStep)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersPostPayoutUpdatedPayloadDataFailure(t *testing.T) {
@@ -24940,6 +25308,39 @@ func TestGettersPostPayoutUpdatedPayloadDataFailure(t *testing.T) {
 		_ = obj.GetMessage() // Should return zero value
 	})
 
+	t.Run("GetNextStep", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutUpdatedPayloadDataFailure{}
+		var expected *PostPayoutUpdatedPayloadDataFailureNextStep
+		obj.NextStep = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetNextStep(), "getter should return the property value")
+	})
+
+	t.Run("GetNextStep_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutUpdatedPayloadDataFailure{}
+		obj.NextStep = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetNextStep(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetNextStep_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PostPayoutUpdatedPayloadDataFailure
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetNextStep() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitPostPayoutUpdatedPayloadDataFailure(t *testing.T) {
@@ -25013,6 +25414,37 @@ func TestSettersMarkExplicitPostPayoutUpdatedPayloadDataFailure(t *testing.T) {
 
 		// Act
 		obj.SetMessage(fernTestValueMessage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetNextStep_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostPayoutUpdatedPayloadDataFailure{}
+		var fernTestValueNextStep *PostPayoutUpdatedPayloadDataFailureNextStep
+
+		// Act
+		obj.SetNextStep(fernTestValueNextStep)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -27921,6 +28353,14 @@ func TestSettersRetrievePayoutsResponseFailure(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetNextStep", func(t *testing.T) {
+		obj := &RetrievePayoutsResponseFailure{}
+		var fernTestValueNextStep *RetrievePayoutsResponseFailureNextStep
+		obj.SetNextStep(fernTestValueNextStep)
+		assert.Equal(t, fernTestValueNextStep, obj.NextStep)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestGettersRetrievePayoutsResponseFailure(t *testing.T) {
@@ -28023,6 +28463,39 @@ func TestGettersRetrievePayoutsResponseFailure(t *testing.T) {
 		_ = obj.GetMessage() // Should return zero value
 	})
 
+	t.Run("GetNextStep", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePayoutsResponseFailure{}
+		var expected *RetrievePayoutsResponseFailureNextStep
+		obj.NextStep = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetNextStep(), "getter should return the property value")
+	})
+
+	t.Run("GetNextStep_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePayoutsResponseFailure{}
+		obj.NextStep = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetNextStep(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetNextStep_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrievePayoutsResponseFailure
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetNextStep() // Should return zero value
+	})
+
 }
 
 func TestSettersMarkExplicitRetrievePayoutsResponseFailure(t *testing.T) {
@@ -28096,6 +28569,37 @@ func TestSettersMarkExplicitRetrievePayoutsResponseFailure(t *testing.T) {
 
 		// Act
 		obj.SetMessage(fernTestValueMessage)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetNextStep_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePayoutsResponseFailure{}
+		var fernTestValueNextStep *RetrievePayoutsResponseFailureNextStep
+
+		// Act
+		obj.SetNextStep(fernTestValueNextStep)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -30719,6 +31223,7 @@ func TestRequiredNullableRoundTripCancelPayoutsResponseFailure(t *testing.T) {
 		"code",
 		"funds_returned_at",
 		"message",
+		"next_step",
 	}
 	marshalToMap := func(t *testing.T, obj *CancelPayoutsResponseFailure) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -30731,7 +31236,7 @@ func TestRequiredNullableRoundTripCancelPayoutsResponseFailure(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj CancelPayoutsResponseFailure
-		require.NoError(t, json.Unmarshal([]byte(`{"code":null,"funds_returned_at":null,"message":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"code":null,"funds_returned_at":null,"message":null,"next_step":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -30907,6 +31412,7 @@ func TestRequiredNullableRoundTripCreatePayoutsResponseFailure(t *testing.T) {
 		"code",
 		"funds_returned_at",
 		"message",
+		"next_step",
 	}
 	marshalToMap := func(t *testing.T, obj *CreatePayoutsResponseFailure) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -30919,7 +31425,7 @@ func TestRequiredNullableRoundTripCreatePayoutsResponseFailure(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj CreatePayoutsResponseFailure
-		require.NoError(t, json.Unmarshal([]byte(`{"code":null,"funds_returned_at":null,"message":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"code":null,"funds_returned_at":null,"message":null,"next_step":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -31227,6 +31733,7 @@ func TestRequiredNullableRoundTripListPayoutsResponseDataItemFailure(t *testing.
 		"code",
 		"funds_returned_at",
 		"message",
+		"next_step",
 	}
 	marshalToMap := func(t *testing.T, obj *ListPayoutsResponseDataItemFailure) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -31239,7 +31746,7 @@ func TestRequiredNullableRoundTripListPayoutsResponseDataItemFailure(t *testing.
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ListPayoutsResponseDataItemFailure
-		require.NoError(t, json.Unmarshal([]byte(`{"code":null,"funds_returned_at":null,"message":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"code":null,"funds_returned_at":null,"message":null,"next_step":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -31502,6 +32009,7 @@ func TestRequiredNullableRoundTripPostPayoutCreatedPayloadDataFailure(t *testing
 		"code",
 		"funds_returned_at",
 		"message",
+		"next_step",
 	}
 	marshalToMap := func(t *testing.T, obj *PostPayoutCreatedPayloadDataFailure) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -31514,7 +32022,7 @@ func TestRequiredNullableRoundTripPostPayoutCreatedPayloadDataFailure(t *testing
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PostPayoutCreatedPayloadDataFailure
-		require.NoError(t, json.Unmarshal([]byte(`{"code":null,"funds_returned_at":null,"message":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"code":null,"funds_returned_at":null,"message":null,"next_step":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -31966,6 +32474,7 @@ func TestRequiredNullableRoundTripPostPayoutReversedPayloadDataFailure(t *testin
 		"code",
 		"funds_returned_at",
 		"message",
+		"next_step",
 	}
 	marshalToMap := func(t *testing.T, obj *PostPayoutReversedPayloadDataFailure) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -31978,7 +32487,7 @@ func TestRequiredNullableRoundTripPostPayoutReversedPayloadDataFailure(t *testin
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PostPayoutReversedPayloadDataFailure
-		require.NoError(t, json.Unmarshal([]byte(`{"code":null,"funds_returned_at":null,"message":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"code":null,"funds_returned_at":null,"message":null,"next_step":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -32197,6 +32706,7 @@ func TestRequiredNullableRoundTripPostPayoutUpdatedPayloadDataFailure(t *testing
 		"code",
 		"funds_returned_at",
 		"message",
+		"next_step",
 	}
 	marshalToMap := func(t *testing.T, obj *PostPayoutUpdatedPayloadDataFailure) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -32209,7 +32719,7 @@ func TestRequiredNullableRoundTripPostPayoutUpdatedPayloadDataFailure(t *testing
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PostPayoutUpdatedPayloadDataFailure
-		require.NoError(t, json.Unmarshal([]byte(`{"code":null,"funds_returned_at":null,"message":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"code":null,"funds_returned_at":null,"message":null,"next_step":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -32382,6 +32892,7 @@ func TestRequiredNullableRoundTripRetrievePayoutsResponseFailure(t *testing.T) {
 		"code",
 		"funds_returned_at",
 		"message",
+		"next_step",
 	}
 	marshalToMap := func(t *testing.T, obj *RetrievePayoutsResponseFailure) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -32394,7 +32905,7 @@ func TestRequiredNullableRoundTripRetrievePayoutsResponseFailure(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj RetrievePayoutsResponseFailure
-		require.NoError(t, json.Unmarshal([]byte(`{"code":null,"funds_returned_at":null,"message":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"code":null,"funds_returned_at":null,"message":null,"next_step":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -33624,6 +34135,63 @@ func TestStringRetrievePayoutsResponseTimelineItem(t *testing.T) {
 	})
 }
 
+func TestEnumCancelPayoutsResponseFailureNextStep(t *testing.T) {
+	t.Run("NewFromString_update_payout_method", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCancelPayoutsResponseFailureNextStepFromString("update_payout_method")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CancelPayoutsResponseFailureNextStep("update_payout_method"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_use_another_payout_method", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCancelPayoutsResponseFailureNextStepFromString("use_another_payout_method")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CancelPayoutsResponseFailureNextStep("use_another_payout_method"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_complete_verification", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCancelPayoutsResponseFailureNextStepFromString("complete_verification")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CancelPayoutsResponseFailureNextStep("complete_verification"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdraw_again", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCancelPayoutsResponseFailureNextStepFromString("withdraw_again")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CancelPayoutsResponseFailureNextStep("withdraw_again"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contact_bank", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCancelPayoutsResponseFailureNextStepFromString("contact_bank")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CancelPayoutsResponseFailureNextStep("contact_bank"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contact_support", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCancelPayoutsResponseFailureNextStepFromString("contact_support")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CancelPayoutsResponseFailureNextStep("contact_support"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCancelPayoutsResponseFailureNextStepFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCancelPayoutsResponseFailureNextStepFromString("update_payout_method")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumCancelPayoutsResponseFeePaidBy(t *testing.T) {
 	t.Run("NewFromString_self", func(t *testing.T) {
 		t.Parallel()
@@ -33940,6 +34508,63 @@ func TestEnumCreatePayoutsRequestSpeed(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewCreatePayoutsRequestSpeedFromString("standard")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumCreatePayoutsResponseFailureNextStep(t *testing.T) {
+	t.Run("NewFromString_update_payout_method", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreatePayoutsResponseFailureNextStepFromString("update_payout_method")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreatePayoutsResponseFailureNextStep("update_payout_method"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_use_another_payout_method", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreatePayoutsResponseFailureNextStepFromString("use_another_payout_method")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreatePayoutsResponseFailureNextStep("use_another_payout_method"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_complete_verification", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreatePayoutsResponseFailureNextStepFromString("complete_verification")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreatePayoutsResponseFailureNextStep("complete_verification"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdraw_again", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreatePayoutsResponseFailureNextStepFromString("withdraw_again")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreatePayoutsResponseFailureNextStep("withdraw_again"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contact_bank", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreatePayoutsResponseFailureNextStepFromString("contact_bank")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreatePayoutsResponseFailureNextStep("contact_bank"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contact_support", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreatePayoutsResponseFailureNextStepFromString("contact_support")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreatePayoutsResponseFailureNextStep("contact_support"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreatePayoutsResponseFailureNextStepFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreatePayoutsResponseFailureNextStepFromString("update_payout_method")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -34399,6 +35024,63 @@ func TestEnumListPayoutsRequestStatus(t *testing.T) {
 	})
 }
 
+func TestEnumListPayoutsResponseDataItemFailureNextStep(t *testing.T) {
+	t.Run("NewFromString_update_payout_method", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPayoutsResponseDataItemFailureNextStepFromString("update_payout_method")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPayoutsResponseDataItemFailureNextStep("update_payout_method"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_use_another_payout_method", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPayoutsResponseDataItemFailureNextStepFromString("use_another_payout_method")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPayoutsResponseDataItemFailureNextStep("use_another_payout_method"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_complete_verification", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPayoutsResponseDataItemFailureNextStepFromString("complete_verification")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPayoutsResponseDataItemFailureNextStep("complete_verification"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdraw_again", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPayoutsResponseDataItemFailureNextStepFromString("withdraw_again")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPayoutsResponseDataItemFailureNextStep("withdraw_again"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contact_bank", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPayoutsResponseDataItemFailureNextStepFromString("contact_bank")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPayoutsResponseDataItemFailureNextStep("contact_bank"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contact_support", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPayoutsResponseDataItemFailureNextStepFromString("contact_support")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPayoutsResponseDataItemFailureNextStep("contact_support"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewListPayoutsResponseDataItemFailureNextStepFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewListPayoutsResponseDataItemFailureNextStepFromString("update_payout_method")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumListPayoutsResponseDataItemFeePaidBy(t *testing.T) {
 	t.Run("NewFromString_self", func(t *testing.T) {
 		t.Parallel()
@@ -34708,6 +35390,63 @@ func TestEnumPostPayoutCreatedPayloadAPIVersion(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewPostPayoutCreatedPayloadAPIVersionFromString("v1")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumPostPayoutCreatedPayloadDataFailureNextStep(t *testing.T) {
+	t.Run("NewFromString_update_payout_method", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutCreatedPayloadDataFailureNextStepFromString("update_payout_method")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutCreatedPayloadDataFailureNextStep("update_payout_method"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_use_another_payout_method", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutCreatedPayloadDataFailureNextStepFromString("use_another_payout_method")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutCreatedPayloadDataFailureNextStep("use_another_payout_method"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_complete_verification", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutCreatedPayloadDataFailureNextStepFromString("complete_verification")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutCreatedPayloadDataFailureNextStep("complete_verification"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdraw_again", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutCreatedPayloadDataFailureNextStepFromString("withdraw_again")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutCreatedPayloadDataFailureNextStep("withdraw_again"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contact_bank", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutCreatedPayloadDataFailureNextStepFromString("contact_bank")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutCreatedPayloadDataFailureNextStep("contact_bank"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contact_support", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutCreatedPayloadDataFailureNextStepFromString("contact_support")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutCreatedPayloadDataFailureNextStep("contact_support"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPostPayoutCreatedPayloadDataFailureNextStepFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPostPayoutCreatedPayloadDataFailureNextStepFromString("update_payout_method")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -35392,6 +36131,63 @@ func TestEnumPostPayoutReversedPayloadAPIVersion(t *testing.T) {
 	})
 }
 
+func TestEnumPostPayoutReversedPayloadDataFailureNextStep(t *testing.T) {
+	t.Run("NewFromString_update_payout_method", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutReversedPayloadDataFailureNextStepFromString("update_payout_method")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutReversedPayloadDataFailureNextStep("update_payout_method"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_use_another_payout_method", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutReversedPayloadDataFailureNextStepFromString("use_another_payout_method")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutReversedPayloadDataFailureNextStep("use_another_payout_method"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_complete_verification", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutReversedPayloadDataFailureNextStepFromString("complete_verification")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutReversedPayloadDataFailureNextStep("complete_verification"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdraw_again", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutReversedPayloadDataFailureNextStepFromString("withdraw_again")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutReversedPayloadDataFailureNextStep("withdraw_again"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contact_bank", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutReversedPayloadDataFailureNextStepFromString("contact_bank")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutReversedPayloadDataFailureNextStep("contact_bank"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contact_support", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutReversedPayloadDataFailureNextStepFromString("contact_support")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutReversedPayloadDataFailureNextStep("contact_support"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPostPayoutReversedPayloadDataFailureNextStepFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPostPayoutReversedPayloadDataFailureNextStepFromString("update_payout_method")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumPostPayoutReversedPayloadDataFeePaidBy(t *testing.T) {
 	t.Run("NewFromString_self", func(t *testing.T) {
 		t.Parallel()
@@ -35730,6 +36526,63 @@ func TestEnumPostPayoutUpdatedPayloadAPIVersion(t *testing.T) {
 	})
 }
 
+func TestEnumPostPayoutUpdatedPayloadDataFailureNextStep(t *testing.T) {
+	t.Run("NewFromString_update_payout_method", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutUpdatedPayloadDataFailureNextStepFromString("update_payout_method")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutUpdatedPayloadDataFailureNextStep("update_payout_method"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_use_another_payout_method", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutUpdatedPayloadDataFailureNextStepFromString("use_another_payout_method")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutUpdatedPayloadDataFailureNextStep("use_another_payout_method"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_complete_verification", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutUpdatedPayloadDataFailureNextStepFromString("complete_verification")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutUpdatedPayloadDataFailureNextStep("complete_verification"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdraw_again", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutUpdatedPayloadDataFailureNextStepFromString("withdraw_again")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutUpdatedPayloadDataFailureNextStep("withdraw_again"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contact_bank", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutUpdatedPayloadDataFailureNextStepFromString("contact_bank")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutUpdatedPayloadDataFailureNextStep("contact_bank"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contact_support", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPostPayoutUpdatedPayloadDataFailureNextStepFromString("contact_support")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PostPayoutUpdatedPayloadDataFailureNextStep("contact_support"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPostPayoutUpdatedPayloadDataFailureNextStepFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPostPayoutUpdatedPayloadDataFailureNextStepFromString("update_payout_method")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumPostPayoutUpdatedPayloadDataFeePaidBy(t *testing.T) {
 	t.Run("NewFromString_self", func(t *testing.T) {
 		t.Parallel()
@@ -36039,6 +36892,63 @@ func TestEnumPostPayoutUpdatedPayloadType(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewPostPayoutUpdatedPayloadTypeFromString("payout.updated")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumRetrievePayoutsResponseFailureNextStep(t *testing.T) {
+	t.Run("NewFromString_update_payout_method", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePayoutsResponseFailureNextStepFromString("update_payout_method")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePayoutsResponseFailureNextStep("update_payout_method"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_use_another_payout_method", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePayoutsResponseFailureNextStepFromString("use_another_payout_method")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePayoutsResponseFailureNextStep("use_another_payout_method"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_complete_verification", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePayoutsResponseFailureNextStepFromString("complete_verification")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePayoutsResponseFailureNextStep("complete_verification"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_withdraw_again", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePayoutsResponseFailureNextStepFromString("withdraw_again")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePayoutsResponseFailureNextStep("withdraw_again"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contact_bank", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePayoutsResponseFailureNextStepFromString("contact_bank")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePayoutsResponseFailureNextStep("contact_bank"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contact_support", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePayoutsResponseFailureNextStepFromString("contact_support")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePayoutsResponseFailureNextStep("contact_support"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRetrievePayoutsResponseFailureNextStepFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRetrievePayoutsResponseFailureNextStepFromString("update_payout_method")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
