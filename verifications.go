@@ -3402,7 +3402,8 @@ var (
 	createVerificationsResponseOwnersItemFieldRejectedChecks      = big.NewInt(1 << 5)
 	createVerificationsResponseOwnersItemFieldRequiredDocuments   = big.NewInt(1 << 6)
 	createVerificationsResponseOwnersItemFieldRoles               = big.NewInt(1 << 7)
-	createVerificationsResponseOwnersItemFieldStatus              = big.NewInt(1 << 8)
+	createVerificationsResponseOwnersItemFieldSessionURL          = big.NewInt(1 << 8)
+	createVerificationsResponseOwnersItemFieldStatus              = big.NewInt(1 << 9)
 )
 
 // createVerificationsResponseOwnersItemNullableFields maps the wire names of CreateVerificationsResponseOwnersItem's nullable fields (required or optional) to their field bits.
@@ -3411,6 +3412,7 @@ var createVerificationsResponseOwnersItemNullableFields = map[string]*big.Int{
 	"first_name":           createVerificationsResponseOwnersItemFieldFirstName,
 	"last_name":            createVerificationsResponseOwnersItemFieldLastName,
 	"ownership_percentage": createVerificationsResponseOwnersItemFieldOwnershipPercentage,
+	"session_url":          createVerificationsResponseOwnersItemFieldSessionURL,
 }
 
 type CreateVerificationsResponseOwnersItem struct {
@@ -3428,6 +3430,8 @@ type CreateVerificationsResponseOwnersItem struct {
 	RequiredDocuments []*CreateVerificationsResponseOwnersItemRequiredDocumentsItem `json:"required_documents" url:"required_documents"`
 	// What the person is to the business.
 	Roles []CreateVerificationsResponseOwnersItemRolesItem `json:"roles" url:"roles"`
+	// Hosted verification session URL for the owner to complete their own identity checks. Expires 7 days after creation. `null` unless the business review waits on this owner to start or finish a hosted session.
+	SessionURL *string `json:"session_url,omitempty" url:"session_url,omitempty"`
 	// Where the owner's own verification stands, in the same states as `status`. `action_required` when their documents need sending again.
 	Status CreateVerificationsResponseOwnersItemStatus `json:"status" url:"status"`
 
@@ -3492,6 +3496,13 @@ func (c *CreateVerificationsResponseOwnersItem) GetRoles() []CreateVerifications
 		return nil
 	}
 	return c.Roles
+}
+
+func (c *CreateVerificationsResponseOwnersItem) GetSessionURL() *string {
+	if c == nil {
+		return nil
+	}
+	return c.SessionURL
 }
 
 func (c *CreateVerificationsResponseOwnersItem) GetStatus() CreateVerificationsResponseOwnersItemStatus {
@@ -3571,6 +3582,13 @@ func (c *CreateVerificationsResponseOwnersItem) SetRequiredDocuments(requiredDoc
 func (c *CreateVerificationsResponseOwnersItem) SetRoles(roles []CreateVerificationsResponseOwnersItemRolesItem) {
 	c.Roles = roles
 	c.require(createVerificationsResponseOwnersItemFieldRoles)
+}
+
+// SetSessionURL sets the SessionURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateVerificationsResponseOwnersItem) SetSessionURL(sessionURL *string) {
+	c.SessionURL = sessionURL
+	c.require(createVerificationsResponseOwnersItemFieldSessionURL)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -5817,7 +5835,8 @@ var (
 	listVerificationsResponseDataItemOwnersItemFieldRejectedChecks      = big.NewInt(1 << 5)
 	listVerificationsResponseDataItemOwnersItemFieldRequiredDocuments   = big.NewInt(1 << 6)
 	listVerificationsResponseDataItemOwnersItemFieldRoles               = big.NewInt(1 << 7)
-	listVerificationsResponseDataItemOwnersItemFieldStatus              = big.NewInt(1 << 8)
+	listVerificationsResponseDataItemOwnersItemFieldSessionURL          = big.NewInt(1 << 8)
+	listVerificationsResponseDataItemOwnersItemFieldStatus              = big.NewInt(1 << 9)
 )
 
 // listVerificationsResponseDataItemOwnersItemNullableFields maps the wire names of ListVerificationsResponseDataItemOwnersItem's nullable fields (required or optional) to their field bits.
@@ -5826,6 +5845,7 @@ var listVerificationsResponseDataItemOwnersItemNullableFields = map[string]*big.
 	"first_name":           listVerificationsResponseDataItemOwnersItemFieldFirstName,
 	"last_name":            listVerificationsResponseDataItemOwnersItemFieldLastName,
 	"ownership_percentage": listVerificationsResponseDataItemOwnersItemFieldOwnershipPercentage,
+	"session_url":          listVerificationsResponseDataItemOwnersItemFieldSessionURL,
 }
 
 type ListVerificationsResponseDataItemOwnersItem struct {
@@ -5843,6 +5863,8 @@ type ListVerificationsResponseDataItemOwnersItem struct {
 	RequiredDocuments []*ListVerificationsResponseDataItemOwnersItemRequiredDocumentsItem `json:"required_documents" url:"required_documents"`
 	// What the person is to the business.
 	Roles []ListVerificationsResponseDataItemOwnersItemRolesItem `json:"roles" url:"roles"`
+	// Hosted verification session URL for the owner to complete their own identity checks. Expires 7 days after creation. `null` unless the business review waits on this owner to start or finish a hosted session.
+	SessionURL *string `json:"session_url,omitempty" url:"session_url,omitempty"`
 	// Where the owner's own verification stands, in the same states as `status`. `action_required` when their documents need sending again.
 	Status ListVerificationsResponseDataItemOwnersItemStatus `json:"status" url:"status"`
 
@@ -5907,6 +5929,13 @@ func (l *ListVerificationsResponseDataItemOwnersItem) GetRoles() []ListVerificat
 		return nil
 	}
 	return l.Roles
+}
+
+func (l *ListVerificationsResponseDataItemOwnersItem) GetSessionURL() *string {
+	if l == nil {
+		return nil
+	}
+	return l.SessionURL
 }
 
 func (l *ListVerificationsResponseDataItemOwnersItem) GetStatus() ListVerificationsResponseDataItemOwnersItemStatus {
@@ -5986,6 +6015,13 @@ func (l *ListVerificationsResponseDataItemOwnersItem) SetRequiredDocuments(requi
 func (l *ListVerificationsResponseDataItemOwnersItem) SetRoles(roles []ListVerificationsResponseDataItemOwnersItemRolesItem) {
 	l.Roles = roles
 	l.require(listVerificationsResponseDataItemOwnersItemFieldRoles)
+}
+
+// SetSessionURL sets the SessionURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListVerificationsResponseDataItemOwnersItem) SetSessionURL(sessionURL *string) {
+	l.SessionURL = sessionURL
+	l.require(listVerificationsResponseDataItemOwnersItemFieldSessionURL)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -8852,7 +8888,8 @@ var (
 	retrieveVerificationsResponseOwnersItemFieldRejectedChecks      = big.NewInt(1 << 5)
 	retrieveVerificationsResponseOwnersItemFieldRequiredDocuments   = big.NewInt(1 << 6)
 	retrieveVerificationsResponseOwnersItemFieldRoles               = big.NewInt(1 << 7)
-	retrieveVerificationsResponseOwnersItemFieldStatus              = big.NewInt(1 << 8)
+	retrieveVerificationsResponseOwnersItemFieldSessionURL          = big.NewInt(1 << 8)
+	retrieveVerificationsResponseOwnersItemFieldStatus              = big.NewInt(1 << 9)
 )
 
 // retrieveVerificationsResponseOwnersItemNullableFields maps the wire names of RetrieveVerificationsResponseOwnersItem's nullable fields (required or optional) to their field bits.
@@ -8861,6 +8898,7 @@ var retrieveVerificationsResponseOwnersItemNullableFields = map[string]*big.Int{
 	"first_name":           retrieveVerificationsResponseOwnersItemFieldFirstName,
 	"last_name":            retrieveVerificationsResponseOwnersItemFieldLastName,
 	"ownership_percentage": retrieveVerificationsResponseOwnersItemFieldOwnershipPercentage,
+	"session_url":          retrieveVerificationsResponseOwnersItemFieldSessionURL,
 }
 
 type RetrieveVerificationsResponseOwnersItem struct {
@@ -8878,6 +8916,8 @@ type RetrieveVerificationsResponseOwnersItem struct {
 	RequiredDocuments []*RetrieveVerificationsResponseOwnersItemRequiredDocumentsItem `json:"required_documents" url:"required_documents"`
 	// What the person is to the business.
 	Roles []RetrieveVerificationsResponseOwnersItemRolesItem `json:"roles" url:"roles"`
+	// Hosted verification session URL for the owner to complete their own identity checks. Expires 7 days after creation. `null` unless the business review waits on this owner to start or finish a hosted session.
+	SessionURL *string `json:"session_url,omitempty" url:"session_url,omitempty"`
 	// Where the owner's own verification stands, in the same states as `status`. `action_required` when their documents need sending again.
 	Status RetrieveVerificationsResponseOwnersItemStatus `json:"status" url:"status"`
 
@@ -8942,6 +8982,13 @@ func (r *RetrieveVerificationsResponseOwnersItem) GetRoles() []RetrieveVerificat
 		return nil
 	}
 	return r.Roles
+}
+
+func (r *RetrieveVerificationsResponseOwnersItem) GetSessionURL() *string {
+	if r == nil {
+		return nil
+	}
+	return r.SessionURL
 }
 
 func (r *RetrieveVerificationsResponseOwnersItem) GetStatus() RetrieveVerificationsResponseOwnersItemStatus {
@@ -9021,6 +9068,13 @@ func (r *RetrieveVerificationsResponseOwnersItem) SetRequiredDocuments(requiredD
 func (r *RetrieveVerificationsResponseOwnersItem) SetRoles(roles []RetrieveVerificationsResponseOwnersItemRolesItem) {
 	r.Roles = roles
 	r.require(retrieveVerificationsResponseOwnersItemFieldRoles)
+}
+
+// SetSessionURL sets the SessionURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveVerificationsResponseOwnersItem) SetSessionURL(sessionURL *string) {
+	r.SessionURL = sessionURL
+	r.require(retrieveVerificationsResponseOwnersItemFieldSessionURL)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -14294,7 +14348,8 @@ var (
 	updateVerificationsResponseOwnersItemFieldRejectedChecks      = big.NewInt(1 << 5)
 	updateVerificationsResponseOwnersItemFieldRequiredDocuments   = big.NewInt(1 << 6)
 	updateVerificationsResponseOwnersItemFieldRoles               = big.NewInt(1 << 7)
-	updateVerificationsResponseOwnersItemFieldStatus              = big.NewInt(1 << 8)
+	updateVerificationsResponseOwnersItemFieldSessionURL          = big.NewInt(1 << 8)
+	updateVerificationsResponseOwnersItemFieldStatus              = big.NewInt(1 << 9)
 )
 
 // updateVerificationsResponseOwnersItemNullableFields maps the wire names of UpdateVerificationsResponseOwnersItem's nullable fields (required or optional) to their field bits.
@@ -14303,6 +14358,7 @@ var updateVerificationsResponseOwnersItemNullableFields = map[string]*big.Int{
 	"first_name":           updateVerificationsResponseOwnersItemFieldFirstName,
 	"last_name":            updateVerificationsResponseOwnersItemFieldLastName,
 	"ownership_percentage": updateVerificationsResponseOwnersItemFieldOwnershipPercentage,
+	"session_url":          updateVerificationsResponseOwnersItemFieldSessionURL,
 }
 
 type UpdateVerificationsResponseOwnersItem struct {
@@ -14320,6 +14376,8 @@ type UpdateVerificationsResponseOwnersItem struct {
 	RequiredDocuments []*UpdateVerificationsResponseOwnersItemRequiredDocumentsItem `json:"required_documents" url:"required_documents"`
 	// What the person is to the business.
 	Roles []UpdateVerificationsResponseOwnersItemRolesItem `json:"roles" url:"roles"`
+	// Hosted verification session URL for the owner to complete their own identity checks. Expires 7 days after creation. `null` unless the business review waits on this owner to start or finish a hosted session.
+	SessionURL *string `json:"session_url,omitempty" url:"session_url,omitempty"`
 	// Where the owner's own verification stands, in the same states as `status`. `action_required` when their documents need sending again.
 	Status UpdateVerificationsResponseOwnersItemStatus `json:"status" url:"status"`
 
@@ -14384,6 +14442,13 @@ func (u *UpdateVerificationsResponseOwnersItem) GetRoles() []UpdateVerifications
 		return nil
 	}
 	return u.Roles
+}
+
+func (u *UpdateVerificationsResponseOwnersItem) GetSessionURL() *string {
+	if u == nil {
+		return nil
+	}
+	return u.SessionURL
 }
 
 func (u *UpdateVerificationsResponseOwnersItem) GetStatus() UpdateVerificationsResponseOwnersItemStatus {
@@ -14463,6 +14528,13 @@ func (u *UpdateVerificationsResponseOwnersItem) SetRequiredDocuments(requiredDoc
 func (u *UpdateVerificationsResponseOwnersItem) SetRoles(roles []UpdateVerificationsResponseOwnersItemRolesItem) {
 	u.Roles = roles
 	u.require(updateVerificationsResponseOwnersItemFieldRoles)
+}
+
+// SetSessionURL sets the SessionURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateVerificationsResponseOwnersItem) SetSessionURL(sessionURL *string) {
+	u.SessionURL = sessionURL
+	u.require(updateVerificationsResponseOwnersItemFieldSessionURL)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
