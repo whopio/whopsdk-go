@@ -1242,6 +1242,7 @@ var (
 	cancelPayoutsResponseFailureFieldCode            = big.NewInt(1 << 0)
 	cancelPayoutsResponseFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
 	cancelPayoutsResponseFailureFieldMessage         = big.NewInt(1 << 2)
+	cancelPayoutsResponseFailureFieldNextStep        = big.NewInt(1 << 3)
 )
 
 // cancelPayoutsResponseFailureNullableFields maps the wire names of CancelPayoutsResponseFailure's nullable fields (required or optional) to their field bits.
@@ -1249,6 +1250,7 @@ var cancelPayoutsResponseFailureNullableFields = map[string]*big.Int{
 	"code":              cancelPayoutsResponseFailureFieldCode,
 	"funds_returned_at": cancelPayoutsResponseFailureFieldFundsReturnedAt,
 	"message":           cancelPayoutsResponseFailureFieldMessage,
+	"next_step":         cancelPayoutsResponseFailureFieldNextStep,
 }
 
 // Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
@@ -1257,8 +1259,10 @@ type CancelPayoutsResponseFailure struct {
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
 	// The effective time of the reversal that put the funds back in the balance — `null` if they never left it or have not returned yet. Set only once the return is confirmed in the ledger; the ledger posting itself can land moments after this time.
 	FundsReturnedAt *time.Time `json:"funds_returned_at,omitempty" url:"funds_returned_at,omitempty"`
-	// Human-readable explanation of the failure. Callers holding `payout:destination:read` may receive text personalized to the destination; other callers get the generic catalog message.
+	// Human-readable explanation of the failure. Callers holding `payout:destination:read` may receive text personalized to the destination. Other callers get the generic catalog message.
 	Message *string `json:"message,omitempty" url:"message,omitempty"`
+	// What to do before a new payout can succeed. `withdraw_again` means that the payout method needs no change. `null` when the failure has no code from the error catalog, or when the account owner canceled the payout.
+	NextStep *CancelPayoutsResponseFailureNextStep `json:"next_step,omitempty" url:"next_step,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -1286,6 +1290,13 @@ func (c *CancelPayoutsResponseFailure) GetMessage() *string {
 		return nil
 	}
 	return c.Message
+}
+
+func (c *CancelPayoutsResponseFailure) GetNextStep() *CancelPayoutsResponseFailureNextStep {
+	if c == nil {
+		return nil
+	}
+	return c.NextStep
 }
 
 func (c *CancelPayoutsResponseFailure) GetExtraProperties() map[string]interface{} {
@@ -1323,6 +1334,13 @@ func (c *CancelPayoutsResponseFailure) SetFundsReturnedAt(fundsReturnedAt *time.
 func (c *CancelPayoutsResponseFailure) SetMessage(message *string) {
 	c.Message = message
 	c.require(cancelPayoutsResponseFailureFieldMessage)
+}
+
+// SetNextStep sets the NextStep field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CancelPayoutsResponseFailure) SetNextStep(nextStep *CancelPayoutsResponseFailureNextStep) {
+	c.NextStep = nextStep
+	c.require(cancelPayoutsResponseFailureFieldNextStep)
 }
 
 func (c *CancelPayoutsResponseFailure) UnmarshalJSON(data []byte) error {
@@ -1380,6 +1398,41 @@ func (c *CancelPayoutsResponseFailure) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+// What to do before a new payout can succeed. `withdraw_again` means that the payout method needs no change. `null` when the failure has no code from the error catalog, or when the account owner canceled the payout.
+type CancelPayoutsResponseFailureNextStep string
+
+const (
+	CancelPayoutsResponseFailureNextStepUpdatePayoutMethod     CancelPayoutsResponseFailureNextStep = "update_payout_method"
+	CancelPayoutsResponseFailureNextStepUseAnotherPayoutMethod CancelPayoutsResponseFailureNextStep = "use_another_payout_method"
+	CancelPayoutsResponseFailureNextStepCompleteVerification   CancelPayoutsResponseFailureNextStep = "complete_verification"
+	CancelPayoutsResponseFailureNextStepWithdrawAgain          CancelPayoutsResponseFailureNextStep = "withdraw_again"
+	CancelPayoutsResponseFailureNextStepContactBank            CancelPayoutsResponseFailureNextStep = "contact_bank"
+	CancelPayoutsResponseFailureNextStepContactSupport         CancelPayoutsResponseFailureNextStep = "contact_support"
+)
+
+func NewCancelPayoutsResponseFailureNextStepFromString(s string) (CancelPayoutsResponseFailureNextStep, error) {
+	switch s {
+	case "update_payout_method":
+		return CancelPayoutsResponseFailureNextStepUpdatePayoutMethod, nil
+	case "use_another_payout_method":
+		return CancelPayoutsResponseFailureNextStepUseAnotherPayoutMethod, nil
+	case "complete_verification":
+		return CancelPayoutsResponseFailureNextStepCompleteVerification, nil
+	case "withdraw_again":
+		return CancelPayoutsResponseFailureNextStepWithdrawAgain, nil
+	case "contact_bank":
+		return CancelPayoutsResponseFailureNextStepContactBank, nil
+	case "contact_support":
+		return CancelPayoutsResponseFailureNextStepContactSupport, nil
+	}
+	var t CancelPayoutsResponseFailureNextStep
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CancelPayoutsResponseFailureNextStep) Ptr() *CancelPayoutsResponseFailureNextStep {
+	return &c
 }
 
 // Who bore the payout fee: the account itself, or its parent platform.
@@ -2564,6 +2617,7 @@ var (
 	createPayoutsResponseFailureFieldCode            = big.NewInt(1 << 0)
 	createPayoutsResponseFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
 	createPayoutsResponseFailureFieldMessage         = big.NewInt(1 << 2)
+	createPayoutsResponseFailureFieldNextStep        = big.NewInt(1 << 3)
 )
 
 // createPayoutsResponseFailureNullableFields maps the wire names of CreatePayoutsResponseFailure's nullable fields (required or optional) to their field bits.
@@ -2571,6 +2625,7 @@ var createPayoutsResponseFailureNullableFields = map[string]*big.Int{
 	"code":              createPayoutsResponseFailureFieldCode,
 	"funds_returned_at": createPayoutsResponseFailureFieldFundsReturnedAt,
 	"message":           createPayoutsResponseFailureFieldMessage,
+	"next_step":         createPayoutsResponseFailureFieldNextStep,
 }
 
 // Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
@@ -2579,8 +2634,10 @@ type CreatePayoutsResponseFailure struct {
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
 	// The effective time of the reversal that put the funds back in the balance — `null` if they never left it or have not returned yet. Set only once the return is confirmed in the ledger; the ledger posting itself can land moments after this time.
 	FundsReturnedAt *time.Time `json:"funds_returned_at,omitempty" url:"funds_returned_at,omitempty"`
-	// Human-readable explanation of the failure. Callers holding `payout:destination:read` may receive text personalized to the destination; other callers get the generic catalog message.
+	// Human-readable explanation of the failure. Callers holding `payout:destination:read` may receive text personalized to the destination. Other callers get the generic catalog message.
 	Message *string `json:"message,omitempty" url:"message,omitempty"`
+	// What to do before a new payout can succeed. `withdraw_again` means that the payout method needs no change. `null` when the failure has no code from the error catalog, or when the account owner canceled the payout.
+	NextStep *CreatePayoutsResponseFailureNextStep `json:"next_step,omitempty" url:"next_step,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -2608,6 +2665,13 @@ func (c *CreatePayoutsResponseFailure) GetMessage() *string {
 		return nil
 	}
 	return c.Message
+}
+
+func (c *CreatePayoutsResponseFailure) GetNextStep() *CreatePayoutsResponseFailureNextStep {
+	if c == nil {
+		return nil
+	}
+	return c.NextStep
 }
 
 func (c *CreatePayoutsResponseFailure) GetExtraProperties() map[string]interface{} {
@@ -2645,6 +2709,13 @@ func (c *CreatePayoutsResponseFailure) SetFundsReturnedAt(fundsReturnedAt *time.
 func (c *CreatePayoutsResponseFailure) SetMessage(message *string) {
 	c.Message = message
 	c.require(createPayoutsResponseFailureFieldMessage)
+}
+
+// SetNextStep sets the NextStep field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePayoutsResponseFailure) SetNextStep(nextStep *CreatePayoutsResponseFailureNextStep) {
+	c.NextStep = nextStep
+	c.require(createPayoutsResponseFailureFieldNextStep)
 }
 
 func (c *CreatePayoutsResponseFailure) UnmarshalJSON(data []byte) error {
@@ -2702,6 +2773,41 @@ func (c *CreatePayoutsResponseFailure) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", c)
+}
+
+// What to do before a new payout can succeed. `withdraw_again` means that the payout method needs no change. `null` when the failure has no code from the error catalog, or when the account owner canceled the payout.
+type CreatePayoutsResponseFailureNextStep string
+
+const (
+	CreatePayoutsResponseFailureNextStepUpdatePayoutMethod     CreatePayoutsResponseFailureNextStep = "update_payout_method"
+	CreatePayoutsResponseFailureNextStepUseAnotherPayoutMethod CreatePayoutsResponseFailureNextStep = "use_another_payout_method"
+	CreatePayoutsResponseFailureNextStepCompleteVerification   CreatePayoutsResponseFailureNextStep = "complete_verification"
+	CreatePayoutsResponseFailureNextStepWithdrawAgain          CreatePayoutsResponseFailureNextStep = "withdraw_again"
+	CreatePayoutsResponseFailureNextStepContactBank            CreatePayoutsResponseFailureNextStep = "contact_bank"
+	CreatePayoutsResponseFailureNextStepContactSupport         CreatePayoutsResponseFailureNextStep = "contact_support"
+)
+
+func NewCreatePayoutsResponseFailureNextStepFromString(s string) (CreatePayoutsResponseFailureNextStep, error) {
+	switch s {
+	case "update_payout_method":
+		return CreatePayoutsResponseFailureNextStepUpdatePayoutMethod, nil
+	case "use_another_payout_method":
+		return CreatePayoutsResponseFailureNextStepUseAnotherPayoutMethod, nil
+	case "complete_verification":
+		return CreatePayoutsResponseFailureNextStepCompleteVerification, nil
+	case "withdraw_again":
+		return CreatePayoutsResponseFailureNextStepWithdrawAgain, nil
+	case "contact_bank":
+		return CreatePayoutsResponseFailureNextStepContactBank, nil
+	case "contact_support":
+		return CreatePayoutsResponseFailureNextStepContactSupport, nil
+	}
+	var t CreatePayoutsResponseFailureNextStep
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreatePayoutsResponseFailureNextStep) Ptr() *CreatePayoutsResponseFailureNextStep {
+	return &c
 }
 
 // Who bore the payout fee: the account itself, or its parent platform.
@@ -4754,6 +4860,7 @@ var (
 	listPayoutsResponseDataItemFailureFieldCode            = big.NewInt(1 << 0)
 	listPayoutsResponseDataItemFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
 	listPayoutsResponseDataItemFailureFieldMessage         = big.NewInt(1 << 2)
+	listPayoutsResponseDataItemFailureFieldNextStep        = big.NewInt(1 << 3)
 )
 
 // listPayoutsResponseDataItemFailureNullableFields maps the wire names of ListPayoutsResponseDataItemFailure's nullable fields (required or optional) to their field bits.
@@ -4761,6 +4868,7 @@ var listPayoutsResponseDataItemFailureNullableFields = map[string]*big.Int{
 	"code":              listPayoutsResponseDataItemFailureFieldCode,
 	"funds_returned_at": listPayoutsResponseDataItemFailureFieldFundsReturnedAt,
 	"message":           listPayoutsResponseDataItemFailureFieldMessage,
+	"next_step":         listPayoutsResponseDataItemFailureFieldNextStep,
 }
 
 // Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
@@ -4769,8 +4877,10 @@ type ListPayoutsResponseDataItemFailure struct {
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
 	// The effective time of the reversal that put the funds back in the balance — `null` if they never left it or have not returned yet. Set only once the return is confirmed in the ledger; the ledger posting itself can land moments after this time.
 	FundsReturnedAt *time.Time `json:"funds_returned_at,omitempty" url:"funds_returned_at,omitempty"`
-	// Human-readable explanation of the failure. Callers holding `payout:destination:read` may receive text personalized to the destination; other callers get the generic catalog message.
+	// Human-readable explanation of the failure. Callers holding `payout:destination:read` may receive text personalized to the destination. Other callers get the generic catalog message.
 	Message *string `json:"message,omitempty" url:"message,omitempty"`
+	// What to do before a new payout can succeed. `withdraw_again` means that the payout method needs no change. `null` when the failure has no code from the error catalog, or when the account owner canceled the payout.
+	NextStep *ListPayoutsResponseDataItemFailureNextStep `json:"next_step,omitempty" url:"next_step,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -4798,6 +4908,13 @@ func (l *ListPayoutsResponseDataItemFailure) GetMessage() *string {
 		return nil
 	}
 	return l.Message
+}
+
+func (l *ListPayoutsResponseDataItemFailure) GetNextStep() *ListPayoutsResponseDataItemFailureNextStep {
+	if l == nil {
+		return nil
+	}
+	return l.NextStep
 }
 
 func (l *ListPayoutsResponseDataItemFailure) GetExtraProperties() map[string]interface{} {
@@ -4835,6 +4952,13 @@ func (l *ListPayoutsResponseDataItemFailure) SetFundsReturnedAt(fundsReturnedAt 
 func (l *ListPayoutsResponseDataItemFailure) SetMessage(message *string) {
 	l.Message = message
 	l.require(listPayoutsResponseDataItemFailureFieldMessage)
+}
+
+// SetNextStep sets the NextStep field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListPayoutsResponseDataItemFailure) SetNextStep(nextStep *ListPayoutsResponseDataItemFailureNextStep) {
+	l.NextStep = nextStep
+	l.require(listPayoutsResponseDataItemFailureFieldNextStep)
 }
 
 func (l *ListPayoutsResponseDataItemFailure) UnmarshalJSON(data []byte) error {
@@ -4892,6 +5016,41 @@ func (l *ListPayoutsResponseDataItemFailure) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", l)
+}
+
+// What to do before a new payout can succeed. `withdraw_again` means that the payout method needs no change. `null` when the failure has no code from the error catalog, or when the account owner canceled the payout.
+type ListPayoutsResponseDataItemFailureNextStep string
+
+const (
+	ListPayoutsResponseDataItemFailureNextStepUpdatePayoutMethod     ListPayoutsResponseDataItemFailureNextStep = "update_payout_method"
+	ListPayoutsResponseDataItemFailureNextStepUseAnotherPayoutMethod ListPayoutsResponseDataItemFailureNextStep = "use_another_payout_method"
+	ListPayoutsResponseDataItemFailureNextStepCompleteVerification   ListPayoutsResponseDataItemFailureNextStep = "complete_verification"
+	ListPayoutsResponseDataItemFailureNextStepWithdrawAgain          ListPayoutsResponseDataItemFailureNextStep = "withdraw_again"
+	ListPayoutsResponseDataItemFailureNextStepContactBank            ListPayoutsResponseDataItemFailureNextStep = "contact_bank"
+	ListPayoutsResponseDataItemFailureNextStepContactSupport         ListPayoutsResponseDataItemFailureNextStep = "contact_support"
+)
+
+func NewListPayoutsResponseDataItemFailureNextStepFromString(s string) (ListPayoutsResponseDataItemFailureNextStep, error) {
+	switch s {
+	case "update_payout_method":
+		return ListPayoutsResponseDataItemFailureNextStepUpdatePayoutMethod, nil
+	case "use_another_payout_method":
+		return ListPayoutsResponseDataItemFailureNextStepUseAnotherPayoutMethod, nil
+	case "complete_verification":
+		return ListPayoutsResponseDataItemFailureNextStepCompleteVerification, nil
+	case "withdraw_again":
+		return ListPayoutsResponseDataItemFailureNextStepWithdrawAgain, nil
+	case "contact_bank":
+		return ListPayoutsResponseDataItemFailureNextStepContactBank, nil
+	case "contact_support":
+		return ListPayoutsResponseDataItemFailureNextStepContactSupport, nil
+	}
+	var t ListPayoutsResponseDataItemFailureNextStep
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (l ListPayoutsResponseDataItemFailureNextStep) Ptr() *ListPayoutsResponseDataItemFailureNextStep {
+	return &l
 }
 
 // Who bore the payout fee: the account itself, or its parent platform.
@@ -6446,6 +6605,7 @@ var (
 	postPayoutCreatedPayloadDataFailureFieldCode            = big.NewInt(1 << 0)
 	postPayoutCreatedPayloadDataFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
 	postPayoutCreatedPayloadDataFailureFieldMessage         = big.NewInt(1 << 2)
+	postPayoutCreatedPayloadDataFailureFieldNextStep        = big.NewInt(1 << 3)
 )
 
 // postPayoutCreatedPayloadDataFailureNullableFields maps the wire names of PostPayoutCreatedPayloadDataFailure's nullable fields (required or optional) to their field bits.
@@ -6453,6 +6613,7 @@ var postPayoutCreatedPayloadDataFailureNullableFields = map[string]*big.Int{
 	"code":              postPayoutCreatedPayloadDataFailureFieldCode,
 	"funds_returned_at": postPayoutCreatedPayloadDataFailureFieldFundsReturnedAt,
 	"message":           postPayoutCreatedPayloadDataFailureFieldMessage,
+	"next_step":         postPayoutCreatedPayloadDataFailureFieldNextStep,
 }
 
 // Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
@@ -6461,8 +6622,10 @@ type PostPayoutCreatedPayloadDataFailure struct {
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
 	// The effective time of the reversal that put the funds back in the balance — `null` if they never left it or have not returned yet. Set only once the return is confirmed in the ledger; the ledger posting itself can land moments after this time.
 	FundsReturnedAt *time.Time `json:"funds_returned_at,omitempty" url:"funds_returned_at,omitempty"`
-	// Human-readable explanation of the failure. Callers holding `payout:destination:read` may receive text personalized to the destination; other callers get the generic catalog message.
+	// Human-readable explanation of the failure. Callers holding `payout:destination:read` may receive text personalized to the destination. Other callers get the generic catalog message.
 	Message *string `json:"message,omitempty" url:"message,omitempty"`
+	// What to do before a new payout can succeed. `withdraw_again` means that the payout method needs no change. `null` when the failure has no code from the error catalog, or when the account owner canceled the payout.
+	NextStep *PostPayoutCreatedPayloadDataFailureNextStep `json:"next_step,omitempty" url:"next_step,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -6490,6 +6653,13 @@ func (p *PostPayoutCreatedPayloadDataFailure) GetMessage() *string {
 		return nil
 	}
 	return p.Message
+}
+
+func (p *PostPayoutCreatedPayloadDataFailure) GetNextStep() *PostPayoutCreatedPayloadDataFailureNextStep {
+	if p == nil {
+		return nil
+	}
+	return p.NextStep
 }
 
 func (p *PostPayoutCreatedPayloadDataFailure) GetExtraProperties() map[string]interface{} {
@@ -6527,6 +6697,13 @@ func (p *PostPayoutCreatedPayloadDataFailure) SetFundsReturnedAt(fundsReturnedAt
 func (p *PostPayoutCreatedPayloadDataFailure) SetMessage(message *string) {
 	p.Message = message
 	p.require(postPayoutCreatedPayloadDataFailureFieldMessage)
+}
+
+// SetNextStep sets the NextStep field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutCreatedPayloadDataFailure) SetNextStep(nextStep *PostPayoutCreatedPayloadDataFailureNextStep) {
+	p.NextStep = nextStep
+	p.require(postPayoutCreatedPayloadDataFailureFieldNextStep)
 }
 
 func (p *PostPayoutCreatedPayloadDataFailure) UnmarshalJSON(data []byte) error {
@@ -6584,6 +6761,41 @@ func (p *PostPayoutCreatedPayloadDataFailure) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+// What to do before a new payout can succeed. `withdraw_again` means that the payout method needs no change. `null` when the failure has no code from the error catalog, or when the account owner canceled the payout.
+type PostPayoutCreatedPayloadDataFailureNextStep string
+
+const (
+	PostPayoutCreatedPayloadDataFailureNextStepUpdatePayoutMethod     PostPayoutCreatedPayloadDataFailureNextStep = "update_payout_method"
+	PostPayoutCreatedPayloadDataFailureNextStepUseAnotherPayoutMethod PostPayoutCreatedPayloadDataFailureNextStep = "use_another_payout_method"
+	PostPayoutCreatedPayloadDataFailureNextStepCompleteVerification   PostPayoutCreatedPayloadDataFailureNextStep = "complete_verification"
+	PostPayoutCreatedPayloadDataFailureNextStepWithdrawAgain          PostPayoutCreatedPayloadDataFailureNextStep = "withdraw_again"
+	PostPayoutCreatedPayloadDataFailureNextStepContactBank            PostPayoutCreatedPayloadDataFailureNextStep = "contact_bank"
+	PostPayoutCreatedPayloadDataFailureNextStepContactSupport         PostPayoutCreatedPayloadDataFailureNextStep = "contact_support"
+)
+
+func NewPostPayoutCreatedPayloadDataFailureNextStepFromString(s string) (PostPayoutCreatedPayloadDataFailureNextStep, error) {
+	switch s {
+	case "update_payout_method":
+		return PostPayoutCreatedPayloadDataFailureNextStepUpdatePayoutMethod, nil
+	case "use_another_payout_method":
+		return PostPayoutCreatedPayloadDataFailureNextStepUseAnotherPayoutMethod, nil
+	case "complete_verification":
+		return PostPayoutCreatedPayloadDataFailureNextStepCompleteVerification, nil
+	case "withdraw_again":
+		return PostPayoutCreatedPayloadDataFailureNextStepWithdrawAgain, nil
+	case "contact_bank":
+		return PostPayoutCreatedPayloadDataFailureNextStepContactBank, nil
+	case "contact_support":
+		return PostPayoutCreatedPayloadDataFailureNextStepContactSupport, nil
+	}
+	var t PostPayoutCreatedPayloadDataFailureNextStep
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPayoutCreatedPayloadDataFailureNextStep) Ptr() *PostPayoutCreatedPayloadDataFailureNextStep {
+	return &p
 }
 
 // Who bore the payout fee: the account itself, or its parent platform.
@@ -10022,6 +10234,7 @@ var (
 	postPayoutReversedPayloadDataFailureFieldCode            = big.NewInt(1 << 0)
 	postPayoutReversedPayloadDataFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
 	postPayoutReversedPayloadDataFailureFieldMessage         = big.NewInt(1 << 2)
+	postPayoutReversedPayloadDataFailureFieldNextStep        = big.NewInt(1 << 3)
 )
 
 // postPayoutReversedPayloadDataFailureNullableFields maps the wire names of PostPayoutReversedPayloadDataFailure's nullable fields (required or optional) to their field bits.
@@ -10029,6 +10242,7 @@ var postPayoutReversedPayloadDataFailureNullableFields = map[string]*big.Int{
 	"code":              postPayoutReversedPayloadDataFailureFieldCode,
 	"funds_returned_at": postPayoutReversedPayloadDataFailureFieldFundsReturnedAt,
 	"message":           postPayoutReversedPayloadDataFailureFieldMessage,
+	"next_step":         postPayoutReversedPayloadDataFailureFieldNextStep,
 }
 
 // Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
@@ -10037,8 +10251,10 @@ type PostPayoutReversedPayloadDataFailure struct {
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
 	// The effective time of the reversal that put the funds back in the balance — `null` if they never left it or have not returned yet. Set only once the return is confirmed in the ledger; the ledger posting itself can land moments after this time.
 	FundsReturnedAt *time.Time `json:"funds_returned_at,omitempty" url:"funds_returned_at,omitempty"`
-	// Human-readable explanation of the failure. Callers holding `payout:destination:read` may receive text personalized to the destination; other callers get the generic catalog message.
+	// Human-readable explanation of the failure. Callers holding `payout:destination:read` may receive text personalized to the destination. Other callers get the generic catalog message.
 	Message *string `json:"message,omitempty" url:"message,omitempty"`
+	// What to do before a new payout can succeed. `withdraw_again` means that the payout method needs no change. `null` when the failure has no code from the error catalog, or when the account owner canceled the payout.
+	NextStep *PostPayoutReversedPayloadDataFailureNextStep `json:"next_step,omitempty" url:"next_step,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -10066,6 +10282,13 @@ func (p *PostPayoutReversedPayloadDataFailure) GetMessage() *string {
 		return nil
 	}
 	return p.Message
+}
+
+func (p *PostPayoutReversedPayloadDataFailure) GetNextStep() *PostPayoutReversedPayloadDataFailureNextStep {
+	if p == nil {
+		return nil
+	}
+	return p.NextStep
 }
 
 func (p *PostPayoutReversedPayloadDataFailure) GetExtraProperties() map[string]interface{} {
@@ -10103,6 +10326,13 @@ func (p *PostPayoutReversedPayloadDataFailure) SetFundsReturnedAt(fundsReturnedA
 func (p *PostPayoutReversedPayloadDataFailure) SetMessage(message *string) {
 	p.Message = message
 	p.require(postPayoutReversedPayloadDataFailureFieldMessage)
+}
+
+// SetNextStep sets the NextStep field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutReversedPayloadDataFailure) SetNextStep(nextStep *PostPayoutReversedPayloadDataFailureNextStep) {
+	p.NextStep = nextStep
+	p.require(postPayoutReversedPayloadDataFailureFieldNextStep)
 }
 
 func (p *PostPayoutReversedPayloadDataFailure) UnmarshalJSON(data []byte) error {
@@ -10160,6 +10390,41 @@ func (p *PostPayoutReversedPayloadDataFailure) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+// What to do before a new payout can succeed. `withdraw_again` means that the payout method needs no change. `null` when the failure has no code from the error catalog, or when the account owner canceled the payout.
+type PostPayoutReversedPayloadDataFailureNextStep string
+
+const (
+	PostPayoutReversedPayloadDataFailureNextStepUpdatePayoutMethod     PostPayoutReversedPayloadDataFailureNextStep = "update_payout_method"
+	PostPayoutReversedPayloadDataFailureNextStepUseAnotherPayoutMethod PostPayoutReversedPayloadDataFailureNextStep = "use_another_payout_method"
+	PostPayoutReversedPayloadDataFailureNextStepCompleteVerification   PostPayoutReversedPayloadDataFailureNextStep = "complete_verification"
+	PostPayoutReversedPayloadDataFailureNextStepWithdrawAgain          PostPayoutReversedPayloadDataFailureNextStep = "withdraw_again"
+	PostPayoutReversedPayloadDataFailureNextStepContactBank            PostPayoutReversedPayloadDataFailureNextStep = "contact_bank"
+	PostPayoutReversedPayloadDataFailureNextStepContactSupport         PostPayoutReversedPayloadDataFailureNextStep = "contact_support"
+)
+
+func NewPostPayoutReversedPayloadDataFailureNextStepFromString(s string) (PostPayoutReversedPayloadDataFailureNextStep, error) {
+	switch s {
+	case "update_payout_method":
+		return PostPayoutReversedPayloadDataFailureNextStepUpdatePayoutMethod, nil
+	case "use_another_payout_method":
+		return PostPayoutReversedPayloadDataFailureNextStepUseAnotherPayoutMethod, nil
+	case "complete_verification":
+		return PostPayoutReversedPayloadDataFailureNextStepCompleteVerification, nil
+	case "withdraw_again":
+		return PostPayoutReversedPayloadDataFailureNextStepWithdrawAgain, nil
+	case "contact_bank":
+		return PostPayoutReversedPayloadDataFailureNextStepContactBank, nil
+	case "contact_support":
+		return PostPayoutReversedPayloadDataFailureNextStepContactSupport, nil
+	}
+	var t PostPayoutReversedPayloadDataFailureNextStep
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPayoutReversedPayloadDataFailureNextStep) Ptr() *PostPayoutReversedPayloadDataFailureNextStep {
+	return &p
 }
 
 // Who bore the payout fee: the account itself, or its parent platform.
@@ -11587,6 +11852,7 @@ var (
 	postPayoutUpdatedPayloadDataFailureFieldCode            = big.NewInt(1 << 0)
 	postPayoutUpdatedPayloadDataFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
 	postPayoutUpdatedPayloadDataFailureFieldMessage         = big.NewInt(1 << 2)
+	postPayoutUpdatedPayloadDataFailureFieldNextStep        = big.NewInt(1 << 3)
 )
 
 // postPayoutUpdatedPayloadDataFailureNullableFields maps the wire names of PostPayoutUpdatedPayloadDataFailure's nullable fields (required or optional) to their field bits.
@@ -11594,6 +11860,7 @@ var postPayoutUpdatedPayloadDataFailureNullableFields = map[string]*big.Int{
 	"code":              postPayoutUpdatedPayloadDataFailureFieldCode,
 	"funds_returned_at": postPayoutUpdatedPayloadDataFailureFieldFundsReturnedAt,
 	"message":           postPayoutUpdatedPayloadDataFailureFieldMessage,
+	"next_step":         postPayoutUpdatedPayloadDataFailureFieldNextStep,
 }
 
 // Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
@@ -11602,8 +11869,10 @@ type PostPayoutUpdatedPayloadDataFailure struct {
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
 	// The effective time of the reversal that put the funds back in the balance — `null` if they never left it or have not returned yet. Set only once the return is confirmed in the ledger; the ledger posting itself can land moments after this time.
 	FundsReturnedAt *time.Time `json:"funds_returned_at,omitempty" url:"funds_returned_at,omitempty"`
-	// Human-readable explanation of the failure. Callers holding `payout:destination:read` may receive text personalized to the destination; other callers get the generic catalog message.
+	// Human-readable explanation of the failure. Callers holding `payout:destination:read` may receive text personalized to the destination. Other callers get the generic catalog message.
 	Message *string `json:"message,omitempty" url:"message,omitempty"`
+	// What to do before a new payout can succeed. `withdraw_again` means that the payout method needs no change. `null` when the failure has no code from the error catalog, or when the account owner canceled the payout.
+	NextStep *PostPayoutUpdatedPayloadDataFailureNextStep `json:"next_step,omitempty" url:"next_step,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -11631,6 +11900,13 @@ func (p *PostPayoutUpdatedPayloadDataFailure) GetMessage() *string {
 		return nil
 	}
 	return p.Message
+}
+
+func (p *PostPayoutUpdatedPayloadDataFailure) GetNextStep() *PostPayoutUpdatedPayloadDataFailureNextStep {
+	if p == nil {
+		return nil
+	}
+	return p.NextStep
 }
 
 func (p *PostPayoutUpdatedPayloadDataFailure) GetExtraProperties() map[string]interface{} {
@@ -11668,6 +11944,13 @@ func (p *PostPayoutUpdatedPayloadDataFailure) SetFundsReturnedAt(fundsReturnedAt
 func (p *PostPayoutUpdatedPayloadDataFailure) SetMessage(message *string) {
 	p.Message = message
 	p.require(postPayoutUpdatedPayloadDataFailureFieldMessage)
+}
+
+// SetNextStep sets the NextStep field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostPayoutUpdatedPayloadDataFailure) SetNextStep(nextStep *PostPayoutUpdatedPayloadDataFailureNextStep) {
+	p.NextStep = nextStep
+	p.require(postPayoutUpdatedPayloadDataFailureFieldNextStep)
 }
 
 func (p *PostPayoutUpdatedPayloadDataFailure) UnmarshalJSON(data []byte) error {
@@ -11725,6 +12008,41 @@ func (p *PostPayoutUpdatedPayloadDataFailure) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", p)
+}
+
+// What to do before a new payout can succeed. `withdraw_again` means that the payout method needs no change. `null` when the failure has no code from the error catalog, or when the account owner canceled the payout.
+type PostPayoutUpdatedPayloadDataFailureNextStep string
+
+const (
+	PostPayoutUpdatedPayloadDataFailureNextStepUpdatePayoutMethod     PostPayoutUpdatedPayloadDataFailureNextStep = "update_payout_method"
+	PostPayoutUpdatedPayloadDataFailureNextStepUseAnotherPayoutMethod PostPayoutUpdatedPayloadDataFailureNextStep = "use_another_payout_method"
+	PostPayoutUpdatedPayloadDataFailureNextStepCompleteVerification   PostPayoutUpdatedPayloadDataFailureNextStep = "complete_verification"
+	PostPayoutUpdatedPayloadDataFailureNextStepWithdrawAgain          PostPayoutUpdatedPayloadDataFailureNextStep = "withdraw_again"
+	PostPayoutUpdatedPayloadDataFailureNextStepContactBank            PostPayoutUpdatedPayloadDataFailureNextStep = "contact_bank"
+	PostPayoutUpdatedPayloadDataFailureNextStepContactSupport         PostPayoutUpdatedPayloadDataFailureNextStep = "contact_support"
+)
+
+func NewPostPayoutUpdatedPayloadDataFailureNextStepFromString(s string) (PostPayoutUpdatedPayloadDataFailureNextStep, error) {
+	switch s {
+	case "update_payout_method":
+		return PostPayoutUpdatedPayloadDataFailureNextStepUpdatePayoutMethod, nil
+	case "use_another_payout_method":
+		return PostPayoutUpdatedPayloadDataFailureNextStepUseAnotherPayoutMethod, nil
+	case "complete_verification":
+		return PostPayoutUpdatedPayloadDataFailureNextStepCompleteVerification, nil
+	case "withdraw_again":
+		return PostPayoutUpdatedPayloadDataFailureNextStepWithdrawAgain, nil
+	case "contact_bank":
+		return PostPayoutUpdatedPayloadDataFailureNextStepContactBank, nil
+	case "contact_support":
+		return PostPayoutUpdatedPayloadDataFailureNextStepContactSupport, nil
+	}
+	var t PostPayoutUpdatedPayloadDataFailureNextStep
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PostPayoutUpdatedPayloadDataFailureNextStep) Ptr() *PostPayoutUpdatedPayloadDataFailureNextStep {
+	return &p
 }
 
 // Who bore the payout fee: the account itself, or its parent platform.
@@ -12998,6 +13316,7 @@ var (
 	retrievePayoutsResponseFailureFieldCode            = big.NewInt(1 << 0)
 	retrievePayoutsResponseFailureFieldFundsReturnedAt = big.NewInt(1 << 1)
 	retrievePayoutsResponseFailureFieldMessage         = big.NewInt(1 << 2)
+	retrievePayoutsResponseFailureFieldNextStep        = big.NewInt(1 << 3)
 )
 
 // retrievePayoutsResponseFailureNullableFields maps the wire names of RetrievePayoutsResponseFailure's nullable fields (required or optional) to their field bits.
@@ -13005,6 +13324,7 @@ var retrievePayoutsResponseFailureNullableFields = map[string]*big.Int{
 	"code":              retrievePayoutsResponseFailureFieldCode,
 	"funds_returned_at": retrievePayoutsResponseFailureFieldFundsReturnedAt,
 	"message":           retrievePayoutsResponseFailureFieldMessage,
+	"next_step":         retrievePayoutsResponseFailureFieldNextStep,
 }
 
 // Why the payout ended without paying, or why it reversed after settlement. Present on failed, canceled, denied, and reversed payouts; `null` otherwise.
@@ -13013,8 +13333,10 @@ type RetrievePayoutsResponseFailure struct {
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
 	// The effective time of the reversal that put the funds back in the balance — `null` if they never left it or have not returned yet. Set only once the return is confirmed in the ledger; the ledger posting itself can land moments after this time.
 	FundsReturnedAt *time.Time `json:"funds_returned_at,omitempty" url:"funds_returned_at,omitempty"`
-	// Human-readable explanation of the failure. Callers holding `payout:destination:read` may receive text personalized to the destination; other callers get the generic catalog message.
+	// Human-readable explanation of the failure. Callers holding `payout:destination:read` may receive text personalized to the destination. Other callers get the generic catalog message.
 	Message *string `json:"message,omitempty" url:"message,omitempty"`
+	// What to do before a new payout can succeed. `withdraw_again` means that the payout method needs no change. `null` when the failure has no code from the error catalog, or when the account owner canceled the payout.
+	NextStep *RetrievePayoutsResponseFailureNextStep `json:"next_step,omitempty" url:"next_step,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -13042,6 +13364,13 @@ func (r *RetrievePayoutsResponseFailure) GetMessage() *string {
 		return nil
 	}
 	return r.Message
+}
+
+func (r *RetrievePayoutsResponseFailure) GetNextStep() *RetrievePayoutsResponseFailureNextStep {
+	if r == nil {
+		return nil
+	}
+	return r.NextStep
 }
 
 func (r *RetrievePayoutsResponseFailure) GetExtraProperties() map[string]interface{} {
@@ -13079,6 +13408,13 @@ func (r *RetrievePayoutsResponseFailure) SetFundsReturnedAt(fundsReturnedAt *tim
 func (r *RetrievePayoutsResponseFailure) SetMessage(message *string) {
 	r.Message = message
 	r.require(retrievePayoutsResponseFailureFieldMessage)
+}
+
+// SetNextStep sets the NextStep field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePayoutsResponseFailure) SetNextStep(nextStep *RetrievePayoutsResponseFailureNextStep) {
+	r.NextStep = nextStep
+	r.require(retrievePayoutsResponseFailureFieldNextStep)
 }
 
 func (r *RetrievePayoutsResponseFailure) UnmarshalJSON(data []byte) error {
@@ -13136,6 +13472,41 @@ func (r *RetrievePayoutsResponseFailure) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", r)
+}
+
+// What to do before a new payout can succeed. `withdraw_again` means that the payout method needs no change. `null` when the failure has no code from the error catalog, or when the account owner canceled the payout.
+type RetrievePayoutsResponseFailureNextStep string
+
+const (
+	RetrievePayoutsResponseFailureNextStepUpdatePayoutMethod     RetrievePayoutsResponseFailureNextStep = "update_payout_method"
+	RetrievePayoutsResponseFailureNextStepUseAnotherPayoutMethod RetrievePayoutsResponseFailureNextStep = "use_another_payout_method"
+	RetrievePayoutsResponseFailureNextStepCompleteVerification   RetrievePayoutsResponseFailureNextStep = "complete_verification"
+	RetrievePayoutsResponseFailureNextStepWithdrawAgain          RetrievePayoutsResponseFailureNextStep = "withdraw_again"
+	RetrievePayoutsResponseFailureNextStepContactBank            RetrievePayoutsResponseFailureNextStep = "contact_bank"
+	RetrievePayoutsResponseFailureNextStepContactSupport         RetrievePayoutsResponseFailureNextStep = "contact_support"
+)
+
+func NewRetrievePayoutsResponseFailureNextStepFromString(s string) (RetrievePayoutsResponseFailureNextStep, error) {
+	switch s {
+	case "update_payout_method":
+		return RetrievePayoutsResponseFailureNextStepUpdatePayoutMethod, nil
+	case "use_another_payout_method":
+		return RetrievePayoutsResponseFailureNextStepUseAnotherPayoutMethod, nil
+	case "complete_verification":
+		return RetrievePayoutsResponseFailureNextStepCompleteVerification, nil
+	case "withdraw_again":
+		return RetrievePayoutsResponseFailureNextStepWithdrawAgain, nil
+	case "contact_bank":
+		return RetrievePayoutsResponseFailureNextStepContactBank, nil
+	case "contact_support":
+		return RetrievePayoutsResponseFailureNextStepContactSupport, nil
+	}
+	var t RetrievePayoutsResponseFailureNextStep
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePayoutsResponseFailureNextStep) Ptr() *RetrievePayoutsResponseFailureNextStep {
+	return &r
 }
 
 // Who bore the payout fee: the account itself, or its parent platform. Only returned to callers with payout:withdrawal:read on the owning ledger.
