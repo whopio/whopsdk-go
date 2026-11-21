@@ -12,15 +12,18 @@ import (
 
 var (
 	createDepositsRequestFieldAmount          = big.NewInt(1 << 0)
-	createDepositsRequestFieldDestination     = big.NewInt(1 << 1)
-	createDepositsRequestFieldMetadata        = big.NewInt(1 << 2)
-	createDepositsRequestFieldOriginBic       = big.NewInt(1 << 3)
-	createDepositsRequestFieldPaymentMethodID = big.NewInt(1 << 4)
+	createDepositsRequestFieldCurrency        = big.NewInt(1 << 1)
+	createDepositsRequestFieldDestination     = big.NewInt(1 << 2)
+	createDepositsRequestFieldMetadata        = big.NewInt(1 << 3)
+	createDepositsRequestFieldOriginBic       = big.NewInt(1 << 4)
+	createDepositsRequestFieldPaymentMethodID = big.NewInt(1 << 5)
 )
 
 type CreateDepositsRequest struct {
 	// Amount to prefill on hosted deposit page. Crypto deposits require a $10 minimum. With `payment_method_id`, the amount in USD to charge, and required.
 	Amount *float64 `json:"amount,omitempty" url:"-"`
+	// Bank account currency to set up for the destination. A USD account is always set up. Pass `cad` once to also set up a CAD account. After that, every request returns the details of all set-up currencies.
+	Currency *CreateDepositsRequestCurrency `json:"currency,omitempty" url:"-"`
 	// Account ID to fund, `biz_` or `user_`. Any business resolves without authentication; a user account resolves only for that same authenticated user.
 	Destination string `json:"destination" url:"-"`
 	// Custom metadata to attach to the payment the charge creates. Ignored unless `payment_method_id` is provided.
@@ -48,6 +51,13 @@ func (c *CreateDepositsRequest) require(field *big.Int) {
 func (c *CreateDepositsRequest) SetAmount(amount *float64) {
 	c.Amount = amount
 	c.require(createDepositsRequestFieldAmount)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateDepositsRequest) SetCurrency(currency *CreateDepositsRequestCurrency) {
+	c.Currency = currency
+	c.require(createDepositsRequestFieldCurrency)
 }
 
 // SetDestination sets the Destination field and marks it as non-optional;
@@ -176,6 +186,29 @@ func (r *ReverseDepositsRequest) MarshalJSON() ([]byte, error) {
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
 	return json.Marshal(explicitMarshaler)
+}
+
+// Bank account currency to set up for the destination. A USD account is always set up. Pass `cad` once to also set up a CAD account. After that, every request returns the details of all set-up currencies.
+type CreateDepositsRequestCurrency string
+
+const (
+	CreateDepositsRequestCurrencyUsd CreateDepositsRequestCurrency = "usd"
+	CreateDepositsRequestCurrencyCad CreateDepositsRequestCurrency = "cad"
+)
+
+func NewCreateDepositsRequestCurrencyFromString(s string) (CreateDepositsRequestCurrency, error) {
+	switch s {
+	case "usd":
+		return CreateDepositsRequestCurrencyUsd, nil
+	case "cad":
+		return CreateDepositsRequestCurrencyCad, nil
+	}
+	var t CreateDepositsRequestCurrency
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateDepositsRequestCurrency) Ptr() *CreateDepositsRequestCurrency {
+	return &c
 }
 
 type CreateDepositsRequestMetadataValue struct {
