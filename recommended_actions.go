@@ -538,7 +538,7 @@ var (
 )
 
 type RecommendedActionChangedResource struct {
-	// ID of the resource. A `variant` ID is prefixed `plan_`.
+	// ID of the resource. A `variant` ID is prefixed `plan_` and a `promo_code` ID `promo_`.
 	ID string `json:"id" url:"id"`
 	// Type of the resource. New types can be added, so skip an entry whose `resource_type` you do not know.
 	ResourceType RecommendedActionChangedResourceResourceType `json:"resource_type" url:"resource_type"`
@@ -640,13 +640,16 @@ func (r *RecommendedActionChangedResource) String() string {
 type RecommendedActionChangedResourceResourceType string
 
 const (
-	RecommendedActionChangedResourceResourceTypeVariant RecommendedActionChangedResourceResourceType = "variant"
+	RecommendedActionChangedResourceResourceTypeVariant   RecommendedActionChangedResourceResourceType = "variant"
+	RecommendedActionChangedResourceResourceTypePromoCode RecommendedActionChangedResourceResourceType = "promo_code"
 )
 
 func NewRecommendedActionChangedResourceResourceTypeFromString(s string) (RecommendedActionChangedResourceResourceType, error) {
 	switch s {
 	case "variant":
 		return RecommendedActionChangedResourceResourceTypeVariant, nil
+	case "promo_code":
+		return RecommendedActionChangedResourceResourceTypePromoCode, nil
 	}
 	var t RecommendedActionChangedResourceResourceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
