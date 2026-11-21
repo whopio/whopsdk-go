@@ -344,7 +344,7 @@ type ListSupportedMethodsResponseDataItem struct {
 	// Fields to collect before saving this supported payout method. Present only when supported_payout_method_id narrows the request to one method.
 	RequiredFields          []*ListSupportedMethodsResponseDataItemRequiredFieldsItem `json:"required_fields,omitempty" url:"required_fields,omitempty"`
 	SupportsInstantDelivery bool                                                      `json:"supports_instant_delivery" url:"supports_instant_delivery"`
-	// Whether the payer can add this method by logging in to PayPal through `POST /payouts/paypal_link_sessions`, which confirms the PayPal account is verified and owned by the payee. True only for the PayPal method, and only once PayPal login is enabled for the account.
+	// Whether the payer can add this method by logging in to PayPal through `POST /payouts/paypal_link_sessions`, which confirms the PayPal account is verified and owned by the payee. True only for the PayPal method.
 	SupportsPaypalLogin      *bool `json:"supports_paypal_login,omitempty" url:"supports_paypal_login,omitempty"`
 	SupportsStandardDelivery bool  `json:"supports_standard_delivery" url:"supports_standard_delivery"`
 
