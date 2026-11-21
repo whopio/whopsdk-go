@@ -99666,6 +99666,14 @@ func TestSettersPaymentInstrument(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetCrypto", func(t *testing.T) {
+		obj := &PaymentInstrument{}
+		var fernTestValueCrypto *PaymentInstrumentCrypto
+		obj.SetCrypto(fernTestValueCrypto)
+		assert.Equal(t, fernTestValueCrypto, obj.Crypto)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetDisplayName", func(t *testing.T) {
 		obj := &PaymentInstrument{}
 		var fernTestValueDisplayName string
@@ -99732,6 +99740,39 @@ func TestGettersPaymentInstrument(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCard() // Should return zero value
+	})
+
+	t.Run("GetCrypto", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInstrument{}
+		var expected *PaymentInstrumentCrypto
+		obj.Crypto = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCrypto(), "getter should return the property value")
+	})
+
+	t.Run("GetCrypto_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInstrument{}
+		obj.Crypto = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetCrypto(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetCrypto_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInstrument
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCrypto() // Should return zero value
 	})
 
 	t.Run("GetDisplayName", func(t *testing.T) {
@@ -99857,6 +99898,37 @@ func TestSettersMarkExplicitPaymentInstrument(t *testing.T) {
 
 		// Act
 		obj.SetCard(fernTestValueCard)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetCrypto_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInstrument{}
+		var fernTestValueCrypto *PaymentInstrumentCrypto
+
+		// Act
+		obj.SetCrypto(fernTestValueCrypto)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -100422,6 +100494,87 @@ func TestSettersMarkExplicitPaymentInstrumentCard(t *testing.T) {
 
 		// Act
 		obj.SetNetworkTransactionID(fernTestValueNetworkTransactionID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersPaymentInstrumentCrypto(t *testing.T) {
+	t.Run("SetTransactionHash", func(t *testing.T) {
+		obj := &PaymentInstrumentCrypto{}
+		var fernTestValueTransactionHash *string
+		obj.SetTransactionHash(fernTestValueTransactionHash)
+		assert.Equal(t, fernTestValueTransactionHash, obj.TransactionHash)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersPaymentInstrumentCrypto(t *testing.T) {
+	t.Run("GetTransactionHash", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInstrumentCrypto{}
+		var expected *string
+		obj.TransactionHash = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTransactionHash(), "getter should return the property value")
+	})
+
+	t.Run("GetTransactionHash_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInstrumentCrypto{}
+		obj.TransactionHash = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTransactionHash(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTransactionHash_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInstrumentCrypto
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTransactionHash() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitPaymentInstrumentCrypto(t *testing.T) {
+	t.Run("SetTransactionHash_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInstrumentCrypto{}
+		var fernTestValueTransactionHash *string
+
+		// Act
+		obj.SetTransactionHash(fernTestValueTransactionHash)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -169875,6 +170028,39 @@ func TestJSONMarshalingPaymentInstrumentCard(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingPaymentInstrumentCrypto(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PaymentInstrumentCrypto{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled PaymentInstrumentCrypto
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj PaymentInstrumentCrypto
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj PaymentInstrumentCrypto
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingPaymentLegacy(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -181344,6 +181530,7 @@ func TestRequiredNullableRoundTripPaymentHold(t *testing.T) {
 func TestRequiredNullableRoundTripPaymentInstrument(t *testing.T) {
 	requiredNullableKeys := []string{
 		"card",
+		"crypto",
 		"installment_count",
 	}
 	marshalToMap := func(t *testing.T, obj *PaymentInstrument) map[string]json.RawMessage {
@@ -181357,7 +181544,7 @@ func TestRequiredNullableRoundTripPaymentInstrument(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PaymentInstrument
-		require.NoError(t, json.Unmarshal([]byte(`{"card":null,"installment_count":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"card":null,"crypto":null,"installment_count":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -181427,6 +181614,49 @@ func TestRequiredNullableRoundTripPaymentInstrumentCard(t *testing.T) {
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
 		result := marshalToMap(t, &PaymentInstrumentCard{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripPaymentInstrumentCrypto(t *testing.T) {
+	requiredNullableKeys := []string{
+		"transaction_hash",
+	}
+	marshalToMap := func(t *testing.T, obj *PaymentInstrumentCrypto) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj PaymentInstrumentCrypto
+		require.NoError(t, json.Unmarshal([]byte(`{"transaction_hash":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj PaymentInstrumentCrypto
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &PaymentInstrumentCrypto{})
 		for _, key := range requiredNullableKeys {
 			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
 		}
@@ -189986,6 +190216,22 @@ func TestStringPaymentInstrumentCard(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *PaymentInstrumentCard
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringPaymentInstrumentCrypto(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &PaymentInstrumentCrypto{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInstrumentCrypto
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -216071,6 +216317,29 @@ func TestExtraPropertiesPaymentInstrumentCard(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *PaymentInstrumentCard
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesPaymentInstrumentCrypto(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &PaymentInstrumentCrypto{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PaymentInstrumentCrypto
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
