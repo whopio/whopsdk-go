@@ -11,12 +11,18 @@ import (
 )
 
 var (
-	capturePaymentsRequestFieldID = big.NewInt(1 << 0)
+	capturePaymentsRequestFieldID       = big.NewInt(1 << 0)
+	capturePaymentsRequestFieldAmount   = big.NewInt(1 << 1)
+	capturePaymentsRequestFieldMetadata = big.NewInt(1 << 2)
 )
 
 type CapturePaymentsRequest struct {
 	// The unique identifier of the payment.
 	ID string `json:"-" url:"-"`
+	// The amount to capture, in the payment's currency. It must equal the payment's `total`, and defaults to it. The total moves away from the authorized amount when its line items change after the card was authorized. Capturing more or less than the authorized amount is off by default. Contact Whop support to turn it on for your account.
+	Amount *float64 `json:"amount,omitempty" url:"-"`
+	// Keys and values added to the payment's `metadata` once it is captured, such as the file of the buyer's signature. Only for an in-person payment created with `capture: false`.
+	Metadata map[string]*string `json:"metadata,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -36,6 +42,41 @@ func (c *CapturePaymentsRequest) require(field *big.Int) {
 func (c *CapturePaymentsRequest) SetID(id string) {
 	c.ID = id
 	c.require(capturePaymentsRequestFieldID)
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CapturePaymentsRequest) SetAmount(amount *float64) {
+	c.Amount = amount
+	c.require(capturePaymentsRequestFieldAmount)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CapturePaymentsRequest) SetMetadata(metadata map[string]*string) {
+	c.Metadata = metadata
+	c.require(capturePaymentsRequestFieldMetadata)
+}
+
+func (c *CapturePaymentsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler CapturePaymentsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*c = CapturePaymentsRequest(body)
+	return nil
+}
+
+func (c *CapturePaymentsRequest) MarshalJSON() ([]byte, error) {
+	type embed CapturePaymentsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
 }
 
 var (
@@ -75,11 +116,11 @@ type CreatePaymentsRequest struct {
 	AffiliateCode *string `json:"affiliate_code,omitempty" url:"-"`
 	// Adds the account's card surcharge, set in `card_surcharge` on the account's preferences, when the card is a credit card. Send it only after you have shown the buyer the surcharge. Whop calculates the amount. You cannot send an amount. With a `confirmation_token`, the surcharge is a line of its own, calculated on the purchase after discounts and before tax. With a `card_present` `payment_method`, the surcharge is added after the reader reads the card, with `POST /payments/{id}/apply_surcharge`. A debit or prepaid card, or an account that cannot surcharge, pays no surcharge. The payment still goes ahead. Only for a one-time purchase, and not with `quote_id`. Defaults to false.
 	ApplySurcharge *bool `json:"apply_surcharge,omitempty" url:"-"`
-	// Minutes after authorization at which Whop captures the hold automatically unless it has been voided. Requires `capture: false`. Between 5 and 5760 (4 days).
+	// Minutes after authorization at which Whop captures the hold automatically unless it has been voided. Requires `capture: false`. Between 5 and 5760 (4 days), or 5 and 1440 (1 day) for `card_present`.
 	AutoCaptureAfterMinutes *int `json:"auto_capture_after_minutes,omitempty" url:"-"`
 	// The buyer's billing address, returned on the payment as `billing_address` and used to calculate tax when Whop calculates it for the account. Only with a `paypal` `payment_method`. Only the keys you supply are kept.
 	BillingAddress *CreatePaymentsRequestBillingAddress `json:"billing_address,omitempty" url:"-"`
-	// Whether to capture a card payment immediately. Defaults to true. Pass false to place an authorization hold that must be captured in full within five days via the capture endpoint, or automatically after `auto_capture_after_minutes`.
+	// Whether to capture a card payment immediately. Defaults to true. Pass false to place an authorization hold that must be captured in full within five days via the capture endpoint, or automatically after `auto_capture_after_minutes`. With a `card_present` `payment_method`, false holds the sale so its line items can change after the tap with `PATCH /payments/{id}`. Capture it for its total, or Whop captures it after `auto_capture_after_minutes` (10 by default).
 	Capture *bool `json:"capture,omitempty" url:"-"`
 	// A confirmation token describing a payment method the buyer just supplied. Provide this instead of `member_id` and `payment_method_id`; the buyer is resolved from the token's billing email, or from `email`. The buyer may still have a step to complete — poll the payment's status for what to do next.
 	ConfirmationToken *string `json:"confirmation_token,omitempty" url:"-"`
@@ -9822,6 +9863,257 @@ func (s *SummaryPaymentsResponseGroupsSubstatus) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
+type UpdatePaymentsRequestLineItemsItem struct {
+	Unknown any
+
+	typ string
+}
+
+func (u *UpdatePaymentsRequestLineItemsItem) GetUnknown() any {
+	if u == nil {
+		return nil
+	}
+	return u.Unknown
+}
+
+func (u *UpdatePaymentsRequestLineItemsItem) UnmarshalJSON(data []byte) error {
+	var valueUnknown any
+	if err := json.Unmarshal(data, &valueUnknown); err == nil {
+		u.typ = "Unknown"
+		u.Unknown = valueUnknown
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, u)
+}
+
+func (u UpdatePaymentsRequestLineItemsItem) MarshalJSON() ([]byte, error) {
+	if u.typ == "Unknown" || u.Unknown != nil {
+		return json.Marshal(u.Unknown)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", u)
+}
+
+type UpdatePaymentsRequestLineItemsItemVisitor interface {
+	VisitUnknown(any) error
+}
+
+func (u *UpdatePaymentsRequestLineItemsItem) Accept(visitor UpdatePaymentsRequestLineItemsItemVisitor) error {
+	if u.typ == "Unknown" || u.Unknown != nil {
+		return visitor.VisitUnknown(u.Unknown)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", u)
+}
+
+var (
+	updatePaymentsRequestLineItemsItemVariantFieldInitialPrice = big.NewInt(1 << 0)
+	updatePaymentsRequestLineItemsItemVariantFieldProduct      = big.NewInt(1 << 1)
+)
+
+// A one-time line to add. A payment carries one added line per product, so a line for a product that already has one replaces it.
+type UpdatePaymentsRequestLineItemsItemVariant struct {
+	// The line's price in the payment's currency, at most two decimal places. 0 takes the product's added line off.
+	InitialPrice float64 `json:"initial_price" url:"initial_price"`
+	// The product the line belongs to. It is found by `external_identifier` and created hidden when the account has none, so it never shows in the store.
+	Product *UpdatePaymentsRequestLineItemsItemVariantProduct `json:"product" url:"product"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePaymentsRequestLineItemsItemVariant) GetInitialPrice() float64 {
+	if u == nil {
+		return 0
+	}
+	return u.InitialPrice
+}
+
+func (u *UpdatePaymentsRequestLineItemsItemVariant) GetProduct() *UpdatePaymentsRequestLineItemsItemVariantProduct {
+	if u == nil {
+		return nil
+	}
+	return u.Product
+}
+
+func (u *UpdatePaymentsRequestLineItemsItemVariant) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePaymentsRequestLineItemsItemVariant) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetInitialPrice sets the InitialPrice field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestLineItemsItemVariant) SetInitialPrice(initialPrice float64) {
+	u.InitialPrice = initialPrice
+	u.require(updatePaymentsRequestLineItemsItemVariantFieldInitialPrice)
+}
+
+// SetProduct sets the Product field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestLineItemsItemVariant) SetProduct(product *UpdatePaymentsRequestLineItemsItemVariantProduct) {
+	u.Product = product
+	u.require(updatePaymentsRequestLineItemsItemVariantFieldProduct)
+}
+
+func (u *UpdatePaymentsRequestLineItemsItemVariant) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePaymentsRequestLineItemsItemVariant
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePaymentsRequestLineItemsItemVariant(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePaymentsRequestLineItemsItemVariant) MarshalJSON() ([]byte, error) {
+	type embed UpdatePaymentsRequestLineItemsItemVariant
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePaymentsRequestLineItemsItemVariant) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+var (
+	updatePaymentsRequestLineItemsItemVariantProductFieldExternalIdentifier = big.NewInt(1 << 0)
+	updatePaymentsRequestLineItemsItemVariantProductFieldTitle              = big.NewInt(1 << 1)
+)
+
+// The product the line belongs to. It is found by `external_identifier` and created hidden when the account has none, so it never shows in the store.
+type UpdatePaymentsRequestLineItemsItemVariantProduct struct {
+	// Your identifier for the product.
+	ExternalIdentifier string `json:"external_identifier" url:"external_identifier"`
+	// The product's name, also the line's label on the receipt.
+	Title string `json:"title" url:"title"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdatePaymentsRequestLineItemsItemVariantProduct) GetExternalIdentifier() string {
+	if u == nil {
+		return ""
+	}
+	return u.ExternalIdentifier
+}
+
+func (u *UpdatePaymentsRequestLineItemsItemVariantProduct) GetTitle() string {
+	if u == nil {
+		return ""
+	}
+	return u.Title
+}
+
+func (u *UpdatePaymentsRequestLineItemsItemVariantProduct) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdatePaymentsRequestLineItemsItemVariantProduct) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetExternalIdentifier sets the ExternalIdentifier field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestLineItemsItemVariantProduct) SetExternalIdentifier(externalIdentifier string) {
+	u.ExternalIdentifier = externalIdentifier
+	u.require(updatePaymentsRequestLineItemsItemVariantProductFieldExternalIdentifier)
+}
+
+// SetTitle sets the Title field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequestLineItemsItemVariantProduct) SetTitle(title string) {
+	u.Title = title
+	u.require(updatePaymentsRequestLineItemsItemVariantProductFieldTitle)
+}
+
+func (u *UpdatePaymentsRequestLineItemsItemVariantProduct) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdatePaymentsRequestLineItemsItemVariantProduct
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdatePaymentsRequestLineItemsItemVariantProduct(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdatePaymentsRequestLineItemsItemVariantProduct) MarshalJSON() ([]byte, error) {
+	type embed UpdatePaymentsRequestLineItemsItemVariantProduct
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdatePaymentsRequestLineItemsItemVariantProduct) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
 var (
 	updatePaymentsRequestShippingAddressFieldCity       = big.NewInt(1 << 0)
 	updatePaymentsRequestShippingAddressFieldCountry    = big.NewInt(1 << 1)
@@ -10032,13 +10324,16 @@ func (u *UpdatePaymentsRequestShippingAddress) String() string {
 
 var (
 	updatePaymentsRequestFieldID              = big.NewInt(1 << 0)
-	updatePaymentsRequestFieldReturnURL       = big.NewInt(1 << 1)
-	updatePaymentsRequestFieldShippingAddress = big.NewInt(1 << 2)
+	updatePaymentsRequestFieldLineItems       = big.NewInt(1 << 1)
+	updatePaymentsRequestFieldReturnURL       = big.NewInt(1 << 2)
+	updatePaymentsRequestFieldShippingAddress = big.NewInt(1 << 3)
 )
 
 type UpdatePaymentsRequest struct {
 	// The payment, prefixed `pay_`.
 	ID string `json:"-" url:"-"`
+	// The line items of an in-person payment, changed after the reader reads the card and before the payment is captured. The list replaces the current one. Send each line already on the payment back with its `id`, and add a line with a one-time `variant`. Only lines added this way can change or be left out, and leaving one out removes it. Added lines aren't taxed. On an open payment, change them before you confirm the payment on the reader, within Stripe's 30 seconds. On a payment created with `capture: false`, change them before you capture, then capture the payment for its new `total`. Off by default. Contact Whop support to turn it on for your account.
+	LineItems []*UpdatePaymentsRequestLineItemsItem `json:"line_items,omitempty" url:"-"`
 	// Where the buyer continues after completing an off-site step. An absolute https URL without credentials, at most 2,048 characters. Only for payments created with a `confirmation_token`, and only until the buyer has returned. Omit it to leave it unchanged.
 	ReturnURL *string `json:"return_url,omitempty" url:"-"`
 	// The complete new shipping address. It replaces the current address as a whole and is never merged with it, so send every field the address should have, including the ones that are not changing. Any field you leave out is cleared: sending only `city` leaves an address with nothing but a city. Pass null to remove the address, or omit `shipping_address` to leave it unchanged. It cannot change once a shipment exists for the payment.
@@ -10062,6 +10357,13 @@ func (u *UpdatePaymentsRequest) require(field *big.Int) {
 func (u *UpdatePaymentsRequest) SetID(id string) {
 	u.ID = id
 	u.require(updatePaymentsRequestFieldID)
+}
+
+// SetLineItems sets the LineItems field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePaymentsRequest) SetLineItems(lineItems []*UpdatePaymentsRequestLineItemsItem) {
+	u.LineItems = lineItems
+	u.require(updatePaymentsRequestFieldLineItems)
 }
 
 // SetReturnURL sets the ReturnURL field and marks it as non-optional;
