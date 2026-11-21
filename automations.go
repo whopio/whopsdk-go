@@ -686,15 +686,15 @@ func (a *Automation) String() string {
 }
 
 var (
-	automationActorFieldID     = big.NewInt(1 << 0)
-	automationActorFieldObject = big.NewInt(1 << 1)
+	automationActorFieldID           = big.NewInt(1 << 0)
+	automationActorFieldResourceType = big.NewInt(1 << 1)
 )
 
 type AutomationActor struct {
 	// ID of the user, account or app, prefixed `user_`, `biz_` or `app_`.
 	ID string `json:"id" url:"id"`
 	// What acted: a `user`, an `account` through one of its API keys, or an `app`.
-	Object AutomationActorObject `json:"object" url:"object"`
+	ResourceType AutomationActorResourceType `json:"resource_type" url:"resource_type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -710,11 +710,11 @@ func (a *AutomationActor) GetID() string {
 	return a.ID
 }
 
-func (a *AutomationActor) GetObject() AutomationActorObject {
+func (a *AutomationActor) GetResourceType() AutomationActorResourceType {
 	if a == nil {
 		return ""
 	}
-	return a.Object
+	return a.ResourceType
 }
 
 func (a *AutomationActor) GetExtraProperties() map[string]interface{} {
@@ -740,11 +740,11 @@ func (a *AutomationActor) SetID(id string) {
 	a.require(automationActorFieldID)
 }
 
-// SetObject sets the Object field and marks it as non-optional;
+// SetResourceType sets the ResourceType field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AutomationActor) SetObject(object AutomationActorObject) {
-	a.Object = object
-	a.require(automationActorFieldObject)
+func (a *AutomationActor) SetResourceType(resourceType AutomationActorResourceType) {
+	a.ResourceType = resourceType
+	a.require(automationActorFieldResourceType)
 }
 
 func (a *AutomationActor) UnmarshalJSON(data []byte) error {
@@ -790,28 +790,28 @@ func (a *AutomationActor) String() string {
 }
 
 // What acted: a `user`, an `account` through one of its API keys, or an `app`.
-type AutomationActorObject string
+type AutomationActorResourceType string
 
 const (
-	AutomationActorObjectUser    AutomationActorObject = "user"
-	AutomationActorObjectAccount AutomationActorObject = "account"
-	AutomationActorObjectApp     AutomationActorObject = "app"
+	AutomationActorResourceTypeUser    AutomationActorResourceType = "user"
+	AutomationActorResourceTypeAccount AutomationActorResourceType = "account"
+	AutomationActorResourceTypeApp     AutomationActorResourceType = "app"
 )
 
-func NewAutomationActorObjectFromString(s string) (AutomationActorObject, error) {
+func NewAutomationActorResourceTypeFromString(s string) (AutomationActorResourceType, error) {
 	switch s {
 	case "user":
-		return AutomationActorObjectUser, nil
+		return AutomationActorResourceTypeUser, nil
 	case "account":
-		return AutomationActorObjectAccount, nil
+		return AutomationActorResourceTypeAccount, nil
 	case "app":
-		return AutomationActorObjectApp, nil
+		return AutomationActorResourceTypeApp, nil
 	}
-	var t AutomationActorObject
+	var t AutomationActorResourceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (a AutomationActorObject) Ptr() *AutomationActorObject {
+func (a AutomationActorResourceType) Ptr() *AutomationActorResourceType {
 	return &a
 }
 

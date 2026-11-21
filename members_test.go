@@ -1086,7 +1086,7 @@ func TestSettersMember(t *testing.T) {
 
 	t.Run("SetLastActivity", func(t *testing.T) {
 		obj := &Member{}
-		var fernTestValueLastActivity *MemberLastActivity
+		var fernTestValueLastActivity *MemberLastActivityMessage
 		obj.SetLastActivity(fernTestValueLastActivity)
 		assert.Equal(t, fernTestValueLastActivity, obj.LastActivity)
 		assert.NotNil(t, obj.explicitFields)
@@ -1457,7 +1457,7 @@ func TestGettersMember(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &Member{}
-		var expected *MemberLastActivity
+		var expected *MemberLastActivityMessage
 		obj.LastActivity = expected
 
 		// Act & Assert
@@ -2146,7 +2146,7 @@ func TestSettersMarkExplicitMember(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &Member{}
-		var fernTestValueLastActivity *MemberLastActivity
+		var fernTestValueLastActivity *MemberLastActivityMessage
 
 		// Act
 		obj.SetLastActivity(fernTestValueLastActivity)
@@ -2549,19 +2549,19 @@ func TestSettersMemberLastActivityMessage(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetObject", func(t *testing.T) {
-		obj := &MemberLastActivityMessage{}
-		var fernTestValueObject MemberLastActivityMessageObject
-		obj.SetObject(fernTestValueObject)
-		assert.Equal(t, fernTestValueObject, obj.Object)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
 	t.Run("SetPlainContent", func(t *testing.T) {
 		obj := &MemberLastActivityMessage{}
 		var fernTestValuePlainContent *string
 		obj.SetPlainContent(fernTestValuePlainContent)
 		assert.Equal(t, fernTestValuePlainContent, obj.PlainContent)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetType", func(t *testing.T) {
+		obj := &MemberLastActivityMessage{}
+		var fernTestValueType MemberLastActivityMessageType
+		obj.SetType(fernTestValueType)
+		assert.Equal(t, fernTestValueType, obj.Type)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -2670,29 +2670,6 @@ func TestGettersMemberLastActivityMessage(t *testing.T) {
 		_ = obj.GetID() // Should return zero value
 	})
 
-	t.Run("GetObject", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &MemberLastActivityMessage{}
-		var expected MemberLastActivityMessageObject
-		obj.Object = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetObject(), "getter should return the property value")
-	})
-
-	t.Run("GetObject_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *MemberLastActivityMessage
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetObject() // Should return zero value
-	})
-
 	t.Run("GetPlainContent", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2724,6 +2701,29 @@ func TestGettersMemberLastActivityMessage(t *testing.T) {
 			}
 		}()
 		_ = obj.GetPlainContent() // Should return zero value
+	})
+
+	t.Run("GetType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &MemberLastActivityMessage{}
+		var expected MemberLastActivityMessageType
+		obj.Type = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetType(), "getter should return the property value")
+	})
+
+	t.Run("GetType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *MemberLastActivityMessage
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetType() // Should return zero value
 	})
 
 }
@@ -2853,14 +2853,14 @@ func TestSettersMarkExplicitMemberLastActivityMessage(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetObject_MarksExplicit", func(t *testing.T) {
+	t.Run("SetPlainContent_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &MemberLastActivityMessage{}
-		var fernTestValueObject MemberLastActivityMessageObject
+		var fernTestValuePlainContent *string
 
 		// Act
-		obj.SetObject(fernTestValueObject)
+		obj.SetPlainContent(fernTestValuePlainContent)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2884,14 +2884,14 @@ func TestSettersMarkExplicitMemberLastActivityMessage(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetPlainContent_MarksExplicit", func(t *testing.T) {
+	t.Run("SetType_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &MemberLastActivityMessage{}
-		var fernTestValuePlainContent *string
+		var fernTestValueType MemberLastActivityMessageType
 
 		// Act
-		obj.SetPlainContent(fernTestValuePlainContent)
+		obj.SetType(fernTestValueType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -6416,21 +6416,21 @@ func TestEnumMemberAccessLevel(t *testing.T) {
 	})
 }
 
-func TestEnumMemberLastActivityMessageObject(t *testing.T) {
+func TestEnumMemberLastActivityMessageType(t *testing.T) {
 	t.Run("NewFromString_message", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewMemberLastActivityMessageObjectFromString("message")
+		val, err := NewMemberLastActivityMessageTypeFromString("message")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, MemberLastActivityMessageObject("message"), val, "enum value should match expected wire value")
+		assert.Equal(t, MemberLastActivityMessageType("message"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewMemberLastActivityMessageObjectFromString("invalid_value_that_does_not_exist")
+		_, err := NewMemberLastActivityMessageTypeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewMemberLastActivityMessageObjectFromString("message")
+		val, err := NewMemberLastActivityMessageTypeFromString("message")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

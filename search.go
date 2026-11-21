@@ -77,9 +77,9 @@ func (l *ListSearchRequest) SetFirst(first *int) {
 	l.require(listSearchRequestFieldFirst)
 }
 
-// The record a result points to. Its fields depend on `object`, and every type shares basics like `title` and `image_url`.
+// The record a result points to. Its fields depend on `type`, and every type shares basics like `title` and `image_url`.
 type SearchRecord struct {
-	Object               string
+	Type                 string
 	Account              *SearchRecordAccount
 	Affiliate            *SearchRecordAffiliate
 	Member               *SearchRecordMember
@@ -92,11 +92,11 @@ type SearchRecord struct {
 	rawJSON json.RawMessage
 }
 
-func (s *SearchRecord) GetObject() string {
+func (s *SearchRecord) GetType() string {
 	if s == nil {
 		return ""
 	}
-	return s.Object
+	return s.Type
 }
 
 func (s *SearchRecord) GetAccount() *SearchRecordAccount {
@@ -157,16 +157,16 @@ func (s *SearchRecord) GetReview() *SearchRecordReview {
 
 func (s *SearchRecord) UnmarshalJSON(data []byte) error {
 	var unmarshaler struct {
-		Object string `json:"object"`
+		Type string `json:"type"`
 	}
 	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	s.Object = unmarshaler.Object
-	if unmarshaler.Object == "" {
-		return fmt.Errorf("%T did not include discriminant object", s)
+	s.Type = unmarshaler.Type
+	if unmarshaler.Type == "" {
+		return fmt.Errorf("%T did not include discriminant type", s)
 	}
-	switch unmarshaler.Object {
+	switch unmarshaler.Type {
 	case "account":
 		value := new(SearchRecordAccount)
 		if err := json.Unmarshal(data, &value); err != nil {
@@ -225,28 +225,28 @@ func (s SearchRecord) MarshalJSON() ([]byte, error) {
 		return nil, err
 	}
 	if s.Account != nil {
-		return internal.MarshalJSONWithExtraProperty(s.Account, "object", "account")
+		return internal.MarshalJSONWithExtraProperty(s.Account, "type", "account")
 	}
 	if s.Affiliate != nil {
-		return internal.MarshalJSONWithExtraProperty(s.Affiliate, "object", "affiliate")
+		return internal.MarshalJSONWithExtraProperty(s.Affiliate, "type", "affiliate")
 	}
 	if s.Member != nil {
-		return internal.MarshalJSONWithExtraProperty(s.Member, "object", "member")
+		return internal.MarshalJSONWithExtraProperty(s.Member, "type", "member")
 	}
 	if s.Membership != nil {
-		return internal.MarshalJSONWithExtraProperty(s.Membership, "object", "membership")
+		return internal.MarshalJSONWithExtraProperty(s.Membership, "type", "membership")
 	}
 	if s.Payment != nil {
-		return internal.MarshalJSONWithExtraProperty(s.Payment, "object", "payment")
+		return internal.MarshalJSONWithExtraProperty(s.Payment, "type", "payment")
 	}
 	if s.PromoCode != nil {
-		return internal.MarshalJSONWithExtraProperty(s.PromoCode, "object", "promo_code")
+		return internal.MarshalJSONWithExtraProperty(s.PromoCode, "type", "promo_code")
 	}
 	if s.ResolutionCenterCase != nil {
-		return internal.MarshalJSONWithExtraProperty(s.ResolutionCenterCase, "object", "resolution_center_case")
+		return internal.MarshalJSONWithExtraProperty(s.ResolutionCenterCase, "type", "resolution_center_case")
 	}
 	if s.Review != nil {
-		return internal.MarshalJSONWithExtraProperty(s.Review, "object", "review")
+		return internal.MarshalJSONWithExtraProperty(s.Review, "type", "review")
 	}
 	if len(s.rawJSON) > 0 {
 		return s.rawJSON, nil
@@ -323,24 +323,24 @@ func (s *SearchRecord) validate() error {
 		fields = append(fields, "review")
 	}
 	if len(fields) == 0 {
-		if s.Object != "" {
+		if s.Type != "" {
 			if len(s.rawJSON) > 0 {
 				return nil
 			}
-			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", s, s.Object)
+			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", s, s.Type)
 		}
 		return fmt.Errorf("type %T is empty", s)
 	}
 	if len(fields) > 1 {
 		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", s, fields)
 	}
-	if s.Object != "" {
+	if s.Type != "" {
 		field := fields[0]
-		if s.Object != field {
+		if s.Type != field {
 			return fmt.Errorf(
 				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
 				s,
-				s.Object,
+				s.Type,
 				s,
 			)
 		}

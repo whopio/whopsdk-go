@@ -12977,6 +12977,392 @@ func (c CheckoutShapes) Ptr() *CheckoutShapes {
 	return &c
 }
 
+var (
+	createAimerceExternalAccountFieldAccountID = big.NewInt(1 << 0)
+	createAimerceExternalAccountFieldAPIKey    = big.NewInt(1 << 1)
+)
+
+// Connects the account's Aimerce shop with an API key and turns on the Aimerce tracking pixel. Requires the `company:manage_checkout` scope instead of `social_account:create`.
+type CreateAimerceExternalAccount struct {
+	// The account ID, prefixed `biz_`. For an account-scoped API key, omit this field to use its account.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// The account's Aimerce API key. Whop checks the key with Aimerce before connecting and never returns it. Connecting again replaces the saved key.
+	APIKey string `json:"api_key" url:"api_key"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateAimerceExternalAccount) GetAccountID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AccountID
+}
+
+func (c *CreateAimerceExternalAccount) GetAPIKey() string {
+	if c == nil {
+		return ""
+	}
+	return c.APIKey
+}
+
+func (c *CreateAimerceExternalAccount) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateAimerceExternalAccount) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAimerceExternalAccount) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createAimerceExternalAccountFieldAccountID)
+}
+
+// SetAPIKey sets the APIKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAimerceExternalAccount) SetAPIKey(apiKey string) {
+	c.APIKey = apiKey
+	c.require(createAimerceExternalAccountFieldAPIKey)
+}
+
+func (c *CreateAimerceExternalAccount) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateAimerceExternalAccount
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateAimerceExternalAccount(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateAimerceExternalAccount) MarshalJSON() ([]byte, error) {
+	type embed CreateAimerceExternalAccount
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateAimerceExternalAccount) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createFacebookExternalAccountFieldAccountID = big.NewInt(1 << 0)
+)
+
+// Whop no longer creates Facebook pages, so this returns a `facebook_page_provisioning_retired` error.
+type CreateFacebookExternalAccount struct {
+	// The account ID, prefixed `biz_`. For an account-scoped API key, omit this field to use its account.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateFacebookExternalAccount) GetAccountID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AccountID
+}
+
+func (c *CreateFacebookExternalAccount) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateFacebookExternalAccount) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateFacebookExternalAccount) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createFacebookExternalAccountFieldAccountID)
+}
+
+func (c *CreateFacebookExternalAccount) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateFacebookExternalAccount
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateFacebookExternalAccount(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateFacebookExternalAccount) MarshalJSON() ([]byte, error) {
+	type embed CreateFacebookExternalAccount
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateFacebookExternalAccount) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createKlaviyoExternalAccountFieldAccountID = big.NewInt(1 << 0)
+	createKlaviyoExternalAccountFieldAPIKey    = big.NewInt(1 << 1)
+)
+
+// Connects the account's existing Klaviyo account with a private API key.
+type CreateKlaviyoExternalAccount struct {
+	// The account ID, prefixed `biz_`. For an account-scoped API key, omit this field to use its account.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+	// A private Klaviyo API key with read access to Accounts. Whop checks the key with Klaviyo before connecting and never returns it. Connecting again replaces the saved key.
+	APIKey string `json:"api_key" url:"api_key"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateKlaviyoExternalAccount) GetAccountID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AccountID
+}
+
+func (c *CreateKlaviyoExternalAccount) GetAPIKey() string {
+	if c == nil {
+		return ""
+	}
+	return c.APIKey
+}
+
+func (c *CreateKlaviyoExternalAccount) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateKlaviyoExternalAccount) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateKlaviyoExternalAccount) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createKlaviyoExternalAccountFieldAccountID)
+}
+
+// SetAPIKey sets the APIKey field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateKlaviyoExternalAccount) SetAPIKey(apiKey string) {
+	c.APIKey = apiKey
+	c.require(createKlaviyoExternalAccountFieldAPIKey)
+}
+
+func (c *CreateKlaviyoExternalAccount) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateKlaviyoExternalAccount
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateKlaviyoExternalAccount(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateKlaviyoExternalAccount) MarshalJSON() ([]byte, error) {
+	type embed CreateKlaviyoExternalAccount
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateKlaviyoExternalAccount) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createTiktokExternalAccountFieldAccountID = big.NewInt(1 << 0)
+)
+
+// Starts provisioning a Whop-managed TikTok account. Set the account's `logo` with [Update Account](/api-reference/accounts/update-account) before you call this endpoint. Whop returns an `id` you can use immediately. The rest of the profile appears after provisioning.
+type CreateTiktokExternalAccount struct {
+	// The account ID, prefixed `biz_`. For an account-scoped API key, omit this field to use its account.
+	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateTiktokExternalAccount) GetAccountID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.AccountID
+}
+
+func (c *CreateTiktokExternalAccount) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateTiktokExternalAccount) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateTiktokExternalAccount) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createTiktokExternalAccountFieldAccountID)
+}
+
+func (c *CreateTiktokExternalAccount) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateTiktokExternalAccount
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateTiktokExternalAccount(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateTiktokExternalAccount) MarshalJSON() ([]byte, error) {
+	type embed CreateTiktokExternalAccount
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateTiktokExternalAccount) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
 // The available currencies on the platform
 type Currencies string
 
@@ -20641,18 +21027,18 @@ func (e *EntryUser) String() string {
 }
 
 var (
-	experienceNotificationPreferenceFieldLevel  = big.NewInt(1 << 0)
-	experienceNotificationPreferenceFieldObject = big.NewInt(1 << 1)
-	experienceNotificationPreferenceFieldScope  = big.NewInt(1 << 2)
+	experienceNotificationPreferenceFieldLevel = big.NewInt(1 << 0)
+	experienceNotificationPreferenceFieldScope = big.NewInt(1 << 1)
+	experienceNotificationPreferenceFieldType  = big.NewInt(1 << 2)
 )
 
 type ExperienceNotificationPreference struct {
 	// What the user is notified about in the experience: `all` notifications, only `mentions`, or `nothing`.
 	Level ExperienceNotificationPreferenceLevel `json:"level" url:"level"`
-	// The type of object. Always `experience_notification_preference`.
-	Object ExperienceNotificationPreferenceObject `json:"object" url:"object"`
 	// What the preference applies to. Echo it back to `PATCH /users/me/preferences/notifications` to change this preference.
 	Scope *NotificationPreferenceScope `json:"scope" url:"scope"`
+	// Always `experience_notification_preference`.
+	Type ExperienceNotificationPreferenceType `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -20668,18 +21054,18 @@ func (e *ExperienceNotificationPreference) GetLevel() ExperienceNotificationPref
 	return e.Level
 }
 
-func (e *ExperienceNotificationPreference) GetObject() ExperienceNotificationPreferenceObject {
-	if e == nil {
-		return ""
-	}
-	return e.Object
-}
-
 func (e *ExperienceNotificationPreference) GetScope() *NotificationPreferenceScope {
 	if e == nil {
 		return nil
 	}
 	return e.Scope
+}
+
+func (e *ExperienceNotificationPreference) GetType() ExperienceNotificationPreferenceType {
+	if e == nil {
+		return ""
+	}
+	return e.Type
 }
 
 func (e *ExperienceNotificationPreference) GetExtraProperties() map[string]interface{} {
@@ -20705,18 +21091,18 @@ func (e *ExperienceNotificationPreference) SetLevel(level ExperienceNotification
 	e.require(experienceNotificationPreferenceFieldLevel)
 }
 
-// SetObject sets the Object field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (e *ExperienceNotificationPreference) SetObject(object ExperienceNotificationPreferenceObject) {
-	e.Object = object
-	e.require(experienceNotificationPreferenceFieldObject)
-}
-
 // SetScope sets the Scope field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (e *ExperienceNotificationPreference) SetScope(scope *NotificationPreferenceScope) {
 	e.Scope = scope
 	e.require(experienceNotificationPreferenceFieldScope)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExperienceNotificationPreference) SetType(type_ ExperienceNotificationPreferenceType) {
+	e.Type = type_
+	e.require(experienceNotificationPreferenceFieldType)
 }
 
 func (e *ExperienceNotificationPreference) UnmarshalJSON(data []byte) error {
@@ -20787,23 +21173,23 @@ func (e ExperienceNotificationPreferenceLevel) Ptr() *ExperienceNotificationPref
 	return &e
 }
 
-// The type of object. Always `experience_notification_preference`.
-type ExperienceNotificationPreferenceObject string
+// Always `experience_notification_preference`.
+type ExperienceNotificationPreferenceType string
 
 const (
-	ExperienceNotificationPreferenceObjectExperienceNotificationPreference ExperienceNotificationPreferenceObject = "experience_notification_preference"
+	ExperienceNotificationPreferenceTypeExperienceNotificationPreference ExperienceNotificationPreferenceType = "experience_notification_preference"
 )
 
-func NewExperienceNotificationPreferenceObjectFromString(s string) (ExperienceNotificationPreferenceObject, error) {
+func NewExperienceNotificationPreferenceTypeFromString(s string) (ExperienceNotificationPreferenceType, error) {
 	switch s {
 	case "experience_notification_preference":
-		return ExperienceNotificationPreferenceObjectExperienceNotificationPreference, nil
+		return ExperienceNotificationPreferenceTypeExperienceNotificationPreference, nil
 	}
-	var t ExperienceNotificationPreferenceObject
+	var t ExperienceNotificationPreferenceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (e ExperienceNotificationPreferenceObject) Ptr() *ExperienceNotificationPreferenceObject {
+func (e ExperienceNotificationPreferenceType) Ptr() *ExperienceNotificationPreferenceType {
 	return &e
 }
 
@@ -43388,9 +43774,9 @@ func (n NotificationPreferenceScopeChannel) Ptr() *NotificationPreferenceScopeCh
 }
 
 var (
-	notificationPreferenceStateFieldLevel  = big.NewInt(1 << 0)
-	notificationPreferenceStateFieldObject = big.NewInt(1 << 1)
-	notificationPreferenceStateFieldScope  = big.NewInt(1 << 2)
+	notificationPreferenceStateFieldLevel = big.NewInt(1 << 0)
+	notificationPreferenceStateFieldScope = big.NewInt(1 << 1)
+	notificationPreferenceStateFieldType  = big.NewInt(1 << 2)
 )
 
 // notificationPreferenceStateNullableFields maps the wire names of NotificationPreferenceState's nullable fields (required or optional) to their field bits.
@@ -43401,10 +43787,10 @@ var notificationPreferenceStateNullableFields = map[string]*big.Int{
 type NotificationPreferenceState struct {
 	// What the user is now notified about in this scope, or `null` if the preference was cleared and the scope inherits its default again.
 	Level *NotificationPreferenceStateLevel `json:"level,omitempty" url:"level,omitempty"`
-	// Which kind of preference was written: `experience_notification_preference` for an experience level, `notification_preference` for a topic override.
-	Object NotificationPreferenceStateObject `json:"object" url:"object"`
 	// The scope that was written, resolved. `null` on a dimension means the preference is not narrowed there.
 	Scope *NotificationPreferenceScope `json:"scope" url:"scope"`
+	// Which kind of preference was written: `experience_notification_preference` for an experience level, `notification_preference` for a topic override.
+	Type NotificationPreferenceStateType `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -43420,18 +43806,18 @@ func (n *NotificationPreferenceState) GetLevel() *NotificationPreferenceStateLev
 	return n.Level
 }
 
-func (n *NotificationPreferenceState) GetObject() NotificationPreferenceStateObject {
-	if n == nil {
-		return ""
-	}
-	return n.Object
-}
-
 func (n *NotificationPreferenceState) GetScope() *NotificationPreferenceScope {
 	if n == nil {
 		return nil
 	}
 	return n.Scope
+}
+
+func (n *NotificationPreferenceState) GetType() NotificationPreferenceStateType {
+	if n == nil {
+		return ""
+	}
+	return n.Type
 }
 
 func (n *NotificationPreferenceState) GetExtraProperties() map[string]interface{} {
@@ -43457,18 +43843,18 @@ func (n *NotificationPreferenceState) SetLevel(level *NotificationPreferenceStat
 	n.require(notificationPreferenceStateFieldLevel)
 }
 
-// SetObject sets the Object field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (n *NotificationPreferenceState) SetObject(object NotificationPreferenceStateObject) {
-	n.Object = object
-	n.require(notificationPreferenceStateFieldObject)
-}
-
 // SetScope sets the Scope field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (n *NotificationPreferenceState) SetScope(scope *NotificationPreferenceScope) {
 	n.Scope = scope
 	n.require(notificationPreferenceStateFieldScope)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (n *NotificationPreferenceState) SetType(type_ NotificationPreferenceStateType) {
+	n.Type = type_
+	n.require(notificationPreferenceStateFieldType)
 }
 
 func (n *NotificationPreferenceState) UnmarshalJSON(data []byte) error {
@@ -43547,25 +43933,25 @@ func (n NotificationPreferenceStateLevel) Ptr() *NotificationPreferenceStateLeve
 }
 
 // Which kind of preference was written: `experience_notification_preference` for an experience level, `notification_preference` for a topic override.
-type NotificationPreferenceStateObject string
+type NotificationPreferenceStateType string
 
 const (
-	NotificationPreferenceStateObjectNotificationPreference           NotificationPreferenceStateObject = "notification_preference"
-	NotificationPreferenceStateObjectExperienceNotificationPreference NotificationPreferenceStateObject = "experience_notification_preference"
+	NotificationPreferenceStateTypeNotificationPreference           NotificationPreferenceStateType = "notification_preference"
+	NotificationPreferenceStateTypeExperienceNotificationPreference NotificationPreferenceStateType = "experience_notification_preference"
 )
 
-func NewNotificationPreferenceStateObjectFromString(s string) (NotificationPreferenceStateObject, error) {
+func NewNotificationPreferenceStateTypeFromString(s string) (NotificationPreferenceStateType, error) {
 	switch s {
 	case "notification_preference":
-		return NotificationPreferenceStateObjectNotificationPreference, nil
+		return NotificationPreferenceStateTypeNotificationPreference, nil
 	case "experience_notification_preference":
-		return NotificationPreferenceStateObjectExperienceNotificationPreference, nil
+		return NotificationPreferenceStateTypeExperienceNotificationPreference, nil
 	}
-	var t NotificationPreferenceStateObject
+	var t NotificationPreferenceStateType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (n NotificationPreferenceStateObject) Ptr() *NotificationPreferenceStateObject {
+func (n NotificationPreferenceStateType) Ptr() *NotificationPreferenceStateType {
 	return &n
 }
 
@@ -79531,8 +79917,8 @@ var (
 	userNotificationPreferenceFieldCreatedAt = big.NewInt(1 << 0)
 	userNotificationPreferenceFieldID        = big.NewInt(1 << 1)
 	userNotificationPreferenceFieldLevel     = big.NewInt(1 << 2)
-	userNotificationPreferenceFieldObject    = big.NewInt(1 << 3)
-	userNotificationPreferenceFieldScope     = big.NewInt(1 << 4)
+	userNotificationPreferenceFieldScope     = big.NewInt(1 << 3)
+	userNotificationPreferenceFieldType      = big.NewInt(1 << 4)
 	userNotificationPreferenceFieldUpdatedAt = big.NewInt(1 << 5)
 )
 
@@ -79543,10 +79929,10 @@ type UserNotificationPreference struct {
 	ID string `json:"id" url:"id"`
 	// What the user is notified about in this scope: `all` or `nothing`.
 	Level UserNotificationPreferenceLevel `json:"level" url:"level"`
-	// The type of object. Always `notification_preference`.
-	Object UserNotificationPreferenceObject `json:"object" url:"object"`
 	// What the preference applies to. Echo it back to `PATCH /users/me/preferences/notifications` to change this preference.
 	Scope *NotificationPreferenceScope `json:"scope" url:"scope"`
+	// Always `notification_preference`.
+	Type UserNotificationPreferenceType `json:"type" url:"type"`
 	// When the preference was last changed, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
 
@@ -79578,18 +79964,18 @@ func (u *UserNotificationPreference) GetLevel() UserNotificationPreferenceLevel 
 	return u.Level
 }
 
-func (u *UserNotificationPreference) GetObject() UserNotificationPreferenceObject {
-	if u == nil {
-		return ""
-	}
-	return u.Object
-}
-
 func (u *UserNotificationPreference) GetScope() *NotificationPreferenceScope {
 	if u == nil {
 		return nil
 	}
 	return u.Scope
+}
+
+func (u *UserNotificationPreference) GetType() UserNotificationPreferenceType {
+	if u == nil {
+		return ""
+	}
+	return u.Type
 }
 
 func (u *UserNotificationPreference) GetUpdatedAt() string {
@@ -79636,18 +80022,18 @@ func (u *UserNotificationPreference) SetLevel(level UserNotificationPreferenceLe
 	u.require(userNotificationPreferenceFieldLevel)
 }
 
-// SetObject sets the Object field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (u *UserNotificationPreference) SetObject(object UserNotificationPreferenceObject) {
-	u.Object = object
-	u.require(userNotificationPreferenceFieldObject)
-}
-
 // SetScope sets the Scope field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (u *UserNotificationPreference) SetScope(scope *NotificationPreferenceScope) {
 	u.Scope = scope
 	u.require(userNotificationPreferenceFieldScope)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserNotificationPreference) SetType(type_ UserNotificationPreferenceType) {
+	u.Type = type_
+	u.require(userNotificationPreferenceFieldType)
 }
 
 // SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
@@ -79722,23 +80108,23 @@ func (u UserNotificationPreferenceLevel) Ptr() *UserNotificationPreferenceLevel 
 	return &u
 }
 
-// The type of object. Always `notification_preference`.
-type UserNotificationPreferenceObject string
+// Always `notification_preference`.
+type UserNotificationPreferenceType string
 
 const (
-	UserNotificationPreferenceObjectNotificationPreference UserNotificationPreferenceObject = "notification_preference"
+	UserNotificationPreferenceTypeNotificationPreference UserNotificationPreferenceType = "notification_preference"
 )
 
-func NewUserNotificationPreferenceObjectFromString(s string) (UserNotificationPreferenceObject, error) {
+func NewUserNotificationPreferenceTypeFromString(s string) (UserNotificationPreferenceType, error) {
 	switch s {
 	case "notification_preference":
-		return UserNotificationPreferenceObjectNotificationPreference, nil
+		return UserNotificationPreferenceTypeNotificationPreference, nil
 	}
-	var t UserNotificationPreferenceObject
+	var t UserNotificationPreferenceType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
 }
 
-func (u UserNotificationPreferenceObject) Ptr() *UserNotificationPreferenceObject {
+func (u UserNotificationPreferenceType) Ptr() *UserNotificationPreferenceType {
 	return &u
 }
 
