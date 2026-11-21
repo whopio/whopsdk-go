@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-19-2"
+		apiVersionDateDefault := "2026-11-20"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -123,7 +123,9 @@ func (c *Client) List(
 // Example:
 //
 //	request := &whopsdk.CreateSocialAccountsRequestBody{
-//	    Facebook: &whopsdk.CreateSocialAccountsRequestBodyFacebook{},
+//	    Aimerce: &whopsdk.CreateAimerceExternalAccount{
+//	        APIKey: "api_key",
+//	    },
 //	}
 //	client.SocialAccounts.Create(
 //	    context.TODO(),

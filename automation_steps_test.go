@@ -2536,18 +2536,18 @@ func TestSettersMarkExplicitAutomationStepPreview(t *testing.T) {
 }
 
 func TestGettersAutomationStepSender(t *testing.T) {
-	t.Run("GetObject", func(t *testing.T) {
+	t.Run("GetType", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &AutomationStepSender{}
 		var expected string
-		obj.Object = expected
+		obj.Type = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetObject(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetType(), "getter should return the property value")
 	})
 
-	t.Run("GetObject_NilReceiver", func(t *testing.T) {
+	t.Run("GetType_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *AutomationStepSender
 		// Should not panic - getters should handle nil receiver gracefully
@@ -2556,7 +2556,7 @@ func TestGettersAutomationStepSender(t *testing.T) {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetObject() // Should return zero value
+		_ = obj.GetType() // Should return zero value
 	})
 
 	t.Run("GetEmailAddress", func(t *testing.T) {

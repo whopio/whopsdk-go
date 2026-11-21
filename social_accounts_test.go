@@ -2162,110 +2162,11 @@ func TestGettersCreateSocialAccountsRequestBody(t *testing.T) {
 		_ = obj.GetPlatform() // Should return zero value
 	})
 
-	t.Run("GetFacebook", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBody{}
-		var expected *CreateSocialAccountsRequestBodyFacebook
-		obj.Facebook = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetFacebook(), "getter should return the property value")
-	})
-
-	t.Run("GetFacebook_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBody{}
-		obj.Facebook = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetFacebook(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetFacebook_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateSocialAccountsRequestBody
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetFacebook() // Should return zero value
-	})
-
-	t.Run("GetTiktok", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBody{}
-		var expected *CreateSocialAccountsRequestBodyTiktok
-		obj.Tiktok = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetTiktok(), "getter should return the property value")
-	})
-
-	t.Run("GetTiktok_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBody{}
-		obj.Tiktok = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetTiktok(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetTiktok_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateSocialAccountsRequestBody
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetTiktok() // Should return zero value
-	})
-
-	t.Run("GetKlaviyo", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBody{}
-		var expected *CreateSocialAccountsRequestBodyKlaviyo
-		obj.Klaviyo = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetKlaviyo(), "getter should return the property value")
-	})
-
-	t.Run("GetKlaviyo_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBody{}
-		obj.Klaviyo = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetKlaviyo(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetKlaviyo_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateSocialAccountsRequestBody
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetKlaviyo() // Should return zero value
-	})
-
 	t.Run("GetAimerce", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &CreateSocialAccountsRequestBody{}
-		var expected *CreateSocialAccountsRequestBodyAimerce
+		var expected *CreateAimerceExternalAccount
 		obj.Aimerce = expected
 
 		// Act & Assert
@@ -2294,452 +2195,103 @@ func TestGettersCreateSocialAccountsRequestBody(t *testing.T) {
 		_ = obj.GetAimerce() // Should return zero value
 	})
 
-}
-
-func TestSettersCreateSocialAccountsRequestBodyAimerce(t *testing.T) {
-	t.Run("SetAccountID", func(t *testing.T) {
-		obj := &CreateSocialAccountsRequestBodyAimerce{}
-		var fernTestValueAccountID *string
-		obj.SetAccountID(fernTestValueAccountID)
-		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetAPIKey", func(t *testing.T) {
-		obj := &CreateSocialAccountsRequestBodyAimerce{}
-		var fernTestValueAPIKey string
-		obj.SetAPIKey(fernTestValueAPIKey)
-		assert.Equal(t, fernTestValueAPIKey, obj.APIKey)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-}
-
-func TestGettersCreateSocialAccountsRequestBodyAimerce(t *testing.T) {
-	t.Run("GetAccountID", func(t *testing.T) {
+	t.Run("GetFacebook", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateSocialAccountsRequestBodyAimerce{}
-		var expected *string
-		obj.AccountID = expected
+		obj := &CreateSocialAccountsRequestBody{}
+		var expected *CreateFacebookExternalAccount
+		obj.Facebook = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetAccountID(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetFacebook(), "getter should return the property value")
 	})
 
-	t.Run("GetAccountID_NilValue", func(t *testing.T) {
+	t.Run("GetFacebook_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateSocialAccountsRequestBodyAimerce{}
-		obj.AccountID = nil
+		obj := &CreateSocialAccountsRequestBody{}
+		obj.Facebook = nil
 
 		// Act & Assert
-		assert.Nil(t, obj.GetAccountID(), "getter should return nil when property is nil")
+		assert.Nil(t, obj.GetFacebook(), "getter should return nil when property is nil")
 	})
 
-	t.Run("GetAccountID_NilReceiver", func(t *testing.T) {
+	t.Run("GetFacebook_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateSocialAccountsRequestBodyAimerce
+		var obj *CreateSocialAccountsRequestBody
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetAccountID() // Should return zero value
+		_ = obj.GetFacebook() // Should return zero value
 	})
 
-	t.Run("GetAPIKey", func(t *testing.T) {
+	t.Run("GetKlaviyo", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateSocialAccountsRequestBodyAimerce{}
-		var expected string
-		obj.APIKey = expected
+		obj := &CreateSocialAccountsRequestBody{}
+		var expected *CreateKlaviyoExternalAccount
+		obj.Klaviyo = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetAPIKey(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetKlaviyo(), "getter should return the property value")
 	})
 
-	t.Run("GetAPIKey_NilReceiver", func(t *testing.T) {
+	t.Run("GetKlaviyo_NilValue", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateSocialAccountsRequestBodyAimerce
+		// Arrange
+		obj := &CreateSocialAccountsRequestBody{}
+		obj.Klaviyo = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetKlaviyo(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetKlaviyo_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateSocialAccountsRequestBody
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetAPIKey() // Should return zero value
+		_ = obj.GetKlaviyo() // Should return zero value
 	})
 
-}
-
-func TestSettersMarkExplicitCreateSocialAccountsRequestBodyAimerce(t *testing.T) {
-	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
+	t.Run("GetTiktok", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateSocialAccountsRequestBodyAimerce{}
-		var fernTestValueAccountID *string
-
-		// Act
-		obj.SetAccountID(fernTestValueAccountID)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetAPIKey_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBodyAimerce{}
-		var fernTestValueAPIKey string
-
-		// Act
-		obj.SetAPIKey(fernTestValueAPIKey)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-}
-
-func TestSettersCreateSocialAccountsRequestBodyFacebook(t *testing.T) {
-	t.Run("SetAccountID", func(t *testing.T) {
-		obj := &CreateSocialAccountsRequestBodyFacebook{}
-		var fernTestValueAccountID *string
-		obj.SetAccountID(fernTestValueAccountID)
-		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-}
-
-func TestGettersCreateSocialAccountsRequestBodyFacebook(t *testing.T) {
-	t.Run("GetAccountID", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBodyFacebook{}
-		var expected *string
-		obj.AccountID = expected
+		obj := &CreateSocialAccountsRequestBody{}
+		var expected *CreateTiktokExternalAccount
+		obj.Tiktok = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetAccountID(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetTiktok(), "getter should return the property value")
 	})
 
-	t.Run("GetAccountID_NilValue", func(t *testing.T) {
+	t.Run("GetTiktok_NilValue", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
-		obj := &CreateSocialAccountsRequestBodyFacebook{}
-		obj.AccountID = nil
+		obj := &CreateSocialAccountsRequestBody{}
+		obj.Tiktok = nil
 
 		// Act & Assert
-		assert.Nil(t, obj.GetAccountID(), "getter should return nil when property is nil")
+		assert.Nil(t, obj.GetTiktok(), "getter should return nil when property is nil")
 	})
 
-	t.Run("GetAccountID_NilReceiver", func(t *testing.T) {
+	t.Run("GetTiktok_NilReceiver", func(t *testing.T) {
 		t.Parallel()
-		var obj *CreateSocialAccountsRequestBodyFacebook
+		var obj *CreateSocialAccountsRequestBody
 		// Should not panic - getters should handle nil receiver gracefully
 		defer func() {
 			if r := recover(); r != nil {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetAccountID() // Should return zero value
-	})
-
-}
-
-func TestSettersMarkExplicitCreateSocialAccountsRequestBodyFacebook(t *testing.T) {
-	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBodyFacebook{}
-		var fernTestValueAccountID *string
-
-		// Act
-		obj.SetAccountID(fernTestValueAccountID)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-}
-
-func TestSettersCreateSocialAccountsRequestBodyKlaviyo(t *testing.T) {
-	t.Run("SetAccountID", func(t *testing.T) {
-		obj := &CreateSocialAccountsRequestBodyKlaviyo{}
-		var fernTestValueAccountID *string
-		obj.SetAccountID(fernTestValueAccountID)
-		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-	t.Run("SetAPIKey", func(t *testing.T) {
-		obj := &CreateSocialAccountsRequestBodyKlaviyo{}
-		var fernTestValueAPIKey string
-		obj.SetAPIKey(fernTestValueAPIKey)
-		assert.Equal(t, fernTestValueAPIKey, obj.APIKey)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-}
-
-func TestGettersCreateSocialAccountsRequestBodyKlaviyo(t *testing.T) {
-	t.Run("GetAccountID", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBodyKlaviyo{}
-		var expected *string
-		obj.AccountID = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetAccountID(), "getter should return the property value")
-	})
-
-	t.Run("GetAccountID_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBodyKlaviyo{}
-		obj.AccountID = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetAccountID(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetAccountID_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateSocialAccountsRequestBodyKlaviyo
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetAccountID() // Should return zero value
-	})
-
-	t.Run("GetAPIKey", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBodyKlaviyo{}
-		var expected string
-		obj.APIKey = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetAPIKey(), "getter should return the property value")
-	})
-
-	t.Run("GetAPIKey_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateSocialAccountsRequestBodyKlaviyo
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetAPIKey() // Should return zero value
-	})
-
-}
-
-func TestSettersMarkExplicitCreateSocialAccountsRequestBodyKlaviyo(t *testing.T) {
-	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBodyKlaviyo{}
-		var fernTestValueAccountID *string
-
-		// Act
-		obj.SetAccountID(fernTestValueAccountID)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-	t.Run("SetAPIKey_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBodyKlaviyo{}
-		var fernTestValueAPIKey string
-
-		// Act
-		obj.SetAPIKey(fernTestValueAPIKey)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
-	})
-
-}
-
-func TestSettersCreateSocialAccountsRequestBodyTiktok(t *testing.T) {
-	t.Run("SetAccountID", func(t *testing.T) {
-		obj := &CreateSocialAccountsRequestBodyTiktok{}
-		var fernTestValueAccountID *string
-		obj.SetAccountID(fernTestValueAccountID)
-		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
-		assert.NotNil(t, obj.explicitFields)
-	})
-
-}
-
-func TestGettersCreateSocialAccountsRequestBodyTiktok(t *testing.T) {
-	t.Run("GetAccountID", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBodyTiktok{}
-		var expected *string
-		obj.AccountID = expected
-
-		// Act & Assert
-		assert.Equal(t, expected, obj.GetAccountID(), "getter should return the property value")
-	})
-
-	t.Run("GetAccountID_NilValue", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBodyTiktok{}
-		obj.AccountID = nil
-
-		// Act & Assert
-		assert.Nil(t, obj.GetAccountID(), "getter should return nil when property is nil")
-	})
-
-	t.Run("GetAccountID_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateSocialAccountsRequestBodyTiktok
-		// Should not panic - getters should handle nil receiver gracefully
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("Getter panicked on nil receiver: %v", r)
-			}
-		}()
-		_ = obj.GetAccountID() // Should return zero value
-	})
-
-}
-
-func TestSettersMarkExplicitCreateSocialAccountsRequestBodyTiktok(t *testing.T) {
-	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBodyTiktok{}
-		var fernTestValueAccountID *string
-
-		// Act
-		obj.SetAccountID(fernTestValueAccountID)
-
-		// Assert - object with explicitly set field can be marshaled/unmarshaled
-		bytes, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed for test setup")
-
-		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
-		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
-		if len(bytes) > 0 && bytes[0] == '{' {
-			// JSON object - unmarshal into map
-			var unmarshaled map[string]interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		} else {
-			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
-			var unmarshaled interface{}
-			err = json.Unmarshal(bytes, &unmarshaled)
-			require.NoError(t, err, "unmarshaling should succeed for test verification")
-		}
-
-		// Note: This does not explicitly assert the presence of a specific JSON field
-		// It verifies that setting a field via setter allows successful JSON round-trip
+		_ = obj.GetTiktok() // Should return zero value
 	})
 
 }
@@ -3340,138 +2892,6 @@ func TestJSONMarshalingConnectSocialAccountsResponse(t *testing.T) {
 	})
 }
 
-func TestJSONMarshalingCreateSocialAccountsRequestBodyAimerce(t *testing.T) {
-	t.Run("MarshalUnmarshal", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBodyAimerce{}
-
-		// Act - Marshal to JSON
-		data, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed")
-		assert.NotNil(t, data, "marshaled data should not be nil")
-		assert.NotEmpty(t, data, "marshaled data should not be empty")
-
-		// Unmarshal back and verify round-trip
-		var unmarshaled CreateSocialAccountsRequestBodyAimerce
-		err = json.Unmarshal(data, &unmarshaled)
-		assert.NoError(t, err, "round-trip unmarshal should succeed")
-	})
-
-	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
-		t.Parallel()
-		var obj CreateSocialAccountsRequestBodyAimerce
-		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
-		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
-	})
-
-	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
-		t.Parallel()
-		var obj CreateSocialAccountsRequestBodyAimerce
-		err := json.Unmarshal([]byte(`{}`), &obj)
-		assert.NoError(t, err, "unmarshaling empty object should succeed")
-	})
-}
-
-func TestJSONMarshalingCreateSocialAccountsRequestBodyFacebook(t *testing.T) {
-	t.Run("MarshalUnmarshal", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBodyFacebook{}
-
-		// Act - Marshal to JSON
-		data, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed")
-		assert.NotNil(t, data, "marshaled data should not be nil")
-		assert.NotEmpty(t, data, "marshaled data should not be empty")
-
-		// Unmarshal back and verify round-trip
-		var unmarshaled CreateSocialAccountsRequestBodyFacebook
-		err = json.Unmarshal(data, &unmarshaled)
-		assert.NoError(t, err, "round-trip unmarshal should succeed")
-	})
-
-	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
-		t.Parallel()
-		var obj CreateSocialAccountsRequestBodyFacebook
-		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
-		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
-	})
-
-	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
-		t.Parallel()
-		var obj CreateSocialAccountsRequestBodyFacebook
-		err := json.Unmarshal([]byte(`{}`), &obj)
-		assert.NoError(t, err, "unmarshaling empty object should succeed")
-	})
-}
-
-func TestJSONMarshalingCreateSocialAccountsRequestBodyKlaviyo(t *testing.T) {
-	t.Run("MarshalUnmarshal", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBodyKlaviyo{}
-
-		// Act - Marshal to JSON
-		data, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed")
-		assert.NotNil(t, data, "marshaled data should not be nil")
-		assert.NotEmpty(t, data, "marshaled data should not be empty")
-
-		// Unmarshal back and verify round-trip
-		var unmarshaled CreateSocialAccountsRequestBodyKlaviyo
-		err = json.Unmarshal(data, &unmarshaled)
-		assert.NoError(t, err, "round-trip unmarshal should succeed")
-	})
-
-	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
-		t.Parallel()
-		var obj CreateSocialAccountsRequestBodyKlaviyo
-		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
-		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
-	})
-
-	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
-		t.Parallel()
-		var obj CreateSocialAccountsRequestBodyKlaviyo
-		err := json.Unmarshal([]byte(`{}`), &obj)
-		assert.NoError(t, err, "unmarshaling empty object should succeed")
-	})
-}
-
-func TestJSONMarshalingCreateSocialAccountsRequestBodyTiktok(t *testing.T) {
-	t.Run("MarshalUnmarshal", func(t *testing.T) {
-		t.Parallel()
-		// Arrange
-		obj := &CreateSocialAccountsRequestBodyTiktok{}
-
-		// Act - Marshal to JSON
-		data, err := json.Marshal(obj)
-		require.NoError(t, err, "marshaling should succeed")
-		assert.NotNil(t, data, "marshaled data should not be nil")
-		assert.NotEmpty(t, data, "marshaled data should not be empty")
-
-		// Unmarshal back and verify round-trip
-		var unmarshaled CreateSocialAccountsRequestBodyTiktok
-		err = json.Unmarshal(data, &unmarshaled)
-		assert.NoError(t, err, "round-trip unmarshal should succeed")
-	})
-
-	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
-		t.Parallel()
-		var obj CreateSocialAccountsRequestBodyTiktok
-		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
-		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
-	})
-
-	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
-		t.Parallel()
-		var obj CreateSocialAccountsRequestBodyTiktok
-		err := json.Unmarshal([]byte(`{}`), &obj)
-		assert.NoError(t, err, "unmarshaling empty object should succeed")
-	})
-}
-
 func TestJSONMarshalingDeleteSocialAccountsResponse(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -3787,70 +3207,6 @@ func TestStringConnectSocialAccountsResponse(t *testing.T) {
 	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ConnectSocialAccountsResponse
-		result := obj.String()
-		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
-	})
-}
-
-func TestStringCreateSocialAccountsRequestBodyAimerce(t *testing.T) {
-	t.Run("StringMethod", func(t *testing.T) {
-		t.Parallel()
-		obj := &CreateSocialAccountsRequestBodyAimerce{}
-		result := obj.String()
-		assert.NotEmpty(t, result, "String() should return a non-empty representation")
-	})
-
-	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateSocialAccountsRequestBodyAimerce
-		result := obj.String()
-		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
-	})
-}
-
-func TestStringCreateSocialAccountsRequestBodyFacebook(t *testing.T) {
-	t.Run("StringMethod", func(t *testing.T) {
-		t.Parallel()
-		obj := &CreateSocialAccountsRequestBodyFacebook{}
-		result := obj.String()
-		assert.NotEmpty(t, result, "String() should return a non-empty representation")
-	})
-
-	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateSocialAccountsRequestBodyFacebook
-		result := obj.String()
-		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
-	})
-}
-
-func TestStringCreateSocialAccountsRequestBodyKlaviyo(t *testing.T) {
-	t.Run("StringMethod", func(t *testing.T) {
-		t.Parallel()
-		obj := &CreateSocialAccountsRequestBodyKlaviyo{}
-		result := obj.String()
-		assert.NotEmpty(t, result, "String() should return a non-empty representation")
-	})
-
-	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateSocialAccountsRequestBodyKlaviyo
-		result := obj.String()
-		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
-	})
-}
-
-func TestStringCreateSocialAccountsRequestBodyTiktok(t *testing.T) {
-	t.Run("StringMethod", func(t *testing.T) {
-		t.Parallel()
-		obj := &CreateSocialAccountsRequestBodyTiktok{}
-		result := obj.String()
-		assert.NotEmpty(t, result, "String() should return a non-empty representation")
-	})
-
-	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateSocialAccountsRequestBodyTiktok
 		result := obj.String()
 		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
 	})
@@ -4438,98 +3794,6 @@ func TestExtraPropertiesConnectSocialAccountsResponse(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ConnectSocialAccountsResponse
-		extraProps := obj.GetExtraProperties()
-		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
-	})
-}
-
-func TestExtraPropertiesCreateSocialAccountsRequestBodyAimerce(t *testing.T) {
-	t.Run("GetExtraProperties", func(t *testing.T) {
-		t.Parallel()
-		obj := &CreateSocialAccountsRequestBodyAimerce{}
-		// Should not panic when calling GetExtraProperties()
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("GetExtraProperties() panicked: %v", r)
-			}
-		}()
-		extraProps := obj.GetExtraProperties()
-		// Result can be nil or an empty/non-empty map
-		_ = extraProps
-	})
-
-	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateSocialAccountsRequestBodyAimerce
-		extraProps := obj.GetExtraProperties()
-		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
-	})
-}
-
-func TestExtraPropertiesCreateSocialAccountsRequestBodyFacebook(t *testing.T) {
-	t.Run("GetExtraProperties", func(t *testing.T) {
-		t.Parallel()
-		obj := &CreateSocialAccountsRequestBodyFacebook{}
-		// Should not panic when calling GetExtraProperties()
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("GetExtraProperties() panicked: %v", r)
-			}
-		}()
-		extraProps := obj.GetExtraProperties()
-		// Result can be nil or an empty/non-empty map
-		_ = extraProps
-	})
-
-	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateSocialAccountsRequestBodyFacebook
-		extraProps := obj.GetExtraProperties()
-		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
-	})
-}
-
-func TestExtraPropertiesCreateSocialAccountsRequestBodyKlaviyo(t *testing.T) {
-	t.Run("GetExtraProperties", func(t *testing.T) {
-		t.Parallel()
-		obj := &CreateSocialAccountsRequestBodyKlaviyo{}
-		// Should not panic when calling GetExtraProperties()
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("GetExtraProperties() panicked: %v", r)
-			}
-		}()
-		extraProps := obj.GetExtraProperties()
-		// Result can be nil or an empty/non-empty map
-		_ = extraProps
-	})
-
-	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateSocialAccountsRequestBodyKlaviyo
-		extraProps := obj.GetExtraProperties()
-		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
-	})
-}
-
-func TestExtraPropertiesCreateSocialAccountsRequestBodyTiktok(t *testing.T) {
-	t.Run("GetExtraProperties", func(t *testing.T) {
-		t.Parallel()
-		obj := &CreateSocialAccountsRequestBodyTiktok{}
-		// Should not panic when calling GetExtraProperties()
-		defer func() {
-			if r := recover(); r != nil {
-				t.Errorf("GetExtraProperties() panicked: %v", r)
-			}
-		}()
-		extraProps := obj.GetExtraProperties()
-		// Result can be nil or an empty/non-empty map
-		_ = extraProps
-	})
-
-	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
-		t.Parallel()
-		var obj *CreateSocialAccountsRequestBodyTiktok
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

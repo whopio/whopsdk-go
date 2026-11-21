@@ -113,7 +113,9 @@ func TestSocialAccountsCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateSocialAccountsRequestBody{
-		Facebook: &whopsdk.CreateSocialAccountsRequestBodyFacebook{},
+		Aimerce: &whopsdk.CreateAimerceExternalAccount{
+			APIKey: "api_key",
+		},
 	}
 	_, invocationErr := client.SocialAccounts.Create(
 		context.TODO(),

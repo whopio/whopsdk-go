@@ -1778,11 +1778,11 @@ func TestSettersAutomationActor(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
-	t.Run("SetObject", func(t *testing.T) {
+	t.Run("SetResourceType", func(t *testing.T) {
 		obj := &AutomationActor{}
-		var fernTestValueObject AutomationActorObject
-		obj.SetObject(fernTestValueObject)
-		assert.Equal(t, fernTestValueObject, obj.Object)
+		var fernTestValueResourceType AutomationActorResourceType
+		obj.SetResourceType(fernTestValueResourceType)
+		assert.Equal(t, fernTestValueResourceType, obj.ResourceType)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1812,18 +1812,18 @@ func TestGettersAutomationActor(t *testing.T) {
 		_ = obj.GetID() // Should return zero value
 	})
 
-	t.Run("GetObject", func(t *testing.T) {
+	t.Run("GetResourceType", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &AutomationActor{}
-		var expected AutomationActorObject
-		obj.Object = expected
+		var expected AutomationActorResourceType
+		obj.ResourceType = expected
 
 		// Act & Assert
-		assert.Equal(t, expected, obj.GetObject(), "getter should return the property value")
+		assert.Equal(t, expected, obj.GetResourceType(), "getter should return the property value")
 	})
 
-	t.Run("GetObject_NilReceiver", func(t *testing.T) {
+	t.Run("GetResourceType_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *AutomationActor
 		// Should not panic - getters should handle nil receiver gracefully
@@ -1832,7 +1832,7 @@ func TestGettersAutomationActor(t *testing.T) {
 				t.Errorf("Getter panicked on nil receiver: %v", r)
 			}
 		}()
-		_ = obj.GetObject() // Should return zero value
+		_ = obj.GetResourceType() // Should return zero value
 	})
 
 }
@@ -1869,14 +1869,14 @@ func TestSettersMarkExplicitAutomationActor(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
-	t.Run("SetObject_MarksExplicit", func(t *testing.T) {
+	t.Run("SetResourceType_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &AutomationActor{}
-		var fernTestValueObject AutomationActorObject
+		var fernTestValueResourceType AutomationActorResourceType
 
 		// Act
-		obj.SetObject(fernTestValueObject)
+		obj.SetResourceType(fernTestValueResourceType)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -2888,35 +2888,35 @@ func TestStringListAutomationsResponsePageInfo(t *testing.T) {
 	})
 }
 
-func TestEnumAutomationActorObject(t *testing.T) {
+func TestEnumAutomationActorResourceType(t *testing.T) {
 	t.Run("NewFromString_user", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewAutomationActorObjectFromString("user")
+		val, err := NewAutomationActorResourceTypeFromString("user")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AutomationActorObject("user"), val, "enum value should match expected wire value")
+		assert.Equal(t, AutomationActorResourceType("user"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_account", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewAutomationActorObjectFromString("account")
+		val, err := NewAutomationActorResourceTypeFromString("account")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AutomationActorObject("account"), val, "enum value should match expected wire value")
+		assert.Equal(t, AutomationActorResourceType("account"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_app", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewAutomationActorObjectFromString("app")
+		val, err := NewAutomationActorResourceTypeFromString("app")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, AutomationActorObject("app"), val, "enum value should match expected wire value")
+		assert.Equal(t, AutomationActorResourceType("app"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
-		_, err := NewAutomationActorObjectFromString("invalid_value_that_does_not_exist")
+		_, err := NewAutomationActorResourceTypeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewAutomationActorObjectFromString("user")
+		val, err := NewAutomationActorResourceTypeFromString("user")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

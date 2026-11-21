@@ -1332,20 +1332,20 @@ func (a AutomationStepPreviewOutcome) Ptr() *AutomationStepPreviewOutcome {
 	return &a
 }
 
-// Who a step's message comes from. `object` picks the shape: an `email_address` for an `email` step, a `user` on the team for a `message` step.
+// Who a step's message comes from. `type` picks the shape: an `email_address` for an `email` step, a `user` on the team for a `message` step.
 type AutomationStepSender struct {
-	Object       string
+	Type         string
 	EmailAddress *AutomationStepEmailAddressSender
 	User         *AutomationStepUserSender
 
 	rawJSON json.RawMessage
 }
 
-func (a *AutomationStepSender) GetObject() string {
+func (a *AutomationStepSender) GetType() string {
 	if a == nil {
 		return ""
 	}
-	return a.Object
+	return a.Type
 }
 
 func (a *AutomationStepSender) GetEmailAddress() *AutomationStepEmailAddressSender {
@@ -1364,16 +1364,16 @@ func (a *AutomationStepSender) GetUser() *AutomationStepUserSender {
 
 func (a *AutomationStepSender) UnmarshalJSON(data []byte) error {
 	var unmarshaler struct {
-		Object string `json:"object"`
+		Type string `json:"type"`
 	}
 	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	a.Object = unmarshaler.Object
-	if unmarshaler.Object == "" {
-		return fmt.Errorf("%T did not include discriminant object", a)
+	a.Type = unmarshaler.Type
+	if unmarshaler.Type == "" {
+		return fmt.Errorf("%T did not include discriminant type", a)
 	}
-	switch unmarshaler.Object {
+	switch unmarshaler.Type {
 	case "email_address":
 		value := new(AutomationStepEmailAddressSender)
 		if err := json.Unmarshal(data, &value); err != nil {
@@ -1396,10 +1396,10 @@ func (a AutomationStepSender) MarshalJSON() ([]byte, error) {
 		return nil, err
 	}
 	if a.EmailAddress != nil {
-		return internal.MarshalJSONWithExtraProperty(a.EmailAddress, "object", "email_address")
+		return internal.MarshalJSONWithExtraProperty(a.EmailAddress, "type", "email_address")
 	}
 	if a.User != nil {
-		return internal.MarshalJSONWithExtraProperty(a.User, "object", "user")
+		return internal.MarshalJSONWithExtraProperty(a.User, "type", "user")
 	}
 	if len(a.rawJSON) > 0 {
 		return a.rawJSON, nil
@@ -1434,24 +1434,24 @@ func (a *AutomationStepSender) validate() error {
 		fields = append(fields, "user")
 	}
 	if len(fields) == 0 {
-		if a.Object != "" {
+		if a.Type != "" {
 			if len(a.rawJSON) > 0 {
 				return nil
 			}
-			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", a, a.Object)
+			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", a, a.Type)
 		}
 		return fmt.Errorf("type %T is empty", a)
 	}
 	if len(fields) > 1 {
 		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", a, fields)
 	}
-	if a.Object != "" {
+	if a.Type != "" {
 		field := fields[0]
-		if a.Object != field {
+		if a.Type != field {
 			return fmt.Errorf(
 				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
 				a,
-				a.Object,
+				a.Type,
 				a,
 			)
 		}
