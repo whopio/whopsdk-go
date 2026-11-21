@@ -694,7 +694,9 @@ var (
 	sendInvoicesRequestFieldID               = big.NewInt(1 << 0)
 	sendInvoicesRequestFieldChargeAt         = big.NewInt(1 << 1)
 	sendInvoicesRequestFieldCollectionMethod = big.NewInt(1 << 2)
-	sendInvoicesRequestFieldSendAt           = big.NewInt(1 << 3)
+	sendInvoicesRequestFieldMessage          = big.NewInt(1 << 3)
+	sendInvoicesRequestFieldSendAs           = big.NewInt(1 << 4)
+	sendInvoicesRequestFieldSendAt           = big.NewInt(1 << 5)
 )
 
 type SendInvoicesRequest struct {
@@ -704,6 +706,10 @@ type SendInvoicesRequest struct {
 	ChargeAt *time.Time `json:"charge_at,omitempty" url:"-"`
 	// How the subscription this invoice starts collects each renewal. `charge_automatically` charges the payment method that paid the invoice each period: the draft's `payment_method_id`, or the one the customer pays the invoice link with. `send_invoice` issues a numbered invoice each period, due on the renewal date and emailed with its payment link to the latest invoice's `recipient_emails`, so it needs at least one recipient and isn't available for invoices billed to a business. Defaults to `charge_automatically`. Only for a draft with a recurring item. A scheduled send applies it when it fires (see `scheduled_collection_method`).
 	CollectionMethod *SendInvoicesRequestCollectionMethod `json:"collection_method,omitempty" url:"-"`
+	// A note to the customer in the quote email. It is not stored. Only with `send_as` set to `quote`. Defaults to "Please review and accept this quote" when it is blank or left out.
+	Message *string `json:"message,omitempty" url:"-"`
+	// How to send the draft. `invoice` issues it and emails it to be paid. `quote` emails it as a quote and keeps it a draft. Defaults to `invoice`.
+	SendAs *SendInvoicesRequestSendAs `json:"send_as,omitempty" url:"-"`
 	// When to send the draft, as an ISO 8601 timestamp in the future. Omit to send now.
 	SendAt *time.Time `json:"send_at,omitempty" url:"-"`
 
@@ -739,6 +745,20 @@ func (s *SendInvoicesRequest) SetChargeAt(chargeAt *time.Time) {
 func (s *SendInvoicesRequest) SetCollectionMethod(collectionMethod *SendInvoicesRequestCollectionMethod) {
 	s.CollectionMethod = collectionMethod
 	s.require(sendInvoicesRequestFieldCollectionMethod)
+}
+
+// SetMessage sets the Message field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendInvoicesRequest) SetMessage(message *string) {
+	s.Message = message
+	s.require(sendInvoicesRequestFieldMessage)
+}
+
+// SetSendAs sets the SendAs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendInvoicesRequest) SetSendAs(sendAs *SendInvoicesRequestSendAs) {
+	s.SendAs = sendAs
+	s.require(sendInvoicesRequestFieldSendAs)
 }
 
 // SetSendAt sets the SendAt field and marks it as non-optional;
@@ -808,19 +828,20 @@ var (
 	invoiceFieldPaidAt                     = big.NewInt(1 << 23)
 	invoiceFieldPaymentMethodConfiguration = big.NewInt(1 << 24)
 	invoiceFieldPaymentMethodID            = big.NewInt(1 << 25)
-	invoiceFieldRecipientEmails            = big.NewInt(1 << 26)
-	invoiceFieldScheduledChargeAt          = big.NewInt(1 << 27)
-	invoiceFieldScheduledCollectionMethod  = big.NewInt(1 << 28)
-	invoiceFieldScheduledSendAt            = big.NewInt(1 << 29)
-	invoiceFieldSendsOnDueDate             = big.NewInt(1 << 30)
-	invoiceFieldStatus                     = big.NewInt(1 << 31)
-	invoiceFieldSubscriptionStartsAt       = big.NewInt(1 << 32)
-	invoiceFieldSubtotal                   = big.NewInt(1 << 33)
-	invoiceFieldTaxAmount                  = big.NewInt(1 << 34)
-	invoiceFieldTimeZone                   = big.NewInt(1 << 35)
-	invoiceFieldTotal                      = big.NewInt(1 << 36)
-	invoiceFieldTotalsStatus               = big.NewInt(1 << 37)
-	invoiceFieldUpdatedAt                  = big.NewInt(1 << 38)
+	invoiceFieldQuoteSentAt                = big.NewInt(1 << 26)
+	invoiceFieldRecipientEmails            = big.NewInt(1 << 27)
+	invoiceFieldScheduledChargeAt          = big.NewInt(1 << 28)
+	invoiceFieldScheduledCollectionMethod  = big.NewInt(1 << 29)
+	invoiceFieldScheduledSendAt            = big.NewInt(1 << 30)
+	invoiceFieldSendsOnDueDate             = big.NewInt(1 << 31)
+	invoiceFieldStatus                     = big.NewInt(1 << 32)
+	invoiceFieldSubscriptionStartsAt       = big.NewInt(1 << 33)
+	invoiceFieldSubtotal                   = big.NewInt(1 << 34)
+	invoiceFieldTaxAmount                  = big.NewInt(1 << 35)
+	invoiceFieldTimeZone                   = big.NewInt(1 << 36)
+	invoiceFieldTotal                      = big.NewInt(1 << 37)
+	invoiceFieldTotalsStatus               = big.NewInt(1 << 38)
+	invoiceFieldUpdatedAt                  = big.NewInt(1 << 39)
 )
 
 // invoiceNullableFields maps the wire names of Invoice's nullable fields (required or optional) to their field bits.
@@ -838,6 +859,7 @@ var invoiceNullableFields = map[string]*big.Int{
 	"paid_at":                      invoiceFieldPaidAt,
 	"payment_method_configuration": invoiceFieldPaymentMethodConfiguration,
 	"payment_method_id":            invoiceFieldPaymentMethodID,
+	"quote_sent_at":                invoiceFieldQuoteSentAt,
 	"scheduled_charge_at":          invoiceFieldScheduledChargeAt,
 	"scheduled_collection_method":  invoiceFieldScheduledCollectionMethod,
 	"scheduled_send_at":            invoiceFieldScheduledSendAt,
@@ -879,13 +901,15 @@ type Invoice struct {
 	// The payment methods the customer can choose from when paying through the invoice's checkout link. It takes precedence over the invoice's variants and the account. `null` when the invoice uses its variants' payment methods.
 	PaymentMethodConfiguration *CheckoutSessionPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
 	PaymentMethodID            *string                                    `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
-	RecipientEmails            []string                                   `json:"recipient_emails" url:"recipient_emails"`
+	// When the draft was last emailed to its recipients as a quote, as an ISO 8601 timestamp. A quote stays a draft and cannot be paid. It is not issued on its `due_at`. `null` when the invoice was never sent as a quote.
+	QuoteSentAt     *string  `json:"quote_sent_at,omitempty" url:"quote_sent_at,omitempty"`
+	RecipientEmails []string `json:"recipient_emails" url:"recipient_emails"`
 	// When the invoice's saved payment method will be charged, as an ISO 8601 timestamp. It is the `charge_at` the invoice was sent or issued with. Without one, it is `due_at` when an invoice with a `payment_method_id` is sent or issued before it is due. On a draft, it is the `charge_at` of its scheduled send. `null` otherwise, once the charge starts, and once the invoice is paid, void, or uncollectible.
 	ScheduledChargeAt *string `json:"scheduled_charge_at,omitempty" url:"scheduled_charge_at,omitempty"`
 	// The `collection_method` a draft's scheduled send applies when it fires. `null` when the draft has no scheduled send or it was scheduled without one, and once the invoice is issued.
 	ScheduledCollectionMethod *InvoiceScheduledCollectionMethod `json:"scheduled_collection_method,omitempty" url:"scheduled_collection_method,omitempty"`
 	ScheduledSendAt           *string                           `json:"scheduled_send_at,omitempty" url:"scheduled_send_at,omitempty"`
-	// Whether this draft is issued automatically when its `due_at` arrives. Issuing it charges its `payment_method_id`, or emails its payment link to its `recipient_emails`. `false` for an invoice that is not a draft and for a draft with a scheduled send. `false` while sending the draft would fail for missing recipients or an unavailable payment link. `false` for a draft that had no future `due_at` when it was last saved. `false` for a draft created before 2026-11-12T22:00:00Z.
+	// Whether this draft is issued automatically when its `due_at` arrives. Issuing it charges its `payment_method_id`, or emails its payment link to its `recipient_emails`. `false` for an invoice that is not a draft, for a draft with a scheduled send, and for a draft sent as a quote. `false` while sending the draft would fail for missing recipients or an unavailable payment link. `false` for a draft that had no future `due_at` when it was last saved. `false` for a draft created before 2026-11-12T22:00:00Z.
 	SendsOnDueDate bool          `json:"sends_on_due_date" url:"sends_on_due_date"`
 	Status         InvoiceStatus `json:"status" url:"status"`
 	// When the first billing period of the invoice's recurring items starts, as an ISO 8601 timestamp. Renewals count from this moment. `null` starts the period when the invoice is paid, and so does a time that has passed by then. An invoice with a start date skips its variants' free trial.
@@ -1085,6 +1109,13 @@ func (i *Invoice) GetPaymentMethodID() *string {
 		return nil
 	}
 	return i.PaymentMethodID
+}
+
+func (i *Invoice) GetQuoteSentAt() *string {
+	if i == nil {
+		return nil
+	}
+	return i.QuoteSentAt
 }
 
 func (i *Invoice) GetRecipientEmails() []string {
@@ -1374,6 +1405,13 @@ func (i *Invoice) SetPaymentMethodConfiguration(paymentMethodConfiguration *Chec
 func (i *Invoice) SetPaymentMethodID(paymentMethodID *string) {
 	i.PaymentMethodID = paymentMethodID
 	i.require(invoiceFieldPaymentMethodID)
+}
+
+// SetQuoteSentAt sets the QuoteSentAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetQuoteSentAt(quoteSentAt *string) {
+	i.QuoteSentAt = quoteSentAt
+	i.require(invoiceFieldQuoteSentAt)
 }
 
 // SetRecipientEmails sets the RecipientEmails field and marks it as non-optional;
@@ -5427,6 +5465,29 @@ func NewSendInvoicesRequestCollectionMethodFromString(s string) (SendInvoicesReq
 }
 
 func (s SendInvoicesRequestCollectionMethod) Ptr() *SendInvoicesRequestCollectionMethod {
+	return &s
+}
+
+// How to send the draft. `invoice` issues it and emails it to be paid. `quote` emails it as a quote and keeps it a draft. Defaults to `invoice`.
+type SendInvoicesRequestSendAs string
+
+const (
+	SendInvoicesRequestSendAsInvoice SendInvoicesRequestSendAs = "invoice"
+	SendInvoicesRequestSendAsQuote   SendInvoicesRequestSendAs = "quote"
+)
+
+func NewSendInvoicesRequestSendAsFromString(s string) (SendInvoicesRequestSendAs, error) {
+	switch s {
+	case "invoice":
+		return SendInvoicesRequestSendAsInvoice, nil
+	case "quote":
+		return SendInvoicesRequestSendAsQuote, nil
+	}
+	var t SendInvoicesRequestSendAs
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (s SendInvoicesRequestSendAs) Ptr() *SendInvoicesRequestSendAs {
 	return &s
 }
 
