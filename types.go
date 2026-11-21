@@ -50586,21 +50586,25 @@ func (p *PaymentInstructions) validate() error {
 
 var (
 	paymentInstrumentFieldCard              = big.NewInt(1 << 0)
-	paymentInstrumentFieldDisplayName       = big.NewInt(1 << 1)
-	paymentInstrumentFieldIcons             = big.NewInt(1 << 2)
-	paymentInstrumentFieldInstallmentCount  = big.NewInt(1 << 3)
-	paymentInstrumentFieldPaymentMethodType = big.NewInt(1 << 4)
+	paymentInstrumentFieldCrypto            = big.NewInt(1 << 1)
+	paymentInstrumentFieldDisplayName       = big.NewInt(1 << 2)
+	paymentInstrumentFieldIcons             = big.NewInt(1 << 3)
+	paymentInstrumentFieldInstallmentCount  = big.NewInt(1 << 4)
+	paymentInstrumentFieldPaymentMethodType = big.NewInt(1 << 5)
 )
 
 // paymentInstrumentNullableFields maps the wire names of PaymentInstrument's nullable fields (required or optional) to their field bits.
 var paymentInstrumentNullableFields = map[string]*big.Int{
 	"card":              paymentInstrumentFieldCard,
+	"crypto":            paymentInstrumentFieldCrypto,
 	"installment_count": paymentInstrumentFieldInstallmentCount,
 }
 
 type PaymentInstrument struct {
 	// Card, Apple Pay, and Google Pay payments only: the card's network, last four, issuer identification number, expiry, and network transaction id.
 	Card *PaymentInstrumentCard `json:"card,omitempty" url:"card,omitempty"`
+	// Crypto payments only: the on-chain transaction that the buyer sent.
+	Crypto *PaymentInstrumentCrypto `json:"crypto,omitempty" url:"crypto,omitempty"`
 	// Buyer-facing instrument name — "Visa •••• 4242" when the card surfaced, else the method's own name ("Klarna").
 	DisplayName string `json:"display_name" url:"display_name"`
 	// The standard icon set: square and card shapes, each in light and dark colorways.
@@ -50622,6 +50626,13 @@ func (p *PaymentInstrument) GetCard() *PaymentInstrumentCard {
 		return nil
 	}
 	return p.Card
+}
+
+func (p *PaymentInstrument) GetCrypto() *PaymentInstrumentCrypto {
+	if p == nil {
+		return nil
+	}
+	return p.Crypto
 }
 
 func (p *PaymentInstrument) GetDisplayName() string {
@@ -50673,6 +50684,13 @@ func (p *PaymentInstrument) require(field *big.Int) {
 func (p *PaymentInstrument) SetCard(card *PaymentInstrumentCard) {
 	p.Card = card
 	p.require(paymentInstrumentFieldCard)
+}
+
+// SetCrypto sets the Crypto field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInstrument) SetCrypto(crypto *PaymentInstrumentCrypto) {
+	p.Crypto = crypto
+	p.require(paymentInstrumentFieldCrypto)
 }
 
 // SetDisplayName sets the DisplayName field and marks it as non-optional;
@@ -50927,6 +50945,105 @@ func (p *PaymentInstrumentCard) MarshalJSON() ([]byte, error) {
 }
 
 func (p *PaymentInstrumentCard) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	paymentInstrumentCryptoFieldTransactionHash = big.NewInt(1 << 0)
+)
+
+// paymentInstrumentCryptoNullableFields maps the wire names of PaymentInstrumentCrypto's nullable fields (required or optional) to their field bits.
+var paymentInstrumentCryptoNullableFields = map[string]*big.Int{
+	"transaction_hash": paymentInstrumentCryptoFieldTransactionHash,
+}
+
+type PaymentInstrumentCrypto struct {
+	// The hash of the on-chain transaction that the buyer sent to pay. Use it to find the payment from a hash that the buyer gives you. Null until the payment provider reports the transaction.
+	TransactionHash *string `json:"transaction_hash,omitempty" url:"transaction_hash,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentInstrumentCrypto) GetTransactionHash() *string {
+	if p == nil {
+		return nil
+	}
+	return p.TransactionHash
+}
+
+func (p *PaymentInstrumentCrypto) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaymentInstrumentCrypto) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetTransactionHash sets the TransactionHash field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentInstrumentCrypto) SetTransactionHash(transactionHash *string) {
+	p.TransactionHash = transactionHash
+	p.require(paymentInstrumentCryptoFieldTransactionHash)
+}
+
+func (p *PaymentInstrumentCrypto) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentInstrumentCrypto
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentInstrumentCrypto(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, paymentInstrumentCryptoNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentInstrumentCrypto) MarshalJSON() ([]byte, error) {
+	type embed PaymentInstrumentCrypto
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaymentInstrumentCrypto) String() string {
 	if p == nil {
 		return "<nil>"
 	}
