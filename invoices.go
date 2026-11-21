@@ -828,20 +828,24 @@ var (
 	invoiceFieldPaidAt                     = big.NewInt(1 << 23)
 	invoiceFieldPaymentMethodConfiguration = big.NewInt(1 << 24)
 	invoiceFieldPaymentMethodID            = big.NewInt(1 << 25)
-	invoiceFieldQuoteSentAt                = big.NewInt(1 << 26)
-	invoiceFieldRecipientEmails            = big.NewInt(1 << 27)
-	invoiceFieldScheduledChargeAt          = big.NewInt(1 << 28)
-	invoiceFieldScheduledCollectionMethod  = big.NewInt(1 << 29)
-	invoiceFieldScheduledSendAt            = big.NewInt(1 << 30)
-	invoiceFieldSendsOnDueDate             = big.NewInt(1 << 31)
-	invoiceFieldStatus                     = big.NewInt(1 << 32)
-	invoiceFieldSubscriptionStartsAt       = big.NewInt(1 << 33)
-	invoiceFieldSubtotal                   = big.NewInt(1 << 34)
-	invoiceFieldTaxAmount                  = big.NewInt(1 << 35)
-	invoiceFieldTimeZone                   = big.NewInt(1 << 36)
-	invoiceFieldTotal                      = big.NewInt(1 << 37)
-	invoiceFieldTotalsStatus               = big.NewInt(1 << 38)
-	invoiceFieldUpdatedAt                  = big.NewInt(1 << 39)
+	invoiceFieldQuoteAcceptedAt            = big.NewInt(1 << 26)
+	invoiceFieldQuoteSentAt                = big.NewInt(1 << 27)
+	invoiceFieldQuoteSignatureURL          = big.NewInt(1 << 28)
+	invoiceFieldQuoteSignerEmail           = big.NewInt(1 << 29)
+	invoiceFieldQuoteSignerName            = big.NewInt(1 << 30)
+	invoiceFieldRecipientEmails            = big.NewInt(1 << 31)
+	invoiceFieldScheduledChargeAt          = big.NewInt(1 << 32)
+	invoiceFieldScheduledCollectionMethod  = big.NewInt(1 << 33)
+	invoiceFieldScheduledSendAt            = big.NewInt(1 << 34)
+	invoiceFieldSendsOnDueDate             = big.NewInt(1 << 35)
+	invoiceFieldStatus                     = big.NewInt(1 << 36)
+	invoiceFieldSubscriptionStartsAt       = big.NewInt(1 << 37)
+	invoiceFieldSubtotal                   = big.NewInt(1 << 38)
+	invoiceFieldTaxAmount                  = big.NewInt(1 << 39)
+	invoiceFieldTimeZone                   = big.NewInt(1 << 40)
+	invoiceFieldTotal                      = big.NewInt(1 << 41)
+	invoiceFieldTotalsStatus               = big.NewInt(1 << 42)
+	invoiceFieldUpdatedAt                  = big.NewInt(1 << 43)
 )
 
 // invoiceNullableFields maps the wire names of Invoice's nullable fields (required or optional) to their field bits.
@@ -859,7 +863,11 @@ var invoiceNullableFields = map[string]*big.Int{
 	"paid_at":                      invoiceFieldPaidAt,
 	"payment_method_configuration": invoiceFieldPaymentMethodConfiguration,
 	"payment_method_id":            invoiceFieldPaymentMethodID,
+	"quote_accepted_at":            invoiceFieldQuoteAcceptedAt,
 	"quote_sent_at":                invoiceFieldQuoteSentAt,
+	"quote_signature_url":          invoiceFieldQuoteSignatureURL,
+	"quote_signer_email":           invoiceFieldQuoteSignerEmail,
+	"quote_signer_name":            invoiceFieldQuoteSignerName,
 	"scheduled_charge_at":          invoiceFieldScheduledChargeAt,
 	"scheduled_collection_method":  invoiceFieldScheduledCollectionMethod,
 	"scheduled_send_at":            invoiceFieldScheduledSendAt,
@@ -901,8 +909,16 @@ type Invoice struct {
 	// The payment methods the customer can choose from when paying through the invoice's checkout link. It takes precedence over the invoice's variants and the account. `null` when the invoice uses its variants' payment methods.
 	PaymentMethodConfiguration *CheckoutSessionPaymentMethodConfiguration `json:"payment_method_configuration,omitempty" url:"payment_method_configuration,omitempty"`
 	PaymentMethodID            *string                                    `json:"payment_method_id,omitempty" url:"payment_method_id,omitempty"`
+	// When the customer accepted and signed the quote, as an ISO 8601 timestamp. An edit to the draft clears it, unless the edit changes only `recipient_emails`. `null` when the quote was not accepted.
+	QuoteAcceptedAt *string `json:"quote_accepted_at,omitempty" url:"quote_accepted_at,omitempty"`
 	// When the draft was last emailed to its recipients as a quote, as an ISO 8601 timestamp. A quote stays a draft and cannot be paid. It is not issued on its `due_at`. `null` when the invoice was never sent as a quote.
-	QuoteSentAt     *string  `json:"quote_sent_at,omitempty" url:"quote_sent_at,omitempty"`
+	QuoteSentAt *string `json:"quote_sent_at,omitempty" url:"quote_sent_at,omitempty"`
+	// A link to the signature the customer drew, as a PNG image with a transparent background. The link expires after a short time. `null` when the quote was not accepted, and for a credential without the member:basic:read permission.
+	QuoteSignatureURL *string `json:"quote_signature_url,omitempty" url:"quote_signature_url,omitempty"`
+	// The email address of the Whop user who signed the quote. `null` when the quote was not accepted, when the signer was not signed in to Whop, and without the member:email:read permission.
+	QuoteSignerEmail *string `json:"quote_signer_email,omitempty" url:"quote_signer_email,omitempty"`
+	// The full name the customer typed to sign the quote. `null` when the quote was not accepted, and for a credential without the member:basic:read permission.
+	QuoteSignerName *string  `json:"quote_signer_name,omitempty" url:"quote_signer_name,omitempty"`
 	RecipientEmails []string `json:"recipient_emails" url:"recipient_emails"`
 	// When the invoice's saved payment method will be charged, as an ISO 8601 timestamp. It is the `charge_at` the invoice was sent or issued with. Without one, it is `due_at` when an invoice with a `payment_method_id` is sent or issued before it is due. On a draft, it is the `charge_at` of its scheduled send. `null` otherwise, once the charge starts, and once the invoice is paid, void, or uncollectible.
 	ScheduledChargeAt *string `json:"scheduled_charge_at,omitempty" url:"scheduled_charge_at,omitempty"`
@@ -1111,11 +1127,39 @@ func (i *Invoice) GetPaymentMethodID() *string {
 	return i.PaymentMethodID
 }
 
+func (i *Invoice) GetQuoteAcceptedAt() *string {
+	if i == nil {
+		return nil
+	}
+	return i.QuoteAcceptedAt
+}
+
 func (i *Invoice) GetQuoteSentAt() *string {
 	if i == nil {
 		return nil
 	}
 	return i.QuoteSentAt
+}
+
+func (i *Invoice) GetQuoteSignatureURL() *string {
+	if i == nil {
+		return nil
+	}
+	return i.QuoteSignatureURL
+}
+
+func (i *Invoice) GetQuoteSignerEmail() *string {
+	if i == nil {
+		return nil
+	}
+	return i.QuoteSignerEmail
+}
+
+func (i *Invoice) GetQuoteSignerName() *string {
+	if i == nil {
+		return nil
+	}
+	return i.QuoteSignerName
 }
 
 func (i *Invoice) GetRecipientEmails() []string {
@@ -1407,11 +1451,39 @@ func (i *Invoice) SetPaymentMethodID(paymentMethodID *string) {
 	i.require(invoiceFieldPaymentMethodID)
 }
 
+// SetQuoteAcceptedAt sets the QuoteAcceptedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetQuoteAcceptedAt(quoteAcceptedAt *string) {
+	i.QuoteAcceptedAt = quoteAcceptedAt
+	i.require(invoiceFieldQuoteAcceptedAt)
+}
+
 // SetQuoteSentAt sets the QuoteSentAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (i *Invoice) SetQuoteSentAt(quoteSentAt *string) {
 	i.QuoteSentAt = quoteSentAt
 	i.require(invoiceFieldQuoteSentAt)
+}
+
+// SetQuoteSignatureURL sets the QuoteSignatureURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetQuoteSignatureURL(quoteSignatureURL *string) {
+	i.QuoteSignatureURL = quoteSignatureURL
+	i.require(invoiceFieldQuoteSignatureURL)
+}
+
+// SetQuoteSignerEmail sets the QuoteSignerEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetQuoteSignerEmail(quoteSignerEmail *string) {
+	i.QuoteSignerEmail = quoteSignerEmail
+	i.require(invoiceFieldQuoteSignerEmail)
+}
+
+// SetQuoteSignerName sets the QuoteSignerName field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetQuoteSignerName(quoteSignerName *string) {
+	i.QuoteSignerName = quoteSignerName
+	i.require(invoiceFieldQuoteSignerName)
 }
 
 // SetRecipientEmails sets the RecipientEmails field and marks it as non-optional;

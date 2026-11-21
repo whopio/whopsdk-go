@@ -2223,11 +2223,43 @@ func TestSettersInvoice(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetQuoteAcceptedAt", func(t *testing.T) {
+		obj := &Invoice{}
+		var fernTestValueQuoteAcceptedAt *string
+		obj.SetQuoteAcceptedAt(fernTestValueQuoteAcceptedAt)
+		assert.Equal(t, fernTestValueQuoteAcceptedAt, obj.QuoteAcceptedAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetQuoteSentAt", func(t *testing.T) {
 		obj := &Invoice{}
 		var fernTestValueQuoteSentAt *string
 		obj.SetQuoteSentAt(fernTestValueQuoteSentAt)
 		assert.Equal(t, fernTestValueQuoteSentAt, obj.QuoteSentAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetQuoteSignatureURL", func(t *testing.T) {
+		obj := &Invoice{}
+		var fernTestValueQuoteSignatureURL *string
+		obj.SetQuoteSignatureURL(fernTestValueQuoteSignatureURL)
+		assert.Equal(t, fernTestValueQuoteSignatureURL, obj.QuoteSignatureURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetQuoteSignerEmail", func(t *testing.T) {
+		obj := &Invoice{}
+		var fernTestValueQuoteSignerEmail *string
+		obj.SetQuoteSignerEmail(fernTestValueQuoteSignerEmail)
+		assert.Equal(t, fernTestValueQuoteSignerEmail, obj.QuoteSignerEmail)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetQuoteSignerName", func(t *testing.T) {
+		obj := &Invoice{}
+		var fernTestValueQuoteSignerName *string
+		obj.SetQuoteSignerName(fernTestValueQuoteSignerName)
+		assert.Equal(t, fernTestValueQuoteSignerName, obj.QuoteSignerName)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -3116,6 +3148,39 @@ func TestGettersInvoice(t *testing.T) {
 		_ = obj.GetPaymentMethodID() // Should return zero value
 	})
 
+	t.Run("GetQuoteAcceptedAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var expected *string
+		obj.QuoteAcceptedAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetQuoteAcceptedAt(), "getter should return the property value")
+	})
+
+	t.Run("GetQuoteAcceptedAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		obj.QuoteAcceptedAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetQuoteAcceptedAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetQuoteAcceptedAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Invoice
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetQuoteAcceptedAt() // Should return zero value
+	})
+
 	t.Run("GetQuoteSentAt", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3147,6 +3212,105 @@ func TestGettersInvoice(t *testing.T) {
 			}
 		}()
 		_ = obj.GetQuoteSentAt() // Should return zero value
+	})
+
+	t.Run("GetQuoteSignatureURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var expected *string
+		obj.QuoteSignatureURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetQuoteSignatureURL(), "getter should return the property value")
+	})
+
+	t.Run("GetQuoteSignatureURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		obj.QuoteSignatureURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetQuoteSignatureURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetQuoteSignatureURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Invoice
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetQuoteSignatureURL() // Should return zero value
+	})
+
+	t.Run("GetQuoteSignerEmail", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var expected *string
+		obj.QuoteSignerEmail = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetQuoteSignerEmail(), "getter should return the property value")
+	})
+
+	t.Run("GetQuoteSignerEmail_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		obj.QuoteSignerEmail = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetQuoteSignerEmail(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetQuoteSignerEmail_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Invoice
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetQuoteSignerEmail() // Should return zero value
+	})
+
+	t.Run("GetQuoteSignerName", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var expected *string
+		obj.QuoteSignerName = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetQuoteSignerName(), "getter should return the property value")
+	})
+
+	t.Run("GetQuoteSignerName_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		obj.QuoteSignerName = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetQuoteSignerName(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetQuoteSignerName_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Invoice
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetQuoteSignerName() // Should return zero value
 	})
 
 	t.Run("GetRecipientEmails", func(t *testing.T) {
@@ -4337,6 +4501,37 @@ func TestSettersMarkExplicitInvoice(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetQuoteAcceptedAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var fernTestValueQuoteAcceptedAt *string
+
+		// Act
+		obj.SetQuoteAcceptedAt(fernTestValueQuoteAcceptedAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetQuoteSentAt_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -4345,6 +4540,99 @@ func TestSettersMarkExplicitInvoice(t *testing.T) {
 
 		// Act
 		obj.SetQuoteSentAt(fernTestValueQuoteSentAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetQuoteSignatureURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var fernTestValueQuoteSignatureURL *string
+
+		// Act
+		obj.SetQuoteSignatureURL(fernTestValueQuoteSignatureURL)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetQuoteSignerEmail_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var fernTestValueQuoteSignerEmail *string
+
+		// Act
+		obj.SetQuoteSignerEmail(fernTestValueQuoteSignerEmail)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetQuoteSignerName_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var fernTestValueQuoteSignerName *string
+
+		// Act
+		obj.SetQuoteSignerName(fernTestValueQuoteSignerName)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -16507,7 +16795,11 @@ func TestRequiredNullableRoundTripInvoice(t *testing.T) {
 		"paid_at",
 		"payment_method_configuration",
 		"payment_method_id",
+		"quote_accepted_at",
 		"quote_sent_at",
+		"quote_signature_url",
+		"quote_signer_email",
+		"quote_signer_name",
 		"scheduled_charge_at",
 		"scheduled_collection_method",
 		"scheduled_send_at",
@@ -16525,7 +16817,7 @@ func TestRequiredNullableRoundTripInvoice(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Invoice
-		require.NoError(t, json.Unmarshal([]byte(`{"billing_address":null,"checkout_link":null,"customer_name":null,"due_at":null,"email_address":null,"invoice_prefix":null,"mailing_address_id":null,"member_id":null,"membership_id":null,"memo":null,"paid_at":null,"payment_method_configuration":null,"payment_method_id":null,"quote_sent_at":null,"scheduled_charge_at":null,"scheduled_collection_method":null,"scheduled_send_at":null,"subscription_starts_at":null,"tax_amount":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"billing_address":null,"checkout_link":null,"customer_name":null,"due_at":null,"email_address":null,"invoice_prefix":null,"mailing_address_id":null,"member_id":null,"membership_id":null,"memo":null,"paid_at":null,"payment_method_configuration":null,"payment_method_id":null,"quote_accepted_at":null,"quote_sent_at":null,"quote_signature_url":null,"quote_signer_email":null,"quote_signer_name":null,"scheduled_charge_at":null,"scheduled_collection_method":null,"scheduled_send_at":null,"subscription_starts_at":null,"tax_amount":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
