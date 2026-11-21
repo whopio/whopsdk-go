@@ -16468,6 +16468,14 @@ client.Deposits.Create(
 <dl>
 <dd>
 
+**currency:** `*whopsdk.CreateDepositsRequestCurrency` — Bank account currency to set up for the destination. A USD account is always set up. Pass `cad` once to also set up a CAD account. After that, every request returns the details of all set-up currencies.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **destination:** `string` — Account ID to fund, `biz_` or `user_`. Any business resolves without authentication; a user account resolves only for that same authenticated user.
     
 </dd>
