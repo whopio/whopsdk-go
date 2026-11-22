@@ -267,8 +267,11 @@ type ListFinancialActivityRequestLineTypesItem string
 const (
 	ListFinancialActivityRequestLineTypesItemAccountSettlement                         ListFinancialActivityRequestLineTypesItem = "account_settlement"
 	ListFinancialActivityRequestLineTypesItemAdAffiliatePayoutReceived                 ListFinancialActivityRequestLineTypesItem = "ad_affiliate_payout_received"
+	ListFinancialActivityRequestLineTypesItemAdBalanceFundingReceipt                   ListFinancialActivityRequestLineTypesItem = "ad_balance_funding_receipt"
 	ListFinancialActivityRequestLineTypesItemAdBudgetRelease                           ListFinancialActivityRequestLineTypesItem = "ad_budget_release"
 	ListFinancialActivityRequestLineTypesItemAdCampaignBudget                          ListFinancialActivityRequestLineTypesItem = "ad_campaign_budget"
+	ListFinancialActivityRequestLineTypesItemAdFundingDisbursement                     ListFinancialActivityRequestLineTypesItem = "ad_funding_disbursement"
+	ListFinancialActivityRequestLineTypesItemAdIncomeReceipt                           ListFinancialActivityRequestLineTypesItem = "ad_income_receipt"
 	ListFinancialActivityRequestLineTypesItemAdPublisherPayout                         ListFinancialActivityRequestLineTypesItem = "ad_publisher_payout"
 	ListFinancialActivityRequestLineTypesItemAdPublisherPayoutReceived                 ListFinancialActivityRequestLineTypesItem = "ad_publisher_payout_received"
 	ListFinancialActivityRequestLineTypesItemAdSpendCharge                             ListFinancialActivityRequestLineTypesItem = "ad_spend_charge"
@@ -420,10 +423,16 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemAccountSettlement, nil
 	case "ad_affiliate_payout_received":
 		return ListFinancialActivityRequestLineTypesItemAdAffiliatePayoutReceived, nil
+	case "ad_balance_funding_receipt":
+		return ListFinancialActivityRequestLineTypesItemAdBalanceFundingReceipt, nil
 	case "ad_budget_release":
 		return ListFinancialActivityRequestLineTypesItemAdBudgetRelease, nil
 	case "ad_campaign_budget":
 		return ListFinancialActivityRequestLineTypesItemAdCampaignBudget, nil
+	case "ad_funding_disbursement":
+		return ListFinancialActivityRequestLineTypesItemAdFundingDisbursement, nil
+	case "ad_income_receipt":
+		return ListFinancialActivityRequestLineTypesItemAdIncomeReceipt, nil
 	case "ad_publisher_payout":
 		return ListFinancialActivityRequestLineTypesItemAdPublisherPayout, nil
 	case "ad_publisher_payout_received":
