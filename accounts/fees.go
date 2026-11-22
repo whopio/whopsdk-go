@@ -8881,6 +8881,120 @@ func (u *UpdateFeesRequestSepaReturnRegionsValue) String() string {
 }
 
 var (
+	updateFeesRequestSubaccountFeeModeFieldMode = big.NewInt(1 << 0)
+)
+
+// Changes how this account charges its subaccounts. Only an account without a parent account can set it. An account can change `inherit` to either other mode. It can change `subaccount_rates_collect_difference` to `subaccount_rates`. Whop must make other changes.
+type UpdateFeesRequestSubaccountFeeMode struct {
+	// How this account charges its subaccounts. `inherit` charges subaccounts this account's rates. `subaccount_rates` charges subaccounts their own rates. `subaccount_rates_collect_difference` charges subaccounts their own rates. With `subaccount_rates_collect_difference`, this account receives the amount above its own rate.
+	Mode UpdateFeesRequestSubaccountFeeModeMode `json:"mode" url:"mode"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UpdateFeesRequestSubaccountFeeMode) GetMode() UpdateFeesRequestSubaccountFeeModeMode {
+	if u == nil {
+		return ""
+	}
+	return u.Mode
+}
+
+func (u *UpdateFeesRequestSubaccountFeeMode) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UpdateFeesRequestSubaccountFeeMode) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetMode sets the Mode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequestSubaccountFeeMode) SetMode(mode UpdateFeesRequestSubaccountFeeModeMode) {
+	u.Mode = mode
+	u.require(updateFeesRequestSubaccountFeeModeFieldMode)
+}
+
+func (u *UpdateFeesRequestSubaccountFeeMode) UnmarshalJSON(data []byte) error {
+	type unmarshaler UpdateFeesRequestSubaccountFeeMode
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UpdateFeesRequestSubaccountFeeMode(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UpdateFeesRequestSubaccountFeeMode) MarshalJSON() ([]byte, error) {
+	type embed UpdateFeesRequestSubaccountFeeMode
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UpdateFeesRequestSubaccountFeeMode) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// How this account charges its subaccounts. `inherit` charges subaccounts this account's rates. `subaccount_rates` charges subaccounts their own rates. `subaccount_rates_collect_difference` charges subaccounts their own rates. With `subaccount_rates_collect_difference`, this account receives the amount above its own rate.
+type UpdateFeesRequestSubaccountFeeModeMode string
+
+const (
+	UpdateFeesRequestSubaccountFeeModeModeInherit                          UpdateFeesRequestSubaccountFeeModeMode = "inherit"
+	UpdateFeesRequestSubaccountFeeModeModeSubaccountRates                  UpdateFeesRequestSubaccountFeeModeMode = "subaccount_rates"
+	UpdateFeesRequestSubaccountFeeModeModeSubaccountRatesCollectDifference UpdateFeesRequestSubaccountFeeModeMode = "subaccount_rates_collect_difference"
+)
+
+func NewUpdateFeesRequestSubaccountFeeModeModeFromString(s string) (UpdateFeesRequestSubaccountFeeModeMode, error) {
+	switch s {
+	case "inherit":
+		return UpdateFeesRequestSubaccountFeeModeModeInherit, nil
+	case "subaccount_rates":
+		return UpdateFeesRequestSubaccountFeeModeModeSubaccountRates, nil
+	case "subaccount_rates_collect_difference":
+		return UpdateFeesRequestSubaccountFeeModeModeSubaccountRatesCollectDifference, nil
+	}
+	var t UpdateFeesRequestSubaccountFeeModeMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateFeesRequestSubaccountFeeModeMode) Ptr() *UpdateFeesRequestSubaccountFeeModeMode {
+	return &u
+}
+
+var (
 	updateFeesRequestTaxCalculationFieldFixed      = big.NewInt(1 << 0)
 	updateFeesRequestTaxCalculationFieldPercentage = big.NewInt(1 << 1)
 	updateFeesRequestTaxCalculationFieldRegions    = big.NewInt(1 << 2)
@@ -9920,10 +10034,11 @@ var (
 	updateFeesRequestFieldRevshare             = big.NewInt(1 << 28)
 	updateFeesRequestFieldSepaDispute          = big.NewInt(1 << 29)
 	updateFeesRequestFieldSepaReturn           = big.NewInt(1 << 30)
-	updateFeesRequestFieldTaxCalculation       = big.NewInt(1 << 31)
-	updateFeesRequestFieldTaxService           = big.NewInt(1 << 32)
-	updateFeesRequestFieldThreeDs              = big.NewInt(1 << 33)
-	updateFeesRequestFieldTransfers            = big.NewInt(1 << 34)
+	updateFeesRequestFieldSubaccountFeeMode    = big.NewInt(1 << 31)
+	updateFeesRequestFieldTaxCalculation       = big.NewInt(1 << 32)
+	updateFeesRequestFieldTaxService           = big.NewInt(1 << 33)
+	updateFeesRequestFieldThreeDs              = big.NewInt(1 << 34)
+	updateFeesRequestFieldTransfers            = big.NewInt(1 << 35)
 )
 
 type UpdateFeesRequest struct {
@@ -9989,6 +10104,8 @@ type UpdateFeesRequest struct {
 	SepaDispute *UpdateFeesRequestSepaDispute `json:"sepa_dispute,omitempty" url:"-"`
 	// The fields of a fee the caller may change. Only the keys sent are replaced.
 	SepaReturn *UpdateFeesRequestSepaReturn `json:"sepa_return,omitempty" url:"-"`
+	// Changes how this account charges its subaccounts. Only an account without a parent account can set it. An account can change `inherit` to either other mode. It can change `subaccount_rates_collect_difference` to `subaccount_rates`. Whop must make other changes.
+	SubaccountFeeMode *UpdateFeesRequestSubaccountFeeMode `json:"subaccount_fee_mode,omitempty" url:"-"`
 	// The fields of a fee the caller may change. Only the keys sent are replaced.
 	TaxCalculation *UpdateFeesRequestTaxCalculation `json:"tax_calculation,omitempty" url:"-"`
 	// The fields of a fee the caller may change. Only the keys sent are replaced.
@@ -10226,6 +10343,13 @@ func (u *UpdateFeesRequest) SetSepaDispute(sepaDispute *UpdateFeesRequestSepaDis
 func (u *UpdateFeesRequest) SetSepaReturn(sepaReturn *UpdateFeesRequestSepaReturn) {
 	u.SepaReturn = sepaReturn
 	u.require(updateFeesRequestFieldSepaReturn)
+}
+
+// SetSubaccountFeeMode sets the SubaccountFeeMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateFeesRequest) SetSubaccountFeeMode(subaccountFeeMode *UpdateFeesRequestSubaccountFeeMode) {
+	u.SubaccountFeeMode = subaccountFeeMode
+	u.require(updateFeesRequestFieldSubaccountFeeMode)
 }
 
 // SetTaxCalculation sets the TaxCalculation field and marks it as non-optional;

@@ -3819,17 +3819,19 @@ var (
 	accountFeesFieldRevshare             = big.NewInt(1 << 28)
 	accountFeesFieldSepaDispute          = big.NewInt(1 << 29)
 	accountFeesFieldSepaReturn           = big.NewInt(1 << 30)
-	accountFeesFieldTaxCalculation       = big.NewInt(1 << 31)
-	accountFeesFieldTaxService           = big.NewInt(1 << 32)
-	accountFeesFieldThreeDs              = big.NewInt(1 << 33)
-	accountFeesFieldTransfers            = big.NewInt(1 << 34)
+	accountFeesFieldSubaccountFeeMode    = big.NewInt(1 << 31)
+	accountFeesFieldTaxCalculation       = big.NewInt(1 << 32)
+	accountFeesFieldTaxService           = big.NewInt(1 << 33)
+	accountFeesFieldThreeDs              = big.NewInt(1 << 34)
+	accountFeesFieldTransfers            = big.NewInt(1 << 35)
 )
 
 // accountFeesNullableFields maps the wire names of AccountFees's nullable fields (required or optional) to their field bits.
 var accountFeesNullableFields = map[string]*big.Int{
-	"child_markups":     accountFeesFieldChildMarkups,
-	"markups":           accountFeesFieldMarkups,
-	"parent_account_id": accountFeesFieldParentAccountID,
+	"child_markups":       accountFeesFieldChildMarkups,
+	"markups":             accountFeesFieldMarkups,
+	"parent_account_id":   accountFeesFieldParentAccountID,
+	"subaccount_fee_mode": accountFeesFieldSubaccountFeeMode,
 }
 
 type AccountFees struct {
@@ -3895,6 +3897,8 @@ type AccountFees struct {
 	SepaDispute *AccountFee `json:"sepa_dispute" url:"sepa_dispute"`
 	// A flat fee in euros (EUR), charged when the buyer's bank returns a SEPA Direct Debit payment unpaid.
 	SepaReturn *AccountFee `json:"sepa_return" url:"sepa_return"`
+	// How this account charges its subaccounts, and whether the caller can change it. `null` for a subaccount.
+	SubaccountFeeMode *AccountSubaccountFeeMode `json:"subaccount_fee_mode,omitempty" url:"subaccount_fee_mode,omitempty"`
 	// Charged when Whop calculates tax on a payment and the account remits the tax itself. An account whose `tax_remitted_by` is `null` pays it on every taxed payment.
 	TaxCalculation *AccountFee `json:"tax_calculation" url:"tax_calculation"`
 	// Charged when Whop collects and remits tax on the account's behalf.
@@ -4126,6 +4130,13 @@ func (a *AccountFees) GetSepaReturn() *AccountFee {
 		return nil
 	}
 	return a.SepaReturn
+}
+
+func (a *AccountFees) GetSubaccountFeeMode() *AccountSubaccountFeeMode {
+	if a == nil {
+		return nil
+	}
+	return a.SubaccountFeeMode
 }
 
 func (a *AccountFees) GetTaxCalculation() *AccountFee {
@@ -4387,6 +4398,13 @@ func (a *AccountFees) SetSepaDispute(sepaDispute *AccountFee) {
 func (a *AccountFees) SetSepaReturn(sepaReturn *AccountFee) {
 	a.SepaReturn = sepaReturn
 	a.require(accountFeesFieldSepaReturn)
+}
+
+// SetSubaccountFeeMode sets the SubaccountFeeMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountFees) SetSubaccountFeeMode(subaccountFeeMode *AccountSubaccountFeeMode) {
+	a.SubaccountFeeMode = subaccountFeeMode
+	a.require(accountFeesFieldSubaccountFeeMode)
 }
 
 // SetTaxCalculation sets the TaxCalculation field and marks it as non-optional;
@@ -6667,6 +6685,230 @@ func NewAccountReserveUnlockTypeTypeFromString(s string) (AccountReserveUnlockTy
 }
 
 func (a AccountReserveUnlockTypeType) Ptr() *AccountReserveUnlockTypeType {
+	return &a
+}
+
+var (
+	accountSubaccountFeeModeFieldAdjustable         = big.NewInt(1 << 0)
+	accountSubaccountFeeModeFieldAvailableModes     = big.NewInt(1 << 1)
+	accountSubaccountFeeModeFieldMode               = big.NewInt(1 << 2)
+	accountSubaccountFeeModeFieldUnadjustableReason = big.NewInt(1 << 3)
+)
+
+// accountSubaccountFeeModeNullableFields maps the wire names of AccountSubaccountFeeMode's nullable fields (required or optional) to their field bits.
+var accountSubaccountFeeModeNullableFields = map[string]*big.Int{
+	"unadjustable_reason": accountSubaccountFeeModeFieldUnadjustableReason,
+}
+
+type AccountSubaccountFeeMode struct {
+	// Whether the caller can change the mode through `PATCH`. True for the platform's team holding the `company:update_child_fees` scope, while a change is available.
+	Adjustable     bool                                         `json:"adjustable" url:"adjustable"`
+	AvailableModes []AccountSubaccountFeeModeAvailableModesItem `json:"available_modes" url:"available_modes"`
+	// How this account charges its subaccounts. `inherit` charges subaccounts this account's rates. `subaccount_rates` charges subaccounts their own rates. `subaccount_rates_collect_difference` charges subaccounts their own rates. With `subaccount_rates_collect_difference`, this account receives the amount above its own rate.
+	Mode AccountSubaccountFeeModeMode `json:"mode" url:"mode"`
+	// Why the caller cannot change the mode, or `null` when `adjustable`. `requires_whop` means that only Whop can make the next change.
+	UnadjustableReason *AccountSubaccountFeeModeUnadjustableReason `json:"unadjustable_reason,omitempty" url:"unadjustable_reason,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (a *AccountSubaccountFeeMode) GetAdjustable() bool {
+	if a == nil {
+		return false
+	}
+	return a.Adjustable
+}
+
+func (a *AccountSubaccountFeeMode) GetAvailableModes() []AccountSubaccountFeeModeAvailableModesItem {
+	if a == nil {
+		return nil
+	}
+	return a.AvailableModes
+}
+
+func (a *AccountSubaccountFeeMode) GetMode() AccountSubaccountFeeModeMode {
+	if a == nil {
+		return ""
+	}
+	return a.Mode
+}
+
+func (a *AccountSubaccountFeeMode) GetUnadjustableReason() *AccountSubaccountFeeModeUnadjustableReason {
+	if a == nil {
+		return nil
+	}
+	return a.UnadjustableReason
+}
+
+func (a *AccountSubaccountFeeMode) GetExtraProperties() map[string]interface{} {
+	if a == nil {
+		return nil
+	}
+	return a.extraProperties
+}
+
+func (a *AccountSubaccountFeeMode) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetAdjustable sets the Adjustable field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountSubaccountFeeMode) SetAdjustable(adjustable bool) {
+	a.Adjustable = adjustable
+	a.require(accountSubaccountFeeModeFieldAdjustable)
+}
+
+// SetAvailableModes sets the AvailableModes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountSubaccountFeeMode) SetAvailableModes(availableModes []AccountSubaccountFeeModeAvailableModesItem) {
+	a.AvailableModes = availableModes
+	a.require(accountSubaccountFeeModeFieldAvailableModes)
+}
+
+// SetMode sets the Mode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountSubaccountFeeMode) SetMode(mode AccountSubaccountFeeModeMode) {
+	a.Mode = mode
+	a.require(accountSubaccountFeeModeFieldMode)
+}
+
+// SetUnadjustableReason sets the UnadjustableReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountSubaccountFeeMode) SetUnadjustableReason(unadjustableReason *AccountSubaccountFeeModeUnadjustableReason) {
+	a.UnadjustableReason = unadjustableReason
+	a.require(accountSubaccountFeeModeFieldUnadjustableReason)
+}
+
+func (a *AccountSubaccountFeeMode) UnmarshalJSON(data []byte) error {
+	type unmarshaler AccountSubaccountFeeMode
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*a = AccountSubaccountFeeMode(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *a)
+	if err != nil {
+		return err
+	}
+	a.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, accountSubaccountFeeModeNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		a.require(presentFields)
+	}
+	a.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (a *AccountSubaccountFeeMode) MarshalJSON() ([]byte, error) {
+	type embed AccountSubaccountFeeMode
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (a *AccountSubaccountFeeMode) String() string {
+	if a == nil {
+		return "<nil>"
+	}
+	if len(a.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(a); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", a)
+}
+
+// The modes the caller can change to through `PATCH`. Empty when `adjustable` is false.
+type AccountSubaccountFeeModeAvailableModesItem string
+
+const (
+	AccountSubaccountFeeModeAvailableModesItemInherit                          AccountSubaccountFeeModeAvailableModesItem = "inherit"
+	AccountSubaccountFeeModeAvailableModesItemSubaccountRates                  AccountSubaccountFeeModeAvailableModesItem = "subaccount_rates"
+	AccountSubaccountFeeModeAvailableModesItemSubaccountRatesCollectDifference AccountSubaccountFeeModeAvailableModesItem = "subaccount_rates_collect_difference"
+)
+
+func NewAccountSubaccountFeeModeAvailableModesItemFromString(s string) (AccountSubaccountFeeModeAvailableModesItem, error) {
+	switch s {
+	case "inherit":
+		return AccountSubaccountFeeModeAvailableModesItemInherit, nil
+	case "subaccount_rates":
+		return AccountSubaccountFeeModeAvailableModesItemSubaccountRates, nil
+	case "subaccount_rates_collect_difference":
+		return AccountSubaccountFeeModeAvailableModesItemSubaccountRatesCollectDifference, nil
+	}
+	var t AccountSubaccountFeeModeAvailableModesItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountSubaccountFeeModeAvailableModesItem) Ptr() *AccountSubaccountFeeModeAvailableModesItem {
+	return &a
+}
+
+// How this account charges its subaccounts. `inherit` charges subaccounts this account's rates. `subaccount_rates` charges subaccounts their own rates. `subaccount_rates_collect_difference` charges subaccounts their own rates. With `subaccount_rates_collect_difference`, this account receives the amount above its own rate.
+type AccountSubaccountFeeModeMode string
+
+const (
+	AccountSubaccountFeeModeModeInherit                          AccountSubaccountFeeModeMode = "inherit"
+	AccountSubaccountFeeModeModeSubaccountRates                  AccountSubaccountFeeModeMode = "subaccount_rates"
+	AccountSubaccountFeeModeModeSubaccountRatesCollectDifference AccountSubaccountFeeModeMode = "subaccount_rates_collect_difference"
+)
+
+func NewAccountSubaccountFeeModeModeFromString(s string) (AccountSubaccountFeeModeMode, error) {
+	switch s {
+	case "inherit":
+		return AccountSubaccountFeeModeModeInherit, nil
+	case "subaccount_rates":
+		return AccountSubaccountFeeModeModeSubaccountRates, nil
+	case "subaccount_rates_collect_difference":
+		return AccountSubaccountFeeModeModeSubaccountRatesCollectDifference, nil
+	}
+	var t AccountSubaccountFeeModeMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountSubaccountFeeModeMode) Ptr() *AccountSubaccountFeeModeMode {
+	return &a
+}
+
+// Why the caller cannot change the mode, or `null` when `adjustable`. `requires_whop` means that only Whop can make the next change.
+type AccountSubaccountFeeModeUnadjustableReason string
+
+const (
+	AccountSubaccountFeeModeUnadjustableReasonNotPermitted AccountSubaccountFeeModeUnadjustableReason = "not_permitted"
+	AccountSubaccountFeeModeUnadjustableReasonRequiresWhop AccountSubaccountFeeModeUnadjustableReason = "requires_whop"
+)
+
+func NewAccountSubaccountFeeModeUnadjustableReasonFromString(s string) (AccountSubaccountFeeModeUnadjustableReason, error) {
+	switch s {
+	case "not_permitted":
+		return AccountSubaccountFeeModeUnadjustableReasonNotPermitted, nil
+	case "requires_whop":
+		return AccountSubaccountFeeModeUnadjustableReasonRequiresWhop, nil
+	}
+	var t AccountSubaccountFeeModeUnadjustableReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountSubaccountFeeModeUnadjustableReason) Ptr() *AccountSubaccountFeeModeUnadjustableReason {
 	return &a
 }
 
