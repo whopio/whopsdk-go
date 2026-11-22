@@ -60338,6 +60338,14 @@ func TestSettersMarkExplicitLedgerActivityResourceTwo(t *testing.T) {
 }
 
 func TestSettersLedgerActivitySource(t *testing.T) {
+	t.Run("SetAccountID", func(t *testing.T) {
+		obj := &LedgerActivitySource{}
+		var fernTestValueAccountID *string
+		obj.SetAccountID(fernTestValueAccountID)
+		assert.Equal(t, fernTestValueAccountID, obj.AccountID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAmountFloat", func(t *testing.T) {
 		obj := &LedgerActivitySource{}
 		var fernTestValueAmountFloat *float64
@@ -60546,6 +60554,14 @@ func TestSettersLedgerActivitySource(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetTitle", func(t *testing.T) {
+		obj := &LedgerActivitySource{}
+		var fernTestValueTitle *string
+		obj.SetTitle(fernTestValueTitle)
+		assert.Equal(t, fernTestValueTitle, obj.Title)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetToAmount", func(t *testing.T) {
 		obj := &LedgerActivitySource{}
 		var fernTestValueToAmount *string
@@ -60581,6 +60597,39 @@ func TestSettersLedgerActivitySource(t *testing.T) {
 }
 
 func TestGettersLedgerActivitySource(t *testing.T) {
+	t.Run("GetAccountID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &LedgerActivitySource{}
+		var expected *string
+		obj.AccountID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAccountID(), "getter should return the property value")
+	})
+
+	t.Run("GetAccountID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &LedgerActivitySource{}
+		obj.AccountID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAccountID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAccountID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *LedgerActivitySource
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAccountID() // Should return zero value
+	})
+
 	t.Run("GetAmountFloat", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -61419,6 +61468,39 @@ func TestGettersLedgerActivitySource(t *testing.T) {
 		_ = obj.GetStatus() // Should return zero value
 	})
 
+	t.Run("GetTitle", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &LedgerActivitySource{}
+		var expected *string
+		obj.Title = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetTitle(), "getter should return the property value")
+	})
+
+	t.Run("GetTitle_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &LedgerActivitySource{}
+		obj.Title = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetTitle(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetTitle_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *LedgerActivitySource
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetTitle() // Should return zero value
+	})
+
 	t.Run("GetToAmount", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -61554,6 +61636,37 @@ func TestGettersLedgerActivitySource(t *testing.T) {
 }
 
 func TestSettersMarkExplicitLedgerActivitySource(t *testing.T) {
+	t.Run("SetAccountID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &LedgerActivitySource{}
+		var fernTestValueAccountID *string
+
+		// Act
+		obj.SetAccountID(fernTestValueAccountID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetAmountFloat_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -62337,6 +62450,37 @@ func TestSettersMarkExplicitLedgerActivitySource(t *testing.T) {
 
 		// Act
 		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetTitle_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &LedgerActivitySource{}
+		var fernTestValueTitle *string
+
+		// Act
+		obj.SetTitle(fernTestValueTitle)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -186597,6 +186741,7 @@ func TestOptionalNullableRoundTripLedgerActivity(t *testing.T) {
 
 func TestOptionalNullableRoundTripLedgerActivitySource(t *testing.T) {
 	optionalNullableKeys := []string{
+		"account_id",
 		"amount_float",
 		"card_brand",
 		"chain",
@@ -186621,6 +186766,7 @@ func TestOptionalNullableRoundTripLedgerActivitySource(t *testing.T) {
 		"risk_review_hold",
 		"sender_address",
 		"status",
+		"title",
 		"to_amount",
 		"to_currency",
 		"trace_code",
@@ -186637,7 +186783,7 @@ func TestOptionalNullableRoundTripLedgerActivitySource(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj LedgerActivitySource
-		require.NoError(t, json.Unmarshal([]byte(`{"amount_float":null,"card_brand":null,"chain":null,"claim_url":null,"created_at":null,"created_by_user":null,"estimated_arrival":null,"fee_amount":null,"fee_kind":null,"fee_type":null,"from_amount":null,"from_currency":null,"notes":null,"payer_name":null,"payment_amount":null,"payment_method_type":null,"payment_processor":null,"payout_amount":null,"payout_destination":null,"payout_token_nickname":null,"reason":null,"risk_review_hold":null,"sender_address":null,"status":null,"to_amount":null,"to_currency":null,"trace_code":null,"tx_hash":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"account_id":null,"amount_float":null,"card_brand":null,"chain":null,"claim_url":null,"created_at":null,"created_by_user":null,"estimated_arrival":null,"fee_amount":null,"fee_kind":null,"fee_type":null,"from_amount":null,"from_currency":null,"notes":null,"payer_name":null,"payment_amount":null,"payment_method_type":null,"payment_processor":null,"payout_amount":null,"payout_destination":null,"payout_token_nickname":null,"reason":null,"risk_review_hold":null,"sender_address":null,"status":null,"title":null,"to_amount":null,"to_currency":null,"trace_code":null,"tx_hash":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]

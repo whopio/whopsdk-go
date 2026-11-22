@@ -2258,6 +2258,13 @@ func TestEnumRetrieveFinancialReportsRequestLineTypesItem(t *testing.T) {
 		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("ad_affiliate_payout_received"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_ad_balance_funding_receipt", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("ad_balance_funding_receipt")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("ad_balance_funding_receipt"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_ad_budget_release", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("ad_budget_release")
@@ -2270,6 +2277,20 @@ func TestEnumRetrieveFinancialReportsRequestLineTypesItem(t *testing.T) {
 		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("ad_campaign_budget")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("ad_campaign_budget"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_funding_disbursement", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("ad_funding_disbursement")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("ad_funding_disbursement"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_ad_income_receipt", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsRequestLineTypesItemFromString("ad_income_receipt")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsRequestLineTypesItem("ad_income_receipt"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_ad_publisher_payout", func(t *testing.T) {

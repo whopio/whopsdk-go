@@ -203,8 +203,11 @@ type RetrieveFinancialReportsRequestLineTypesItem string
 const (
 	RetrieveFinancialReportsRequestLineTypesItemAccountSettlement                         RetrieveFinancialReportsRequestLineTypesItem = "account_settlement"
 	RetrieveFinancialReportsRequestLineTypesItemAdAffiliatePayoutReceived                 RetrieveFinancialReportsRequestLineTypesItem = "ad_affiliate_payout_received"
+	RetrieveFinancialReportsRequestLineTypesItemAdBalanceFundingReceipt                   RetrieveFinancialReportsRequestLineTypesItem = "ad_balance_funding_receipt"
 	RetrieveFinancialReportsRequestLineTypesItemAdBudgetRelease                           RetrieveFinancialReportsRequestLineTypesItem = "ad_budget_release"
 	RetrieveFinancialReportsRequestLineTypesItemAdCampaignBudget                          RetrieveFinancialReportsRequestLineTypesItem = "ad_campaign_budget"
+	RetrieveFinancialReportsRequestLineTypesItemAdFundingDisbursement                     RetrieveFinancialReportsRequestLineTypesItem = "ad_funding_disbursement"
+	RetrieveFinancialReportsRequestLineTypesItemAdIncomeReceipt                           RetrieveFinancialReportsRequestLineTypesItem = "ad_income_receipt"
 	RetrieveFinancialReportsRequestLineTypesItemAdPublisherPayout                         RetrieveFinancialReportsRequestLineTypesItem = "ad_publisher_payout"
 	RetrieveFinancialReportsRequestLineTypesItemAdPublisherPayoutReceived                 RetrieveFinancialReportsRequestLineTypesItem = "ad_publisher_payout_received"
 	RetrieveFinancialReportsRequestLineTypesItemAdSpendCharge                             RetrieveFinancialReportsRequestLineTypesItem = "ad_spend_charge"
@@ -356,10 +359,16 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 		return RetrieveFinancialReportsRequestLineTypesItemAccountSettlement, nil
 	case "ad_affiliate_payout_received":
 		return RetrieveFinancialReportsRequestLineTypesItemAdAffiliatePayoutReceived, nil
+	case "ad_balance_funding_receipt":
+		return RetrieveFinancialReportsRequestLineTypesItemAdBalanceFundingReceipt, nil
 	case "ad_budget_release":
 		return RetrieveFinancialReportsRequestLineTypesItemAdBudgetRelease, nil
 	case "ad_campaign_budget":
 		return RetrieveFinancialReportsRequestLineTypesItemAdCampaignBudget, nil
+	case "ad_funding_disbursement":
+		return RetrieveFinancialReportsRequestLineTypesItemAdFundingDisbursement, nil
+	case "ad_income_receipt":
+		return RetrieveFinancialReportsRequestLineTypesItemAdIncomeReceipt, nil
 	case "ad_publisher_payout":
 		return RetrieveFinancialReportsRequestLineTypesItemAdPublisherPayout, nil
 	case "ad_publisher_payout_received":
