@@ -7073,6 +7073,14 @@ func TestSettersAccountFees(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSubaccountFeeMode", func(t *testing.T) {
+		obj := &AccountFees{}
+		var fernTestValueSubaccountFeeMode *AccountSubaccountFeeMode
+		obj.SetSubaccountFeeMode(fernTestValueSubaccountFeeMode)
+		assert.Equal(t, fernTestValueSubaccountFeeMode, obj.SubaccountFeeMode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetTaxCalculation", func(t *testing.T) {
 		obj := &AccountFees{}
 		var fernTestValueTaxCalculation *AccountFee
@@ -8119,6 +8127,39 @@ func TestGettersAccountFees(t *testing.T) {
 			}
 		}()
 		_ = obj.GetSepaReturn() // Should return zero value
+	})
+
+	t.Run("GetSubaccountFeeMode", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountFees{}
+		var expected *AccountSubaccountFeeMode
+		obj.SubaccountFeeMode = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSubaccountFeeMode(), "getter should return the property value")
+	})
+
+	t.Run("GetSubaccountFeeMode_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountFees{}
+		obj.SubaccountFeeMode = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSubaccountFeeMode(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSubaccountFeeMode_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountFees
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSubaccountFeeMode() // Should return zero value
 	})
 
 	t.Run("GetTaxCalculation", func(t *testing.T) {
@@ -9194,6 +9235,37 @@ func TestSettersMarkExplicitAccountFees(t *testing.T) {
 
 		// Act
 		obj.SetSepaReturn(fernTestValueSepaReturn)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSubaccountFeeMode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountFees{}
+		var fernTestValueSubaccountFeeMode *AccountSubaccountFeeMode
+
+		// Act
+		obj.SetSubaccountFeeMode(fernTestValueSubaccountFeeMode)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -13997,6 +14069,283 @@ func TestSettersMarkExplicitAccountReserveUnlockType(t *testing.T) {
 
 		// Act
 		obj.SetType(fernTestValueType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersAccountSubaccountFeeMode(t *testing.T) {
+	t.Run("SetAdjustable", func(t *testing.T) {
+		obj := &AccountSubaccountFeeMode{}
+		var fernTestValueAdjustable bool
+		obj.SetAdjustable(fernTestValueAdjustable)
+		assert.Equal(t, fernTestValueAdjustable, obj.Adjustable)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetAvailableModes", func(t *testing.T) {
+		obj := &AccountSubaccountFeeMode{}
+		var fernTestValueAvailableModes []AccountSubaccountFeeModeAvailableModesItem
+		obj.SetAvailableModes(fernTestValueAvailableModes)
+		assert.Equal(t, fernTestValueAvailableModes, obj.AvailableModes)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetMode", func(t *testing.T) {
+		obj := &AccountSubaccountFeeMode{}
+		var fernTestValueMode AccountSubaccountFeeModeMode
+		obj.SetMode(fernTestValueMode)
+		assert.Equal(t, fernTestValueMode, obj.Mode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetUnadjustableReason", func(t *testing.T) {
+		obj := &AccountSubaccountFeeMode{}
+		var fernTestValueUnadjustableReason *AccountSubaccountFeeModeUnadjustableReason
+		obj.SetUnadjustableReason(fernTestValueUnadjustableReason)
+		assert.Equal(t, fernTestValueUnadjustableReason, obj.UnadjustableReason)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersAccountSubaccountFeeMode(t *testing.T) {
+	t.Run("GetAdjustable", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountSubaccountFeeMode{}
+		var expected bool
+		obj.Adjustable = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAdjustable(), "getter should return the property value")
+	})
+
+	t.Run("GetAdjustable_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountSubaccountFeeMode
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAdjustable() // Should return zero value
+	})
+
+	t.Run("GetAvailableModes", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountSubaccountFeeMode{}
+		var expected []AccountSubaccountFeeModeAvailableModesItem
+		obj.AvailableModes = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAvailableModes(), "getter should return the property value")
+	})
+
+	t.Run("GetAvailableModes_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountSubaccountFeeMode{}
+		obj.AvailableModes = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAvailableModes(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAvailableModes_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountSubaccountFeeMode
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAvailableModes() // Should return zero value
+	})
+
+	t.Run("GetMode", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountSubaccountFeeMode{}
+		var expected AccountSubaccountFeeModeMode
+		obj.Mode = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMode(), "getter should return the property value")
+	})
+
+	t.Run("GetMode_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountSubaccountFeeMode
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMode() // Should return zero value
+	})
+
+	t.Run("GetUnadjustableReason", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountSubaccountFeeMode{}
+		var expected *AccountSubaccountFeeModeUnadjustableReason
+		obj.UnadjustableReason = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetUnadjustableReason(), "getter should return the property value")
+	})
+
+	t.Run("GetUnadjustableReason_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountSubaccountFeeMode{}
+		obj.UnadjustableReason = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetUnadjustableReason(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetUnadjustableReason_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountSubaccountFeeMode
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetUnadjustableReason() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitAccountSubaccountFeeMode(t *testing.T) {
+	t.Run("SetAdjustable_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountSubaccountFeeMode{}
+		var fernTestValueAdjustable bool
+
+		// Act
+		obj.SetAdjustable(fernTestValueAdjustable)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAvailableModes_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountSubaccountFeeMode{}
+		var fernTestValueAvailableModes []AccountSubaccountFeeModeAvailableModesItem
+
+		// Act
+		obj.SetAvailableModes(fernTestValueAvailableModes)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountSubaccountFeeMode{}
+		var fernTestValueMode AccountSubaccountFeeModeMode
+
+		// Act
+		obj.SetMode(fernTestValueMode)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetUnadjustableReason_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountSubaccountFeeMode{}
+		var fernTestValueUnadjustableReason *AccountSubaccountFeeModeUnadjustableReason
+
+		// Act
+		obj.SetUnadjustableReason(fernTestValueUnadjustableReason)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -163723,6 +164072,39 @@ func TestJSONMarshalingAccountReserveUnlockType(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingAccountSubaccountFeeMode(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AccountSubaccountFeeMode{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled AccountSubaccountFeeMode
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj AccountSubaccountFeeMode
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj AccountSubaccountFeeMode
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingAccountSummary(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -176509,6 +176891,7 @@ func TestRequiredNullableRoundTripAccountFees(t *testing.T) {
 		"child_markups",
 		"markups",
 		"parent_account_id",
+		"subaccount_fee_mode",
 	}
 	marshalToMap := func(t *testing.T, obj *AccountFees) map[string]json.RawMessage {
 		data, err := json.Marshal(obj)
@@ -176521,7 +176904,7 @@ func TestRequiredNullableRoundTripAccountFees(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj AccountFees
-		require.NoError(t, json.Unmarshal([]byte(`{"child_markups":null,"markups":null,"parent_account_id":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"child_markups":null,"markups":null,"parent_account_id":null,"subaccount_fee_mode":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -176773,6 +177156,49 @@ func TestRequiredNullableRoundTripAccountReserveType(t *testing.T) {
 	t.Run("FreshValueOmits", func(t *testing.T) {
 		t.Parallel()
 		result := marshalToMap(t, &AccountReserveType{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
+func TestRequiredNullableRoundTripAccountSubaccountFeeMode(t *testing.T) {
+	requiredNullableKeys := []string{
+		"unadjustable_reason",
+	}
+	marshalToMap := func(t *testing.T, obj *AccountSubaccountFeeMode) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj AccountSubaccountFeeMode
+		require.NoError(t, json.Unmarshal([]byte(`{"unadjustable_reason":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj AccountSubaccountFeeMode
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &AccountSubaccountFeeMode{})
 		for _, key := range requiredNullableKeys {
 			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
 		}
@@ -187603,6 +188029,22 @@ func TestStringAccountReserveUnlockType(t *testing.T) {
 	})
 }
 
+func TestStringAccountSubaccountFeeMode(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &AccountSubaccountFeeMode{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountSubaccountFeeMode
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringAccountSummary(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -195413,6 +195855,107 @@ func TestEnumAccountReserveUnlockTypeType(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewAccountReserveUnlockTypeTypeFromString("regular")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumAccountSubaccountFeeModeAvailableModesItem(t *testing.T) {
+	t.Run("NewFromString_inherit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountSubaccountFeeModeAvailableModesItemFromString("inherit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountSubaccountFeeModeAvailableModesItem("inherit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_subaccount_rates", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountSubaccountFeeModeAvailableModesItemFromString("subaccount_rates")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountSubaccountFeeModeAvailableModesItem("subaccount_rates"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_subaccount_rates_collect_difference", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountSubaccountFeeModeAvailableModesItemFromString("subaccount_rates_collect_difference")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountSubaccountFeeModeAvailableModesItem("subaccount_rates_collect_difference"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewAccountSubaccountFeeModeAvailableModesItemFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewAccountSubaccountFeeModeAvailableModesItemFromString("inherit")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumAccountSubaccountFeeModeMode(t *testing.T) {
+	t.Run("NewFromString_inherit", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountSubaccountFeeModeModeFromString("inherit")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountSubaccountFeeModeMode("inherit"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_subaccount_rates", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountSubaccountFeeModeModeFromString("subaccount_rates")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountSubaccountFeeModeMode("subaccount_rates"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_subaccount_rates_collect_difference", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountSubaccountFeeModeModeFromString("subaccount_rates_collect_difference")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountSubaccountFeeModeMode("subaccount_rates_collect_difference"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewAccountSubaccountFeeModeModeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewAccountSubaccountFeeModeModeFromString("inherit")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumAccountSubaccountFeeModeUnadjustableReason(t *testing.T) {
+	t.Run("NewFromString_not_permitted", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountSubaccountFeeModeUnadjustableReasonFromString("not_permitted")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountSubaccountFeeModeUnadjustableReason("not_permitted"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_requires_whop", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountSubaccountFeeModeUnadjustableReasonFromString("requires_whop")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountSubaccountFeeModeUnadjustableReason("requires_whop"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewAccountSubaccountFeeModeUnadjustableReasonFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewAccountSubaccountFeeModeUnadjustableReasonFromString("not_permitted")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -212300,6 +212843,29 @@ func TestExtraPropertiesAccountReserveUnlockType(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *AccountReserveUnlockType
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesAccountSubaccountFeeMode(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &AccountSubaccountFeeMode{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AccountSubaccountFeeMode
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

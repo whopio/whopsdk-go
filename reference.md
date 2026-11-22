@@ -47116,6 +47116,14 @@ client.Accounts.Fees.Update(
 <dl>
 <dd>
 
+**subaccountFeeMode:** `*accounts.UpdateFeesRequestSubaccountFeeMode` — Changes how this account charges its subaccounts. Only an account without a parent account can set it. An account can change `inherit` to either other mode. It can change `subaccount_rates_collect_difference` to `subaccount_rates`. Whop must make other changes.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **taxCalculation:** `*accounts.UpdateFeesRequestTaxCalculation` — The fields of a fee the caller may change. Only the keys sent are replaced.
     
 </dd>
