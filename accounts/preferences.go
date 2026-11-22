@@ -133,7 +133,7 @@ type RetrievePreferencesResponse struct {
 	FailedPaymentEmails bool `json:"failed_payment_emails" url:"failed_payment_emails"`
 	// The account's own cancel reasons, in the order members see them when they cancel. Each is filed under a standard category, saved as the membership's `cancel_option`, so reports keep grouping cancellations. Empty when the account uses Whop's default reasons.
 	FeedbackOptions []*RetrievePreferencesResponseFeedbackOptionsItem `json:"feedback_options" url:"feedback_options"`
-	// The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account's business category cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `account` means the account is the merchant of record.
+	// The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `account` means the account is the merchant of record.
 	MerchantOfRecord *RetrievePreferencesResponseMerchantOfRecord `json:"merchant_of_record,omitempty" url:"merchant_of_record,omitempty"`
 	// Whether all active account payment rules apply to future off-session charges, including renewals. Off by default. Requires the payment:manage scope to change.
 	OffSessionPaymentRules bool `json:"off_session_payment_rules" url:"off_session_payment_rules"`
@@ -2097,7 +2097,7 @@ func (r RetrievePreferencesResponseFeedbackOptionsItemCategory) Ptr() *RetrieveP
 	return &r
 }
 
-// The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account's business category cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `account` means the account is the merchant of record.
+// The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `account` means the account is the merchant of record.
 type RetrievePreferencesResponseMerchantOfRecord string
 
 const (
@@ -3493,7 +3493,7 @@ func (u UpdatePreferencesRequestFeedbackOptionsItemCategory) Ptr() *UpdatePrefer
 	return &u
 }
 
-// Set it to `account` to make the account the merchant of record. Only some business categories can switch. The business must be verified. The switch cannot be undone. The response shows `pending` until approval. Checkout takes no payments until then. After the switch, the account accepts only card, Apple Pay, Google Pay and crypto payments. PayPal, buy now pay later and local payment methods stop. Requires the `payout:account:update` scope on your API key.
+// Set it to `account` to make the account the merchant of record. Only some business categories can switch. A subaccount can also switch when Whop has approved its platform. Its business category must not be prohibited. The business must be verified. The switch cannot be undone. The response shows `pending` until approval. Checkout takes no payments until then. After the switch, the account accepts only card, Apple Pay, Google Pay and crypto payments. PayPal, buy now pay later and local payment methods stop. Requires the `payout:account:update` scope on your API key.
 type UpdatePreferencesRequestMerchantOfRecord string
 
 const (
@@ -3663,7 +3663,7 @@ type UpdatePreferencesResponse struct {
 	FailedPaymentEmails bool `json:"failed_payment_emails" url:"failed_payment_emails"`
 	// The account's own cancel reasons, in the order members see them when they cancel. Each is filed under a standard category, saved as the membership's `cancel_option`, so reports keep grouping cancellations. Empty when the account uses Whop's default reasons.
 	FeedbackOptions []*UpdatePreferencesResponseFeedbackOptionsItem `json:"feedback_options" url:"feedback_options"`
-	// The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account's business category cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `account` means the account is the merchant of record.
+	// The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `account` means the account is the merchant of record.
 	MerchantOfRecord *UpdatePreferencesResponseMerchantOfRecord `json:"merchant_of_record,omitempty" url:"merchant_of_record,omitempty"`
 	// Whether all active account payment rules apply to future off-session charges, including renewals. Off by default. Requires the payment:manage scope to change.
 	OffSessionPaymentRules bool `json:"off_session_payment_rules" url:"off_session_payment_rules"`
@@ -5627,7 +5627,7 @@ func (u UpdatePreferencesResponseFeedbackOptionsItemCategory) Ptr() *UpdatePrefe
 	return &u
 }
 
-// The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account's business category cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `account` means the account is the merchant of record.
+// The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `account` means the account is the merchant of record.
 type UpdatePreferencesResponseMerchantOfRecord string
 
 const (
@@ -5771,7 +5771,7 @@ type UpdatePreferencesRequest struct {
 	FailedPaymentEmails *bool `json:"failed_payment_emails,omitempty" url:"-"`
 	// Replaces the account's own cancel reasons, shown to members in this order when they cancel. Pass an option's `id` to keep it, for example when renaming it. Options without an `id` are added, and options left out are removed. Pass an empty array to go back to Whop's default reasons. Members who already picked an option keep the label they saw. Requires the `company:manage_checkout` scope on your API key.
 	FeedbackOptions []*UpdatePreferencesRequestFeedbackOptionsItem `json:"feedback_options,omitempty" url:"-"`
-	// Set it to `account` to make the account the merchant of record. Only some business categories can switch. The business must be verified. The switch cannot be undone. The response shows `pending` until approval. Checkout takes no payments until then. After the switch, the account accepts only card, Apple Pay, Google Pay and crypto payments. PayPal, buy now pay later and local payment methods stop. Requires the `payout:account:update` scope on your API key.
+	// Set it to `account` to make the account the merchant of record. Only some business categories can switch. A subaccount can also switch when Whop has approved its platform. Its business category must not be prohibited. The business must be verified. The switch cannot be undone. The response shows `pending` until approval. Checkout takes no payments until then. After the switch, the account accepts only card, Apple Pay, Google Pay and crypto payments. PayPal, buy now pay later and local payment methods stop. Requires the `payout:account:update` scope on your API key.
 	MerchantOfRecord *UpdatePreferencesRequestMerchantOfRecord `json:"merchant_of_record,omitempty" url:"-"`
 	// Whether this account's active payment rules apply to future off-session charges, including renewals. Off by default. Requires the payment:manage scope on your API key.
 	OffSessionPaymentRules *bool `json:"off_session_payment_rules,omitempty" url:"-"`

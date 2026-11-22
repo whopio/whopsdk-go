@@ -1117,6 +1117,14 @@ client.Accounts.Update(
 <dl>
 <dd>
 
+**statementDescriptor:** `*string` — The text on buyers' card statements for this account's payments. It must be 5 to 22 characters with at least one letter, using only A-Z and 0-9 after any `WHOP*` prefix. It must start with `WHOP*` while Whop is the merchant of record. Once the account has switched to being its own merchant of record (`merchant_of_record` in account preferences), it can be set without the prefix. `null` clears it. Requires the `payout:account:update` scope.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **storePageConfig:** `*whopsdk.UpdateAccountsRequestStorePageConfig` — Account store page display configuration.
     
 </dd>
@@ -31912,7 +31920,7 @@ client.Payments.Create(
 <dl>
 <dd>
 
-**statementDescriptor:** `*string` — Overrides the text on the buyer's card statement for this payment only. Takes precedence over the product's and account's custom descriptors, and changes neither. Must start with `WHOP*` unless the business processes as the merchant of record. For businesses processing as the merchant of record, omit the `WHOP*` prefix; the descriptor appears as provided. Must be 5-22 characters, contain at least one letter, and use only Latin letters, numbers, spaces, underscores, hyphens, or asterisks.
+**statementDescriptor:** `*string` — Overrides the text on the buyer's card statement for this payment only. Takes precedence over the product's and account's custom descriptors, and changes neither. Must start with `WHOP*` unless the business processes as the merchant of record. For a business processing as the merchant of record, Whop removes a `WHOP*` prefix when at least 5 characters, including a letter, remain. Must be 5-22 characters, contain at least one letter, and use only Latin letters, numbers, spaces, underscores, hyphens, or asterisks.
     
 </dd>
 </dl>
@@ -47502,7 +47510,7 @@ client.Accounts.Preferences.Update(
 <dl>
 <dd>
 
-**merchantOfRecord:** `*accounts.UpdatePreferencesRequestMerchantOfRecord` — Set it to `account` to make the account the merchant of record. Only some business categories can switch. The business must be verified. The switch cannot be undone. The response shows `pending` until approval. Checkout takes no payments until then. After the switch, the account accepts only card, Apple Pay, Google Pay and crypto payments. PayPal, buy now pay later and local payment methods stop. Requires the `payout:account:update` scope on your API key.
+**merchantOfRecord:** `*accounts.UpdatePreferencesRequestMerchantOfRecord` — Set it to `account` to make the account the merchant of record. Only some business categories can switch. A subaccount can also switch when Whop has approved its platform. Its business category must not be prohibited. The business must be verified. The switch cannot be undone. The response shows `pending` until approval. Checkout takes no payments until then. After the switch, the account accepts only card, Apple Pay, Google Pay and crypto payments. PayPal, buy now pay later and local payment methods stop. Requires the `payout:account:update` scope on your API key.
     
 </dd>
 </dl>
