@@ -9909,11 +9909,11 @@ var (
 	updatePaymentsRequestLineItemsItemVariantFieldProduct      = big.NewInt(1 << 1)
 )
 
-// A one-time line to add. A payment carries one added line per product, so a line for a product that already has one replaces it.
+// A line to add. Each product holds one added line, so a new line for the same product replaces it.
 type UpdatePaymentsRequestLineItemsItemVariant struct {
-	// The line's price in the payment's currency, at most two decimal places. 0 takes the product's added line off.
+	// Price in the payment's currency, up to two decimal places. `0` removes the product's added line.
 	InitialPrice float64 `json:"initial_price" url:"initial_price"`
-	// The product the line belongs to. It is found by `external_identifier` and created hidden when the account has none, so it never shows in the store.
+	// Product for the line, matched by `external_identifier`. Created hidden if it doesn't exist. An existing product must be hidden.
 	Product *UpdatePaymentsRequestLineItemsItemVariantProduct `json:"product" url:"product"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -10014,11 +10014,11 @@ var (
 	updatePaymentsRequestLineItemsItemVariantProductFieldTitle              = big.NewInt(1 << 1)
 )
 
-// The product the line belongs to. It is found by `external_identifier` and created hidden when the account has none, so it never shows in the store.
+// Product for the line, matched by `external_identifier`. Created hidden if it doesn't exist. An existing product must be hidden.
 type UpdatePaymentsRequestLineItemsItemVariantProduct struct {
 	// Your identifier for the product.
 	ExternalIdentifier string `json:"external_identifier" url:"external_identifier"`
-	// The product's name, also the line's label on the receipt.
+	// Product name, shown as the line's label on the receipt.
 	Title string `json:"title" url:"title"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -10332,7 +10332,7 @@ var (
 type UpdatePaymentsRequest struct {
 	// The payment, prefixed `pay_`.
 	ID string `json:"-" url:"-"`
-	// The line items of an in-person payment, changed after the reader reads the card and before the payment is captured. The list replaces the current one. Send each line already on the payment back with its `id`, and add a line with a one-time `variant`. Only lines added this way can change or be left out, and leaving one out removes it. Added lines aren't taxed. On an open payment, change them before you confirm the payment on the reader, within Stripe's 30 seconds. On a payment created with `capture: false`, change them before you capture, then capture the payment for its new `total`. Off by default. Contact Whop support to turn it on for your account.
+	// Off by default. Whop support must turn it on for your account. Replaces an in-person payment's line items after the card is read. On an open payment, update within 30 seconds of the card read, before the reader confirms it. On a `capture: false` payment, update before you capture it for the new `total`. Send every purchased line back by `id`. Added lines can be kept by `id`, added with `variant`, or removed by leaving them out. Added lines aren't taxed.
 	LineItems []*UpdatePaymentsRequestLineItemsItem `json:"line_items,omitempty" url:"-"`
 	// Where the buyer continues after completing an off-site step. An absolute https URL without credentials, at most 2,048 characters. Only for payments created with a `confirmation_token`, and only until the buyer has returned. Omit it to leave it unchanged.
 	ReturnURL *string `json:"return_url,omitempty" url:"-"`
