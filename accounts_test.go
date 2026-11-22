@@ -2573,6 +2573,14 @@ func TestSettersAccount(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMerchantOfRecord", func(t *testing.T) {
+		obj := &Account{}
+		var fernTestValueMerchantOfRecord *AccountMerchantOfRecord
+		obj.SetMerchantOfRecord(fernTestValueMerchantOfRecord)
+		assert.Equal(t, fernTestValueMerchantOfRecord, obj.MerchantOfRecord)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetMetadata", func(t *testing.T) {
 		obj := &Account{}
 		var fernTestValueMetadata map[string]any
@@ -2786,6 +2794,14 @@ func TestSettersAccount(t *testing.T) {
 		var fernTestValueSocialLinks []*AccountSocialLink
 		obj.SetSocialLinks(fernTestValueSocialLinks)
 		assert.Equal(t, fernTestValueSocialLinks, obj.SocialLinks)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetStatementDescriptor", func(t *testing.T) {
+		obj := &Account{}
+		var fernTestValueStatementDescriptor *string
+		obj.SetStatementDescriptor(fernTestValueStatementDescriptor)
+		assert.Equal(t, fernTestValueStatementDescriptor, obj.StatementDescriptor)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -3890,6 +3906,39 @@ func TestGettersAccount(t *testing.T) {
 		_ = obj.GetLogoURL() // Should return zero value
 	})
 
+	t.Run("GetMerchantOfRecord", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var expected *AccountMerchantOfRecord
+		obj.MerchantOfRecord = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetMerchantOfRecord(), "getter should return the property value")
+	})
+
+	t.Run("GetMerchantOfRecord_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		obj.MerchantOfRecord = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetMerchantOfRecord(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetMerchantOfRecord_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Account
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetMerchantOfRecord() // Should return zero value
+	})
+
 	t.Run("GetMetadata", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -4709,6 +4758,39 @@ func TestGettersAccount(t *testing.T) {
 			}
 		}()
 		_ = obj.GetSocialLinks() // Should return zero value
+	})
+
+	t.Run("GetStatementDescriptor", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var expected *string
+		obj.StatementDescriptor = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetStatementDescriptor(), "getter should return the property value")
+	})
+
+	t.Run("GetStatementDescriptor_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		obj.StatementDescriptor = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetStatementDescriptor(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetStatementDescriptor_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Account
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetStatementDescriptor() // Should return zero value
 	})
 
 	t.Run("GetStatus", func(t *testing.T) {
@@ -6317,6 +6399,37 @@ func TestSettersMarkExplicitAccount(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetMerchantOfRecord_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var fernTestValueMerchantOfRecord *AccountMerchantOfRecord
+
+		// Act
+		obj.SetMerchantOfRecord(fernTestValueMerchantOfRecord)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetMetadata_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -7131,6 +7244,37 @@ func TestSettersMarkExplicitAccount(t *testing.T) {
 
 		// Act
 		obj.SetSocialLinks(fernTestValueSocialLinks)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStatementDescriptor_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Account{}
+		var fernTestValueStatementDescriptor *string
+
+		// Act
+		obj.SetStatementDescriptor(fernTestValueStatementDescriptor)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -19127,6 +19271,14 @@ func TestSettersUpdateAccountsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetStatementDescriptor", func(t *testing.T) {
+		obj := &UpdateAccountsRequest{}
+		var fernTestValueStatementDescriptor *string
+		obj.SetStatementDescriptor(fernTestValueStatementDescriptor)
+		assert.Equal(t, fernTestValueStatementDescriptor, obj.StatementDescriptor)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetStorePageConfig", func(t *testing.T) {
 		obj := &UpdateAccountsRequest{}
 		var fernTestValueStorePageConfig *UpdateAccountsRequestStorePageConfig
@@ -20327,6 +20479,37 @@ func TestSettersMarkExplicitUpdateAccountsRequest(t *testing.T) {
 
 		// Act
 		obj.SetSocialLinks(fernTestValueSocialLinks)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetStatementDescriptor_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateAccountsRequest{}
+		var fernTestValueStatementDescriptor *string
+
+		// Act
+		obj.SetStatementDescriptor(fernTestValueStatementDescriptor)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -22295,6 +22478,7 @@ func TestRequiredNullableRoundTripAccount(t *testing.T) {
 		"invoice_prefix",
 		"level",
 		"logo_url",
+		"merchant_of_record",
 		"onboarding_type",
 		"opengraph_image_url",
 		"opengraph_image_variant",
@@ -22309,6 +22493,7 @@ func TestRequiredNullableRoundTripAccount(t *testing.T) {
 		"required_actions",
 		"return_policy",
 		"shipping_policy",
+		"statement_descriptor",
 		"status",
 		"status_reason",
 		"target_audience",
@@ -22335,7 +22520,7 @@ func TestRequiredNullableRoundTripAccount(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Account
-		require.NoError(t, json.Unmarshal([]byte(`{"ads_spend_usd":null,"banner_image_url":null,"business_address":null,"business_name":null,"business_type":null,"cancellation_policy":null,"capabilities":null,"cards":null,"country":null,"customers_l30d":null,"description":null,"email":null,"eula":null,"external_id":null,"financing":null,"funds_release_at":null,"industry_type":null,"invoice_prefix":null,"level":null,"logo_url":null,"onboarding_type":null,"opengraph_image_url":null,"opengraph_image_variant":null,"other_business_description":null,"other_industry_description":null,"parent_account":null,"payment_controls":null,"payment_method_configuration":null,"privacy_policy":null,"product_tax_code":null,"recommended_actions":null,"required_actions":null,"return_policy":null,"shipping_policy":null,"status":null,"status_reason":null,"target_audience":null,"tax_remitted_by":null,"tax_type":null,"terms_of_service":null,"three_ds_level":null,"total_earned_usd":null,"total_usd":null,"trading":null,"volume_l30d_usd":null,"volume_usd":null,"wallet":null,"website":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"ads_spend_usd":null,"banner_image_url":null,"business_address":null,"business_name":null,"business_type":null,"cancellation_policy":null,"capabilities":null,"cards":null,"country":null,"customers_l30d":null,"description":null,"email":null,"eula":null,"external_id":null,"financing":null,"funds_release_at":null,"industry_type":null,"invoice_prefix":null,"level":null,"logo_url":null,"merchant_of_record":null,"onboarding_type":null,"opengraph_image_url":null,"opengraph_image_variant":null,"other_business_description":null,"other_industry_description":null,"parent_account":null,"payment_controls":null,"payment_method_configuration":null,"privacy_policy":null,"product_tax_code":null,"recommended_actions":null,"required_actions":null,"return_policy":null,"shipping_policy":null,"statement_descriptor":null,"status":null,"status_reason":null,"target_audience":null,"tax_remitted_by":null,"tax_type":null,"terms_of_service":null,"three_ds_level":null,"total_earned_usd":null,"total_usd":null,"trading":null,"volume_l30d_usd":null,"volume_usd":null,"wallet":null,"website":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -24002,6 +24187,42 @@ func TestEnumAccountHomePreferencesItem(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewAccountHomePreferencesItemFromString("hide_member_count")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumAccountMerchantOfRecord(t *testing.T) {
+	t.Run("NewFromString_whop", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountMerchantOfRecordFromString("whop")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountMerchantOfRecord("whop"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_pending", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountMerchantOfRecordFromString("pending")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountMerchantOfRecord("pending"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_account", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountMerchantOfRecordFromString("account")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountMerchantOfRecord("account"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewAccountMerchantOfRecordFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewAccountMerchantOfRecordFromString("whop")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

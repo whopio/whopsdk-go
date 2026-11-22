@@ -864,54 +864,56 @@ var (
 	accountFieldInvoicePrefix                       = big.NewInt(1 << 27)
 	accountFieldLevel                               = big.NewInt(1 << 28)
 	accountFieldLogoURL                             = big.NewInt(1 << 29)
-	accountFieldMetadata                            = big.NewInt(1 << 30)
-	accountFieldOnboardingType                      = big.NewInt(1 << 31)
-	accountFieldOpengraphImageURL                   = big.NewInt(1 << 32)
-	accountFieldOpengraphImageVariant               = big.NewInt(1 << 33)
-	accountFieldOrchestrationEnabled                = big.NewInt(1 << 34)
-	accountFieldOtherBusinessDescription            = big.NewInt(1 << 35)
-	accountFieldOtherIndustryDescription            = big.NewInt(1 << 36)
-	accountFieldOwner                               = big.NewInt(1 << 37)
-	accountFieldParentAccount                       = big.NewInt(1 << 38)
-	accountFieldPartner                             = big.NewInt(1 << 39)
-	accountFieldPaymentControls                     = big.NewInt(1 << 40)
-	accountFieldPaymentMethodConfiguration          = big.NewInt(1 << 41)
-	accountFieldPlatformCredits                     = big.NewInt(1 << 42)
-	accountFieldPrivacyPolicy                       = big.NewInt(1 << 43)
-	accountFieldProductTaxCode                      = big.NewInt(1 << 44)
-	accountFieldRecommendedActions                  = big.NewInt(1 << 45)
-	accountFieldRequire2Fa                          = big.NewInt(1 << 46)
-	accountFieldRequiredActions                     = big.NewInt(1 << 47)
-	accountFieldReturnPolicy                        = big.NewInt(1 << 48)
-	accountFieldRewards                             = big.NewInt(1 << 49)
-	accountFieldRoute                               = big.NewInt(1 << 50)
-	accountFieldSendCustomerEmails                  = big.NewInt(1 << 51)
-	accountFieldShippingPolicy                      = big.NewInt(1 << 52)
-	accountFieldShowJoinedWhops                     = big.NewInt(1 << 53)
-	accountFieldShowReviewsDtc                      = big.NewInt(1 << 54)
-	accountFieldShowUserDirectory                   = big.NewInt(1 << 55)
-	accountFieldSocialLinks                         = big.NewInt(1 << 56)
-	accountFieldStatus                              = big.NewInt(1 << 57)
-	accountFieldStatusReason                        = big.NewInt(1 << 58)
-	accountFieldStorePageConfig                     = big.NewInt(1 << 59)
-	accountFieldTargetAudience                      = big.NewInt(1 << 60)
-	accountFieldTaxCollectionEnabledStates          = big.NewInt(1 << 61)
-	accountFieldTaxIdentifiers                      = big.NewInt(1 << 62)
-	accountFieldTaxRemittedBy                       = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	accountFieldTaxType                             = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	accountFieldTermsOfService                      = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	accountFieldThreeDsLevel                        = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	accountFieldTitle                               = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 71)
-	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 72)
-	accountFieldVolumeL30DUsd                       = big.NewInt(0).Lsh(big.NewInt(1), 73)
-	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 74)
-	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 75)
-	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 76)
-	accountFieldWhopPartnerEnabledAt                = big.NewInt(0).Lsh(big.NewInt(1), 77)
+	accountFieldMerchantOfRecord                    = big.NewInt(1 << 30)
+	accountFieldMetadata                            = big.NewInt(1 << 31)
+	accountFieldOnboardingType                      = big.NewInt(1 << 32)
+	accountFieldOpengraphImageURL                   = big.NewInt(1 << 33)
+	accountFieldOpengraphImageVariant               = big.NewInt(1 << 34)
+	accountFieldOrchestrationEnabled                = big.NewInt(1 << 35)
+	accountFieldOtherBusinessDescription            = big.NewInt(1 << 36)
+	accountFieldOtherIndustryDescription            = big.NewInt(1 << 37)
+	accountFieldOwner                               = big.NewInt(1 << 38)
+	accountFieldParentAccount                       = big.NewInt(1 << 39)
+	accountFieldPartner                             = big.NewInt(1 << 40)
+	accountFieldPaymentControls                     = big.NewInt(1 << 41)
+	accountFieldPaymentMethodConfiguration          = big.NewInt(1 << 42)
+	accountFieldPlatformCredits                     = big.NewInt(1 << 43)
+	accountFieldPrivacyPolicy                       = big.NewInt(1 << 44)
+	accountFieldProductTaxCode                      = big.NewInt(1 << 45)
+	accountFieldRecommendedActions                  = big.NewInt(1 << 46)
+	accountFieldRequire2Fa                          = big.NewInt(1 << 47)
+	accountFieldRequiredActions                     = big.NewInt(1 << 48)
+	accountFieldReturnPolicy                        = big.NewInt(1 << 49)
+	accountFieldRewards                             = big.NewInt(1 << 50)
+	accountFieldRoute                               = big.NewInt(1 << 51)
+	accountFieldSendCustomerEmails                  = big.NewInt(1 << 52)
+	accountFieldShippingPolicy                      = big.NewInt(1 << 53)
+	accountFieldShowJoinedWhops                     = big.NewInt(1 << 54)
+	accountFieldShowReviewsDtc                      = big.NewInt(1 << 55)
+	accountFieldShowUserDirectory                   = big.NewInt(1 << 56)
+	accountFieldSocialLinks                         = big.NewInt(1 << 57)
+	accountFieldStatementDescriptor                 = big.NewInt(1 << 58)
+	accountFieldStatus                              = big.NewInt(1 << 59)
+	accountFieldStatusReason                        = big.NewInt(1 << 60)
+	accountFieldStorePageConfig                     = big.NewInt(1 << 61)
+	accountFieldTargetAudience                      = big.NewInt(1 << 62)
+	accountFieldTaxCollectionEnabledStates          = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	accountFieldTaxIdentifiers                      = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	accountFieldTaxRemittedBy                       = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	accountFieldTaxType                             = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	accountFieldTermsOfService                      = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	accountFieldThreeDsLevel                        = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	accountFieldTitle                               = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	accountFieldTotalEarnedUsd                      = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	accountFieldTotalUsd                            = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	accountFieldTrading                             = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	accountFieldUseLogoAsOpengraphImageFallback     = big.NewInt(0).Lsh(big.NewInt(1), 73)
+	accountFieldVerification                        = big.NewInt(0).Lsh(big.NewInt(1), 74)
+	accountFieldVolumeL30DUsd                       = big.NewInt(0).Lsh(big.NewInt(1), 75)
+	accountFieldVolumeUsd                           = big.NewInt(0).Lsh(big.NewInt(1), 76)
+	accountFieldWallet                              = big.NewInt(0).Lsh(big.NewInt(1), 77)
+	accountFieldWebsite                             = big.NewInt(0).Lsh(big.NewInt(1), 78)
+	accountFieldWhopPartnerEnabledAt                = big.NewInt(0).Lsh(big.NewInt(1), 79)
 )
 
 // accountNullableFields maps the wire names of Account's nullable fields (required or optional) to their field bits.
@@ -936,6 +938,7 @@ var accountNullableFields = map[string]*big.Int{
 	"invoice_prefix":               accountFieldInvoicePrefix,
 	"level":                        accountFieldLevel,
 	"logo_url":                     accountFieldLogoURL,
+	"merchant_of_record":           accountFieldMerchantOfRecord,
 	"onboarding_type":              accountFieldOnboardingType,
 	"opengraph_image_url":          accountFieldOpengraphImageURL,
 	"opengraph_image_variant":      accountFieldOpengraphImageVariant,
@@ -951,6 +954,7 @@ var accountNullableFields = map[string]*big.Int{
 	"required_actions":             accountFieldRequiredActions,
 	"return_policy":                accountFieldReturnPolicy,
 	"shipping_policy":              accountFieldShippingPolicy,
+	"statement_descriptor":         accountFieldStatementDescriptor,
 	"status":                       accountFieldStatus,
 	"status_reason":                accountFieldStatusReason,
 	"target_audience":              accountFieldTargetAudience,
@@ -969,7 +973,7 @@ var accountNullableFields = map[string]*big.Int{
 }
 
 type Account struct {
-	// Lifetime charged ad spend for the account, in USD. Computed only on `list` for callers with `stats:read` on the account; `null` otherwise.
+	// Lifetime charged ad spend for the account, in USD. Computed only on `list` for callers with `stats:read` on the account, and `null` otherwise.
 	AdsSpendUsd *float64               `json:"ads_spend_usd,omitempty" url:"ads_spend_usd,omitempty"`
 	Balances    []*AccountBalanceToken `json:"balances" url:"balances"`
 	// Account banner image URL.
@@ -1027,6 +1031,8 @@ type Account struct {
 	Level *AccountLevel `json:"level,omitempty" url:"level,omitempty"`
 	// Account logo image URL.
 	LogoURL *string `json:"logo_url,omitempty" url:"logo_url,omitempty"`
+	// The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `required_actions` lists what the account must answer, or says that it was not approved. `account` means the account is the merchant of record. Switch with `merchant_of_record` on `PATCH /accounts/{id}/preferences`. Whop sends `account.updated` when this value changes.
+	MerchantOfRecord *AccountMerchantOfRecord `json:"merchant_of_record,omitempty" url:"merchant_of_record,omitempty"`
 	// Arbitrary key/value metadata supplied at account creation.
 	Metadata map[string]any `json:"metadata" url:"metadata"`
 	// Type of onboarding the account has completed.
@@ -1077,6 +1083,8 @@ type Account struct {
 	// Whether the account shows users in the user directory.
 	ShowUserDirectory bool                 `json:"show_user_directory" url:"show_user_directory"`
 	SocialLinks       []*AccountSocialLink `json:"social_links" url:"social_links"`
+	// The text on buyers' card statements for this account's payments, up to 22 characters. While Whop is the merchant of record, it starts with `WHOP*`. Whop drops the `WHOP*` prefix when the account is its own merchant of record and can take card payments. It keeps the prefix if fewer than five characters or no letters would remain. A product or payment descriptor takes precedence. `null` uses a descriptor made from the account's title.
+	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// Whether the account can operate on Whop: `active` or `suspended`. Computed on `list`, `retrieve`, `me`, and `suspend`; `null` otherwise.
 	Status *string `json:"status,omitempty" url:"status,omitempty"`
 	// Why the account was suspended, as a label such as `Suspended - Fraudulent activity`. `Suspended` when no reason is recorded. Computed on `retrieve`, `me`, and `suspend`. `null` otherwise, or when `status` is not `suspended`.
@@ -1107,9 +1115,9 @@ type Account struct {
 	UseLogoAsOpengraphImageFallback bool `json:"use_logo_as_opengraph_image_fallback" url:"use_logo_as_opengraph_image_fallback"`
 	// Account identity verification status for the `individual` (KYC) and `business` (KYB) profiles. Each is `null` until created, otherwise a `status` of `not_started`, `pending`, `manual_review`, `approved`, or `rejected`.
 	Verification map[string]any `json:"verification" url:"verification"`
-	// Volume through the account in the last 30 days (GMV from paid receipts), normalized to USD. Computed only on `list` for callers with `stats:read` on the account; `null` otherwise.
+	// Volume through the account in the last 30 days (GMV from paid receipts), normalized to USD. Computed only on `list` for callers with `stats:read` on the account, and `null` otherwise.
 	VolumeL30DUsd *float64 `json:"volume_l30d_usd,omitempty" url:"volume_l30d_usd,omitempty"`
-	// Lifetime volume through the account — sales plus transfers received — normalized to USD. Computed only on `list` for callers with `stats:read` on the account; `null` otherwise.
+	// Lifetime volume through the account (sales plus transfers received), normalized to USD. Computed only on `list` for callers with `stats:read` on the account, and `null` otherwise.
 	VolumeUsd *float64 `json:"volume_usd,omitempty" url:"volume_usd,omitempty"`
 	// Account primary crypto wallet, or `null` if none has been provisioned.
 	Wallet *AccountWallet `json:"wallet,omitempty" url:"wallet,omitempty"`
@@ -1335,6 +1343,13 @@ func (a *Account) GetLogoURL() *string {
 	return a.LogoURL
 }
 
+func (a *Account) GetMerchantOfRecord() *AccountMerchantOfRecord {
+	if a == nil {
+		return nil
+	}
+	return a.MerchantOfRecord
+}
+
 func (a *Account) GetMetadata() map[string]any {
 	if a == nil {
 		return nil
@@ -1522,6 +1537,13 @@ func (a *Account) GetSocialLinks() []*AccountSocialLink {
 		return nil
 	}
 	return a.SocialLinks
+}
+
+func (a *Account) GetStatementDescriptor() *string {
+	if a == nil {
+		return nil
+	}
+	return a.StatementDescriptor
 }
 
 func (a *Account) GetStatus() *string {
@@ -1897,6 +1919,13 @@ func (a *Account) SetLogoURL(logoURL *string) {
 	a.require(accountFieldLogoURL)
 }
 
+// SetMerchantOfRecord sets the MerchantOfRecord field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetMerchantOfRecord(merchantOfRecord *AccountMerchantOfRecord) {
+	a.MerchantOfRecord = merchantOfRecord
+	a.require(accountFieldMerchantOfRecord)
+}
+
 // SetMetadata sets the Metadata field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *Account) SetMetadata(metadata map[string]any) {
@@ -2084,6 +2113,13 @@ func (a *Account) SetShowUserDirectory(showUserDirectory bool) {
 func (a *Account) SetSocialLinks(socialLinks []*AccountSocialLink) {
 	a.SocialLinks = socialLinks
 	a.require(accountFieldSocialLinks)
+}
+
+// SetStatementDescriptor sets the StatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Account) SetStatementDescriptor(statementDescriptor *string) {
+	a.StatementDescriptor = statementDescriptor
+	a.require(accountFieldStatementDescriptor)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -3319,6 +3355,32 @@ func (a *AccountLevel) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
+}
+
+// The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `required_actions` lists what the account must answer, or says that it was not approved. `account` means the account is the merchant of record. Switch with `merchant_of_record` on `PATCH /accounts/{id}/preferences`. Whop sends `account.updated` when this value changes.
+type AccountMerchantOfRecord string
+
+const (
+	AccountMerchantOfRecordWhop    AccountMerchantOfRecord = "whop"
+	AccountMerchantOfRecordPending AccountMerchantOfRecord = "pending"
+	AccountMerchantOfRecordAccount AccountMerchantOfRecord = "account"
+)
+
+func NewAccountMerchantOfRecordFromString(s string) (AccountMerchantOfRecord, error) {
+	switch s {
+	case "whop":
+		return AccountMerchantOfRecordWhop, nil
+	case "pending":
+		return AccountMerchantOfRecordPending, nil
+	case "account":
+		return AccountMerchantOfRecordAccount, nil
+	}
+	var t AccountMerchantOfRecord
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountMerchantOfRecord) Ptr() *AccountMerchantOfRecord {
+	return &a
 }
 
 // Type of onboarding the account has completed.
@@ -10722,19 +10784,20 @@ var (
 	updateAccountsRequestFieldShowReviewsDtc                  = big.NewInt(1 << 33)
 	updateAccountsRequestFieldShowUserDirectory               = big.NewInt(1 << 34)
 	updateAccountsRequestFieldSocialLinks                     = big.NewInt(1 << 35)
-	updateAccountsRequestFieldStorePageConfig                 = big.NewInt(1 << 36)
-	updateAccountsRequestFieldTargetAudience                  = big.NewInt(1 << 37)
-	updateAccountsRequestFieldTaxCollectionEnabledStates      = big.NewInt(1 << 38)
-	updateAccountsRequestFieldTaxIdentifiers                  = big.NewInt(1 << 39)
-	updateAccountsRequestFieldTaxRemittedBy                   = big.NewInt(1 << 40)
-	updateAccountsRequestFieldTaxType                         = big.NewInt(1 << 41)
-	updateAccountsRequestFieldTermsOfService                  = big.NewInt(1 << 42)
-	updateAccountsRequestFieldThreeDsLevel                    = big.NewInt(1 << 43)
-	updateAccountsRequestFieldTitle                           = big.NewInt(1 << 44)
-	updateAccountsRequestFieldUseLogoAsOpengraphImageFallback = big.NewInt(1 << 45)
-	updateAccountsRequestFieldWebsite                         = big.NewInt(1 << 46)
-	updateAccountsRequestFieldWhopPartnerEnabled              = big.NewInt(1 << 47)
-	updateAccountsRequestFieldIndustryType                    = big.NewInt(1 << 48)
+	updateAccountsRequestFieldStatementDescriptor             = big.NewInt(1 << 36)
+	updateAccountsRequestFieldStorePageConfig                 = big.NewInt(1 << 37)
+	updateAccountsRequestFieldTargetAudience                  = big.NewInt(1 << 38)
+	updateAccountsRequestFieldTaxCollectionEnabledStates      = big.NewInt(1 << 39)
+	updateAccountsRequestFieldTaxIdentifiers                  = big.NewInt(1 << 40)
+	updateAccountsRequestFieldTaxRemittedBy                   = big.NewInt(1 << 41)
+	updateAccountsRequestFieldTaxType                         = big.NewInt(1 << 42)
+	updateAccountsRequestFieldTermsOfService                  = big.NewInt(1 << 43)
+	updateAccountsRequestFieldThreeDsLevel                    = big.NewInt(1 << 44)
+	updateAccountsRequestFieldTitle                           = big.NewInt(1 << 45)
+	updateAccountsRequestFieldUseLogoAsOpengraphImageFallback = big.NewInt(1 << 46)
+	updateAccountsRequestFieldWebsite                         = big.NewInt(1 << 47)
+	updateAccountsRequestFieldWhopPartnerEnabled              = big.NewInt(1 << 48)
+	updateAccountsRequestFieldIndustryType                    = big.NewInt(1 << 49)
 )
 
 type UpdateAccountsRequest struct {
@@ -10810,6 +10873,8 @@ type UpdateAccountsRequest struct {
 	ShowUserDirectory *bool `json:"show_user_directory,omitempty" url:"-"`
 	// The full list of social links to display for the account.
 	SocialLinks []map[string]any `json:"social_links,omitempty" url:"-"`
+	// The text on buyers' card statements for this account's payments. It must be 5 to 22 characters with at least one letter, using only A-Z and 0-9 after any `WHOP*` prefix. It must start with `WHOP*` while Whop is the merchant of record. Once the account has switched to being its own merchant of record (`merchant_of_record` in account preferences), it can be set without the prefix. `null` clears it. Requires the `payout:account:update` scope.
+	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"-"`
 	// Account store page display configuration.
 	StorePageConfig *UpdateAccountsRequestStorePageConfig `json:"store_page_config,omitempty" url:"-"`
 	// The target audience for this account.
@@ -11099,6 +11164,13 @@ func (u *UpdateAccountsRequest) SetShowUserDirectory(showUserDirectory *bool) {
 func (u *UpdateAccountsRequest) SetSocialLinks(socialLinks []map[string]any) {
 	u.SocialLinks = socialLinks
 	u.require(updateAccountsRequestFieldSocialLinks)
+}
+
+// SetStatementDescriptor sets the StatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateAccountsRequest) SetStatementDescriptor(statementDescriptor *string) {
+	u.StatementDescriptor = statementDescriptor
+	u.require(updateAccountsRequestFieldStatementDescriptor)
 }
 
 // SetStorePageConfig sets the StorePageConfig field and marks it as non-optional;
