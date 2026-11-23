@@ -205,13 +205,13 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Generates a short-lived link to download one image that a person sent for an individual verification. Use the `identity_document` and `selfie` fields of the verification to know which images exist.
+// Generates a short-lived link to download one image that a person sent for an individual verification. Ask for `front`, `back`, or `selfie`. The link always downloads the document that passed the check, whatever its type.
 //
 // Example:
 //
 //	request := &whopsdk.GenerateDocumentURLVerificationsRequest{
 //	    ID: "id",
-//	    Document: whopsdk.GenerateDocumentURLVerificationsRequestDocumentIDCardFront,
+//	    Document: whopsdk.GenerateDocumentURLVerificationsRequestDocumentFront,
 //	}
 //	client.Verifications.GenerateDocumentURL(
 //	    context.TODO(),

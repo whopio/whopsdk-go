@@ -42730,53 +42730,18 @@ func TestEnumCreateVerificationsResponseStatus(t *testing.T) {
 }
 
 func TestEnumGenerateDocumentURLVerificationsRequestDocument(t *testing.T) {
-	t.Run("NewFromString_id_card_front", func(t *testing.T) {
+	t.Run("NewFromString_front", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("id_card_front")
+		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("front")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, GenerateDocumentURLVerificationsRequestDocument("id_card_front"), val, "enum value should match expected wire value")
+		assert.Equal(t, GenerateDocumentURLVerificationsRequestDocument("front"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_id_card_back", func(t *testing.T) {
+	t.Run("NewFromString_back", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("id_card_back")
+		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("back")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, GenerateDocumentURLVerificationsRequestDocument("id_card_back"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_drivers_front", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("drivers_front")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, GenerateDocumentURLVerificationsRequestDocument("drivers_front"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_drivers_back", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("drivers_back")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, GenerateDocumentURLVerificationsRequestDocument("drivers_back"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_residence_permit_front", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("residence_permit_front")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, GenerateDocumentURLVerificationsRequestDocument("residence_permit_front"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_residence_permit_back", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("residence_permit_back")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, GenerateDocumentURLVerificationsRequestDocument("residence_permit_back"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_passport_front", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("passport_front")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, GenerateDocumentURLVerificationsRequestDocument("passport_front"), val, "enum value should match expected wire value")
+		assert.Equal(t, GenerateDocumentURLVerificationsRequestDocument("back"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_selfie", func(t *testing.T) {
@@ -42792,7 +42757,7 @@ func TestEnumGenerateDocumentURLVerificationsRequestDocument(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("id_card_front")
+		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("front")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -42801,53 +42766,18 @@ func TestEnumGenerateDocumentURLVerificationsRequestDocument(t *testing.T) {
 }
 
 func TestEnumGenerateDocumentURLVerificationsResponseDocument(t *testing.T) {
-	t.Run("NewFromString_id_card_front", func(t *testing.T) {
+	t.Run("NewFromString_front", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("id_card_front")
+		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("front")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, GenerateDocumentURLVerificationsResponseDocument("id_card_front"), val, "enum value should match expected wire value")
+		assert.Equal(t, GenerateDocumentURLVerificationsResponseDocument("front"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_id_card_back", func(t *testing.T) {
+	t.Run("NewFromString_back", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("id_card_back")
+		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("back")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, GenerateDocumentURLVerificationsResponseDocument("id_card_back"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_drivers_front", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("drivers_front")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, GenerateDocumentURLVerificationsResponseDocument("drivers_front"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_drivers_back", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("drivers_back")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, GenerateDocumentURLVerificationsResponseDocument("drivers_back"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_residence_permit_front", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("residence_permit_front")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, GenerateDocumentURLVerificationsResponseDocument("residence_permit_front"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_residence_permit_back", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("residence_permit_back")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, GenerateDocumentURLVerificationsResponseDocument("residence_permit_back"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_passport_front", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("passport_front")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, GenerateDocumentURLVerificationsResponseDocument("passport_front"), val, "enum value should match expected wire value")
+		assert.Equal(t, GenerateDocumentURLVerificationsResponseDocument("back"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_selfie", func(t *testing.T) {
@@ -42863,7 +42793,7 @@ func TestEnumGenerateDocumentURLVerificationsResponseDocument(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("id_card_front")
+		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("front")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

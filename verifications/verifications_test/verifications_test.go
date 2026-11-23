@@ -197,7 +197,7 @@ func TestVerificationsGenerateDocumentURLWithWireMock(
 	)
 	request := &whopsdk.GenerateDocumentURLVerificationsRequest{
 		ID:       "id",
-		Document: whopsdk.GenerateDocumentURLVerificationsRequestDocumentIDCardFront,
+		Document: whopsdk.GenerateDocumentURLVerificationsRequestDocumentFront,
 	}
 	_, invocationErr := client.Verifications.GenerateDocumentURL(
 		context.TODO(),

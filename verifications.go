@@ -70,7 +70,7 @@ var (
 type GenerateDocumentURLVerificationsRequest struct {
 	// Verification profile ID, prefixed `idpf_`.
 	ID string `json:"-" url:"-"`
-	// Image to download. Use the side of the document type on the verification, or `selfie`.
+	// Image to download: the `front` or `back` of the identity document, or the `selfie`. A passport has no `back`.
 	Document GenerateDocumentURLVerificationsRequestDocument `json:"document" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -4839,36 +4839,21 @@ func (c CreateVerificationsResponseStatus) Ptr() *CreateVerificationsResponseSta
 	return &c
 }
 
-// Image to download. Use the side of the document type on the verification, or `selfie`.
+// Image to download: the `front` or `back` of the identity document, or the `selfie`. A passport has no `back`.
 type GenerateDocumentURLVerificationsRequestDocument string
 
 const (
-	GenerateDocumentURLVerificationsRequestDocumentIDCardFront          GenerateDocumentURLVerificationsRequestDocument = "id_card_front"
-	GenerateDocumentURLVerificationsRequestDocumentIDCardBack           GenerateDocumentURLVerificationsRequestDocument = "id_card_back"
-	GenerateDocumentURLVerificationsRequestDocumentDriversFront         GenerateDocumentURLVerificationsRequestDocument = "drivers_front"
-	GenerateDocumentURLVerificationsRequestDocumentDriversBack          GenerateDocumentURLVerificationsRequestDocument = "drivers_back"
-	GenerateDocumentURLVerificationsRequestDocumentResidencePermitFront GenerateDocumentURLVerificationsRequestDocument = "residence_permit_front"
-	GenerateDocumentURLVerificationsRequestDocumentResidencePermitBack  GenerateDocumentURLVerificationsRequestDocument = "residence_permit_back"
-	GenerateDocumentURLVerificationsRequestDocumentPassportFront        GenerateDocumentURLVerificationsRequestDocument = "passport_front"
-	GenerateDocumentURLVerificationsRequestDocumentSelfie               GenerateDocumentURLVerificationsRequestDocument = "selfie"
+	GenerateDocumentURLVerificationsRequestDocumentFront  GenerateDocumentURLVerificationsRequestDocument = "front"
+	GenerateDocumentURLVerificationsRequestDocumentBack   GenerateDocumentURLVerificationsRequestDocument = "back"
+	GenerateDocumentURLVerificationsRequestDocumentSelfie GenerateDocumentURLVerificationsRequestDocument = "selfie"
 )
 
 func NewGenerateDocumentURLVerificationsRequestDocumentFromString(s string) (GenerateDocumentURLVerificationsRequestDocument, error) {
 	switch s {
-	case "id_card_front":
-		return GenerateDocumentURLVerificationsRequestDocumentIDCardFront, nil
-	case "id_card_back":
-		return GenerateDocumentURLVerificationsRequestDocumentIDCardBack, nil
-	case "drivers_front":
-		return GenerateDocumentURLVerificationsRequestDocumentDriversFront, nil
-	case "drivers_back":
-		return GenerateDocumentURLVerificationsRequestDocumentDriversBack, nil
-	case "residence_permit_front":
-		return GenerateDocumentURLVerificationsRequestDocumentResidencePermitFront, nil
-	case "residence_permit_back":
-		return GenerateDocumentURLVerificationsRequestDocumentResidencePermitBack, nil
-	case "passport_front":
-		return GenerateDocumentURLVerificationsRequestDocumentPassportFront, nil
+	case "front":
+		return GenerateDocumentURLVerificationsRequestDocumentFront, nil
+	case "back":
+		return GenerateDocumentURLVerificationsRequestDocumentBack, nil
 	case "selfie":
 		return GenerateDocumentURLVerificationsRequestDocumentSelfie, nil
 	}
@@ -5005,32 +4990,17 @@ func (g *GenerateDocumentURLVerificationsResponse) String() string {
 type GenerateDocumentURLVerificationsResponseDocument string
 
 const (
-	GenerateDocumentURLVerificationsResponseDocumentIDCardFront          GenerateDocumentURLVerificationsResponseDocument = "id_card_front"
-	GenerateDocumentURLVerificationsResponseDocumentIDCardBack           GenerateDocumentURLVerificationsResponseDocument = "id_card_back"
-	GenerateDocumentURLVerificationsResponseDocumentDriversFront         GenerateDocumentURLVerificationsResponseDocument = "drivers_front"
-	GenerateDocumentURLVerificationsResponseDocumentDriversBack          GenerateDocumentURLVerificationsResponseDocument = "drivers_back"
-	GenerateDocumentURLVerificationsResponseDocumentResidencePermitFront GenerateDocumentURLVerificationsResponseDocument = "residence_permit_front"
-	GenerateDocumentURLVerificationsResponseDocumentResidencePermitBack  GenerateDocumentURLVerificationsResponseDocument = "residence_permit_back"
-	GenerateDocumentURLVerificationsResponseDocumentPassportFront        GenerateDocumentURLVerificationsResponseDocument = "passport_front"
-	GenerateDocumentURLVerificationsResponseDocumentSelfie               GenerateDocumentURLVerificationsResponseDocument = "selfie"
+	GenerateDocumentURLVerificationsResponseDocumentFront  GenerateDocumentURLVerificationsResponseDocument = "front"
+	GenerateDocumentURLVerificationsResponseDocumentBack   GenerateDocumentURLVerificationsResponseDocument = "back"
+	GenerateDocumentURLVerificationsResponseDocumentSelfie GenerateDocumentURLVerificationsResponseDocument = "selfie"
 )
 
 func NewGenerateDocumentURLVerificationsResponseDocumentFromString(s string) (GenerateDocumentURLVerificationsResponseDocument, error) {
 	switch s {
-	case "id_card_front":
-		return GenerateDocumentURLVerificationsResponseDocumentIDCardFront, nil
-	case "id_card_back":
-		return GenerateDocumentURLVerificationsResponseDocumentIDCardBack, nil
-	case "drivers_front":
-		return GenerateDocumentURLVerificationsResponseDocumentDriversFront, nil
-	case "drivers_back":
-		return GenerateDocumentURLVerificationsResponseDocumentDriversBack, nil
-	case "residence_permit_front":
-		return GenerateDocumentURLVerificationsResponseDocumentResidencePermitFront, nil
-	case "residence_permit_back":
-		return GenerateDocumentURLVerificationsResponseDocumentResidencePermitBack, nil
-	case "passport_front":
-		return GenerateDocumentURLVerificationsResponseDocumentPassportFront, nil
+	case "front":
+		return GenerateDocumentURLVerificationsResponseDocumentFront, nil
+	case "back":
+		return GenerateDocumentURLVerificationsResponseDocumentBack, nil
 	case "selfie":
 		return GenerateDocumentURLVerificationsResponseDocumentSelfie, nil
 	}
