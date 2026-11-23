@@ -183,3 +183,30 @@ func TestVerificationsUpdateWithWireMock(
 	require.NoError(t, invocationErr, "Client method call should succeed")
 	VerifyRequestCount(t, "TestVerificationsUpdateWithWireMock", "PATCH", "/verifications/id", nil, 1)
 }
+
+func TestVerificationsGenerateDocumentURLWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.GenerateDocumentURLVerificationsRequest{
+		ID:       "id",
+		Document: whopsdk.GenerateDocumentURLVerificationsRequestDocumentIDCardFront,
+	}
+	_, invocationErr := client.Verifications.GenerateDocumentURL(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestVerificationsGenerateDocumentURLWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestVerificationsGenerateDocumentURLWithWireMock", "POST", "/verifications/id/generate_document_url", nil, 1)
+}

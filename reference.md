@@ -45273,6 +45273,75 @@ client.Verifications.Update(
 </dl>
 </details>
 
+<details><summary><code>client.Verifications.GenerateDocumentURL(ID, request) -> *whopsdk.GenerateDocumentURLVerificationsResponse</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Generates a short-lived link to download one image that a person sent for an individual verification. Use the `identity_document` and `selfie` fields of the verification to know which images exist.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.GenerateDocumentURLVerificationsRequest{
+    ID: "id",
+    Document: whopsdk.GenerateDocumentURLVerificationsRequestDocumentIDCardFront,
+}
+client.Verifications.GenerateDocumentURL(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — Verification profile ID, prefixed `idpf_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**document:** `whopsdk.GenerateDocumentURLVerificationsRequestDocument` — Image to download. Use the side of the document type on the verification, or `selfie`.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 ## Waitlist Entries
 <details><summary><code>client.WaitlistEntries.List() -> *whopsdk.ListWaitlistEntriesResponse</code></summary>
 <dl>
