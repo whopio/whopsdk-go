@@ -66,7 +66,7 @@ type CreateAdCampaignsRequest struct {
 	BudgetType *CreateAdCampaignsRequestBudgetType `json:"budget_type,omitempty" url:"-"`
 	// The kind of campaign to create. `standard` runs image and video ads; `search` shows text ads on search results for the ad groups' keywords. Defaults to `standard`. Can't be changed after creation.
 	CampaignType *CreateAdCampaignsRequestCampaignType `json:"campaign_type,omitempty" url:"-"`
-	// The cost per result, in USD, you want this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. Ad groups set cost and bid caps with their own `desired_cost_per_result`. Omit or send `null` for no target.
+	// The cost per result, in USD, you want this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. An ad group's own `desired_cost_per_result` overrides it. For an `awareness` campaign, it's the cost per 1,000 impressions. Omit or send `null` for no target.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"-"`
 	// When the campaign stops delivering, as an ISO 8601 timestamp. Only for campaigns that own the budget.
 	EndsAt *string `json:"ends_at,omitempty" url:"-"`
@@ -703,7 +703,7 @@ type AdCampaign struct {
 	CostPerMille float64 `json:"cost_per_mille" url:"cost_per_mille"`
 	// Spend divided by attributed purchases; null when purchases are not a goal and none are attributed.
 	CostPerPurchase *float64 `json:"cost_per_purchase,omitempty" url:"cost_per_purchase,omitempty"`
-	// Spend divided by Whop pixel-attributed results; null when nothing Whop-attributable is being optimized for.
+	// Spend divided by Whop pixel-attributed results. For `impressions`, it's the spend per 1,000 impressions. `null` when nothing Whop-attributable is being optimized for.
 	CostPerResult *float64 `json:"cost_per_result,omitempty" url:"cost_per_result,omitempty"`
 	// Spend divided by attributed schedule events; null when schedules are not the goal and none are attributed.
 	CostPerSchedule *float64 `json:"cost_per_schedule,omitempty" url:"cost_per_schedule,omitempty"`
@@ -723,7 +723,7 @@ type AdCampaign struct {
 	CustomEventValues map[string]any `json:"custom_event_values" url:"custom_event_values"`
 	// Whether the campaign's ads are delivering right now, and if not, why. Content review is in_review; a campaign waiting to start is processing. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus AdCampaignDeliveryStatus `json:"delivery_status" url:"delivery_status"`
-	// The cost per result, in USD, the advertiser wants this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. `null` when no target is set.
+	// The cost per result, in USD, the advertiser wants this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. An ad group's own `desired_cost_per_result` overrides it. For an `awareness` campaign, it's the cost per 1,000 impressions. `null` when no target is set.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
 	// When the campaign stops delivering, as an ISO 8601 timestamp. `null` when it runs until paused, or when its ad groups set their own schedule.
 	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
@@ -740,7 +740,7 @@ type AdCampaign struct {
 	Leads float64 `json:"leads" url:"leads"`
 	// Page views on your destination from people who clicked the ad, recorded by the Whop pixel. Counted the same way on every ad platform.
 	LinkClicks float64 `json:"link_clicks" url:"link_clicks"`
-	// The goal the campaign optimizes toward. `awareness` appears only on campaigns created before it was retired; those campaigns can't launch.
+	// The goal the campaign optimizes toward. `awareness` optimizes for impressions. `engagement` appears only on campaigns created before it was retired.
 	Objective *AdCampaignObjective `json:"objective,omitempty" url:"objective,omitempty"`
 	// USD value of pixel-attributed purchases.
 	PurchaseValue float64 `json:"purchase_value" url:"purchase_value"`
@@ -748,7 +748,7 @@ type AdCampaign struct {
 	Purchases float64 `json:"purchases" url:"purchases"`
 	// The number of unique people who saw this.
 	Reach float64 `json:"reach" url:"reach"`
-	// The Whop pixel conversion event whose attributed count represents results — the optimization goal, or the highest-volume attributed event for campaigns that budget per ad group. Null when the goal isn't a Whop-attributed event.
+	// The Whop pixel event whose attributed count represents results. It's the optimization goal, or the highest-volume attributed event for a campaign that budgets per ad group. `impressions` counts reported impressions. `null` when the goal isn't a Whop-attributed event.
 	ResultEvent *AdCampaignResultEvent `json:"result_event,omitempty" url:"result_event,omitempty"`
 	// The merchant-defined event name when result_event is custom; null for the standard events.
 	ResultEventName *string `json:"result_event_name,omitempty" url:"result_event_name,omitempty"`
@@ -773,7 +773,7 @@ type AdCampaign struct {
 	SubmittedApplicationValue float64 `json:"submitted_application_value" url:"submitted_application_value"`
 	// Whop pixel-attributed submit-application events, last-click.
 	SubmittedApplications float64 `json:"submitted_applications" url:"submitted_applications"`
-	// The desired cost per result for `target_result_event`, in USD. `null` when none is set.
+	// The desired cost per result for `target_result_event`, in USD. For `impressions`, it's the cost per 1,000 impressions. `null` when none is set or the ad groups set different ones.
 	TargetCostPerResult *float64 `json:"target_cost_per_result,omitempty" url:"target_cost_per_result,omitempty"`
 	// The event `target_cost_per_result` is priced per, such as `purchase` or `lead`. `null` when the campaign has no single goal.
 	TargetResultEvent *string `json:"target_result_event,omitempty" url:"target_result_event,omitempty"`
@@ -1908,7 +1908,7 @@ func (a AdCampaignDeliveryStatus) Ptr() *AdCampaignDeliveryStatus {
 	return &a
 }
 
-// The goal the campaign optimizes toward. `awareness` appears only on campaigns created before it was retired; those campaigns can't launch.
+// The goal the campaign optimizes toward. `awareness` optimizes for impressions. `engagement` appears only on campaigns created before it was retired.
 type AdCampaignObjective string
 
 const (
@@ -1940,7 +1940,7 @@ func (a AdCampaignObjective) Ptr() *AdCampaignObjective {
 	return &a
 }
 
-// The Whop pixel conversion event whose attributed count represents results — the optimization goal, or the highest-volume attributed event for campaigns that budget per ad group. Null when the goal isn't a Whop-attributed event.
+// The Whop pixel event whose attributed count represents results. It's the optimization goal, or the highest-volume attributed event for a campaign that budgets per ad group. `impressions` counts reported impressions. `null` when the goal isn't a Whop-attributed event.
 type AdCampaignResultEvent string
 
 const (
@@ -1954,6 +1954,7 @@ const (
 	AdCampaignResultEventAddToCart             AdCampaignResultEvent = "add_to_cart"
 	AdCampaignResultEventCustom                AdCampaignResultEvent = "custom"
 	AdCampaignResultEventMessagingConversation AdCampaignResultEvent = "messaging_conversation"
+	AdCampaignResultEventImpressions           AdCampaignResultEvent = "impressions"
 )
 
 func NewAdCampaignResultEventFromString(s string) (AdCampaignResultEvent, error) {
@@ -1978,6 +1979,8 @@ func NewAdCampaignResultEventFromString(s string) (AdCampaignResultEvent, error)
 		return AdCampaignResultEventCustom, nil
 	case "messaging_conversation":
 		return AdCampaignResultEventMessagingConversation, nil
+	case "impressions":
+		return AdCampaignResultEventImpressions, nil
 	}
 	var t AdCampaignResultEvent
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2124,18 +2127,18 @@ func (c CreateAdCampaignsRequestCampaignType) Ptr() *CreateAdCampaignsRequestCam
 type CreateAdCampaignsRequestObjective string
 
 const (
-	CreateAdCampaignsRequestObjectiveTraffic    CreateAdCampaignsRequestObjective = "traffic"
-	CreateAdCampaignsRequestObjectiveEngagement CreateAdCampaignsRequestObjective = "engagement"
-	CreateAdCampaignsRequestObjectiveLeads      CreateAdCampaignsRequestObjective = "leads"
-	CreateAdCampaignsRequestObjectiveSales      CreateAdCampaignsRequestObjective = "sales"
+	CreateAdCampaignsRequestObjectiveAwareness CreateAdCampaignsRequestObjective = "awareness"
+	CreateAdCampaignsRequestObjectiveTraffic   CreateAdCampaignsRequestObjective = "traffic"
+	CreateAdCampaignsRequestObjectiveLeads     CreateAdCampaignsRequestObjective = "leads"
+	CreateAdCampaignsRequestObjectiveSales     CreateAdCampaignsRequestObjective = "sales"
 )
 
 func NewCreateAdCampaignsRequestObjectiveFromString(s string) (CreateAdCampaignsRequestObjective, error) {
 	switch s {
+	case "awareness":
+		return CreateAdCampaignsRequestObjectiveAwareness, nil
 	case "traffic":
 		return CreateAdCampaignsRequestObjectiveTraffic, nil
-	case "engagement":
-		return CreateAdCampaignsRequestObjectiveEngagement, nil
 	case "leads":
 		return CreateAdCampaignsRequestObjectiveLeads, nil
 	case "sales":
@@ -3075,21 +3078,21 @@ type PostAdCampaignPaymentFailedPayloadData struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Whether the campaign's ads are delivering right now, and if not, why. Content review is in_review; a campaign waiting to start is processing. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus PostAdCampaignPaymentFailedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
-	// The cost per result, in USD, the advertiser wants this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. `null` when no target is set.
+	// The cost per result, in USD, the advertiser wants this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. An ad group's own `desired_cost_per_result` overrides it. For an `awareness` campaign, it's the cost per 1,000 impressions. `null` when no target is set.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
 	// When the campaign stops delivering, as an ISO 8601 timestamp. `null` when it runs until paused, or when its ad groups set their own schedule.
 	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
 	// Unique identifier for the ad campaign, prefixed `adcamp_`.
 	ID     string             `json:"id" url:"id"`
 	Issues []*AdPlatformIssue `json:"issues" url:"issues"`
-	// The goal the campaign optimizes toward. `awareness` appears only on campaigns created before it was retired; those campaigns can't launch.
+	// The goal the campaign optimizes toward. `awareness` optimizes for impressions. `engagement` appears only on campaigns created before it was retired.
 	Objective           *PostAdCampaignPaymentFailedPayloadDataObjective                `json:"objective,omitempty" url:"objective,omitempty"`
 	SpecialAdCategories []PostAdCampaignPaymentFailedPayloadDataSpecialAdCategoriesItem `json:"special_ad_categories" url:"special_ad_categories"`
 	// When the campaign starts delivering, as an ISO 8601 timestamp. `null` when it starts as soon as it launches, or when its ad groups set their own schedule.
 	StartsAt *string `json:"starts_at,omitempty" url:"starts_at,omitempty"`
 	// The configured lifecycle status of the ad campaign. Billing failures preserve active or paused here and set delivery_status to payment_failed.
 	Status PostAdCampaignPaymentFailedPayloadDataStatus `json:"status" url:"status"`
-	// The desired cost per result for `target_result_event`, in USD. `null` when none is set.
+	// The desired cost per result for `target_result_event`, in USD. For `impressions`, it's the cost per 1,000 impressions. `null` when none is set or the ad groups set different ones.
 	TargetCostPerResult *float64 `json:"target_cost_per_result,omitempty" url:"target_cost_per_result,omitempty"`
 	// The event `target_cost_per_result` is priced per, such as `purchase` or `lead`. `null` when the campaign has no single goal.
 	TargetResultEvent *string `json:"target_result_event,omitempty" url:"target_result_event,omitempty"`
@@ -3586,7 +3589,7 @@ func (p PostAdCampaignPaymentFailedPayloadDataDeliveryStatus) Ptr() *PostAdCampa
 	return &p
 }
 
-// The goal the campaign optimizes toward. `awareness` appears only on campaigns created before it was retired; those campaigns can't launch.
+// The goal the campaign optimizes toward. `awareness` optimizes for impressions. `engagement` appears only on campaigns created before it was retired.
 type PostAdCampaignPaymentFailedPayloadDataObjective string
 
 const (
@@ -4006,21 +4009,21 @@ type PostAdCampaignUpdatedPayloadData struct {
 	CreatedAt string `json:"created_at" url:"created_at"`
 	// Whether the campaign's ads are delivering right now, and if not, why. Content review is in_review; a campaign waiting to start is processing. Account billing failures set payment_failed without changing the configured status. Successful payment retry clears that block and recalculates delivery. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus PostAdCampaignUpdatedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
-	// The cost per result, in USD, the advertiser wants this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. `null` when no target is set.
+	// The cost per result, in USD, the advertiser wants this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. An ad group's own `desired_cost_per_result` overrides it. For an `awareness` campaign, it's the cost per 1,000 impressions. `null` when no target is set.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
 	// When the campaign stops delivering, as an ISO 8601 timestamp. `null` when it runs until paused, or when its ad groups set their own schedule.
 	EndsAt *string `json:"ends_at,omitempty" url:"ends_at,omitempty"`
 	// Unique identifier for the ad campaign, prefixed `adcamp_`.
 	ID     string             `json:"id" url:"id"`
 	Issues []*AdPlatformIssue `json:"issues" url:"issues"`
-	// The goal the campaign optimizes toward. `awareness` appears only on campaigns created before it was retired; those campaigns can't launch.
+	// The goal the campaign optimizes toward. `awareness` optimizes for impressions. `engagement` appears only on campaigns created before it was retired.
 	Objective           *PostAdCampaignUpdatedPayloadDataObjective                `json:"objective,omitempty" url:"objective,omitempty"`
 	SpecialAdCategories []PostAdCampaignUpdatedPayloadDataSpecialAdCategoriesItem `json:"special_ad_categories" url:"special_ad_categories"`
 	// When the campaign starts delivering, as an ISO 8601 timestamp. `null` when it starts as soon as it launches, or when its ad groups set their own schedule.
 	StartsAt *string `json:"starts_at,omitempty" url:"starts_at,omitempty"`
 	// The configured lifecycle status of the ad campaign. Billing failures preserve active or paused here and set delivery_status to payment_failed.
 	Status PostAdCampaignUpdatedPayloadDataStatus `json:"status" url:"status"`
-	// The desired cost per result for `target_result_event`, in USD. `null` when none is set.
+	// The desired cost per result for `target_result_event`, in USD. For `impressions`, it's the cost per 1,000 impressions. `null` when none is set or the ad groups set different ones.
 	TargetCostPerResult *float64 `json:"target_cost_per_result,omitempty" url:"target_cost_per_result,omitempty"`
 	// The event `target_cost_per_result` is priced per, such as `purchase` or `lead`. `null` when the campaign has no single goal.
 	TargetResultEvent *string `json:"target_result_event,omitempty" url:"target_result_event,omitempty"`
@@ -4517,7 +4520,7 @@ func (p PostAdCampaignUpdatedPayloadDataDeliveryStatus) Ptr() *PostAdCampaignUpd
 	return &p
 }
 
-// The goal the campaign optimizes toward. `awareness` appears only on campaigns created before it was retired; those campaigns can't launch.
+// The goal the campaign optimizes toward. `awareness` optimizes for impressions. `engagement` appears only on campaigns created before it was retired.
 type PostAdCampaignUpdatedPayloadDataObjective string
 
 const (
@@ -4828,7 +4831,7 @@ type UpdateAdCampaignsRequest struct {
 	BudgetType *UpdateAdCampaignsRequestBudgetType `json:"budget_type,omitempty" url:"-"`
 	// Accepted only when it matches the campaign's current type, so a read can be sent back unchanged. The type is fixed at creation.
 	CampaignType *UpdateAdCampaignsRequestCampaignType `json:"campaign_type,omitempty" url:"-"`
-	// The cost per result, in USD, you want this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. Ad groups set cost and bid caps with their own `desired_cost_per_result`. `null` clears it.
+	// The cost per result, in USD, you want this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. An ad group's own `desired_cost_per_result` overrides it. For an `awareness` campaign, it's the cost per 1,000 impressions. `null` clears it.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"-"`
 	// When the campaign stops delivering, as an ISO 8601 timestamp. Only for campaigns that own the budget.
 	EndsAt *string `json:"ends_at,omitempty" url:"-"`

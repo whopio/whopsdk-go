@@ -12345,6 +12345,13 @@ func TestEnumAdCampaignResultEvent(t *testing.T) {
 		assert.Equal(t, AdCampaignResultEvent("messaging_conversation"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_impressions", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdCampaignResultEventFromString("impressions")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdCampaignResultEvent("impressions"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewAdCampaignResultEventFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -12547,18 +12554,18 @@ func TestEnumCreateAdCampaignsRequestCampaignType(t *testing.T) {
 }
 
 func TestEnumCreateAdCampaignsRequestObjective(t *testing.T) {
+	t.Run("NewFromString_awareness", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAdCampaignsRequestObjectiveFromString("awareness")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAdCampaignsRequestObjective("awareness"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_traffic", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewCreateAdCampaignsRequestObjectiveFromString("traffic")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, CreateAdCampaignsRequestObjective("traffic"), val, "enum value should match expected wire value")
-	})
-
-	t.Run("NewFromString_engagement", func(t *testing.T) {
-		t.Parallel()
-		val, err := NewCreateAdCampaignsRequestObjectiveFromString("engagement")
-		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, CreateAdCampaignsRequestObjective("engagement"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_leads", func(t *testing.T) {
@@ -12581,7 +12588,7 @@ func TestEnumCreateAdCampaignsRequestObjective(t *testing.T) {
 	})
 
 	t.Run("Ptr", func(t *testing.T) {
-		val, err := NewCreateAdCampaignsRequestObjectiveFromString("traffic")
+		val, err := NewCreateAdCampaignsRequestObjectiveFromString("awareness")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
