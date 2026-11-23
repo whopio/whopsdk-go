@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-22-1"
+		apiVersionDateDefault := "2026-11-23"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -255,7 +255,7 @@ func (c *Client) Claim(
 	return response.Body, nil
 }
 
-// Creates copies of the campaign in `duplicating` status and returns them; each copy transitions to `draft` once duplication completes. Poll each returned campaign until it leaves `duplicating` — a copy that could not be completed is deleted and returns 404.
+// Creates copies of the campaign in `duplicating` status and returns them. Each copy moves to `draft` when duplication completes. Poll each returned campaign until it leaves `duplicating`. A copy that could not be completed is deleted and returns 404. A campaign with a lifetime budget, or with an ad group on one, can't be duplicated.
 //
 // Example:
 //

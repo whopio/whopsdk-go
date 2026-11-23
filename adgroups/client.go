@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-22-1"
+		apiVersionDateDefault := "2026-11-23"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -232,7 +232,7 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
-// Starts copying an ad group and returns the copies in `duplicating` status. Poll each returned ad group until it leaves `duplicating`: it then takes the source's `active` or `paused` status, or, if the copy could not be completed, is deleted and returns 404.
+// Starts copying an ad group and returns the copies in `duplicating` status. Poll each returned ad group until it leaves `duplicating`. A copy then takes the source's `active` or `paused` status. A copy that could not be completed is deleted and returns 404. An ad group with a lifetime budget can't be duplicated.
 //
 // Example:
 //
