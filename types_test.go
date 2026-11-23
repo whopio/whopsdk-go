@@ -84561,6 +84561,22 @@ func TestSettersNotificationTopic(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetEmailDelivery", func(t *testing.T) {
+		obj := &NotificationTopic{}
+		var fernTestValueEmailDelivery NotificationTopicEmailDelivery
+		obj.SetEmailDelivery(fernTestValueEmailDelivery)
+		assert.Equal(t, fernTestValueEmailDelivery, obj.EmailDelivery)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetEveryChannelCoversEmail", func(t *testing.T) {
+		obj := &NotificationTopic{}
+		var fernTestValueEveryChannelCoversEmail bool
+		obj.SetEveryChannelCoversEmail(fernTestValueEveryChannelCoversEmail)
+		assert.Equal(t, fernTestValueEveryChannelCoversEmail, obj.EveryChannelCoversEmail)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetID", func(t *testing.T) {
 		obj := &NotificationTopic{}
 		var fernTestValueID string
@@ -84590,6 +84606,14 @@ func TestSettersNotificationTopic(t *testing.T) {
 		var fernTestValueName string
 		obj.SetName(fernTestValueName)
 		assert.Equal(t, fernTestValueName, obj.Name)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetPushDelivery", func(t *testing.T) {
+		obj := &NotificationTopic{}
+		var fernTestValuePushDelivery NotificationTopicPushDelivery
+		obj.SetPushDelivery(fernTestValuePushDelivery)
+		assert.Equal(t, fernTestValuePushDelivery, obj.PushDelivery)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -84658,6 +84682,52 @@ func TestGettersNotificationTopic(t *testing.T) {
 			}
 		}()
 		_ = obj.GetDescription() // Should return zero value
+	})
+
+	t.Run("GetEmailDelivery", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &NotificationTopic{}
+		var expected NotificationTopicEmailDelivery
+		obj.EmailDelivery = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEmailDelivery(), "getter should return the property value")
+	})
+
+	t.Run("GetEmailDelivery_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *NotificationTopic
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEmailDelivery() // Should return zero value
+	})
+
+	t.Run("GetEveryChannelCoversEmail", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &NotificationTopic{}
+		var expected bool
+		obj.EveryChannelCoversEmail = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetEveryChannelCoversEmail(), "getter should return the property value")
+	})
+
+	t.Run("GetEveryChannelCoversEmail_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *NotificationTopic
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetEveryChannelCoversEmail() // Should return zero value
 	})
 
 	t.Run("GetID", func(t *testing.T) {
@@ -84752,6 +84822,29 @@ func TestGettersNotificationTopic(t *testing.T) {
 		_ = obj.GetName() // Should return zero value
 	})
 
+	t.Run("GetPushDelivery", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &NotificationTopic{}
+		var expected NotificationTopicPushDelivery
+		obj.PushDelivery = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetPushDelivery(), "getter should return the property value")
+	})
+
+	t.Run("GetPushDelivery_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *NotificationTopic
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetPushDelivery() // Should return zero value
+	})
+
 	t.Run("GetTopicType", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -84817,6 +84910,68 @@ func TestSettersMarkExplicitNotificationTopic(t *testing.T) {
 
 		// Act
 		obj.SetDescription(fernTestValueDescription)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetEmailDelivery_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &NotificationTopic{}
+		var fernTestValueEmailDelivery NotificationTopicEmailDelivery
+
+		// Act
+		obj.SetEmailDelivery(fernTestValueEmailDelivery)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetEveryChannelCoversEmail_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &NotificationTopic{}
+		var fernTestValueEveryChannelCoversEmail bool
+
+		// Act
+		obj.SetEveryChannelCoversEmail(fernTestValueEveryChannelCoversEmail)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -84941,6 +85096,37 @@ func TestSettersMarkExplicitNotificationTopic(t *testing.T) {
 
 		// Act
 		obj.SetName(fernTestValueName)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetPushDelivery_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &NotificationTopic{}
+		var fernTestValuePushDelivery NotificationTopicPushDelivery
+
+		// Act
+		obj.SetPushDelivery(fernTestValuePushDelivery)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -204215,6 +204401,13 @@ func TestEnumNotificationPreferenceScopeChannel(t *testing.T) {
 		assert.Equal(t, NotificationPreferenceScopeChannel("mobile"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_email", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewNotificationPreferenceScopeChannelFromString("email")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, NotificationPreferenceScopeChannel("email"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewNotificationPreferenceScopeChannelFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -204287,6 +204480,71 @@ func TestEnumNotificationPreferenceStateType(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewNotificationPreferenceStateTypeFromString("notification_preference")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumNotificationTopicEmailDelivery(t *testing.T) {
+	t.Run("NewFromString_optional", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewNotificationTopicEmailDeliveryFromString("optional")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, NotificationTopicEmailDelivery("optional"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_always", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewNotificationTopicEmailDeliveryFromString("always")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, NotificationTopicEmailDelivery("always"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_unavailable", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewNotificationTopicEmailDeliveryFromString("unavailable")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, NotificationTopicEmailDelivery("unavailable"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewNotificationTopicEmailDeliveryFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewNotificationTopicEmailDeliveryFromString("optional")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumNotificationTopicPushDelivery(t *testing.T) {
+	t.Run("NewFromString_optional", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewNotificationTopicPushDeliveryFromString("optional")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, NotificationTopicPushDelivery("optional"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_unavailable", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewNotificationTopicPushDeliveryFromString("unavailable")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, NotificationTopicPushDelivery("unavailable"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewNotificationTopicPushDeliveryFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewNotificationTopicPushDeliveryFromString("optional")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
