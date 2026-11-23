@@ -157,6 +157,14 @@ func TestSettersCreateExperimentsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDecisionMode", func(t *testing.T) {
+		obj := &CreateExperimentsRequest{}
+		var fernTestValueDecisionMode *CreateExperimentsRequestDecisionMode
+		obj.SetDecisionMode(fernTestValueDecisionMode)
+		assert.Equal(t, fernTestValueDecisionMode, obj.DecisionMode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFlagKey", func(t *testing.T) {
 		obj := &CreateExperimentsRequest{}
 		var fernTestValueFlagKey string
@@ -294,6 +302,37 @@ func TestSettersMarkExplicitCreateExperimentsRequest(t *testing.T) {
 
 		// Act
 		obj.SetControl(fernTestValueControl)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDecisionMode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateExperimentsRequest{}
+		var fernTestValueDecisionMode *CreateExperimentsRequestDecisionMode
+
+		// Act
+		obj.SetDecisionMode(fernTestValueDecisionMode)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -1713,6 +1752,14 @@ func TestSettersExperiment(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDecisionMode", func(t *testing.T) {
+		obj := &Experiment{}
+		var fernTestValueDecisionMode *ExperimentDecisionMode
+		obj.SetDecisionMode(fernTestValueDecisionMode)
+		assert.Equal(t, fernTestValueDecisionMode, obj.DecisionMode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetEndedAt", func(t *testing.T) {
 		obj := &Experiment{}
 		var fernTestValueEndedAt *string
@@ -2035,6 +2082,39 @@ func TestGettersExperiment(t *testing.T) {
 			}
 		}()
 		_ = obj.GetCreatedBy() // Should return zero value
+	})
+
+	t.Run("GetDecisionMode", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Experiment{}
+		var expected *ExperimentDecisionMode
+		obj.DecisionMode = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDecisionMode(), "getter should return the property value")
+	})
+
+	t.Run("GetDecisionMode_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Experiment{}
+		obj.DecisionMode = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDecisionMode(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDecisionMode_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Experiment
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDecisionMode() // Should return zero value
 	})
 
 	t.Run("GetEndedAt", func(t *testing.T) {
@@ -2689,6 +2769,37 @@ func TestSettersMarkExplicitExperiment(t *testing.T) {
 
 		// Act
 		obj.SetCreatedBy(fernTestValueCreatedBy)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDecisionMode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Experiment{}
+		var fernTestValueDecisionMode *ExperimentDecisionMode
+
+		// Act
+		obj.SetDecisionMode(fernTestValueDecisionMode)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -7423,6 +7534,14 @@ func TestSettersUpdateExperimentsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetDecisionMode", func(t *testing.T) {
+		obj := &UpdateExperimentsRequest{}
+		var fernTestValueDecisionMode *UpdateExperimentsRequestDecisionMode
+		obj.SetDecisionMode(fernTestValueDecisionMode)
+		assert.Equal(t, fernTestValueDecisionMode, obj.DecisionMode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetHypothesis", func(t *testing.T) {
 		obj := &UpdateExperimentsRequest{}
 		var fernTestValueHypothesis *string
@@ -7520,6 +7639,37 @@ func TestSettersMarkExplicitUpdateExperimentsRequest(t *testing.T) {
 
 		// Act
 		obj.SetControl(fernTestValueControl)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDecisionMode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdateExperimentsRequest{}
+		var fernTestValueDecisionMode *UpdateExperimentsRequestDecisionMode
+
+		// Act
+		obj.SetDecisionMode(fernTestValueDecisionMode)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -8421,6 +8571,7 @@ func TestOptionalNullableRoundTripExperiment(t *testing.T) {
 		"bucket_by",
 		"created_at",
 		"created_by",
+		"decision_mode",
 		"ended_at",
 		"findings",
 		"hypothesis",
@@ -8439,7 +8590,7 @@ func TestOptionalNullableRoundTripExperiment(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Experiment
-		require.NoError(t, json.Unmarshal([]byte(`{"bucket_by":null,"created_at":null,"created_by":null,"ended_at":null,"findings":null,"hypothesis":null,"started_at":null,"target_stats":null,"winning_arm":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"bucket_by":null,"created_at":null,"created_by":null,"decision_mode":null,"ended_at":null,"findings":null,"hypothesis":null,"started_at":null,"target_stats":null,"winning_arm":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range optionalNullableKeys {
 			value, ok := result[key]
@@ -8914,6 +9065,35 @@ func TestEnumCreateExperimentsRequestBucketBy(t *testing.T) {
 	})
 }
 
+func TestEnumCreateExperimentsRequestDecisionMode(t *testing.T) {
+	t.Run("NewFromString_autopilot", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateExperimentsRequestDecisionModeFromString("autopilot")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateExperimentsRequestDecisionMode("autopilot"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_require_approval", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateExperimentsRequestDecisionModeFromString("require_approval")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateExperimentsRequestDecisionMode("require_approval"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateExperimentsRequestDecisionModeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateExperimentsRequestDecisionModeFromString("autopilot")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumCreateExperimentsRequestKind(t *testing.T) {
 	t.Run("NewFromString_experiment", func(t *testing.T) {
 		t.Parallel()
@@ -8972,6 +9152,35 @@ func TestEnumExperimentBucketBy(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewExperimentBucketByFromString("user")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumExperimentDecisionMode(t *testing.T) {
+	t.Run("NewFromString_autopilot", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExperimentDecisionModeFromString("autopilot")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExperimentDecisionMode("autopilot"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_require_approval", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExperimentDecisionModeFromString("require_approval")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExperimentDecisionMode("require_approval"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewExperimentDecisionModeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewExperimentDecisionModeFromString("autopilot")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -9296,6 +9505,35 @@ func TestEnumResultsExperimentsResponseStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewResultsExperimentsResponseStatusFromString("draft")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdateExperimentsRequestDecisionMode(t *testing.T) {
+	t.Run("NewFromString_autopilot", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateExperimentsRequestDecisionModeFromString("autopilot")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateExperimentsRequestDecisionMode("autopilot"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_require_approval", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateExperimentsRequestDecisionModeFromString("require_approval")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateExperimentsRequestDecisionMode("require_approval"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdateExperimentsRequestDecisionModeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdateExperimentsRequestDecisionModeFromString("autopilot")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
