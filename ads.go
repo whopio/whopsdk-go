@@ -817,7 +817,7 @@ type Ad struct {
 	ContactValue float64 `json:"contact_value" url:"contact_value"`
 	// Whop pixel-attributed contact events, last-click.
 	Contacts float64 `json:"contacts" url:"contacts"`
-	// Whop's content review of this ad: whether it has finished, which ad networks it is recommended for, and the content rules it breaks.
+	// Whop's content review of this ad: whether it has finished and the content rules it breaks.
 	ContentReview *AdContentReview `json:"content_review" url:"content_review"`
 	// Spend divided by attributed add-to-cart events; null when they are not the goal and none are attributed.
 	CostPerAddedToCart *float64 `json:"cost_per_added_to_cart,omitempty" url:"cost_per_added_to_cart,omitempty"`
@@ -1975,13 +1975,11 @@ func (a AdCallToAction) Ptr() *AdCallToAction {
 }
 
 var (
-	adContentReviewFieldNetworks = big.NewInt(1 << 0)
-	adContentReviewFieldStatus   = big.NewInt(1 << 1)
-	adContentReviewFieldTags     = big.NewInt(1 << 2)
+	adContentReviewFieldStatus = big.NewInt(1 << 0)
+	adContentReviewFieldTags   = big.NewInt(1 << 1)
 )
 
 type AdContentReview struct {
-	Networks []*AdContentReviewNetwork `json:"networks" url:"networks"`
 	// `reviewed` once Whop content review finishes, `in_review` while it runs, `not_reviewed` when it never ran.
 	Status AdContentReviewStatus `json:"status" url:"status"`
 	Tags   []*AdContentReviewTag `json:"tags" url:"tags"`
@@ -1991,13 +1989,6 @@ type AdContentReview struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
-}
-
-func (a *AdContentReview) GetNetworks() []*AdContentReviewNetwork {
-	if a == nil {
-		return nil
-	}
-	return a.Networks
 }
 
 func (a *AdContentReview) GetStatus() AdContentReviewStatus {
@@ -2028,13 +2019,6 @@ func (a *AdContentReview) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	a.explicitFields = next
-}
-
-// SetNetworks sets the Networks field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdContentReview) SetNetworks(networks []*AdContentReviewNetwork) {
-	a.Networks = networks
-	a.require(adContentReviewFieldNetworks)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -2093,139 +2077,6 @@ func (a *AdContentReview) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-var (
-	adContentReviewNetworkFieldRecommended = big.NewInt(1 << 0)
-	adContentReviewNetworkFieldTitle       = big.NewInt(1 << 1)
-)
-
-type AdContentReviewNetwork struct {
-	// Whether the ad passes Whop's content policy and this network's.
-	Recommended bool `json:"recommended" url:"recommended"`
-	// The network. `whop` is Whop's own content policy, which every other network also requires.
-	Title AdContentReviewNetworkTitle `json:"title" url:"title"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AdContentReviewNetwork) GetRecommended() bool {
-	if a == nil {
-		return false
-	}
-	return a.Recommended
-}
-
-func (a *AdContentReviewNetwork) GetTitle() AdContentReviewNetworkTitle {
-	if a == nil {
-		return ""
-	}
-	return a.Title
-}
-
-func (a *AdContentReviewNetwork) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AdContentReviewNetwork) require(field *big.Int) {
-	next := new(big.Int)
-	if a.explicitFields != nil {
-		next.Set(a.explicitFields)
-	}
-	next.Or(next, field)
-	a.explicitFields = next
-}
-
-// SetRecommended sets the Recommended field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdContentReviewNetwork) SetRecommended(recommended bool) {
-	a.Recommended = recommended
-	a.require(adContentReviewNetworkFieldRecommended)
-}
-
-// SetTitle sets the Title field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdContentReviewNetwork) SetTitle(title AdContentReviewNetworkTitle) {
-	a.Title = title
-	a.require(adContentReviewNetworkFieldTitle)
-}
-
-func (a *AdContentReviewNetwork) UnmarshalJSON(data []byte) error {
-	type unmarshaler AdContentReviewNetwork
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AdContentReviewNetwork(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AdContentReviewNetwork) MarshalJSON() ([]byte, error) {
-	type embed AdContentReviewNetwork
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AdContentReviewNetwork) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-// The network. `whop` is Whop's own content policy, which every other network also requires.
-type AdContentReviewNetworkTitle string
-
-const (
-	AdContentReviewNetworkTitleWhop   AdContentReviewNetworkTitle = "whop"
-	AdContentReviewNetworkTitleMeta   AdContentReviewNetworkTitle = "meta"
-	AdContentReviewNetworkTitleTiktok AdContentReviewNetworkTitle = "tiktok"
-	AdContentReviewNetworkTitleGoogle AdContentReviewNetworkTitle = "google"
-)
-
-func NewAdContentReviewNetworkTitleFromString(s string) (AdContentReviewNetworkTitle, error) {
-	switch s {
-	case "whop":
-		return AdContentReviewNetworkTitleWhop, nil
-	case "meta":
-		return AdContentReviewNetworkTitleMeta, nil
-	case "tiktok":
-		return AdContentReviewNetworkTitleTiktok, nil
-	case "google":
-		return AdContentReviewNetworkTitleGoogle, nil
-	}
-	var t AdContentReviewNetworkTitle
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdContentReviewNetworkTitle) Ptr() *AdContentReviewNetworkTitle {
-	return &a
-}
-
 // `reviewed` once Whop content review finishes, `in_review` while it runs, `not_reviewed` when it never ran.
 type AdContentReviewStatus string
 
@@ -2253,15 +2104,13 @@ func (a AdContentReviewStatus) Ptr() *AdContentReviewStatus {
 }
 
 var (
-	adContentReviewTagFieldMessage      = big.NewInt(1 << 0)
-	adContentReviewTagFieldRestrictions = big.NewInt(1 << 1)
-	adContentReviewTagFieldTitle        = big.NewInt(1 << 2)
+	adContentReviewTagFieldMessage = big.NewInt(1 << 0)
+	adContentReviewTagFieldTitle   = big.NewInt(1 << 1)
 )
 
 type AdContentReviewTag struct {
 	// The evidence the review recorded for this rule.
-	Message      string                           `json:"message" url:"message"`
-	Restrictions []*AdContentReviewTagRestriction `json:"restrictions" url:"restrictions"`
+	Message string `json:"message" url:"message"`
 	// The rule Whop content review found the ad breaks.
 	Title string `json:"title" url:"title"`
 
@@ -2277,13 +2126,6 @@ func (a *AdContentReviewTag) GetMessage() string {
 		return ""
 	}
 	return a.Message
-}
-
-func (a *AdContentReviewTag) GetRestrictions() []*AdContentReviewTagRestriction {
-	if a == nil {
-		return nil
-	}
-	return a.Restrictions
 }
 
 func (a *AdContentReviewTag) GetTitle() string {
@@ -2314,13 +2156,6 @@ func (a *AdContentReviewTag) require(field *big.Int) {
 func (a *AdContentReviewTag) SetMessage(message string) {
 	a.Message = message
 	a.require(adContentReviewTagFieldMessage)
-}
-
-// SetRestrictions sets the Restrictions field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdContentReviewTag) SetRestrictions(restrictions []*AdContentReviewTagRestriction) {
-	a.Restrictions = restrictions
-	a.require(adContentReviewTagFieldRestrictions)
 }
 
 // SetTitle sets the Title field and marks it as non-optional;
@@ -2370,231 +2205,6 @@ func (a *AdContentReviewTag) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
-}
-
-var (
-	adContentReviewTagRestrictionFieldCondition = big.NewInt(1 << 0)
-	adContentReviewTagRestrictionFieldCountry   = big.NewInt(1 << 1)
-	adContentReviewTagRestrictionFieldKind      = big.NewInt(1 << 2)
-	adContentReviewTagRestrictionFieldNetwork   = big.NewInt(1 << 3)
-)
-
-// adContentReviewTagRestrictionNullableFields maps the wire names of AdContentReviewTagRestriction's nullable fields (required or optional) to their field bits.
-var adContentReviewTagRestrictionNullableFields = map[string]*big.Int{
-	"condition": adContentReviewTagRestrictionFieldCondition,
-	"country":   adContentReviewTagRestrictionFieldCountry,
-	"kind":      adContentReviewTagRestrictionFieldKind,
-}
-
-type AdContentReviewTagRestriction struct {
-	// What the network requires before it allows this content. `null` when the network doesn't allow it at all.
-	Condition *string `json:"condition,omitempty" url:"condition,omitempty"`
-	// The targeted country the condition applies in, as an ISO 3166-1 alpha-2 code. `null` when the condition isn't tied to a country.
-	Country *string `json:"country,omitempty" url:"country,omitempty"`
-	// The kind of condition the network sets. `null` when the network doesn't allow the content at all, and on reviews saved before kinds were recorded.
-	Kind *AdContentReviewTagRestrictionKind `json:"kind,omitempty" url:"kind,omitempty"`
-	// The network whose content policy keeps the ad off. `whop` is Whop's own policy, which keeps it off every network.
-	Network AdContentReviewTagRestrictionNetwork `json:"network" url:"network"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AdContentReviewTagRestriction) GetCondition() *string {
-	if a == nil {
-		return nil
-	}
-	return a.Condition
-}
-
-func (a *AdContentReviewTagRestriction) GetCountry() *string {
-	if a == nil {
-		return nil
-	}
-	return a.Country
-}
-
-func (a *AdContentReviewTagRestriction) GetKind() *AdContentReviewTagRestrictionKind {
-	if a == nil {
-		return nil
-	}
-	return a.Kind
-}
-
-func (a *AdContentReviewTagRestriction) GetNetwork() AdContentReviewTagRestrictionNetwork {
-	if a == nil {
-		return ""
-	}
-	return a.Network
-}
-
-func (a *AdContentReviewTagRestriction) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AdContentReviewTagRestriction) require(field *big.Int) {
-	next := new(big.Int)
-	if a.explicitFields != nil {
-		next.Set(a.explicitFields)
-	}
-	next.Or(next, field)
-	a.explicitFields = next
-}
-
-// SetCondition sets the Condition field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdContentReviewTagRestriction) SetCondition(condition *string) {
-	a.Condition = condition
-	a.require(adContentReviewTagRestrictionFieldCondition)
-}
-
-// SetCountry sets the Country field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdContentReviewTagRestriction) SetCountry(country *string) {
-	a.Country = country
-	a.require(adContentReviewTagRestrictionFieldCountry)
-}
-
-// SetKind sets the Kind field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdContentReviewTagRestriction) SetKind(kind *AdContentReviewTagRestrictionKind) {
-	a.Kind = kind
-	a.require(adContentReviewTagRestrictionFieldKind)
-}
-
-// SetNetwork sets the Network field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AdContentReviewTagRestriction) SetNetwork(network AdContentReviewTagRestrictionNetwork) {
-	a.Network = network
-	a.require(adContentReviewTagRestrictionFieldNetwork)
-}
-
-func (a *AdContentReviewTagRestriction) UnmarshalJSON(data []byte) error {
-	type unmarshaler AdContentReviewTagRestriction
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AdContentReviewTagRestriction(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, adContentReviewTagRestrictionNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		a.require(presentFields)
-	}
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AdContentReviewTagRestriction) MarshalJSON() ([]byte, error) {
-	type embed AdContentReviewTagRestriction
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AdContentReviewTagRestriction) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-// The kind of condition the network sets. `null` when the network doesn't allow the content at all, and on reviews saved before kinds were recorded.
-type AdContentReviewTagRestrictionKind string
-
-const (
-	AdContentReviewTagRestrictionKindProduct       AdContentReviewTagRestrictionKind = "product"
-	AdContentReviewTagRestrictionKindCountry       AdContentReviewTagRestrictionKind = "country"
-	AdContentReviewTagRestrictionKindAge           AdContentReviewTagRestrictionKind = "age"
-	AdContentReviewTagRestrictionKindCertification AdContentReviewTagRestrictionKind = "certification"
-	AdContentReviewTagRestrictionKindDisclosure    AdContentReviewTagRestrictionKind = "disclosure"
-	AdContentReviewTagRestrictionKindAdFormat      AdContentReviewTagRestrictionKind = "ad_format"
-	AdContentReviewTagRestrictionKindAudience      AdContentReviewTagRestrictionKind = "audience"
-	AdContentReviewTagRestrictionKindSchedule      AdContentReviewTagRestrictionKind = "schedule"
-	AdContentReviewTagRestrictionKindUnconfirmed   AdContentReviewTagRestrictionKind = "unconfirmed"
-)
-
-func NewAdContentReviewTagRestrictionKindFromString(s string) (AdContentReviewTagRestrictionKind, error) {
-	switch s {
-	case "product":
-		return AdContentReviewTagRestrictionKindProduct, nil
-	case "country":
-		return AdContentReviewTagRestrictionKindCountry, nil
-	case "age":
-		return AdContentReviewTagRestrictionKindAge, nil
-	case "certification":
-		return AdContentReviewTagRestrictionKindCertification, nil
-	case "disclosure":
-		return AdContentReviewTagRestrictionKindDisclosure, nil
-	case "ad_format":
-		return AdContentReviewTagRestrictionKindAdFormat, nil
-	case "audience":
-		return AdContentReviewTagRestrictionKindAudience, nil
-	case "schedule":
-		return AdContentReviewTagRestrictionKindSchedule, nil
-	case "unconfirmed":
-		return AdContentReviewTagRestrictionKindUnconfirmed, nil
-	}
-	var t AdContentReviewTagRestrictionKind
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdContentReviewTagRestrictionKind) Ptr() *AdContentReviewTagRestrictionKind {
-	return &a
-}
-
-// The network whose content policy keeps the ad off. `whop` is Whop's own policy, which keeps it off every network.
-type AdContentReviewTagRestrictionNetwork string
-
-const (
-	AdContentReviewTagRestrictionNetworkWhop   AdContentReviewTagRestrictionNetwork = "whop"
-	AdContentReviewTagRestrictionNetworkMeta   AdContentReviewTagRestrictionNetwork = "meta"
-	AdContentReviewTagRestrictionNetworkTiktok AdContentReviewTagRestrictionNetwork = "tiktok"
-	AdContentReviewTagRestrictionNetworkGoogle AdContentReviewTagRestrictionNetwork = "google"
-)
-
-func NewAdContentReviewTagRestrictionNetworkFromString(s string) (AdContentReviewTagRestrictionNetwork, error) {
-	switch s {
-	case "whop":
-		return AdContentReviewTagRestrictionNetworkWhop, nil
-	case "meta":
-		return AdContentReviewTagRestrictionNetworkMeta, nil
-	case "tiktok":
-		return AdContentReviewTagRestrictionNetworkTiktok, nil
-	case "google":
-		return AdContentReviewTagRestrictionNetworkGoogle, nil
-	}
-	var t AdContentReviewTagRestrictionNetwork
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AdContentReviewTagRestrictionNetwork) Ptr() *AdContentReviewTagRestrictionNetwork {
-	return &a
 }
 
 var (
@@ -5218,7 +4828,7 @@ type PostAdUpdatedPayloadData struct {
 	AdGroup *AdEntityReference `json:"ad_group" url:"ad_group"`
 	// The call-to-action button shown on the ad.
 	CallToAction *PostAdUpdatedPayloadDataCallToAction `json:"call_to_action,omitempty" url:"call_to_action,omitempty"`
-	// Whop's content review of this ad: whether it has finished, which ad networks it is recommended for, and the content rules it breaks.
+	// Whop's content review of this ad: whether it has finished and the content rules it breaks.
 	ContentReview *AdContentReview `json:"content_review" url:"content_review"`
 	// When the ad was created, as an ISO 8601 timestamp.
 	CreatedAt string        `json:"created_at" url:"created_at"`
