@@ -43877,7 +43877,7 @@ var notificationPreferenceScopeNullableFields = map[string]*big.Int{
 type NotificationPreferenceScope struct {
 	// Account the preference is scoped to (member notifications), prefixed `biz_`.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// Delivery channel the preference applies to. `null` applies to every channel.
+	// Delivery channel the preference applies to. `null` applies to every channel. Email is the exception when the topic's `every_channel_covers_email` is `false`.
 	Channel *NotificationPreferenceScopeChannel `json:"channel,omitempty" url:"channel,omitempty"`
 	// Experience the preference is scoped to, prefixed `exp_`.
 	ExperienceID *string `json:"experience_id,omitempty" url:"experience_id,omitempty"`
@@ -44028,12 +44028,13 @@ func (n *NotificationPreferenceScope) String() string {
 	return fmt.Sprintf("%#v", n)
 }
 
-// Delivery channel the preference applies to. `null` applies to every channel.
+// Delivery channel the preference applies to. `null` applies to every channel. Email is the exception when the topic's `every_channel_covers_email` is `false`.
 type NotificationPreferenceScopeChannel string
 
 const (
 	NotificationPreferenceScopeChannelInApp  NotificationPreferenceScopeChannel = "in_app"
 	NotificationPreferenceScopeChannelMobile NotificationPreferenceScopeChannel = "mobile"
+	NotificationPreferenceScopeChannelEmail  NotificationPreferenceScopeChannel = "email"
 )
 
 func NewNotificationPreferenceScopeChannelFromString(s string) (NotificationPreferenceScopeChannel, error) {
@@ -44042,6 +44043,8 @@ func NewNotificationPreferenceScopeChannelFromString(s string) (NotificationPref
 		return NotificationPreferenceScopeChannelInApp, nil
 	case "mobile":
 		return NotificationPreferenceScopeChannelMobile, nil
+	case "email":
+		return NotificationPreferenceScopeChannelEmail, nil
 	}
 	var t NotificationPreferenceScopeChannel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -44234,13 +44237,16 @@ func (n NotificationPreferenceStateType) Ptr() *NotificationPreferenceStateType 
 }
 
 var (
-	notificationTopicFieldDefaultPreferenceValue = big.NewInt(1 << 0)
-	notificationTopicFieldDescription            = big.NewInt(1 << 1)
-	notificationTopicFieldID                     = big.NewInt(1 << 2)
-	notificationTopicFieldIdentifier             = big.NewInt(1 << 3)
-	notificationTopicFieldIsMention              = big.NewInt(1 << 4)
-	notificationTopicFieldName                   = big.NewInt(1 << 5)
-	notificationTopicFieldTopicType              = big.NewInt(1 << 6)
+	notificationTopicFieldDefaultPreferenceValue  = big.NewInt(1 << 0)
+	notificationTopicFieldDescription             = big.NewInt(1 << 1)
+	notificationTopicFieldEmailDelivery           = big.NewInt(1 << 2)
+	notificationTopicFieldEveryChannelCoversEmail = big.NewInt(1 << 3)
+	notificationTopicFieldID                      = big.NewInt(1 << 4)
+	notificationTopicFieldIdentifier              = big.NewInt(1 << 5)
+	notificationTopicFieldIsMention               = big.NewInt(1 << 6)
+	notificationTopicFieldName                    = big.NewInt(1 << 7)
+	notificationTopicFieldPushDelivery            = big.NewInt(1 << 8)
+	notificationTopicFieldTopicType               = big.NewInt(1 << 9)
 )
 
 // notificationTopicNullableFields maps the wire names of NotificationTopic's nullable fields (required or optional) to their field bits.
@@ -44253,6 +44259,10 @@ type NotificationTopic struct {
 	DefaultPreferenceValue bool `json:"default_preference_value" url:"default_preference_value"`
 	// Human-readable explanation of what notifications in this topic are about. `null` when no description has been set.
 	Description *string `json:"description,omitempty" url:"description,omitempty"`
+	// How the topic sends email. `optional` means a preference with channel `email` turns its emails on or off. `always` means its emails are sent whatever the preferences say. `unavailable` means the topic sends no email.
+	EmailDelivery NotificationTopicEmailDelivery `json:"email_delivery" url:"email_delivery"`
+	// Whether a preference with no channel also turns this topic's email on or off. When `false`, only a preference with channel `email` changes its email.
+	EveryChannelCoversEmail bool `json:"every_channel_covers_email" url:"every_channel_covers_email"`
 	// Notification topic ID, prefixed `topic_`. This is the value the notification preference endpoints take as `topic_id`.
 	ID string `json:"id" url:"id"`
 	// Stable, human-readable name for the category, such as `new-follower`. Unlike `id`, it is the same in every environment, which makes it the value to match on in code and to read in logs. Treat it as an opaque string: the set is open and the casing is historical rather than normalized.
@@ -44261,6 +44271,8 @@ type NotificationTopic struct {
 	IsMention bool `json:"is_mention" url:"is_mention"`
 	// Display name shown in notification preference settings.
 	Name string `json:"name" url:"name"`
+	// How the topic sends push and in-app notifications. `optional` means a preference with channel `mobile` or `in_app` turns them on or off. A `mobile` preference wins over an `in_app` one. `unavailable` means the topic sends no push or in-app notification.
+	PushDelivery NotificationTopicPushDelivery `json:"push_delivery" url:"push_delivery"`
 	// Scope of the topic: whether it applies to an account, a user, or an account's team.
 	TopicType NotificationTopicTopicType `json:"topic_type" url:"topic_type"`
 
@@ -44283,6 +44295,20 @@ func (n *NotificationTopic) GetDescription() *string {
 		return nil
 	}
 	return n.Description
+}
+
+func (n *NotificationTopic) GetEmailDelivery() NotificationTopicEmailDelivery {
+	if n == nil {
+		return ""
+	}
+	return n.EmailDelivery
+}
+
+func (n *NotificationTopic) GetEveryChannelCoversEmail() bool {
+	if n == nil {
+		return false
+	}
+	return n.EveryChannelCoversEmail
 }
 
 func (n *NotificationTopic) GetID() string {
@@ -44311,6 +44337,13 @@ func (n *NotificationTopic) GetName() string {
 		return ""
 	}
 	return n.Name
+}
+
+func (n *NotificationTopic) GetPushDelivery() NotificationTopicPushDelivery {
+	if n == nil {
+		return ""
+	}
+	return n.PushDelivery
 }
 
 func (n *NotificationTopic) GetTopicType() NotificationTopicTopicType {
@@ -44350,6 +44383,20 @@ func (n *NotificationTopic) SetDescription(description *string) {
 	n.require(notificationTopicFieldDescription)
 }
 
+// SetEmailDelivery sets the EmailDelivery field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (n *NotificationTopic) SetEmailDelivery(emailDelivery NotificationTopicEmailDelivery) {
+	n.EmailDelivery = emailDelivery
+	n.require(notificationTopicFieldEmailDelivery)
+}
+
+// SetEveryChannelCoversEmail sets the EveryChannelCoversEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (n *NotificationTopic) SetEveryChannelCoversEmail(everyChannelCoversEmail bool) {
+	n.EveryChannelCoversEmail = everyChannelCoversEmail
+	n.require(notificationTopicFieldEveryChannelCoversEmail)
+}
+
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (n *NotificationTopic) SetID(id string) {
@@ -44376,6 +44423,13 @@ func (n *NotificationTopic) SetIsMention(isMention bool) {
 func (n *NotificationTopic) SetName(name string) {
 	n.Name = name
 	n.require(notificationTopicFieldName)
+}
+
+// SetPushDelivery sets the PushDelivery field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (n *NotificationTopic) SetPushDelivery(pushDelivery NotificationTopicPushDelivery) {
+	n.PushDelivery = pushDelivery
+	n.require(notificationTopicFieldPushDelivery)
 }
 
 // SetTopicType sets the TopicType field and marks it as non-optional;
@@ -44432,6 +44486,55 @@ func (n *NotificationTopic) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", n)
+}
+
+// How the topic sends email. `optional` means a preference with channel `email` turns its emails on or off. `always` means its emails are sent whatever the preferences say. `unavailable` means the topic sends no email.
+type NotificationTopicEmailDelivery string
+
+const (
+	NotificationTopicEmailDeliveryOptional    NotificationTopicEmailDelivery = "optional"
+	NotificationTopicEmailDeliveryAlways      NotificationTopicEmailDelivery = "always"
+	NotificationTopicEmailDeliveryUnavailable NotificationTopicEmailDelivery = "unavailable"
+)
+
+func NewNotificationTopicEmailDeliveryFromString(s string) (NotificationTopicEmailDelivery, error) {
+	switch s {
+	case "optional":
+		return NotificationTopicEmailDeliveryOptional, nil
+	case "always":
+		return NotificationTopicEmailDeliveryAlways, nil
+	case "unavailable":
+		return NotificationTopicEmailDeliveryUnavailable, nil
+	}
+	var t NotificationTopicEmailDelivery
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (n NotificationTopicEmailDelivery) Ptr() *NotificationTopicEmailDelivery {
+	return &n
+}
+
+// How the topic sends push and in-app notifications. `optional` means a preference with channel `mobile` or `in_app` turns them on or off. A `mobile` preference wins over an `in_app` one. `unavailable` means the topic sends no push or in-app notification.
+type NotificationTopicPushDelivery string
+
+const (
+	NotificationTopicPushDeliveryOptional    NotificationTopicPushDelivery = "optional"
+	NotificationTopicPushDeliveryUnavailable NotificationTopicPushDelivery = "unavailable"
+)
+
+func NewNotificationTopicPushDeliveryFromString(s string) (NotificationTopicPushDelivery, error) {
+	switch s {
+	case "optional":
+		return NotificationTopicPushDeliveryOptional, nil
+	case "unavailable":
+		return NotificationTopicPushDeliveryUnavailable, nil
+	}
+	var t NotificationTopicPushDelivery
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (n NotificationTopicPushDelivery) Ptr() *NotificationTopicPushDelivery {
+	return &n
 }
 
 // Scope of the topic: whether it applies to an account, a user, or an account's team.

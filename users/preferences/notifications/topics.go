@@ -103,6 +103,7 @@ type ListTopicsRequestChannel string
 const (
 	ListTopicsRequestChannelInApp  ListTopicsRequestChannel = "in_app"
 	ListTopicsRequestChannelMobile ListTopicsRequestChannel = "mobile"
+	ListTopicsRequestChannelEmail  ListTopicsRequestChannel = "email"
 )
 
 func NewListTopicsRequestChannelFromString(s string) (ListTopicsRequestChannel, error) {
@@ -111,6 +112,8 @@ func NewListTopicsRequestChannelFromString(s string) (ListTopicsRequestChannel, 
 		return ListTopicsRequestChannelInApp, nil
 	case "mobile":
 		return ListTopicsRequestChannelMobile, nil
+	case "email":
+		return ListTopicsRequestChannelEmail, nil
 	}
 	var t ListTopicsRequestChannel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

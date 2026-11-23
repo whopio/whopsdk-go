@@ -222,7 +222,7 @@ var setNotificationsRequestPreferencesItemScopeNullableFields = map[string]*big.
 type SetNotificationsRequestPreferencesItemScope struct {
 	// Account to scope the preference to (member notifications), `biz_` tag.
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// Delivery channel the preference applies to. Omit it (or pass `null`) to apply the preference to every channel.
+	// Delivery channel the preference applies to. Omit it (or pass `null`) to apply the preference to every channel. Email is the exception when the topic's `every_channel_covers_email` is `false`.
 	Channel *SetNotificationsRequestPreferencesItemScopeChannel `json:"channel,omitempty" url:"channel,omitempty"`
 	// Experience to scope the preference to (`exp_` tag). Requires `account_id` when a `topic_id` is also given.
 	ExperienceID *string `json:"experience_id,omitempty" url:"experience_id,omitempty"`
@@ -373,12 +373,13 @@ func (s *SetNotificationsRequestPreferencesItemScope) String() string {
 	return fmt.Sprintf("%#v", s)
 }
 
-// Delivery channel the preference applies to. Omit it (or pass `null`) to apply the preference to every channel.
+// Delivery channel the preference applies to. Omit it (or pass `null`) to apply the preference to every channel. Email is the exception when the topic's `every_channel_covers_email` is `false`.
 type SetNotificationsRequestPreferencesItemScopeChannel string
 
 const (
 	SetNotificationsRequestPreferencesItemScopeChannelInApp  SetNotificationsRequestPreferencesItemScopeChannel = "in_app"
 	SetNotificationsRequestPreferencesItemScopeChannelMobile SetNotificationsRequestPreferencesItemScopeChannel = "mobile"
+	SetNotificationsRequestPreferencesItemScopeChannelEmail  SetNotificationsRequestPreferencesItemScopeChannel = "email"
 )
 
 func NewSetNotificationsRequestPreferencesItemScopeChannelFromString(s string) (SetNotificationsRequestPreferencesItemScopeChannel, error) {
@@ -387,6 +388,8 @@ func NewSetNotificationsRequestPreferencesItemScopeChannelFromString(s string) (
 		return SetNotificationsRequestPreferencesItemScopeChannelInApp, nil
 	case "mobile":
 		return SetNotificationsRequestPreferencesItemScopeChannelMobile, nil
+	case "email":
+		return SetNotificationsRequestPreferencesItemScopeChannelEmail, nil
 	}
 	var t SetNotificationsRequestPreferencesItemScopeChannel
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
