@@ -42,10 +42,10 @@ type CreateAdGroupsRequest struct {
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"-"`
 	// This ad group's budget stated in the account's ads reporting currency (`budget_currency` on the response) instead of USD. Converted to USD at the current exchange rate and stored as budget_amount; on an update, an amount equal to the current budget_amount_local keeps the stored USD budget as is. Provide this or budget_amount, not both.
 	BudgetAmountLocal *float64 `json:"budget_amount_local,omitempty" url:"-"`
-	// Whether budget_amount is spent per day (`daily`) or over the ad group's full run (`lifetime`).
+	// Deprecated: lifetime budgets have ended. Leave this out, or send `daily`. `lifetime` returns a `400` unless the ad group already has a lifetime budget.
 	BudgetType      *CreateAdGroupsRequestBudgetType `json:"budget_type,omitempty" url:"-"`
 	ConversionEvent *ConversionEvent                 `json:"conversion_event,omitempty" url:"-"`
-	// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+	// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight. A day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. The schedule is replaced as a whole. `null` delivers at every hour. A schedule needs a lifetime budget on the ad group, or on its campaign when the campaign holds the budget. Only ad groups and campaigns that already have one can use it.
 	DeliverySchedule *CreateAdGroupsRequestDeliverySchedule `json:"delivery_schedule,omitempty" url:"-"`
 	// Age, gender, and automatic-audience targeting.
 	Demographics *AdGroupDemographicsBody `json:"demographics,omitempty" url:"-"`
@@ -777,7 +777,7 @@ type AdGroup struct {
 	CustomEventCounts map[string]any `json:"custom_event_counts" url:"custom_event_counts"`
 	// Conversion value attributed to each custom event, keyed by event name like custom_event_counts. Sums the value passed to whop.track, normalized to USD; events fired without a value contribute 0.
 	CustomEventValues map[string]any `json:"custom_event_values" url:"custom_event_values"`
-	// Hours the ad group delivers in each week, keyed by day. Days it doesn't deliver are omitted. `null` when it delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+	// Hours the ad group delivers in each week, keyed by day. Days it doesn't deliver are omitted. `null` when it delivers at every hour. A schedule needs a lifetime budget on the ad group, or on its campaign when the campaign holds the budget. Only ad groups and campaigns that already have one can use it.
 	DeliverySchedule *AdGroupDeliverySchedule `json:"delivery_schedule,omitempty" url:"delivery_schedule,omitempty"`
 	// Whether ads in this ad group are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus AdGroupDeliveryStatus `json:"delivery_status" url:"delivery_status"`
@@ -5153,7 +5153,7 @@ func (c CreateAdGroupsRequestBidType) Ptr() *CreateAdGroupsRequestBidType {
 	return &c
 }
 
-// Whether budget_amount is spent per day (`daily`) or over the ad group's full run (`lifetime`).
+// Deprecated: lifetime budgets have ended. Leave this out, or send `daily`. `lifetime` returns a `400` unless the ad group already has a lifetime budget.
 type CreateAdGroupsRequestBudgetType string
 
 const (
@@ -5186,7 +5186,7 @@ var (
 	createAdGroupsRequestDeliveryScheduleFieldWednesday = big.NewInt(1 << 6)
 )
 
-// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight. A day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. The schedule is replaced as a whole. `null` delivers at every hour. A schedule needs a lifetime budget on the ad group, or on its campaign when the campaign holds the budget. Only ad groups and campaigns that already have one can use it.
 type CreateAdGroupsRequestDeliverySchedule struct {
 	// Windows the ad group delivers in on Friday.
 	Friday []*CreateAdGroupsRequestDeliveryScheduleFridayItem `json:"friday,omitempty" url:"friday,omitempty"`
@@ -7143,7 +7143,7 @@ type PostAdGroupUpdatedPayloadData struct {
 	ConversionEvent *ConversionEvent                         `json:"conversion_event,omitempty" url:"conversion_event,omitempty"`
 	// When the ad group was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
-	// Hours the ad group delivers in each week, keyed by day. Days it doesn't deliver are omitted. `null` when it delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+	// Hours the ad group delivers in each week, keyed by day. Days it doesn't deliver are omitted. `null` when it delivers at every hour. A schedule needs a lifetime budget on the ad group, or on its campaign when the campaign holds the budget. Only ad groups and campaigns that already have one can use it.
 	DeliverySchedule *AdGroupDeliverySchedule `json:"delivery_schedule,omitempty" url:"delivery_schedule,omitempty"`
 	// Whether ads in this ad group are delivering right now, and if not, why. When several states apply at once, the highest-precedence one is returned.
 	DeliveryStatus PostAdGroupUpdatedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
@@ -7791,7 +7791,7 @@ func (u UpdateAdGroupsRequestBidType) Ptr() *UpdateAdGroupsRequestBidType {
 	return &u
 }
 
-// Whether budget_amount is spent per day (`daily`) or over the ad group's full run (`lifetime`).
+// Deprecated: lifetime budgets have ended. Leave this out, or send `daily`. `lifetime` returns a `400` unless the ad group already has a lifetime budget.
 type UpdateAdGroupsRequestBudgetType string
 
 const (
@@ -7824,7 +7824,7 @@ var (
 	updateAdGroupsRequestDeliveryScheduleFieldWednesday = big.NewInt(1 << 6)
 )
 
-// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight. A day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. The schedule is replaced as a whole. `null` delivers at every hour. A schedule needs a lifetime budget on the ad group, or on its campaign when the campaign holds the budget. Only ad groups and campaigns that already have one can use it.
 type UpdateAdGroupsRequestDeliverySchedule struct {
 	// Windows the ad group delivers in on Friday.
 	Friday []*UpdateAdGroupsRequestDeliveryScheduleFridayItem `json:"friday,omitempty" url:"friday,omitempty"`
@@ -8962,10 +8962,10 @@ type UpdateAdGroupsRequest struct {
 	BudgetAmount *float64 `json:"budget_amount,omitempty" url:"-"`
 	// This ad group's budget stated in the account's ads reporting currency (`budget_currency` on the response) instead of USD. Converted to USD at the current exchange rate and stored as budget_amount; on an update, an amount equal to the current budget_amount_local keeps the stored USD budget as is. Provide this or budget_amount, not both.
 	BudgetAmountLocal *float64 `json:"budget_amount_local,omitempty" url:"-"`
-	// Whether budget_amount is spent per day (`daily`) or over the ad group's full run (`lifetime`).
+	// Deprecated: lifetime budgets have ended. Leave this out, or send `daily`. `lifetime` returns a `400` unless the ad group already has a lifetime budget.
 	BudgetType      *UpdateAdGroupsRequestBudgetType `json:"budget_type,omitempty" url:"-"`
 	ConversionEvent *ConversionEvent                 `json:"conversion_event,omitempty" url:"-"`
-	// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight, and a day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. Replaces the whole schedule; `null` delivers at every hour. Some platforms need a lifetime `budget_type` for a schedule, on the ad group or on its campaign when the campaign holds the budget.
+	// Hours the ad group delivers in each week, keyed by day. Each window runs from `start` to `end` on the hour, with `24:00` for midnight. A day's windows can't overlap or touch. A day that's empty or left out doesn't deliver. The schedule is replaced as a whole. `null` delivers at every hour. A schedule needs a lifetime budget on the ad group, or on its campaign when the campaign holds the budget. Only ad groups and campaigns that already have one can use it.
 	DeliverySchedule *UpdateAdGroupsRequestDeliverySchedule `json:"delivery_schedule,omitempty" url:"-"`
 	// Age, gender, and automatic-audience targeting.
 	Demographics *AdGroupDemographicsBody `json:"demographics,omitempty" url:"-"`
