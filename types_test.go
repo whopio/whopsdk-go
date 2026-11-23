@@ -42419,6 +42419,14 @@ func TestSettersFile(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetOptimizedURL", func(t *testing.T) {
+		obj := &File{}
+		var fernTestValueOptimizedURL *string
+		obj.SetOptimizedURL(fernTestValueOptimizedURL)
+		assert.Equal(t, fernTestValueOptimizedURL, obj.OptimizedURL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetRemovedByModeration", func(t *testing.T) {
 		obj := &File{}
 		var fernTestValueRemovedByModeration bool
@@ -42825,6 +42833,39 @@ func TestGettersFile(t *testing.T) {
 			}
 		}()
 		_ = obj.GetObject() // Should return zero value
+	})
+
+	t.Run("GetOptimizedURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &File{}
+		var expected *string
+		obj.OptimizedURL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetOptimizedURL(), "getter should return the property value")
+	})
+
+	t.Run("GetOptimizedURL_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &File{}
+		obj.OptimizedURL = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetOptimizedURL(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetOptimizedURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *File
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetOptimizedURL() // Should return zero value
 	})
 
 	t.Run("GetRemovedByModeration", func(t *testing.T) {
@@ -43415,6 +43456,37 @@ func TestSettersMarkExplicitFile(t *testing.T) {
 
 		// Act
 		obj.SetObject(fernTestValueObject)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetOptimizedURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &File{}
+		var fernTestValueOptimizedURL *string
+
+		// Act
+		obj.SetOptimizedURL(fernTestValueOptimizedURL)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -86006,6 +86078,14 @@ func TestSettersMarkExplicitOwnerLevel(t *testing.T) {
 }
 
 func TestSettersOwnerLevelPoints(t *testing.T) {
+	t.Run("SetActions", func(t *testing.T) {
+		obj := &OwnerLevelPoints{}
+		var fernTestValueActions int
+		obj.SetActions(fernTestValueActions)
+		assert.Equal(t, fernTestValueActions, obj.Actions)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAds", func(t *testing.T) {
 		obj := &OwnerLevelPoints{}
 		var fernTestValueAds int
@@ -86041,6 +86121,29 @@ func TestSettersOwnerLevelPoints(t *testing.T) {
 }
 
 func TestGettersOwnerLevelPoints(t *testing.T) {
+	t.Run("GetActions", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &OwnerLevelPoints{}
+		var expected int
+		obj.Actions = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetActions(), "getter should return the property value")
+	})
+
+	t.Run("GetActions_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *OwnerLevelPoints
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetActions() // Should return zero value
+	})
+
 	t.Run("GetAds", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -86136,6 +86239,37 @@ func TestGettersOwnerLevelPoints(t *testing.T) {
 }
 
 func TestSettersMarkExplicitOwnerLevelPoints(t *testing.T) {
+	t.Run("SetActions_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &OwnerLevelPoints{}
+		var fernTestValueActions int
+
+		// Act
+		obj.SetActions(fernTestValueActions)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetAds_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -179228,6 +179362,7 @@ func TestRequiredNullableRoundTripFile(t *testing.T) {
 		"duration_seconds",
 		"filename",
 		"height",
+		"optimized_url",
 		"size",
 		"url",
 		"waveform_url",
@@ -179244,7 +179379,7 @@ func TestRequiredNullableRoundTripFile(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj File
-		require.NoError(t, json.Unmarshal([]byte(`{"blurhash":null,"content_type":null,"duration_seconds":null,"filename":null,"height":null,"size":null,"url":null,"waveform_url":null,"width":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"blurhash":null,"content_type":null,"duration_seconds":null,"filename":null,"height":null,"optimized_url":null,"size":null,"url":null,"waveform_url":null,"width":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

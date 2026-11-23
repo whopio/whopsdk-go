@@ -1556,15 +1556,16 @@ var (
 	disputeEvidenceDocumentFieldMultipartUploadID   = big.NewInt(1 << 9)
 	disputeEvidenceDocumentFieldMultipartUploadURLs = big.NewInt(1 << 10)
 	disputeEvidenceDocumentFieldObject              = big.NewInt(1 << 11)
-	disputeEvidenceDocumentFieldRemovedByModeration = big.NewInt(1 << 12)
-	disputeEvidenceDocumentFieldSize                = big.NewInt(1 << 13)
-	disputeEvidenceDocumentFieldUploadHeaders       = big.NewInt(1 << 14)
-	disputeEvidenceDocumentFieldUploadStatus        = big.NewInt(1 << 15)
-	disputeEvidenceDocumentFieldUploadURL           = big.NewInt(1 << 16)
-	disputeEvidenceDocumentFieldURL                 = big.NewInt(1 << 17)
-	disputeEvidenceDocumentFieldVisibility          = big.NewInt(1 << 18)
-	disputeEvidenceDocumentFieldWaveformURL         = big.NewInt(1 << 19)
-	disputeEvidenceDocumentFieldWidth               = big.NewInt(1 << 20)
+	disputeEvidenceDocumentFieldOptimizedURL        = big.NewInt(1 << 12)
+	disputeEvidenceDocumentFieldRemovedByModeration = big.NewInt(1 << 13)
+	disputeEvidenceDocumentFieldSize                = big.NewInt(1 << 14)
+	disputeEvidenceDocumentFieldUploadHeaders       = big.NewInt(1 << 15)
+	disputeEvidenceDocumentFieldUploadStatus        = big.NewInt(1 << 16)
+	disputeEvidenceDocumentFieldUploadURL           = big.NewInt(1 << 17)
+	disputeEvidenceDocumentFieldURL                 = big.NewInt(1 << 18)
+	disputeEvidenceDocumentFieldVisibility          = big.NewInt(1 << 19)
+	disputeEvidenceDocumentFieldWaveformURL         = big.NewInt(1 << 20)
+	disputeEvidenceDocumentFieldWidth               = big.NewInt(1 << 21)
 )
 
 // disputeEvidenceDocumentNullableFields maps the wire names of DisputeEvidenceDocument's nullable fields (required or optional) to their field bits.
@@ -1577,6 +1578,7 @@ var disputeEvidenceDocumentNullableFields = map[string]*big.Int{
 	"multipart_chunk_size":  disputeEvidenceDocumentFieldMultipartChunkSize,
 	"multipart_upload_id":   disputeEvidenceDocumentFieldMultipartUploadID,
 	"multipart_upload_urls": disputeEvidenceDocumentFieldMultipartUploadURLs,
+	"optimized_url":         disputeEvidenceDocumentFieldOptimizedURL,
 	"size":                  disputeEvidenceDocumentFieldSize,
 	"upload_url":            disputeEvidenceDocumentFieldUploadURL,
 	"url":                   disputeEvidenceDocumentFieldURL,
@@ -1608,6 +1610,8 @@ type DisputeEvidenceDocument struct {
 	MultipartUploadURLs []*FileMultipartURL `json:"multipart_upload_urls,omitempty" url:"multipart_upload_urls,omitempty"`
 	// The type of this object, always `file`.
 	Object string `json:"object" url:"object"`
+	// URL to the optimized file. `null` when no optimized version is available.
+	OptimizedURL *string `json:"optimized_url,omitempty" url:"optimized_url,omitempty"`
 	// Whether moderation removed the file. When `true`, `url` serves a replacement image. `filename`, `size` and `content_type` still describe the original file.
 	RemovedByModeration bool `json:"removed_by_moderation" url:"removed_by_moderation"`
 	// The file size in bytes. `null` until the upload has finished.
@@ -1716,6 +1720,13 @@ func (d *DisputeEvidenceDocument) GetObject() string {
 		return ""
 	}
 	return d.Object
+}
+
+func (d *DisputeEvidenceDocument) GetOptimizedURL() *string {
+	if d == nil {
+		return nil
+	}
+	return d.OptimizedURL
 }
 
 func (d *DisputeEvidenceDocument) GetRemovedByModeration() bool {
@@ -1879,6 +1890,13 @@ func (d *DisputeEvidenceDocument) SetMultipartUploadURLs(multipartUploadURLs []*
 func (d *DisputeEvidenceDocument) SetObject(object string) {
 	d.Object = object
 	d.require(disputeEvidenceDocumentFieldObject)
+}
+
+// SetOptimizedURL sets the OptimizedURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (d *DisputeEvidenceDocument) SetOptimizedURL(optimizedURL *string) {
+	d.OptimizedURL = optimizedURL
+	d.require(disputeEvidenceDocumentFieldOptimizedURL)
 }
 
 // SetRemovedByModeration sets the RemovedByModeration field and marks it as non-optional;
