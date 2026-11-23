@@ -22,7 +22,7 @@ type Client struct {
 
 func NewClient(options *core.RequestOptions) *Client {
 	if options.APIVersionDate == nil {
-		apiVersionDateDefault := "2026-11-23"
+		apiVersionDateDefault := "2026-11-23-1"
 		options.APIVersionDate = &apiVersionDateDefault
 	}
 	return &Client{
@@ -121,7 +121,7 @@ func (c *Client) List(
 	return pager.GetPage(ctx, request.After)
 }
 
-// Creates a custom audience from a customer list or your account's Whop People data, or a lookalike audience that reaches people similar to an existing one. Processing runs asynchronously. A custom audience returns one audience; a lookalike returns the requested similarity bands in `data`.
+// Creates a custom audience from a CSV or Whop People filters, or lookalikes of an existing audience. Processing is asynchronous.
 //
 // Example:
 //

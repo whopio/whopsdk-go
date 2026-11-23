@@ -87,23 +87,23 @@ type CreateAudiencesRequest struct {
 	AccountID string `json:"account_id" url:"-"`
 	// Audience type. Defaults to `custom`.
 	AudienceType *CreateAudiencesRequestAudienceType `json:"audience_type,omitempty" url:"-"`
-	// Filter audiences only, and set only at creation. `true` (the default) rebuilds membership from the filters twice a day. `false` keeps whoever matched at creation and never rebuilds.
+	// People audiences only. When `true`, the default, Whop rebuilds membership twice a day. When `false`, the audience keeps the people it matched at creation. You cannot change it later.
 	AutoRefresh *bool `json:"auto_refresh,omitempty" url:"-"`
-	// CSV audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
+	// CSV audiences only. The CSV header for each identity field. Map `email`, `phone`, or both.
 	ColumnMapping *CreateAudiencesRequestColumnMapping `json:"column_mapping,omitempty" url:"-"`
-	// Lookalikes only. Number of lookalike audiences to create (1–6).
+	// Lookalikes only. Number of lookalike audiences to create, from 1 to 6.
 	Count *int `json:"count,omitempty" url:"-"`
-	// CSV audiences only. The uploaded customer CSV — a file id (`file_...`) returned by `POST /files`.
+	// CSV audiences only. File ID of the CSV, prefixed `file_`, from `POST /files`.
 	FileID *string `json:"file_id,omitempty" url:"-"`
-	// Filter audiences only. The People filters that define membership, keyed exactly as `GET /people` accepts them — for example `{"os": "iOS", "country": "US"}`. Activity dates `event_from` and `event_to` are inclusive and remain fixed on refresh. Use `event_within_days`, `first_seen_within_days` or `last_seen_within_days` for a rolling window. Source values are canonical source paths (`whop:<campaign>:<group>:<ad>`, `ext:<platform>:...`, `referrer:<domain>`, `direct`), exact or with a trailing `:*` wildcard.
+	// People audiences only. The filters that define membership, with the same keys as `GET /people`. `event_from` and `event_to` stay fixed when the audience rebuilds. For a rolling window, use `event_within_days`, `first_seen_within_days`, or `last_seen_within_days`.
 	Filters map[string]any `json:"filters,omitempty" url:"-"`
-	// Audience display name. Required for custom audiences; lookalike names are generated from the source audience.
+	// Audience display name. Required for custom audiences. Lookalikes take their name from the source audience.
 	Name *string `json:"name,omitempty" url:"-"`
-	// Lookalikes only. Total similarity reach as a whole percent (1–20), sliced evenly across `count` — must be divisible by `count`. For example, 3 audiences at 6% creates 0–2%, 2–4%, and 4–6% bands.
+	// Lookalikes only. Total reach as a whole percent, from 1 to 20. It must divide evenly by `count`. For example, 3 audiences at 6% make the 0 to 2%, 2 to 4%, and 4 to 6% bands.
 	Percentage *int `json:"percentage,omitempty" url:"-"`
-	// Lookalikes only. The ready custom audience (`adaud_`) to build from; uploaded and People audiences need at least 100 matched people.
+	// Lookalikes only. The ready custom audience to build from, prefixed `adaud_`. It must have at least 100 people.
 	SourceAudienceID *string `json:"source_audience_id,omitempty" url:"-"`
-	// Custom audience source. Inferred from `filters`, otherwise defaults to `csv_upload`. Supply only the fields for the selected source.
+	// Custom audience source. Defaults to `people_filter` when `filters` is set, otherwise `csv_upload`. Send only that source's fields.
 	SourceType *CreateAudiencesRequestSourceType `json:"source_type,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -333,17 +333,15 @@ var (
 	audienceFieldLastRefreshedAt        = big.NewInt(1 << 6)
 	audienceFieldLookalikeRatio         = big.NewInt(1 << 7)
 	audienceFieldLookalikeStartingRatio = big.NewInt(1 << 8)
-	audienceFieldMatchRates             = big.NewInt(1 << 9)
-	audienceFieldMatchedRows            = big.NewInt(1 << 10)
-	audienceFieldName                   = big.NewInt(1 << 11)
-	audienceFieldPlatformAudienceIDs    = big.NewInt(1 << 12)
-	audienceFieldProcessedRows          = big.NewInt(1 << 13)
-	audienceFieldProgressPercent        = big.NewInt(1 << 14)
-	audienceFieldSourceAudienceID       = big.NewInt(1 << 15)
-	audienceFieldSourceType             = big.NewInt(1 << 16)
-	audienceFieldStatus                 = big.NewInt(1 << 17)
-	audienceFieldTotalRows              = big.NewInt(1 << 18)
-	audienceFieldUpdatedAt              = big.NewInt(1 << 19)
+	audienceFieldMatchedRows            = big.NewInt(1 << 9)
+	audienceFieldName                   = big.NewInt(1 << 10)
+	audienceFieldProcessedRows          = big.NewInt(1 << 11)
+	audienceFieldProgressPercent        = big.NewInt(1 << 12)
+	audienceFieldSourceAudienceID       = big.NewInt(1 << 13)
+	audienceFieldSourceType             = big.NewInt(1 << 14)
+	audienceFieldStatus                 = big.NewInt(1 << 15)
+	audienceFieldTotalRows              = big.NewInt(1 << 16)
+	audienceFieldUpdatedAt              = big.NewInt(1 << 17)
 )
 
 // audienceNullableFields maps the wire names of Audience's nullable fields (required or optional) to their field bits.
@@ -374,13 +372,11 @@ type Audience struct {
 	// For lookalikes: the upper bound of the similarity band as a fraction (0.02 = top 2%). `null` for custom audiences.
 	LookalikeRatio *float64 `json:"lookalike_ratio,omitempty" url:"lookalike_ratio,omitempty"`
 	// For lookalikes: the lower bound of the similarity band as a fraction. `null` for custom audiences and first-tier lookalikes.
-	LookalikeStartingRatio *float64             `json:"lookalike_starting_ratio,omitempty" url:"lookalike_starting_ratio,omitempty"`
-	MatchRates             []*AudienceMatchRate `json:"match_rates" url:"match_rates"`
-	// Members successfully uploaded to connected ad accounts. Always 0 for lookalikes and engagement audiences.
+	LookalikeStartingRatio *float64 `json:"lookalike_starting_ratio,omitempty" url:"lookalike_starting_ratio,omitempty"`
+	// Members Whop can target with ads. Always 0 for lookalikes and engagement audiences.
 	MatchedRows float64 `json:"matched_rows" url:"matched_rows"`
 	// Audience display name.
-	Name                string   `json:"name" url:"name"`
-	PlatformAudienceIDs []string `json:"platform_audience_ids" url:"platform_audience_ids"`
+	Name string `json:"name" url:"name"`
 	// Members processed from the source so far. Always 0 for lookalikes and engagement audiences.
 	ProcessedRows float64 `json:"processed_rows" url:"processed_rows"`
 	// Processing progress from 0 to 100.
@@ -389,9 +385,9 @@ type Audience struct {
 	SourceAudienceID *string `json:"source_audience_id,omitempty" url:"source_audience_id,omitempty"`
 	// Membership source: an uploaded CSV, Whop People filters, or social engagement. Engagement audiences can no longer be created.
 	SourceType AudienceSourceType `json:"source_type" url:"source_type"`
-	// Current state of audience creation. When a `pending` audience is waiting on something, such as an ad account to upload to, `error_message` says what. When status is `partial` or `failed`, `error_message` explains what went wrong.
+	// Processing state. When the audience is `pending`, `partial`, or `failed`, `error_message` says why.
 	Status AudienceStatus `json:"status" url:"status"`
-	// Total members detected in the source — CSV rows for uploaded lists, matching people for automatic audiences. Always 0 for lookalikes and engagement audiences.
+	// Members found in the source: CSV rows for an uploaded list, or matching people for a People audience. Always 0 for lookalikes and engagement audiences.
 	TotalRows float64 `json:"total_rows" url:"total_rows"`
 	// When the audience was last updated, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
@@ -466,13 +462,6 @@ func (a *Audience) GetLookalikeStartingRatio() *float64 {
 	return a.LookalikeStartingRatio
 }
 
-func (a *Audience) GetMatchRates() []*AudienceMatchRate {
-	if a == nil {
-		return nil
-	}
-	return a.MatchRates
-}
-
 func (a *Audience) GetMatchedRows() float64 {
 	if a == nil {
 		return 0
@@ -485,13 +474,6 @@ func (a *Audience) GetName() string {
 		return ""
 	}
 	return a.Name
-}
-
-func (a *Audience) GetPlatformAudienceIDs() []string {
-	if a == nil {
-		return nil
-	}
-	return a.PlatformAudienceIDs
 }
 
 func (a *Audience) GetProcessedRows() float64 {
@@ -622,13 +604,6 @@ func (a *Audience) SetLookalikeStartingRatio(lookalikeStartingRatio *float64) {
 	a.require(audienceFieldLookalikeStartingRatio)
 }
 
-// SetMatchRates sets the MatchRates field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Audience) SetMatchRates(matchRates []*AudienceMatchRate) {
-	a.MatchRates = matchRates
-	a.require(audienceFieldMatchRates)
-}
-
 // SetMatchedRows sets the MatchedRows field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *Audience) SetMatchedRows(matchedRows float64) {
@@ -641,13 +616,6 @@ func (a *Audience) SetMatchedRows(matchedRows float64) {
 func (a *Audience) SetName(name string) {
 	a.Name = name
 	a.require(audienceFieldName)
-}
-
-// SetPlatformAudienceIDs sets the PlatformAudienceIDs field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *Audience) SetPlatformAudienceIDs(platformAudienceIDs []string) {
-	a.PlatformAudienceIDs = platformAudienceIDs
-	a.require(audienceFieldPlatformAudienceIDs)
 }
 
 // SetProcessedRows sets the ProcessedRows field and marks it as non-optional;
@@ -771,204 +739,6 @@ func (a AudienceAudienceType) Ptr() *AudienceAudienceType {
 	return &a
 }
 
-var (
-	audienceMatchRateFieldLowerBound = big.NewInt(1 << 0)
-	audienceMatchRateFieldPlatform   = big.NewInt(1 << 1)
-	audienceMatchRateFieldStatus     = big.NewInt(1 << 2)
-	audienceMatchRateFieldUpperBound = big.NewInt(1 << 3)
-)
-
-// audienceMatchRateNullableFields maps the wire names of AudienceMatchRate's nullable fields (required or optional) to their field bits.
-var audienceMatchRateNullableFields = map[string]*big.Int{
-	"lower_bound": audienceMatchRateFieldLowerBound,
-	"status":      audienceMatchRateFieldStatus,
-	"upper_bound": audienceMatchRateFieldUpperBound,
-}
-
-type AudienceMatchRate struct {
-	// Lower bound of the estimated match rate percentage. `null` until available.
-	LowerBound *float64 `json:"lower_bound,omitempty" url:"lower_bound,omitempty"`
-	// The ad platform that provided the match-rate estimate.
-	Platform AudienceMatchRatePlatform `json:"platform" url:"platform"`
-	// Availability of the estimated match rate.
-	Status *AudienceMatchRateStatus `json:"status,omitempty" url:"status,omitempty"`
-	// Upper bound of the estimated match rate percentage. `null` until available.
-	UpperBound *float64 `json:"upper_bound,omitempty" url:"upper_bound,omitempty"`
-
-	// Private bitmask of fields set to an explicit value and therefore not to be omitted
-	explicitFields *big.Int `json:"-" url:"-"`
-
-	extraProperties map[string]interface{}
-	rawJSON         json.RawMessage
-}
-
-func (a *AudienceMatchRate) GetLowerBound() *float64 {
-	if a == nil {
-		return nil
-	}
-	return a.LowerBound
-}
-
-func (a *AudienceMatchRate) GetPlatform() AudienceMatchRatePlatform {
-	if a == nil {
-		return ""
-	}
-	return a.Platform
-}
-
-func (a *AudienceMatchRate) GetStatus() *AudienceMatchRateStatus {
-	if a == nil {
-		return nil
-	}
-	return a.Status
-}
-
-func (a *AudienceMatchRate) GetUpperBound() *float64 {
-	if a == nil {
-		return nil
-	}
-	return a.UpperBound
-}
-
-func (a *AudienceMatchRate) GetExtraProperties() map[string]interface{} {
-	if a == nil {
-		return nil
-	}
-	return a.extraProperties
-}
-
-func (a *AudienceMatchRate) require(field *big.Int) {
-	next := new(big.Int)
-	if a.explicitFields != nil {
-		next.Set(a.explicitFields)
-	}
-	next.Or(next, field)
-	a.explicitFields = next
-}
-
-// SetLowerBound sets the LowerBound field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AudienceMatchRate) SetLowerBound(lowerBound *float64) {
-	a.LowerBound = lowerBound
-	a.require(audienceMatchRateFieldLowerBound)
-}
-
-// SetPlatform sets the Platform field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AudienceMatchRate) SetPlatform(platform AudienceMatchRatePlatform) {
-	a.Platform = platform
-	a.require(audienceMatchRateFieldPlatform)
-}
-
-// SetStatus sets the Status field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AudienceMatchRate) SetStatus(status *AudienceMatchRateStatus) {
-	a.Status = status
-	a.require(audienceMatchRateFieldStatus)
-}
-
-// SetUpperBound sets the UpperBound field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (a *AudienceMatchRate) SetUpperBound(upperBound *float64) {
-	a.UpperBound = upperBound
-	a.require(audienceMatchRateFieldUpperBound)
-}
-
-func (a *AudienceMatchRate) UnmarshalJSON(data []byte) error {
-	type unmarshaler AudienceMatchRate
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
-		return err
-	}
-	*a = AudienceMatchRate(value)
-	extraProperties, err := internal.ExtractExtraProperties(data, *a)
-	if err != nil {
-		return err
-	}
-	a.extraProperties = extraProperties
-	presentFields, err := internal.ExplicitFieldsFromJSON(data, audienceMatchRateNullableFields)
-	if err != nil {
-		return err
-	}
-	if presentFields != nil {
-		a.require(presentFields)
-	}
-	a.rawJSON = json.RawMessage(data)
-	return nil
-}
-
-func (a *AudienceMatchRate) MarshalJSON() ([]byte, error) {
-	type embed AudienceMatchRate
-	var marshaler = struct {
-		embed
-	}{
-		embed: embed(*a),
-	}
-	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
-	return json.Marshal(explicitMarshaler)
-}
-
-func (a *AudienceMatchRate) String() string {
-	if a == nil {
-		return "<nil>"
-	}
-	if len(a.rawJSON) > 0 {
-		if value, err := internal.StringifyJSON(a.rawJSON); err == nil {
-			return value
-		}
-	}
-	if value, err := internal.StringifyJSON(a); err == nil {
-		return value
-	}
-	return fmt.Sprintf("%#v", a)
-}
-
-// The ad platform that provided the match-rate estimate.
-type AudienceMatchRatePlatform string
-
-const (
-	AudienceMatchRatePlatformMeta AudienceMatchRatePlatform = "meta"
-)
-
-func NewAudienceMatchRatePlatformFromString(s string) (AudienceMatchRatePlatform, error) {
-	switch s {
-	case "meta":
-		return AudienceMatchRatePlatformMeta, nil
-	}
-	var t AudienceMatchRatePlatform
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AudienceMatchRatePlatform) Ptr() *AudienceMatchRatePlatform {
-	return &a
-}
-
-// Availability of the estimated match rate.
-type AudienceMatchRateStatus string
-
-const (
-	AudienceMatchRateStatusCalculating AudienceMatchRateStatus = "calculating"
-	AudienceMatchRateStatusAvailable   AudienceMatchRateStatus = "available"
-	AudienceMatchRateStatusUnavailable AudienceMatchRateStatus = "unavailable"
-)
-
-func NewAudienceMatchRateStatusFromString(s string) (AudienceMatchRateStatus, error) {
-	switch s {
-	case "calculating":
-		return AudienceMatchRateStatusCalculating, nil
-	case "available":
-		return AudienceMatchRateStatusAvailable, nil
-	case "unavailable":
-		return AudienceMatchRateStatusUnavailable, nil
-	}
-	var t AudienceMatchRateStatus
-	return "", fmt.Errorf("%s is not a valid %T", s, t)
-}
-
-func (a AudienceMatchRateStatus) Ptr() *AudienceMatchRateStatus {
-	return &a
-}
-
 // Membership source: an uploaded CSV, Whop People filters, or social engagement. Engagement audiences can no longer be created.
 type AudienceSourceType string
 
@@ -995,7 +765,7 @@ func (a AudienceSourceType) Ptr() *AudienceSourceType {
 	return &a
 }
 
-// Current state of audience creation. When a `pending` audience is waiting on something, such as an ad account to upload to, `error_message` says what. When status is `partial` or `failed`, `error_message` explains what went wrong.
+// Processing state. When the audience is `pending`, `partial`, or `failed`, `error_message` says why.
 type AudienceStatus string
 
 const (
@@ -1055,11 +825,10 @@ var (
 	createAudiencesRequestColumnMappingFieldEmail     = big.NewInt(1 << 1)
 	createAudiencesRequestColumnMappingFieldFirstName = big.NewInt(1 << 2)
 	createAudiencesRequestColumnMappingFieldLastName  = big.NewInt(1 << 3)
-	createAudiencesRequestColumnMappingFieldLtv       = big.NewInt(1 << 4)
-	createAudiencesRequestColumnMappingFieldPhone     = big.NewInt(1 << 5)
+	createAudiencesRequestColumnMappingFieldPhone     = big.NewInt(1 << 4)
 )
 
-// CSV audiences only. Maps supported identity fields to CSV column headers. Map at least one of `email` or `phone`.
+// CSV audiences only. The CSV header for each identity field. Map `email`, `phone`, or both.
 type CreateAudiencesRequestColumnMapping struct {
 	// CSV header for ISO 3166-1 alpha-2 country codes, such as `US`.
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
@@ -1069,8 +838,6 @@ type CreateAudiencesRequestColumnMapping struct {
 	FirstName *string `json:"first_name,omitempty" url:"first_name,omitempty"`
 	// CSV header for last names.
 	LastName *string `json:"last_name,omitempty" url:"last_name,omitempty"`
-	// CSV header for each customer's lifetime value — a non-negative number, currency symbols allowed. When mapped, Meta creates the audience as value-based, so lookalikes built from it favor people similar to the highest-value customers.
-	Ltv *string `json:"ltv,omitempty" url:"ltv,omitempty"`
 	// CSV header for phone numbers.
 	Phone *string `json:"phone,omitempty" url:"phone,omitempty"`
 
@@ -1107,13 +874,6 @@ func (c *CreateAudiencesRequestColumnMapping) GetLastName() *string {
 		return nil
 	}
 	return c.LastName
-}
-
-func (c *CreateAudiencesRequestColumnMapping) GetLtv() *string {
-	if c == nil {
-		return nil
-	}
-	return c.Ltv
 }
 
 func (c *CreateAudiencesRequestColumnMapping) GetPhone() *string {
@@ -1167,13 +927,6 @@ func (c *CreateAudiencesRequestColumnMapping) SetLastName(lastName *string) {
 	c.require(createAudiencesRequestColumnMappingFieldLastName)
 }
 
-// SetLtv sets the Ltv field and marks it as non-optional;
-// this prevents an empty or null value for this field from being omitted during serialization.
-func (c *CreateAudiencesRequestColumnMapping) SetLtv(ltv *string) {
-	c.Ltv = ltv
-	c.require(createAudiencesRequestColumnMappingFieldLtv)
-}
-
 // SetPhone sets the Phone field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (c *CreateAudiencesRequestColumnMapping) SetPhone(phone *string) {
@@ -1223,7 +976,7 @@ func (c *CreateAudiencesRequestColumnMapping) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
-// Custom audience source. Inferred from `filters`, otherwise defaults to `csv_upload`. Supply only the fields for the selected source.
+// Custom audience source. Defaults to `people_filter` when `filters` is set, otherwise `csv_upload`. Send only that source's fields.
 type CreateAudiencesRequestSourceType string
 
 const (
@@ -1268,7 +1021,7 @@ func (c *CreateAudiencesResponse) GetCreateAudiencesResponseData() *CreateAudien
 }
 
 func (c *CreateAudiencesResponse) UnmarshalJSON(data []byte) error {
-	if internal.MatchesObjectKeys(data, []string{"audience_type", "auto_refresh", "created_at", "error_message", "filters", "id", "last_refreshed_at", "lookalike_ratio", "lookalike_starting_ratio", "match_rates", "matched_rows", "name", "platform_audience_ids", "processed_rows", "progress_percent", "source_audience_id", "source_type", "status", "total_rows", "updated_at"}, []string{"audience_type", "auto_refresh", "created_at", "id", "match_rates", "matched_rows", "name", "platform_audience_ids", "processed_rows", "progress_percent", "source_type", "status", "total_rows", "updated_at"}) {
+	if internal.MatchesObjectKeys(data, []string{"audience_type", "auto_refresh", "created_at", "error_message", "filters", "id", "last_refreshed_at", "lookalike_ratio", "lookalike_starting_ratio", "matched_rows", "name", "processed_rows", "progress_percent", "source_audience_id", "source_type", "status", "total_rows", "updated_at"}, []string{"audience_type", "auto_refresh", "created_at", "id", "matched_rows", "name", "processed_rows", "progress_percent", "source_type", "status", "total_rows", "updated_at"}) {
 		valueAudience := new(Audience)
 		if err := json.Unmarshal(data, &valueAudience); err == nil {
 			c.typ = "Audience"
@@ -1284,7 +1037,7 @@ func (c *CreateAudiencesResponse) UnmarshalJSON(data []byte) error {
 			return nil
 		}
 	}
-	if internal.HasObjectKeys(data, []string{"audience_type", "auto_refresh", "created_at", "id", "match_rates", "matched_rows", "name", "platform_audience_ids", "processed_rows", "progress_percent", "source_type", "status", "total_rows", "updated_at"}) {
+	if internal.HasObjectKeys(data, []string{"audience_type", "auto_refresh", "created_at", "id", "matched_rows", "name", "processed_rows", "progress_percent", "source_type", "status", "total_rows", "updated_at"}) {
 		valueAudience := new(Audience)
 		if err := json.Unmarshal(data, &valueAudience); err == nil {
 			c.typ = "Audience"
