@@ -1585,7 +1585,7 @@ type RetrieveStatsResponseData struct {
 	DataAsOf *string `json:"data_as_of,omitempty" url:"data_as_of,omitempty"`
 	// One entry per period, oldest first.
 	Points []*RetrieveStatsResponseDataPointsItem `json:"points" url:"points"`
-	// Whole-window aggregates, present when the metric computes them. Don't derive these from `points`: a rate is measured across the whole window, not averaged across its points, and whole-window unique people are distinct across every bucket.
+	// Whole-window aggregates, present when the metric computes them. Don't derive these from `points`. A rate is measured across the whole window, not averaged across its points. Whole-window unique people are distinct across every bucket.
 	Totals []*RetrieveStatsResponseDataTotalsItem `json:"totals,omitempty" url:"totals,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
