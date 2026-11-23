@@ -490,11 +490,12 @@ var (
 	createQuoteSwapsResponseFieldFromAddress              = big.NewInt(1 << 6)
 	createQuoteSwapsResponseFieldFromToken                = big.NewInt(1 << 7)
 	createQuoteSwapsResponseFieldMetadata                 = big.NewInt(1 << 8)
-	createQuoteSwapsResponseFieldObject                   = big.NewInt(1 << 9)
-	createQuoteSwapsResponseFieldRate                     = big.NewInt(1 << 10)
-	createQuoteSwapsResponseFieldRequiresTokenApproval    = big.NewInt(1 << 11)
-	createQuoteSwapsResponseFieldToAddress                = big.NewInt(1 << 12)
-	createQuoteSwapsResponseFieldToToken                  = big.NewInt(1 << 13)
+	createQuoteSwapsResponseFieldMidMarketRate            = big.NewInt(1 << 9)
+	createQuoteSwapsResponseFieldObject                   = big.NewInt(1 << 10)
+	createQuoteSwapsResponseFieldRate                     = big.NewInt(1 << 11)
+	createQuoteSwapsResponseFieldRequiresTokenApproval    = big.NewInt(1 << 12)
+	createQuoteSwapsResponseFieldToAddress                = big.NewInt(1 << 13)
+	createQuoteSwapsResponseFieldToToken                  = big.NewInt(1 << 14)
 )
 
 // createQuoteSwapsResponseNullableFields maps the wire names of CreateQuoteSwapsResponse's nullable fields (required or optional) to their field bits.
@@ -502,6 +503,7 @@ var createQuoteSwapsResponseNullableFields = map[string]*big.Int{
 	"bridge_fee":                 createQuoteSwapsResponseFieldBridgeFee,
 	"estimated_duration_seconds": createQuoteSwapsResponseFieldEstimatedDurationSeconds,
 	"from_address":               createQuoteSwapsResponseFieldFromAddress,
+	"mid_market_rate":            createQuoteSwapsResponseFieldMidMarketRate,
 	"requires_token_approval":    createQuoteSwapsResponseFieldRequiresTokenApproval,
 	"to_address":                 createQuoteSwapsResponseFieldToAddress,
 }
@@ -524,8 +526,10 @@ type CreateQuoteSwapsResponse struct {
 	// Resolved source token details.
 	FromToken map[string]any `json:"from_token" url:"from_token"`
 	// Metadata from the request.
-	Metadata map[string]any                 `json:"metadata" url:"metadata"`
-	Object   CreateQuoteSwapsResponseObject `json:"object" url:"object"`
+	Metadata map[string]any `json:"metadata" url:"metadata"`
+	// Mid-market exchange rate for a fiat pair, before the FX charge, as a decimal string. `rate` is after the FX charge. `null` for a crypto pair.
+	MidMarketRate *string                        `json:"mid_market_rate,omitempty" url:"mid_market_rate,omitempty"`
+	Object        CreateQuoteSwapsResponseObject `json:"object" url:"object"`
 	// Quoted exchange rate.
 	Rate string `json:"rate" url:"rate"`
 	// Whether the source token needs approval before swapping.
@@ -603,6 +607,13 @@ func (c *CreateQuoteSwapsResponse) GetMetadata() map[string]any {
 		return nil
 	}
 	return c.Metadata
+}
+
+func (c *CreateQuoteSwapsResponse) GetMidMarketRate() *string {
+	if c == nil {
+		return nil
+	}
+	return c.MidMarketRate
 }
 
 func (c *CreateQuoteSwapsResponse) GetObject() CreateQuoteSwapsResponseObject {
@@ -717,6 +728,13 @@ func (c *CreateQuoteSwapsResponse) SetFromToken(fromToken map[string]any) {
 func (c *CreateQuoteSwapsResponse) SetMetadata(metadata map[string]any) {
 	c.Metadata = metadata
 	c.require(createQuoteSwapsResponseFieldMetadata)
+}
+
+// SetMidMarketRate sets the MidMarketRate field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateQuoteSwapsResponse) SetMidMarketRate(midMarketRate *string) {
+	c.MidMarketRate = midMarketRate
+	c.require(createQuoteSwapsResponseFieldMidMarketRate)
 }
 
 // SetObject sets the Object field and marks it as non-optional;
