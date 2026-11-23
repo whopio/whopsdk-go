@@ -3215,7 +3215,7 @@ type AccountLevel struct {
 	AccountLevel int `json:"account_level" url:"account_level"`
 	// The level that applies: the highest the owner reached this month or in the 5 months before, from `0` up to `10`.
 	Current int `json:"current" url:"current"`
-	// Points earned this month across every account the owner owns, plus the owner's partner points, rounded down. An account whose month nets below zero counts as zero.
+	// Points earned this month by the owner and their accounts, rounded down. An account whose month nets below zero counts as zero.
 	Points int `json:"points" url:"points"`
 	// This month's points, split by where they were earned. Each source is net of its refunds, so one can be negative.
 	PointsBySource *OwnerLevelPoints `json:"points_by_source" url:"points_by_source"`

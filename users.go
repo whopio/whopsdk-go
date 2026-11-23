@@ -2221,7 +2221,7 @@ var userLevelNullableFields = map[string]*big.Int{
 type UserLevel struct {
 	// The level that applies: the highest the user reached this month or in the 5 months before, from `0` up to `10`. Public.
 	Current int `json:"current" url:"current"`
-	// Points earned this month across every account the user owns, plus their partner points, rounded down. An account whose month nets below zero counts as zero. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
+	// Points earned this month by the user and their accounts, rounded down. An account whose month nets below zero counts as zero. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
 	Points *int `json:"points,omitempty" url:"points,omitempty"`
 	// This month's points, split by where they were earned. Each source is net of its refunds, so one can be negative. `null` unless you retrieve yourself with the reserved id `me` and have balance-read scope.
 	PointsBySource *OwnerLevelPoints `json:"points_by_source,omitempty" url:"points_by_source,omitempty"`

@@ -21868,15 +21868,16 @@ var (
 	fileFieldMultipartUploadID   = big.NewInt(1 << 8)
 	fileFieldMultipartUploadURLs = big.NewInt(1 << 9)
 	fileFieldObject              = big.NewInt(1 << 10)
-	fileFieldRemovedByModeration = big.NewInt(1 << 11)
-	fileFieldSize                = big.NewInt(1 << 12)
-	fileFieldUploadHeaders       = big.NewInt(1 << 13)
-	fileFieldUploadStatus        = big.NewInt(1 << 14)
-	fileFieldUploadURL           = big.NewInt(1 << 15)
-	fileFieldURL                 = big.NewInt(1 << 16)
-	fileFieldVisibility          = big.NewInt(1 << 17)
-	fileFieldWaveformURL         = big.NewInt(1 << 18)
-	fileFieldWidth               = big.NewInt(1 << 19)
+	fileFieldOptimizedURL        = big.NewInt(1 << 11)
+	fileFieldRemovedByModeration = big.NewInt(1 << 12)
+	fileFieldSize                = big.NewInt(1 << 13)
+	fileFieldUploadHeaders       = big.NewInt(1 << 14)
+	fileFieldUploadStatus        = big.NewInt(1 << 15)
+	fileFieldUploadURL           = big.NewInt(1 << 16)
+	fileFieldURL                 = big.NewInt(1 << 17)
+	fileFieldVisibility          = big.NewInt(1 << 18)
+	fileFieldWaveformURL         = big.NewInt(1 << 19)
+	fileFieldWidth               = big.NewInt(1 << 20)
 )
 
 // fileNullableFields maps the wire names of File's nullable fields (required or optional) to their field bits.
@@ -21889,6 +21890,7 @@ var fileNullableFields = map[string]*big.Int{
 	"multipart_chunk_size":  fileFieldMultipartChunkSize,
 	"multipart_upload_id":   fileFieldMultipartUploadID,
 	"multipart_upload_urls": fileFieldMultipartUploadURLs,
+	"optimized_url":         fileFieldOptimizedURL,
 	"size":                  fileFieldSize,
 	"upload_url":            fileFieldUploadURL,
 	"url":                   fileFieldURL,
@@ -21918,6 +21920,8 @@ type File struct {
 	MultipartUploadURLs []*FileMultipartURL `json:"multipart_upload_urls,omitempty" url:"multipart_upload_urls,omitempty"`
 	// The type of this object, always `file`.
 	Object string `json:"object" url:"object"`
+	// URL to the optimized file. `null` when no optimized version is available.
+	OptimizedURL *string `json:"optimized_url,omitempty" url:"optimized_url,omitempty"`
 	// Whether moderation removed the file. When `true`, `url` serves a replacement image. `filename`, `size` and `content_type` still describe the original file.
 	RemovedByModeration bool `json:"removed_by_moderation" url:"removed_by_moderation"`
 	// The file size in bytes. `null` until the upload has finished.
@@ -22019,6 +22023,13 @@ func (f *File) GetObject() string {
 		return ""
 	}
 	return f.Object
+}
+
+func (f *File) GetOptimizedURL() *string {
+	if f == nil {
+		return nil
+	}
+	return f.OptimizedURL
 }
 
 func (f *File) GetRemovedByModeration() bool {
@@ -22175,6 +22186,13 @@ func (f *File) SetMultipartUploadURLs(multipartUploadURLs []*FileMultipartURL) {
 func (f *File) SetObject(object string) {
 	f.Object = object
 	f.require(fileFieldObject)
+}
+
+// SetOptimizedURL sets the OptimizedURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (f *File) SetOptimizedURL(optimizedURL *string) {
+	f.OptimizedURL = optimizedURL
+	f.require(fileFieldOptimizedURL)
 }
 
 // SetRemovedByModeration sets the RemovedByModeration field and marks it as non-optional;
@@ -44792,7 +44810,7 @@ var (
 type OwnerLevel struct {
 	// The level that applies: the highest the owner reached this month or in the 5 months before, from `0` up to `10`.
 	Current int `json:"current" url:"current"`
-	// Points earned this month across every account the owner owns, plus the owner's partner points, rounded down. An account whose month nets below zero counts as zero.
+	// Points earned this month by the owner and their accounts, rounded down. An account whose month nets below zero counts as zero.
 	Points int `json:"points" url:"points"`
 	// This month's points, split by where they were earned. Each source is net of its refunds, so one can be negative.
 	PointsBySource *OwnerLevelPoints `json:"points_by_source" url:"points_by_source"`
@@ -44921,13 +44939,16 @@ func (o *OwnerLevel) String() string {
 }
 
 var (
-	ownerLevelPointsFieldAds      = big.NewInt(1 << 0)
-	ownerLevelPointsFieldCards    = big.NewInt(1 << 1)
-	ownerLevelPointsFieldPartners = big.NewInt(1 << 2)
-	ownerLevelPointsFieldTrading  = big.NewInt(1 << 3)
+	ownerLevelPointsFieldActions  = big.NewInt(1 << 0)
+	ownerLevelPointsFieldAds      = big.NewInt(1 << 1)
+	ownerLevelPointsFieldCards    = big.NewInt(1 << 2)
+	ownerLevelPointsFieldPartners = big.NewInt(1 << 3)
+	ownerLevelPointsFieldTrading  = big.NewInt(1 << 4)
 )
 
 type OwnerLevelPoints struct {
+	// Points earned from eligible actions on Whop, rounded toward zero.
+	Actions int `json:"actions" url:"actions"`
 	// Points from paid Whop Ads charges, net of refunds: 10 for every dollar, rounded toward zero.
 	Ads int `json:"ads" url:"ads"`
 	// Points from captured Whop Card spend, net of refunds: 10 for every dollar, rounded toward zero.
@@ -44942,6 +44963,13 @@ type OwnerLevelPoints struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (o *OwnerLevelPoints) GetActions() int {
+	if o == nil {
+		return 0
+	}
+	return o.Actions
 }
 
 func (o *OwnerLevelPoints) GetAds() int {
@@ -44986,6 +45014,13 @@ func (o *OwnerLevelPoints) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	o.explicitFields = next
+}
+
+// SetActions sets the Actions field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (o *OwnerLevelPoints) SetActions(actions int) {
+	o.Actions = actions
+	o.require(ownerLevelPointsFieldActions)
 }
 
 // SetAds sets the Ads field and marks it as non-optional;
