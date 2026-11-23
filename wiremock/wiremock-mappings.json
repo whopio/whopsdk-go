@@ -16676,7 +16676,7 @@
       },
       "response": {
         "status": 200,
-        "body": "{\n  \"document\": \"id_card_front\",\n  \"expires_at\": \"2026-06-01T12:01:00.000Z\",\n  \"url\": \"https://content.whop.com/document\"\n}",
+        "body": "{\n  \"document\": \"front\",\n  \"expires_at\": \"2026-06-01T12:01:00.000Z\",\n  \"url\": \"https://content.whop.com/document\"\n}",
         "headers": {
           "Content-Type": "application/json"
         }
