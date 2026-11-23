@@ -833,7 +833,7 @@ type Ad struct {
 	CostPerMille float64 `json:"cost_per_mille" url:"cost_per_mille"`
 	// Spend divided by attributed purchases; null when purchases are not a goal and none are attributed.
 	CostPerPurchase *float64 `json:"cost_per_purchase,omitempty" url:"cost_per_purchase,omitempty"`
-	// Spend divided by Whop pixel-attributed results; null when nothing Whop-attributable is being optimized for.
+	// Spend divided by Whop pixel-attributed results. For `impressions`, it's the spend per 1,000 impressions. `null` when nothing Whop-attributable is being optimized for.
 	CostPerResult *float64 `json:"cost_per_result,omitempty" url:"cost_per_result,omitempty"`
 	// Spend divided by attributed schedule events; null when schedules are not the goal and none are attributed.
 	CostPerSchedule *float64 `json:"cost_per_schedule,omitempty" url:"cost_per_schedule,omitempty"`
@@ -876,7 +876,7 @@ type Ad struct {
 	Purchases float64 `json:"purchases" url:"purchases"`
 	// The number of unique people who saw this.
 	Reach float64 `json:"reach" url:"reach"`
-	// The Whop pixel conversion event whose attributed count represents results — the optimization goal, or the highest-volume attributed event for campaigns that budget per ad group. Null when the goal isn't a Whop-attributed event.
+	// The Whop pixel event whose attributed count represents results. It's the optimization goal, or the highest-volume attributed event for a campaign that budgets per ad group. `impressions` counts reported impressions. `null` when the goal isn't a Whop-attributed event.
 	ResultEvent *AdResultEvent `json:"result_event,omitempty" url:"result_event,omitempty"`
 	// The merchant-defined event name when result_event is custom; null for the standard events.
 	ResultEventName *string `json:"result_event_name,omitempty" url:"result_event_name,omitempty"`
@@ -3332,7 +3332,7 @@ func (a AdIssueResourceType) Ptr() *AdIssueResourceType {
 	return &a
 }
 
-// The Whop pixel conversion event whose attributed count represents results — the optimization goal, or the highest-volume attributed event for campaigns that budget per ad group. Null when the goal isn't a Whop-attributed event.
+// The Whop pixel event whose attributed count represents results. It's the optimization goal, or the highest-volume attributed event for a campaign that budgets per ad group. `impressions` counts reported impressions. `null` when the goal isn't a Whop-attributed event.
 type AdResultEvent string
 
 const (
@@ -3346,6 +3346,7 @@ const (
 	AdResultEventAddToCart             AdResultEvent = "add_to_cart"
 	AdResultEventCustom                AdResultEvent = "custom"
 	AdResultEventMessagingConversation AdResultEvent = "messaging_conversation"
+	AdResultEventImpressions           AdResultEvent = "impressions"
 )
 
 func NewAdResultEventFromString(s string) (AdResultEvent, error) {
@@ -3370,6 +3371,8 @@ func NewAdResultEventFromString(s string) (AdResultEvent, error) {
 		return AdResultEventCustom, nil
 	case "messaging_conversation":
 		return AdResultEventMessagingConversation, nil
+	case "impressions":
+		return AdResultEventImpressions, nil
 	}
 	var t AdResultEvent
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

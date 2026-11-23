@@ -49,7 +49,7 @@ type CreateAdGroupsRequest struct {
 	DeliverySchedule *CreateAdGroupsRequestDeliverySchedule `json:"delivery_schedule,omitempty" url:"-"`
 	// Age, gender, and automatic-audience targeting.
 	Demographics *AdGroupDemographicsBody `json:"demographics,omitempty" url:"-"`
-	// Cost per result to aim for (`average_target`) or never exceed (`maximum_target`).
+	// The cost per result you want for this ad group, in USD. For an `awareness` campaign, it's the cost per 1,000 impressions. `null` uses the campaign's `desired_cost_per_result`.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"-"`
 	// Device platforms and operating systems to target.
 	Devices *AdGroupDevicesBody `json:"devices,omitempty" url:"-"`
@@ -759,7 +759,7 @@ type AdGroup struct {
 	CostPerMille float64 `json:"cost_per_mille" url:"cost_per_mille"`
 	// Spend divided by attributed purchases; null when purchases are not a goal and none are attributed.
 	CostPerPurchase *float64 `json:"cost_per_purchase,omitempty" url:"cost_per_purchase,omitempty"`
-	// Spend divided by Whop pixel-attributed results; null when nothing Whop-attributable is being optimized for.
+	// Spend divided by Whop pixel-attributed results. For `impressions`, it's the spend per 1,000 impressions. `null` when nothing Whop-attributable is being optimized for.
 	CostPerResult *float64 `json:"cost_per_result,omitempty" url:"cost_per_result,omitempty"`
 	// Spend divided by attributed schedule events; null when schedules are not the goal and none are attributed.
 	CostPerSchedule *float64 `json:"cost_per_schedule,omitempty" url:"cost_per_schedule,omitempty"`
@@ -783,7 +783,7 @@ type AdGroup struct {
 	DeliveryStatus AdGroupDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	// Age, gender, and automatic-audience targeting.
 	Demographics *AdGroupDemographics `json:"demographics" url:"demographics"`
-	// Cost per result to aim for (`average_target`) or never exceed (`maximum_target`). `null` for `minimum_cost` bidding.
+	// The cost per result the advertiser wants for this ad group, in USD. For an `awareness` campaign, it's the cost per 1,000 impressions. `null` when the ad group uses its campaign's `desired_cost_per_result`.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
 	// Device platforms and operating systems targeted.
 	Devices *AdGroupDevices `json:"devices" url:"devices"`
@@ -814,7 +814,7 @@ type AdGroup struct {
 	Reach float64 `json:"reach" url:"reach"`
 	// Locations targeted and excluded.
 	Regions *AdGroupRegions `json:"regions" url:"regions"`
-	// The Whop pixel conversion event whose attributed count represents results — the optimization goal, or the highest-volume attributed event for campaigns that budget per ad group. Null when the goal isn't a Whop-attributed event.
+	// The Whop pixel event whose attributed count represents results. It's the optimization goal, or the highest-volume attributed event for a campaign that budgets per ad group. `impressions` counts reported impressions. `null` when the goal isn't a Whop-attributed event.
 	ResultEvent *AdGroupResultEvent `json:"result_event,omitempty" url:"result_event,omitempty"`
 	// The merchant-defined event name when result_event is custom; null for the standard events.
 	ResultEventName *string `json:"result_event_name,omitempty" url:"result_event_name,omitempty"`
@@ -4921,7 +4921,7 @@ func (a *AdGroupRegionsBody) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// The Whop pixel conversion event whose attributed count represents results — the optimization goal, or the highest-volume attributed event for campaigns that budget per ad group. Null when the goal isn't a Whop-attributed event.
+// The Whop pixel event whose attributed count represents results. It's the optimization goal, or the highest-volume attributed event for a campaign that budgets per ad group. `impressions` counts reported impressions. `null` when the goal isn't a Whop-attributed event.
 type AdGroupResultEvent string
 
 const (
@@ -4935,6 +4935,7 @@ const (
 	AdGroupResultEventAddToCart             AdGroupResultEvent = "add_to_cart"
 	AdGroupResultEventCustom                AdGroupResultEvent = "custom"
 	AdGroupResultEventMessagingConversation AdGroupResultEvent = "messaging_conversation"
+	AdGroupResultEventImpressions           AdGroupResultEvent = "impressions"
 )
 
 func NewAdGroupResultEventFromString(s string) (AdGroupResultEvent, error) {
@@ -4959,6 +4960,8 @@ func NewAdGroupResultEventFromString(s string) (AdGroupResultEvent, error) {
 		return AdGroupResultEventCustom, nil
 	case "messaging_conversation":
 		return AdGroupResultEventMessagingConversation, nil
+	case "impressions":
+		return AdGroupResultEventImpressions, nil
 	}
 	var t AdGroupResultEvent
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -7146,7 +7149,7 @@ type PostAdGroupUpdatedPayloadData struct {
 	DeliveryStatus PostAdGroupUpdatedPayloadDataDeliveryStatus `json:"delivery_status" url:"delivery_status"`
 	// Age, gender, and automatic-audience targeting.
 	Demographics *AdGroupDemographics `json:"demographics" url:"demographics"`
-	// Cost per result to aim for (`average_target`) or never exceed (`maximum_target`). `null` for `minimum_cost` bidding.
+	// The cost per result the advertiser wants for this ad group, in USD. For an `awareness` campaign, it's the cost per 1,000 impressions. `null` when the ad group uses its campaign's `desired_cost_per_result`.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"desired_cost_per_result,omitempty"`
 	// Device platforms and operating systems targeted.
 	Devices *AdGroupDevices `json:"devices" url:"devices"`
@@ -8966,7 +8969,7 @@ type UpdateAdGroupsRequest struct {
 	DeliverySchedule *UpdateAdGroupsRequestDeliverySchedule `json:"delivery_schedule,omitempty" url:"-"`
 	// Age, gender, and automatic-audience targeting.
 	Demographics *AdGroupDemographicsBody `json:"demographics,omitempty" url:"-"`
-	// Cost per result to aim for (`average_target`) or never exceed (`maximum_target`).
+	// The cost per result you want for this ad group, in USD. For an `awareness` campaign, it's the cost per 1,000 impressions. `null` uses the campaign's `desired_cost_per_result`.
 	DesiredCostPerResult *float64 `json:"desired_cost_per_result,omitempty" url:"-"`
 	// Device platforms and operating systems to target.
 	Devices *AdGroupDevicesBody `json:"devices,omitempty" url:"-"`

@@ -113,7 +113,7 @@ func TestAdCampaignsCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateAdCampaignsRequest{
-		Objective: whopsdk.CreateAdCampaignsRequestObjectiveTraffic,
+		Objective: whopsdk.CreateAdCampaignsRequestObjectiveAwareness,
 		Title:     "Now hiring mobile detailers — Austin",
 	}
 	_, invocationErr := client.AdCampaigns.Create(

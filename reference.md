@@ -1870,7 +1870,7 @@ Creates an ad campaign in `draft` status for an account. Nothing runs until you 
 
 ```go
 request := &whopsdk.CreateAdCampaignsRequest{
-    Objective: whopsdk.CreateAdCampaignsRequestObjectiveTraffic,
+    Objective: whopsdk.CreateAdCampaignsRequestObjectiveAwareness,
     Title: "Now hiring mobile detailers — Austin",
 }
 client.AdCampaigns.Create(
@@ -1939,7 +1939,7 @@ client.AdCampaigns.Create(
 <dl>
 <dd>
 
-**desiredCostPerResult:** `*float64` — The cost per result, in USD, you want this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. Ad groups set cost and bid caps with their own `desired_cost_per_result`. Omit or send `null` for no target.
+**desiredCostPerResult:** `*float64` — The cost per result, in USD, you want this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. An ad group's own `desired_cost_per_result` overrides it. For an `awareness` campaign, it's the cost per 1,000 impressions. Omit or send `null` for no target.
     
 </dd>
 </dl>
@@ -2239,7 +2239,7 @@ client.AdCampaigns.Update(
 <dl>
 <dd>
 
-**desiredCostPerResult:** `*float64` — The cost per result, in USD, you want this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. Ad groups set cost and bid caps with their own `desired_cost_per_result`. `null` clears it.
+**desiredCostPerResult:** `*float64` — The cost per result, in USD, you want this campaign to achieve. A target only: it is not a bid, cost cap, or bid cap, and doesn't change how the campaign's ads bid. An ad group's own `desired_cost_per_result` overrides it. For an `awareness` campaign, it's the cost per 1,000 impressions. `null` clears it.
     
 </dd>
 </dl>
@@ -2852,7 +2852,7 @@ client.AdGroups.Create(
 <dl>
 <dd>
 
-**desiredCostPerResult:** `*float64` — Cost per result to aim for (`average_target`) or never exceed (`maximum_target`).
+**desiredCostPerResult:** `*float64` — The cost per result you want for this ad group, in USD. For an `awareness` campaign, it's the cost per 1,000 impressions. `null` uses the campaign's `desired_cost_per_result`.
     
 </dd>
 </dl>
@@ -3200,7 +3200,7 @@ client.AdGroups.Update(
 <dl>
 <dd>
 
-**desiredCostPerResult:** `*float64` — Cost per result to aim for (`average_target`) or never exceed (`maximum_target`).
+**desiredCostPerResult:** `*float64` — The cost per result you want for this ad group, in USD. For an `awareness` campaign, it's the cost per 1,000 impressions. `null` uses the campaign's `desired_cost_per_result`.
     
 </dd>
 </dl>

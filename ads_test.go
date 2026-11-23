@@ -16026,6 +16026,13 @@ func TestEnumAdResultEvent(t *testing.T) {
 		assert.Equal(t, AdResultEvent("messaging_conversation"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_impressions", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAdResultEventFromString("impressions")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AdResultEvent("impressions"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewAdResultEventFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
