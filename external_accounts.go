@@ -18,7 +18,7 @@ var (
 type ConnectExternalAccountsRequest struct {
 	// The Account (biz_ identifier) to connect the external account for. An account-scoped API key may omit this to default to its own account. Omit for user profile connections.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, and the user picks the company in QuickBooks.
+	// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, and the user picks the company in QuickBooks. Use `stripe` to let Whop read the past payments of the account’s Stripe account: pass `account_id`, and the user installs Whop’s app in Stripe. It requires the `payout:account:update` scope instead of `social_account:create`.
 	Platform ConnectExternalAccountsRequestPlatform `json:"platform" url:"-"`
 	// Where to send the user once they finish connecting their accounts. Must be an `https` URL on whop.com; any other host is rejected. On success, the user is redirected with an `external_account_connected` query param naming the platform; if the connection fails, with an `external_account_error` query param instead. The same values also arrive as `social_account_connected` / `social_account_error`.
 	RedirectURL string `json:"redirect_url" url:"-"`
@@ -146,7 +146,7 @@ type ListExternalAccountsRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// The User that the external accounts are connected to. Provide either this or account_id.
 	UserID *string `json:"-" url:"user_id,omitempty"`
-	// Only return external accounts for the platform that is specified. An `aimerce` account is returned only with this filter, which requires the `company:manage_checkout` scope instead of `social_account:read`.
+	// Only return external accounts for the platform that is specified. An `aimerce` account is returned only with this filter, which requires the `company:manage_checkout` scope instead of `social_account:read`. A `stripe` account is also returned only with this filter, which requires the `payout:account:update` scope.
 	Platform *ListExternalAccountsRequestPlatform `json:"-" url:"platform,omitempty"`
 	// Only return external accounts linked with this trust level, such as `oauth` for accounts connected through OAuth.
 	TrustLevel *ListExternalAccountsRequestTrustLevel `json:"-" url:"trust_level,omitempty"`
@@ -324,21 +324,23 @@ func (r *RefreshExternalAccountsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	externalAccountFieldExternalID            = big.NewInt(1 << 0)
-	externalAccountFieldID                    = big.NewInt(1 << 1)
-	externalAccountFieldName                  = big.NewInt(1 << 2)
-	externalAccountFieldParentExternalAccount = big.NewInt(1 << 3)
-	externalAccountFieldPartnershipStatus     = big.NewInt(1 << 4)
-	externalAccountFieldPlatform              = big.NewInt(1 << 5)
-	externalAccountFieldProfilePictureURL     = big.NewInt(1 << 6)
-	externalAccountFieldScopes                = big.NewInt(1 << 7)
-	externalAccountFieldURL                   = big.NewInt(1 << 8)
-	externalAccountFieldUsername              = big.NewInt(1 << 9)
-	externalAccountFieldVerified              = big.NewInt(1 << 10)
+	externalAccountFieldConnectionStatus      = big.NewInt(1 << 0)
+	externalAccountFieldExternalID            = big.NewInt(1 << 1)
+	externalAccountFieldID                    = big.NewInt(1 << 2)
+	externalAccountFieldName                  = big.NewInt(1 << 3)
+	externalAccountFieldParentExternalAccount = big.NewInt(1 << 4)
+	externalAccountFieldPartnershipStatus     = big.NewInt(1 << 5)
+	externalAccountFieldPlatform              = big.NewInt(1 << 6)
+	externalAccountFieldProfilePictureURL     = big.NewInt(1 << 7)
+	externalAccountFieldScopes                = big.NewInt(1 << 8)
+	externalAccountFieldURL                   = big.NewInt(1 << 9)
+	externalAccountFieldUsername              = big.NewInt(1 << 10)
+	externalAccountFieldVerified              = big.NewInt(1 << 11)
 )
 
 // externalAccountNullableFields maps the wire names of ExternalAccount's nullable fields (required or optional) to their field bits.
 var externalAccountNullableFields = map[string]*big.Int{
+	"connection_status":       externalAccountFieldConnectionStatus,
 	"external_id":             externalAccountFieldExternalID,
 	"name":                    externalAccountFieldName,
 	"parent_external_account": externalAccountFieldParentExternalAccount,
@@ -349,6 +351,8 @@ var externalAccountNullableFields = map[string]*big.Int{
 }
 
 type ExternalAccount struct {
+	// Connection health of the external account. `reconnect_required` means the platform refused Whop's access, and the owner must connect the account again. `active` means Whop has not seen a refusal. Whop checks only Stripe connections for a refusal. `null` when Whop holds no access for the account, for example a claimed profile.
+	ConnectionStatus *ExternalAccountConnectionStatus `json:"connection_status,omitempty" url:"connection_status,omitempty"`
 	// The platform-specific ID for this external account.
 	ExternalID *string `json:"external_id,omitempty" url:"external_id,omitempty"`
 	// Unique identifier for the external account.
@@ -376,6 +380,13 @@ type ExternalAccount struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (e *ExternalAccount) GetConnectionStatus() *ExternalAccountConnectionStatus {
+	if e == nil {
+		return nil
+	}
+	return e.ConnectionStatus
 }
 
 func (e *ExternalAccount) GetExternalID() *string {
@@ -469,6 +480,13 @@ func (e *ExternalAccount) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	e.explicitFields = next
+}
+
+// SetConnectionStatus sets the ConnectionStatus field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *ExternalAccount) SetConnectionStatus(connectionStatus *ExternalAccountConnectionStatus) {
+	e.ConnectionStatus = connectionStatus
+	e.require(externalAccountFieldConnectionStatus)
 }
 
 // SetExternalID sets the ExternalID field and marks it as non-optional;
@@ -595,6 +613,29 @@ func (e *ExternalAccount) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", e)
+}
+
+// Connection health of the external account. `reconnect_required` means the platform refused Whop's access, and the owner must connect the account again. `active` means Whop has not seen a refusal. Whop checks only Stripe connections for a refusal. `null` when Whop holds no access for the account, for example a claimed profile.
+type ExternalAccountConnectionStatus string
+
+const (
+	ExternalAccountConnectionStatusActive            ExternalAccountConnectionStatus = "active"
+	ExternalAccountConnectionStatusReconnectRequired ExternalAccountConnectionStatus = "reconnect_required"
+)
+
+func NewExternalAccountConnectionStatusFromString(s string) (ExternalAccountConnectionStatus, error) {
+	switch s {
+	case "active":
+		return ExternalAccountConnectionStatusActive, nil
+	case "reconnect_required":
+		return ExternalAccountConnectionStatusReconnectRequired, nil
+	}
+	var t ExternalAccountConnectionStatus
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e ExternalAccountConnectionStatus) Ptr() *ExternalAccountConnectionStatus {
+	return &e
 }
 
 var (
@@ -815,6 +856,7 @@ const (
 	ExternalAccountParentPlatformKlaviyo    ExternalAccountParentPlatform = "klaviyo"
 	ExternalAccountParentPlatformQuickbooks ExternalAccountParentPlatform = "quickbooks"
 	ExternalAccountParentPlatformAimerce    ExternalAccountParentPlatform = "aimerce"
+	ExternalAccountParentPlatformStripe     ExternalAccountParentPlatform = "stripe"
 )
 
 func NewExternalAccountParentPlatformFromString(s string) (ExternalAccountParentPlatform, error) {
@@ -839,6 +881,8 @@ func NewExternalAccountParentPlatformFromString(s string) (ExternalAccountParent
 		return ExternalAccountParentPlatformQuickbooks, nil
 	case "aimerce":
 		return ExternalAccountParentPlatformAimerce, nil
+	case "stripe":
+		return ExternalAccountParentPlatformStripe, nil
 	}
 	var t ExternalAccountParentPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -862,6 +906,7 @@ const (
 	ExternalAccountPlatformKlaviyo    ExternalAccountPlatform = "klaviyo"
 	ExternalAccountPlatformQuickbooks ExternalAccountPlatform = "quickbooks"
 	ExternalAccountPlatformAimerce    ExternalAccountPlatform = "aimerce"
+	ExternalAccountPlatformStripe     ExternalAccountPlatform = "stripe"
 )
 
 func NewExternalAccountPlatformFromString(s string) (ExternalAccountPlatform, error) {
@@ -886,6 +931,8 @@ func NewExternalAccountPlatformFromString(s string) (ExternalAccountPlatform, er
 		return ExternalAccountPlatformQuickbooks, nil
 	case "aimerce":
 		return ExternalAccountPlatformAimerce, nil
+	case "stripe":
+		return ExternalAccountPlatformStripe, nil
 	}
 	var t ExternalAccountPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -895,7 +942,7 @@ func (e ExternalAccountPlatform) Ptr() *ExternalAccountPlatform {
 	return &e
 }
 
-// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, and the user picks the company in QuickBooks.
+// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, and the user picks the company in QuickBooks. Use `stripe` to let Whop read the past payments of the account’s Stripe account: pass `account_id`, and the user installs Whop’s app in Stripe. It requires the `payout:account:update` scope instead of `social_account:create`.
 type ConnectExternalAccountsRequestPlatform string
 
 const (
@@ -904,6 +951,7 @@ const (
 	ConnectExternalAccountsRequestPlatformYoutube    ConnectExternalAccountsRequestPlatform = "youtube"
 	ConnectExternalAccountsRequestPlatformX          ConnectExternalAccountsRequestPlatform = "x"
 	ConnectExternalAccountsRequestPlatformQuickbooks ConnectExternalAccountsRequestPlatform = "quickbooks"
+	ConnectExternalAccountsRequestPlatformStripe     ConnectExternalAccountsRequestPlatform = "stripe"
 )
 
 func NewConnectExternalAccountsRequestPlatformFromString(s string) (ConnectExternalAccountsRequestPlatform, error) {
@@ -918,6 +966,8 @@ func NewConnectExternalAccountsRequestPlatformFromString(s string) (ConnectExter
 		return ConnectExternalAccountsRequestPlatformX, nil
 	case "quickbooks":
 		return ConnectExternalAccountsRequestPlatformQuickbooks, nil
+	case "stripe":
+		return ConnectExternalAccountsRequestPlatformStripe, nil
 	}
 	var t ConnectExternalAccountsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1351,6 +1401,7 @@ const (
 	ListExternalAccountsRequestPlatformKlaviyo    ListExternalAccountsRequestPlatform = "klaviyo"
 	ListExternalAccountsRequestPlatformQuickbooks ListExternalAccountsRequestPlatform = "quickbooks"
 	ListExternalAccountsRequestPlatformAimerce    ListExternalAccountsRequestPlatform = "aimerce"
+	ListExternalAccountsRequestPlatformStripe     ListExternalAccountsRequestPlatform = "stripe"
 )
 
 func NewListExternalAccountsRequestPlatformFromString(s string) (ListExternalAccountsRequestPlatform, error) {
@@ -1379,6 +1430,8 @@ func NewListExternalAccountsRequestPlatformFromString(s string) (ListExternalAcc
 		return ListExternalAccountsRequestPlatformQuickbooks, nil
 	case "aimerce":
 		return ListExternalAccountsRequestPlatformAimerce, nil
+	case "stripe":
+		return ListExternalAccountsRequestPlatformStripe, nil
 	}
 	var t ListExternalAccountsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
