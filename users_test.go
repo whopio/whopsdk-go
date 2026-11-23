@@ -1055,6 +1055,14 @@ func TestSettersMarkExplicitRetrieveUsersRequest(t *testing.T) {
 }
 
 func TestSettersUser(t *testing.T) {
+	t.Run("SetBadges", func(t *testing.T) {
+		obj := &User{}
+		var fernTestValueBadges []*UserBadge
+		obj.SetBadges(fernTestValueBadges)
+		assert.Equal(t, fernTestValueBadges, obj.Badges)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetBalance", func(t *testing.T) {
 		obj := &User{}
 		var fernTestValueBalance *UserBalance
@@ -1274,6 +1282,39 @@ func TestSettersUser(t *testing.T) {
 }
 
 func TestGettersUser(t *testing.T) {
+	t.Run("GetBadges", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &User{}
+		var expected []*UserBadge
+		obj.Badges = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBadges(), "getter should return the property value")
+	})
+
+	t.Run("GetBadges_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &User{}
+		obj.Badges = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetBadges(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetBadges_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *User
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBadges() // Should return zero value
+	})
+
 	t.Run("GetBalance", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2128,6 +2169,37 @@ func TestGettersUser(t *testing.T) {
 }
 
 func TestSettersMarkExplicitUser(t *testing.T) {
+	t.Run("SetBadges_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &User{}
+		var fernTestValueBadges []*UserBadge
+
+		// Act
+		obj.SetBadges(fernTestValueBadges)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetBalance_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange

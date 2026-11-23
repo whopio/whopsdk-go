@@ -80037,6 +80037,116 @@ func (u UploadStatuses) Ptr() *UploadStatuses {
 }
 
 var (
+	userBadgeFieldType = big.NewInt(1 << 0)
+)
+
+type UserBadge struct {
+	// Badge category. `whop_team` identifies a Whop team member. `verified_partner` identifies a verified member of the Whop Partners program.
+	Type UserBadgeType `json:"type" url:"type"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (u *UserBadge) GetType() UserBadgeType {
+	if u == nil {
+		return ""
+	}
+	return u.Type
+}
+
+func (u *UserBadge) GetExtraProperties() map[string]interface{} {
+	if u == nil {
+		return nil
+	}
+	return u.extraProperties
+}
+
+func (u *UserBadge) require(field *big.Int) {
+	next := new(big.Int)
+	if u.explicitFields != nil {
+		next.Set(u.explicitFields)
+	}
+	next.Or(next, field)
+	u.explicitFields = next
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserBadge) SetType(type_ UserBadgeType) {
+	u.Type = type_
+	u.require(userBadgeFieldType)
+}
+
+func (u *UserBadge) UnmarshalJSON(data []byte) error {
+	type unmarshaler UserBadge
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*u = UserBadge(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *u)
+	if err != nil {
+		return err
+	}
+	u.extraProperties = extraProperties
+	u.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (u *UserBadge) MarshalJSON() ([]byte, error) {
+	type embed UserBadge
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*u),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, u.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (u *UserBadge) String() string {
+	if u == nil {
+		return "<nil>"
+	}
+	if len(u.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(u.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(u); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", u)
+}
+
+// Badge category. `whop_team` identifies a Whop team member. `verified_partner` identifies a verified member of the Whop Partners program.
+type UserBadgeType string
+
+const (
+	UserBadgeTypeWhopTeam        UserBadgeType = "whop_team"
+	UserBadgeTypeVerifiedPartner UserBadgeType = "verified_partner"
+)
+
+func NewUserBadgeTypeFromString(s string) (UserBadgeType, error) {
+	switch s {
+	case "whop_team":
+		return UserBadgeTypeWhopTeam, nil
+	case "verified_partner":
+		return UserBadgeTypeVerifiedPartner, nil
+	}
+	var t UserBadgeType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UserBadgeType) Ptr() *UserBadgeType {
+	return &u
+}
+
+var (
 	userEarningsAmountFieldLast24Hours = big.NewInt(1 << 0)
 	userEarningsAmountFieldLast30Days  = big.NewInt(1 << 1)
 	userEarningsAmountFieldLast7Days   = big.NewInt(1 << 2)
@@ -80867,10 +80977,11 @@ func (u *UserProfilePicture) String() string {
 }
 
 var (
-	userSummaryFieldID             = big.NewInt(1 << 0)
-	userSummaryFieldName           = big.NewInt(1 << 1)
-	userSummaryFieldProfilePicture = big.NewInt(1 << 2)
-	userSummaryFieldUsername       = big.NewInt(1 << 3)
+	userSummaryFieldBadges         = big.NewInt(1 << 0)
+	userSummaryFieldID             = big.NewInt(1 << 1)
+	userSummaryFieldName           = big.NewInt(1 << 2)
+	userSummaryFieldProfilePicture = big.NewInt(1 << 3)
+	userSummaryFieldUsername       = big.NewInt(1 << 4)
 )
 
 // userSummaryNullableFields maps the wire names of UserSummary's nullable fields (required or optional) to their field bits.
@@ -80879,6 +80990,7 @@ var userSummaryNullableFields = map[string]*big.Int{
 }
 
 type UserSummary struct {
+	Badges []*UserBadge `json:"badges" url:"badges"`
 	// User ID, prefixed `user_`.
 	ID string `json:"id" url:"id"`
 	// Display name.
@@ -80893,6 +81005,13 @@ type UserSummary struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (u *UserSummary) GetBadges() []*UserBadge {
+	if u == nil {
+		return nil
+	}
+	return u.Badges
 }
 
 func (u *UserSummary) GetID() string {
@@ -80937,6 +81056,13 @@ func (u *UserSummary) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	u.explicitFields = next
+}
+
+// SetBadges sets the Badges field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UserSummary) SetBadges(badges []*UserBadge) {
+	u.Badges = badges
+	u.require(userSummaryFieldBadges)
 }
 
 // SetID sets the ID field and marks it as non-optional;

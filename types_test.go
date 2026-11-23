@@ -156559,6 +156559,77 @@ func TestSettersMarkExplicitUnprocessableEntityErrorBodyError(t *testing.T) {
 
 }
 
+func TestSettersUserBadge(t *testing.T) {
+	t.Run("SetType", func(t *testing.T) {
+		obj := &UserBadge{}
+		var fernTestValueType UserBadgeType
+		obj.SetType(fernTestValueType)
+		assert.Equal(t, fernTestValueType, obj.Type)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersUserBadge(t *testing.T) {
+	t.Run("GetType", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UserBadge{}
+		var expected UserBadgeType
+		obj.Type = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetType(), "getter should return the property value")
+	})
+
+	t.Run("GetType_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UserBadge
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetType() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitUserBadge(t *testing.T) {
+	t.Run("SetType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UserBadge{}
+		var fernTestValueType UserBadgeType
+
+		// Act
+		obj.SetType(fernTestValueType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersUserEarningsAmount(t *testing.T) {
 	t.Run("SetLast24Hours", func(t *testing.T) {
 		obj := &UserEarningsAmount{}
@@ -158215,6 +158286,14 @@ func TestSettersMarkExplicitUserProfilePicture(t *testing.T) {
 }
 
 func TestSettersUserSummary(t *testing.T) {
+	t.Run("SetBadges", func(t *testing.T) {
+		obj := &UserSummary{}
+		var fernTestValueBadges []*UserBadge
+		obj.SetBadges(fernTestValueBadges)
+		assert.Equal(t, fernTestValueBadges, obj.Badges)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetID", func(t *testing.T) {
 		obj := &UserSummary{}
 		var fernTestValueID string
@@ -158250,6 +158329,39 @@ func TestSettersUserSummary(t *testing.T) {
 }
 
 func TestGettersUserSummary(t *testing.T) {
+	t.Run("GetBadges", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UserSummary{}
+		var expected []*UserBadge
+		obj.Badges = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBadges(), "getter should return the property value")
+	})
+
+	t.Run("GetBadges_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UserSummary{}
+		obj.Badges = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetBadges(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetBadges_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UserSummary
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBadges() // Should return zero value
+	})
+
 	t.Run("GetID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -158365,6 +158477,37 @@ func TestGettersUserSummary(t *testing.T) {
 }
 
 func TestSettersMarkExplicitUserSummary(t *testing.T) {
+	t.Run("SetBadges_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UserSummary{}
+		var fernTestValueBadges []*UserBadge
+
+		// Act
+		obj.SetBadges(fernTestValueBadges)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -176371,6 +176514,39 @@ func TestJSONMarshalingUnprocessableEntityErrorBodyError(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingUserBadge(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UserBadge{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled UserBadge
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj UserBadge
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj UserBadge
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingUserEarningsAmount(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -194158,6 +194334,22 @@ func TestStringUnprocessableEntityErrorBodyError(t *testing.T) {
 	})
 }
 
+func TestStringUserBadge(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &UserBadge{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UserBadge
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringUserEarningsAmount(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -211316,6 +211508,35 @@ func TestEnumUploadStatuses(t *testing.T) {
 	})
 }
 
+func TestEnumUserBadgeType(t *testing.T) {
+	t.Run("NewFromString_whop_team", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUserBadgeTypeFromString("whop_team")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UserBadgeType("whop_team"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_verified_partner", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUserBadgeTypeFromString("verified_partner")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UserBadgeType("verified_partner"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUserBadgeTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUserBadgeTypeFromString("whop_team")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumUserNotificationPreferenceLevel(t *testing.T) {
 	t.Run("NewFromString_all", func(t *testing.T) {
 		t.Parallel()
@@ -221585,6 +221806,29 @@ func TestExtraPropertiesUnprocessableEntityErrorBodyError(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *UnprocessableEntityErrorBodyError
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesUserBadge(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &UserBadge{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UserBadge
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

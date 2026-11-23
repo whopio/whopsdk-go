@@ -3433,13 +3433,14 @@ func (a AccountOpengraphImageVariant) Ptr() *AccountOpengraphImageVariant {
 }
 
 var (
-	accountPartnerFieldEmail                 = big.NewInt(1 << 0)
-	accountPartnerFieldID                    = big.NewInt(1 << 1)
-	accountPartnerFieldName                  = big.NewInt(1 << 2)
-	accountPartnerFieldProfilePicture        = big.NewInt(1 << 3)
-	accountPartnerFieldReferringAccount      = big.NewInt(1 << 4)
-	accountPartnerFieldUsername              = big.NewInt(1 << 5)
-	accountPartnerFieldWhopPartnerVerifiedAt = big.NewInt(1 << 6)
+	accountPartnerFieldBadges                = big.NewInt(1 << 0)
+	accountPartnerFieldEmail                 = big.NewInt(1 << 1)
+	accountPartnerFieldID                    = big.NewInt(1 << 2)
+	accountPartnerFieldName                  = big.NewInt(1 << 3)
+	accountPartnerFieldProfilePicture        = big.NewInt(1 << 4)
+	accountPartnerFieldReferringAccount      = big.NewInt(1 << 5)
+	accountPartnerFieldUsername              = big.NewInt(1 << 6)
+	accountPartnerFieldWhopPartnerVerifiedAt = big.NewInt(1 << 7)
 )
 
 // accountPartnerNullableFields maps the wire names of AccountPartner's nullable fields (required or optional) to their field bits.
@@ -3451,6 +3452,7 @@ var accountPartnerNullableFields = map[string]*big.Int{
 }
 
 type AccountPartner struct {
+	Badges []*UserBadge `json:"badges" url:"badges"`
 	// Email address for contacting the partner. Null when the partner has not added their own email address.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// User ID, prefixed `user_`.
@@ -3471,6 +3473,13 @@ type AccountPartner struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AccountPartner) GetBadges() []*UserBadge {
+	if a == nil {
+		return nil
+	}
+	return a.Badges
 }
 
 func (a *AccountPartner) GetEmail() *string {
@@ -3536,6 +3545,13 @@ func (a *AccountPartner) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	a.explicitFields = next
+}
+
+// SetBadges sets the Badges field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPartner) SetBadges(badges []*UserBadge) {
+	a.Badges = badges
+	a.require(accountPartnerFieldBadges)
 }
 
 // SetEmail sets the Email field and marks it as non-optional;

@@ -361,33 +361,34 @@ func (r *RetrieveUsersRequest) SetTimeZone(timeZone *string) {
 }
 
 var (
-	userFieldBalance                           = big.NewInt(1 << 0)
-	userFieldBalanceHistory                    = big.NewInt(1 << 1)
-	userFieldBalances                          = big.NewInt(1 << 2)
-	userFieldBanner                            = big.NewInt(1 << 3)
-	userFieldBio                               = big.NewInt(1 << 4)
-	userFieldCards                             = big.NewInt(1 << 5)
-	userFieldCity                              = big.NewInt(1 << 6)
-	userFieldCountry                           = big.NewInt(1 << 7)
-	userFieldCreatedAt                         = big.NewInt(1 << 8)
-	userFieldDateOfBirth                       = big.NewInt(1 << 9)
-	userFieldEarningsUsd                       = big.NewInt(1 << 10)
-	userFieldEmail                             = big.NewInt(1 << 11)
-	userFieldFollowersCount                    = big.NewInt(1 << 12)
-	userFieldID                                = big.NewInt(1 << 13)
-	userFieldLevel                             = big.NewInt(1 << 14)
-	userFieldName                              = big.NewInt(1 << 15)
-	userFieldProfilePicture                    = big.NewInt(1 << 16)
-	userFieldSocialLinks                       = big.NewInt(1 << 17)
-	userFieldState                             = big.NewInt(1 << 18)
-	userFieldTotalUsd                          = big.NewInt(1 << 19)
-	userFieldTrading                           = big.NewInt(1 << 20)
-	userFieldUsername                          = big.NewInt(1 << 21)
-	userFieldVerification                      = big.NewInt(1 << 22)
-	userFieldVerifiedAt                        = big.NewInt(1 << 23)
-	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 24)
-	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 25)
-	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 26)
+	userFieldBadges                            = big.NewInt(1 << 0)
+	userFieldBalance                           = big.NewInt(1 << 1)
+	userFieldBalanceHistory                    = big.NewInt(1 << 2)
+	userFieldBalances                          = big.NewInt(1 << 3)
+	userFieldBanner                            = big.NewInt(1 << 4)
+	userFieldBio                               = big.NewInt(1 << 5)
+	userFieldCards                             = big.NewInt(1 << 6)
+	userFieldCity                              = big.NewInt(1 << 7)
+	userFieldCountry                           = big.NewInt(1 << 8)
+	userFieldCreatedAt                         = big.NewInt(1 << 9)
+	userFieldDateOfBirth                       = big.NewInt(1 << 10)
+	userFieldEarningsUsd                       = big.NewInt(1 << 11)
+	userFieldEmail                             = big.NewInt(1 << 12)
+	userFieldFollowersCount                    = big.NewInt(1 << 13)
+	userFieldID                                = big.NewInt(1 << 14)
+	userFieldLevel                             = big.NewInt(1 << 15)
+	userFieldName                              = big.NewInt(1 << 16)
+	userFieldProfilePicture                    = big.NewInt(1 << 17)
+	userFieldSocialLinks                       = big.NewInt(1 << 18)
+	userFieldState                             = big.NewInt(1 << 19)
+	userFieldTotalUsd                          = big.NewInt(1 << 20)
+	userFieldTrading                           = big.NewInt(1 << 21)
+	userFieldUsername                          = big.NewInt(1 << 22)
+	userFieldVerification                      = big.NewInt(1 << 23)
+	userFieldVerifiedAt                        = big.NewInt(1 << 24)
+	userFieldWhopPartnerEnabledAt              = big.NewInt(1 << 25)
+	userFieldWhopPartnerOnboardedAccountsCount = big.NewInt(1 << 26)
+	userFieldWhopPartnerVerifiedAt             = big.NewInt(1 << 27)
 )
 
 // userNullableFields maps the wire names of User's nullable fields (required or optional) to their field bits.
@@ -414,6 +415,7 @@ var userNullableFields = map[string]*big.Int{
 }
 
 type User struct {
+	Badges []*UserBadge `json:"badges" url:"badges"`
 	// The user's balance: personal cash + other holdings + deposits still in flight, plus account balances for accounts they own. Computed only on the self view (retrieved with the reserved id `me`) for callers with balance-read scope; `null` otherwise, or when `include_balance=false`.
 	Balance *UserBalance `json:"balance,omitempty" url:"balance,omitempty"`
 	// The user's cumulative wallet balance over time (USD `{ t, v }` points plus last/min/max), for the balance chart. Opt in with `include_balance_history=true` when retrieving yourself with the reserved id `me`; populated only for callers with balance-read scope and `null` otherwise. A user with no wallet activity returns an empty series.
@@ -472,6 +474,13 @@ type User struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (u *User) GetBadges() []*UserBadge {
+	if u == nil {
+		return nil
+	}
+	return u.Badges
 }
 
 func (u *User) GetBalance() *UserBalance {
@@ -677,6 +686,13 @@ func (u *User) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	u.explicitFields = next
+}
+
+// SetBadges sets the Badges field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *User) SetBadges(badges []*UserBadge) {
+	u.Badges = badges
+	u.require(userFieldBadges)
 }
 
 // SetBalance sets the Balance field and marks it as non-optional;
