@@ -1134,13 +1134,14 @@ func (m MemberUnsubscribeStatus) Ptr() *MemberUnsubscribeStatus {
 }
 
 var (
-	memberUserFieldCity           = big.NewInt(1 << 0)
-	memberUserFieldCountry        = big.NewInt(1 << 1)
-	memberUserFieldID             = big.NewInt(1 << 2)
-	memberUserFieldName           = big.NewInt(1 << 3)
-	memberUserFieldProfilePicture = big.NewInt(1 << 4)
-	memberUserFieldState          = big.NewInt(1 << 5)
-	memberUserFieldUsername       = big.NewInt(1 << 6)
+	memberUserFieldBadges         = big.NewInt(1 << 0)
+	memberUserFieldCity           = big.NewInt(1 << 1)
+	memberUserFieldCountry        = big.NewInt(1 << 2)
+	memberUserFieldID             = big.NewInt(1 << 3)
+	memberUserFieldName           = big.NewInt(1 << 4)
+	memberUserFieldProfilePicture = big.NewInt(1 << 5)
+	memberUserFieldState          = big.NewInt(1 << 6)
+	memberUserFieldUsername       = big.NewInt(1 << 7)
 )
 
 // memberUserNullableFields maps the wire names of MemberUser's nullable fields (required or optional) to their field bits.
@@ -1152,6 +1153,7 @@ var memberUserNullableFields = map[string]*big.Int{
 }
 
 type MemberUser struct {
+	Badges []*UserBadge `json:"badges" url:"badges"`
 	// The user's city, derived from their IP address. `null` when unknown or the user turned off location sharing.
 	City *string `json:"city,omitempty" url:"city,omitempty"`
 	// The user's country as an ISO 3166-1 alpha-2 code, like `US`, derived from their IP address. `null` when unknown or the user turned off location sharing.
@@ -1172,6 +1174,13 @@ type MemberUser struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (m *MemberUser) GetBadges() []*UserBadge {
+	if m == nil {
+		return nil
+	}
+	return m.Badges
 }
 
 func (m *MemberUser) GetCity() *string {
@@ -1237,6 +1246,13 @@ func (m *MemberUser) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	m.explicitFields = next
+}
+
+// SetBadges sets the Badges field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (m *MemberUser) SetBadges(badges []*UserBadge) {
+	m.Badges = badges
+	m.require(memberUserFieldBadges)
 }
 
 // SetCity sets the City field and marks it as non-optional;

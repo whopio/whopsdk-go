@@ -341,11 +341,12 @@ func (p ProductAffiliateStatus) Ptr() *ProductAffiliateStatus {
 }
 
 var (
-	productAffiliateUserFieldEmail          = big.NewInt(1 << 0)
-	productAffiliateUserFieldID             = big.NewInt(1 << 1)
-	productAffiliateUserFieldName           = big.NewInt(1 << 2)
-	productAffiliateUserFieldProfilePicture = big.NewInt(1 << 3)
-	productAffiliateUserFieldUsername       = big.NewInt(1 << 4)
+	productAffiliateUserFieldBadges         = big.NewInt(1 << 0)
+	productAffiliateUserFieldEmail          = big.NewInt(1 << 1)
+	productAffiliateUserFieldID             = big.NewInt(1 << 2)
+	productAffiliateUserFieldName           = big.NewInt(1 << 3)
+	productAffiliateUserFieldProfilePicture = big.NewInt(1 << 4)
+	productAffiliateUserFieldUsername       = big.NewInt(1 << 5)
 )
 
 // productAffiliateUserNullableFields maps the wire names of ProductAffiliateUser's nullable fields (required or optional) to their field bits.
@@ -355,6 +356,7 @@ var productAffiliateUserNullableFields = map[string]*big.Int{
 }
 
 type ProductAffiliateUser struct {
+	Badges []*UserBadge `json:"badges" url:"badges"`
 	// The affiliate's email address. Requires the `member:email:read` scope; `null` without it.
 	Email *string `json:"email,omitempty" url:"email,omitempty"`
 	// User ID, prefixed `user_`.
@@ -371,6 +373,13 @@ type ProductAffiliateUser struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (p *ProductAffiliateUser) GetBadges() []*UserBadge {
+	if p == nil {
+		return nil
+	}
+	return p.Badges
 }
 
 func (p *ProductAffiliateUser) GetEmail() *string {
@@ -422,6 +431,13 @@ func (p *ProductAffiliateUser) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	p.explicitFields = next
+}
+
+// SetBadges sets the Badges field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *ProductAffiliateUser) SetBadges(badges []*UserBadge) {
+	p.Badges = badges
+	p.require(productAffiliateUserFieldBadges)
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
