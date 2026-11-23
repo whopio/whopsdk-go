@@ -82,14 +82,15 @@ var (
 	createExperimentsRequestFieldAccountID       = big.NewInt(1 << 0)
 	createExperimentsRequestFieldBucketBy        = big.NewInt(1 << 1)
 	createExperimentsRequestFieldControl         = big.NewInt(1 << 2)
-	createExperimentsRequestFieldFlagKey         = big.NewInt(1 << 3)
-	createExperimentsRequestFieldHypothesis      = big.NewInt(1 << 4)
-	createExperimentsRequestFieldKind            = big.NewInt(1 << 5)
-	createExperimentsRequestFieldMetadata        = big.NewInt(1 << 6)
-	createExperimentsRequestFieldName            = big.NewInt(1 << 7)
-	createExperimentsRequestFieldRelatedResource = big.NewInt(1 << 8)
-	createExperimentsRequestFieldTargetStats     = big.NewInt(1 << 9)
-	createExperimentsRequestFieldVariants        = big.NewInt(1 << 10)
+	createExperimentsRequestFieldDecisionMode    = big.NewInt(1 << 3)
+	createExperimentsRequestFieldFlagKey         = big.NewInt(1 << 4)
+	createExperimentsRequestFieldHypothesis      = big.NewInt(1 << 5)
+	createExperimentsRequestFieldKind            = big.NewInt(1 << 6)
+	createExperimentsRequestFieldMetadata        = big.NewInt(1 << 7)
+	createExperimentsRequestFieldName            = big.NewInt(1 << 8)
+	createExperimentsRequestFieldRelatedResource = big.NewInt(1 << 9)
+	createExperimentsRequestFieldTargetStats     = big.NewInt(1 << 10)
+	createExperimentsRequestFieldVariants        = big.NewInt(1 << 11)
 )
 
 type CreateExperimentsRequest struct {
@@ -98,6 +99,8 @@ type CreateExperimentsRequest struct {
 	// Randomization unit, and the only identity the assignment is keyed on — evaluation fails rather than falling back to another. `user` (default) uses `subject[user_id]`; `account` uses `subject[account_id]`, so every user of an account gets the same arm; `anonymous` uses the anonymous id and survives sign-in. Fixed after creation.
 	BucketBy *CreateExperimentsRequestBucketBy `json:"bucket_by,omitempty" url:"-"`
 	Control  *CreateExperimentsRequestControl  `json:"control,omitempty" url:"-"`
+	// How the experiment is decided. `autopilot` ends it as soon as a result is outside the margin of error, shipping the arm that won or keeping control if it lost. If its window passes with no clear result, `autopilot` keeps control. `require_approval` leaves every arm serving for the owner to end. Omit to leave it to the owner. Not accepted on feature flags.
+	DecisionMode *CreateExperimentsRequestDecisionMode `json:"decision_mode,omitempty" url:"-"`
 	// Developer-chosen handle referenced from code, used in evaluation and results calls. Interchangeable with the returned `expt_` id anywhere the API takes an experiment identifier.
 	FlagKey string `json:"flag_key" url:"-"`
 	// Required for full experiments; rejected on feature flags. Structure it as "If we [change] for [cohort], then [measurable behavior] will [increase/decrease], resulting in [business outcome], because [evidence]. Created by [name]." Evidence should be something real — a baseline number, a funnel breakdown — not a guess, and [name] is you, not something to leave blank.
@@ -147,6 +150,13 @@ func (c *CreateExperimentsRequest) SetBucketBy(bucketBy *CreateExperimentsReques
 func (c *CreateExperimentsRequest) SetControl(control *CreateExperimentsRequestControl) {
 	c.Control = control
 	c.require(createExperimentsRequestFieldControl)
+}
+
+// SetDecisionMode sets the DecisionMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateExperimentsRequest) SetDecisionMode(decisionMode *CreateExperimentsRequestDecisionMode) {
+	c.DecisionMode = decisionMode
+	c.require(createExperimentsRequestFieldDecisionMode)
 }
 
 // SetFlagKey sets the FlagKey field and marks it as non-optional;
@@ -633,35 +643,37 @@ var (
 	experimentFieldControl               = big.NewInt(1 << 4)
 	experimentFieldCreatedAt             = big.NewInt(1 << 5)
 	experimentFieldCreatedBy             = big.NewInt(1 << 6)
-	experimentFieldEndedAt               = big.NewInt(1 << 7)
-	experimentFieldFindings              = big.NewInt(1 << 8)
-	experimentFieldFlagKey               = big.NewInt(1 << 9)
-	experimentFieldHypothesis            = big.NewInt(1 << 10)
-	experimentFieldID                    = big.NewInt(1 << 11)
-	experimentFieldKind                  = big.NewInt(1 << 12)
-	experimentFieldMetadata              = big.NewInt(1 << 13)
-	experimentFieldName                  = big.NewInt(1 << 14)
-	experimentFieldRelatedResource       = big.NewInt(1 << 15)
-	experimentFieldStartedAt             = big.NewInt(1 << 16)
-	experimentFieldStatus                = big.NewInt(1 << 17)
-	experimentFieldTargetStats           = big.NewInt(1 << 18)
-	experimentFieldUpdatedAt             = big.NewInt(1 << 19)
-	experimentFieldVariants              = big.NewInt(1 << 20)
-	experimentFieldWinningArm            = big.NewInt(1 << 21)
+	experimentFieldDecisionMode          = big.NewInt(1 << 7)
+	experimentFieldEndedAt               = big.NewInt(1 << 8)
+	experimentFieldFindings              = big.NewInt(1 << 9)
+	experimentFieldFlagKey               = big.NewInt(1 << 10)
+	experimentFieldHypothesis            = big.NewInt(1 << 11)
+	experimentFieldID                    = big.NewInt(1 << 12)
+	experimentFieldKind                  = big.NewInt(1 << 13)
+	experimentFieldMetadata              = big.NewInt(1 << 14)
+	experimentFieldName                  = big.NewInt(1 << 15)
+	experimentFieldRelatedResource       = big.NewInt(1 << 16)
+	experimentFieldStartedAt             = big.NewInt(1 << 17)
+	experimentFieldStatus                = big.NewInt(1 << 18)
+	experimentFieldTargetStats           = big.NewInt(1 << 19)
+	experimentFieldUpdatedAt             = big.NewInt(1 << 20)
+	experimentFieldVariants              = big.NewInt(1 << 21)
+	experimentFieldWinningArm            = big.NewInt(1 << 22)
 )
 
 // experimentNullableFields maps the wire names of Experiment's nullable fields (required or optional) to their field bits.
 var experimentNullableFields = map[string]*big.Int{
-	"bucket_by":    experimentFieldBucketBy,
-	"created_at":   experimentFieldCreatedAt,
-	"created_by":   experimentFieldCreatedBy,
-	"ended_at":     experimentFieldEndedAt,
-	"findings":     experimentFieldFindings,
-	"hypothesis":   experimentFieldHypothesis,
-	"started_at":   experimentFieldStartedAt,
-	"target_stats": experimentFieldTargetStats,
-	"updated_at":   experimentFieldUpdatedAt,
-	"winning_arm":  experimentFieldWinningArm,
+	"bucket_by":     experimentFieldBucketBy,
+	"created_at":    experimentFieldCreatedAt,
+	"created_by":    experimentFieldCreatedBy,
+	"decision_mode": experimentFieldDecisionMode,
+	"ended_at":      experimentFieldEndedAt,
+	"findings":      experimentFieldFindings,
+	"hypothesis":    experimentFieldHypothesis,
+	"started_at":    experimentFieldStartedAt,
+	"target_stats":  experimentFieldTargetStats,
+	"updated_at":    experimentFieldUpdatedAt,
+	"winning_arm":   experimentFieldWinningArm,
 }
 
 type Experiment struct {
@@ -678,6 +690,8 @@ type Experiment struct {
 	CreatedAt *string `json:"created_at,omitempty" url:"created_at,omitempty"`
 	// ID of the user who created the experiment, prefixed `user_`. `null` for experiments created before creators were recorded.
 	CreatedBy *string `json:"created_by,omitempty" url:"created_by,omitempty"`
+	// How the experiment is decided. `autopilot` ends it as soon as a result is outside the margin of error, shipping the arm that won or keeping control if it lost. If its window passes with no clear result, `autopilot` keeps control. `require_approval` leaves every arm serving for the owner to end. `null` leaves it to the owner.
+	DecisionMode *ExperimentDecisionMode `json:"decision_mode,omitempty" url:"decision_mode,omitempty"`
 	// When the experiment stopped collecting data, as an ISO 8601 timestamp. `null` while still running.
 	EndedAt *string `json:"ended_at,omitempty" url:"ended_at,omitempty"`
 	// What was learned and why this outcome, recorded when the experiment was ended. `null` until then.
@@ -762,6 +776,13 @@ func (e *Experiment) GetCreatedBy() *string {
 		return nil
 	}
 	return e.CreatedBy
+}
+
+func (e *Experiment) GetDecisionMode() *ExperimentDecisionMode {
+	if e == nil {
+		return nil
+	}
+	return e.DecisionMode
 }
 
 func (e *Experiment) GetEndedAt() *string {
@@ -932,6 +953,13 @@ func (e *Experiment) SetCreatedAt(createdAt *string) {
 func (e *Experiment) SetCreatedBy(createdBy *string) {
 	e.CreatedBy = createdBy
 	e.require(experimentFieldCreatedBy)
+}
+
+// SetDecisionMode sets the DecisionMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (e *Experiment) SetDecisionMode(decisionMode *ExperimentDecisionMode) {
+	e.DecisionMode = decisionMode
+	e.require(experimentFieldDecisionMode)
 }
 
 // SetEndedAt sets the EndedAt field and marks it as non-optional;
@@ -1405,6 +1433,29 @@ func (e *ExperimentControl) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", e)
+}
+
+// How the experiment is decided. `autopilot` ends it as soon as a result is outside the margin of error, shipping the arm that won or keeping control if it lost. If its window passes with no clear result, `autopilot` keeps control. `require_approval` leaves every arm serving for the owner to end. `null` leaves it to the owner.
+type ExperimentDecisionMode string
+
+const (
+	ExperimentDecisionModeAutopilot       ExperimentDecisionMode = "autopilot"
+	ExperimentDecisionModeRequireApproval ExperimentDecisionMode = "require_approval"
+)
+
+func NewExperimentDecisionModeFromString(s string) (ExperimentDecisionMode, error) {
+	switch s {
+	case "autopilot":
+		return ExperimentDecisionModeAutopilot, nil
+	case "require_approval":
+		return ExperimentDecisionModeRequireApproval, nil
+	}
+	var t ExperimentDecisionMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (e ExperimentDecisionMode) Ptr() *ExperimentDecisionMode {
+	return &e
 }
 
 var (
@@ -2609,6 +2660,29 @@ func (c *CreateExperimentsRequestControl) String() string {
 	return fmt.Sprintf("%#v", c)
 }
 
+// How the experiment is decided. `autopilot` ends it as soon as a result is outside the margin of error, shipping the arm that won or keeping control if it lost. If its window passes with no clear result, `autopilot` keeps control. `require_approval` leaves every arm serving for the owner to end. Omit to leave it to the owner. Not accepted on feature flags.
+type CreateExperimentsRequestDecisionMode string
+
+const (
+	CreateExperimentsRequestDecisionModeAutopilot       CreateExperimentsRequestDecisionMode = "autopilot"
+	CreateExperimentsRequestDecisionModeRequireApproval CreateExperimentsRequestDecisionMode = "require_approval"
+)
+
+func NewCreateExperimentsRequestDecisionModeFromString(s string) (CreateExperimentsRequestDecisionMode, error) {
+	switch s {
+	case "autopilot":
+		return CreateExperimentsRequestDecisionModeAutopilot, nil
+	case "require_approval":
+		return CreateExperimentsRequestDecisionModeRequireApproval, nil
+	}
+	var t CreateExperimentsRequestDecisionMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateExperimentsRequestDecisionMode) Ptr() *CreateExperimentsRequestDecisionMode {
+	return &c
+}
+
 // `experiment` assigns its subjects to arms and takes `variants`. `beforeafter` compares a change with the period before it: it assigns nobody and needs `target_stats`. Defaults to `experiment`.
 type CreateExperimentsRequestKind string
 
@@ -3540,6 +3614,29 @@ func (u *UpdateExperimentsRequestControl) String() string {
 	return fmt.Sprintf("%#v", u)
 }
 
+// How the experiment is decided. `autopilot` ends it as soon as a result is outside the margin of error, shipping the arm that won or keeping control if it lost. If its window passes with no clear result, `autopilot` keeps control. `require_approval` leaves every arm serving for the owner to end. Send `null` to leave it to the owner. Not accepted on feature flags. Omit to leave unchanged.
+type UpdateExperimentsRequestDecisionMode string
+
+const (
+	UpdateExperimentsRequestDecisionModeAutopilot       UpdateExperimentsRequestDecisionMode = "autopilot"
+	UpdateExperimentsRequestDecisionModeRequireApproval UpdateExperimentsRequestDecisionMode = "require_approval"
+)
+
+func NewUpdateExperimentsRequestDecisionModeFromString(s string) (UpdateExperimentsRequestDecisionMode, error) {
+	switch s {
+	case "autopilot":
+		return UpdateExperimentsRequestDecisionModeAutopilot, nil
+	case "require_approval":
+		return UpdateExperimentsRequestDecisionModeRequireApproval, nil
+	}
+	var t UpdateExperimentsRequestDecisionMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdateExperimentsRequestDecisionMode) Ptr() *UpdateExperimentsRequestDecisionMode {
+	return &u
+}
+
 var (
 	updateExperimentsRequestVariantsItemFieldName            = big.NewInt(1 << 0)
 	updateExperimentsRequestVariantsItemFieldRelatedResource = big.NewInt(1 << 1)
@@ -3664,9 +3761,10 @@ var (
 	updateExperimentsRequestFieldID              = big.NewInt(1 << 0)
 	updateExperimentsRequestFieldAccountID       = big.NewInt(1 << 1)
 	updateExperimentsRequestFieldControl         = big.NewInt(1 << 2)
-	updateExperimentsRequestFieldHypothesis      = big.NewInt(1 << 3)
-	updateExperimentsRequestFieldRelatedResource = big.NewInt(1 << 4)
-	updateExperimentsRequestFieldVariants        = big.NewInt(1 << 5)
+	updateExperimentsRequestFieldDecisionMode    = big.NewInt(1 << 3)
+	updateExperimentsRequestFieldHypothesis      = big.NewInt(1 << 4)
+	updateExperimentsRequestFieldRelatedResource = big.NewInt(1 << 5)
+	updateExperimentsRequestFieldVariants        = big.NewInt(1 << 6)
 )
 
 type UpdateExperimentsRequest struct {
@@ -3675,6 +3773,8 @@ type UpdateExperimentsRequest struct {
 	// Owning account ID. Required when `id` is a flag key, optional for an `expt_` ID.
 	AccountID *string                          `json:"-" url:"account_id,omitempty"`
 	Control   *UpdateExperimentsRequestControl `json:"control,omitempty" url:"-"`
+	// How the experiment is decided. `autopilot` ends it as soon as a result is outside the margin of error, shipping the arm that won or keeping control if it lost. If its window passes with no clear result, `autopilot` keeps control. `require_approval` leaves every arm serving for the owner to end. Send `null` to leave it to the owner. Not accepted on feature flags. Omit to leave unchanged.
+	DecisionMode *UpdateExperimentsRequestDecisionMode `json:"decision_mode,omitempty" url:"-"`
 	// Omit to leave unchanged. Send an empty string to clear it. Not accepted on feature flags. When setting it, structure it as "If we [change] for [cohort], then [measurable behavior] will [increase/decrease], resulting in [business outcome], because [evidence]. Created by [name]." same as on create.
 	Hypothesis *string `json:"hypothesis,omitempty" url:"-"`
 	// Resource owned by the account that this experiment is bound to, such as an app or product. `null` when unbound. Fixed once the experiment first activates.
@@ -3714,6 +3814,13 @@ func (u *UpdateExperimentsRequest) SetAccountID(accountID *string) {
 func (u *UpdateExperimentsRequest) SetControl(control *UpdateExperimentsRequestControl) {
 	u.Control = control
 	u.require(updateExperimentsRequestFieldControl)
+}
+
+// SetDecisionMode sets the DecisionMode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateExperimentsRequest) SetDecisionMode(decisionMode *UpdateExperimentsRequestDecisionMode) {
+	u.DecisionMode = decisionMode
+	u.require(updateExperimentsRequestFieldDecisionMode)
 }
 
 // SetHypothesis sets the Hypothesis field and marks it as non-optional;

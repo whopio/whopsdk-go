@@ -20256,6 +20256,14 @@ client.Experiments.Create(
 <dl>
 <dd>
 
+**decisionMode:** `*whopsdk.CreateExperimentsRequestDecisionMode` — How the experiment is decided. `autopilot` ends it as soon as a result is outside the margin of error, shipping the arm that won or keeping control if it lost. If its window passes with no clear result, `autopilot` keeps control. `require_approval` leaves every arm serving for the owner to end. Omit to leave it to the owner. Not accepted on feature flags.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **flagKey:** `string` — Developer-chosen handle referenced from code, used in evaluation and results calls. Interchangeable with the returned `expt_` id anywhere the API takes an experiment identifier.
     
 </dd>
@@ -20555,6 +20563,14 @@ client.Experiments.Update(
 <dd>
 
 **control:** `*whopsdk.UpdateExperimentsRequestControl` 
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**decisionMode:** `*whopsdk.UpdateExperimentsRequestDecisionMode` — How the experiment is decided. `autopilot` ends it as soon as a result is outside the margin of error, shipping the arm that won or keeping control if it lost. If its window passes with no clear result, `autopilot` keeps control. `require_approval` leaves every arm serving for the owner to end. Send `null` to leave it to the owner. Not accepted on feature flags. Omit to leave unchanged.
     
 </dd>
 </dl>
