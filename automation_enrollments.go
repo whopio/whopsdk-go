@@ -566,19 +566,20 @@ func (a AutomationEnrollmentStatus) Ptr() *AutomationEnrollmentStatus {
 type AutomationEnrollmentTriggerEvent string
 
 const (
-	AutomationEnrollmentTriggerEventPaymentSucceeded                 AutomationEnrollmentTriggerEvent = "payment.succeeded"
-	AutomationEnrollmentTriggerEventPaymentFailed                    AutomationEnrollmentTriggerEvent = "payment.failed"
-	AutomationEnrollmentTriggerEventMembershipActivated              AutomationEnrollmentTriggerEvent = "membership.activated"
-	AutomationEnrollmentTriggerEventMembershipTrialEndingSoon        AutomationEnrollmentTriggerEvent = "membership.trial_ending_soon"
-	AutomationEnrollmentTriggerEventMemberCreated                    AutomationEnrollmentTriggerEvent = "member.created"
-	AutomationEnrollmentTriggerEventInvoiceCreated                   AutomationEnrollmentTriggerEvent = "invoice.created"
-	AutomationEnrollmentTriggerEventInvoicePaid                      AutomationEnrollmentTriggerEvent = "invoice.paid"
-	AutomationEnrollmentTriggerEventInvoicePastDue                   AutomationEnrollmentTriggerEvent = "invoice.past_due"
-	AutomationEnrollmentTriggerEventRefundCreated                    AutomationEnrollmentTriggerEvent = "refund.created"
-	AutomationEnrollmentTriggerEventDisputeCreated                   AutomationEnrollmentTriggerEvent = "dispute.created"
-	AutomationEnrollmentTriggerEventResolutionCenterCaseCreated      AutomationEnrollmentTriggerEvent = "resolution_center_case.created"
-	AutomationEnrollmentTriggerEventResolutionCenterCaseDecided      AutomationEnrollmentTriggerEvent = "resolution_center_case.decided"
-	AutomationEnrollmentTriggerEventCourseLessonInteractionCompleted AutomationEnrollmentTriggerEvent = "course_lesson_interaction.completed"
+	AutomationEnrollmentTriggerEventPaymentSucceeded                   AutomationEnrollmentTriggerEvent = "payment.succeeded"
+	AutomationEnrollmentTriggerEventPaymentFailed                      AutomationEnrollmentTriggerEvent = "payment.failed"
+	AutomationEnrollmentTriggerEventMembershipActivated                AutomationEnrollmentTriggerEvent = "membership.activated"
+	AutomationEnrollmentTriggerEventMembershipTrialEndingSoon          AutomationEnrollmentTriggerEvent = "membership.trial_ending_soon"
+	AutomationEnrollmentTriggerEventMembershipCancelAtPeriodEndChanged AutomationEnrollmentTriggerEvent = "membership.cancel_at_period_end_changed"
+	AutomationEnrollmentTriggerEventMemberCreated                      AutomationEnrollmentTriggerEvent = "member.created"
+	AutomationEnrollmentTriggerEventInvoiceCreated                     AutomationEnrollmentTriggerEvent = "invoice.created"
+	AutomationEnrollmentTriggerEventInvoicePaid                        AutomationEnrollmentTriggerEvent = "invoice.paid"
+	AutomationEnrollmentTriggerEventInvoicePastDue                     AutomationEnrollmentTriggerEvent = "invoice.past_due"
+	AutomationEnrollmentTriggerEventRefundCreated                      AutomationEnrollmentTriggerEvent = "refund.created"
+	AutomationEnrollmentTriggerEventDisputeCreated                     AutomationEnrollmentTriggerEvent = "dispute.created"
+	AutomationEnrollmentTriggerEventResolutionCenterCaseCreated        AutomationEnrollmentTriggerEvent = "resolution_center_case.created"
+	AutomationEnrollmentTriggerEventResolutionCenterCaseDecided        AutomationEnrollmentTriggerEvent = "resolution_center_case.decided"
+	AutomationEnrollmentTriggerEventCourseLessonInteractionCompleted   AutomationEnrollmentTriggerEvent = "course_lesson_interaction.completed"
 )
 
 func NewAutomationEnrollmentTriggerEventFromString(s string) (AutomationEnrollmentTriggerEvent, error) {
@@ -591,6 +592,8 @@ func NewAutomationEnrollmentTriggerEventFromString(s string) (AutomationEnrollme
 		return AutomationEnrollmentTriggerEventMembershipActivated, nil
 	case "membership.trial_ending_soon":
 		return AutomationEnrollmentTriggerEventMembershipTrialEndingSoon, nil
+	case "membership.cancel_at_period_end_changed":
+		return AutomationEnrollmentTriggerEventMembershipCancelAtPeriodEndChanged, nil
 	case "member.created":
 		return AutomationEnrollmentTriggerEventMemberCreated, nil
 	case "invoice.created":

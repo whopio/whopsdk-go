@@ -2278,6 +2278,13 @@ func TestEnumAutomationEnrollmentTriggerEvent(t *testing.T) {
 		assert.Equal(t, AutomationEnrollmentTriggerEvent("membership.trial_ending_soon"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_membership_cancel_at_period_end_changed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAutomationEnrollmentTriggerEventFromString("membership.cancel_at_period_end_changed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AutomationEnrollmentTriggerEvent("membership.cancel_at_period_end_changed"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_member_created", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewAutomationEnrollmentTriggerEventFromString("member.created")

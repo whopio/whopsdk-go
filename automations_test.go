@@ -2989,6 +2989,13 @@ func TestEnumAutomationTriggerEvent(t *testing.T) {
 		assert.Equal(t, AutomationTriggerEvent("membership.trial_ending_soon"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_membership_cancel_at_period_end_changed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAutomationTriggerEventFromString("membership.cancel_at_period_end_changed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AutomationTriggerEvent("membership.cancel_at_period_end_changed"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_member_created", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewAutomationTriggerEventFromString("member.created")
@@ -3093,6 +3100,13 @@ func TestEnumCreateAutomationsRequestTriggerEvent(t *testing.T) {
 		val, err := NewCreateAutomationsRequestTriggerEventFromString("membership.trial_ending_soon")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, CreateAutomationsRequestTriggerEvent("membership.trial_ending_soon"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_membership_cancel_at_period_end_changed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateAutomationsRequestTriggerEventFromString("membership.cancel_at_period_end_changed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateAutomationsRequestTriggerEvent("membership.cancel_at_period_end_changed"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_member_created", func(t *testing.T) {
@@ -3288,6 +3302,13 @@ func TestEnumListAutomationsRequestTriggerEvent(t *testing.T) {
 		assert.Equal(t, ListAutomationsRequestTriggerEvent("membership.trial_ending_soon"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_membership_cancel_at_period_end_changed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListAutomationsRequestTriggerEventFromString("membership.cancel_at_period_end_changed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListAutomationsRequestTriggerEvent("membership.cancel_at_period_end_changed"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_member_created", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListAutomationsRequestTriggerEventFromString("member.created")
@@ -3428,6 +3449,13 @@ func TestEnumUpdateAutomationsRequestTriggerEvent(t *testing.T) {
 		val, err := NewUpdateAutomationsRequestTriggerEventFromString("membership.trial_ending_soon")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, UpdateAutomationsRequestTriggerEvent("membership.trial_ending_soon"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_membership_cancel_at_period_end_changed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdateAutomationsRequestTriggerEventFromString("membership.cancel_at_period_end_changed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdateAutomationsRequestTriggerEvent("membership.cancel_at_period_end_changed"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_member_created", func(t *testing.T) {
