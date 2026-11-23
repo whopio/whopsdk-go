@@ -814,6 +814,14 @@ func TestSettersMarkExplicitRefreshExternalAccountsRequest(t *testing.T) {
 }
 
 func TestSettersExternalAccount(t *testing.T) {
+	t.Run("SetConnectionStatus", func(t *testing.T) {
+		obj := &ExternalAccount{}
+		var fernTestValueConnectionStatus *ExternalAccountConnectionStatus
+		obj.SetConnectionStatus(fernTestValueConnectionStatus)
+		assert.Equal(t, fernTestValueConnectionStatus, obj.ConnectionStatus)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetExternalID", func(t *testing.T) {
 		obj := &ExternalAccount{}
 		var fernTestValueExternalID *string
@@ -905,6 +913,39 @@ func TestSettersExternalAccount(t *testing.T) {
 }
 
 func TestGettersExternalAccount(t *testing.T) {
+	t.Run("GetConnectionStatus", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var expected *ExternalAccountConnectionStatus
+		obj.ConnectionStatus = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetConnectionStatus(), "getter should return the property value")
+	})
+
+	t.Run("GetConnectionStatus_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		obj.ConnectionStatus = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetConnectionStatus(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetConnectionStatus_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ExternalAccount
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetConnectionStatus() // Should return zero value
+	})
+
 	t.Run("GetExternalID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -1241,6 +1282,37 @@ func TestGettersExternalAccount(t *testing.T) {
 }
 
 func TestSettersMarkExplicitExternalAccount(t *testing.T) {
+	t.Run("SetConnectionStatus_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ExternalAccount{}
+		var fernTestValueConnectionStatus *ExternalAccountConnectionStatus
+
+		// Act
+		obj.SetConnectionStatus(fernTestValueConnectionStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetExternalID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3059,6 +3131,7 @@ func TestJSONMarshalingListExternalAccountsResponsePageInfo(t *testing.T) {
 
 func TestRequiredNullableRoundTripExternalAccount(t *testing.T) {
 	requiredNullableKeys := []string{
+		"connection_status",
 		"external_id",
 		"name",
 		"parent_external_account",
@@ -3078,7 +3151,7 @@ func TestRequiredNullableRoundTripExternalAccount(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ExternalAccount
-		require.NoError(t, json.Unmarshal([]byte(`{"external_id":null,"name":null,"parent_external_account":null,"partnership_status":null,"profile_picture_url":null,"url":null,"username":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"connection_status":null,"external_id":null,"name":null,"parent_external_account":null,"partnership_status":null,"profile_picture_url":null,"url":null,"username":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -3328,6 +3401,13 @@ func TestEnumConnectExternalAccountsRequestPlatform(t *testing.T) {
 		assert.Equal(t, ConnectExternalAccountsRequestPlatform("quickbooks"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_stripe", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewConnectExternalAccountsRequestPlatformFromString("stripe")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ConnectExternalAccountsRequestPlatform("stripe"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewConnectExternalAccountsRequestPlatformFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -3335,6 +3415,35 @@ func TestEnumConnectExternalAccountsRequestPlatform(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewConnectExternalAccountsRequestPlatformFromString("tiktok")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumExternalAccountConnectionStatus(t *testing.T) {
+	t.Run("NewFromString_active", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountConnectionStatusFromString("active")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountConnectionStatus("active"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_reconnect_required", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountConnectionStatusFromString("reconnect_required")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountConnectionStatus("reconnect_required"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewExternalAccountConnectionStatusFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewExternalAccountConnectionStatusFromString("active")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -3411,6 +3520,13 @@ func TestEnumExternalAccountParentPlatform(t *testing.T) {
 		val, err := NewExternalAccountParentPlatformFromString("aimerce")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ExternalAccountParentPlatform("aimerce"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_stripe", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountParentPlatformFromString("stripe")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountParentPlatform("stripe"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -3496,6 +3612,13 @@ func TestEnumExternalAccountPlatform(t *testing.T) {
 		val, err := NewExternalAccountPlatformFromString("aimerce")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ExternalAccountPlatform("aimerce"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_stripe", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewExternalAccountPlatformFromString("stripe")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ExternalAccountPlatform("stripe"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -3653,6 +3776,13 @@ func TestEnumListExternalAccountsRequestPlatform(t *testing.T) {
 		val, err := NewListExternalAccountsRequestPlatformFromString("aimerce")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListExternalAccountsRequestPlatform("aimerce"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_stripe", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListExternalAccountsRequestPlatformFromString("stripe")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListExternalAccountsRequestPlatform("stripe"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

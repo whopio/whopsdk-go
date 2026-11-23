@@ -18,7 +18,7 @@ var (
 type ConnectSocialAccountsRequest struct {
 	// The Account (biz_ identifier) to connect the external account for. An account-scoped API key may omit this to default to its own account. Omit for user profile connections.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
-	// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, and the user picks the company in QuickBooks.
+	// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, and the user picks the company in QuickBooks. Use `stripe` to let Whop read the past payments of the account’s Stripe account: pass `account_id`, and the user installs Whop’s app in Stripe. It requires the `payout:account:update` scope instead of `social_account:create`.
 	Platform ConnectSocialAccountsRequestPlatform `json:"platform" url:"-"`
 	// Where to send the user once they finish connecting their accounts. Must be an `https` URL on whop.com; any other host is rejected. On success, the user is redirected with an `external_account_connected` query param naming the platform; if the connection fails, with an `external_account_error` query param instead. The same values also arrive as `social_account_connected` / `social_account_error`.
 	RedirectURL string `json:"redirect_url" url:"-"`
@@ -144,7 +144,7 @@ type ListSocialAccountsRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// The User that the external accounts are connected to. Provide either this or account_id.
 	UserID *string `json:"-" url:"user_id,omitempty"`
-	// Only return external accounts for the platform that is specified. An `aimerce` account is returned only with this filter, which requires the `company:manage_checkout` scope instead of `social_account:read`.
+	// Only return external accounts for the platform that is specified. An `aimerce` account is returned only with this filter, which requires the `company:manage_checkout` scope instead of `social_account:read`. A `stripe` account is also returned only with this filter, which requires the `payout:account:update` scope.
 	Platform *ListSocialAccountsRequestPlatform `json:"-" url:"platform,omitempty"`
 	// Only return external accounts linked with this trust level, such as `oauth` for accounts connected through OAuth.
 	TrustLevel *ListSocialAccountsRequestTrustLevel `json:"-" url:"trust_level,omitempty"`
@@ -815,6 +815,7 @@ const (
 	SocialAccountParentPlatformKlaviyo    SocialAccountParentPlatform = "klaviyo"
 	SocialAccountParentPlatformQuickbooks SocialAccountParentPlatform = "quickbooks"
 	SocialAccountParentPlatformAimerce    SocialAccountParentPlatform = "aimerce"
+	SocialAccountParentPlatformStripe     SocialAccountParentPlatform = "stripe"
 )
 
 func NewSocialAccountParentPlatformFromString(s string) (SocialAccountParentPlatform, error) {
@@ -843,6 +844,8 @@ func NewSocialAccountParentPlatformFromString(s string) (SocialAccountParentPlat
 		return SocialAccountParentPlatformQuickbooks, nil
 	case "aimerce":
 		return SocialAccountParentPlatformAimerce, nil
+	case "stripe":
+		return SocialAccountParentPlatformStripe, nil
 	}
 	var t SocialAccountParentPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -868,6 +871,7 @@ const (
 	SocialAccountPlatformKlaviyo    SocialAccountPlatform = "klaviyo"
 	SocialAccountPlatformQuickbooks SocialAccountPlatform = "quickbooks"
 	SocialAccountPlatformAimerce    SocialAccountPlatform = "aimerce"
+	SocialAccountPlatformStripe     SocialAccountPlatform = "stripe"
 )
 
 func NewSocialAccountPlatformFromString(s string) (SocialAccountPlatform, error) {
@@ -896,6 +900,8 @@ func NewSocialAccountPlatformFromString(s string) (SocialAccountPlatform, error)
 		return SocialAccountPlatformQuickbooks, nil
 	case "aimerce":
 		return SocialAccountPlatformAimerce, nil
+	case "stripe":
+		return SocialAccountPlatformStripe, nil
 	}
 	var t SocialAccountPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -905,7 +911,7 @@ func (s SocialAccountPlatform) Ptr() *SocialAccountPlatform {
 	return &s
 }
 
-// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, and the user picks the company in QuickBooks.
+// The platform to connect the external account on. Use `tiktok` to connect the authenticated user’s TikTok profile, `linkedin` for their LinkedIn profile, `youtube` for their YouTube channel, or `x` for their X profile. Use `quickbooks` to connect the account’s QuickBooks Online company: pass `account_id`, and the user picks the company in QuickBooks. Use `stripe` to let Whop read the past payments of the account’s Stripe account: pass `account_id`, and the user installs Whop’s app in Stripe. It requires the `payout:account:update` scope instead of `social_account:create`.
 type ConnectSocialAccountsRequestPlatform string
 
 const (
@@ -914,6 +920,7 @@ const (
 	ConnectSocialAccountsRequestPlatformYoutube    ConnectSocialAccountsRequestPlatform = "youtube"
 	ConnectSocialAccountsRequestPlatformX          ConnectSocialAccountsRequestPlatform = "x"
 	ConnectSocialAccountsRequestPlatformQuickbooks ConnectSocialAccountsRequestPlatform = "quickbooks"
+	ConnectSocialAccountsRequestPlatformStripe     ConnectSocialAccountsRequestPlatform = "stripe"
 )
 
 func NewConnectSocialAccountsRequestPlatformFromString(s string) (ConnectSocialAccountsRequestPlatform, error) {
@@ -928,6 +935,8 @@ func NewConnectSocialAccountsRequestPlatformFromString(s string) (ConnectSocialA
 		return ConnectSocialAccountsRequestPlatformX, nil
 	case "quickbooks":
 		return ConnectSocialAccountsRequestPlatformQuickbooks, nil
+	case "stripe":
+		return ConnectSocialAccountsRequestPlatformStripe, nil
 	}
 	var t ConnectSocialAccountsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -1358,6 +1367,7 @@ const (
 	ListSocialAccountsRequestPlatformKlaviyo    ListSocialAccountsRequestPlatform = "klaviyo"
 	ListSocialAccountsRequestPlatformQuickbooks ListSocialAccountsRequestPlatform = "quickbooks"
 	ListSocialAccountsRequestPlatformAimerce    ListSocialAccountsRequestPlatform = "aimerce"
+	ListSocialAccountsRequestPlatformStripe     ListSocialAccountsRequestPlatform = "stripe"
 )
 
 func NewListSocialAccountsRequestPlatformFromString(s string) (ListSocialAccountsRequestPlatform, error) {
@@ -1386,6 +1396,8 @@ func NewListSocialAccountsRequestPlatformFromString(s string) (ListSocialAccount
 		return ListSocialAccountsRequestPlatformQuickbooks, nil
 	case "aimerce":
 		return ListSocialAccountsRequestPlatformAimerce, nil
+	case "stripe":
+		return ListSocialAccountsRequestPlatformStripe, nil
 	}
 	var t ListSocialAccountsRequestPlatform
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
