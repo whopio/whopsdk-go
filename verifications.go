@@ -63,6 +63,65 @@ func (c *CreateVerificationsRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
+	generateDocumentURLVerificationsRequestFieldID       = big.NewInt(1 << 0)
+	generateDocumentURLVerificationsRequestFieldDocument = big.NewInt(1 << 1)
+)
+
+type GenerateDocumentURLVerificationsRequest struct {
+	// Verification profile ID, prefixed `idpf_`.
+	ID string `json:"-" url:"-"`
+	// Image to download. Use the side of the document type on the verification, or `selfie`.
+	Document GenerateDocumentURLVerificationsRequestDocument `json:"document" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (g *GenerateDocumentURLVerificationsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if g.explicitFields != nil {
+		next.Set(g.explicitFields)
+	}
+	next.Or(next, field)
+	g.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateDocumentURLVerificationsRequest) SetID(id string) {
+	g.ID = id
+	g.require(generateDocumentURLVerificationsRequestFieldID)
+}
+
+// SetDocument sets the Document field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateDocumentURLVerificationsRequest) SetDocument(document GenerateDocumentURLVerificationsRequestDocument) {
+	g.Document = document
+	g.require(generateDocumentURLVerificationsRequestFieldDocument)
+}
+
+func (g *GenerateDocumentURLVerificationsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler GenerateDocumentURLVerificationsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*g = GenerateDocumentURLVerificationsRequest(body)
+	return nil
+}
+
+func (g *GenerateDocumentURLVerificationsRequest) MarshalJSON() ([]byte, error) {
+	type embed GenerateDocumentURLVerificationsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	listVerificationsRequestFieldAccountID          = big.NewInt(1 << 0)
 	listVerificationsRequestFieldUserID             = big.NewInt(1 << 1)
 	listVerificationsRequestFieldIncludeSubaccounts = big.NewInt(1 << 2)
@@ -4778,6 +4837,209 @@ func NewCreateVerificationsResponseStatusFromString(s string) (CreateVerificatio
 
 func (c CreateVerificationsResponseStatus) Ptr() *CreateVerificationsResponseStatus {
 	return &c
+}
+
+// Image to download. Use the side of the document type on the verification, or `selfie`.
+type GenerateDocumentURLVerificationsRequestDocument string
+
+const (
+	GenerateDocumentURLVerificationsRequestDocumentIDCardFront          GenerateDocumentURLVerificationsRequestDocument = "id_card_front"
+	GenerateDocumentURLVerificationsRequestDocumentIDCardBack           GenerateDocumentURLVerificationsRequestDocument = "id_card_back"
+	GenerateDocumentURLVerificationsRequestDocumentDriversFront         GenerateDocumentURLVerificationsRequestDocument = "drivers_front"
+	GenerateDocumentURLVerificationsRequestDocumentDriversBack          GenerateDocumentURLVerificationsRequestDocument = "drivers_back"
+	GenerateDocumentURLVerificationsRequestDocumentResidencePermitFront GenerateDocumentURLVerificationsRequestDocument = "residence_permit_front"
+	GenerateDocumentURLVerificationsRequestDocumentResidencePermitBack  GenerateDocumentURLVerificationsRequestDocument = "residence_permit_back"
+	GenerateDocumentURLVerificationsRequestDocumentPassportFront        GenerateDocumentURLVerificationsRequestDocument = "passport_front"
+	GenerateDocumentURLVerificationsRequestDocumentSelfie               GenerateDocumentURLVerificationsRequestDocument = "selfie"
+)
+
+func NewGenerateDocumentURLVerificationsRequestDocumentFromString(s string) (GenerateDocumentURLVerificationsRequestDocument, error) {
+	switch s {
+	case "id_card_front":
+		return GenerateDocumentURLVerificationsRequestDocumentIDCardFront, nil
+	case "id_card_back":
+		return GenerateDocumentURLVerificationsRequestDocumentIDCardBack, nil
+	case "drivers_front":
+		return GenerateDocumentURLVerificationsRequestDocumentDriversFront, nil
+	case "drivers_back":
+		return GenerateDocumentURLVerificationsRequestDocumentDriversBack, nil
+	case "residence_permit_front":
+		return GenerateDocumentURLVerificationsRequestDocumentResidencePermitFront, nil
+	case "residence_permit_back":
+		return GenerateDocumentURLVerificationsRequestDocumentResidencePermitBack, nil
+	case "passport_front":
+		return GenerateDocumentURLVerificationsRequestDocumentPassportFront, nil
+	case "selfie":
+		return GenerateDocumentURLVerificationsRequestDocumentSelfie, nil
+	}
+	var t GenerateDocumentURLVerificationsRequestDocument
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GenerateDocumentURLVerificationsRequestDocument) Ptr() *GenerateDocumentURLVerificationsRequestDocument {
+	return &g
+}
+
+var (
+	generateDocumentURLVerificationsResponseFieldDocument  = big.NewInt(1 << 0)
+	generateDocumentURLVerificationsResponseFieldExpiresAt = big.NewInt(1 << 1)
+	generateDocumentURLVerificationsResponseFieldURL       = big.NewInt(1 << 2)
+)
+
+type GenerateDocumentURLVerificationsResponse struct {
+	// Image that the link downloads.
+	Document GenerateDocumentURLVerificationsResponseDocument `json:"document" url:"document"`
+	// When the link stops working, as an ISO 8601 timestamp. Generate a new link after that.
+	ExpiresAt string `json:"expires_at" url:"expires_at"`
+	// A short-lived link to download the image. Anyone holding the link can download the image until it expires.
+	URL string `json:"url" url:"url"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (g *GenerateDocumentURLVerificationsResponse) GetDocument() GenerateDocumentURLVerificationsResponseDocument {
+	if g == nil {
+		return ""
+	}
+	return g.Document
+}
+
+func (g *GenerateDocumentURLVerificationsResponse) GetExpiresAt() string {
+	if g == nil {
+		return ""
+	}
+	return g.ExpiresAt
+}
+
+func (g *GenerateDocumentURLVerificationsResponse) GetURL() string {
+	if g == nil {
+		return ""
+	}
+	return g.URL
+}
+
+func (g *GenerateDocumentURLVerificationsResponse) GetExtraProperties() map[string]interface{} {
+	if g == nil {
+		return nil
+	}
+	return g.extraProperties
+}
+
+func (g *GenerateDocumentURLVerificationsResponse) require(field *big.Int) {
+	next := new(big.Int)
+	if g.explicitFields != nil {
+		next.Set(g.explicitFields)
+	}
+	next.Or(next, field)
+	g.explicitFields = next
+}
+
+// SetDocument sets the Document field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateDocumentURLVerificationsResponse) SetDocument(document GenerateDocumentURLVerificationsResponseDocument) {
+	g.Document = document
+	g.require(generateDocumentURLVerificationsResponseFieldDocument)
+}
+
+// SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateDocumentURLVerificationsResponse) SetExpiresAt(expiresAt string) {
+	g.ExpiresAt = expiresAt
+	g.require(generateDocumentURLVerificationsResponseFieldExpiresAt)
+}
+
+// SetURL sets the URL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (g *GenerateDocumentURLVerificationsResponse) SetURL(url string) {
+	g.URL = url
+	g.require(generateDocumentURLVerificationsResponseFieldURL)
+}
+
+func (g *GenerateDocumentURLVerificationsResponse) UnmarshalJSON(data []byte) error {
+	type unmarshaler GenerateDocumentURLVerificationsResponse
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*g = GenerateDocumentURLVerificationsResponse(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *g)
+	if err != nil {
+		return err
+	}
+	g.extraProperties = extraProperties
+	g.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (g *GenerateDocumentURLVerificationsResponse) MarshalJSON() ([]byte, error) {
+	type embed GenerateDocumentURLVerificationsResponse
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*g),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, g.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (g *GenerateDocumentURLVerificationsResponse) String() string {
+	if g == nil {
+		return "<nil>"
+	}
+	if len(g.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(g.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(g); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", g)
+}
+
+// Image that the link downloads.
+type GenerateDocumentURLVerificationsResponseDocument string
+
+const (
+	GenerateDocumentURLVerificationsResponseDocumentIDCardFront          GenerateDocumentURLVerificationsResponseDocument = "id_card_front"
+	GenerateDocumentURLVerificationsResponseDocumentIDCardBack           GenerateDocumentURLVerificationsResponseDocument = "id_card_back"
+	GenerateDocumentURLVerificationsResponseDocumentDriversFront         GenerateDocumentURLVerificationsResponseDocument = "drivers_front"
+	GenerateDocumentURLVerificationsResponseDocumentDriversBack          GenerateDocumentURLVerificationsResponseDocument = "drivers_back"
+	GenerateDocumentURLVerificationsResponseDocumentResidencePermitFront GenerateDocumentURLVerificationsResponseDocument = "residence_permit_front"
+	GenerateDocumentURLVerificationsResponseDocumentResidencePermitBack  GenerateDocumentURLVerificationsResponseDocument = "residence_permit_back"
+	GenerateDocumentURLVerificationsResponseDocumentPassportFront        GenerateDocumentURLVerificationsResponseDocument = "passport_front"
+	GenerateDocumentURLVerificationsResponseDocumentSelfie               GenerateDocumentURLVerificationsResponseDocument = "selfie"
+)
+
+func NewGenerateDocumentURLVerificationsResponseDocumentFromString(s string) (GenerateDocumentURLVerificationsResponseDocument, error) {
+	switch s {
+	case "id_card_front":
+		return GenerateDocumentURLVerificationsResponseDocumentIDCardFront, nil
+	case "id_card_back":
+		return GenerateDocumentURLVerificationsResponseDocumentIDCardBack, nil
+	case "drivers_front":
+		return GenerateDocumentURLVerificationsResponseDocumentDriversFront, nil
+	case "drivers_back":
+		return GenerateDocumentURLVerificationsResponseDocumentDriversBack, nil
+	case "residence_permit_front":
+		return GenerateDocumentURLVerificationsResponseDocumentResidencePermitFront, nil
+	case "residence_permit_back":
+		return GenerateDocumentURLVerificationsResponseDocumentResidencePermitBack, nil
+	case "passport_front":
+		return GenerateDocumentURLVerificationsResponseDocumentPassportFront, nil
+	case "selfie":
+		return GenerateDocumentURLVerificationsResponseDocumentSelfie, nil
+	}
+	var t GenerateDocumentURLVerificationsResponseDocument
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (g GenerateDocumentURLVerificationsResponseDocument) Ptr() *GenerateDocumentURLVerificationsResponseDocument {
+	return &g
 }
 
 type ListVerificationsRequestDirection string

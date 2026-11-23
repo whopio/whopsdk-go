@@ -16658,6 +16658,42 @@
       }
     },
     {
+      "id": "29b9fed3-9b90-4329-ab78-da2e9040dab9",
+      "name": "Generate Verification Document URL - default",
+      "request": {
+        "urlPathTemplate": "/verifications/{id}/generate_document_url",
+        "method": "POST",
+        "headers": {
+          "Authorization": {
+            "matches": "Bearer .+"
+          }
+        },
+        "pathParameters": {
+          "id": {
+            "equalTo": "id"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"document\": \"id_card_front\",\n  \"expires_at\": \"2026-06-01T12:01:00.000Z\",\n  \"url\": \"https://content.whop.com/document\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      },
+      "uuid": "29b9fed3-9b90-4329-ab78-da2e9040dab9",
+      "persistent": true,
+      "priority": 3,
+      "metadata": {
+        "mocklab": {
+          "created": {
+            "at": "2020-01-01T00:00:00.000Z",
+            "via": "SYSTEM"
+          }
+        }
+      }
+    },
+    {
       "id": "5a9966d1-9453-42fd-9884-6fa513aeaa67",
       "name": "List Waitlist Entries - default",
       "request": {
@@ -19236,6 +19272,6 @@
     }
   ],
   "meta": {
-    "total": 537
+    "total": 538
   }
 }

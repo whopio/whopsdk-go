@@ -94,6 +94,90 @@ func TestSettersMarkExplicitCreateVerificationsRequest(t *testing.T) {
 
 }
 
+func TestSettersGenerateDocumentURLVerificationsRequest(t *testing.T) {
+	t.Run("SetID", func(t *testing.T) {
+		obj := &GenerateDocumentURLVerificationsRequest{}
+		var fernTestValueID string
+		obj.SetID(fernTestValueID)
+		assert.Equal(t, fernTestValueID, obj.ID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetDocument", func(t *testing.T) {
+		obj := &GenerateDocumentURLVerificationsRequest{}
+		var fernTestValueDocument GenerateDocumentURLVerificationsRequestDocument
+		obj.SetDocument(fernTestValueDocument)
+		assert.Equal(t, fernTestValueDocument, obj.Document)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestSettersMarkExplicitGenerateDocumentURLVerificationsRequest(t *testing.T) {
+	t.Run("SetID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GenerateDocumentURLVerificationsRequest{}
+		var fernTestValueID string
+
+		// Act
+		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetDocument_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GenerateDocumentURLVerificationsRequest{}
+		var fernTestValueDocument GenerateDocumentURLVerificationsRequestDocument
+
+		// Act
+		obj.SetDocument(fernTestValueDocument)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersListVerificationsRequest(t *testing.T) {
 	t.Run("SetAccountID", func(t *testing.T) {
 		obj := &ListVerificationsRequest{}
@@ -11569,6 +11653,201 @@ func TestSettersMarkExplicitCreateVerificationsResponseSelfie(t *testing.T) {
 
 		// Act
 		obj.SetStatus(fernTestValueStatus)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersGenerateDocumentURLVerificationsResponse(t *testing.T) {
+	t.Run("SetDocument", func(t *testing.T) {
+		obj := &GenerateDocumentURLVerificationsResponse{}
+		var fernTestValueDocument GenerateDocumentURLVerificationsResponseDocument
+		obj.SetDocument(fernTestValueDocument)
+		assert.Equal(t, fernTestValueDocument, obj.Document)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetExpiresAt", func(t *testing.T) {
+		obj := &GenerateDocumentURLVerificationsResponse{}
+		var fernTestValueExpiresAt string
+		obj.SetExpiresAt(fernTestValueExpiresAt)
+		assert.Equal(t, fernTestValueExpiresAt, obj.ExpiresAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetURL", func(t *testing.T) {
+		obj := &GenerateDocumentURLVerificationsResponse{}
+		var fernTestValueURL string
+		obj.SetURL(fernTestValueURL)
+		assert.Equal(t, fernTestValueURL, obj.URL)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersGenerateDocumentURLVerificationsResponse(t *testing.T) {
+	t.Run("GetDocument", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GenerateDocumentURLVerificationsResponse{}
+		var expected GenerateDocumentURLVerificationsResponseDocument
+		obj.Document = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDocument(), "getter should return the property value")
+	})
+
+	t.Run("GetDocument_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GenerateDocumentURLVerificationsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDocument() // Should return zero value
+	})
+
+	t.Run("GetExpiresAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GenerateDocumentURLVerificationsResponse{}
+		var expected string
+		obj.ExpiresAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetExpiresAt(), "getter should return the property value")
+	})
+
+	t.Run("GetExpiresAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GenerateDocumentURLVerificationsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetExpiresAt() // Should return zero value
+	})
+
+	t.Run("GetURL", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GenerateDocumentURLVerificationsResponse{}
+		var expected string
+		obj.URL = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetURL(), "getter should return the property value")
+	})
+
+	t.Run("GetURL_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GenerateDocumentURLVerificationsResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetURL() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitGenerateDocumentURLVerificationsResponse(t *testing.T) {
+	t.Run("SetDocument_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GenerateDocumentURLVerificationsResponse{}
+		var fernTestValueDocument GenerateDocumentURLVerificationsResponseDocument
+
+		// Act
+		obj.SetDocument(fernTestValueDocument)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetExpiresAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GenerateDocumentURLVerificationsResponse{}
+		var fernTestValueExpiresAt string
+
+		// Act
+		obj.SetExpiresAt(fernTestValueExpiresAt)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetURL_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GenerateDocumentURLVerificationsResponse{}
+		var fernTestValueURL string
+
+		// Act
+		obj.SetURL(fernTestValueURL)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -37486,6 +37765,39 @@ func TestJSONMarshalingCreateVerificationsResponseSelfie(t *testing.T) {
 	})
 }
 
+func TestJSONMarshalingGenerateDocumentURLVerificationsResponse(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &GenerateDocumentURLVerificationsResponse{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled GenerateDocumentURLVerificationsResponse
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj GenerateDocumentURLVerificationsResponse
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj GenerateDocumentURLVerificationsResponse
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingListVerificationsResponse(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -41012,6 +41324,22 @@ func TestStringCreateVerificationsResponseSelfie(t *testing.T) {
 	})
 }
 
+func TestStringGenerateDocumentURLVerificationsResponse(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &GenerateDocumentURLVerificationsResponse{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GenerateDocumentURLVerificationsResponse
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringListVerificationsResponse(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -42394,6 +42722,148 @@ func TestEnumCreateVerificationsResponseStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewCreateVerificationsResponseStatusFromString("not_started")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumGenerateDocumentURLVerificationsRequestDocument(t *testing.T) {
+	t.Run("NewFromString_id_card_front", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("id_card_front")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GenerateDocumentURLVerificationsRequestDocument("id_card_front"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_id_card_back", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("id_card_back")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GenerateDocumentURLVerificationsRequestDocument("id_card_back"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_drivers_front", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("drivers_front")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GenerateDocumentURLVerificationsRequestDocument("drivers_front"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_drivers_back", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("drivers_back")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GenerateDocumentURLVerificationsRequestDocument("drivers_back"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_residence_permit_front", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("residence_permit_front")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GenerateDocumentURLVerificationsRequestDocument("residence_permit_front"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_residence_permit_back", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("residence_permit_back")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GenerateDocumentURLVerificationsRequestDocument("residence_permit_back"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_passport_front", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("passport_front")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GenerateDocumentURLVerificationsRequestDocument("passport_front"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_selfie", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("selfie")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GenerateDocumentURLVerificationsRequestDocument("selfie"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewGenerateDocumentURLVerificationsRequestDocumentFromString("id_card_front")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumGenerateDocumentURLVerificationsResponseDocument(t *testing.T) {
+	t.Run("NewFromString_id_card_front", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("id_card_front")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GenerateDocumentURLVerificationsResponseDocument("id_card_front"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_id_card_back", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("id_card_back")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GenerateDocumentURLVerificationsResponseDocument("id_card_back"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_drivers_front", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("drivers_front")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GenerateDocumentURLVerificationsResponseDocument("drivers_front"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_drivers_back", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("drivers_back")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GenerateDocumentURLVerificationsResponseDocument("drivers_back"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_residence_permit_front", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("residence_permit_front")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GenerateDocumentURLVerificationsResponseDocument("residence_permit_front"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_residence_permit_back", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("residence_permit_back")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GenerateDocumentURLVerificationsResponseDocument("residence_permit_back"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_passport_front", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("passport_front")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GenerateDocumentURLVerificationsResponseDocument("passport_front"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_selfie", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("selfie")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, GenerateDocumentURLVerificationsResponseDocument("selfie"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewGenerateDocumentURLVerificationsResponseDocumentFromString("id_card_front")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -44672,6 +45142,29 @@ func TestExtraPropertiesCreateVerificationsResponseSelfie(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *CreateVerificationsResponseSelfie
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesGenerateDocumentURLVerificationsResponse(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &GenerateDocumentURLVerificationsResponse{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *GenerateDocumentURLVerificationsResponse
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
