@@ -45370,7 +45370,13 @@ Lists the waitlist signups you can see. `waitlist_entry:read` returns your own s
 <dd>
 
 ```go
-request := &whopsdk.ListWaitlistEntriesRequest{}
+request := &whopsdk.ListWaitlistEntriesRequest{
+    ProductIDs: []*string{
+        whopsdk.String(
+            "prod_xxxxxxxxxxxxx",
+        ),
+    },
+}
 client.WaitlistEntries.List(
     context.TODO(),
     request,
@@ -45446,6 +45452,14 @@ client.WaitlistEntries.List(
 <dd>
 
 **productID:** `*string` — Only return signups for variants on this product, prefixed `prod_`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**productIDs:** `*string` — Only return signups for variants on any of these products, prefixed `prod_`. Unknown IDs match nothing.
     
 </dd>
 </dl>

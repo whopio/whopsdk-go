@@ -88,7 +88,13 @@ func TestWaitlistEntriesListWithWireMock(
 		option.WithBaseURL(WireMockBaseURL),
 		option.WithToken("test-token"),
 	)
-	request := &whopsdk.ListWaitlistEntriesRequest{}
+	request := &whopsdk.ListWaitlistEntriesRequest{
+		ProductIDs: []*string{
+			whopsdk.String(
+				"prod_xxxxxxxxxxxxx",
+			),
+		},
+	}
 	_, invocationErr := client.WaitlistEntries.List(
 		context.TODO(),
 		request,
@@ -98,7 +104,7 @@ func TestWaitlistEntriesListWithWireMock(
 	)
 
 	require.NoError(t, invocationErr, "Client method call should succeed")
-	VerifyRequestCount(t, "TestWaitlistEntriesListWithWireMock", "GET", "/waitlist_entries", nil, 1)
+	VerifyRequestCount(t, "TestWaitlistEntriesListWithWireMock", "GET", "/waitlist_entries", map[string]interface{}{"product_ids": "prod_xxxxxxxxxxxxx"}, 1)
 }
 
 func TestWaitlistEntriesCreateWithWireMock(

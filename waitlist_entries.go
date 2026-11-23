@@ -240,13 +240,14 @@ var (
 	listWaitlistEntriesRequestFieldVariantID         = big.NewInt(1 << 5)
 	listWaitlistEntriesRequestFieldAccountID         = big.NewInt(1 << 6)
 	listWaitlistEntriesRequestFieldProductID         = big.NewInt(1 << 7)
-	listWaitlistEntriesRequestFieldBuyerAccountID    = big.NewInt(1 << 8)
-	listWaitlistEntriesRequestFieldStatus            = big.NewInt(1 << 9)
-	listWaitlistEntriesRequestFieldQuery             = big.NewInt(1 << 10)
-	listWaitlistEntriesRequestFieldCreatedBefore     = big.NewInt(1 << 11)
-	listWaitlistEntriesRequestFieldCreatedAfter      = big.NewInt(1 << 12)
-	listWaitlistEntriesRequestFieldOrder             = big.NewInt(1 << 13)
-	listWaitlistEntriesRequestFieldDirection         = big.NewInt(1 << 14)
+	listWaitlistEntriesRequestFieldProductIDs        = big.NewInt(1 << 8)
+	listWaitlistEntriesRequestFieldBuyerAccountID    = big.NewInt(1 << 9)
+	listWaitlistEntriesRequestFieldStatus            = big.NewInt(1 << 10)
+	listWaitlistEntriesRequestFieldQuery             = big.NewInt(1 << 11)
+	listWaitlistEntriesRequestFieldCreatedBefore     = big.NewInt(1 << 12)
+	listWaitlistEntriesRequestFieldCreatedAfter      = big.NewInt(1 << 13)
+	listWaitlistEntriesRequestFieldOrder             = big.NewInt(1 << 14)
+	listWaitlistEntriesRequestFieldDirection         = big.NewInt(1 << 15)
 )
 
 type ListWaitlistEntriesRequest struct {
@@ -266,6 +267,8 @@ type ListWaitlistEntriesRequest struct {
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// Only return signups for variants on this product, prefixed `prod_`.
 	ProductID *string `json:"-" url:"product_id,omitempty"`
+	// Only return signups for variants on any of these products, prefixed `prod_`. Unknown IDs match nothing.
+	ProductIDs []*string `json:"-" url:"product_ids,omitempty"`
 	// List the signups submitted on behalf of this account, prefixed `biz_`, instead of your own and seller signups. Requires `waitlist_entry:read` on the account. The other filters still apply.
 	BuyerAccountID *string `json:"-" url:"buyer_account_id,omitempty"`
 	// Only return signups in this state. Canceled signups are returned only when `status` is `canceled`.
@@ -348,6 +351,13 @@ func (l *ListWaitlistEntriesRequest) SetAccountID(accountID *string) {
 func (l *ListWaitlistEntriesRequest) SetProductID(productID *string) {
 	l.ProductID = productID
 	l.require(listWaitlistEntriesRequestFieldProductID)
+}
+
+// SetProductIDs sets the ProductIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListWaitlistEntriesRequest) SetProductIDs(productIDs []*string) {
+	l.ProductIDs = productIDs
+	l.require(listWaitlistEntriesRequestFieldProductIDs)
 }
 
 // SetBuyerAccountID sets the BuyerAccountID field and marks it as non-optional;

@@ -43,7 +43,13 @@ func NewClient(options *core.RequestOptions) *Client {
 //
 // Example:
 //
-//	request := &whopsdk.ListWaitlistEntriesRequest{}
+//	request := &whopsdk.ListWaitlistEntriesRequest{
+//	    ProductIDs: []*string{
+//	        whopsdk.String(
+//	            "prod_xxxxxxxxxxxxx",
+//	        ),
+//	    },
+//	}
 //	client.WaitlistEntries.List(
 //	    context.TODO(),
 //	    request,
