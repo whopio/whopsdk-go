@@ -845,19 +845,20 @@ func (a AutomationStatus) Ptr() *AutomationStatus {
 type AutomationTriggerEvent string
 
 const (
-	AutomationTriggerEventPaymentSucceeded                 AutomationTriggerEvent = "payment.succeeded"
-	AutomationTriggerEventPaymentFailed                    AutomationTriggerEvent = "payment.failed"
-	AutomationTriggerEventMembershipActivated              AutomationTriggerEvent = "membership.activated"
-	AutomationTriggerEventMembershipTrialEndingSoon        AutomationTriggerEvent = "membership.trial_ending_soon"
-	AutomationTriggerEventMemberCreated                    AutomationTriggerEvent = "member.created"
-	AutomationTriggerEventInvoiceCreated                   AutomationTriggerEvent = "invoice.created"
-	AutomationTriggerEventInvoicePaid                      AutomationTriggerEvent = "invoice.paid"
-	AutomationTriggerEventInvoicePastDue                   AutomationTriggerEvent = "invoice.past_due"
-	AutomationTriggerEventRefundCreated                    AutomationTriggerEvent = "refund.created"
-	AutomationTriggerEventDisputeCreated                   AutomationTriggerEvent = "dispute.created"
-	AutomationTriggerEventResolutionCenterCaseCreated      AutomationTriggerEvent = "resolution_center_case.created"
-	AutomationTriggerEventResolutionCenterCaseDecided      AutomationTriggerEvent = "resolution_center_case.decided"
-	AutomationTriggerEventCourseLessonInteractionCompleted AutomationTriggerEvent = "course_lesson_interaction.completed"
+	AutomationTriggerEventPaymentSucceeded                   AutomationTriggerEvent = "payment.succeeded"
+	AutomationTriggerEventPaymentFailed                      AutomationTriggerEvent = "payment.failed"
+	AutomationTriggerEventMembershipActivated                AutomationTriggerEvent = "membership.activated"
+	AutomationTriggerEventMembershipTrialEndingSoon          AutomationTriggerEvent = "membership.trial_ending_soon"
+	AutomationTriggerEventMembershipCancelAtPeriodEndChanged AutomationTriggerEvent = "membership.cancel_at_period_end_changed"
+	AutomationTriggerEventMemberCreated                      AutomationTriggerEvent = "member.created"
+	AutomationTriggerEventInvoiceCreated                     AutomationTriggerEvent = "invoice.created"
+	AutomationTriggerEventInvoicePaid                        AutomationTriggerEvent = "invoice.paid"
+	AutomationTriggerEventInvoicePastDue                     AutomationTriggerEvent = "invoice.past_due"
+	AutomationTriggerEventRefundCreated                      AutomationTriggerEvent = "refund.created"
+	AutomationTriggerEventDisputeCreated                     AutomationTriggerEvent = "dispute.created"
+	AutomationTriggerEventResolutionCenterCaseCreated        AutomationTriggerEvent = "resolution_center_case.created"
+	AutomationTriggerEventResolutionCenterCaseDecided        AutomationTriggerEvent = "resolution_center_case.decided"
+	AutomationTriggerEventCourseLessonInteractionCompleted   AutomationTriggerEvent = "course_lesson_interaction.completed"
 )
 
 func NewAutomationTriggerEventFromString(s string) (AutomationTriggerEvent, error) {
@@ -870,6 +871,8 @@ func NewAutomationTriggerEventFromString(s string) (AutomationTriggerEvent, erro
 		return AutomationTriggerEventMembershipActivated, nil
 	case "membership.trial_ending_soon":
 		return AutomationTriggerEventMembershipTrialEndingSoon, nil
+	case "membership.cancel_at_period_end_changed":
+		return AutomationTriggerEventMembershipCancelAtPeriodEndChanged, nil
 	case "member.created":
 		return AutomationTriggerEventMemberCreated, nil
 	case "invoice.created":
@@ -901,19 +904,20 @@ func (a AutomationTriggerEvent) Ptr() *AutomationTriggerEvent {
 type CreateAutomationsRequestTriggerEvent string
 
 const (
-	CreateAutomationsRequestTriggerEventPaymentSucceeded                 CreateAutomationsRequestTriggerEvent = "payment.succeeded"
-	CreateAutomationsRequestTriggerEventPaymentFailed                    CreateAutomationsRequestTriggerEvent = "payment.failed"
-	CreateAutomationsRequestTriggerEventMembershipActivated              CreateAutomationsRequestTriggerEvent = "membership.activated"
-	CreateAutomationsRequestTriggerEventMembershipTrialEndingSoon        CreateAutomationsRequestTriggerEvent = "membership.trial_ending_soon"
-	CreateAutomationsRequestTriggerEventMemberCreated                    CreateAutomationsRequestTriggerEvent = "member.created"
-	CreateAutomationsRequestTriggerEventInvoiceCreated                   CreateAutomationsRequestTriggerEvent = "invoice.created"
-	CreateAutomationsRequestTriggerEventInvoicePaid                      CreateAutomationsRequestTriggerEvent = "invoice.paid"
-	CreateAutomationsRequestTriggerEventInvoicePastDue                   CreateAutomationsRequestTriggerEvent = "invoice.past_due"
-	CreateAutomationsRequestTriggerEventRefundCreated                    CreateAutomationsRequestTriggerEvent = "refund.created"
-	CreateAutomationsRequestTriggerEventDisputeCreated                   CreateAutomationsRequestTriggerEvent = "dispute.created"
-	CreateAutomationsRequestTriggerEventResolutionCenterCaseCreated      CreateAutomationsRequestTriggerEvent = "resolution_center_case.created"
-	CreateAutomationsRequestTriggerEventResolutionCenterCaseDecided      CreateAutomationsRequestTriggerEvent = "resolution_center_case.decided"
-	CreateAutomationsRequestTriggerEventCourseLessonInteractionCompleted CreateAutomationsRequestTriggerEvent = "course_lesson_interaction.completed"
+	CreateAutomationsRequestTriggerEventPaymentSucceeded                   CreateAutomationsRequestTriggerEvent = "payment.succeeded"
+	CreateAutomationsRequestTriggerEventPaymentFailed                      CreateAutomationsRequestTriggerEvent = "payment.failed"
+	CreateAutomationsRequestTriggerEventMembershipActivated                CreateAutomationsRequestTriggerEvent = "membership.activated"
+	CreateAutomationsRequestTriggerEventMembershipTrialEndingSoon          CreateAutomationsRequestTriggerEvent = "membership.trial_ending_soon"
+	CreateAutomationsRequestTriggerEventMembershipCancelAtPeriodEndChanged CreateAutomationsRequestTriggerEvent = "membership.cancel_at_period_end_changed"
+	CreateAutomationsRequestTriggerEventMemberCreated                      CreateAutomationsRequestTriggerEvent = "member.created"
+	CreateAutomationsRequestTriggerEventInvoiceCreated                     CreateAutomationsRequestTriggerEvent = "invoice.created"
+	CreateAutomationsRequestTriggerEventInvoicePaid                        CreateAutomationsRequestTriggerEvent = "invoice.paid"
+	CreateAutomationsRequestTriggerEventInvoicePastDue                     CreateAutomationsRequestTriggerEvent = "invoice.past_due"
+	CreateAutomationsRequestTriggerEventRefundCreated                      CreateAutomationsRequestTriggerEvent = "refund.created"
+	CreateAutomationsRequestTriggerEventDisputeCreated                     CreateAutomationsRequestTriggerEvent = "dispute.created"
+	CreateAutomationsRequestTriggerEventResolutionCenterCaseCreated        CreateAutomationsRequestTriggerEvent = "resolution_center_case.created"
+	CreateAutomationsRequestTriggerEventResolutionCenterCaseDecided        CreateAutomationsRequestTriggerEvent = "resolution_center_case.decided"
+	CreateAutomationsRequestTriggerEventCourseLessonInteractionCompleted   CreateAutomationsRequestTriggerEvent = "course_lesson_interaction.completed"
 )
 
 func NewCreateAutomationsRequestTriggerEventFromString(s string) (CreateAutomationsRequestTriggerEvent, error) {
@@ -926,6 +930,8 @@ func NewCreateAutomationsRequestTriggerEventFromString(s string) (CreateAutomati
 		return CreateAutomationsRequestTriggerEventMembershipActivated, nil
 	case "membership.trial_ending_soon":
 		return CreateAutomationsRequestTriggerEventMembershipTrialEndingSoon, nil
+	case "membership.cancel_at_period_end_changed":
+		return CreateAutomationsRequestTriggerEventMembershipCancelAtPeriodEndChanged, nil
 	case "member.created":
 		return CreateAutomationsRequestTriggerEventMemberCreated, nil
 	case "invoice.created":
@@ -1022,19 +1028,20 @@ func (l ListAutomationsRequestStatus) Ptr() *ListAutomationsRequestStatus {
 type ListAutomationsRequestTriggerEvent string
 
 const (
-	ListAutomationsRequestTriggerEventPaymentSucceeded                 ListAutomationsRequestTriggerEvent = "payment.succeeded"
-	ListAutomationsRequestTriggerEventPaymentFailed                    ListAutomationsRequestTriggerEvent = "payment.failed"
-	ListAutomationsRequestTriggerEventMembershipActivated              ListAutomationsRequestTriggerEvent = "membership.activated"
-	ListAutomationsRequestTriggerEventMembershipTrialEndingSoon        ListAutomationsRequestTriggerEvent = "membership.trial_ending_soon"
-	ListAutomationsRequestTriggerEventMemberCreated                    ListAutomationsRequestTriggerEvent = "member.created"
-	ListAutomationsRequestTriggerEventInvoiceCreated                   ListAutomationsRequestTriggerEvent = "invoice.created"
-	ListAutomationsRequestTriggerEventInvoicePaid                      ListAutomationsRequestTriggerEvent = "invoice.paid"
-	ListAutomationsRequestTriggerEventInvoicePastDue                   ListAutomationsRequestTriggerEvent = "invoice.past_due"
-	ListAutomationsRequestTriggerEventRefundCreated                    ListAutomationsRequestTriggerEvent = "refund.created"
-	ListAutomationsRequestTriggerEventDisputeCreated                   ListAutomationsRequestTriggerEvent = "dispute.created"
-	ListAutomationsRequestTriggerEventResolutionCenterCaseCreated      ListAutomationsRequestTriggerEvent = "resolution_center_case.created"
-	ListAutomationsRequestTriggerEventResolutionCenterCaseDecided      ListAutomationsRequestTriggerEvent = "resolution_center_case.decided"
-	ListAutomationsRequestTriggerEventCourseLessonInteractionCompleted ListAutomationsRequestTriggerEvent = "course_lesson_interaction.completed"
+	ListAutomationsRequestTriggerEventPaymentSucceeded                   ListAutomationsRequestTriggerEvent = "payment.succeeded"
+	ListAutomationsRequestTriggerEventPaymentFailed                      ListAutomationsRequestTriggerEvent = "payment.failed"
+	ListAutomationsRequestTriggerEventMembershipActivated                ListAutomationsRequestTriggerEvent = "membership.activated"
+	ListAutomationsRequestTriggerEventMembershipTrialEndingSoon          ListAutomationsRequestTriggerEvent = "membership.trial_ending_soon"
+	ListAutomationsRequestTriggerEventMembershipCancelAtPeriodEndChanged ListAutomationsRequestTriggerEvent = "membership.cancel_at_period_end_changed"
+	ListAutomationsRequestTriggerEventMemberCreated                      ListAutomationsRequestTriggerEvent = "member.created"
+	ListAutomationsRequestTriggerEventInvoiceCreated                     ListAutomationsRequestTriggerEvent = "invoice.created"
+	ListAutomationsRequestTriggerEventInvoicePaid                        ListAutomationsRequestTriggerEvent = "invoice.paid"
+	ListAutomationsRequestTriggerEventInvoicePastDue                     ListAutomationsRequestTriggerEvent = "invoice.past_due"
+	ListAutomationsRequestTriggerEventRefundCreated                      ListAutomationsRequestTriggerEvent = "refund.created"
+	ListAutomationsRequestTriggerEventDisputeCreated                     ListAutomationsRequestTriggerEvent = "dispute.created"
+	ListAutomationsRequestTriggerEventResolutionCenterCaseCreated        ListAutomationsRequestTriggerEvent = "resolution_center_case.created"
+	ListAutomationsRequestTriggerEventResolutionCenterCaseDecided        ListAutomationsRequestTriggerEvent = "resolution_center_case.decided"
+	ListAutomationsRequestTriggerEventCourseLessonInteractionCompleted   ListAutomationsRequestTriggerEvent = "course_lesson_interaction.completed"
 )
 
 func NewListAutomationsRequestTriggerEventFromString(s string) (ListAutomationsRequestTriggerEvent, error) {
@@ -1047,6 +1054,8 @@ func NewListAutomationsRequestTriggerEventFromString(s string) (ListAutomationsR
 		return ListAutomationsRequestTriggerEventMembershipActivated, nil
 	case "membership.trial_ending_soon":
 		return ListAutomationsRequestTriggerEventMembershipTrialEndingSoon, nil
+	case "membership.cancel_at_period_end_changed":
+		return ListAutomationsRequestTriggerEventMembershipCancelAtPeriodEndChanged, nil
 	case "member.created":
 		return ListAutomationsRequestTriggerEventMemberCreated, nil
 	case "invoice.created":
@@ -1418,19 +1427,20 @@ func (u UpdateAutomationsRequestStatus) Ptr() *UpdateAutomationsRequestStatus {
 type UpdateAutomationsRequestTriggerEvent string
 
 const (
-	UpdateAutomationsRequestTriggerEventPaymentSucceeded                 UpdateAutomationsRequestTriggerEvent = "payment.succeeded"
-	UpdateAutomationsRequestTriggerEventPaymentFailed                    UpdateAutomationsRequestTriggerEvent = "payment.failed"
-	UpdateAutomationsRequestTriggerEventMembershipActivated              UpdateAutomationsRequestTriggerEvent = "membership.activated"
-	UpdateAutomationsRequestTriggerEventMembershipTrialEndingSoon        UpdateAutomationsRequestTriggerEvent = "membership.trial_ending_soon"
-	UpdateAutomationsRequestTriggerEventMemberCreated                    UpdateAutomationsRequestTriggerEvent = "member.created"
-	UpdateAutomationsRequestTriggerEventInvoiceCreated                   UpdateAutomationsRequestTriggerEvent = "invoice.created"
-	UpdateAutomationsRequestTriggerEventInvoicePaid                      UpdateAutomationsRequestTriggerEvent = "invoice.paid"
-	UpdateAutomationsRequestTriggerEventInvoicePastDue                   UpdateAutomationsRequestTriggerEvent = "invoice.past_due"
-	UpdateAutomationsRequestTriggerEventRefundCreated                    UpdateAutomationsRequestTriggerEvent = "refund.created"
-	UpdateAutomationsRequestTriggerEventDisputeCreated                   UpdateAutomationsRequestTriggerEvent = "dispute.created"
-	UpdateAutomationsRequestTriggerEventResolutionCenterCaseCreated      UpdateAutomationsRequestTriggerEvent = "resolution_center_case.created"
-	UpdateAutomationsRequestTriggerEventResolutionCenterCaseDecided      UpdateAutomationsRequestTriggerEvent = "resolution_center_case.decided"
-	UpdateAutomationsRequestTriggerEventCourseLessonInteractionCompleted UpdateAutomationsRequestTriggerEvent = "course_lesson_interaction.completed"
+	UpdateAutomationsRequestTriggerEventPaymentSucceeded                   UpdateAutomationsRequestTriggerEvent = "payment.succeeded"
+	UpdateAutomationsRequestTriggerEventPaymentFailed                      UpdateAutomationsRequestTriggerEvent = "payment.failed"
+	UpdateAutomationsRequestTriggerEventMembershipActivated                UpdateAutomationsRequestTriggerEvent = "membership.activated"
+	UpdateAutomationsRequestTriggerEventMembershipTrialEndingSoon          UpdateAutomationsRequestTriggerEvent = "membership.trial_ending_soon"
+	UpdateAutomationsRequestTriggerEventMembershipCancelAtPeriodEndChanged UpdateAutomationsRequestTriggerEvent = "membership.cancel_at_period_end_changed"
+	UpdateAutomationsRequestTriggerEventMemberCreated                      UpdateAutomationsRequestTriggerEvent = "member.created"
+	UpdateAutomationsRequestTriggerEventInvoiceCreated                     UpdateAutomationsRequestTriggerEvent = "invoice.created"
+	UpdateAutomationsRequestTriggerEventInvoicePaid                        UpdateAutomationsRequestTriggerEvent = "invoice.paid"
+	UpdateAutomationsRequestTriggerEventInvoicePastDue                     UpdateAutomationsRequestTriggerEvent = "invoice.past_due"
+	UpdateAutomationsRequestTriggerEventRefundCreated                      UpdateAutomationsRequestTriggerEvent = "refund.created"
+	UpdateAutomationsRequestTriggerEventDisputeCreated                     UpdateAutomationsRequestTriggerEvent = "dispute.created"
+	UpdateAutomationsRequestTriggerEventResolutionCenterCaseCreated        UpdateAutomationsRequestTriggerEvent = "resolution_center_case.created"
+	UpdateAutomationsRequestTriggerEventResolutionCenterCaseDecided        UpdateAutomationsRequestTriggerEvent = "resolution_center_case.decided"
+	UpdateAutomationsRequestTriggerEventCourseLessonInteractionCompleted   UpdateAutomationsRequestTriggerEvent = "course_lesson_interaction.completed"
 )
 
 func NewUpdateAutomationsRequestTriggerEventFromString(s string) (UpdateAutomationsRequestTriggerEvent, error) {
@@ -1443,6 +1453,8 @@ func NewUpdateAutomationsRequestTriggerEventFromString(s string) (UpdateAutomati
 		return UpdateAutomationsRequestTriggerEventMembershipActivated, nil
 	case "membership.trial_ending_soon":
 		return UpdateAutomationsRequestTriggerEventMembershipTrialEndingSoon, nil
+	case "membership.cancel_at_period_end_changed":
+		return UpdateAutomationsRequestTriggerEventMembershipCancelAtPeriodEndChanged, nil
 	case "member.created":
 		return UpdateAutomationsRequestTriggerEventMemberCreated, nil
 	case "invoice.created":

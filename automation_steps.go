@@ -358,7 +358,7 @@ type AutomationStep struct {
 	ActionType AutomationStepActionType `json:"action_type" url:"action_type"`
 	// ID of the automation the step belongs to, prefixed `ato_`.
 	AutomationID string `json:"automation_id" url:"automation_id"`
-	// The step's settings for its `action_type`: `delay_seconds` for a `wait`, `sender_id` for an `email` or `message`. Writing it replaces the whole object.
+	// The step's settings for its `action_type`: `delay_seconds` for a `wait`, and `sender_id` and `attachment_ids` for an `email` or `message`. Writing it replaces the whole object, except that a step keeps its `attachment_ids` when the write leaves them out.
 	Config *AutomationStepConfig `json:"config" url:"config"`
 	// When the step was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
@@ -660,7 +660,7 @@ func (a AutomationStepActionType) Ptr() *AutomationStepActionType {
 	return &a
 }
 
-// The step's settings for its `action_type`: `delay_seconds` for a `wait`, and `sender_id` for an `email` or a `message`. Writing it replaces the whole object.
+// The step's settings for its `action_type`: `delay_seconds` for a `wait`, and `sender_id` and `attachment_ids` for an `email` or a `message`. Writing it replaces the whole object, except that a step keeps its `attachment_ids` when the write leaves them out.
 type AutomationStepConfig struct {
 	AutomationStepWaitConfig    *AutomationStepWaitConfig
 	AutomationStepEmailConfig   *AutomationStepEmailConfig
@@ -699,7 +699,7 @@ func (a *AutomationStepConfig) UnmarshalJSON(data []byte) error {
 			return nil
 		}
 	}
-	if internal.MatchesObjectKeys(data, []string{"sender_id"}, []string{}) {
+	if internal.MatchesObjectKeys(data, []string{"attachment_ids", "sender_id"}, []string{}) {
 		valueAutomationStepEmailConfig := new(AutomationStepEmailConfig)
 		if err := json.Unmarshal(data, &valueAutomationStepEmailConfig); err == nil {
 			a.typ = "AutomationStepEmailConfig"
@@ -707,7 +707,7 @@ func (a *AutomationStepConfig) UnmarshalJSON(data []byte) error {
 			return nil
 		}
 	}
-	if internal.MatchesObjectKeys(data, []string{"sender_id"}, []string{}) {
+	if internal.MatchesObjectKeys(data, []string{"attachment_ids", "sender_id"}, []string{}) {
 		valueAutomationStepMessageConfig := new(AutomationStepMessageConfig)
 		if err := json.Unmarshal(data, &valueAutomationStepMessageConfig); err == nil {
 			a.typ = "AutomationStepMessageConfig"
@@ -881,7 +881,8 @@ func (a *AutomationStepEmailAddressSender) String() string {
 }
 
 var (
-	automationStepEmailConfigFieldSenderID = big.NewInt(1 << 0)
+	automationStepEmailConfigFieldAttachmentIDs = big.NewInt(1 << 0)
+	automationStepEmailConfigFieldSenderID      = big.NewInt(1 << 1)
 )
 
 // automationStepEmailConfigNullableFields maps the wire names of AutomationStepEmailConfig's nullable fields (required or optional) to their field bits.
@@ -890,6 +891,7 @@ var automationStepEmailConfigNullableFields = map[string]*big.Int{
 }
 
 type AutomationStepEmailConfig struct {
+	AttachmentIDs []string `json:"attachment_ids,omitempty" url:"attachment_ids,omitempty"`
 	// The mailbox the email comes from, prefixed `emaddr_`: an email address on the account whose domain can send email. Naming one needs what `/email_addresses` asks to use it. `null` sends from the account's name through Whop.
 	SenderID *string `json:"sender_id,omitempty" url:"sender_id,omitempty"`
 
@@ -898,6 +900,13 @@ type AutomationStepEmailConfig struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AutomationStepEmailConfig) GetAttachmentIDs() []string {
+	if a == nil {
+		return nil
+	}
+	return a.AttachmentIDs
 }
 
 func (a *AutomationStepEmailConfig) GetSenderID() *string {
@@ -921,6 +930,13 @@ func (a *AutomationStepEmailConfig) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	a.explicitFields = next
+}
+
+// SetAttachmentIDs sets the AttachmentIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AutomationStepEmailConfig) SetAttachmentIDs(attachmentIDs []string) {
+	a.AttachmentIDs = attachmentIDs
+	a.require(automationStepEmailConfigFieldAttachmentIDs)
 }
 
 // SetSenderID sets the SenderID field and marks it as non-optional;
@@ -980,7 +996,8 @@ func (a *AutomationStepEmailConfig) String() string {
 }
 
 var (
-	automationStepMessageConfigFieldSenderID = big.NewInt(1 << 0)
+	automationStepMessageConfigFieldAttachmentIDs = big.NewInt(1 << 0)
+	automationStepMessageConfigFieldSenderID      = big.NewInt(1 << 1)
 )
 
 // automationStepMessageConfigNullableFields maps the wire names of AutomationStepMessageConfig's nullable fields (required or optional) to their field bits.
@@ -989,6 +1006,7 @@ var automationStepMessageConfigNullableFields = map[string]*big.Int{
 }
 
 type AutomationStepMessageConfig struct {
+	AttachmentIDs []string `json:"attachment_ids,omitempty" url:"attachment_ids,omitempty"`
 	// The team member the message comes from, as a user ID prefixed `user_`. Only that member can name themselves. `null` sends as the account owner.
 	SenderID *string `json:"sender_id,omitempty" url:"sender_id,omitempty"`
 
@@ -997,6 +1015,13 @@ type AutomationStepMessageConfig struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AutomationStepMessageConfig) GetAttachmentIDs() []string {
+	if a == nil {
+		return nil
+	}
+	return a.AttachmentIDs
 }
 
 func (a *AutomationStepMessageConfig) GetSenderID() *string {
@@ -1020,6 +1045,13 @@ func (a *AutomationStepMessageConfig) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	a.explicitFields = next
+}
+
+// SetAttachmentIDs sets the AttachmentIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AutomationStepMessageConfig) SetAttachmentIDs(attachmentIDs []string) {
+	a.AttachmentIDs = attachmentIDs
+	a.require(automationStepMessageConfigFieldAttachmentIDs)
 }
 
 // SetSenderID sets the SenderID field and marks it as non-optional;
