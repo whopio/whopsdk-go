@@ -28655,6 +28655,7 @@ const (
 	LedgerActivityLineTypePaymentUnreconciledClearing               LedgerActivityLineType = "payment_unreconciled_clearing"
 	LedgerActivityLineTypePaymentUnreconciledReversal               LedgerActivityLineType = "payment_unreconciled_reversal"
 	LedgerActivityLineTypeSettlementShortfallLoss                   LedgerActivityLineType = "settlement_shortfall_loss"
+	LedgerActivityLineTypePspErrorLoss                              LedgerActivityLineType = "psp_error_loss"
 	LedgerActivityLineTypeFxSettlementGainLoss                      LedgerActivityLineType = "fx_settlement_gain_loss"
 	LedgerActivityLineTypeSettlementRoundingVariance                LedgerActivityLineType = "settlement_rounding_variance"
 	LedgerActivityLineTypePspPayoutSettlement                       LedgerActivityLineType = "psp_payout_settlement"
@@ -29235,6 +29236,8 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypePaymentUnreconciledReversal, nil
 	case "settlement_shortfall_loss":
 		return LedgerActivityLineTypeSettlementShortfallLoss, nil
+	case "psp_error_loss":
+		return LedgerActivityLineTypePspErrorLoss, nil
 	case "fx_settlement_gain_loss":
 		return LedgerActivityLineTypeFxSettlementGainLoss, nil
 	case "settlement_rounding_variance":

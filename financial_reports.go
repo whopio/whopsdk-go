@@ -1702,6 +1702,7 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspDisputeFee                             RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_dispute_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspDisputeManagementFee                   RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_dispute_management_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspDisputePayable                         RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_dispute_payable"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPspErrorLoss                              RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_error_loss"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspExternalAccountConnectionFee           RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_external_account_connection_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspFixedFee                               RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_fixed_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPspFxAdjustment                           RetrieveFinancialReportsResponseRowsItemLineCategory = "psp_fx_adjustment"
@@ -2281,6 +2282,8 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPspDisputeManagementFee, nil
 	case "psp_dispute_payable":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPspDisputePayable, nil
+	case "psp_error_loss":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPspErrorLoss, nil
 	case "psp_external_account_connection_fee":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPspExternalAccountConnectionFee, nil
 	case "psp_fixed_fee":

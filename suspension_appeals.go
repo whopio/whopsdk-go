@@ -920,36 +920,38 @@ func (s SuspensionAppealStatus) Ptr() *SuspensionAppealStatus {
 }
 
 var (
-	suspensionAppealSubjectFieldAppeal                = big.NewInt(1 << 0)
-	suspensionAppealSubjectFieldAppealDeadline        = big.NewInt(1 << 1)
-	suspensionAppealSubjectFieldDisplayName           = big.NewInt(1 << 2)
-	suspensionAppealSubjectFieldEligible              = big.NewInt(1 << 3)
-	suspensionAppealSubjectFieldFundsExplanation      = big.NewInt(1 << 4)
-	suspensionAppealSubjectFieldFundsReleaseAt        = big.NewInt(1 << 5)
-	suspensionAppealSubjectFieldID                    = big.NewInt(1 << 6)
-	suspensionAppealSubjectFieldIneligibleReason      = big.NewInt(1 << 7)
-	suspensionAppealSubjectFieldPlatformName          = big.NewInt(1 << 8)
-	suspensionAppealSubjectFieldSuspendedAt           = big.NewInt(1 << 9)
-	suspensionAppealSubjectFieldSuspensionCode        = big.NewInt(1 << 10)
-	suspensionAppealSubjectFieldSuspensionCountry     = big.NewInt(1 << 11)
-	suspensionAppealSubjectFieldSuspensionExplanation = big.NewInt(1 << 12)
-	suspensionAppealSubjectFieldSuspensionReason      = big.NewInt(1 << 13)
+	suspensionAppealSubjectFieldAppeal                        = big.NewInt(1 << 0)
+	suspensionAppealSubjectFieldAppealDeadline                = big.NewInt(1 << 1)
+	suspensionAppealSubjectFieldDisplayName                   = big.NewInt(1 << 2)
+	suspensionAppealSubjectFieldEligible                      = big.NewInt(1 << 3)
+	suspensionAppealSubjectFieldFundsExplanation              = big.NewInt(1 << 4)
+	suspensionAppealSubjectFieldFundsReleaseAt                = big.NewInt(1 << 5)
+	suspensionAppealSubjectFieldID                            = big.NewInt(1 << 6)
+	suspensionAppealSubjectFieldIneligibleReason              = big.NewInt(1 << 7)
+	suspensionAppealSubjectFieldPlatformName                  = big.NewInt(1 << 8)
+	suspensionAppealSubjectFieldSuspendedAt                   = big.NewInt(1 << 9)
+	suspensionAppealSubjectFieldSuspensionCode                = big.NewInt(1 << 10)
+	suspensionAppealSubjectFieldSuspensionCountry             = big.NewInt(1 << 11)
+	suspensionAppealSubjectFieldSuspensionExplanation         = big.NewInt(1 << 12)
+	suspensionAppealSubjectFieldSuspensionExplanationMarkdown = big.NewInt(1 << 13)
+	suspensionAppealSubjectFieldSuspensionReason              = big.NewInt(1 << 14)
 )
 
 // suspensionAppealSubjectNullableFields maps the wire names of SuspensionAppealSubject's nullable fields (required or optional) to their field bits.
 var suspensionAppealSubjectNullableFields = map[string]*big.Int{
-	"appeal":                 suspensionAppealSubjectFieldAppeal,
-	"appeal_deadline":        suspensionAppealSubjectFieldAppealDeadline,
-	"display_name":           suspensionAppealSubjectFieldDisplayName,
-	"funds_explanation":      suspensionAppealSubjectFieldFundsExplanation,
-	"funds_release_at":       suspensionAppealSubjectFieldFundsReleaseAt,
-	"ineligible_reason":      suspensionAppealSubjectFieldIneligibleReason,
-	"platform_name":          suspensionAppealSubjectFieldPlatformName,
-	"suspended_at":           suspensionAppealSubjectFieldSuspendedAt,
-	"suspension_code":        suspensionAppealSubjectFieldSuspensionCode,
-	"suspension_country":     suspensionAppealSubjectFieldSuspensionCountry,
-	"suspension_explanation": suspensionAppealSubjectFieldSuspensionExplanation,
-	"suspension_reason":      suspensionAppealSubjectFieldSuspensionReason,
+	"appeal":                          suspensionAppealSubjectFieldAppeal,
+	"appeal_deadline":                 suspensionAppealSubjectFieldAppealDeadline,
+	"display_name":                    suspensionAppealSubjectFieldDisplayName,
+	"funds_explanation":               suspensionAppealSubjectFieldFundsExplanation,
+	"funds_release_at":                suspensionAppealSubjectFieldFundsReleaseAt,
+	"ineligible_reason":               suspensionAppealSubjectFieldIneligibleReason,
+	"platform_name":                   suspensionAppealSubjectFieldPlatformName,
+	"suspended_at":                    suspensionAppealSubjectFieldSuspendedAt,
+	"suspension_code":                 suspensionAppealSubjectFieldSuspensionCode,
+	"suspension_country":              suspensionAppealSubjectFieldSuspensionCountry,
+	"suspension_explanation":          suspensionAppealSubjectFieldSuspensionExplanation,
+	"suspension_explanation_markdown": suspensionAppealSubjectFieldSuspensionExplanationMarkdown,
+	"suspension_reason":               suspensionAppealSubjectFieldSuspensionReason,
 }
 
 type SuspensionAppealSubject struct {
@@ -979,6 +981,8 @@ type SuspensionAppealSubject struct {
 	SuspensionCountry *string `json:"suspension_country,omitempty" url:"suspension_country,omitempty"`
 	// Why the account was suspended, as one sentence written for the account holder in the request's locale. `null` when the account is not suspended. Also `null` for a personal account that has no current `suspension_code` but has a reason on file.
 	SuspensionExplanation *string `json:"suspension_explanation,omitempty" url:"suspension_explanation,omitempty"`
+	// The same sentence as `suspension_explanation`, with each link kept as Markdown, such as `[community guidelines](https://whop.com/guidelines)`. `null` when `suspension_explanation` is `null`.
+	SuspensionExplanationMarkdown *string `json:"suspension_explanation_markdown,omitempty" url:"suspension_explanation_markdown,omitempty"`
 	// Sentence shown to the account holder for this suspension, such as `We cannot support your business due to fraudulent activity.` It is in the request's locale. A personal account suspended without a current `suspension_code` can show the reason it was given at the time. `null` when the account is not suspended.
 	SuspensionReason *string `json:"suspension_reason,omitempty" url:"suspension_reason,omitempty"`
 
@@ -1078,6 +1082,13 @@ func (s *SuspensionAppealSubject) GetSuspensionExplanation() *string {
 		return nil
 	}
 	return s.SuspensionExplanation
+}
+
+func (s *SuspensionAppealSubject) GetSuspensionExplanationMarkdown() *string {
+	if s == nil {
+		return nil
+	}
+	return s.SuspensionExplanationMarkdown
 }
 
 func (s *SuspensionAppealSubject) GetSuspensionReason() *string {
@@ -1192,6 +1203,13 @@ func (s *SuspensionAppealSubject) SetSuspensionCountry(suspensionCountry *string
 func (s *SuspensionAppealSubject) SetSuspensionExplanation(suspensionExplanation *string) {
 	s.SuspensionExplanation = suspensionExplanation
 	s.require(suspensionAppealSubjectFieldSuspensionExplanation)
+}
+
+// SetSuspensionExplanationMarkdown sets the SuspensionExplanationMarkdown field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SuspensionAppealSubject) SetSuspensionExplanationMarkdown(suspensionExplanationMarkdown *string) {
+	s.SuspensionExplanationMarkdown = suspensionExplanationMarkdown
+	s.require(suspensionAppealSubjectFieldSuspensionExplanationMarkdown)
 }
 
 // SetSuspensionReason sets the SuspensionReason field and marks it as non-optional;
