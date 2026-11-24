@@ -21562,6 +21562,34 @@ func TestEnumListPaymentsRequestOrder(t *testing.T) {
 		assert.Equal(t, ListPaymentsRequestOrder("amount"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_status", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestOrderFromString("status")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestOrder("status"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_product", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestOrderFromString("product")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestOrder("product"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_plan", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestOrderFromString("plan")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestOrder("plan"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_method", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListPaymentsRequestOrderFromString("method")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListPaymentsRequestOrder("method"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewListPaymentsRequestOrderFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
