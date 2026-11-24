@@ -118,7 +118,7 @@ type ListPartnerReferralRequestsRequest struct {
 	TargetUserID *string `json:"-" url:"target_user_id,omitempty"`
 	// Only requests sent by this partner's user ID, prefixed `user_`.
 	PartnerID *string `json:"-" url:"partner_id,omitempty"`
-	// Only the referral links created for memberships on this business's team, prefixed `biz_`. Needs read access to the business: its owner sees every member's links, a manager the links of the people reporting to them, and other members only their own.
+	// Only the referral links created for memberships on this business's team, prefixed `biz_`. Needs read access to the business: its owner sees every member's links, a manager the links of the people reporting to them, and other members only their own. With `request_type=lead`, it lists your lead offers that count toward this team, plus your personal lead offers.
 	ReferringAccountID *string `json:"-" url:"referring_account_id,omitempty"`
 	// Only requests with this approval status.
 	Status *ListPartnerReferralRequestsRequestStatus `json:"-" url:"status,omitempty"`
@@ -294,16 +294,19 @@ var (
 	partnerReferralRequestFieldAuthorizedUserID = big.NewInt(1 << 1)
 	partnerReferralRequestFieldCode             = big.NewInt(1 << 2)
 	partnerReferralRequestFieldCreatedAt        = big.NewInt(1 << 3)
-	partnerReferralRequestFieldID               = big.NewInt(1 << 4)
-	partnerReferralRequestFieldMaxRedemptions   = big.NewInt(1 << 5)
-	partnerReferralRequestFieldMemberID         = big.NewInt(1 << 6)
-	partnerReferralRequestFieldPartner          = big.NewInt(1 << 7)
-	partnerReferralRequestFieldReferringAccount = big.NewInt(1 << 8)
-	partnerReferralRequestFieldRequestType      = big.NewInt(1 << 9)
-	partnerReferralRequestFieldRewards          = big.NewInt(1 << 10)
-	partnerReferralRequestFieldStatus           = big.NewInt(1 << 11)
-	partnerReferralRequestFieldUpdatedAt        = big.NewInt(1 << 12)
-	partnerReferralRequestFieldUser             = big.NewInt(1 << 13)
+	partnerReferralRequestFieldExpiresAt        = big.NewInt(1 << 4)
+	partnerReferralRequestFieldID               = big.NewInt(1 << 5)
+	partnerReferralRequestFieldLead             = big.NewInt(1 << 6)
+	partnerReferralRequestFieldMaxRedemptions   = big.NewInt(1 << 7)
+	partnerReferralRequestFieldMemberID         = big.NewInt(1 << 8)
+	partnerReferralRequestFieldPartner          = big.NewInt(1 << 9)
+	partnerReferralRequestFieldReferringAccount = big.NewInt(1 << 10)
+	partnerReferralRequestFieldRequestType      = big.NewInt(1 << 11)
+	partnerReferralRequestFieldRewards          = big.NewInt(1 << 12)
+	partnerReferralRequestFieldStatus           = big.NewInt(1 << 13)
+	partnerReferralRequestFieldStatusReason     = big.NewInt(1 << 14)
+	partnerReferralRequestFieldUpdatedAt        = big.NewInt(1 << 15)
+	partnerReferralRequestFieldUser             = big.NewInt(1 << 16)
 )
 
 // partnerReferralRequestNullableFields maps the wire names of PartnerReferralRequest's nullable fields (required or optional) to their field bits.
@@ -311,10 +314,13 @@ var partnerReferralRequestNullableFields = map[string]*big.Int{
 	"account":            partnerReferralRequestFieldAccount,
 	"authorized_user_id": partnerReferralRequestFieldAuthorizedUserID,
 	"code":               partnerReferralRequestFieldCode,
+	"expires_at":         partnerReferralRequestFieldExpiresAt,
+	"lead":               partnerReferralRequestFieldLead,
 	"max_redemptions":    partnerReferralRequestFieldMaxRedemptions,
 	"member_id":          partnerReferralRequestFieldMemberID,
 	"referring_account":  partnerReferralRequestFieldReferringAccount,
 	"status":             partnerReferralRequestFieldStatus,
+	"status_reason":      partnerReferralRequestFieldStatusReason,
 	"user":               partnerReferralRequestFieldUser,
 }
 
@@ -327,21 +333,27 @@ type PartnerReferralRequest struct {
 	Code *string `json:"code,omitempty" url:"code,omitempty"`
 	// When the request was created, as an ISO 8601 timestamp.
 	CreatedAt string `json:"created_at" url:"created_at"`
+	// When a lead offer stops taking a response, as an ISO 8601 timestamp. `null` for other request types.
+	ExpiresAt *string `json:"expires_at,omitempty" url:"expires_at,omitempty"`
 	// Partner referral request ID, prefixed `prfr_`.
 	ID string `json:"id" url:"id"`
+	// The business's signup answers on a lead offer. Only the partner it was offered to sees them. `null` for anyone else and for other request types.
+	Lead *PartnerReferralRequestLead `json:"lead,omitempty" url:"lead,omitempty"`
 	// Maximum permitted redemptions, when limited.
 	MaxRedemptions *int `json:"max_redemptions,omitempty" url:"max_redemptions,omitempty"`
 	// The partner's member record this referral was created for, prefixed `mber_`, when their role on that business is held on their member record. `null` otherwise.
 	MemberID *string `json:"member_id,omitempty" url:"member_id,omitempty"`
-	// Public profile of the requesting partner.
+	// Public profile of the partner associated with this referral request.
 	Partner *UserSummary `json:"partner" url:"partner"`
-	// Business the partner sent this request on behalf of, when the referral belongs to their team. `null` for a personal referral.
+	// The partner's team account that this referral counts toward. `null` for a personal referral. A lead offer counts toward the partner-mode team where the partner earned the most in the last 30 days, or the newest on a tie. It is set when the offer is made.
 	ReferringAccount *AccountSummary `json:"referring_account,omitempty" url:"referring_account,omitempty"`
 	// How the referral request was initiated.
 	RequestType PartnerReferralRequestRequestType `json:"request_type" url:"request_type"`
 	Rewards     []*PartnerReferralReward          `json:"rewards" url:"rewards"`
-	// The approval state, or null for requests without an approval process.
+	// The approval state, or `null` for requests without an approval process. A lead offer that gets no answer before `expires_at` becomes `cancelled`.
 	Status *PartnerReferralRequestStatus `json:"status,omitempty" url:"status,omitempty"`
+	// Why the request reached its status. `expired` means a lead offer got no answer before `expires_at`. `passed` means the partner turned down a lead offer. `withdrawn` means the partner cancelled their own request. `null` for any other status.
+	StatusReason *PartnerReferralRequestStatusReason `json:"status_reason,omitempty" url:"status_reason,omitempty"`
 	// When the request last changed, as an ISO 8601 timestamp.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
 	// The user an attribution request was sent to. Deprecated: requests to a user have ended. Always `null`.
@@ -383,11 +395,25 @@ func (p *PartnerReferralRequest) GetCreatedAt() string {
 	return p.CreatedAt
 }
 
+func (p *PartnerReferralRequest) GetExpiresAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.ExpiresAt
+}
+
 func (p *PartnerReferralRequest) GetID() string {
 	if p == nil {
 		return ""
 	}
 	return p.ID
+}
+
+func (p *PartnerReferralRequest) GetLead() *PartnerReferralRequestLead {
+	if p == nil {
+		return nil
+	}
+	return p.Lead
 }
 
 func (p *PartnerReferralRequest) GetMaxRedemptions() *int {
@@ -437,6 +463,13 @@ func (p *PartnerReferralRequest) GetStatus() *PartnerReferralRequestStatus {
 		return nil
 	}
 	return p.Status
+}
+
+func (p *PartnerReferralRequest) GetStatusReason() *PartnerReferralRequestStatusReason {
+	if p == nil {
+		return nil
+	}
+	return p.StatusReason
 }
 
 func (p *PartnerReferralRequest) GetUpdatedAt() string {
@@ -497,11 +530,25 @@ func (p *PartnerReferralRequest) SetCreatedAt(createdAt string) {
 	p.require(partnerReferralRequestFieldCreatedAt)
 }
 
+// SetExpiresAt sets the ExpiresAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralRequest) SetExpiresAt(expiresAt *string) {
+	p.ExpiresAt = expiresAt
+	p.require(partnerReferralRequestFieldExpiresAt)
+}
+
 // SetID sets the ID field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PartnerReferralRequest) SetID(id string) {
 	p.ID = id
 	p.require(partnerReferralRequestFieldID)
+}
+
+// SetLead sets the Lead field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralRequest) SetLead(lead *PartnerReferralRequestLead) {
+	p.Lead = lead
+	p.require(partnerReferralRequestFieldLead)
 }
 
 // SetMaxRedemptions sets the MaxRedemptions field and marks it as non-optional;
@@ -551,6 +598,13 @@ func (p *PartnerReferralRequest) SetRewards(rewards []*PartnerReferralReward) {
 func (p *PartnerReferralRequest) SetStatus(status *PartnerReferralRequestStatus) {
 	p.Status = status
 	p.require(partnerReferralRequestFieldStatus)
+}
+
+// SetStatusReason sets the StatusReason field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralRequest) SetStatusReason(statusReason *PartnerReferralRequestStatusReason) {
+	p.StatusReason = statusReason
+	p.require(partnerReferralRequestFieldStatusReason)
 }
 
 // SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
@@ -616,6 +670,193 @@ func (p *PartnerReferralRequest) String() string {
 	return fmt.Sprintf("%#v", p)
 }
 
+var (
+	partnerReferralRequestLeadFieldBusinessType  = big.NewInt(1 << 0)
+	partnerReferralRequestLeadFieldCountry       = big.NewInt(1 << 1)
+	partnerReferralRequestLeadFieldMigratingFrom = big.NewInt(1 << 2)
+	partnerReferralRequestLeadFieldOwner         = big.NewInt(1 << 3)
+	partnerReferralRequestLeadFieldSignedUpAt    = big.NewInt(1 << 4)
+	partnerReferralRequestLeadFieldWebsite       = big.NewInt(1 << 5)
+)
+
+// partnerReferralRequestLeadNullableFields maps the wire names of PartnerReferralRequestLead's nullable fields (required or optional) to their field bits.
+var partnerReferralRequestLeadNullableFields = map[string]*big.Int{
+	"business_type":  partnerReferralRequestLeadFieldBusinessType,
+	"country":        partnerReferralRequestLeadFieldCountry,
+	"migrating_from": partnerReferralRequestLeadFieldMigratingFrom,
+	"website":        partnerReferralRequestLeadFieldWebsite,
+}
+
+type PartnerReferralRequestLead struct {
+	// What the business sells, as the owner picked it at signup, such as `education` or `coaching_and_courses`. `null` when they skipped it.
+	BusinessType *string `json:"business_type,omitempty" url:"business_type,omitempty"`
+	// The business's country as a two-letter ISO 3166-1 code, such as `us`.
+	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// The platform the owner said they are moving from, such as `stripe`, or `none`. `null` when the form did not ask.
+	MigratingFrom *string `json:"migrating_from,omitempty" url:"migrating_from,omitempty"`
+	// The business owner. A partner messages them with this user's ID.
+	Owner *UserSummary `json:"owner" url:"owner"`
+	// When the business was created, as an ISO 8601 timestamp.
+	SignedUpAt string `json:"signed_up_at" url:"signed_up_at"`
+	// The business's website. `null` when the business has none.
+	Website *string `json:"website,omitempty" url:"website,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PartnerReferralRequestLead) GetBusinessType() *string {
+	if p == nil {
+		return nil
+	}
+	return p.BusinessType
+}
+
+func (p *PartnerReferralRequestLead) GetCountry() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Country
+}
+
+func (p *PartnerReferralRequestLead) GetMigratingFrom() *string {
+	if p == nil {
+		return nil
+	}
+	return p.MigratingFrom
+}
+
+func (p *PartnerReferralRequestLead) GetOwner() *UserSummary {
+	if p == nil {
+		return nil
+	}
+	return p.Owner
+}
+
+func (p *PartnerReferralRequestLead) GetSignedUpAt() string {
+	if p == nil {
+		return ""
+	}
+	return p.SignedUpAt
+}
+
+func (p *PartnerReferralRequestLead) GetWebsite() *string {
+	if p == nil {
+		return nil
+	}
+	return p.Website
+}
+
+func (p *PartnerReferralRequestLead) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PartnerReferralRequestLead) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetBusinessType sets the BusinessType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralRequestLead) SetBusinessType(businessType *string) {
+	p.BusinessType = businessType
+	p.require(partnerReferralRequestLeadFieldBusinessType)
+}
+
+// SetCountry sets the Country field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralRequestLead) SetCountry(country *string) {
+	p.Country = country
+	p.require(partnerReferralRequestLeadFieldCountry)
+}
+
+// SetMigratingFrom sets the MigratingFrom field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralRequestLead) SetMigratingFrom(migratingFrom *string) {
+	p.MigratingFrom = migratingFrom
+	p.require(partnerReferralRequestLeadFieldMigratingFrom)
+}
+
+// SetOwner sets the Owner field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralRequestLead) SetOwner(owner *UserSummary) {
+	p.Owner = owner
+	p.require(partnerReferralRequestLeadFieldOwner)
+}
+
+// SetSignedUpAt sets the SignedUpAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralRequestLead) SetSignedUpAt(signedUpAt string) {
+	p.SignedUpAt = signedUpAt
+	p.require(partnerReferralRequestLeadFieldSignedUpAt)
+}
+
+// SetWebsite sets the Website field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralRequestLead) SetWebsite(website *string) {
+	p.Website = website
+	p.require(partnerReferralRequestLeadFieldWebsite)
+}
+
+func (p *PartnerReferralRequestLead) UnmarshalJSON(data []byte) error {
+	type unmarshaler PartnerReferralRequestLead
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PartnerReferralRequestLead(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, partnerReferralRequestLeadNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		p.require(presentFields)
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PartnerReferralRequestLead) MarshalJSON() ([]byte, error) {
+	type embed PartnerReferralRequestLead
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PartnerReferralRequestLead) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
 // How the referral request was initiated.
 type PartnerReferralRequestRequestType string
 
@@ -623,6 +864,7 @@ const (
 	PartnerReferralRequestRequestTypeManual            PartnerReferralRequestRequestType = "manual"
 	PartnerReferralRequestRequestTypeOwnershipTransfer PartnerReferralRequestRequestType = "ownership_transfer"
 	PartnerReferralRequestRequestTypeLink              PartnerReferralRequestRequestType = "link"
+	PartnerReferralRequestRequestTypeLead              PartnerReferralRequestRequestType = "lead"
 )
 
 func NewPartnerReferralRequestRequestTypeFromString(s string) (PartnerReferralRequestRequestType, error) {
@@ -633,6 +875,8 @@ func NewPartnerReferralRequestRequestTypeFromString(s string) (PartnerReferralRe
 		return PartnerReferralRequestRequestTypeOwnershipTransfer, nil
 	case "link":
 		return PartnerReferralRequestRequestTypeLink, nil
+	case "lead":
+		return PartnerReferralRequestRequestTypeLead, nil
 	}
 	var t PartnerReferralRequestRequestType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -642,7 +886,7 @@ func (p PartnerReferralRequestRequestType) Ptr() *PartnerReferralRequestRequestT
 	return &p
 }
 
-// The approval state, or null for requests without an approval process.
+// The approval state, or `null` for requests without an approval process. A lead offer that gets no answer before `expires_at` becomes `cancelled`.
 type PartnerReferralRequestStatus string
 
 const (
@@ -668,6 +912,32 @@ func NewPartnerReferralRequestStatusFromString(s string) (PartnerReferralRequest
 }
 
 func (p PartnerReferralRequestStatus) Ptr() *PartnerReferralRequestStatus {
+	return &p
+}
+
+// Why the request reached its status. `expired` means a lead offer got no answer before `expires_at`. `passed` means the partner turned down a lead offer. `withdrawn` means the partner cancelled their own request. `null` for any other status.
+type PartnerReferralRequestStatusReason string
+
+const (
+	PartnerReferralRequestStatusReasonExpired   PartnerReferralRequestStatusReason = "expired"
+	PartnerReferralRequestStatusReasonPassed    PartnerReferralRequestStatusReason = "passed"
+	PartnerReferralRequestStatusReasonWithdrawn PartnerReferralRequestStatusReason = "withdrawn"
+)
+
+func NewPartnerReferralRequestStatusReasonFromString(s string) (PartnerReferralRequestStatusReason, error) {
+	switch s {
+	case "expired":
+		return PartnerReferralRequestStatusReasonExpired, nil
+	case "passed":
+		return PartnerReferralRequestStatusReasonPassed, nil
+	case "withdrawn":
+		return PartnerReferralRequestStatusReasonWithdrawn, nil
+	}
+	var t PartnerReferralRequestStatusReason
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PartnerReferralRequestStatusReason) Ptr() *PartnerReferralRequestStatusReason {
 	return &p
 }
 
@@ -2003,6 +2273,7 @@ const (
 	ListPartnerReferralRequestsRequestRequestTypeManual            ListPartnerReferralRequestsRequestRequestType = "manual"
 	ListPartnerReferralRequestsRequestRequestTypeOwnershipTransfer ListPartnerReferralRequestsRequestRequestType = "ownership_transfer"
 	ListPartnerReferralRequestsRequestRequestTypeLink              ListPartnerReferralRequestsRequestRequestType = "link"
+	ListPartnerReferralRequestsRequestRequestTypeLead              ListPartnerReferralRequestsRequestRequestType = "lead"
 )
 
 func NewListPartnerReferralRequestsRequestRequestTypeFromString(s string) (ListPartnerReferralRequestsRequestRequestType, error) {
@@ -2013,6 +2284,8 @@ func NewListPartnerReferralRequestsRequestRequestTypeFromString(s string) (ListP
 		return ListPartnerReferralRequestsRequestRequestTypeOwnershipTransfer, nil
 	case "link":
 		return ListPartnerReferralRequestsRequestRequestTypeLink, nil
+	case "lead":
+		return ListPartnerReferralRequestsRequestRequestTypeLead, nil
 	}
 	var t ListPartnerReferralRequestsRequestRequestType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
