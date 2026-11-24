@@ -1359,23 +1359,29 @@ type RetrieveFinancialReportsResponseRowsItemGrouping string
 
 const (
 	RetrieveFinancialReportsResponseRowsItemGroupingAdvertising           RetrieveFinancialReportsResponseRowsItemGrouping = "advertising"
+	RetrieveFinancialReportsResponseRowsItemGroupingAffiliates            RetrieveFinancialReportsResponseRowsItemGrouping = "affiliates"
 	RetrieveFinancialReportsResponseRowsItemGroupingAffiliatesAndRevshare RetrieveFinancialReportsResponseRowsItemGrouping = "affiliates_and_revshare"
 	RetrieveFinancialReportsResponseRowsItemGroupingAirdrops              RetrieveFinancialReportsResponseRowsItemGrouping = "airdrops"
 	RetrieveFinancialReportsResponseRowsItemGroupingBadDebt               RetrieveFinancialReportsResponseRowsItemGrouping = "bad_debt"
 	RetrieveFinancialReportsResponseRowsItemGroupingBalance               RetrieveFinancialReportsResponseRowsItemGrouping = "balance"
 	RetrieveFinancialReportsResponseRowsItemGroupingCapital               RetrieveFinancialReportsResponseRowsItemGrouping = "capital"
+	RetrieveFinancialReportsResponseRowsItemGroupingCardSpend             RetrieveFinancialReportsResponseRowsItemGrouping = "card_spend"
 	RetrieveFinancialReportsResponseRowsItemGroupingClawbacks             RetrieveFinancialReportsResponseRowsItemGrouping = "clawbacks"
 	RetrieveFinancialReportsResponseRowsItemGroupingCrypto                RetrieveFinancialReportsResponseRowsItemGrouping = "crypto"
+	RetrieveFinancialReportsResponseRowsItemGroupingDeposits              RetrieveFinancialReportsResponseRowsItemGrouping = "deposits"
 	RetrieveFinancialReportsResponseRowsItemGroupingDisputes              RetrieveFinancialReportsResponseRowsItemGrouping = "disputes"
 	RetrieveFinancialReportsResponseRowsItemGroupingFees                  RetrieveFinancialReportsResponseRowsItemGrouping = "fees"
 	RetrieveFinancialReportsResponseRowsItemGroupingFx                    RetrieveFinancialReportsResponseRowsItemGrouping = "fx"
+	RetrieveFinancialReportsResponseRowsItemGroupingInvest                RetrieveFinancialReportsResponseRowsItemGrouping = "invest"
 	RetrieveFinancialReportsResponseRowsItemGroupingLegacy                RetrieveFinancialReportsResponseRowsItemGrouping = "legacy"
 	RetrieveFinancialReportsResponseRowsItemGroupingLevelsPoints          RetrieveFinancialReportsResponseRowsItemGrouping = "levels_points"
 	RetrieveFinancialReportsResponseRowsItemGroupingMisc                  RetrieveFinancialReportsResponseRowsItemGrouping = "misc"
 	RetrieveFinancialReportsResponseRowsItemGroupingOperationalCosts      RetrieveFinancialReportsResponseRowsItemGrouping = "operational_costs"
 	RetrieveFinancialReportsResponseRowsItemGroupingOther                 RetrieveFinancialReportsResponseRowsItemGrouping = "other"
+	RetrieveFinancialReportsResponseRowsItemGroupingPartners              RetrieveFinancialReportsResponseRowsItemGrouping = "partners"
 	RetrieveFinancialReportsResponseRowsItemGroupingPayments              RetrieveFinancialReportsResponseRowsItemGrouping = "payments"
 	RetrieveFinancialReportsResponseRowsItemGroupingPlatformCredits       RetrieveFinancialReportsResponseRowsItemGrouping = "platform_credits"
+	RetrieveFinancialReportsResponseRowsItemGroupingPlatforms             RetrieveFinancialReportsResponseRowsItemGrouping = "platforms"
 	RetrieveFinancialReportsResponseRowsItemGroupingRefunds               RetrieveFinancialReportsResponseRowsItemGrouping = "refunds"
 	RetrieveFinancialReportsResponseRowsItemGroupingReserves              RetrieveFinancialReportsResponseRowsItemGrouping = "reserves"
 	RetrieveFinancialReportsResponseRowsItemGroupingSubaccounts           RetrieveFinancialReportsResponseRowsItemGrouping = "subaccounts"
@@ -1388,6 +1394,8 @@ func NewRetrieveFinancialReportsResponseRowsItemGroupingFromString(s string) (Re
 	switch s {
 	case "advertising":
 		return RetrieveFinancialReportsResponseRowsItemGroupingAdvertising, nil
+	case "affiliates":
+		return RetrieveFinancialReportsResponseRowsItemGroupingAffiliates, nil
 	case "affiliates_and_revshare":
 		return RetrieveFinancialReportsResponseRowsItemGroupingAffiliatesAndRevshare, nil
 	case "airdrops":
@@ -1398,16 +1406,22 @@ func NewRetrieveFinancialReportsResponseRowsItemGroupingFromString(s string) (Re
 		return RetrieveFinancialReportsResponseRowsItemGroupingBalance, nil
 	case "capital":
 		return RetrieveFinancialReportsResponseRowsItemGroupingCapital, nil
+	case "card_spend":
+		return RetrieveFinancialReportsResponseRowsItemGroupingCardSpend, nil
 	case "clawbacks":
 		return RetrieveFinancialReportsResponseRowsItemGroupingClawbacks, nil
 	case "crypto":
 		return RetrieveFinancialReportsResponseRowsItemGroupingCrypto, nil
+	case "deposits":
+		return RetrieveFinancialReportsResponseRowsItemGroupingDeposits, nil
 	case "disputes":
 		return RetrieveFinancialReportsResponseRowsItemGroupingDisputes, nil
 	case "fees":
 		return RetrieveFinancialReportsResponseRowsItemGroupingFees, nil
 	case "fx":
 		return RetrieveFinancialReportsResponseRowsItemGroupingFx, nil
+	case "invest":
+		return RetrieveFinancialReportsResponseRowsItemGroupingInvest, nil
 	case "legacy":
 		return RetrieveFinancialReportsResponseRowsItemGroupingLegacy, nil
 	case "levels_points":
@@ -1418,10 +1432,14 @@ func NewRetrieveFinancialReportsResponseRowsItemGroupingFromString(s string) (Re
 		return RetrieveFinancialReportsResponseRowsItemGroupingOperationalCosts, nil
 	case "other":
 		return RetrieveFinancialReportsResponseRowsItemGroupingOther, nil
+	case "partners":
+		return RetrieveFinancialReportsResponseRowsItemGroupingPartners, nil
 	case "payments":
 		return RetrieveFinancialReportsResponseRowsItemGroupingPayments, nil
 	case "platform_credits":
 		return RetrieveFinancialReportsResponseRowsItemGroupingPlatformCredits, nil
+	case "platforms":
+		return RetrieveFinancialReportsResponseRowsItemGroupingPlatforms, nil
 	case "refunds":
 		return RetrieveFinancialReportsResponseRowsItemGroupingRefunds, nil
 	case "reserves":
