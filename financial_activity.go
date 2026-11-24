@@ -383,6 +383,8 @@ const (
 	ListFinancialActivityRequestLineTypesItemPlatformCreditsPayment                    ListFinancialActivityRequestLineTypesItem = "platform_credits_payment"
 	ListFinancialActivityRequestLineTypesItemPlatformCreditsPaymentRefund              ListFinancialActivityRequestLineTypesItem = "platform_credits_payment_refund"
 	ListFinancialActivityRequestLineTypesItemPlatformEarning                           ListFinancialActivityRequestLineTypesItem = "platform_earning"
+	ListFinancialActivityRequestLineTypesItemPlatformInterchangeShare                  ListFinancialActivityRequestLineTypesItem = "platform_interchange_share"
+	ListFinancialActivityRequestLineTypesItemPlatformInterchangeShareReversal          ListFinancialActivityRequestLineTypesItem = "platform_interchange_share_reversal"
 	ListFinancialActivityRequestLineTypesItemPlatformMarkupFee                         ListFinancialActivityRequestLineTypesItem = "platform_markup_fee"
 	ListFinancialActivityRequestLineTypesItemPlatformMarkupFeePayout                   ListFinancialActivityRequestLineTypesItem = "platform_markup_fee_payout"
 	ListFinancialActivityRequestLineTypesItemPromoReversal                             ListFinancialActivityRequestLineTypesItem = "promo_reversal"
@@ -655,6 +657,10 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemPlatformCreditsPaymentRefund, nil
 	case "platform_earning":
 		return ListFinancialActivityRequestLineTypesItemPlatformEarning, nil
+	case "platform_interchange_share":
+		return ListFinancialActivityRequestLineTypesItemPlatformInterchangeShare, nil
+	case "platform_interchange_share_reversal":
+		return ListFinancialActivityRequestLineTypesItemPlatformInterchangeShareReversal, nil
 	case "platform_markup_fee":
 		return ListFinancialActivityRequestLineTypesItemPlatformMarkupFee, nil
 	case "platform_markup_fee_payout":
