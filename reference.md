@@ -11414,7 +11414,7 @@ client.Cards.List(
 <dl>
 <dd>
 
-**accountID:** `*string` — The owning account ID (a biz_ identifier). Provide this or user_id.
+**accountID:** `*string` — The owning account ID: a biz_ identifier for a business, or a user_ identifier for a personal account. Provide this or user_id.
     
 </dd>
 </dl>
@@ -11480,7 +11480,7 @@ client.Cards.Create(
 <dl>
 <dd>
 
-**accountID:** `*string` — The owning account ID (a biz_ identifier). Provide this or user_id.
+**accountID:** `*string` — The owning account ID: a biz_ identifier for a business, or a user_ identifier for a personal account. Provide this or user_id.
     
 </dd>
 </dl>
@@ -11620,7 +11620,7 @@ client.Cards.Retrieve(
 <dl>
 <dd>
 
-**accountID:** `*string` — The owning account ID (a biz_ identifier). Provide this or user_id.
+**accountID:** `*string` — The owning account ID: a biz_ identifier for a business, or a user_ identifier for a personal account. Provide this or user_id.
     
 </dd>
 </dl>
@@ -11696,7 +11696,7 @@ client.Cards.Update(
 <dl>
 <dd>
 
-**accountID:** `*string` — The owning account ID (a biz_ identifier). Provide this or user_id.
+**accountID:** `*string` — The owning account ID: a biz_ identifier for a business, or a user_ identifier for a personal account. Provide this or user_id.
     
 </dd>
 </dl>
