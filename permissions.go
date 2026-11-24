@@ -287,6 +287,7 @@ const (
 	PermissionActionSocialAccountDelete               PermissionAction = "social_account:delete"
 	PermissionActionSocialAccountRead                 PermissionAction = "social_account:read"
 	PermissionActionSocialLinkUpdate                  PermissionAction = "social_link:update"
+	PermissionActionSocialMentionRead                 PermissionAction = "social_mention:read"
 	PermissionActionStatsRead                         PermissionAction = "stats:read"
 	PermissionActionSupportChatCreate                 PermissionAction = "support_chat:create"
 	PermissionActionSupportChatMessageCreate          PermissionAction = "support_chat:message:create"
@@ -825,6 +826,8 @@ func NewPermissionActionFromString(s string) (PermissionAction, error) {
 		return PermissionActionSocialAccountRead, nil
 	case "social_link:update":
 		return PermissionActionSocialLinkUpdate, nil
+	case "social_mention:read":
+		return PermissionActionSocialMentionRead, nil
 	case "stats:read":
 		return PermissionActionStatsRead, nil
 	case "support_chat:create":

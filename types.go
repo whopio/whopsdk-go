@@ -56155,7 +56155,7 @@ type PaymentLegacyProduct struct {
 	ID string `json:"id" url:"id"`
 	// Custom key-value pairs stored on the product and included in payment and membership webhook payloads. Max 50 keys, 100 characters per key, 500 characters per string value.
 	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// URL slug in the product's public link, e.g. `pickaxe-analytics` in whop.com/company/pickaxe-analytics.
+	// URL slug in the product's public link, e.g. `ceramic-coating-package` in whop.com/company/ceramic-coating-package.
 	Route string `json:"route" url:"route"`
 	// The display name of the product shown to customers on the product page and in search results.
 	Title string `json:"title" url:"title"`
@@ -61543,7 +61543,7 @@ type PaymentListItemProduct struct {
 	ID string `json:"id" url:"id"`
 	// Custom key-value pairs stored on the product and included in payment and membership webhook payloads. Max 50 keys, 100 characters per key, 500 characters per string value.
 	Metadata map[string]any `json:"metadata,omitempty" url:"metadata,omitempty"`
-	// URL slug in the product's public link, e.g. `pickaxe-analytics` in whop.com/company/pickaxe-analytics.
+	// URL slug in the product's public link, e.g. `ceramic-coating-package` in whop.com/company/ceramic-coating-package.
 	Route string `json:"route" url:"route"`
 	// The display name of the product shown to customers on the product page and in search results.
 	Title string `json:"title" url:"title"`
@@ -65847,7 +65847,7 @@ type ProductLegacy struct {
 	ProductTaxCode *ProductLegacyProductTaxCode `json:"product_tax_code,omitempty" url:"product_tax_code,omitempty"`
 	// The total number of published customer reviews for this product's company.
 	PublishedReviewsCount int `json:"published_reviews_count" url:"published_reviews_count"`
-	// URL slug in the product's public link, e.g. `pickaxe-analytics` in whop.com/company/pickaxe-analytics.
+	// URL slug in the product's public link, e.g. `ceramic-coating-package` in whop.com/company/ceramic-coating-package.
 	Route string `json:"route" url:"route"`
 	// The display name of the product shown to customers on the product page and in search results.
 	Title string `json:"title" url:"title"`
@@ -66679,7 +66679,7 @@ var (
 type ProductLegacyProductTaxCode struct {
 	// The unique identifier for the product tax code.
 	ID string `json:"id" url:"id"`
-	// Human-readable name of this tax classification, such as 'Digital - SaaS'.
+	// Human-readable name of this tax classification, such as 'Services'.
 	Name string `json:"name" url:"name"`
 	// Broad product category this tax code covers, such as physical goods or digital services.
 	ProductType ProductTaxCodeProductTypes `json:"product_type" url:"product_type"`
