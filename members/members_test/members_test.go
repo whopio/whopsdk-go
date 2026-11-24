@@ -142,7 +142,7 @@ func TestMembersCreateWithWireMock(
 		option.WithToken("test-token"),
 	)
 	request := &whopsdk.CreateMembersRequest{
-		Email: "jane@example.com",
+		Email: "dana@shinetime.example",
 	}
 	_, invocationErr := client.Members.Create(
 		context.TODO(),

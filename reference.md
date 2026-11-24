@@ -26330,7 +26330,7 @@ Adds a person to an account as a member. If the person is already a member of th
 
 ```go
 request := &whopsdk.CreateMembersRequest{
-    Email: "jane@example.com",
+    Email: "dana@shinetime.example",
 }
 client.Members.Create(
     context.TODO(),
