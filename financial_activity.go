@@ -315,7 +315,9 @@ const (
 	ListFinancialActivityRequestLineTypesItemHighRiskMerchantFee                       ListFinancialActivityRequestLineTypesItem = "high_risk_merchant_fee"
 	ListFinancialActivityRequestLineTypesItemInstallmentDefault                        ListFinancialActivityRequestLineTypesItem = "installment_default"
 	ListFinancialActivityRequestLineTypesItemInternalBalanceTransferIncoming           ListFinancialActivityRequestLineTypesItem = "internal_balance_transfer_incoming"
+	ListFinancialActivityRequestLineTypesItemInternalBalanceTransferIncomingReversal   ListFinancialActivityRequestLineTypesItem = "internal_balance_transfer_incoming_reversal"
 	ListFinancialActivityRequestLineTypesItemInternalBalanceTransferOutgoing           ListFinancialActivityRequestLineTypesItem = "internal_balance_transfer_outgoing"
+	ListFinancialActivityRequestLineTypesItemInternalBalanceTransferOutgoingReversal   ListFinancialActivityRequestLineTypesItem = "internal_balance_transfer_outgoing_reversal"
 	ListFinancialActivityRequestLineTypesItemInternalWithdrawal                        ListFinancialActivityRequestLineTypesItem = "internal_withdrawal"
 	ListFinancialActivityRequestLineTypesItemInternalWithdrawalComplete                ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_complete"
 	ListFinancialActivityRequestLineTypesItemInternalWithdrawalFee                     ListFinancialActivityRequestLineTypesItem = "internal_withdrawal_fee"
@@ -376,8 +378,11 @@ const (
 	ListFinancialActivityRequestLineTypesItemPlatformBalancePayment                    ListFinancialActivityRequestLineTypesItem = "platform_balance_payment"
 	ListFinancialActivityRequestLineTypesItemPlatformBalancePaymentRefund              ListFinancialActivityRequestLineTypesItem = "platform_balance_payment_refund"
 	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferFee                ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_fee"
+	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferFeeReversal        ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_fee_reversal"
 	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferIncoming           ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_incoming"
+	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferIncomingReversal   ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_incoming_reversal"
 	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferOutgoing           ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_outgoing"
+	ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferOutgoingReversal   ListFinancialActivityRequestLineTypesItem = "platform_balance_transfer_outgoing_reversal"
 	ListFinancialActivityRequestLineTypesItemPlatformCoveredDispute                    ListFinancialActivityRequestLineTypesItem = "platform_covered_dispute"
 	ListFinancialActivityRequestLineTypesItemPlatformCreditsGranted                    ListFinancialActivityRequestLineTypesItem = "platform_credits_granted"
 	ListFinancialActivityRequestLineTypesItemPlatformCreditsPayment                    ListFinancialActivityRequestLineTypesItem = "platform_credits_payment"
@@ -521,8 +526,12 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemInstallmentDefault, nil
 	case "internal_balance_transfer_incoming":
 		return ListFinancialActivityRequestLineTypesItemInternalBalanceTransferIncoming, nil
+	case "internal_balance_transfer_incoming_reversal":
+		return ListFinancialActivityRequestLineTypesItemInternalBalanceTransferIncomingReversal, nil
 	case "internal_balance_transfer_outgoing":
 		return ListFinancialActivityRequestLineTypesItemInternalBalanceTransferOutgoing, nil
+	case "internal_balance_transfer_outgoing_reversal":
+		return ListFinancialActivityRequestLineTypesItemInternalBalanceTransferOutgoingReversal, nil
 	case "internal_withdrawal":
 		return ListFinancialActivityRequestLineTypesItemInternalWithdrawal, nil
 	case "internal_withdrawal_complete":
@@ -643,10 +652,16 @@ func NewListFinancialActivityRequestLineTypesItemFromString(s string) (ListFinan
 		return ListFinancialActivityRequestLineTypesItemPlatformBalancePaymentRefund, nil
 	case "platform_balance_transfer_fee":
 		return ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferFee, nil
+	case "platform_balance_transfer_fee_reversal":
+		return ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferFeeReversal, nil
 	case "platform_balance_transfer_incoming":
 		return ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferIncoming, nil
+	case "platform_balance_transfer_incoming_reversal":
+		return ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferIncomingReversal, nil
 	case "platform_balance_transfer_outgoing":
 		return ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferOutgoing, nil
+	case "platform_balance_transfer_outgoing_reversal":
+		return ListFinancialActivityRequestLineTypesItemPlatformBalanceTransferOutgoingReversal, nil
 	case "platform_covered_dispute":
 		return ListFinancialActivityRequestLineTypesItemPlatformCoveredDispute, nil
 	case "platform_credits_granted":

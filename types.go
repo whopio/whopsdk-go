@@ -28590,6 +28590,11 @@ const (
 	LedgerActivityLineTypeInternalBalanceTransferOutgoing           LedgerActivityLineType = "internal_balance_transfer_outgoing"
 	LedgerActivityLineTypeInternalBalanceTransferIncoming           LedgerActivityLineType = "internal_balance_transfer_incoming"
 	LedgerActivityLineTypePlatformBalanceTransferFee                LedgerActivityLineType = "platform_balance_transfer_fee"
+	LedgerActivityLineTypePlatformBalanceTransferFeeReversal        LedgerActivityLineType = "platform_balance_transfer_fee_reversal"
+	LedgerActivityLineTypePlatformBalanceTransferIncomingReversal   LedgerActivityLineType = "platform_balance_transfer_incoming_reversal"
+	LedgerActivityLineTypePlatformBalanceTransferOutgoingReversal   LedgerActivityLineType = "platform_balance_transfer_outgoing_reversal"
+	LedgerActivityLineTypeInternalBalanceTransferIncomingReversal   LedgerActivityLineType = "internal_balance_transfer_incoming_reversal"
+	LedgerActivityLineTypeInternalBalanceTransferOutgoingReversal   LedgerActivityLineType = "internal_balance_transfer_outgoing_reversal"
 	LedgerActivityLineTypeConnectedAccountClawback                  LedgerActivityLineType = "connected_account_clawback"
 	LedgerActivityLineTypeConnectedAccountNegativeBalance           LedgerActivityLineType = "connected_account_negative_balance"
 	LedgerActivityLineTypeAdPublisherPayout                         LedgerActivityLineType = "ad_publisher_payout"
@@ -29110,6 +29115,16 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeInternalBalanceTransferIncoming, nil
 	case "platform_balance_transfer_fee":
 		return LedgerActivityLineTypePlatformBalanceTransferFee, nil
+	case "platform_balance_transfer_fee_reversal":
+		return LedgerActivityLineTypePlatformBalanceTransferFeeReversal, nil
+	case "platform_balance_transfer_incoming_reversal":
+		return LedgerActivityLineTypePlatformBalanceTransferIncomingReversal, nil
+	case "platform_balance_transfer_outgoing_reversal":
+		return LedgerActivityLineTypePlatformBalanceTransferOutgoingReversal, nil
+	case "internal_balance_transfer_incoming_reversal":
+		return LedgerActivityLineTypeInternalBalanceTransferIncomingReversal, nil
+	case "internal_balance_transfer_outgoing_reversal":
+		return LedgerActivityLineTypeInternalBalanceTransferOutgoingReversal, nil
 	case "connected_account_clawback":
 		return LedgerActivityLineTypeConnectedAccountClawback, nil
 	case "connected_account_negative_balance":
