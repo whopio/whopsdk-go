@@ -28562,6 +28562,8 @@ const (
 	LedgerActivityLineTypeCashbackFunding                           LedgerActivityLineType = "cashback_funding"
 	LedgerActivityLineTypeCardInterchangeReceivable                 LedgerActivityLineType = "card_interchange_receivable"
 	LedgerActivityLineTypeCardInterchange                           LedgerActivityLineType = "card_interchange"
+	LedgerActivityLineTypePlatformInterchangeShareExpense           LedgerActivityLineType = "platform_interchange_share_expense"
+	LedgerActivityLineTypePlatformInterchangeSharePayable           LedgerActivityLineType = "platform_interchange_share_payable"
 	LedgerActivityLineTypeAccountSettlement                         LedgerActivityLineType = "account_settlement"
 	LedgerActivityLineTypeCurrencyConversionOutgoing                LedgerActivityLineType = "currency_conversion_outgoing"
 	LedgerActivityLineTypeCurrencyConversionIncoming                LedgerActivityLineType = "currency_conversion_incoming"
@@ -28594,6 +28596,8 @@ const (
 	LedgerActivityLineTypeAdPublisherPayoutReceived                 LedgerActivityLineType = "ad_publisher_payout_received"
 	LedgerActivityLineTypeCompanyReferral                           LedgerActivityLineType = "company_referral"
 	LedgerActivityLineTypePlatformAffiliatePayment                  LedgerActivityLineType = "platform_affiliate_payment"
+	LedgerActivityLineTypePlatformInterchangeShare                  LedgerActivityLineType = "platform_interchange_share"
+	LedgerActivityLineTypePlatformInterchangeShareReversal          LedgerActivityLineType = "platform_interchange_share_reversal"
 	LedgerActivityLineTypePlatformAffiliatePaymentReversal          LedgerActivityLineType = "platform_affiliate_payment_reversal"
 	LedgerActivityLineTypeOnboardingReward                          LedgerActivityLineType = "onboarding_reward"
 	LedgerActivityLineTypePartnerGrantReward                        LedgerActivityLineType = "partner_grant_reward"
@@ -29050,6 +29054,10 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeCardInterchangeReceivable, nil
 	case "card_interchange":
 		return LedgerActivityLineTypeCardInterchange, nil
+	case "platform_interchange_share_expense":
+		return LedgerActivityLineTypePlatformInterchangeShareExpense, nil
+	case "platform_interchange_share_payable":
+		return LedgerActivityLineTypePlatformInterchangeSharePayable, nil
 	case "account_settlement":
 		return LedgerActivityLineTypeAccountSettlement, nil
 	case "currency_conversion_outgoing":
@@ -29114,6 +29122,10 @@ func NewLedgerActivityLineTypeFromString(s string) (LedgerActivityLineType, erro
 		return LedgerActivityLineTypeCompanyReferral, nil
 	case "platform_affiliate_payment":
 		return LedgerActivityLineTypePlatformAffiliatePayment, nil
+	case "platform_interchange_share":
+		return LedgerActivityLineTypePlatformInterchangeShare, nil
+	case "platform_interchange_share_reversal":
+		return LedgerActivityLineTypePlatformInterchangeShareReversal, nil
 	case "platform_affiliate_payment_reversal":
 		return LedgerActivityLineTypePlatformAffiliatePaymentReversal, nil
 	case "onboarding_reward":

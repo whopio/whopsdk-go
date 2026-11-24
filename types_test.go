@@ -202820,6 +202820,20 @@ func TestEnumLedgerActivityLineType(t *testing.T) {
 		assert.Equal(t, LedgerActivityLineType("card_interchange"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_platform_interchange_share_expense", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("platform_interchange_share_expense")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("platform_interchange_share_expense"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platform_interchange_share_payable", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("platform_interchange_share_payable")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("platform_interchange_share_payable"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_account_settlement", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewLedgerActivityLineTypeFromString("account_settlement")
@@ -203042,6 +203056,20 @@ func TestEnumLedgerActivityLineType(t *testing.T) {
 		val, err := NewLedgerActivityLineTypeFromString("platform_affiliate_payment")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, LedgerActivityLineType("platform_affiliate_payment"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platform_interchange_share", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("platform_interchange_share")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("platform_interchange_share"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platform_interchange_share_reversal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewLedgerActivityLineTypeFromString("platform_interchange_share_reversal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, LedgerActivityLineType("platform_interchange_share_reversal"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_platform_affiliate_payment_reversal", func(t *testing.T) {

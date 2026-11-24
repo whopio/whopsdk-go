@@ -319,6 +319,8 @@ const (
 	RetrieveFinancialReportsRequestLineTypesItemPlatformCreditsPayment                    RetrieveFinancialReportsRequestLineTypesItem = "platform_credits_payment"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformCreditsPaymentRefund              RetrieveFinancialReportsRequestLineTypesItem = "platform_credits_payment_refund"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformEarning                           RetrieveFinancialReportsRequestLineTypesItem = "platform_earning"
+	RetrieveFinancialReportsRequestLineTypesItemPlatformInterchangeShare                  RetrieveFinancialReportsRequestLineTypesItem = "platform_interchange_share"
+	RetrieveFinancialReportsRequestLineTypesItemPlatformInterchangeShareReversal          RetrieveFinancialReportsRequestLineTypesItem = "platform_interchange_share_reversal"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformMarkupFee                         RetrieveFinancialReportsRequestLineTypesItem = "platform_markup_fee"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformMarkupFeePayout                   RetrieveFinancialReportsRequestLineTypesItem = "platform_markup_fee_payout"
 	RetrieveFinancialReportsRequestLineTypesItemPromoReversal                             RetrieveFinancialReportsRequestLineTypesItem = "promo_reversal"
@@ -591,6 +593,10 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 		return RetrieveFinancialReportsRequestLineTypesItemPlatformCreditsPaymentRefund, nil
 	case "platform_earning":
 		return RetrieveFinancialReportsRequestLineTypesItemPlatformEarning, nil
+	case "platform_interchange_share":
+		return RetrieveFinancialReportsRequestLineTypesItemPlatformInterchangeShare, nil
+	case "platform_interchange_share_reversal":
+		return RetrieveFinancialReportsRequestLineTypesItemPlatformInterchangeShareReversal, nil
 	case "platform_markup_fee":
 		return RetrieveFinancialReportsRequestLineTypesItemPlatformMarkupFee, nil
 	case "platform_markup_fee_payout":
@@ -1675,6 +1681,10 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformEarning                           RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_earning"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformEarningSettlement                 RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_earning_settlement"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformEarningUnreconciledClearing       RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_earning_unreconciled_clearing"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformInterchangeShare                  RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_interchange_share"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformInterchangeShareExpense           RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_interchange_share_expense"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformInterchangeSharePayable           RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_interchange_share_payable"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformInterchangeShareReversal          RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_interchange_share_reversal"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformMarkupFee                         RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_markup_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformMarkupFeePayout                   RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_markup_fee_payout"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformTradingCommission                 RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_trading_commission"
@@ -2228,6 +2238,14 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformEarningSettlement, nil
 	case "platform_earning_unreconciled_clearing":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformEarningUnreconciledClearing, nil
+	case "platform_interchange_share":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformInterchangeShare, nil
+	case "platform_interchange_share_expense":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformInterchangeShareExpense, nil
+	case "platform_interchange_share_payable":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformInterchangeSharePayable, nil
+	case "platform_interchange_share_reversal":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformInterchangeShareReversal, nil
 	case "platform_markup_fee":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformMarkupFee, nil
 	case "platform_markup_fee_payout":
