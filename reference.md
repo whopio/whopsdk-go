@@ -3902,6 +3902,14 @@ client.Ads.Create(
 <dl>
 <dd>
 
+**accountID:** `*string` — The account to create an inline `ad_group.ad_campaign` under. Defaults to the account-scoped key's own account.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **adGroup:** `map[string]any` — An inline ad group to create (same shape as POST /ad_groups, including ad_campaign_id). Creates the ad group and the ad together. Provide this OR ad_group_id.
     
 </dd>
