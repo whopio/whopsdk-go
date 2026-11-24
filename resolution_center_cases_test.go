@@ -296,6 +296,14 @@ func TestSettersMarkExplicitAppealResolutionCenterCasesRequest(t *testing.T) {
 }
 
 func TestSettersCreateResolutionCenterCasesRequest(t *testing.T) {
+	t.Run("SetAnswers", func(t *testing.T) {
+		obj := &CreateResolutionCenterCasesRequest{}
+		var fernTestValueAnswers []*CreateResolutionCenterCasesRequestAnswersItem
+		obj.SetAnswers(fernTestValueAnswers)
+		assert.Equal(t, fernTestValueAnswers, obj.Answers)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAttachments", func(t *testing.T) {
 		obj := &CreateResolutionCenterCasesRequest{}
 		var fernTestValueAttachments []*CreateResolutionCenterCasesRequestAttachmentsItem
@@ -331,6 +339,37 @@ func TestSettersCreateResolutionCenterCasesRequest(t *testing.T) {
 }
 
 func TestSettersMarkExplicitCreateResolutionCenterCasesRequest(t *testing.T) {
+	t.Run("SetAnswers_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateResolutionCenterCasesRequest{}
+		var fernTestValueAnswers []*CreateResolutionCenterCasesRequestAnswersItem
+
+		// Act
+		obj.SetAnswers(fernTestValueAnswers)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetAttachments_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2888,6 +2927,14 @@ func TestSettersResolutionCenterCase(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAnswers", func(t *testing.T) {
+		obj := &ResolutionCenterCase{}
+		var fernTestValueAnswers []*ResolutionCenterCaseAnswer
+		obj.SetAnswers(fernTestValueAnswers)
+		assert.Equal(t, fernTestValueAnswers, obj.Answers)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAvailableActions", func(t *testing.T) {
 		obj := &ResolutionCenterCase{}
 		var fernTestValueAvailableActions []ResolutionCenterCaseAvailableActionsItem
@@ -3089,6 +3136,39 @@ func TestGettersResolutionCenterCase(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAmount() // Should return zero value
+	})
+
+	t.Run("GetAnswers", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResolutionCenterCase{}
+		var expected []*ResolutionCenterCaseAnswer
+		obj.Answers = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAnswers(), "getter should return the property value")
+	})
+
+	t.Run("GetAnswers_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResolutionCenterCase{}
+		obj.Answers = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAnswers(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAnswers_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ResolutionCenterCase
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAnswers() // Should return zero value
 	})
 
 	t.Run("GetAvailableActions", func(t *testing.T) {
@@ -3680,6 +3760,37 @@ func TestSettersMarkExplicitResolutionCenterCase(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetAnswers_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResolutionCenterCase{}
+		var fernTestValueAnswers []*ResolutionCenterCaseAnswer
+
+		// Act
+		obj.SetAnswers(fernTestValueAnswers)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetAvailableActions_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -4215,6 +4326,283 @@ func TestSettersMarkExplicitResolutionCenterCase(t *testing.T) {
 
 		// Act
 		obj.SetVariantID(fernTestValueVariantID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersResolutionCenterCaseAnswer(t *testing.T) {
+	t.Run("SetAttachments", func(t *testing.T) {
+		obj := &ResolutionCenterCaseAnswer{}
+		var fernTestValueAttachments []*ResolutionAttachment
+		obj.SetAttachments(fernTestValueAttachments)
+		assert.Equal(t, fernTestValueAttachments, obj.Attachments)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetID", func(t *testing.T) {
+		obj := &ResolutionCenterCaseAnswer{}
+		var fernTestValueID string
+		obj.SetID(fernTestValueID)
+		assert.Equal(t, fernTestValueID, obj.ID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetQuestion", func(t *testing.T) {
+		obj := &ResolutionCenterCaseAnswer{}
+		var fernTestValueQuestion ResolutionCenterCaseAnswerQuestion
+		obj.SetQuestion(fernTestValueQuestion)
+		assert.Equal(t, fernTestValueQuestion, obj.Question)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetValue", func(t *testing.T) {
+		obj := &ResolutionCenterCaseAnswer{}
+		var fernTestValueValue *string
+		obj.SetValue(fernTestValueValue)
+		assert.Equal(t, fernTestValueValue, obj.Value)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersResolutionCenterCaseAnswer(t *testing.T) {
+	t.Run("GetAttachments", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResolutionCenterCaseAnswer{}
+		var expected []*ResolutionAttachment
+		obj.Attachments = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAttachments(), "getter should return the property value")
+	})
+
+	t.Run("GetAttachments_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResolutionCenterCaseAnswer{}
+		obj.Attachments = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAttachments(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAttachments_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ResolutionCenterCaseAnswer
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAttachments() // Should return zero value
+	})
+
+	t.Run("GetID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResolutionCenterCaseAnswer{}
+		var expected string
+		obj.ID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetID(), "getter should return the property value")
+	})
+
+	t.Run("GetID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ResolutionCenterCaseAnswer
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetID() // Should return zero value
+	})
+
+	t.Run("GetQuestion", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResolutionCenterCaseAnswer{}
+		var expected ResolutionCenterCaseAnswerQuestion
+		obj.Question = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetQuestion(), "getter should return the property value")
+	})
+
+	t.Run("GetQuestion_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ResolutionCenterCaseAnswer
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetQuestion() // Should return zero value
+	})
+
+	t.Run("GetValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResolutionCenterCaseAnswer{}
+		var expected *string
+		obj.Value = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetValue(), "getter should return the property value")
+	})
+
+	t.Run("GetValue_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResolutionCenterCaseAnswer{}
+		obj.Value = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetValue(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetValue_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ResolutionCenterCaseAnswer
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetValue() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitResolutionCenterCaseAnswer(t *testing.T) {
+	t.Run("SetAttachments_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResolutionCenterCaseAnswer{}
+		var fernTestValueAttachments []*ResolutionAttachment
+
+		// Act
+		obj.SetAttachments(fernTestValueAttachments)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResolutionCenterCaseAnswer{}
+		var fernTestValueID string
+
+		// Act
+		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetQuestion_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResolutionCenterCaseAnswer{}
+		var fernTestValueQuestion ResolutionCenterCaseAnswerQuestion
+
+		// Act
+		obj.SetQuestion(fernTestValueQuestion)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetValue_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResolutionCenterCaseAnswer{}
+		var fernTestValueValue *string
+
+		// Act
+		obj.SetValue(fernTestValueValue)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -5391,6 +5779,374 @@ func TestSettersMarkExplicitAppealResolutionCenterCasesRequestAttachmentsItem(t 
 		t.Parallel()
 		// Arrange
 		obj := &AppealResolutionCenterCasesRequestAttachmentsItem{}
+		var fernTestValueID *string
+
+		// Act
+		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersCreateResolutionCenterCasesRequestAnswersItem(t *testing.T) {
+	t.Run("SetAttachments", func(t *testing.T) {
+		obj := &CreateResolutionCenterCasesRequestAnswersItem{}
+		var fernTestValueAttachments []*CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem
+		obj.SetAttachments(fernTestValueAttachments)
+		assert.Equal(t, fernTestValueAttachments, obj.Attachments)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetQuestion", func(t *testing.T) {
+		obj := &CreateResolutionCenterCasesRequestAnswersItem{}
+		var fernTestValueQuestion CreateResolutionCenterCasesRequestAnswersItemQuestion
+		obj.SetQuestion(fernTestValueQuestion)
+		assert.Equal(t, fernTestValueQuestion, obj.Question)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetValue", func(t *testing.T) {
+		obj := &CreateResolutionCenterCasesRequestAnswersItem{}
+		var fernTestValueValue *string
+		obj.SetValue(fernTestValueValue)
+		assert.Equal(t, fernTestValueValue, obj.Value)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCreateResolutionCenterCasesRequestAnswersItem(t *testing.T) {
+	t.Run("GetAttachments", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateResolutionCenterCasesRequestAnswersItem{}
+		var expected []*CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem
+		obj.Attachments = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAttachments(), "getter should return the property value")
+	})
+
+	t.Run("GetAttachments_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateResolutionCenterCasesRequestAnswersItem{}
+		obj.Attachments = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAttachments(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAttachments_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateResolutionCenterCasesRequestAnswersItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAttachments() // Should return zero value
+	})
+
+	t.Run("GetQuestion", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateResolutionCenterCasesRequestAnswersItem{}
+		var expected CreateResolutionCenterCasesRequestAnswersItemQuestion
+		obj.Question = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetQuestion(), "getter should return the property value")
+	})
+
+	t.Run("GetQuestion_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateResolutionCenterCasesRequestAnswersItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetQuestion() // Should return zero value
+	})
+
+	t.Run("GetValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateResolutionCenterCasesRequestAnswersItem{}
+		var expected *string
+		obj.Value = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetValue(), "getter should return the property value")
+	})
+
+	t.Run("GetValue_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateResolutionCenterCasesRequestAnswersItem{}
+		obj.Value = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetValue(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetValue_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateResolutionCenterCasesRequestAnswersItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetValue() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCreateResolutionCenterCasesRequestAnswersItem(t *testing.T) {
+	t.Run("SetAttachments_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateResolutionCenterCasesRequestAnswersItem{}
+		var fernTestValueAttachments []*CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem
+
+		// Act
+		obj.SetAttachments(fernTestValueAttachments)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetQuestion_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateResolutionCenterCasesRequestAnswersItem{}
+		var fernTestValueQuestion CreateResolutionCenterCasesRequestAnswersItemQuestion
+
+		// Act
+		obj.SetQuestion(fernTestValueQuestion)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetValue_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateResolutionCenterCasesRequestAnswersItem{}
+		var fernTestValueValue *string
+
+		// Act
+		obj.SetValue(fernTestValueValue)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
+func TestSettersCreateResolutionCenterCasesRequestAnswersItemAttachmentsItem(t *testing.T) {
+	t.Run("SetDirectUploadID", func(t *testing.T) {
+		obj := &CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem{}
+		var fernTestValueDirectUploadID *string
+		obj.SetDirectUploadID(fernTestValueDirectUploadID)
+		assert.Equal(t, fernTestValueDirectUploadID, obj.DirectUploadID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetID", func(t *testing.T) {
+		obj := &CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem{}
+		var fernTestValueID *string
+		obj.SetID(fernTestValueID)
+		assert.Equal(t, fernTestValueID, obj.ID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestGettersCreateResolutionCenterCasesRequestAnswersItemAttachmentsItem(t *testing.T) {
+	t.Run("GetDirectUploadID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem{}
+		var expected *string
+		obj.DirectUploadID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDirectUploadID(), "getter should return the property value")
+	})
+
+	t.Run("GetDirectUploadID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem{}
+		obj.DirectUploadID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDirectUploadID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDirectUploadID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDirectUploadID() // Should return zero value
+	})
+
+	t.Run("GetID", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem{}
+		var expected *string
+		obj.ID = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetID(), "getter should return the property value")
+	})
+
+	t.Run("GetID_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem{}
+		obj.ID = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetID(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetID_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetID() // Should return zero value
+	})
+
+}
+
+func TestSettersMarkExplicitCreateResolutionCenterCasesRequestAnswersItemAttachmentsItem(t *testing.T) {
+	t.Run("SetDirectUploadID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem{}
+		var fernTestValueDirectUploadID *string
+
+		// Act
+		obj.SetDirectUploadID(fernTestValueDirectUploadID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem{}
 		var fernTestValueID *string
 
 		// Act
@@ -9091,6 +9847,14 @@ func TestSettersMarkExplicitSummaryResolutionCenterCasesResponseGroupsOutcome(t 
 }
 
 func TestSettersSummaryResolutionCenterCasesResponseGroupsReason(t *testing.T) {
+	t.Run("SetCreditNotProcessed", func(t *testing.T) {
+		obj := &SummaryResolutionCenterCasesResponseGroupsReason{}
+		var fernTestValueCreditNotProcessed int
+		obj.SetCreditNotProcessed(fernTestValueCreditNotProcessed)
+		assert.Equal(t, fernTestValueCreditNotProcessed, obj.CreditNotProcessed)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetFraudulent", func(t *testing.T) {
 		obj := &SummaryResolutionCenterCasesResponseGroupsReason{}
 		var fernTestValueFraudulent int
@@ -9134,6 +9898,29 @@ func TestSettersSummaryResolutionCenterCasesResponseGroupsReason(t *testing.T) {
 }
 
 func TestGettersSummaryResolutionCenterCasesResponseGroupsReason(t *testing.T) {
+	t.Run("GetCreditNotProcessed", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SummaryResolutionCenterCasesResponseGroupsReason{}
+		var expected int
+		obj.CreditNotProcessed = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetCreditNotProcessed(), "getter should return the property value")
+	})
+
+	t.Run("GetCreditNotProcessed_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SummaryResolutionCenterCasesResponseGroupsReason
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetCreditNotProcessed() // Should return zero value
+	})
+
 	t.Run("GetFraudulent", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -9252,6 +10039,37 @@ func TestGettersSummaryResolutionCenterCasesResponseGroupsReason(t *testing.T) {
 }
 
 func TestSettersMarkExplicitSummaryResolutionCenterCasesResponseGroupsReason(t *testing.T) {
+	t.Run("SetCreditNotProcessed_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SummaryResolutionCenterCasesResponseGroupsReason{}
+		var fernTestValueCreditNotProcessed int
+
+		// Act
+		obj.SetCreditNotProcessed(fernTestValueCreditNotProcessed)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetFraudulent_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -9816,6 +10634,72 @@ func TestJSONMarshalingAppealResolutionCenterCasesRequestAttachmentsItem(t *test
 	})
 }
 
+func TestJSONMarshalingCreateResolutionCenterCasesRequestAnswersItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateResolutionCenterCasesRequestAnswersItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreateResolutionCenterCasesRequestAnswersItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateResolutionCenterCasesRequestAnswersItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateResolutionCenterCasesRequestAnswersItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingCreateResolutionCenterCasesRequestAnswersItemAttachmentsItem(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
 func TestJSONMarshalingCreateResolutionCenterCasesRequestAttachmentsItem(t *testing.T) {
 	t.Run("MarshalUnmarshal", func(t *testing.T) {
 		t.Parallel()
@@ -10273,6 +11157,39 @@ func TestJSONMarshalingResolutionCenterCase(t *testing.T) {
 	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
 		t.Parallel()
 		var obj ResolutionCenterCase
+		err := json.Unmarshal([]byte(`{}`), &obj)
+		assert.NoError(t, err, "unmarshaling empty object should succeed")
+	})
+}
+
+func TestJSONMarshalingResolutionCenterCaseAnswer(t *testing.T) {
+	t.Run("MarshalUnmarshal", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ResolutionCenterCaseAnswer{}
+
+		// Act - Marshal to JSON
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		assert.NotNil(t, data, "marshaled data should not be nil")
+		assert.NotEmpty(t, data, "marshaled data should not be empty")
+
+		// Unmarshal back and verify round-trip
+		var unmarshaled ResolutionCenterCaseAnswer
+		err = json.Unmarshal(data, &unmarshaled)
+		assert.NoError(t, err, "round-trip unmarshal should succeed")
+	})
+
+	t.Run("UnmarshalInvalidJSON", func(t *testing.T) {
+		t.Parallel()
+		var obj ResolutionCenterCaseAnswer
+		err := json.Unmarshal([]byte(`{invalid json}`), &obj)
+		assert.Error(t, err, "unmarshaling invalid JSON should return an error")
+	})
+
+	t.Run("UnmarshalEmptyObject", func(t *testing.T) {
+		t.Parallel()
+		var obj ResolutionCenterCaseAnswer
 		err := json.Unmarshal([]byte(`{}`), &obj)
 		assert.NoError(t, err, "unmarshaling empty object should succeed")
 	})
@@ -10868,6 +11785,49 @@ func TestRequiredNullableRoundTripResolutionCenterCase(t *testing.T) {
 	})
 }
 
+func TestRequiredNullableRoundTripResolutionCenterCaseAnswer(t *testing.T) {
+	requiredNullableKeys := []string{
+		"value",
+	}
+	marshalToMap := func(t *testing.T, obj *ResolutionCenterCaseAnswer) map[string]json.RawMessage {
+		data, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed")
+		var result map[string]json.RawMessage
+		require.NoError(t, json.Unmarshal(data, &result), "marshaled data should be a JSON object")
+		return result
+	}
+
+	t.Run("NullPreserved", func(t *testing.T) {
+		t.Parallel()
+		var obj ResolutionCenterCaseAnswer
+		require.NoError(t, json.Unmarshal([]byte(`{"value":null}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			value, ok := result[key]
+			require.True(t, ok, "required nullable field %q received as null should be present in the output", key)
+			assert.Equal(t, "null", string(value), "required nullable field %q received as null should be null in the output", key)
+		}
+	})
+
+	t.Run("AbsentStaysAbsent", func(t *testing.T) {
+		t.Parallel()
+		var obj ResolutionCenterCaseAnswer
+		require.NoError(t, json.Unmarshal([]byte(`{}`), &obj))
+		result := marshalToMap(t, &obj)
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q absent from the input should be absent from the output", key)
+		}
+	})
+
+	t.Run("FreshValueOmits", func(t *testing.T) {
+		t.Parallel()
+		result := marshalToMap(t, &ResolutionCenterCaseAnswer{})
+		for _, key := range requiredNullableKeys {
+			assert.NotContains(t, result, key, "required nullable field %q should be omitted from a freshly constructed value", key)
+		}
+	})
+}
+
 func TestRequiredNullableRoundTripResolutionEvent(t *testing.T) {
 	requiredNullableKeys := []string{
 		"details",
@@ -11117,6 +12077,38 @@ func TestStringAppealResolutionCenterCasesRequestAttachmentsItem(t *testing.T) {
 	})
 }
 
+func TestStringCreateResolutionCenterCasesRequestAnswersItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateResolutionCenterCasesRequestAnswersItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateResolutionCenterCasesRequestAnswersItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
+func TestStringCreateResolutionCenterCasesRequestAnswersItemAttachmentsItem(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringCreateResolutionCenterCasesRequestAttachmentsItem(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -11341,6 +12333,22 @@ func TestStringResolutionCenterCase(t *testing.T) {
 	})
 }
 
+func TestStringResolutionCenterCaseAnswer(t *testing.T) {
+	t.Run("StringMethod", func(t *testing.T) {
+		t.Parallel()
+		obj := &ResolutionCenterCaseAnswer{}
+		result := obj.String()
+		assert.NotEmpty(t, result, "String() should return a non-empty representation")
+	})
+
+	t.Run("StringMethod_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ResolutionCenterCaseAnswer
+		result := obj.String()
+		assert.Equal(t, "<nil>", result, "String() should return <nil> for nil receiver")
+	})
+}
+
 func TestStringResolutionEvent(t *testing.T) {
 	t.Run("StringMethod", func(t *testing.T) {
 		t.Parallel()
@@ -11453,6 +12461,112 @@ func TestStringSummaryResolutionCenterCasesResponseGroupsStatus(t *testing.T) {
 	})
 }
 
+func TestEnumCreateResolutionCenterCasesRequestAnswersItemQuestion(t *testing.T) {
+	t.Run("NewFromString_purchased", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateResolutionCenterCasesRequestAnswersItemQuestionFromString("purchased")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateResolutionCenterCasesRequestAnswersItemQuestion("purchased"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_recognizes_purchase", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateResolutionCenterCasesRequestAnswersItemQuestionFromString("recognizes_purchase")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateResolutionCenterCasesRequestAnswersItemQuestion("recognizes_purchase"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_complaint_kind", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateResolutionCenterCasesRequestAnswersItemQuestionFromString("complaint_kind")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateResolutionCenterCasesRequestAnswersItemQuestion("complaint_kind"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_missing_items", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateResolutionCenterCasesRequestAnswersItemQuestionFromString("missing_items")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateResolutionCenterCasesRequestAnswersItemQuestion("missing_items"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_expected_by", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateResolutionCenterCasesRequestAnswersItemQuestionFromString("expected_by")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateResolutionCenterCasesRequestAnswersItemQuestion("expected_by"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_promised", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateResolutionCenterCasesRequestAnswersItemQuestionFromString("promised")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateResolutionCenterCasesRequestAnswersItemQuestion("promised"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_promised_link", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateResolutionCenterCasesRequestAnswersItemQuestionFromString("promised_link")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateResolutionCenterCasesRequestAnswersItemQuestion("promised_link"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_received_instead", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateResolutionCenterCasesRequestAnswersItemQuestionFromString("received_instead")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateResolutionCenterCasesRequestAnswersItemQuestion("received_instead"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_quality_issue", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateResolutionCenterCasesRequestAnswersItemQuestionFromString("quality_issue")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateResolutionCenterCasesRequestAnswersItemQuestion("quality_issue"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contacted_merchant", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateResolutionCenterCasesRequestAnswersItemQuestionFromString("contacted_merchant")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateResolutionCenterCasesRequestAnswersItemQuestion("contacted_merchant"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contacted_on", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateResolutionCenterCasesRequestAnswersItemQuestionFromString("contacted_on")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateResolutionCenterCasesRequestAnswersItemQuestion("contacted_on"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_merchant_reply", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateResolutionCenterCasesRequestAnswersItemQuestionFromString("merchant_reply")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateResolutionCenterCasesRequestAnswersItemQuestion("merchant_reply"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_extra", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateResolutionCenterCasesRequestAnswersItemQuestionFromString("extra")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateResolutionCenterCasesRequestAnswersItemQuestion("extra"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewCreateResolutionCenterCasesRequestAnswersItemQuestionFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewCreateResolutionCenterCasesRequestAnswersItemQuestionFromString("purchased")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumCreateResolutionCenterCasesRequestReason(t *testing.T) {
 	t.Run("NewFromString_fraudulent", func(t *testing.T) {
 		t.Parallel()
@@ -11487,6 +12601,13 @@ func TestEnumCreateResolutionCenterCasesRequestReason(t *testing.T) {
 		val, err := NewCreateResolutionCenterCasesRequestReasonFromString("subscription_canceled")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, CreateResolutionCenterCasesRequestReason("subscription_canceled"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_credit_not_processed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewCreateResolutionCenterCasesRequestReasonFromString("credit_not_processed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, CreateResolutionCenterCasesRequestReason("credit_not_processed"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -12957,6 +14078,13 @@ func TestEnumListResolutionCenterCasesRequestReasonItem(t *testing.T) {
 		assert.Equal(t, ListResolutionCenterCasesRequestReasonItem("subscription_canceled"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_credit_not_processed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListResolutionCenterCasesRequestReasonItemFromString("credit_not_processed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListResolutionCenterCasesRequestReasonItem("credit_not_processed"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewListResolutionCenterCasesRequestReasonItemFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -13146,6 +14274,112 @@ func TestEnumPostResolutionCenterCaseUpdatedPayloadType(t *testing.T) {
 	})
 }
 
+func TestEnumResolutionCenterCaseAnswerQuestion(t *testing.T) {
+	t.Run("NewFromString_purchased", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewResolutionCenterCaseAnswerQuestionFromString("purchased")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ResolutionCenterCaseAnswerQuestion("purchased"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_recognizes_purchase", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewResolutionCenterCaseAnswerQuestionFromString("recognizes_purchase")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ResolutionCenterCaseAnswerQuestion("recognizes_purchase"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_complaint_kind", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewResolutionCenterCaseAnswerQuestionFromString("complaint_kind")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ResolutionCenterCaseAnswerQuestion("complaint_kind"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_missing_items", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewResolutionCenterCaseAnswerQuestionFromString("missing_items")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ResolutionCenterCaseAnswerQuestion("missing_items"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_expected_by", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewResolutionCenterCaseAnswerQuestionFromString("expected_by")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ResolutionCenterCaseAnswerQuestion("expected_by"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_promised", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewResolutionCenterCaseAnswerQuestionFromString("promised")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ResolutionCenterCaseAnswerQuestion("promised"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_promised_link", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewResolutionCenterCaseAnswerQuestionFromString("promised_link")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ResolutionCenterCaseAnswerQuestion("promised_link"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_received_instead", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewResolutionCenterCaseAnswerQuestionFromString("received_instead")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ResolutionCenterCaseAnswerQuestion("received_instead"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_quality_issue", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewResolutionCenterCaseAnswerQuestionFromString("quality_issue")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ResolutionCenterCaseAnswerQuestion("quality_issue"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contacted_merchant", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewResolutionCenterCaseAnswerQuestionFromString("contacted_merchant")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ResolutionCenterCaseAnswerQuestion("contacted_merchant"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_contacted_on", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewResolutionCenterCaseAnswerQuestionFromString("contacted_on")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ResolutionCenterCaseAnswerQuestion("contacted_on"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_merchant_reply", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewResolutionCenterCaseAnswerQuestionFromString("merchant_reply")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ResolutionCenterCaseAnswerQuestion("merchant_reply"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_extra", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewResolutionCenterCaseAnswerQuestionFromString("extra")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ResolutionCenterCaseAnswerQuestion("extra"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewResolutionCenterCaseAnswerQuestionFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewResolutionCenterCaseAnswerQuestionFromString("purchased")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumResolutionCenterCaseAvailableActionsItem(t *testing.T) {
 	t.Run("NewFromString_accept", func(t *testing.T) {
 		t.Parallel()
@@ -13273,6 +14507,13 @@ func TestEnumResolutionCenterCaseReason(t *testing.T) {
 		val, err := NewResolutionCenterCaseReasonFromString("subscription_canceled")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ResolutionCenterCaseReason("subscription_canceled"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_credit_not_processed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewResolutionCenterCaseReasonFromString("credit_not_processed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ResolutionCenterCaseReason("credit_not_processed"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
@@ -14935,6 +16176,13 @@ func TestEnumSummaryResolutionCenterCasesRequestReasonItem(t *testing.T) {
 		assert.Equal(t, SummaryResolutionCenterCasesRequestReasonItem("subscription_canceled"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_credit_not_processed", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewSummaryResolutionCenterCasesRequestReasonItemFromString("credit_not_processed")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, SummaryResolutionCenterCasesRequestReasonItem("credit_not_processed"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewSummaryResolutionCenterCasesRequestReasonItemFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
@@ -15033,6 +16281,52 @@ func TestExtraPropertiesAppealResolutionCenterCasesRequestAttachmentsItem(t *tes
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *AppealResolutionCenterCasesRequestAttachmentsItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesCreateResolutionCenterCasesRequestAnswersItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateResolutionCenterCasesRequestAnswersItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateResolutionCenterCasesRequestAnswersItem
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesCreateResolutionCenterCasesRequestAnswersItemAttachmentsItem(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})
@@ -15355,6 +16649,29 @@ func TestExtraPropertiesResolutionCenterCase(t *testing.T) {
 	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
 		t.Parallel()
 		var obj *ResolutionCenterCase
+		extraProps := obj.GetExtraProperties()
+		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
+	})
+}
+
+func TestExtraPropertiesResolutionCenterCaseAnswer(t *testing.T) {
+	t.Run("GetExtraProperties", func(t *testing.T) {
+		t.Parallel()
+		obj := &ResolutionCenterCaseAnswer{}
+		// Should not panic when calling GetExtraProperties()
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("GetExtraProperties() panicked: %v", r)
+			}
+		}()
+		extraProps := obj.GetExtraProperties()
+		// Result can be nil or an empty/non-empty map
+		_ = extraProps
+	})
+
+	t.Run("GetExtraProperties_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ResolutionCenterCaseAnswer
 		extraProps := obj.GetExtraProperties()
 		assert.Nil(t, extraProps, "nil receiver should return nil without panicking")
 	})

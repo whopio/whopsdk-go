@@ -37956,7 +37956,7 @@ client.ResolutionCenterCases.List(
 <dl>
 <dd>
 
-Opens a case, as the customer, against one of your own payments. Provide the payment (`receipt_id`), the `reason`, and a `message`.
+Opens a case, as the customer, against one of your own payments. Provide the payment (`receipt_id`), the `reason`, and a `message`. Send `answers` to record the customer's answers to the questions for that reason.
 </dd>
 </dl>
 </dd>
@@ -37990,6 +37990,14 @@ client.ResolutionCenterCases.Create(
 
 <dl>
 <dd>
+
+<dl>
+<dd>
+
+**answers:** `[]*whopsdk.CreateResolutionCenterCasesRequestAnswersItem` — The customer's answers to the questions for this `reason`. Every required question needs an answer, and a question the reason does not ask is refused.
+    
+</dd>
+</dl>
 
 <dl>
 <dd>

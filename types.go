@@ -69512,6 +69512,7 @@ const (
 	ResolutionCenterCaseIssueTypesSignificantlyNotAsDescribed ResolutionCenterCaseIssueTypes = "significantly_not_as_described"
 	ResolutionCenterCaseIssueTypesUnauthorizedTransaction     ResolutionCenterCaseIssueTypes = "unauthorized_transaction"
 	ResolutionCenterCaseIssueTypesProductUnacceptable         ResolutionCenterCaseIssueTypes = "product_unacceptable"
+	ResolutionCenterCaseIssueTypesCreditNotProcessed          ResolutionCenterCaseIssueTypes = "credit_not_processed"
 )
 
 func NewResolutionCenterCaseIssueTypesFromString(s string) (ResolutionCenterCaseIssueTypes, error) {
@@ -69526,6 +69527,8 @@ func NewResolutionCenterCaseIssueTypesFromString(s string) (ResolutionCenterCase
 		return ResolutionCenterCaseIssueTypesUnauthorizedTransaction, nil
 	case "product_unacceptable":
 		return ResolutionCenterCaseIssueTypesProductUnacceptable, nil
+	case "credit_not_processed":
+		return ResolutionCenterCaseIssueTypesCreditNotProcessed, nil
 	}
 	var t ResolutionCenterCaseIssueTypes
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
