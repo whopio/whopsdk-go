@@ -2001,6 +2001,14 @@ func TestSettersSuspensionAppealSubject(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetSuspensionExplanationMarkdown", func(t *testing.T) {
+		obj := &SuspensionAppealSubject{}
+		var fernTestValueSuspensionExplanationMarkdown *string
+		obj.SetSuspensionExplanationMarkdown(fernTestValueSuspensionExplanationMarkdown)
+		assert.Equal(t, fernTestValueSuspensionExplanationMarkdown, obj.SuspensionExplanationMarkdown)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetSuspensionReason", func(t *testing.T) {
 		obj := &SuspensionAppealSubject{}
 		var fernTestValueSuspensionReason *string
@@ -2421,6 +2429,39 @@ func TestGettersSuspensionAppealSubject(t *testing.T) {
 		_ = obj.GetSuspensionExplanation() // Should return zero value
 	})
 
+	t.Run("GetSuspensionExplanationMarkdown", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SuspensionAppealSubject{}
+		var expected *string
+		obj.SuspensionExplanationMarkdown = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetSuspensionExplanationMarkdown(), "getter should return the property value")
+	})
+
+	t.Run("GetSuspensionExplanationMarkdown_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SuspensionAppealSubject{}
+		obj.SuspensionExplanationMarkdown = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetSuspensionExplanationMarkdown(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetSuspensionExplanationMarkdown_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *SuspensionAppealSubject
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetSuspensionExplanationMarkdown() // Should return zero value
+	})
+
 	t.Run("GetSuspensionReason", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -2837,6 +2878,37 @@ func TestSettersMarkExplicitSuspensionAppealSubject(t *testing.T) {
 
 		// Act
 		obj.SetSuspensionExplanation(fernTestValueSuspensionExplanation)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetSuspensionExplanationMarkdown_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &SuspensionAppealSubject{}
+		var fernTestValueSuspensionExplanationMarkdown *string
+
+		// Act
+		obj.SetSuspensionExplanationMarkdown(fernTestValueSuspensionExplanationMarkdown)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -4256,6 +4328,7 @@ func TestRequiredNullableRoundTripSuspensionAppealSubject(t *testing.T) {
 		"suspension_code",
 		"suspension_country",
 		"suspension_explanation",
+		"suspension_explanation_markdown",
 		"suspension_reason",
 	}
 	marshalToMap := func(t *testing.T, obj *SuspensionAppealSubject) map[string]json.RawMessage {
@@ -4269,7 +4342,7 @@ func TestRequiredNullableRoundTripSuspensionAppealSubject(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj SuspensionAppealSubject
-		require.NoError(t, json.Unmarshal([]byte(`{"appeal":null,"appeal_deadline":null,"display_name":null,"funds_explanation":null,"funds_release_at":null,"ineligible_reason":null,"platform_name":null,"suspended_at":null,"suspension_code":null,"suspension_country":null,"suspension_explanation":null,"suspension_reason":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"appeal":null,"appeal_deadline":null,"display_name":null,"funds_explanation":null,"funds_release_at":null,"ineligible_reason":null,"platform_name":null,"suspended_at":null,"suspension_code":null,"suspension_country":null,"suspension_explanation":null,"suspension_explanation_markdown":null,"suspension_reason":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

@@ -836,42 +836,43 @@ var (
 	invoiceFieldEmailAddress               = big.NewInt(1 << 11)
 	invoiceFieldID                         = big.NewInt(1 << 12)
 	invoiceFieldInvoicePrefix              = big.NewInt(1 << 13)
-	invoiceFieldLineItems                  = big.NewInt(1 << 14)
-	invoiceFieldMailingAddressID           = big.NewInt(1 << 15)
-	invoiceFieldMemberID                   = big.NewInt(1 << 16)
-	invoiceFieldMembershipID               = big.NewInt(1 << 17)
-	invoiceFieldMemo                       = big.NewInt(1 << 18)
-	invoiceFieldMetadata                   = big.NewInt(1 << 19)
-	invoiceFieldNumber                     = big.NewInt(1 << 20)
-	invoiceFieldObject                     = big.NewInt(1 << 21)
-	invoiceFieldOverdue                    = big.NewInt(1 << 22)
-	invoiceFieldPaidAt                     = big.NewInt(1 << 23)
-	invoiceFieldPaymentMethodConfiguration = big.NewInt(1 << 24)
-	invoiceFieldPaymentMethodID            = big.NewInt(1 << 25)
-	invoiceFieldQuoteAcceptedAt            = big.NewInt(1 << 26)
-	invoiceFieldQuoteAmountPaid            = big.NewInt(1 << 27)
-	invoiceFieldQuoteAmountRemaining       = big.NewInt(1 << 28)
-	invoiceFieldQuoteDepositAmount         = big.NewInt(1 << 29)
-	invoiceFieldQuoteDepositPercentage     = big.NewInt(1 << 30)
-	invoiceFieldQuoteInvoiceIDs            = big.NewInt(1 << 31)
-	invoiceFieldQuotePaymentURL            = big.NewInt(1 << 32)
-	invoiceFieldQuoteSentAt                = big.NewInt(1 << 33)
-	invoiceFieldQuoteSignatureURL          = big.NewInt(1 << 34)
-	invoiceFieldQuoteSignerEmail           = big.NewInt(1 << 35)
-	invoiceFieldQuoteSignerName            = big.NewInt(1 << 36)
-	invoiceFieldRecipientEmails            = big.NewInt(1 << 37)
-	invoiceFieldScheduledChargeAt          = big.NewInt(1 << 38)
-	invoiceFieldScheduledCollectionMethod  = big.NewInt(1 << 39)
-	invoiceFieldScheduledSendAt            = big.NewInt(1 << 40)
-	invoiceFieldSendsOnDueDate             = big.NewInt(1 << 41)
-	invoiceFieldStatus                     = big.NewInt(1 << 42)
-	invoiceFieldSubscriptionStartsAt       = big.NewInt(1 << 43)
-	invoiceFieldSubtotal                   = big.NewInt(1 << 44)
-	invoiceFieldTaxAmount                  = big.NewInt(1 << 45)
-	invoiceFieldTimeZone                   = big.NewInt(1 << 46)
-	invoiceFieldTotal                      = big.NewInt(1 << 47)
-	invoiceFieldTotalsStatus               = big.NewInt(1 << 48)
-	invoiceFieldUpdatedAt                  = big.NewInt(1 << 49)
+	invoiceFieldIssuedAt                   = big.NewInt(1 << 14)
+	invoiceFieldLineItems                  = big.NewInt(1 << 15)
+	invoiceFieldMailingAddressID           = big.NewInt(1 << 16)
+	invoiceFieldMemberID                   = big.NewInt(1 << 17)
+	invoiceFieldMembershipID               = big.NewInt(1 << 18)
+	invoiceFieldMemo                       = big.NewInt(1 << 19)
+	invoiceFieldMetadata                   = big.NewInt(1 << 20)
+	invoiceFieldNumber                     = big.NewInt(1 << 21)
+	invoiceFieldObject                     = big.NewInt(1 << 22)
+	invoiceFieldOverdue                    = big.NewInt(1 << 23)
+	invoiceFieldPaidAt                     = big.NewInt(1 << 24)
+	invoiceFieldPaymentMethodConfiguration = big.NewInt(1 << 25)
+	invoiceFieldPaymentMethodID            = big.NewInt(1 << 26)
+	invoiceFieldQuoteAcceptedAt            = big.NewInt(1 << 27)
+	invoiceFieldQuoteAmountPaid            = big.NewInt(1 << 28)
+	invoiceFieldQuoteAmountRemaining       = big.NewInt(1 << 29)
+	invoiceFieldQuoteDepositAmount         = big.NewInt(1 << 30)
+	invoiceFieldQuoteDepositPercentage     = big.NewInt(1 << 31)
+	invoiceFieldQuoteInvoiceIDs            = big.NewInt(1 << 32)
+	invoiceFieldQuotePaymentURL            = big.NewInt(1 << 33)
+	invoiceFieldQuoteSentAt                = big.NewInt(1 << 34)
+	invoiceFieldQuoteSignatureURL          = big.NewInt(1 << 35)
+	invoiceFieldQuoteSignerEmail           = big.NewInt(1 << 36)
+	invoiceFieldQuoteSignerName            = big.NewInt(1 << 37)
+	invoiceFieldRecipientEmails            = big.NewInt(1 << 38)
+	invoiceFieldScheduledChargeAt          = big.NewInt(1 << 39)
+	invoiceFieldScheduledCollectionMethod  = big.NewInt(1 << 40)
+	invoiceFieldScheduledSendAt            = big.NewInt(1 << 41)
+	invoiceFieldSendsOnDueDate             = big.NewInt(1 << 42)
+	invoiceFieldStatus                     = big.NewInt(1 << 43)
+	invoiceFieldSubscriptionStartsAt       = big.NewInt(1 << 44)
+	invoiceFieldSubtotal                   = big.NewInt(1 << 45)
+	invoiceFieldTaxAmount                  = big.NewInt(1 << 46)
+	invoiceFieldTimeZone                   = big.NewInt(1 << 47)
+	invoiceFieldTotal                      = big.NewInt(1 << 48)
+	invoiceFieldTotalsStatus               = big.NewInt(1 << 49)
+	invoiceFieldUpdatedAt                  = big.NewInt(1 << 50)
 )
 
 // invoiceNullableFields maps the wire names of Invoice's nullable fields (required or optional) to their field bits.
@@ -882,6 +883,7 @@ var invoiceNullableFields = map[string]*big.Int{
 	"due_at":                       invoiceFieldDueAt,
 	"email_address":                invoiceFieldEmailAddress,
 	"invoice_prefix":               invoiceFieldInvoicePrefix,
+	"issued_at":                    invoiceFieldIssuedAt,
 	"mailing_address_id":           invoiceFieldMailingAddressID,
 	"member_id":                    invoiceFieldMemberID,
 	"membership_id":                invoiceFieldMembershipID,
@@ -919,11 +921,13 @@ type Invoice struct {
 	CreatedAt    string  `json:"created_at" url:"created_at"`
 	CustomerName *string `json:"customer_name,omitempty" url:"customer_name,omitempty"`
 	// True when `DELETE /invoices/{id}` can delete this invoice. A draft qualifies unless it is scheduled or bills a subscription. A void invoice qualifies unless it collected money or still awaits a bank wire.
-	Deletable        bool               `json:"deletable" url:"deletable"`
-	DueAt            *string            `json:"due_at,omitempty" url:"due_at,omitempty"`
-	EmailAddress     *string            `json:"email_address,omitempty" url:"email_address,omitempty"`
-	ID               string             `json:"id" url:"id"`
-	InvoicePrefix    *string            `json:"invoice_prefix,omitempty" url:"invoice_prefix,omitempty"`
+	Deletable     bool    `json:"deletable" url:"deletable"`
+	DueAt         *string `json:"due_at,omitempty" url:"due_at,omitempty"`
+	EmailAddress  *string `json:"email_address,omitempty" url:"email_address,omitempty"`
+	ID            string  `json:"id" url:"id"`
+	InvoicePrefix *string `json:"invoice_prefix,omitempty" url:"invoice_prefix,omitempty"`
+	// When the invoice was issued, as an ISO 8601 timestamp. This is when it left draft, which can be after `created_at` for an invoice drafted or scheduled ahead. `null` while the invoice is a draft, and for invoices issued before this field was introduced.
+	IssuedAt         *string            `json:"issued_at,omitempty" url:"issued_at,omitempty"`
 	LineItems        []*InvoiceLineItem `json:"line_items" url:"line_items"`
 	MailingAddressID *string            `json:"mailing_address_id,omitempty" url:"mailing_address_id,omitempty"`
 	MemberID         *string            `json:"member_id,omitempty" url:"member_id,omitempty"`
@@ -1083,6 +1087,13 @@ func (i *Invoice) GetInvoicePrefix() *string {
 		return nil
 	}
 	return i.InvoicePrefix
+}
+
+func (i *Invoice) GetIssuedAt() *string {
+	if i == nil {
+		return nil
+	}
+	return i.IssuedAt
 }
 
 func (i *Invoice) GetLineItems() []*InvoiceLineItem {
@@ -1449,6 +1460,13 @@ func (i *Invoice) SetID(id string) {
 func (i *Invoice) SetInvoicePrefix(invoicePrefix *string) {
 	i.InvoicePrefix = invoicePrefix
 	i.require(invoiceFieldInvoicePrefix)
+}
+
+// SetIssuedAt sets the IssuedAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetIssuedAt(issuedAt *string) {
+	i.IssuedAt = issuedAt
+	i.require(invoiceFieldIssuedAt)
 }
 
 // SetLineItems sets the LineItems field and marks it as non-optional;

@@ -2205,6 +2205,14 @@ func TestSettersInvoice(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetIssuedAt", func(t *testing.T) {
+		obj := &Invoice{}
+		var fernTestValueIssuedAt *string
+		obj.SetIssuedAt(fernTestValueIssuedAt)
+		assert.Equal(t, fernTestValueIssuedAt, obj.IssuedAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetLineItems", func(t *testing.T) {
 		obj := &Invoice{}
 		var fernTestValueLineItems []*InvoiceLineItem
@@ -2906,6 +2914,39 @@ func TestGettersInvoice(t *testing.T) {
 			}
 		}()
 		_ = obj.GetInvoicePrefix() // Should return zero value
+	})
+
+	t.Run("GetIssuedAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var expected *string
+		obj.IssuedAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetIssuedAt(), "getter should return the property value")
+	})
+
+	t.Run("GetIssuedAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		obj.IssuedAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetIssuedAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetIssuedAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Invoice
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetIssuedAt() // Should return zero value
 	})
 
 	t.Run("GetLineItems", func(t *testing.T) {
@@ -4430,6 +4471,37 @@ func TestSettersMarkExplicitInvoice(t *testing.T) {
 
 		// Act
 		obj.SetInvoicePrefix(fernTestValueInvoicePrefix)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetIssuedAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var fernTestValueIssuedAt *string
+
+		// Act
+		obj.SetIssuedAt(fernTestValueIssuedAt)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -17298,6 +17370,7 @@ func TestRequiredNullableRoundTripInvoice(t *testing.T) {
 		"due_at",
 		"email_address",
 		"invoice_prefix",
+		"issued_at",
 		"mailing_address_id",
 		"member_id",
 		"membership_id",
@@ -17332,7 +17405,7 @@ func TestRequiredNullableRoundTripInvoice(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Invoice
-		require.NoError(t, json.Unmarshal([]byte(`{"billing_address":null,"checkout_link":null,"customer_name":null,"due_at":null,"email_address":null,"invoice_prefix":null,"mailing_address_id":null,"member_id":null,"membership_id":null,"memo":null,"paid_at":null,"payment_method_configuration":null,"payment_method_id":null,"quote_accepted_at":null,"quote_amount_paid":null,"quote_amount_remaining":null,"quote_deposit_amount":null,"quote_deposit_percentage":null,"quote_payment_url":null,"quote_sent_at":null,"quote_signature_url":null,"quote_signer_email":null,"quote_signer_name":null,"scheduled_charge_at":null,"scheduled_collection_method":null,"scheduled_send_at":null,"subscription_starts_at":null,"tax_amount":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"billing_address":null,"checkout_link":null,"customer_name":null,"due_at":null,"email_address":null,"invoice_prefix":null,"issued_at":null,"mailing_address_id":null,"member_id":null,"membership_id":null,"memo":null,"paid_at":null,"payment_method_configuration":null,"payment_method_id":null,"quote_accepted_at":null,"quote_amount_paid":null,"quote_amount_remaining":null,"quote_deposit_amount":null,"quote_deposit_percentage":null,"quote_payment_url":null,"quote_sent_at":null,"quote_signature_url":null,"quote_signer_email":null,"quote_signer_name":null,"scheduled_charge_at":null,"scheduled_collection_method":null,"scheduled_send_at":null,"subscription_starts_at":null,"tax_amount":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

@@ -5364,6 +5364,13 @@ func TestEnumRetrieveFinancialReportsResponseRowsItemLineCategory(t *testing.T) 
 		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("psp_dispute_payable"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_psp_error_loss", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("psp_error_loss")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemLineCategory("psp_error_loss"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_psp_external_account_connection_fee", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString("psp_external_account_connection_fee")
