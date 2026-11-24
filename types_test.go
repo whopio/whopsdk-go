@@ -133138,6 +133138,14 @@ func TestSettersMarkExplicitPublicBountySubmission(t *testing.T) {
 }
 
 func TestSettersReceiptLineItem(t *testing.T) {
+	t.Run("SetDiscountAmount", func(t *testing.T) {
+		obj := &ReceiptLineItem{}
+		var fernTestValueDiscountAmount *Money
+		obj.SetDiscountAmount(fernTestValueDiscountAmount)
+		assert.Equal(t, fernTestValueDiscountAmount, obj.DiscountAmount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetID", func(t *testing.T) {
 		obj := &ReceiptLineItem{}
 		var fernTestValueID *string
@@ -133213,6 +133221,39 @@ func TestSettersReceiptLineItem(t *testing.T) {
 }
 
 func TestGettersReceiptLineItem(t *testing.T) {
+	t.Run("GetDiscountAmount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ReceiptLineItem{}
+		var expected *Money
+		obj.DiscountAmount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetDiscountAmount(), "getter should return the property value")
+	})
+
+	t.Run("GetDiscountAmount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ReceiptLineItem{}
+		obj.DiscountAmount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetDiscountAmount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetDiscountAmount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ReceiptLineItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetDiscountAmount() // Should return zero value
+	})
+
 	t.Run("GetID", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -133503,6 +133544,37 @@ func TestGettersReceiptLineItem(t *testing.T) {
 }
 
 func TestSettersMarkExplicitReceiptLineItem(t *testing.T) {
+	t.Run("SetDiscountAmount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ReceiptLineItem{}
+		var fernTestValueDiscountAmount *Money
+
+		// Act
+		obj.SetDiscountAmount(fernTestValueDiscountAmount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetID_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -185440,6 +185512,7 @@ func TestRequiredNullableRoundTripPublicBountySubmission(t *testing.T) {
 
 func TestRequiredNullableRoundTripReceiptLineItem(t *testing.T) {
 	requiredNullableKeys := []string{
+		"discount_amount",
 		"id",
 		"label",
 		"product_id",
@@ -185460,7 +185533,7 @@ func TestRequiredNullableRoundTripReceiptLineItem(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj ReceiptLineItem
-		require.NoError(t, json.Unmarshal([]byte(`{"id":null,"label":null,"product_id":null,"product_title":null,"sku":null,"subtotal":null,"variant_id":null,"variant_title":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"discount_amount":null,"id":null,"label":null,"product_id":null,"product_title":null,"sku":null,"subtotal":null,"variant_id":null,"variant_title":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

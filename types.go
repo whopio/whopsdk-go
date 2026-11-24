@@ -67278,30 +67278,34 @@ func (p PublicBountySubmissionStatus) Ptr() *PublicBountySubmissionStatus {
 }
 
 var (
-	receiptLineItemFieldID           = big.NewInt(1 << 0)
-	receiptLineItemFieldLabel        = big.NewInt(1 << 1)
-	receiptLineItemFieldProductID    = big.NewInt(1 << 2)
-	receiptLineItemFieldProductTitle = big.NewInt(1 << 3)
-	receiptLineItemFieldQuantity     = big.NewInt(1 << 4)
-	receiptLineItemFieldSku          = big.NewInt(1 << 5)
-	receiptLineItemFieldSubtotal     = big.NewInt(1 << 6)
-	receiptLineItemFieldVariantID    = big.NewInt(1 << 7)
-	receiptLineItemFieldVariantTitle = big.NewInt(1 << 8)
+	receiptLineItemFieldDiscountAmount = big.NewInt(1 << 0)
+	receiptLineItemFieldID             = big.NewInt(1 << 1)
+	receiptLineItemFieldLabel          = big.NewInt(1 << 2)
+	receiptLineItemFieldProductID      = big.NewInt(1 << 3)
+	receiptLineItemFieldProductTitle   = big.NewInt(1 << 4)
+	receiptLineItemFieldQuantity       = big.NewInt(1 << 5)
+	receiptLineItemFieldSku            = big.NewInt(1 << 6)
+	receiptLineItemFieldSubtotal       = big.NewInt(1 << 7)
+	receiptLineItemFieldVariantID      = big.NewInt(1 << 8)
+	receiptLineItemFieldVariantTitle   = big.NewInt(1 << 9)
 )
 
 // receiptLineItemNullableFields maps the wire names of ReceiptLineItem's nullable fields (required or optional) to their field bits.
 var receiptLineItemNullableFields = map[string]*big.Int{
-	"id":            receiptLineItemFieldID,
-	"label":         receiptLineItemFieldLabel,
-	"product_id":    receiptLineItemFieldProductID,
-	"product_title": receiptLineItemFieldProductTitle,
-	"sku":           receiptLineItemFieldSku,
-	"subtotal":      receiptLineItemFieldSubtotal,
-	"variant_id":    receiptLineItemFieldVariantID,
-	"variant_title": receiptLineItemFieldVariantTitle,
+	"discount_amount": receiptLineItemFieldDiscountAmount,
+	"id":              receiptLineItemFieldID,
+	"label":           receiptLineItemFieldLabel,
+	"product_id":      receiptLineItemFieldProductID,
+	"product_title":   receiptLineItemFieldProductTitle,
+	"sku":             receiptLineItemFieldSku,
+	"subtotal":        receiptLineItemFieldSubtotal,
+	"variant_id":      receiptLineItemFieldVariantID,
+	"variant_title":   receiptLineItemFieldVariantTitle,
 }
 
 type ReceiptLineItem struct {
+	// The amount taken off this item's `subtotal` by discounts and the promo code, before tax. Returns `null` when no discount was recorded for the item.
+	DiscountAmount *Money `json:"discount_amount,omitempty" url:"discount_amount,omitempty"`
 	// Line item ID, prefixed `li_`. Null when the payment predates item snapshots and the item is read from the payment's variant.
 	ID *string `json:"id,omitempty" url:"id,omitempty"`
 	// The item's name as shown at checkout (the product title, else the variant title).
@@ -67326,6 +67330,13 @@ type ReceiptLineItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (r *ReceiptLineItem) GetDiscountAmount() *Money {
+	if r == nil {
+		return nil
+	}
+	return r.DiscountAmount
 }
 
 func (r *ReceiptLineItem) GetID() *string {
@@ -67405,6 +67416,13 @@ func (r *ReceiptLineItem) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	r.explicitFields = next
+}
+
+// SetDiscountAmount sets the DiscountAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ReceiptLineItem) SetDiscountAmount(discountAmount *Money) {
+	r.DiscountAmount = discountAmount
+	r.require(receiptLineItemFieldDiscountAmount)
 }
 
 // SetID sets the ID field and marks it as non-optional;
