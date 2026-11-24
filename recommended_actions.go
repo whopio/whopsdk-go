@@ -1001,19 +1001,19 @@ func (r RecommendedActionStatus) Ptr() *RecommendedActionStatus {
 type RecommendedActionType string
 
 const (
-	RecommendedActionTypeAddCancelOffer        RecommendedActionType = "add_cancel_offer"
-	RecommendedActionTypeCreateEmailAutomation RecommendedActionType = "create_email_automation"
-	RecommendedActionTypeImproveLandingPage    RecommendedActionType = "improve_landing_page"
-	RecommendedActionTypeFixBrokenWebsite      RecommendedActionType = "fix_broken_website"
-	RecommendedActionTypeCloneAndAbTestSite    RecommendedActionType = "clone_and_ab_test_site"
+	RecommendedActionTypeAddCancelOffer          RecommendedActionType = "add_cancel_offer"
+	RecommendedActionTypeCreateMessageAutomation RecommendedActionType = "create_message_automation"
+	RecommendedActionTypeImproveLandingPage      RecommendedActionType = "improve_landing_page"
+	RecommendedActionTypeFixBrokenWebsite        RecommendedActionType = "fix_broken_website"
+	RecommendedActionTypeCloneAndAbTestSite      RecommendedActionType = "clone_and_ab_test_site"
 )
 
 func NewRecommendedActionTypeFromString(s string) (RecommendedActionType, error) {
 	switch s {
 	case "add_cancel_offer":
 		return RecommendedActionTypeAddCancelOffer, nil
-	case "create_email_automation":
-		return RecommendedActionTypeCreateEmailAutomation, nil
+	case "create_message_automation":
+		return RecommendedActionTypeCreateMessageAutomation, nil
 	case "improve_landing_page":
 		return RecommendedActionTypeImproveLandingPage, nil
 	case "fix_broken_website":

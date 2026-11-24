@@ -5231,11 +5231,11 @@ func TestEnumRecommendedActionType(t *testing.T) {
 		assert.Equal(t, RecommendedActionType("add_cancel_offer"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_create_email_automation", func(t *testing.T) {
+	t.Run("NewFromString_create_message_automation", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewRecommendedActionTypeFromString("create_email_automation")
+		val, err := NewRecommendedActionTypeFromString("create_message_automation")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RecommendedActionType("create_email_automation"), val, "enum value should match expected wire value")
+		assert.Equal(t, RecommendedActionType("create_message_automation"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_improve_landing_page", func(t *testing.T) {

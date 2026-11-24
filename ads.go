@@ -11,19 +11,22 @@ import (
 )
 
 var (
-	createAdsRequestFieldAdGroup       = big.NewInt(1 << 0)
-	createAdsRequestFieldAdGroupID     = big.NewInt(1 << 1)
-	createAdsRequestFieldCallToAction  = big.NewInt(1 << 2)
-	createAdsRequestFieldCreatives     = big.NewInt(1 << 3)
-	createAdsRequestFieldDescriptions  = big.NewInt(1 << 4)
-	createAdsRequestFieldHeadlines     = big.NewInt(1 << 5)
-	createAdsRequestFieldPrimaryTexts  = big.NewInt(1 << 6)
-	createAdsRequestFieldTitle         = big.NewInt(1 << 7)
-	createAdsRequestFieldURL           = big.NewInt(1 << 8)
-	createAdsRequestFieldURLParameters = big.NewInt(1 << 9)
+	createAdsRequestFieldAccountID     = big.NewInt(1 << 0)
+	createAdsRequestFieldAdGroup       = big.NewInt(1 << 1)
+	createAdsRequestFieldAdGroupID     = big.NewInt(1 << 2)
+	createAdsRequestFieldCallToAction  = big.NewInt(1 << 3)
+	createAdsRequestFieldCreatives     = big.NewInt(1 << 4)
+	createAdsRequestFieldDescriptions  = big.NewInt(1 << 5)
+	createAdsRequestFieldHeadlines     = big.NewInt(1 << 6)
+	createAdsRequestFieldPrimaryTexts  = big.NewInt(1 << 7)
+	createAdsRequestFieldTitle         = big.NewInt(1 << 8)
+	createAdsRequestFieldURL           = big.NewInt(1 << 9)
+	createAdsRequestFieldURLParameters = big.NewInt(1 << 10)
 )
 
 type CreateAdsRequest struct {
+	// The account to create an inline `ad_group.ad_campaign` under. Defaults to the account-scoped key's own account.
+	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// An inline ad group to create (same shape as POST /ad_groups, including ad_campaign_id). Creates the ad group and the ad together. Provide this OR ad_group_id.
 	AdGroup map[string]any `json:"ad_group,omitempty" url:"-"`
 	// The existing ad group to create the ad in. Provide this OR ad_group, not both.
@@ -56,6 +59,13 @@ func (c *CreateAdsRequest) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	c.explicitFields = next
+}
+
+// SetAccountID sets the AccountID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAdsRequest) SetAccountID(accountID *string) {
+	c.AccountID = accountID
+	c.require(createAdsRequestFieldAccountID)
 }
 
 // SetAdGroup sets the AdGroup field and marks it as non-optional;
