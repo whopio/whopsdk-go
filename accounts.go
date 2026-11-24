@@ -22,7 +22,8 @@ var (
 	createAccountsRequestFieldReassignExternalID    = big.NewInt(1 << 8)
 	createAccountsRequestFieldSendCustomerEmails    = big.NewInt(1 << 9)
 	createAccountsRequestFieldTitle                 = big.NewInt(1 << 10)
-	createAccountsRequestFieldWebsite               = big.NewInt(1 << 11)
+	createAccountsRequestFieldVerificationIDs       = big.NewInt(1 << 11)
+	createAccountsRequestFieldWebsite               = big.NewInt(1 << 12)
 )
 
 type CreateAccountsRequest struct {
@@ -48,6 +49,8 @@ type CreateAccountsRequest struct {
 	SendCustomerEmails *bool `json:"send_customer_emails,omitempty" url:"-"`
 	// The display name of the account. Defaults to `external_id` or the owner's email when omitted.
 	Title *string `json:"title,omitempty" url:"-"`
+	// IDs of `approved` verifications to reuse on the new account, each prefixed `idpf_`. Send at most one `individual` verification and one `business` verification. Each one becomes the account's current verification for its kind, and its payout account carries across. A user token can reuse the verifications that user started. Requires the `identity:write` permission. It cannot be set when creating a subaccount.
+	VerificationIDs []string `json:"verification_ids,omitempty" url:"-"`
 	// The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry.
 	Website *string `json:"website,omitempty" url:"-"`
 
@@ -139,6 +142,13 @@ func (c *CreateAccountsRequest) SetSendCustomerEmails(sendCustomerEmails *bool) 
 func (c *CreateAccountsRequest) SetTitle(title *string) {
 	c.Title = title
 	c.require(createAccountsRequestFieldTitle)
+}
+
+// SetVerificationIDs sets the VerificationIDs field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateAccountsRequest) SetVerificationIDs(verificationIDs []string) {
+	c.VerificationIDs = verificationIDs
+	c.require(createAccountsRequestFieldVerificationIDs)
 }
 
 // SetWebsite sets the Website field and marks it as non-optional;
