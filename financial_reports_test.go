@@ -3487,6 +3487,13 @@ func TestEnumRetrieveFinancialReportsResponseRowsItemGrouping(t *testing.T) {
 		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemGrouping("advertising"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_affiliates", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemGroupingFromString("affiliates")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemGrouping("affiliates"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_affiliates_and_revshare", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveFinancialReportsResponseRowsItemGroupingFromString("affiliates_and_revshare")
@@ -3522,6 +3529,13 @@ func TestEnumRetrieveFinancialReportsResponseRowsItemGrouping(t *testing.T) {
 		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemGrouping("capital"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_card_spend", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemGroupingFromString("card_spend")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemGrouping("card_spend"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_clawbacks", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveFinancialReportsResponseRowsItemGroupingFromString("clawbacks")
@@ -3534,6 +3548,13 @@ func TestEnumRetrieveFinancialReportsResponseRowsItemGrouping(t *testing.T) {
 		val, err := NewRetrieveFinancialReportsResponseRowsItemGroupingFromString("crypto")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemGrouping("crypto"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_deposits", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemGroupingFromString("deposits")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemGrouping("deposits"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_disputes", func(t *testing.T) {
@@ -3555,6 +3576,13 @@ func TestEnumRetrieveFinancialReportsResponseRowsItemGrouping(t *testing.T) {
 		val, err := NewRetrieveFinancialReportsResponseRowsItemGroupingFromString("fx")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemGrouping("fx"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_invest", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemGroupingFromString("invest")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemGrouping("invest"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_legacy", func(t *testing.T) {
@@ -3592,6 +3620,13 @@ func TestEnumRetrieveFinancialReportsResponseRowsItemGrouping(t *testing.T) {
 		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemGrouping("other"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_partners", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemGroupingFromString("partners")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemGrouping("partners"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_payments", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewRetrieveFinancialReportsResponseRowsItemGroupingFromString("payments")
@@ -3604,6 +3639,13 @@ func TestEnumRetrieveFinancialReportsResponseRowsItemGrouping(t *testing.T) {
 		val, err := NewRetrieveFinancialReportsResponseRowsItemGroupingFromString("platform_credits")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemGrouping("platform_credits"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platforms", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveFinancialReportsResponseRowsItemGroupingFromString("platforms")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveFinancialReportsResponseRowsItemGrouping("platforms"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_refunds", func(t *testing.T) {

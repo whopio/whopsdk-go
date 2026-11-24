@@ -695,9 +695,10 @@ var (
 	sendInvoicesRequestFieldChargeAt               = big.NewInt(1 << 1)
 	sendInvoicesRequestFieldCollectionMethod       = big.NewInt(1 << 2)
 	sendInvoicesRequestFieldMessage                = big.NewInt(1 << 3)
-	sendInvoicesRequestFieldQuoteDepositPercentage = big.NewInt(1 << 4)
-	sendInvoicesRequestFieldSendAs                 = big.NewInt(1 << 5)
-	sendInvoicesRequestFieldSendAt                 = big.NewInt(1 << 6)
+	sendInvoicesRequestFieldQuoteDepositAmount     = big.NewInt(1 << 4)
+	sendInvoicesRequestFieldQuoteDepositPercentage = big.NewInt(1 << 5)
+	sendInvoicesRequestFieldSendAs                 = big.NewInt(1 << 6)
+	sendInvoicesRequestFieldSendAt                 = big.NewInt(1 << 7)
 )
 
 type SendInvoicesRequest struct {
@@ -709,6 +710,8 @@ type SendInvoicesRequest struct {
 	CollectionMethod *SendInvoicesRequestCollectionMethod `json:"collection_method,omitempty" url:"-"`
 	// A note to the customer in the quote email. It is not stored. Only with `send_as` set to `quote`. Defaults to "Please review and accept this quote" when it is blank or left out.
 	Message *string `json:"message,omitempty" url:"-"`
+	// A fixed amount in the invoice's currency to bill as a deposit when the customer signs, such as `200` for $200.00. It must be less than the quote total. Mutually exclusive with `quote_deposit_percentage`. Only with `send_as` set to `quote`.
+	QuoteDepositAmount *float64 `json:"quote_deposit_amount,omitempty" url:"-"`
 	// The share of the quote to bill as a deposit when the customer signs, such as `30` for 30%. The customer is then taken to pay it. Only with `send_as` set to `quote`.
 	QuoteDepositPercentage *float64 `json:"quote_deposit_percentage,omitempty" url:"-"`
 	// How to send the draft. `invoice` issues it and emails it to be paid. `quote` emails it as a quote and keeps it a draft. Defaults to `invoice`.
@@ -755,6 +758,13 @@ func (s *SendInvoicesRequest) SetCollectionMethod(collectionMethod *SendInvoices
 func (s *SendInvoicesRequest) SetMessage(message *string) {
 	s.Message = message
 	s.require(sendInvoicesRequestFieldMessage)
+}
+
+// SetQuoteDepositAmount sets the QuoteDepositAmount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SendInvoicesRequest) SetQuoteDepositAmount(quoteDepositAmount *float64) {
+	s.QuoteDepositAmount = quoteDepositAmount
+	s.require(sendInvoicesRequestFieldQuoteDepositAmount)
 }
 
 // SetQuoteDepositPercentage sets the QuoteDepositPercentage field and marks it as non-optional;
