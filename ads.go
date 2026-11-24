@@ -3025,7 +3025,7 @@ type AdStat struct {
 	HourStartedAt string `json:"hour_started_at" url:"hour_started_at"`
 	// The ad's impressions in the hour.
 	Impressions int `json:"impressions" url:"impressions"`
-	// The spend recorded and paid for the ad in the hour, exactly as reported.
+	// The spend recorded for the ad in the hour, exactly as reported.
 	Spend *Money `json:"spend" url:"spend"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
