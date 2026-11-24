@@ -450,7 +450,7 @@ type ListPaymentsRequest struct {
 	DisputeCreatedAfter *time.Time `json:"-" url:"dispute_created_after,omitempty"`
 	// Only payments with a dispute opened before this ISO 8601 timestamp.
 	DisputeCreatedBefore *time.Time `json:"-" url:"dispute_created_before,omitempty"`
-	// The field to sort by. `amount` sorts by the amount charged, in the currency it was charged in.
+	// The field to sort by. `amount` sorts by the amount charged, in the currency it was charged in. `status`, `product`, `plan` (initial price, no currency) and `method` are a 400 unless the list is filtered to 50,000 payments or fewer.
 	Order *ListPaymentsRequestOrder `json:"-" url:"order,omitempty"`
 	// The sort direction.
 	Direction *ListPaymentsRequestDirection `json:"-" url:"direction,omitempty"`
@@ -4846,6 +4846,10 @@ const (
 	ListPaymentsRequestOrderCreatedAt ListPaymentsRequestOrder = "created_at"
 	ListPaymentsRequestOrderPaidAt    ListPaymentsRequestOrder = "paid_at"
 	ListPaymentsRequestOrderAmount    ListPaymentsRequestOrder = "amount"
+	ListPaymentsRequestOrderStatus    ListPaymentsRequestOrder = "status"
+	ListPaymentsRequestOrderProduct   ListPaymentsRequestOrder = "product"
+	ListPaymentsRequestOrderPlan      ListPaymentsRequestOrder = "plan"
+	ListPaymentsRequestOrderMethod    ListPaymentsRequestOrder = "method"
 )
 
 func NewListPaymentsRequestOrderFromString(s string) (ListPaymentsRequestOrder, error) {
@@ -4856,6 +4860,14 @@ func NewListPaymentsRequestOrderFromString(s string) (ListPaymentsRequestOrder, 
 		return ListPaymentsRequestOrderPaidAt, nil
 	case "amount":
 		return ListPaymentsRequestOrderAmount, nil
+	case "status":
+		return ListPaymentsRequestOrderStatus, nil
+	case "product":
+		return ListPaymentsRequestOrderProduct, nil
+	case "plan":
+		return ListPaymentsRequestOrderPlan, nil
+	case "method":
+		return ListPaymentsRequestOrderMethod, nil
 	}
 	var t ListPaymentsRequestOrder
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

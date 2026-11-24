@@ -31692,7 +31692,7 @@ client.Payments.List(
 <dl>
 <dd>
 
-**order:** `*whopsdk.ListPaymentsRequestOrder` — The field to sort by. `amount` sorts by the amount charged, in the currency it was charged in.
+**order:** `*whopsdk.ListPaymentsRequestOrder` — The field to sort by. `amount` sorts by the amount charged, in the currency it was charged in. `status`, `product`, `plan` (initial price, no currency) and `method` are a 400 unless the list is filtered to 50,000 payments or fewer.
     
 </dd>
 </dl>
