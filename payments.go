@@ -86,19 +86,20 @@ var (
 	createPaymentsRequestFieldBillingAddress          = big.NewInt(1 << 3)
 	createPaymentsRequestFieldCapture                 = big.NewInt(1 << 4)
 	createPaymentsRequestFieldConfirmationToken       = big.NewInt(1 << 5)
-	createPaymentsRequestFieldEmail                   = big.NewInt(1 << 6)
-	createPaymentsRequestFieldIPAddress               = big.NewInt(1 << 7)
-	createPaymentsRequestFieldLineItems               = big.NewInt(1 << 8)
-	createPaymentsRequestFieldMemberID                = big.NewInt(1 << 9)
-	createPaymentsRequestFieldMetadata                = big.NewInt(1 << 10)
-	createPaymentsRequestFieldOffSession              = big.NewInt(1 << 11)
-	createPaymentsRequestFieldPaymentMethod           = big.NewInt(1 << 12)
-	createPaymentsRequestFieldPaymentMethodID         = big.NewInt(1 << 13)
-	createPaymentsRequestFieldQuoteID                 = big.NewInt(1 << 14)
-	createPaymentsRequestFieldReturnURL               = big.NewInt(1 << 15)
-	createPaymentsRequestFieldSetupFutureUsage        = big.NewInt(1 << 16)
-	createPaymentsRequestFieldShippingAddress         = big.NewInt(1 << 17)
-	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 18)
+	createPaymentsRequestFieldDiscount                = big.NewInt(1 << 6)
+	createPaymentsRequestFieldEmail                   = big.NewInt(1 << 7)
+	createPaymentsRequestFieldIPAddress               = big.NewInt(1 << 8)
+	createPaymentsRequestFieldLineItems               = big.NewInt(1 << 9)
+	createPaymentsRequestFieldMemberID                = big.NewInt(1 << 10)
+	createPaymentsRequestFieldMetadata                = big.NewInt(1 << 11)
+	createPaymentsRequestFieldOffSession              = big.NewInt(1 << 12)
+	createPaymentsRequestFieldPaymentMethod           = big.NewInt(1 << 13)
+	createPaymentsRequestFieldPaymentMethodID         = big.NewInt(1 << 14)
+	createPaymentsRequestFieldQuoteID                 = big.NewInt(1 << 15)
+	createPaymentsRequestFieldReturnURL               = big.NewInt(1 << 16)
+	createPaymentsRequestFieldSetupFutureUsage        = big.NewInt(1 << 17)
+	createPaymentsRequestFieldShippingAddress         = big.NewInt(1 << 18)
+	createPaymentsRequestFieldStatementDescriptor     = big.NewInt(1 << 19)
 )
 
 type CreatePaymentsRequest struct {
@@ -124,6 +125,8 @@ type CreatePaymentsRequest struct {
 	Capture *bool `json:"capture,omitempty" url:"-"`
 	// A confirmation token describing a payment method the buyer just supplied. Provide this instead of `member_id` and `payment_method_id`; the buyer is resolved from the token's billing email, or from `email`. The buyer may still have a step to complete — poll the payment's status for what to do next.
 	ConfirmationToken *string `json:"confirmation_token,omitempty" url:"-"`
+	// A discount typed at the register for the whole payment. It comes off what the payment costs after line discounts and the promo code, and can't be more than that amount. Discounts can't bring the payment to zero. Only with a `card_present` `payment_method`, and requires `payment:manage` on the account. Whop takes each line's discount off the line, then the promo code, then the payment's `discount`. Tax is calculated on the discounted amounts.
+	Discount *PaymentRegisterDiscount `json:"discount,omitempty" url:"-"`
 	// The buyer's email, resolving or creating the user the payment belongs to. With `confirmation_token` it overrides the email the token carries, and is ignored when the token was created by a signed-in buyer; with a `card_present` `payment_method` it names a buyer the point of sale already knows, otherwise the sale belongs to a guest until a buyer is attached; with a `paypal` `payment_method` it names the buyer, and when it and `member_id` are both omitted the buyer is the PayPal account that approves the payment. Ignored with `member_id`.
 	Email *string `json:"email,omitempty" url:"-"`
 	// The buyer's IPv4 or IPv6 address, used to assess the charge's risk and passed to the processor. Ignored unless a saved payment method is charged with `off_session` set to false.
@@ -204,6 +207,13 @@ func (c *CreatePaymentsRequest) SetCapture(capture *bool) {
 func (c *CreatePaymentsRequest) SetConfirmationToken(confirmationToken *string) {
 	c.ConfirmationToken = confirmationToken
 	c.require(createPaymentsRequestFieldConfirmationToken)
+}
+
+// SetDiscount sets the Discount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreatePaymentsRequest) SetDiscount(discount *PaymentRegisterDiscount) {
+	c.Discount = discount
+	c.require(createPaymentsRequestFieldDiscount)
 }
 
 // SetEmail sets the Email field and marks it as non-optional;
@@ -2210,6 +2220,476 @@ func (p *PaymentProcessingDetails) MarshalJSON() ([]byte, error) {
 }
 
 func (p *PaymentProcessingDetails) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+type PaymentRegisterDiscount struct {
+	Type       string
+	FlatAmount *PaymentRegisterDiscountFlatAmount
+	Percentage *PaymentRegisterDiscountPercentage
+
+	rawJSON json.RawMessage
+}
+
+func (p *PaymentRegisterDiscount) GetType() string {
+	if p == nil {
+		return ""
+	}
+	return p.Type
+}
+
+func (p *PaymentRegisterDiscount) GetFlatAmount() *PaymentRegisterDiscountFlatAmount {
+	if p == nil {
+		return nil
+	}
+	return p.FlatAmount
+}
+
+func (p *PaymentRegisterDiscount) GetPercentage() *PaymentRegisterDiscountPercentage {
+	if p == nil {
+		return nil
+	}
+	return p.Percentage
+}
+
+func (p *PaymentRegisterDiscount) UnmarshalJSON(data []byte) error {
+	var unmarshaler struct {
+		Type string `json:"type"`
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
+		return err
+	}
+	p.Type = unmarshaler.Type
+	if unmarshaler.Type == "" {
+		return fmt.Errorf("%T did not include discriminant type", p)
+	}
+	switch unmarshaler.Type {
+	case "flat_amount":
+		value := new(PaymentRegisterDiscountFlatAmount)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.FlatAmount = value
+	case "percentage":
+		value := new(PaymentRegisterDiscountPercentage)
+		if err := json.Unmarshal(data, &value); err != nil {
+			return err
+		}
+		p.Percentage = value
+	}
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p PaymentRegisterDiscount) MarshalJSON() ([]byte, error) {
+	if err := p.validate(); err != nil {
+		return nil, err
+	}
+	if p.FlatAmount != nil {
+		return internal.MarshalJSONWithExtraProperty(p.FlatAmount, "type", "flat_amount")
+	}
+	if p.Percentage != nil {
+		return internal.MarshalJSONWithExtraProperty(p.Percentage, "type", "percentage")
+	}
+	if len(p.rawJSON) > 0 {
+		return p.rawJSON, nil
+	}
+	return nil, fmt.Errorf("type %T does not define a non-empty union type", p)
+}
+
+type PaymentRegisterDiscountVisitor interface {
+	VisitFlatAmount(*PaymentRegisterDiscountFlatAmount) error
+	VisitPercentage(*PaymentRegisterDiscountPercentage) error
+}
+
+func (p *PaymentRegisterDiscount) Accept(visitor PaymentRegisterDiscountVisitor) error {
+	if p.FlatAmount != nil {
+		return visitor.VisitFlatAmount(p.FlatAmount)
+	}
+	if p.Percentage != nil {
+		return visitor.VisitPercentage(p.Percentage)
+	}
+	return fmt.Errorf("type %T does not define a non-empty union type", p)
+}
+
+func (p *PaymentRegisterDiscount) validate() error {
+	if p == nil {
+		return fmt.Errorf("type %T is nil", p)
+	}
+	var fields []string
+	if p.FlatAmount != nil {
+		fields = append(fields, "flat_amount")
+	}
+	if p.Percentage != nil {
+		fields = append(fields, "percentage")
+	}
+	if len(fields) == 0 {
+		if p.Type != "" {
+			if len(p.rawJSON) > 0 {
+				return nil
+			}
+			return fmt.Errorf("type %T defines a discriminant set to %q but the field is not set", p, p.Type)
+		}
+		return fmt.Errorf("type %T is empty", p)
+	}
+	if len(fields) > 1 {
+		return fmt.Errorf("type %T defines values for %s, but only one value is allowed", p, fields)
+	}
+	if p.Type != "" {
+		field := fields[0]
+		if p.Type != field {
+			return fmt.Errorf(
+				"type %T defines a discriminant set to %q, but it does not match the %T field; either remove or update the discriminant to match",
+				p,
+				p.Type,
+				p,
+			)
+		}
+	}
+	return nil
+}
+
+var (
+	paymentRegisterDiscountFlatAmountFieldAmountOff = big.NewInt(1 << 0)
+)
+
+// Takes a fixed amount off.
+type PaymentRegisterDiscountFlatAmount struct {
+	// The amount taken off, in the currency of the sale.
+	AmountOff *PaymentRegisterDiscountFlatAmountAmountOff `json:"amount_off" url:"amount_off"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentRegisterDiscountFlatAmount) GetAmountOff() *PaymentRegisterDiscountFlatAmountAmountOff {
+	if p == nil {
+		return nil
+	}
+	return p.AmountOff
+}
+
+func (p *PaymentRegisterDiscountFlatAmount) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaymentRegisterDiscountFlatAmount) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAmountOff sets the AmountOff field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentRegisterDiscountFlatAmount) SetAmountOff(amountOff *PaymentRegisterDiscountFlatAmountAmountOff) {
+	p.AmountOff = amountOff
+	p.require(paymentRegisterDiscountFlatAmountFieldAmountOff)
+}
+
+func (p *PaymentRegisterDiscountFlatAmount) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentRegisterDiscountFlatAmount
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentRegisterDiscountFlatAmount(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentRegisterDiscountFlatAmount) MarshalJSON() ([]byte, error) {
+	type embed PaymentRegisterDiscountFlatAmount
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaymentRegisterDiscountFlatAmount) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+var (
+	paymentRegisterDiscountFlatAmountAmountOffFieldAmount   = big.NewInt(1 << 0)
+	paymentRegisterDiscountFlatAmountAmountOffFieldCurrency = big.NewInt(1 << 1)
+)
+
+// The amount taken off, in the currency of the sale.
+type PaymentRegisterDiscountFlatAmountAmountOff struct {
+	// The amount in major units, as a decimal string. For example, `"2.50"` is two dollars fifty. It must be more than 0. It can't have more decimal places than the currency.
+	Amount *PaymentRegisterDiscountFlatAmountAmountOffAmount `json:"amount" url:"amount"`
+	// Three-letter ISO 4217 currency code. It must be the currency of the sale.
+	Currency string `json:"currency" url:"currency"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentRegisterDiscountFlatAmountAmountOff) GetAmount() *PaymentRegisterDiscountFlatAmountAmountOffAmount {
+	if p == nil {
+		return nil
+	}
+	return p.Amount
+}
+
+func (p *PaymentRegisterDiscountFlatAmountAmountOff) GetCurrency() string {
+	if p == nil {
+		return ""
+	}
+	return p.Currency
+}
+
+func (p *PaymentRegisterDiscountFlatAmountAmountOff) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaymentRegisterDiscountFlatAmountAmountOff) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetAmount sets the Amount field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentRegisterDiscountFlatAmountAmountOff) SetAmount(amount *PaymentRegisterDiscountFlatAmountAmountOffAmount) {
+	p.Amount = amount
+	p.require(paymentRegisterDiscountFlatAmountAmountOffFieldAmount)
+}
+
+// SetCurrency sets the Currency field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentRegisterDiscountFlatAmountAmountOff) SetCurrency(currency string) {
+	p.Currency = currency
+	p.require(paymentRegisterDiscountFlatAmountAmountOffFieldCurrency)
+}
+
+func (p *PaymentRegisterDiscountFlatAmountAmountOff) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentRegisterDiscountFlatAmountAmountOff
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentRegisterDiscountFlatAmountAmountOff(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentRegisterDiscountFlatAmountAmountOff) MarshalJSON() ([]byte, error) {
+	type embed PaymentRegisterDiscountFlatAmountAmountOff
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaymentRegisterDiscountFlatAmountAmountOff) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	if len(p.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(p.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(p); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", p)
+}
+
+// The amount in major units, as a decimal string. For example, `"2.50"` is two dollars fifty. It must be more than 0. It can't have more decimal places than the currency.
+type PaymentRegisterDiscountFlatAmountAmountOffAmount struct {
+	String string
+	Double float64
+
+	typ string
+}
+
+func (p *PaymentRegisterDiscountFlatAmountAmountOffAmount) GetString() string {
+	if p == nil {
+		return ""
+	}
+	return p.String
+}
+
+func (p *PaymentRegisterDiscountFlatAmountAmountOffAmount) GetDouble() float64 {
+	if p == nil {
+		return 0
+	}
+	return p.Double
+}
+
+func (p *PaymentRegisterDiscountFlatAmountAmountOffAmount) UnmarshalJSON(data []byte) error {
+	var valueString string
+	if err := json.Unmarshal(data, &valueString); err == nil {
+		p.typ = "String"
+		p.String = valueString
+		return nil
+	}
+	var valueDouble float64
+	if err := json.Unmarshal(data, &valueDouble); err == nil {
+		p.typ = "Double"
+		p.Double = valueDouble
+		return nil
+	}
+	return fmt.Errorf("%s cannot be deserialized as a %T", data, p)
+}
+
+func (p PaymentRegisterDiscountFlatAmountAmountOffAmount) MarshalJSON() ([]byte, error) {
+	if p.typ == "String" || p.String != "" {
+		return json.Marshal(p.String)
+	}
+	if p.typ == "Double" || p.Double != 0 {
+		return json.Marshal(p.Double)
+	}
+	return nil, fmt.Errorf("type %T does not include a non-empty union type", p)
+}
+
+type PaymentRegisterDiscountFlatAmountAmountOffAmountVisitor interface {
+	VisitString(string) error
+	VisitDouble(float64) error
+}
+
+func (p *PaymentRegisterDiscountFlatAmountAmountOffAmount) Accept(visitor PaymentRegisterDiscountFlatAmountAmountOffAmountVisitor) error {
+	if p.typ == "String" || p.String != "" {
+		return visitor.VisitString(p.String)
+	}
+	if p.typ == "Double" || p.Double != 0 {
+		return visitor.VisitDouble(p.Double)
+	}
+	return fmt.Errorf("type %T does not include a non-empty union type", p)
+}
+
+var (
+	paymentRegisterDiscountPercentageFieldPercentage = big.NewInt(1 << 0)
+)
+
+// Takes a percentage off.
+type PaymentRegisterDiscountPercentage struct {
+	// The percentage taken off. It must be more than 0 and at most 100. Whop rounds the amount to the smallest unit of the currency, half up.
+	Percentage float64 `json:"percentage" url:"percentage"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (p *PaymentRegisterDiscountPercentage) GetPercentage() float64 {
+	if p == nil {
+		return 0
+	}
+	return p.Percentage
+}
+
+func (p *PaymentRegisterDiscountPercentage) GetExtraProperties() map[string]interface{} {
+	if p == nil {
+		return nil
+	}
+	return p.extraProperties
+}
+
+func (p *PaymentRegisterDiscountPercentage) require(field *big.Int) {
+	next := new(big.Int)
+	if p.explicitFields != nil {
+		next.Set(p.explicitFields)
+	}
+	next.Or(next, field)
+	p.explicitFields = next
+}
+
+// SetPercentage sets the Percentage field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PaymentRegisterDiscountPercentage) SetPercentage(percentage float64) {
+	p.Percentage = percentage
+	p.require(paymentRegisterDiscountPercentageFieldPercentage)
+}
+
+func (p *PaymentRegisterDiscountPercentage) UnmarshalJSON(data []byte) error {
+	type unmarshaler PaymentRegisterDiscountPercentage
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*p = PaymentRegisterDiscountPercentage(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *p)
+	if err != nil {
+		return err
+	}
+	p.extraProperties = extraProperties
+	p.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (p *PaymentRegisterDiscountPercentage) MarshalJSON() ([]byte, error) {
+	type embed PaymentRegisterDiscountPercentage
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*p),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, p.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (p *PaymentRegisterDiscountPercentage) String() string {
 	if p == nil {
 		return "<nil>"
 	}
