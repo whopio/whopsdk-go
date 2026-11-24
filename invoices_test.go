@@ -2325,6 +2325,22 @@ func TestSettersInvoice(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetQuoteDepositAmount", func(t *testing.T) {
+		obj := &Invoice{}
+		var fernTestValueQuoteDepositAmount *Money
+		obj.SetQuoteDepositAmount(fernTestValueQuoteDepositAmount)
+		assert.Equal(t, fernTestValueQuoteDepositAmount, obj.QuoteDepositAmount)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetQuoteDepositPercentage", func(t *testing.T) {
+		obj := &Invoice{}
+		var fernTestValueQuoteDepositPercentage *float64
+		obj.SetQuoteDepositPercentage(fernTestValueQuoteDepositPercentage)
+		assert.Equal(t, fernTestValueQuoteDepositPercentage, obj.QuoteDepositPercentage)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetQuoteInvoiceIDs", func(t *testing.T) {
 		obj := &Invoice{}
 		var fernTestValueQuoteInvoiceIDs []string
@@ -3355,6 +3371,72 @@ func TestGettersInvoice(t *testing.T) {
 			}
 		}()
 		_ = obj.GetQuoteAmountRemaining() // Should return zero value
+	})
+
+	t.Run("GetQuoteDepositAmount", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var expected *Money
+		obj.QuoteDepositAmount = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetQuoteDepositAmount(), "getter should return the property value")
+	})
+
+	t.Run("GetQuoteDepositAmount_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		obj.QuoteDepositAmount = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetQuoteDepositAmount(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetQuoteDepositAmount_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Invoice
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetQuoteDepositAmount() // Should return zero value
+	})
+
+	t.Run("GetQuoteDepositPercentage", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var expected *float64
+		obj.QuoteDepositPercentage = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetQuoteDepositPercentage(), "getter should return the property value")
+	})
+
+	t.Run("GetQuoteDepositPercentage_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		obj.QuoteDepositPercentage = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetQuoteDepositPercentage(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetQuoteDepositPercentage_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Invoice
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetQuoteDepositPercentage() // Should return zero value
 	})
 
 	t.Run("GetQuoteInvoiceIDs", func(t *testing.T) {
@@ -4813,6 +4895,68 @@ func TestSettersMarkExplicitInvoice(t *testing.T) {
 
 		// Act
 		obj.SetQuoteAmountRemaining(fernTestValueQuoteAmountRemaining)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetQuoteDepositAmount_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var fernTestValueQuoteDepositAmount *Money
+
+		// Act
+		obj.SetQuoteDepositAmount(fernTestValueQuoteDepositAmount)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetQuoteDepositPercentage_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Invoice{}
+		var fernTestValueQuoteDepositPercentage *float64
+
+		// Act
+		obj.SetQuoteDepositPercentage(fernTestValueQuoteDepositPercentage)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -17164,6 +17308,8 @@ func TestRequiredNullableRoundTripInvoice(t *testing.T) {
 		"quote_accepted_at",
 		"quote_amount_paid",
 		"quote_amount_remaining",
+		"quote_deposit_amount",
+		"quote_deposit_percentage",
 		"quote_payment_url",
 		"quote_sent_at",
 		"quote_signature_url",
@@ -17186,7 +17332,7 @@ func TestRequiredNullableRoundTripInvoice(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Invoice
-		require.NoError(t, json.Unmarshal([]byte(`{"billing_address":null,"checkout_link":null,"customer_name":null,"due_at":null,"email_address":null,"invoice_prefix":null,"mailing_address_id":null,"member_id":null,"membership_id":null,"memo":null,"paid_at":null,"payment_method_configuration":null,"payment_method_id":null,"quote_accepted_at":null,"quote_amount_paid":null,"quote_amount_remaining":null,"quote_payment_url":null,"quote_sent_at":null,"quote_signature_url":null,"quote_signer_email":null,"quote_signer_name":null,"scheduled_charge_at":null,"scheduled_collection_method":null,"scheduled_send_at":null,"subscription_starts_at":null,"tax_amount":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"billing_address":null,"checkout_link":null,"customer_name":null,"due_at":null,"email_address":null,"invoice_prefix":null,"mailing_address_id":null,"member_id":null,"membership_id":null,"memo":null,"paid_at":null,"payment_method_configuration":null,"payment_method_id":null,"quote_accepted_at":null,"quote_amount_paid":null,"quote_amount_remaining":null,"quote_deposit_amount":null,"quote_deposit_percentage":null,"quote_payment_url":null,"quote_sent_at":null,"quote_signature_url":null,"quote_signer_email":null,"quote_signer_name":null,"scheduled_charge_at":null,"scheduled_collection_method":null,"scheduled_send_at":null,"subscription_starts_at":null,"tax_amount":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]

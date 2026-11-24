@@ -24,7 +24,7 @@ var (
 )
 
 type CreateCardsRequest struct {
-	// The owning account ID (a biz_ identifier). Provide this or user_id.
+	// The owning account ID: a biz_ identifier for a business, or a user_ identifier for a personal account. Provide this or user_id.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// The account member (a user_ identifier) to assign the card to. Required for business card issuing accounts. When this call files the card application, the member applies with their identity. An account API key that sends neither this nor kind is refused.
 	AssignedUserID *string `json:"assigned_user_id,omitempty" url:"-"`
@@ -155,7 +155,7 @@ var (
 )
 
 type ListCardsRequest struct {
-	// The owning account ID (a biz_ identifier). Provide this or user_id.
+	// The owning account ID: a biz_ identifier for a business, or a user_ identifier for a personal account. Provide this or user_id.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// The owning user ID (a user_ identifier). Provide this or account_id.
 	UserID *string `json:"-" url:"user_id,omitempty"`
@@ -196,7 +196,7 @@ var (
 type RetrieveCardsRequest struct {
 	// Card ID to retrieve, prefixed `icrd_`.
 	ID string `json:"-" url:"-"`
-	// The owning account ID (a biz_ identifier). Provide this or user_id.
+	// The owning account ID: a biz_ identifier for a business, or a user_ identifier for a personal account. Provide this or user_id.
 	AccountID *string `json:"-" url:"account_id,omitempty"`
 	// The owning user ID (a user_ identifier). Provide this or account_id.
 	UserID *string `json:"-" url:"user_id,omitempty"`
@@ -13099,7 +13099,7 @@ var (
 type UpdateCardsRequest struct {
 	// Card ID to retrieve, prefixed `icrd_`.
 	ID string `json:"-" url:"-"`
-	// The owning account ID (a biz_ identifier). Provide this or user_id.
+	// The owning account ID: a biz_ identifier for a business, or a user_ identifier for a personal account. Provide this or user_id.
 	AccountID *string `json:"account_id,omitempty" url:"-"`
 	// The billing address. On an issued card this replaces the card's billing address and region is also required. On an invited card, sending it as the invited user completes onboarding and starts card provisioning.
 	Billing *UpdateCardsRequestBilling `json:"billing,omitempty" url:"-"`
