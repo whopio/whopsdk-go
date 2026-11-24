@@ -6614,11 +6614,11 @@ func TestEnumRetrieveStatsRequestMode(t *testing.T) {
 		assert.Equal(t, RetrieveStatsRequestMode("owner"), val, "enum value should match expected wire value")
 	})
 
-	t.Run("NewFromString_trends", func(t *testing.T) {
+	t.Run("NewFromString_public", func(t *testing.T) {
 		t.Parallel()
-		val, err := NewRetrieveStatsRequestModeFromString("trends")
+		val, err := NewRetrieveStatsRequestModeFromString("public")
 		assert.NoError(t, err, "valid enum value should not return error")
-		assert.Equal(t, RetrieveStatsRequestMode("trends"), val, "enum value should match expected wire value")
+		assert.Equal(t, RetrieveStatsRequestMode("public"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_Invalid", func(t *testing.T) {

@@ -248,7 +248,7 @@ type RetrieveStatsRequest struct {
 	Activity *RetrieveStatsRequestActivity `json:"-" url:"activity,omitempty"`
 	// With a single breakdown_by, keep this many groups with the highest whole-range values. Every other group folds into one entry named other. A rate or an average ranks its groups by the deals it divides by. The other entry is measured from the underlying rows, so a distinct count or a rate stays exact rather than being added up from groups.
 	BreakdownLimit *int `json:"-" url:"breakdown_limit,omitempty"`
-	// Whose figures the metric reads, one of the modes the metric lists. `global` reads all of Whop and takes no account_id. Without it, the metric reads the account or user named.
+	// Whose figures the metric reads, one of the modes the metric lists. `global` reads all of Whop and takes no account_id. `public` reads the figures of Whop that are shown in public, and takes no account_id. Without it, the metric reads the account or user named.
 	Mode *RetrieveStatsRequestMode `json:"-" url:"mode,omitempty"`
 	// Business ids (biz_...) to scope the series to. The series sums their figures. On a metric that lists account as a breakdown, it replaces account_id and takes at most 50 ids. On such a metric, breakdown_by=account returns an entry for each id. Available on metrics that list account_ids.
 	AccountIDs []*string `json:"-" url:"account_ids,omitempty"`
@@ -1475,7 +1475,7 @@ type RetrieveStatsRequestMode string
 const (
 	RetrieveStatsRequestModeGlobal RetrieveStatsRequestMode = "global"
 	RetrieveStatsRequestModeOwner  RetrieveStatsRequestMode = "owner"
-	RetrieveStatsRequestModeTrends RetrieveStatsRequestMode = "trends"
+	RetrieveStatsRequestModePublic RetrieveStatsRequestMode = "public"
 )
 
 func NewRetrieveStatsRequestModeFromString(s string) (RetrieveStatsRequestMode, error) {
@@ -1484,8 +1484,8 @@ func NewRetrieveStatsRequestModeFromString(s string) (RetrieveStatsRequestMode, 
 		return RetrieveStatsRequestModeGlobal, nil
 	case "owner":
 		return RetrieveStatsRequestModeOwner, nil
-	case "trends":
-		return RetrieveStatsRequestModeTrends, nil
+	case "public":
+		return RetrieveStatsRequestModePublic, nil
 	}
 	var t RetrieveStatsRequestMode
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

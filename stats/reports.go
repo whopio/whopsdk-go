@@ -2043,15 +2043,15 @@ type PlatformTrendsReportsRequestMode string
 
 const (
 	PlatformTrendsReportsRequestModeGlobal PlatformTrendsReportsRequestMode = "global"
-	PlatformTrendsReportsRequestModeTrends PlatformTrendsReportsRequestMode = "trends"
+	PlatformTrendsReportsRequestModePublic PlatformTrendsReportsRequestMode = "public"
 )
 
 func NewPlatformTrendsReportsRequestModeFromString(s string) (PlatformTrendsReportsRequestMode, error) {
 	switch s {
 	case "global":
 		return PlatformTrendsReportsRequestModeGlobal, nil
-	case "trends":
-		return PlatformTrendsReportsRequestModeTrends, nil
+	case "public":
+		return PlatformTrendsReportsRequestModePublic, nil
 	}
 	var t PlatformTrendsReportsRequestMode
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
