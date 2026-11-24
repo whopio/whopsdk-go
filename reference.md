@@ -475,6 +475,14 @@ client.Accounts.Create(
 <dl>
 <dd>
 
+**verificationIDs:** `[]string` — IDs of `approved` verifications to reuse on the new account, each prefixed `idpf_`. Send at most one `individual` verification and one `business` verification. Each one becomes the account's current verification for its kind, and its payout account carries across. A user token can reuse the verifications that user started. Requires the `identity:write` permission. It cannot be set when creating a subaccount.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **website:** `*string` — The account's business website, as an `http` or `https` URL of at most 255 characters. Also added to the account's `social_links` as a `website` entry.
     
 </dd>
