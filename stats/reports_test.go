@@ -107,6 +107,14 @@ func TestSettersPartnerRevenueLinesReportsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMode", func(t *testing.T) {
+		obj := &PartnerRevenueLinesReportsRequest{}
+		var fernTestValueMode *PartnerRevenueLinesReportsRequestMode
+		obj.SetMode(fernTestValueMode)
+		assert.Equal(t, fernTestValueMode, obj.Mode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 }
 
 func TestSettersMarkExplicitPartnerRevenueLinesReportsRequest(t *testing.T) {
@@ -482,6 +490,37 @@ func TestSettersMarkExplicitPartnerRevenueLinesReportsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetMode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PartnerRevenueLinesReportsRequest{}
+		var fernTestValueMode *PartnerRevenueLinesReportsRequestMode
+
+		// Act
+		obj.SetMode(fernTestValueMode)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 }
 
 func TestSettersPlatformTrendsReportsRequest(t *testing.T) {
@@ -602,6 +641,14 @@ func TestSettersPlatformTrendsReportsRequest(t *testing.T) {
 		var fernTestValueAfter *string
 		obj.SetAfter(fernTestValueAfter)
 		assert.Equal(t, fernTestValueAfter, obj.After)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetMode", func(t *testing.T) {
+		obj := &PlatformTrendsReportsRequest{}
+		var fernTestValueMode *PlatformTrendsReportsRequestMode
+		obj.SetMode(fernTestValueMode)
+		assert.Equal(t, fernTestValueMode, obj.Mode)
 		assert.NotNil(t, obj.explicitFields)
 	})
 
@@ -1050,6 +1097,37 @@ func TestSettersMarkExplicitPlatformTrendsReportsRequest(t *testing.T) {
 
 		// Act
 		obj.SetAfter(fernTestValueAfter)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetMode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PlatformTrendsReportsRequest{}
+		var fernTestValueMode *PlatformTrendsReportsRequestMode
+
+		// Act
+		obj.SetMode(fernTestValueMode)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -9377,6 +9455,28 @@ func TestEnumPartnerRevenueLinesReportsRequestDirection(t *testing.T) {
 	})
 }
 
+func TestEnumPartnerRevenueLinesReportsRequestMode(t *testing.T) {
+	t.Run("NewFromString_owner", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPartnerRevenueLinesReportsRequestModeFromString("owner")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PartnerRevenueLinesReportsRequestMode("owner"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPartnerRevenueLinesReportsRequestModeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPartnerRevenueLinesReportsRequestModeFromString("owner")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumPartnerRevenueLinesReportsRequestOrder(t *testing.T) {
 	t.Run("NewFromString_commission", func(t *testing.T) {
 		t.Parallel()
@@ -9478,6 +9578,35 @@ func TestEnumPlatformTrendsReportsRequestDirection(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewPlatformTrendsReportsRequestDirectionFromString("asc")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumPlatformTrendsReportsRequestMode(t *testing.T) {
+	t.Run("NewFromString_global", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPlatformTrendsReportsRequestModeFromString("global")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PlatformTrendsReportsRequestMode("global"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_trends", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewPlatformTrendsReportsRequestModeFromString("trends")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, PlatformTrendsReportsRequestMode("trends"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewPlatformTrendsReportsRequestModeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewPlatformTrendsReportsRequestModeFromString("global")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
