@@ -25137,6 +25137,14 @@ client.Invoices.Send(
 <dl>
 <dd>
 
+**quoteDepositPercentage:** `*float64` — The share of the quote to bill as a deposit when the customer signs, such as `30` for 30%. The customer is then taken to pay it. Only with `send_as` set to `quote`.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **sendAs:** `*whopsdk.SendInvoicesRequestSendAs` — How to send the draft. `invoice` issues it and emails it to be paid. `quote` emails it as a quote and keeps it a draft. Defaults to `invoice`.
     
 </dd>
