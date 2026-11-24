@@ -104,6 +104,14 @@ func TestSettersRetrievePreferencesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAppleIapFeePayer", func(t *testing.T) {
+		obj := &RetrievePreferencesResponse{}
+		var fernTestValueAppleIapFeePayer RetrievePreferencesResponseAppleIapFeePayer
+		obj.SetAppleIapFeePayer(fernTestValueAppleIapFeePayer)
+		assert.Equal(t, fernTestValueAppleIapFeePayer, obj.AppleIapFeePayer)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCancellationEmails", func(t *testing.T) {
 		obj := &RetrievePreferencesResponse{}
 		var fernTestValueCancellationEmails bool
@@ -483,6 +491,29 @@ func TestGettersRetrievePreferencesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAffiliateProgram() // Should return zero value
+	})
+
+	t.Run("GetAppleIapFeePayer", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		var expected RetrievePreferencesResponseAppleIapFeePayer
+		obj.AppleIapFeePayer = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAppleIapFeePayer(), "getter should return the property value")
+	})
+
+	t.Run("GetAppleIapFeePayer_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *RetrievePreferencesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAppleIapFeePayer() // Should return zero value
 	})
 
 	t.Run("GetCancellationEmails", func(t *testing.T) {
@@ -1366,6 +1397,37 @@ func TestSettersMarkExplicitRetrievePreferencesResponse(t *testing.T) {
 
 		// Act
 		obj.SetAffiliateProgram(fernTestValueAffiliateProgram)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAppleIapFeePayer_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrievePreferencesResponse{}
+		var fernTestValueAppleIapFeePayer RetrievePreferencesResponseAppleIapFeePayer
+
+		// Act
+		obj.SetAppleIapFeePayer(fernTestValueAppleIapFeePayer)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -6756,6 +6818,14 @@ func TestSettersUpdatePreferencesResponse(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAppleIapFeePayer", func(t *testing.T) {
+		obj := &UpdatePreferencesResponse{}
+		var fernTestValueAppleIapFeePayer UpdatePreferencesResponseAppleIapFeePayer
+		obj.SetAppleIapFeePayer(fernTestValueAppleIapFeePayer)
+		assert.Equal(t, fernTestValueAppleIapFeePayer, obj.AppleIapFeePayer)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCancellationEmails", func(t *testing.T) {
 		obj := &UpdatePreferencesResponse{}
 		var fernTestValueCancellationEmails bool
@@ -7135,6 +7205,29 @@ func TestGettersUpdatePreferencesResponse(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAffiliateProgram() // Should return zero value
+	})
+
+	t.Run("GetAppleIapFeePayer", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		var expected UpdatePreferencesResponseAppleIapFeePayer
+		obj.AppleIapFeePayer = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAppleIapFeePayer(), "getter should return the property value")
+	})
+
+	t.Run("GetAppleIapFeePayer_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *UpdatePreferencesResponse
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAppleIapFeePayer() // Should return zero value
 	})
 
 	t.Run("GetCancellationEmails", func(t *testing.T) {
@@ -8018,6 +8111,37 @@ func TestSettersMarkExplicitUpdatePreferencesResponse(t *testing.T) {
 
 		// Act
 		obj.SetAffiliateProgram(fernTestValueAffiliateProgram)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAppleIapFeePayer_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesResponse{}
+		var fernTestValueAppleIapFeePayer UpdatePreferencesResponseAppleIapFeePayer
+
+		// Act
+		obj.SetAppleIapFeePayer(fernTestValueAppleIapFeePayer)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -11361,6 +11485,14 @@ func TestSettersUpdatePreferencesRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAppleIapFeePayer", func(t *testing.T) {
+		obj := &UpdatePreferencesRequest{}
+		var fernTestValueAppleIapFeePayer *UpdatePreferencesRequestAppleIapFeePayer
+		obj.SetAppleIapFeePayer(fernTestValueAppleIapFeePayer)
+		assert.Equal(t, fernTestValueAppleIapFeePayer, obj.AppleIapFeePayer)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCancellationEmails", func(t *testing.T) {
 		obj := &UpdatePreferencesRequest{}
 		var fernTestValueCancellationEmails *bool
@@ -11679,6 +11811,37 @@ func TestSettersMarkExplicitUpdatePreferencesRequest(t *testing.T) {
 
 		// Act
 		obj.SetAffiliateProgram(fernTestValueAffiliateProgram)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAppleIapFeePayer_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &UpdatePreferencesRequest{}
+		var fernTestValueAppleIapFeePayer *UpdatePreferencesRequestAppleIapFeePayer
+
+		// Act
+		obj.SetAppleIapFeePayer(fernTestValueAppleIapFeePayer)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -14535,6 +14698,35 @@ func TestEnumRetrievePreferencesResponseAdsTripleWhaleIntegrationStatus(t *testi
 	})
 }
 
+func TestEnumRetrievePreferencesResponseAppleIapFeePayer(t *testing.T) {
+	t.Run("NewFromString_buyer", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePreferencesResponseAppleIapFeePayerFromString("buyer")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePreferencesResponseAppleIapFeePayer("buyer"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_company", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrievePreferencesResponseAppleIapFeePayerFromString("company")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrievePreferencesResponseAppleIapFeePayer("company"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRetrievePreferencesResponseAppleIapFeePayerFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRetrievePreferencesResponseAppleIapFeePayerFromString("buyer")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
 func TestEnumRetrievePreferencesResponseEconomicIntelligenceOffersItemDurationUnit(t *testing.T) {
 	t.Run("NewFromString_hours", func(t *testing.T) {
 		t.Parallel()
@@ -14866,6 +15058,35 @@ func TestEnumUpdatePreferencesRequestAffiliateProgramApplicationQuestionsItemFie
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldTypeFromString("text")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdatePreferencesRequestAppleIapFeePayer(t *testing.T) {
+	t.Run("NewFromString_buyer", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesRequestAppleIapFeePayerFromString("buyer")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesRequestAppleIapFeePayer("buyer"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_company", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesRequestAppleIapFeePayerFromString("company")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesRequestAppleIapFeePayer("company"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdatePreferencesRequestAppleIapFeePayerFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdatePreferencesRequestAppleIapFeePayerFromString("buyer")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
@@ -15211,6 +15432,35 @@ func TestEnumUpdatePreferencesResponseAdsTripleWhaleIntegrationStatus(t *testing
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewUpdatePreferencesResponseAdsTripleWhaleIntegrationStatusFromString("connected")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumUpdatePreferencesResponseAppleIapFeePayer(t *testing.T) {
+	t.Run("NewFromString_buyer", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesResponseAppleIapFeePayerFromString("buyer")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesResponseAppleIapFeePayer("buyer"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_company", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewUpdatePreferencesResponseAppleIapFeePayerFromString("company")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, UpdatePreferencesResponseAppleIapFeePayer("company"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewUpdatePreferencesResponseAppleIapFeePayerFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewUpdatePreferencesResponseAppleIapFeePayerFromString("buyer")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

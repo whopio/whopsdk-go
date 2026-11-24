@@ -45,31 +45,32 @@ var (
 	retrievePreferencesResponseFieldAdsSchedulingTimezone                   = big.NewInt(1 << 3)
 	retrievePreferencesResponseFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 4)
 	retrievePreferencesResponseFieldAffiliateProgram                        = big.NewInt(1 << 5)
-	retrievePreferencesResponseFieldCancellationEmails                      = big.NewInt(1 << 6)
-	retrievePreferencesResponseFieldCardSurcharge                           = big.NewInt(1 << 7)
-	retrievePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 8)
-	retrievePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 9)
-	retrievePreferencesResponseFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 10)
-	retrievePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 11)
-	retrievePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 12)
-	retrievePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 13)
-	retrievePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 14)
-	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 15)
-	retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 16)
-	retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 17)
-	retrievePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 18)
-	retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 19)
-	retrievePreferencesResponseFieldFailedPaymentEmails                     = big.NewInt(1 << 20)
-	retrievePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 21)
-	retrievePreferencesResponseFieldMerchantOfRecord                        = big.NewInt(1 << 22)
-	retrievePreferencesResponseFieldOffSessionPaymentRules                  = big.NewInt(1 << 23)
-	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 24)
-	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 25)
-	retrievePreferencesResponseFieldRenewalReminderEmails                   = big.NewInt(1 << 26)
-	retrievePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 27)
-	retrievePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 28)
-	retrievePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 29)
-	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 30)
+	retrievePreferencesResponseFieldAppleIapFeePayer                        = big.NewInt(1 << 6)
+	retrievePreferencesResponseFieldCancellationEmails                      = big.NewInt(1 << 7)
+	retrievePreferencesResponseFieldCardSurcharge                           = big.NewInt(1 << 8)
+	retrievePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 9)
+	retrievePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 10)
+	retrievePreferencesResponseFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 11)
+	retrievePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 12)
+	retrievePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 13)
+	retrievePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 14)
+	retrievePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 15)
+	retrievePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 16)
+	retrievePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 17)
+	retrievePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 18)
+	retrievePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 19)
+	retrievePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 20)
+	retrievePreferencesResponseFieldFailedPaymentEmails                     = big.NewInt(1 << 21)
+	retrievePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 22)
+	retrievePreferencesResponseFieldMerchantOfRecord                        = big.NewInt(1 << 23)
+	retrievePreferencesResponseFieldOffSessionPaymentRules                  = big.NewInt(1 << 24)
+	retrievePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 25)
+	retrievePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 26)
+	retrievePreferencesResponseFieldRenewalReminderEmails                   = big.NewInt(1 << 27)
+	retrievePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 28)
+	retrievePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 29)
+	retrievePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 30)
+	retrievePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 31)
 )
 
 // retrievePreferencesResponseNullableFields maps the wire names of RetrievePreferencesResponse's nullable fields (required or optional) to their field bits.
@@ -101,6 +102,8 @@ type RetrievePreferencesResponse struct {
 	AdsTripleWhaleIntegration *RetrievePreferencesResponseAdsTripleWhaleIntegration `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
 	// The account's affiliate program: its instructions, its application and the product it features for affiliates. `GET /accounts/{account_id}/affiliate_program` returns the same object without authentication.
 	AffiliateProgram *v2.AccountAffiliateProgram `json:"affiliate_program" url:"affiliate_program"`
+	// Who pays Apple's 30% fee on one-time purchases made in the Whop iOS app. `buyer` (the default) adds about 43% to the iOS price, so the buyer pays the fee. `company` keeps the product's own price, and the fee comes out of the sale.
+	AppleIapFeePayer RetrievePreferencesResponseAppleIapFeePayer `json:"apple_iap_fee_payer" url:"apple_iap_fee_payer"`
 	// Whether Whop emails members when their membership is canceled or terminated. `true` by default. Set it to `false` to stop these emails while keeping the account's other customer emails. They also stop while the account's `send_customer_emails` is `false`.
 	CancellationEmails bool `json:"cancellation_emails" url:"cancellation_emails"`
 	// The card surcharge a point of sale adds to credit card payments. Debit and prepaid cards never pay it.
@@ -199,6 +202,13 @@ func (r *RetrievePreferencesResponse) GetAffiliateProgram() *v2.AccountAffiliate
 		return nil
 	}
 	return r.AffiliateProgram
+}
+
+func (r *RetrievePreferencesResponse) GetAppleIapFeePayer() RetrievePreferencesResponseAppleIapFeePayer {
+	if r == nil {
+		return ""
+	}
+	return r.AppleIapFeePayer
 }
 
 func (r *RetrievePreferencesResponse) GetCancellationEmails() bool {
@@ -432,6 +442,13 @@ func (r *RetrievePreferencesResponse) SetAdsTripleWhaleIntegration(adsTripleWhal
 func (r *RetrievePreferencesResponse) SetAffiliateProgram(affiliateProgram *v2.AccountAffiliateProgram) {
 	r.AffiliateProgram = affiliateProgram
 	r.require(retrievePreferencesResponseFieldAffiliateProgram)
+}
+
+// SetAppleIapFeePayer sets the AppleIapFeePayer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrievePreferencesResponse) SetAppleIapFeePayer(appleIapFeePayer RetrievePreferencesResponseAppleIapFeePayer) {
+	r.AppleIapFeePayer = appleIapFeePayer
+	r.require(retrievePreferencesResponseFieldAppleIapFeePayer)
 }
 
 // SetCancellationEmails sets the CancellationEmails field and marks it as non-optional;
@@ -1603,6 +1620,29 @@ func NewRetrievePreferencesResponseAdsTripleWhaleIntegrationStatusFromString(s s
 }
 
 func (r RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus) Ptr() *RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus {
+	return &r
+}
+
+// Who pays Apple's 30% fee on one-time purchases made in the Whop iOS app. `buyer` (the default) adds about 43% to the iOS price, so the buyer pays the fee. `company` keeps the product's own price, and the fee comes out of the sale.
+type RetrievePreferencesResponseAppleIapFeePayer string
+
+const (
+	RetrievePreferencesResponseAppleIapFeePayerBuyer   RetrievePreferencesResponseAppleIapFeePayer = "buyer"
+	RetrievePreferencesResponseAppleIapFeePayerCompany RetrievePreferencesResponseAppleIapFeePayer = "company"
+)
+
+func NewRetrievePreferencesResponseAppleIapFeePayerFromString(s string) (RetrievePreferencesResponseAppleIapFeePayer, error) {
+	switch s {
+	case "buyer":
+		return RetrievePreferencesResponseAppleIapFeePayerBuyer, nil
+	case "company":
+		return RetrievePreferencesResponseAppleIapFeePayerCompany, nil
+	}
+	var t RetrievePreferencesResponseAppleIapFeePayer
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrievePreferencesResponseAppleIapFeePayer) Ptr() *RetrievePreferencesResponseAppleIapFeePayer {
 	return &r
 }
 
@@ -2995,6 +3035,29 @@ func (u UpdatePreferencesRequestAffiliateProgramApplicationQuestionsItemFieldTyp
 	return &u
 }
 
+// Who pays Apple's 30% fee on one-time purchases made in the Whop iOS app. Set it to `company` to sell at the product's own price and pay the fee from the sale. Set it to `buyer` to add about 43% to the iOS price, so the buyer pays the fee. Requires the `company:update` scope on your API key.
+type UpdatePreferencesRequestAppleIapFeePayer string
+
+const (
+	UpdatePreferencesRequestAppleIapFeePayerBuyer   UpdatePreferencesRequestAppleIapFeePayer = "buyer"
+	UpdatePreferencesRequestAppleIapFeePayerCompany UpdatePreferencesRequestAppleIapFeePayer = "company"
+)
+
+func NewUpdatePreferencesRequestAppleIapFeePayerFromString(s string) (UpdatePreferencesRequestAppleIapFeePayer, error) {
+	switch s {
+	case "buyer":
+		return UpdatePreferencesRequestAppleIapFeePayerBuyer, nil
+	case "company":
+		return UpdatePreferencesRequestAppleIapFeePayerCompany, nil
+	}
+	var t UpdatePreferencesRequestAppleIapFeePayer
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesRequestAppleIapFeePayer) Ptr() *UpdatePreferencesRequestAppleIapFeePayer {
+	return &u
+}
+
 var (
 	updatePreferencesRequestCardSurchargeFieldEnabled    = big.NewInt(1 << 0)
 	updatePreferencesRequestCardSurchargeFieldPercentage = big.NewInt(1 << 1)
@@ -3575,31 +3638,32 @@ var (
 	updatePreferencesResponseFieldAdsSchedulingTimezone                   = big.NewInt(1 << 3)
 	updatePreferencesResponseFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 4)
 	updatePreferencesResponseFieldAffiliateProgram                        = big.NewInt(1 << 5)
-	updatePreferencesResponseFieldCancellationEmails                      = big.NewInt(1 << 6)
-	updatePreferencesResponseFieldCardSurcharge                           = big.NewInt(1 << 7)
-	updatePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 8)
-	updatePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 9)
-	updatePreferencesResponseFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 10)
-	updatePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 11)
-	updatePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 12)
-	updatePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 13)
-	updatePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 14)
-	updatePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 15)
-	updatePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 16)
-	updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 17)
-	updatePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 18)
-	updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 19)
-	updatePreferencesResponseFieldFailedPaymentEmails                     = big.NewInt(1 << 20)
-	updatePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 21)
-	updatePreferencesResponseFieldMerchantOfRecord                        = big.NewInt(1 << 22)
-	updatePreferencesResponseFieldOffSessionPaymentRules                  = big.NewInt(1 << 23)
-	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 24)
-	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 25)
-	updatePreferencesResponseFieldRenewalReminderEmails                   = big.NewInt(1 << 26)
-	updatePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 27)
-	updatePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 28)
-	updatePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 29)
-	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 30)
+	updatePreferencesResponseFieldAppleIapFeePayer                        = big.NewInt(1 << 6)
+	updatePreferencesResponseFieldCancellationEmails                      = big.NewInt(1 << 7)
+	updatePreferencesResponseFieldCardSurcharge                           = big.NewInt(1 << 8)
+	updatePreferencesResponseFieldCardsAutoTopUp                          = big.NewInt(1 << 9)
+	updatePreferencesResponseFieldCardsNotifications                      = big.NewInt(1 << 10)
+	updatePreferencesResponseFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 11)
+	updatePreferencesResponseFieldCustomerTracking                        = big.NewInt(1 << 12)
+	updatePreferencesResponseFieldDisputeFighterEnabled                   = big.NewInt(1 << 13)
+	updatePreferencesResponseFieldEconomicIntelligence                    = big.NewInt(1 << 14)
+	updatePreferencesResponseFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 15)
+	updatePreferencesResponseFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 16)
+	updatePreferencesResponseFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 17)
+	updatePreferencesResponseFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 18)
+	updatePreferencesResponseFieldEconomicIntelligenceOffers              = big.NewInt(1 << 19)
+	updatePreferencesResponseFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 20)
+	updatePreferencesResponseFieldFailedPaymentEmails                     = big.NewInt(1 << 21)
+	updatePreferencesResponseFieldFeedbackOptions                         = big.NewInt(1 << 22)
+	updatePreferencesResponseFieldMerchantOfRecord                        = big.NewInt(1 << 23)
+	updatePreferencesResponseFieldOffSessionPaymentRules                  = big.NewInt(1 << 24)
+	updatePreferencesResponseFieldPreferredSettlementCurrency             = big.NewInt(1 << 25)
+	updatePreferencesResponseFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 26)
+	updatePreferencesResponseFieldRenewalReminderEmails                   = big.NewInt(1 << 27)
+	updatePreferencesResponseFieldReviewRequestEmails                     = big.NewInt(1 << 28)
+	updatePreferencesResponseFieldSubaccountNotifications                 = big.NewInt(1 << 29)
+	updatePreferencesResponseFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 30)
+	updatePreferencesResponseFieldSubscriptionFailureBehavior             = big.NewInt(1 << 31)
 )
 
 // updatePreferencesResponseNullableFields maps the wire names of UpdatePreferencesResponse's nullable fields (required or optional) to their field bits.
@@ -3631,6 +3695,8 @@ type UpdatePreferencesResponse struct {
 	AdsTripleWhaleIntegration *UpdatePreferencesResponseAdsTripleWhaleIntegration `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
 	// The account's affiliate program: its instructions, its application and the product it features for affiliates. `GET /accounts/{account_id}/affiliate_program` returns the same object without authentication.
 	AffiliateProgram *v2.AccountAffiliateProgram `json:"affiliate_program" url:"affiliate_program"`
+	// Who pays Apple's 30% fee on one-time purchases made in the Whop iOS app. `buyer` (the default) adds about 43% to the iOS price, so the buyer pays the fee. `company` keeps the product's own price, and the fee comes out of the sale.
+	AppleIapFeePayer UpdatePreferencesResponseAppleIapFeePayer `json:"apple_iap_fee_payer" url:"apple_iap_fee_payer"`
 	// Whether Whop emails members when their membership is canceled or terminated. `true` by default. Set it to `false` to stop these emails while keeping the account's other customer emails. They also stop while the account's `send_customer_emails` is `false`.
 	CancellationEmails bool `json:"cancellation_emails" url:"cancellation_emails"`
 	// The card surcharge a point of sale adds to credit card payments. Debit and prepaid cards never pay it.
@@ -3729,6 +3795,13 @@ func (u *UpdatePreferencesResponse) GetAffiliateProgram() *v2.AccountAffiliatePr
 		return nil
 	}
 	return u.AffiliateProgram
+}
+
+func (u *UpdatePreferencesResponse) GetAppleIapFeePayer() UpdatePreferencesResponseAppleIapFeePayer {
+	if u == nil {
+		return ""
+	}
+	return u.AppleIapFeePayer
 }
 
 func (u *UpdatePreferencesResponse) GetCancellationEmails() bool {
@@ -3962,6 +4035,13 @@ func (u *UpdatePreferencesResponse) SetAdsTripleWhaleIntegration(adsTripleWhaleI
 func (u *UpdatePreferencesResponse) SetAffiliateProgram(affiliateProgram *v2.AccountAffiliateProgram) {
 	u.AffiliateProgram = affiliateProgram
 	u.require(updatePreferencesResponseFieldAffiliateProgram)
+}
+
+// SetAppleIapFeePayer sets the AppleIapFeePayer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesResponse) SetAppleIapFeePayer(appleIapFeePayer UpdatePreferencesResponseAppleIapFeePayer) {
+	u.AppleIapFeePayer = appleIapFeePayer
+	u.require(updatePreferencesResponseFieldAppleIapFeePayer)
 }
 
 // SetCancellationEmails sets the CancellationEmails field and marks it as non-optional;
@@ -5136,6 +5216,29 @@ func (u UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus) Ptr() *UpdateP
 	return &u
 }
 
+// Who pays Apple's 30% fee on one-time purchases made in the Whop iOS app. `buyer` (the default) adds about 43% to the iOS price, so the buyer pays the fee. `company` keeps the product's own price, and the fee comes out of the sale.
+type UpdatePreferencesResponseAppleIapFeePayer string
+
+const (
+	UpdatePreferencesResponseAppleIapFeePayerBuyer   UpdatePreferencesResponseAppleIapFeePayer = "buyer"
+	UpdatePreferencesResponseAppleIapFeePayerCompany UpdatePreferencesResponseAppleIapFeePayer = "company"
+)
+
+func NewUpdatePreferencesResponseAppleIapFeePayerFromString(s string) (UpdatePreferencesResponseAppleIapFeePayer, error) {
+	switch s {
+	case "buyer":
+		return UpdatePreferencesResponseAppleIapFeePayerBuyer, nil
+	case "company":
+		return UpdatePreferencesResponseAppleIapFeePayerCompany, nil
+	}
+	var t UpdatePreferencesResponseAppleIapFeePayer
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (u UpdatePreferencesResponseAppleIapFeePayer) Ptr() *UpdatePreferencesResponseAppleIapFeePayer {
+	return &u
+}
+
 var (
 	updatePreferencesResponseEconomicIntelligenceOffersItemFieldAutoRenew     = big.NewInt(1 << 0)
 	updatePreferencesResponseEconomicIntelligenceOffersItemFieldDuration      = big.NewInt(1 << 1)
@@ -5715,25 +5818,26 @@ var (
 	updatePreferencesRequestFieldAdsSchedulingTimezone            = big.NewInt(1 << 3)
 	updatePreferencesRequestFieldAdsTripleWhaleIntegration        = big.NewInt(1 << 4)
 	updatePreferencesRequestFieldAffiliateProgram                 = big.NewInt(1 << 5)
-	updatePreferencesRequestFieldCancellationEmails               = big.NewInt(1 << 6)
-	updatePreferencesRequestFieldCardSurcharge                    = big.NewInt(1 << 7)
-	updatePreferencesRequestFieldCardsAutoTopUp                   = big.NewInt(1 << 8)
-	updatePreferencesRequestFieldCardsNotifications               = big.NewInt(1 << 9)
-	updatePreferencesRequestFieldCoversSubaccountNegativeBalances = big.NewInt(1 << 10)
-	updatePreferencesRequestFieldCustomerTracking                 = big.NewInt(1 << 11)
-	updatePreferencesRequestFieldDisputeFighterEnabled            = big.NewInt(1 << 12)
-	updatePreferencesRequestFieldEconomicIntelligenceAutoRenew    = big.NewInt(1 << 13)
-	updatePreferencesRequestFieldEconomicIntelligenceDurationKey  = big.NewInt(1 << 14)
-	updatePreferencesRequestFieldFailedPaymentEmails              = big.NewInt(1 << 15)
-	updatePreferencesRequestFieldFeedbackOptions                  = big.NewInt(1 << 16)
-	updatePreferencesRequestFieldMerchantOfRecord                 = big.NewInt(1 << 17)
-	updatePreferencesRequestFieldOffSessionPaymentRules           = big.NewInt(1 << 18)
-	updatePreferencesRequestFieldPreferredSettlementCurrency      = big.NewInt(1 << 19)
-	updatePreferencesRequestFieldRenewalReminderEmails            = big.NewInt(1 << 20)
-	updatePreferencesRequestFieldReviewRequestEmails              = big.NewInt(1 << 21)
-	updatePreferencesRequestFieldSubaccountNotifications          = big.NewInt(1 << 22)
-	updatePreferencesRequestFieldSubaccountTeamViewOnly           = big.NewInt(1 << 23)
-	updatePreferencesRequestFieldSubscriptionFailureBehavior      = big.NewInt(1 << 24)
+	updatePreferencesRequestFieldAppleIapFeePayer                 = big.NewInt(1 << 6)
+	updatePreferencesRequestFieldCancellationEmails               = big.NewInt(1 << 7)
+	updatePreferencesRequestFieldCardSurcharge                    = big.NewInt(1 << 8)
+	updatePreferencesRequestFieldCardsAutoTopUp                   = big.NewInt(1 << 9)
+	updatePreferencesRequestFieldCardsNotifications               = big.NewInt(1 << 10)
+	updatePreferencesRequestFieldCoversSubaccountNegativeBalances = big.NewInt(1 << 11)
+	updatePreferencesRequestFieldCustomerTracking                 = big.NewInt(1 << 12)
+	updatePreferencesRequestFieldDisputeFighterEnabled            = big.NewInt(1 << 13)
+	updatePreferencesRequestFieldEconomicIntelligenceAutoRenew    = big.NewInt(1 << 14)
+	updatePreferencesRequestFieldEconomicIntelligenceDurationKey  = big.NewInt(1 << 15)
+	updatePreferencesRequestFieldFailedPaymentEmails              = big.NewInt(1 << 16)
+	updatePreferencesRequestFieldFeedbackOptions                  = big.NewInt(1 << 17)
+	updatePreferencesRequestFieldMerchantOfRecord                 = big.NewInt(1 << 18)
+	updatePreferencesRequestFieldOffSessionPaymentRules           = big.NewInt(1 << 19)
+	updatePreferencesRequestFieldPreferredSettlementCurrency      = big.NewInt(1 << 20)
+	updatePreferencesRequestFieldRenewalReminderEmails            = big.NewInt(1 << 21)
+	updatePreferencesRequestFieldReviewRequestEmails              = big.NewInt(1 << 22)
+	updatePreferencesRequestFieldSubaccountNotifications          = big.NewInt(1 << 23)
+	updatePreferencesRequestFieldSubaccountTeamViewOnly           = big.NewInt(1 << 24)
+	updatePreferencesRequestFieldSubscriptionFailureBehavior      = big.NewInt(1 << 25)
 )
 
 type UpdatePreferencesRequest struct {
@@ -5749,6 +5853,8 @@ type UpdatePreferencesRequest struct {
 	AdsTripleWhaleIntegration *UpdatePreferencesRequestAdsTripleWhaleIntegration `json:"ads_triple_whale_integration,omitempty" url:"-"`
 	// The account's affiliate program. Only the fields you send change, and fields left out keep their current values. To clear a field, set it to `null`. To turn affiliates on or off, set `global_affiliate_status` and `member_affiliate_status` on each product with `PATCH /products/{id}`. Requires the `affiliate:update` scope on your API key.
 	AffiliateProgram *UpdatePreferencesRequestAffiliateProgram `json:"affiliate_program,omitempty" url:"-"`
+	// Who pays Apple's 30% fee on one-time purchases made in the Whop iOS app. Set it to `company` to sell at the product's own price and pay the fee from the sale. Set it to `buyer` to add about 43% to the iOS price, so the buyer pays the fee. Requires the `company:update` scope on your API key.
+	AppleIapFeePayer *UpdatePreferencesRequestAppleIapFeePayer `json:"apple_iap_fee_payer,omitempty" url:"-"`
 	// Whether Whop emails members when their membership is canceled or terminated. Set it to `false` to stop these emails while keeping the account's other customer emails. Requires the `company:update` scope on your API key.
 	CancellationEmails *bool `json:"cancellation_emails,omitempty" url:"-"`
 	// The card surcharge a point of sale adds to credit card payments, replaced as a whole. You can always turn it off. You can turn it on only when `card_surcharge.maximum_percentage` is not null. Requires the `company:update` scope on your API key.
@@ -5841,6 +5947,13 @@ func (u *UpdatePreferencesRequest) SetAdsTripleWhaleIntegration(adsTripleWhaleIn
 func (u *UpdatePreferencesRequest) SetAffiliateProgram(affiliateProgram *UpdatePreferencesRequestAffiliateProgram) {
 	u.AffiliateProgram = affiliateProgram
 	u.require(updatePreferencesRequestFieldAffiliateProgram)
+}
+
+// SetAppleIapFeePayer sets the AppleIapFeePayer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdatePreferencesRequest) SetAppleIapFeePayer(appleIapFeePayer *UpdatePreferencesRequestAppleIapFeePayer) {
+	u.AppleIapFeePayer = appleIapFeePayer
+	u.require(updatePreferencesRequestFieldAppleIapFeePayer)
 }
 
 // SetCancellationEmails sets the CancellationEmails field and marks it as non-optional;
