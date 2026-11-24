@@ -91,16 +91,17 @@ var (
 	listMembersRequestFieldPromoCodeIDs      = big.NewInt(1 << 8)
 	listMembersRequestFieldAffiliateID       = big.NewInt(1 << 9)
 	listMembersRequestFieldBuyerAccountIDs   = big.NewInt(1 << 10)
-	listMembersRequestFieldQuery             = big.NewInt(1 << 11)
-	listMembersRequestFieldCreatedAfter      = big.NewInt(1 << 12)
-	listMembersRequestFieldCreatedBefore     = big.NewInt(1 << 13)
-	listMembersRequestFieldOrder             = big.NewInt(1 << 14)
-	listMembersRequestFieldDirection         = big.NewInt(1 << 15)
-	listMembersRequestFieldFirst             = big.NewInt(1 << 16)
-	listMembersRequestFieldAfter             = big.NewInt(1 << 17)
-	listMembersRequestFieldLast              = big.NewInt(1 << 18)
-	listMembersRequestFieldBefore            = big.NewInt(1 << 19)
-	listMembersRequestFieldIncludeTotalCount = big.NewInt(1 << 20)
+	listMembersRequestFieldMetadata          = big.NewInt(1 << 11)
+	listMembersRequestFieldQuery             = big.NewInt(1 << 12)
+	listMembersRequestFieldCreatedAfter      = big.NewInt(1 << 13)
+	listMembersRequestFieldCreatedBefore     = big.NewInt(1 << 14)
+	listMembersRequestFieldOrder             = big.NewInt(1 << 15)
+	listMembersRequestFieldDirection         = big.NewInt(1 << 16)
+	listMembersRequestFieldFirst             = big.NewInt(1 << 17)
+	listMembersRequestFieldAfter             = big.NewInt(1 << 18)
+	listMembersRequestFieldLast              = big.NewInt(1 << 19)
+	listMembersRequestFieldBefore            = big.NewInt(1 << 20)
+	listMembersRequestFieldIncludeTotalCount = big.NewInt(1 << 21)
 )
 
 type ListMembersRequest struct {
@@ -126,6 +127,8 @@ type ListMembersRequest struct {
 	AffiliateID *string `json:"-" url:"affiliate_id,omitempty"`
 	// Only return members bought by these accounts, prefixed `biz_`. Unknown IDs match nothing.
 	BuyerAccountIDs []*string `json:"-" url:"buyer_account_ids,omitempty"`
+	// JSON-encoded object of key and value pairs. Only returns members whose own metadata holds every pair with exactly that value, for example `{"utm_source":"twitter"}`. Takes up to 5 keys. Only the account's newest 50,000 members are searched, and a search that takes over 5 seconds returns a 400. Stored numbers and true or false values match their text. Nested query keys such as `metadata[utm_source]=twitter` also work.
+	Metadata *string `json:"-" url:"metadata,omitempty"`
 	// Search members by name or username. An exact email address also matches when the credential holds the member:email:read scope.
 	Query *string `json:"-" url:"query,omitempty"`
 	// Only members who joined after this ISO 8601 timestamp.
@@ -235,6 +238,13 @@ func (l *ListMembersRequest) SetAffiliateID(affiliateID *string) {
 func (l *ListMembersRequest) SetBuyerAccountIDs(buyerAccountIDs []*string) {
 	l.BuyerAccountIDs = buyerAccountIDs
 	l.require(listMembersRequestFieldBuyerAccountIDs)
+}
+
+// SetMetadata sets the Metadata field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListMembersRequest) SetMetadata(metadata *string) {
+	l.Metadata = metadata
+	l.require(listMembersRequestFieldMetadata)
 }
 
 // SetQuery sets the Query field and marks it as non-optional;

@@ -76514,18 +76514,22 @@ func (s Statuses) Ptr() *Statuses {
 }
 
 var (
-	storefrontAccountFieldID      = big.NewInt(1 << 0)
-	storefrontAccountFieldLogoURL = big.NewInt(1 << 1)
-	storefrontAccountFieldRoute   = big.NewInt(1 << 2)
-	storefrontAccountFieldTitle   = big.NewInt(1 << 3)
+	storefrontAccountFieldBannerImageURL = big.NewInt(1 << 0)
+	storefrontAccountFieldID             = big.NewInt(1 << 1)
+	storefrontAccountFieldLogoURL        = big.NewInt(1 << 2)
+	storefrontAccountFieldRoute          = big.NewInt(1 << 3)
+	storefrontAccountFieldTitle          = big.NewInt(1 << 4)
 )
 
 // storefrontAccountNullableFields maps the wire names of StorefrontAccount's nullable fields (required or optional) to their field bits.
 var storefrontAccountNullableFields = map[string]*big.Int{
-	"logo_url": storefrontAccountFieldLogoURL,
+	"banner_image_url": storefrontAccountFieldBannerImageURL,
+	"logo_url":         storefrontAccountFieldLogoURL,
 }
 
 type StorefrontAccount struct {
+	// Account banner image URL. `null` when the account has not set one.
+	BannerImageURL *string `json:"banner_image_url,omitempty" url:"banner_image_url,omitempty"`
 	// Account ID, prefixed `biz_`.
 	ID string `json:"id" url:"id"`
 	// Account logo image URL. `null` when the account has not set one.
@@ -76540,6 +76544,13 @@ type StorefrontAccount struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (s *StorefrontAccount) GetBannerImageURL() *string {
+	if s == nil {
+		return nil
+	}
+	return s.BannerImageURL
 }
 
 func (s *StorefrontAccount) GetID() string {
@@ -76584,6 +76595,13 @@ func (s *StorefrontAccount) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	s.explicitFields = next
+}
+
+// SetBannerImageURL sets the BannerImageURL field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *StorefrontAccount) SetBannerImageURL(bannerImageURL *string) {
+	s.BannerImageURL = bannerImageURL
+	s.require(storefrontAccountFieldBannerImageURL)
 }
 
 // SetID sets the ID field and marks it as non-optional;
