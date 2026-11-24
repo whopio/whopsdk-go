@@ -23,6 +23,7 @@ var (
 	partnerRevenueLinesReportsRequestFieldConvertTo          = big.NewInt(1 << 9)
 	partnerRevenueLinesReportsRequestFieldFirst              = big.NewInt(1 << 10)
 	partnerRevenueLinesReportsRequestFieldAfter              = big.NewInt(1 << 11)
+	partnerRevenueLinesReportsRequestFieldMode               = big.NewInt(1 << 12)
 )
 
 type PartnerRevenueLinesReportsRequest struct {
@@ -50,6 +51,8 @@ type PartnerRevenueLinesReportsRequest struct {
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
+	// Whose figures the report reads, one of the modes the report has. `global` reads all of Whop with nothing left out.
+	Mode *PartnerRevenueLinesReportsRequestMode `json:"-" url:"mode,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -148,6 +151,13 @@ func (p *PartnerRevenueLinesReportsRequest) SetAfter(after *string) {
 	p.require(partnerRevenueLinesReportsRequestFieldAfter)
 }
 
+// SetMode sets the Mode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerRevenueLinesReportsRequest) SetMode(mode *PartnerRevenueLinesReportsRequestMode) {
+	p.Mode = mode
+	p.require(partnerRevenueLinesReportsRequestFieldMode)
+}
+
 var (
 	platformTrendsReportsRequestFieldBreakdownBy     = big.NewInt(1 << 0)
 	platformTrendsReportsRequestFieldColumns         = big.NewInt(1 << 1)
@@ -164,6 +174,7 @@ var (
 	platformTrendsReportsRequestFieldBlueprint       = big.NewInt(1 << 12)
 	platformTrendsReportsRequestFieldFirst           = big.NewInt(1 << 13)
 	platformTrendsReportsRequestFieldAfter           = big.NewInt(1 << 14)
+	platformTrendsReportsRequestFieldMode            = big.NewInt(1 << 15)
 )
 
 type PlatformTrendsReportsRequest struct {
@@ -197,6 +208,8 @@ type PlatformTrendsReportsRequest struct {
 	First *int `json:"-" url:"first,omitempty"`
 	// Return results after this cursor. Use `page_info.end_cursor` from the previous response to fetch the next page.
 	After *string `json:"-" url:"after,omitempty"`
+	// Whose figures the report reads, one of the modes the report has. `global` reads all of Whop with nothing left out.
+	Mode *PlatformTrendsReportsRequestMode `json:"-" url:"mode,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`
@@ -314,6 +327,13 @@ func (p *PlatformTrendsReportsRequest) SetFirst(first *int) {
 func (p *PlatformTrendsReportsRequest) SetAfter(after *string) {
 	p.After = after
 	p.require(platformTrendsReportsRequestFieldAfter)
+}
+
+// SetMode sets the Mode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PlatformTrendsReportsRequest) SetMode(mode *PlatformTrendsReportsRequestMode) {
+	p.Mode = mode
+	p.require(platformTrendsReportsRequestFieldMode)
 }
 
 var (
@@ -1039,6 +1059,25 @@ func NewPartnerRevenueLinesReportsRequestDirectionFromString(s string) (PartnerR
 }
 
 func (p PartnerRevenueLinesReportsRequestDirection) Ptr() *PartnerRevenueLinesReportsRequestDirection {
+	return &p
+}
+
+type PartnerRevenueLinesReportsRequestMode string
+
+const (
+	PartnerRevenueLinesReportsRequestModeOwner PartnerRevenueLinesReportsRequestMode = "owner"
+)
+
+func NewPartnerRevenueLinesReportsRequestModeFromString(s string) (PartnerRevenueLinesReportsRequestMode, error) {
+	switch s {
+	case "owner":
+		return PartnerRevenueLinesReportsRequestModeOwner, nil
+	}
+	var t PartnerRevenueLinesReportsRequestMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PartnerRevenueLinesReportsRequestMode) Ptr() *PartnerRevenueLinesReportsRequestMode {
 	return &p
 }
 
@@ -1997,6 +2036,28 @@ func NewPlatformTrendsReportsRequestDirectionFromString(s string) (PlatformTrend
 }
 
 func (p PlatformTrendsReportsRequestDirection) Ptr() *PlatformTrendsReportsRequestDirection {
+	return &p
+}
+
+type PlatformTrendsReportsRequestMode string
+
+const (
+	PlatformTrendsReportsRequestModeGlobal PlatformTrendsReportsRequestMode = "global"
+	PlatformTrendsReportsRequestModeTrends PlatformTrendsReportsRequestMode = "trends"
+)
+
+func NewPlatformTrendsReportsRequestModeFromString(s string) (PlatformTrendsReportsRequestMode, error) {
+	switch s {
+	case "global":
+		return PlatformTrendsReportsRequestModeGlobal, nil
+	case "trends":
+		return PlatformTrendsReportsRequestModeTrends, nil
+	}
+	var t PlatformTrendsReportsRequestMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (p PlatformTrendsReportsRequestMode) Ptr() *PlatformTrendsReportsRequestMode {
 	return &p
 }
 

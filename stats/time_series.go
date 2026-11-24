@@ -89,8 +89,9 @@ var (
 	retrieveTimeSeriesRequestFieldTeamLeadID          = big.NewInt(0).Lsh(big.NewInt(1), 74)
 	retrieveTimeSeriesRequestFieldActivity            = big.NewInt(0).Lsh(big.NewInt(1), 75)
 	retrieveTimeSeriesRequestFieldBreakdownLimit      = big.NewInt(0).Lsh(big.NewInt(1), 76)
-	retrieveTimeSeriesRequestFieldAccountIDs          = big.NewInt(0).Lsh(big.NewInt(1), 77)
-	retrieveTimeSeriesRequestFieldRunnerIDs           = big.NewInt(0).Lsh(big.NewInt(1), 78)
+	retrieveTimeSeriesRequestFieldMode                = big.NewInt(0).Lsh(big.NewInt(1), 77)
+	retrieveTimeSeriesRequestFieldAccountIDs          = big.NewInt(0).Lsh(big.NewInt(1), 78)
+	retrieveTimeSeriesRequestFieldRunnerIDs           = big.NewInt(0).Lsh(big.NewInt(1), 79)
 )
 
 type RetrieveTimeSeriesRequest struct {
@@ -248,6 +249,8 @@ type RetrieveTimeSeriesRequest struct {
 	Activity *RetrieveTimeSeriesRequestActivity `json:"-" url:"activity,omitempty"`
 	// With a single breakdown_by, keep this many groups with the highest whole-range values. Every other group folds into one entry named other. A rate or an average ranks its groups by the deals it divides by. The other entry is measured from the underlying rows, so a distinct count or a rate stays exact rather than being added up from groups.
 	BreakdownLimit *int `json:"-" url:"breakdown_limit,omitempty"`
+	// Whose figures the metric reads, one of the modes the metric lists. `global` reads all of Whop and takes no account_id. Without it, the metric reads the account or user named.
+	Mode *RetrieveTimeSeriesRequestMode `json:"-" url:"mode,omitempty"`
 	// Business ids (biz_...) to scope the series to. The series sums their figures. On a metric that lists account as a breakdown, it replaces account_id and takes at most 50 ids. On such a metric, breakdown_by=account returns an entry for each id. Available on metrics that list account_ids.
 	AccountIDs []*string `json:"-" url:"account_ids,omitempty"`
 	// Runner user ids (user_...) to scope the series to; the series sums the figures of the campaigns they hold. Available on metrics that list runner_ids.
@@ -805,6 +808,13 @@ func (r *RetrieveTimeSeriesRequest) SetBreakdownLimit(breakdownLimit *int) {
 	r.require(retrieveTimeSeriesRequestFieldBreakdownLimit)
 }
 
+// SetMode sets the Mode field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesRequest) SetMode(mode *RetrieveTimeSeriesRequestMode) {
+	r.Mode = mode
+	r.require(retrieveTimeSeriesRequestFieldMode)
+}
+
 // SetAccountIDs sets the AccountIDs field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (r *RetrieveTimeSeriesRequest) SetAccountIDs(accountIDs []*string) {
@@ -910,10 +920,11 @@ var (
 	listTimeSeriesResponseDataItemFieldBreakdowns  = big.NewInt(1 << 0)
 	listTimeSeriesResponseDataItemFieldDescription = big.NewInt(1 << 1)
 	listTimeSeriesResponseDataItemFieldKey         = big.NewInt(1 << 2)
-	listTimeSeriesResponseDataItemFieldName        = big.NewInt(1 << 3)
-	listTimeSeriesResponseDataItemFieldProperties  = big.NewInt(1 << 4)
-	listTimeSeriesResponseDataItemFieldUnit        = big.NewInt(1 << 5)
-	listTimeSeriesResponseDataItemFieldWindows     = big.NewInt(1 << 6)
+	listTimeSeriesResponseDataItemFieldModes       = big.NewInt(1 << 3)
+	listTimeSeriesResponseDataItemFieldName        = big.NewInt(1 << 4)
+	listTimeSeriesResponseDataItemFieldProperties  = big.NewInt(1 << 5)
+	listTimeSeriesResponseDataItemFieldUnit        = big.NewInt(1 << 6)
+	listTimeSeriesResponseDataItemFieldWindows     = big.NewInt(1 << 7)
 )
 
 type ListTimeSeriesResponseDataItem struct {
@@ -923,6 +934,8 @@ type ListTimeSeriesResponseDataItem struct {
 	Description string `json:"description" url:"description"`
 	// The metric's key. Pass it to GET /stats/time_series/{metric} to query its values.
 	Key string `json:"key" url:"key"`
+	// The values of the mode parameter that the metric takes. owner reads the account or user named. global reads all of Whop.
+	Modes []string `json:"modes,omitempty" url:"modes,omitempty"`
 	// Human-readable display name for the metric.
 	Name string `json:"name" url:"name"`
 	// The properties you can use with this metric — pass one as a filter (property=value) to narrow the series, or as breakdown_by=property to split it.
@@ -958,6 +971,13 @@ func (l *ListTimeSeriesResponseDataItem) GetKey() string {
 		return ""
 	}
 	return l.Key
+}
+
+func (l *ListTimeSeriesResponseDataItem) GetModes() []string {
+	if l == nil {
+		return nil
+	}
+	return l.Modes
 }
 
 func (l *ListTimeSeriesResponseDataItem) GetName() string {
@@ -1023,6 +1043,13 @@ func (l *ListTimeSeriesResponseDataItem) SetDescription(description string) {
 func (l *ListTimeSeriesResponseDataItem) SetKey(key string) {
 	l.Key = key
 	l.require(listTimeSeriesResponseDataItemFieldKey)
+}
+
+// SetModes sets the Modes field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *ListTimeSeriesResponseDataItem) SetModes(modes []string) {
+	l.Modes = modes
+	l.require(listTimeSeriesResponseDataItemFieldModes)
 }
 
 // SetName sets the Name field and marks it as non-optional;
@@ -1211,6 +1238,31 @@ func NewRetrieveTimeSeriesRequestIntervalFromString(s string) (RetrieveTimeSerie
 }
 
 func (r RetrieveTimeSeriesRequestInterval) Ptr() *RetrieveTimeSeriesRequestInterval {
+	return &r
+}
+
+type RetrieveTimeSeriesRequestMode string
+
+const (
+	RetrieveTimeSeriesRequestModeGlobal RetrieveTimeSeriesRequestMode = "global"
+	RetrieveTimeSeriesRequestModeOwner  RetrieveTimeSeriesRequestMode = "owner"
+	RetrieveTimeSeriesRequestModeTrends RetrieveTimeSeriesRequestMode = "trends"
+)
+
+func NewRetrieveTimeSeriesRequestModeFromString(s string) (RetrieveTimeSeriesRequestMode, error) {
+	switch s {
+	case "global":
+		return RetrieveTimeSeriesRequestModeGlobal, nil
+	case "owner":
+		return RetrieveTimeSeriesRequestModeOwner, nil
+	case "trends":
+		return RetrieveTimeSeriesRequestModeTrends, nil
+	}
+	var t RetrieveTimeSeriesRequestMode
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r RetrieveTimeSeriesRequestMode) Ptr() *RetrieveTimeSeriesRequestMode {
 	return &r
 }
 

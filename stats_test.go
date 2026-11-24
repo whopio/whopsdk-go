@@ -627,6 +627,14 @@ func TestSettersRetrieveStatsRequest(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetMode", func(t *testing.T) {
+		obj := &RetrieveStatsRequest{}
+		var fernTestValueMode *RetrieveStatsRequestMode
+		obj.SetMode(fernTestValueMode)
+		assert.Equal(t, fernTestValueMode, obj.Mode)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetAccountIDs", func(t *testing.T) {
 		obj := &RetrieveStatsRequest{}
 		var fernTestValueAccountIDs []*string
@@ -3033,6 +3041,37 @@ func TestSettersMarkExplicitRetrieveStatsRequest(t *testing.T) {
 		// It verifies that setting a field via setter allows successful JSON round-trip
 	})
 
+	t.Run("SetMode_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &RetrieveStatsRequest{}
+		var fernTestValueMode *RetrieveStatsRequestMode
+
+		// Act
+		obj.SetMode(fernTestValueMode)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetAccountIDs_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -3932,6 +3971,14 @@ func TestSettersListStatsResponseDataItem(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetModes", func(t *testing.T) {
+		obj := &ListStatsResponseDataItem{}
+		var fernTestValueModes []string
+		obj.SetModes(fernTestValueModes)
+		assert.Equal(t, fernTestValueModes, obj.Modes)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetName", func(t *testing.T) {
 		obj := &ListStatsResponseDataItem{}
 		var fernTestValueName string
@@ -4044,6 +4091,39 @@ func TestGettersListStatsResponseDataItem(t *testing.T) {
 			}
 		}()
 		_ = obj.GetKey() // Should return zero value
+	})
+
+	t.Run("GetModes", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListStatsResponseDataItem{}
+		var expected []string
+		obj.Modes = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetModes(), "getter should return the property value")
+	})
+
+	t.Run("GetModes_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListStatsResponseDataItem{}
+		obj.Modes = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetModes(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetModes_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *ListStatsResponseDataItem
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetModes() // Should return zero value
 	})
 
 	t.Run("GetName", func(t *testing.T) {
@@ -4231,6 +4311,37 @@ func TestSettersMarkExplicitListStatsResponseDataItem(t *testing.T) {
 
 		// Act
 		obj.SetKey(fernTestValueKey)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetModes_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &ListStatsResponseDataItem{}
+		var fernTestValueModes []string
+
+		// Act
+		obj.SetModes(fernTestValueModes)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -6481,6 +6592,42 @@ func TestEnumRetrieveStatsRequestInterval(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewRetrieveStatsRequestIntervalFromString("minute")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumRetrieveStatsRequestMode(t *testing.T) {
+	t.Run("NewFromString_global", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveStatsRequestModeFromString("global")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveStatsRequestMode("global"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_owner", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveStatsRequestModeFromString("owner")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveStatsRequestMode("owner"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_trends", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewRetrieveStatsRequestModeFromString("trends")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, RetrieveStatsRequestMode("trends"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewRetrieveStatsRequestModeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewRetrieveStatsRequestModeFromString("global")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)
