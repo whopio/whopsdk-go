@@ -251,7 +251,9 @@ const (
 	RetrieveFinancialReportsRequestLineTypesItemHighRiskMerchantFee                       RetrieveFinancialReportsRequestLineTypesItem = "high_risk_merchant_fee"
 	RetrieveFinancialReportsRequestLineTypesItemInstallmentDefault                        RetrieveFinancialReportsRequestLineTypesItem = "installment_default"
 	RetrieveFinancialReportsRequestLineTypesItemInternalBalanceTransferIncoming           RetrieveFinancialReportsRequestLineTypesItem = "internal_balance_transfer_incoming"
+	RetrieveFinancialReportsRequestLineTypesItemInternalBalanceTransferIncomingReversal   RetrieveFinancialReportsRequestLineTypesItem = "internal_balance_transfer_incoming_reversal"
 	RetrieveFinancialReportsRequestLineTypesItemInternalBalanceTransferOutgoing           RetrieveFinancialReportsRequestLineTypesItem = "internal_balance_transfer_outgoing"
+	RetrieveFinancialReportsRequestLineTypesItemInternalBalanceTransferOutgoingReversal   RetrieveFinancialReportsRequestLineTypesItem = "internal_balance_transfer_outgoing_reversal"
 	RetrieveFinancialReportsRequestLineTypesItemInternalWithdrawal                        RetrieveFinancialReportsRequestLineTypesItem = "internal_withdrawal"
 	RetrieveFinancialReportsRequestLineTypesItemInternalWithdrawalComplete                RetrieveFinancialReportsRequestLineTypesItem = "internal_withdrawal_complete"
 	RetrieveFinancialReportsRequestLineTypesItemInternalWithdrawalFee                     RetrieveFinancialReportsRequestLineTypesItem = "internal_withdrawal_fee"
@@ -312,8 +314,11 @@ const (
 	RetrieveFinancialReportsRequestLineTypesItemPlatformBalancePayment                    RetrieveFinancialReportsRequestLineTypesItem = "platform_balance_payment"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformBalancePaymentRefund              RetrieveFinancialReportsRequestLineTypesItem = "platform_balance_payment_refund"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformBalanceTransferFee                RetrieveFinancialReportsRequestLineTypesItem = "platform_balance_transfer_fee"
+	RetrieveFinancialReportsRequestLineTypesItemPlatformBalanceTransferFeeReversal        RetrieveFinancialReportsRequestLineTypesItem = "platform_balance_transfer_fee_reversal"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformBalanceTransferIncoming           RetrieveFinancialReportsRequestLineTypesItem = "platform_balance_transfer_incoming"
+	RetrieveFinancialReportsRequestLineTypesItemPlatformBalanceTransferIncomingReversal   RetrieveFinancialReportsRequestLineTypesItem = "platform_balance_transfer_incoming_reversal"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformBalanceTransferOutgoing           RetrieveFinancialReportsRequestLineTypesItem = "platform_balance_transfer_outgoing"
+	RetrieveFinancialReportsRequestLineTypesItemPlatformBalanceTransferOutgoingReversal   RetrieveFinancialReportsRequestLineTypesItem = "platform_balance_transfer_outgoing_reversal"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformCoveredDispute                    RetrieveFinancialReportsRequestLineTypesItem = "platform_covered_dispute"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformCreditsGranted                    RetrieveFinancialReportsRequestLineTypesItem = "platform_credits_granted"
 	RetrieveFinancialReportsRequestLineTypesItemPlatformCreditsPayment                    RetrieveFinancialReportsRequestLineTypesItem = "platform_credits_payment"
@@ -457,8 +462,12 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 		return RetrieveFinancialReportsRequestLineTypesItemInstallmentDefault, nil
 	case "internal_balance_transfer_incoming":
 		return RetrieveFinancialReportsRequestLineTypesItemInternalBalanceTransferIncoming, nil
+	case "internal_balance_transfer_incoming_reversal":
+		return RetrieveFinancialReportsRequestLineTypesItemInternalBalanceTransferIncomingReversal, nil
 	case "internal_balance_transfer_outgoing":
 		return RetrieveFinancialReportsRequestLineTypesItemInternalBalanceTransferOutgoing, nil
+	case "internal_balance_transfer_outgoing_reversal":
+		return RetrieveFinancialReportsRequestLineTypesItemInternalBalanceTransferOutgoingReversal, nil
 	case "internal_withdrawal":
 		return RetrieveFinancialReportsRequestLineTypesItemInternalWithdrawal, nil
 	case "internal_withdrawal_complete":
@@ -579,10 +588,16 @@ func NewRetrieveFinancialReportsRequestLineTypesItemFromString(s string) (Retrie
 		return RetrieveFinancialReportsRequestLineTypesItemPlatformBalancePaymentRefund, nil
 	case "platform_balance_transfer_fee":
 		return RetrieveFinancialReportsRequestLineTypesItemPlatformBalanceTransferFee, nil
+	case "platform_balance_transfer_fee_reversal":
+		return RetrieveFinancialReportsRequestLineTypesItemPlatformBalanceTransferFeeReversal, nil
 	case "platform_balance_transfer_incoming":
 		return RetrieveFinancialReportsRequestLineTypesItemPlatformBalanceTransferIncoming, nil
+	case "platform_balance_transfer_incoming_reversal":
+		return RetrieveFinancialReportsRequestLineTypesItemPlatformBalanceTransferIncomingReversal, nil
 	case "platform_balance_transfer_outgoing":
 		return RetrieveFinancialReportsRequestLineTypesItemPlatformBalanceTransferOutgoing, nil
+	case "platform_balance_transfer_outgoing_reversal":
+		return RetrieveFinancialReportsRequestLineTypesItemPlatformBalanceTransferOutgoingReversal, nil
 	case "platform_covered_dispute":
 		return RetrieveFinancialReportsRequestLineTypesItemPlatformCoveredDispute, nil
 	case "platform_credits_granted":
@@ -1574,7 +1589,9 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryIdentityVerificationFee                   RetrieveFinancialReportsResponseRowsItemLineCategory = "identity_verification_fee"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryInstallmentDefault                        RetrieveFinancialReportsResponseRowsItemLineCategory = "installment_default"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryInternalBalanceTransferIncoming           RetrieveFinancialReportsResponseRowsItemLineCategory = "internal_balance_transfer_incoming"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryInternalBalanceTransferIncomingReversal   RetrieveFinancialReportsResponseRowsItemLineCategory = "internal_balance_transfer_incoming_reversal"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryInternalBalanceTransferOutgoing           RetrieveFinancialReportsResponseRowsItemLineCategory = "internal_balance_transfer_outgoing"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryInternalBalanceTransferOutgoingReversal   RetrieveFinancialReportsResponseRowsItemLineCategory = "internal_balance_transfer_outgoing_reversal"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryInternalWithdrawal                        RetrieveFinancialReportsResponseRowsItemLineCategory = "internal_withdrawal"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryInternalWithdrawalComplete                RetrieveFinancialReportsResponseRowsItemLineCategory = "internal_withdrawal_complete"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryInternalWithdrawalFee                     RetrieveFinancialReportsResponseRowsItemLineCategory = "internal_withdrawal_fee"
@@ -1672,8 +1689,11 @@ const (
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalancePayment                    RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_balance_payment"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalancePaymentRefund              RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_balance_payment_refund"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalanceTransferFee                RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_balance_transfer_fee"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalanceTransferFeeReversal        RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_balance_transfer_fee_reversal"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalanceTransferIncoming           RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_balance_transfer_incoming"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalanceTransferIncomingReversal   RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_balance_transfer_incoming_reversal"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalanceTransferOutgoing           RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_balance_transfer_outgoing"
+	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalanceTransferOutgoingReversal   RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_balance_transfer_outgoing_reversal"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformCoveredDispute                    RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_covered_dispute"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformCreditsGranted                    RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_credits_granted"
 	RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformCreditsPayment                    RetrieveFinancialReportsResponseRowsItemLineCategory = "platform_credits_payment"
@@ -2024,8 +2044,12 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryInstallmentDefault, nil
 	case "internal_balance_transfer_incoming":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryInternalBalanceTransferIncoming, nil
+	case "internal_balance_transfer_incoming_reversal":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryInternalBalanceTransferIncomingReversal, nil
 	case "internal_balance_transfer_outgoing":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryInternalBalanceTransferOutgoing, nil
+	case "internal_balance_transfer_outgoing_reversal":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryInternalBalanceTransferOutgoingReversal, nil
 	case "internal_withdrawal":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryInternalWithdrawal, nil
 	case "internal_withdrawal_complete":
@@ -2220,10 +2244,16 @@ func NewRetrieveFinancialReportsResponseRowsItemLineCategoryFromString(s string)
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalancePaymentRefund, nil
 	case "platform_balance_transfer_fee":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalanceTransferFee, nil
+	case "platform_balance_transfer_fee_reversal":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalanceTransferFeeReversal, nil
 	case "platform_balance_transfer_incoming":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalanceTransferIncoming, nil
+	case "platform_balance_transfer_incoming_reversal":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalanceTransferIncomingReversal, nil
 	case "platform_balance_transfer_outgoing":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalanceTransferOutgoing, nil
+	case "platform_balance_transfer_outgoing_reversal":
+		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformBalanceTransferOutgoingReversal, nil
 	case "platform_covered_dispute":
 		return RetrieveFinancialReportsResponseRowsItemLineCategoryPlatformCoveredDispute, nil
 	case "platform_credits_granted":

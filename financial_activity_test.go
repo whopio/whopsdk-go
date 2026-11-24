@@ -1738,11 +1738,25 @@ func TestEnumListFinancialActivityRequestLineTypesItem(t *testing.T) {
 		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("internal_balance_transfer_incoming"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_internal_balance_transfer_incoming_reversal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("internal_balance_transfer_incoming_reversal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("internal_balance_transfer_incoming_reversal"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_internal_balance_transfer_outgoing", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListFinancialActivityRequestLineTypesItemFromString("internal_balance_transfer_outgoing")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("internal_balance_transfer_outgoing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_internal_balance_transfer_outgoing_reversal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("internal_balance_transfer_outgoing_reversal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("internal_balance_transfer_outgoing_reversal"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_internal_withdrawal", func(t *testing.T) {
@@ -2165,6 +2179,13 @@ func TestEnumListFinancialActivityRequestLineTypesItem(t *testing.T) {
 		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("platform_balance_transfer_fee"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_platform_balance_transfer_fee_reversal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("platform_balance_transfer_fee_reversal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("platform_balance_transfer_fee_reversal"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_platform_balance_transfer_incoming", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListFinancialActivityRequestLineTypesItemFromString("platform_balance_transfer_incoming")
@@ -2172,11 +2193,25 @@ func TestEnumListFinancialActivityRequestLineTypesItem(t *testing.T) {
 		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("platform_balance_transfer_incoming"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_platform_balance_transfer_incoming_reversal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("platform_balance_transfer_incoming_reversal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("platform_balance_transfer_incoming_reversal"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_platform_balance_transfer_outgoing", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListFinancialActivityRequestLineTypesItemFromString("platform_balance_transfer_outgoing")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("platform_balance_transfer_outgoing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_platform_balance_transfer_outgoing_reversal", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListFinancialActivityRequestLineTypesItemFromString("platform_balance_transfer_outgoing_reversal")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListFinancialActivityRequestLineTypesItem("platform_balance_transfer_outgoing_reversal"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_platform_covered_dispute", func(t *testing.T) {
