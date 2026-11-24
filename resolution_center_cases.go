@@ -159,13 +159,16 @@ func (a *AppealResolutionCenterCasesRequest) MarshalJSON() ([]byte, error) {
 }
 
 var (
-	createResolutionCenterCasesRequestFieldAttachments = big.NewInt(1 << 0)
-	createResolutionCenterCasesRequestFieldMessage     = big.NewInt(1 << 1)
-	createResolutionCenterCasesRequestFieldReason      = big.NewInt(1 << 2)
-	createResolutionCenterCasesRequestFieldReceiptID   = big.NewInt(1 << 3)
+	createResolutionCenterCasesRequestFieldAnswers     = big.NewInt(1 << 0)
+	createResolutionCenterCasesRequestFieldAttachments = big.NewInt(1 << 1)
+	createResolutionCenterCasesRequestFieldMessage     = big.NewInt(1 << 2)
+	createResolutionCenterCasesRequestFieldReason      = big.NewInt(1 << 3)
+	createResolutionCenterCasesRequestFieldReceiptID   = big.NewInt(1 << 4)
 )
 
 type CreateResolutionCenterCasesRequest struct {
+	// The customer's answers to the questions for this `reason`. Every required question needs an answer, and a question the reason does not ask is refused.
+	Answers     []*CreateResolutionCenterCasesRequestAnswersItem     `json:"answers,omitempty" url:"-"`
 	Attachments []*CreateResolutionCenterCasesRequestAttachmentsItem `json:"attachments,omitempty" url:"-"`
 	// The customer's explanation.
 	Message string `json:"message" url:"-"`
@@ -185,6 +188,13 @@ func (c *CreateResolutionCenterCasesRequest) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	c.explicitFields = next
+}
+
+// SetAnswers sets the Answers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateResolutionCenterCasesRequest) SetAnswers(answers []*CreateResolutionCenterCasesRequestAnswersItem) {
+	c.Answers = answers
+	c.require(createResolutionCenterCasesRequestFieldAnswers)
 }
 
 // SetAttachments sets the Attachments field and marks it as non-optional;
@@ -1191,24 +1201,25 @@ func (r *ResolutionBuyer) String() string {
 var (
 	resolutionCenterCaseFieldAccount          = big.NewInt(1 << 0)
 	resolutionCenterCaseFieldAmount           = big.NewInt(1 << 1)
-	resolutionCenterCaseFieldAvailableActions = big.NewInt(1 << 2)
-	resolutionCenterCaseFieldBuyer            = big.NewInt(1 << 3)
-	resolutionCenterCaseFieldClosedAt         = big.NewInt(1 << 4)
-	resolutionCenterCaseFieldCreatedAt        = big.NewInt(1 << 5)
-	resolutionCenterCaseFieldCurrency         = big.NewInt(1 << 6)
-	resolutionCenterCaseFieldCustomerAppealed = big.NewInt(1 << 7)
-	resolutionCenterCaseFieldEscalated        = big.NewInt(1 << 8)
-	resolutionCenterCaseFieldID               = big.NewInt(1 << 9)
-	resolutionCenterCaseFieldLineItems        = big.NewInt(1 << 10)
-	resolutionCenterCaseFieldOutcome          = big.NewInt(1 << 11)
-	resolutionCenterCaseFieldPayment          = big.NewInt(1 << 12)
-	resolutionCenterCaseFieldProductID        = big.NewInt(1 << 13)
-	resolutionCenterCaseFieldReason           = big.NewInt(1 << 14)
-	resolutionCenterCaseFieldRefund           = big.NewInt(1 << 15)
-	resolutionCenterCaseFieldResponseDueAt    = big.NewInt(1 << 16)
-	resolutionCenterCaseFieldStatus           = big.NewInt(1 << 17)
-	resolutionCenterCaseFieldUpdatedAt        = big.NewInt(1 << 18)
-	resolutionCenterCaseFieldVariantID        = big.NewInt(1 << 19)
+	resolutionCenterCaseFieldAnswers          = big.NewInt(1 << 2)
+	resolutionCenterCaseFieldAvailableActions = big.NewInt(1 << 3)
+	resolutionCenterCaseFieldBuyer            = big.NewInt(1 << 4)
+	resolutionCenterCaseFieldClosedAt         = big.NewInt(1 << 5)
+	resolutionCenterCaseFieldCreatedAt        = big.NewInt(1 << 6)
+	resolutionCenterCaseFieldCurrency         = big.NewInt(1 << 7)
+	resolutionCenterCaseFieldCustomerAppealed = big.NewInt(1 << 8)
+	resolutionCenterCaseFieldEscalated        = big.NewInt(1 << 9)
+	resolutionCenterCaseFieldID               = big.NewInt(1 << 10)
+	resolutionCenterCaseFieldLineItems        = big.NewInt(1 << 11)
+	resolutionCenterCaseFieldOutcome          = big.NewInt(1 << 12)
+	resolutionCenterCaseFieldPayment          = big.NewInt(1 << 13)
+	resolutionCenterCaseFieldProductID        = big.NewInt(1 << 14)
+	resolutionCenterCaseFieldReason           = big.NewInt(1 << 15)
+	resolutionCenterCaseFieldRefund           = big.NewInt(1 << 16)
+	resolutionCenterCaseFieldResponseDueAt    = big.NewInt(1 << 17)
+	resolutionCenterCaseFieldStatus           = big.NewInt(1 << 18)
+	resolutionCenterCaseFieldUpdatedAt        = big.NewInt(1 << 19)
+	resolutionCenterCaseFieldVariantID        = big.NewInt(1 << 20)
 )
 
 // resolutionCenterCaseNullableFields maps the wire names of ResolutionCenterCase's nullable fields (required or optional) to their field bits.
@@ -1228,6 +1239,7 @@ type ResolutionCenterCase struct {
 	Account *AccountSummary `json:"account,omitempty" url:"account,omitempty"`
 	// The amount in question, in whole units of `currency`.
 	Amount           float64                                    `json:"amount" url:"amount"`
+	Answers          []*ResolutionCenterCaseAnswer              `json:"answers" url:"answers"`
 	AvailableActions []ResolutionCenterCaseAvailableActionsItem `json:"available_actions" url:"available_actions"`
 	// The customer who opened the case.
 	Buyer *ResolutionBuyer `json:"buyer" url:"buyer"`
@@ -1282,6 +1294,13 @@ func (r *ResolutionCenterCase) GetAmount() float64 {
 		return 0
 	}
 	return r.Amount
+}
+
+func (r *ResolutionCenterCase) GetAnswers() []*ResolutionCenterCaseAnswer {
+	if r == nil {
+		return nil
+	}
+	return r.Answers
 }
 
 func (r *ResolutionCenterCase) GetAvailableActions() []ResolutionCenterCaseAvailableActionsItem {
@@ -1438,6 +1457,13 @@ func (r *ResolutionCenterCase) SetAccount(account *AccountSummary) {
 func (r *ResolutionCenterCase) SetAmount(amount float64) {
 	r.Amount = amount
 	r.require(resolutionCenterCaseFieldAmount)
+}
+
+// SetAnswers sets the Answers field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResolutionCenterCase) SetAnswers(answers []*ResolutionCenterCaseAnswer) {
+	r.Answers = answers
+	r.require(resolutionCenterCaseFieldAnswers)
 }
 
 // SetAvailableActions sets the AvailableActions field and marks it as non-optional;
@@ -1615,6 +1641,211 @@ func (r *ResolutionCenterCase) String() string {
 	return fmt.Sprintf("%#v", r)
 }
 
+var (
+	resolutionCenterCaseAnswerFieldAttachments = big.NewInt(1 << 0)
+	resolutionCenterCaseAnswerFieldID          = big.NewInt(1 << 1)
+	resolutionCenterCaseAnswerFieldQuestion    = big.NewInt(1 << 2)
+	resolutionCenterCaseAnswerFieldValue       = big.NewInt(1 << 3)
+)
+
+// resolutionCenterCaseAnswerNullableFields maps the wire names of ResolutionCenterCaseAnswer's nullable fields (required or optional) to their field bits.
+var resolutionCenterCaseAnswerNullableFields = map[string]*big.Int{
+	"value": resolutionCenterCaseAnswerFieldValue,
+}
+
+type ResolutionCenterCaseAnswer struct {
+	Attachments []*ResolutionAttachment `json:"attachments" url:"attachments"`
+	// Unique identifier for the answer, prefixed `inrqi_`.
+	ID string `json:"id" url:"id"`
+	// The question this answers. Which questions a case asks depends on its `reason` and on earlier answers.
+	Question ResolutionCenterCaseAnswerQuestion `json:"question" url:"question"`
+	// The customer's answer. Choice questions hold one of their fixed values, and `contacted_on` holds an ISO 8601 date. `null` when an optional question was skipped.
+	Value *string `json:"value,omitempty" url:"value,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (r *ResolutionCenterCaseAnswer) GetAttachments() []*ResolutionAttachment {
+	if r == nil {
+		return nil
+	}
+	return r.Attachments
+}
+
+func (r *ResolutionCenterCaseAnswer) GetID() string {
+	if r == nil {
+		return ""
+	}
+	return r.ID
+}
+
+func (r *ResolutionCenterCaseAnswer) GetQuestion() ResolutionCenterCaseAnswerQuestion {
+	if r == nil {
+		return ""
+	}
+	return r.Question
+}
+
+func (r *ResolutionCenterCaseAnswer) GetValue() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Value
+}
+
+func (r *ResolutionCenterCaseAnswer) GetExtraProperties() map[string]interface{} {
+	if r == nil {
+		return nil
+	}
+	return r.extraProperties
+}
+
+func (r *ResolutionCenterCaseAnswer) require(field *big.Int) {
+	next := new(big.Int)
+	if r.explicitFields != nil {
+		next.Set(r.explicitFields)
+	}
+	next.Or(next, field)
+	r.explicitFields = next
+}
+
+// SetAttachments sets the Attachments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResolutionCenterCaseAnswer) SetAttachments(attachments []*ResolutionAttachment) {
+	r.Attachments = attachments
+	r.require(resolutionCenterCaseAnswerFieldAttachments)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResolutionCenterCaseAnswer) SetID(id string) {
+	r.ID = id
+	r.require(resolutionCenterCaseAnswerFieldID)
+}
+
+// SetQuestion sets the Question field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResolutionCenterCaseAnswer) SetQuestion(question ResolutionCenterCaseAnswerQuestion) {
+	r.Question = question
+	r.require(resolutionCenterCaseAnswerFieldQuestion)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *ResolutionCenterCaseAnswer) SetValue(value *string) {
+	r.Value = value
+	r.require(resolutionCenterCaseAnswerFieldValue)
+}
+
+func (r *ResolutionCenterCaseAnswer) UnmarshalJSON(data []byte) error {
+	type unmarshaler ResolutionCenterCaseAnswer
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*r = ResolutionCenterCaseAnswer(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *r)
+	if err != nil {
+		return err
+	}
+	r.extraProperties = extraProperties
+	presentFields, err := internal.ExplicitFieldsFromJSON(data, resolutionCenterCaseAnswerNullableFields)
+	if err != nil {
+		return err
+	}
+	if presentFields != nil {
+		r.require(presentFields)
+	}
+	r.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (r *ResolutionCenterCaseAnswer) MarshalJSON() ([]byte, error) {
+	type embed ResolutionCenterCaseAnswer
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*r),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, r.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (r *ResolutionCenterCaseAnswer) String() string {
+	if r == nil {
+		return "<nil>"
+	}
+	if len(r.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(r.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(r); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", r)
+}
+
+// The question this answers. Which questions a case asks depends on its `reason` and on earlier answers.
+type ResolutionCenterCaseAnswerQuestion string
+
+const (
+	ResolutionCenterCaseAnswerQuestionPurchased          ResolutionCenterCaseAnswerQuestion = "purchased"
+	ResolutionCenterCaseAnswerQuestionRecognizesPurchase ResolutionCenterCaseAnswerQuestion = "recognizes_purchase"
+	ResolutionCenterCaseAnswerQuestionComplaintKind      ResolutionCenterCaseAnswerQuestion = "complaint_kind"
+	ResolutionCenterCaseAnswerQuestionMissingItems       ResolutionCenterCaseAnswerQuestion = "missing_items"
+	ResolutionCenterCaseAnswerQuestionExpectedBy         ResolutionCenterCaseAnswerQuestion = "expected_by"
+	ResolutionCenterCaseAnswerQuestionPromised           ResolutionCenterCaseAnswerQuestion = "promised"
+	ResolutionCenterCaseAnswerQuestionPromisedLink       ResolutionCenterCaseAnswerQuestion = "promised_link"
+	ResolutionCenterCaseAnswerQuestionReceivedInstead    ResolutionCenterCaseAnswerQuestion = "received_instead"
+	ResolutionCenterCaseAnswerQuestionQualityIssue       ResolutionCenterCaseAnswerQuestion = "quality_issue"
+	ResolutionCenterCaseAnswerQuestionContactedMerchant  ResolutionCenterCaseAnswerQuestion = "contacted_merchant"
+	ResolutionCenterCaseAnswerQuestionContactedOn        ResolutionCenterCaseAnswerQuestion = "contacted_on"
+	ResolutionCenterCaseAnswerQuestionMerchantReply      ResolutionCenterCaseAnswerQuestion = "merchant_reply"
+	ResolutionCenterCaseAnswerQuestionExtra              ResolutionCenterCaseAnswerQuestion = "extra"
+)
+
+func NewResolutionCenterCaseAnswerQuestionFromString(s string) (ResolutionCenterCaseAnswerQuestion, error) {
+	switch s {
+	case "purchased":
+		return ResolutionCenterCaseAnswerQuestionPurchased, nil
+	case "recognizes_purchase":
+		return ResolutionCenterCaseAnswerQuestionRecognizesPurchase, nil
+	case "complaint_kind":
+		return ResolutionCenterCaseAnswerQuestionComplaintKind, nil
+	case "missing_items":
+		return ResolutionCenterCaseAnswerQuestionMissingItems, nil
+	case "expected_by":
+		return ResolutionCenterCaseAnswerQuestionExpectedBy, nil
+	case "promised":
+		return ResolutionCenterCaseAnswerQuestionPromised, nil
+	case "promised_link":
+		return ResolutionCenterCaseAnswerQuestionPromisedLink, nil
+	case "received_instead":
+		return ResolutionCenterCaseAnswerQuestionReceivedInstead, nil
+	case "quality_issue":
+		return ResolutionCenterCaseAnswerQuestionQualityIssue, nil
+	case "contacted_merchant":
+		return ResolutionCenterCaseAnswerQuestionContactedMerchant, nil
+	case "contacted_on":
+		return ResolutionCenterCaseAnswerQuestionContactedOn, nil
+	case "merchant_reply":
+		return ResolutionCenterCaseAnswerQuestionMerchantReply, nil
+	case "extra":
+		return ResolutionCenterCaseAnswerQuestionExtra, nil
+	}
+	var t ResolutionCenterCaseAnswerQuestion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (r ResolutionCenterCaseAnswerQuestion) Ptr() *ResolutionCenterCaseAnswerQuestion {
+	return &r
+}
+
 // What you can do to this case right now, named for the endpoint that does it. Resolved for the calling credential, so a merchant and a customer reading the same case see their own options.
 type ResolutionCenterCaseAvailableActionsItem string
 
@@ -1685,6 +1916,7 @@ const (
 	ResolutionCenterCaseReasonNotAsDescribed       ResolutionCenterCaseReason = "not_as_described"
 	ResolutionCenterCaseReasonProductUnacceptable  ResolutionCenterCaseReason = "product_unacceptable"
 	ResolutionCenterCaseReasonSubscriptionCanceled ResolutionCenterCaseReason = "subscription_canceled"
+	ResolutionCenterCaseReasonCreditNotProcessed   ResolutionCenterCaseReason = "credit_not_processed"
 )
 
 func NewResolutionCenterCaseReasonFromString(s string) (ResolutionCenterCaseReason, error) {
@@ -1699,6 +1931,8 @@ func NewResolutionCenterCaseReasonFromString(s string) (ResolutionCenterCaseReas
 		return ResolutionCenterCaseReasonProductUnacceptable, nil
 	case "subscription_canceled":
 		return ResolutionCenterCaseReasonSubscriptionCanceled, nil
+	case "credit_not_processed":
+		return ResolutionCenterCaseReasonCreditNotProcessed, nil
 	}
 	var t ResolutionCenterCaseReason
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -2433,6 +2667,285 @@ func (a *AppealResolutionCenterCasesRequestAttachmentsItem) String() string {
 }
 
 var (
+	createResolutionCenterCasesRequestAnswersItemFieldAttachments = big.NewInt(1 << 0)
+	createResolutionCenterCasesRequestAnswersItemFieldQuestion    = big.NewInt(1 << 1)
+	createResolutionCenterCasesRequestAnswersItemFieldValue       = big.NewInt(1 << 2)
+)
+
+type CreateResolutionCenterCasesRequestAnswersItem struct {
+	// Up to 5 files for this answer, by existing file `id` or `direct_upload_id`.
+	Attachments []*CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem `json:"attachments,omitempty" url:"attachments,omitempty"`
+	// The question this answers.
+	Question CreateResolutionCenterCasesRequestAnswersItemQuestion `json:"question" url:"question"`
+	// The answer, up to 500 characters. A choice question takes one of its fixed values, and `contacted_on` takes an ISO 8601 date. `purchased`, `missing_items`, `promised`, `received_instead`, `quality_issue` and `merchant_reply` need at least 20 characters.
+	Value *string `json:"value,omitempty" url:"value,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateResolutionCenterCasesRequestAnswersItem) GetAttachments() []*CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem {
+	if c == nil {
+		return nil
+	}
+	return c.Attachments
+}
+
+func (c *CreateResolutionCenterCasesRequestAnswersItem) GetQuestion() CreateResolutionCenterCasesRequestAnswersItemQuestion {
+	if c == nil {
+		return ""
+	}
+	return c.Question
+}
+
+func (c *CreateResolutionCenterCasesRequestAnswersItem) GetValue() *string {
+	if c == nil {
+		return nil
+	}
+	return c.Value
+}
+
+func (c *CreateResolutionCenterCasesRequestAnswersItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateResolutionCenterCasesRequestAnswersItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetAttachments sets the Attachments field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateResolutionCenterCasesRequestAnswersItem) SetAttachments(attachments []*CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem) {
+	c.Attachments = attachments
+	c.require(createResolutionCenterCasesRequestAnswersItemFieldAttachments)
+}
+
+// SetQuestion sets the Question field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateResolutionCenterCasesRequestAnswersItem) SetQuestion(question CreateResolutionCenterCasesRequestAnswersItemQuestion) {
+	c.Question = question
+	c.require(createResolutionCenterCasesRequestAnswersItemFieldQuestion)
+}
+
+// SetValue sets the Value field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateResolutionCenterCasesRequestAnswersItem) SetValue(value *string) {
+	c.Value = value
+	c.require(createResolutionCenterCasesRequestAnswersItemFieldValue)
+}
+
+func (c *CreateResolutionCenterCasesRequestAnswersItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateResolutionCenterCasesRequestAnswersItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateResolutionCenterCasesRequestAnswersItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateResolutionCenterCasesRequestAnswersItem) MarshalJSON() ([]byte, error) {
+	type embed CreateResolutionCenterCasesRequestAnswersItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateResolutionCenterCasesRequestAnswersItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+var (
+	createResolutionCenterCasesRequestAnswersItemAttachmentsItemFieldDirectUploadID = big.NewInt(1 << 0)
+	createResolutionCenterCasesRequestAnswersItemAttachmentsItemFieldID             = big.NewInt(1 << 1)
+)
+
+type CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem struct {
+	DirectUploadID *string `json:"direct_upload_id,omitempty" url:"direct_upload_id,omitempty"`
+	ID             *string `json:"id,omitempty" url:"id,omitempty"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (c *CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem) GetDirectUploadID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.DirectUploadID
+}
+
+func (c *CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem) GetID() *string {
+	if c == nil {
+		return nil
+	}
+	return c.ID
+}
+
+func (c *CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem) GetExtraProperties() map[string]interface{} {
+	if c == nil {
+		return nil
+	}
+	return c.extraProperties
+}
+
+func (c *CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem) require(field *big.Int) {
+	next := new(big.Int)
+	if c.explicitFields != nil {
+		next.Set(c.explicitFields)
+	}
+	next.Or(next, field)
+	c.explicitFields = next
+}
+
+// SetDirectUploadID sets the DirectUploadID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem) SetDirectUploadID(directUploadID *string) {
+	c.DirectUploadID = directUploadID
+	c.require(createResolutionCenterCasesRequestAnswersItemAttachmentsItemFieldDirectUploadID)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem) SetID(id *string) {
+	c.ID = id
+	c.require(createResolutionCenterCasesRequestAnswersItemAttachmentsItemFieldID)
+}
+
+func (c *CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem) UnmarshalJSON(data []byte) error {
+	type unmarshaler CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*c = CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *c)
+	if err != nil {
+		return err
+	}
+	c.extraProperties = extraProperties
+	c.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (c *CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem) MarshalJSON() ([]byte, error) {
+	type embed CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*c),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, c.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (c *CreateResolutionCenterCasesRequestAnswersItemAttachmentsItem) String() string {
+	if c == nil {
+		return "<nil>"
+	}
+	if len(c.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(c.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(c); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", c)
+}
+
+// The question this answers.
+type CreateResolutionCenterCasesRequestAnswersItemQuestion string
+
+const (
+	CreateResolutionCenterCasesRequestAnswersItemQuestionPurchased          CreateResolutionCenterCasesRequestAnswersItemQuestion = "purchased"
+	CreateResolutionCenterCasesRequestAnswersItemQuestionRecognizesPurchase CreateResolutionCenterCasesRequestAnswersItemQuestion = "recognizes_purchase"
+	CreateResolutionCenterCasesRequestAnswersItemQuestionComplaintKind      CreateResolutionCenterCasesRequestAnswersItemQuestion = "complaint_kind"
+	CreateResolutionCenterCasesRequestAnswersItemQuestionMissingItems       CreateResolutionCenterCasesRequestAnswersItemQuestion = "missing_items"
+	CreateResolutionCenterCasesRequestAnswersItemQuestionExpectedBy         CreateResolutionCenterCasesRequestAnswersItemQuestion = "expected_by"
+	CreateResolutionCenterCasesRequestAnswersItemQuestionPromised           CreateResolutionCenterCasesRequestAnswersItemQuestion = "promised"
+	CreateResolutionCenterCasesRequestAnswersItemQuestionPromisedLink       CreateResolutionCenterCasesRequestAnswersItemQuestion = "promised_link"
+	CreateResolutionCenterCasesRequestAnswersItemQuestionReceivedInstead    CreateResolutionCenterCasesRequestAnswersItemQuestion = "received_instead"
+	CreateResolutionCenterCasesRequestAnswersItemQuestionQualityIssue       CreateResolutionCenterCasesRequestAnswersItemQuestion = "quality_issue"
+	CreateResolutionCenterCasesRequestAnswersItemQuestionContactedMerchant  CreateResolutionCenterCasesRequestAnswersItemQuestion = "contacted_merchant"
+	CreateResolutionCenterCasesRequestAnswersItemQuestionContactedOn        CreateResolutionCenterCasesRequestAnswersItemQuestion = "contacted_on"
+	CreateResolutionCenterCasesRequestAnswersItemQuestionMerchantReply      CreateResolutionCenterCasesRequestAnswersItemQuestion = "merchant_reply"
+	CreateResolutionCenterCasesRequestAnswersItemQuestionExtra              CreateResolutionCenterCasesRequestAnswersItemQuestion = "extra"
+)
+
+func NewCreateResolutionCenterCasesRequestAnswersItemQuestionFromString(s string) (CreateResolutionCenterCasesRequestAnswersItemQuestion, error) {
+	switch s {
+	case "purchased":
+		return CreateResolutionCenterCasesRequestAnswersItemQuestionPurchased, nil
+	case "recognizes_purchase":
+		return CreateResolutionCenterCasesRequestAnswersItemQuestionRecognizesPurchase, nil
+	case "complaint_kind":
+		return CreateResolutionCenterCasesRequestAnswersItemQuestionComplaintKind, nil
+	case "missing_items":
+		return CreateResolutionCenterCasesRequestAnswersItemQuestionMissingItems, nil
+	case "expected_by":
+		return CreateResolutionCenterCasesRequestAnswersItemQuestionExpectedBy, nil
+	case "promised":
+		return CreateResolutionCenterCasesRequestAnswersItemQuestionPromised, nil
+	case "promised_link":
+		return CreateResolutionCenterCasesRequestAnswersItemQuestionPromisedLink, nil
+	case "received_instead":
+		return CreateResolutionCenterCasesRequestAnswersItemQuestionReceivedInstead, nil
+	case "quality_issue":
+		return CreateResolutionCenterCasesRequestAnswersItemQuestionQualityIssue, nil
+	case "contacted_merchant":
+		return CreateResolutionCenterCasesRequestAnswersItemQuestionContactedMerchant, nil
+	case "contacted_on":
+		return CreateResolutionCenterCasesRequestAnswersItemQuestionContactedOn, nil
+	case "merchant_reply":
+		return CreateResolutionCenterCasesRequestAnswersItemQuestionMerchantReply, nil
+	case "extra":
+		return CreateResolutionCenterCasesRequestAnswersItemQuestionExtra, nil
+	}
+	var t CreateResolutionCenterCasesRequestAnswersItemQuestion
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (c CreateResolutionCenterCasesRequestAnswersItemQuestion) Ptr() *CreateResolutionCenterCasesRequestAnswersItemQuestion {
+	return &c
+}
+
+var (
 	createResolutionCenterCasesRequestAttachmentsItemFieldDirectUploadID = big.NewInt(1 << 0)
 	createResolutionCenterCasesRequestAttachmentsItemFieldID             = big.NewInt(1 << 1)
 )
@@ -2543,6 +3056,7 @@ const (
 	CreateResolutionCenterCasesRequestReasonNotAsDescribed       CreateResolutionCenterCasesRequestReason = "not_as_described"
 	CreateResolutionCenterCasesRequestReasonProductUnacceptable  CreateResolutionCenterCasesRequestReason = "product_unacceptable"
 	CreateResolutionCenterCasesRequestReasonSubscriptionCanceled CreateResolutionCenterCasesRequestReason = "subscription_canceled"
+	CreateResolutionCenterCasesRequestReasonCreditNotProcessed   CreateResolutionCenterCasesRequestReason = "credit_not_processed"
 )
 
 func NewCreateResolutionCenterCasesRequestReasonFromString(s string) (CreateResolutionCenterCasesRequestReason, error) {
@@ -2557,6 +3071,8 @@ func NewCreateResolutionCenterCasesRequestReasonFromString(s string) (CreateReso
 		return CreateResolutionCenterCasesRequestReasonProductUnacceptable, nil
 	case "subscription_canceled":
 		return CreateResolutionCenterCasesRequestReasonSubscriptionCanceled, nil
+	case "credit_not_processed":
+		return CreateResolutionCenterCasesRequestReasonCreditNotProcessed, nil
 	}
 	var t CreateResolutionCenterCasesRequestReason
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -3571,6 +4087,7 @@ const (
 	ListResolutionCenterCasesRequestReasonItemNotAsDescribed       ListResolutionCenterCasesRequestReasonItem = "not_as_described"
 	ListResolutionCenterCasesRequestReasonItemProductUnacceptable  ListResolutionCenterCasesRequestReasonItem = "product_unacceptable"
 	ListResolutionCenterCasesRequestReasonItemSubscriptionCanceled ListResolutionCenterCasesRequestReasonItem = "subscription_canceled"
+	ListResolutionCenterCasesRequestReasonItemCreditNotProcessed   ListResolutionCenterCasesRequestReasonItem = "credit_not_processed"
 )
 
 func NewListResolutionCenterCasesRequestReasonItemFromString(s string) (ListResolutionCenterCasesRequestReasonItem, error) {
@@ -3585,6 +4102,8 @@ func NewListResolutionCenterCasesRequestReasonItemFromString(s string) (ListReso
 		return ListResolutionCenterCasesRequestReasonItemProductUnacceptable, nil
 	case "subscription_canceled":
 		return ListResolutionCenterCasesRequestReasonItemSubscriptionCanceled, nil
+	case "credit_not_processed":
+		return ListResolutionCenterCasesRequestReasonItemCreditNotProcessed, nil
 	}
 	var t ListResolutionCenterCasesRequestReasonItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -5508,6 +6027,7 @@ const (
 	SummaryResolutionCenterCasesRequestReasonItemNotAsDescribed       SummaryResolutionCenterCasesRequestReasonItem = "not_as_described"
 	SummaryResolutionCenterCasesRequestReasonItemProductUnacceptable  SummaryResolutionCenterCasesRequestReasonItem = "product_unacceptable"
 	SummaryResolutionCenterCasesRequestReasonItemSubscriptionCanceled SummaryResolutionCenterCasesRequestReasonItem = "subscription_canceled"
+	SummaryResolutionCenterCasesRequestReasonItemCreditNotProcessed   SummaryResolutionCenterCasesRequestReasonItem = "credit_not_processed"
 )
 
 func NewSummaryResolutionCenterCasesRequestReasonItemFromString(s string) (SummaryResolutionCenterCasesRequestReasonItem, error) {
@@ -5522,6 +6042,8 @@ func NewSummaryResolutionCenterCasesRequestReasonItemFromString(s string) (Summa
 		return SummaryResolutionCenterCasesRequestReasonItemProductUnacceptable, nil
 	case "subscription_canceled":
 		return SummaryResolutionCenterCasesRequestReasonItemSubscriptionCanceled, nil
+	case "credit_not_processed":
+		return SummaryResolutionCenterCasesRequestReasonItemCreditNotProcessed, nil
 	}
 	var t SummaryResolutionCenterCasesRequestReasonItem
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
@@ -5905,15 +6427,17 @@ func (s *SummaryResolutionCenterCasesResponseGroupsOutcome) String() string {
 }
 
 var (
-	summaryResolutionCenterCasesResponseGroupsReasonFieldFraudulent           = big.NewInt(1 << 0)
-	summaryResolutionCenterCasesResponseGroupsReasonFieldNotAsDescribed       = big.NewInt(1 << 1)
-	summaryResolutionCenterCasesResponseGroupsReasonFieldProductNotReceived   = big.NewInt(1 << 2)
-	summaryResolutionCenterCasesResponseGroupsReasonFieldProductUnacceptable  = big.NewInt(1 << 3)
-	summaryResolutionCenterCasesResponseGroupsReasonFieldSubscriptionCanceled = big.NewInt(1 << 4)
+	summaryResolutionCenterCasesResponseGroupsReasonFieldCreditNotProcessed   = big.NewInt(1 << 0)
+	summaryResolutionCenterCasesResponseGroupsReasonFieldFraudulent           = big.NewInt(1 << 1)
+	summaryResolutionCenterCasesResponseGroupsReasonFieldNotAsDescribed       = big.NewInt(1 << 2)
+	summaryResolutionCenterCasesResponseGroupsReasonFieldProductNotReceived   = big.NewInt(1 << 3)
+	summaryResolutionCenterCasesResponseGroupsReasonFieldProductUnacceptable  = big.NewInt(1 << 4)
+	summaryResolutionCenterCasesResponseGroupsReasonFieldSubscriptionCanceled = big.NewInt(1 << 5)
 )
 
 // How many of the matching cases were opened for each reason. Every reason is present, including those with a count of zero.
 type SummaryResolutionCenterCasesResponseGroupsReason struct {
+	CreditNotProcessed   int `json:"credit_not_processed" url:"credit_not_processed"`
 	Fraudulent           int `json:"fraudulent" url:"fraudulent"`
 	NotAsDescribed       int `json:"not_as_described" url:"not_as_described"`
 	ProductNotReceived   int `json:"product_not_received" url:"product_not_received"`
@@ -5925,6 +6449,13 @@ type SummaryResolutionCenterCasesResponseGroupsReason struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (s *SummaryResolutionCenterCasesResponseGroupsReason) GetCreditNotProcessed() int {
+	if s == nil {
+		return 0
+	}
+	return s.CreditNotProcessed
 }
 
 func (s *SummaryResolutionCenterCasesResponseGroupsReason) GetFraudulent() int {
@@ -5976,6 +6507,13 @@ func (s *SummaryResolutionCenterCasesResponseGroupsReason) require(field *big.In
 	}
 	next.Or(next, field)
 	s.explicitFields = next
+}
+
+// SetCreditNotProcessed sets the CreditNotProcessed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (s *SummaryResolutionCenterCasesResponseGroupsReason) SetCreditNotProcessed(creditNotProcessed int) {
+	s.CreditNotProcessed = creditNotProcessed
+	s.require(summaryResolutionCenterCasesResponseGroupsReasonFieldCreditNotProcessed)
 }
 
 // SetFraudulent sets the Fraudulent field and marks it as non-optional;
