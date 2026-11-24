@@ -27488,7 +27488,7 @@ type LedgerActivity struct {
 	ProductName *string `json:"product_name,omitempty" url:"product_name,omitempty"`
 	// Resource associated with this ledger activity.
 	Resource *LedgerActivityResource `json:"resource,omitempty" url:"resource,omitempty"`
-	// Source of this ledger activity. Platform markup fees use object platform_fee and the ledger activity ID.
+	// Source of this ledger activity. Platform markup fees use object platform_fee and the ledger activity ID. Treasury pay-ins use object `crypto_offramp` and an ID prefixed `cofr_`. With `include_resource=false`, a treasury pay-in's source and a deposit's `bank_deposit_id` can be null.
 	Source *LedgerActivitySource `json:"source,omitempty" url:"source,omitempty"`
 	// Dollar value of this movement as a decimal string, signed like `amount`. Converted from the posted amount at the rate that was live when the line posted — the same pricing the wallet balance chart and the financial reports use — so a crypto row carries its dollar value too. `null` for a currency Whop holds no exchange rate for.
 	UsdAmount *string `json:"usd_amount,omitempty" url:"usd_amount,omitempty"`
@@ -32681,36 +32681,37 @@ func (l LedgerActivityResourceTwoObject) Ptr() *LedgerActivityResourceTwoObject 
 var (
 	ledgerActivitySourceFieldAccountID           = big.NewInt(1 << 0)
 	ledgerActivitySourceFieldAmountFloat         = big.NewInt(1 << 1)
-	ledgerActivitySourceFieldCardBrand           = big.NewInt(1 << 2)
-	ledgerActivitySourceFieldChain               = big.NewInt(1 << 3)
-	ledgerActivitySourceFieldClaimURL            = big.NewInt(1 << 4)
-	ledgerActivitySourceFieldCreatedAt           = big.NewInt(1 << 5)
-	ledgerActivitySourceFieldCreatedByUser       = big.NewInt(1 << 6)
-	ledgerActivitySourceFieldEstimatedArrival    = big.NewInt(1 << 7)
-	ledgerActivitySourceFieldFeeAmount           = big.NewInt(1 << 8)
-	ledgerActivitySourceFieldFeeKind             = big.NewInt(1 << 9)
-	ledgerActivitySourceFieldFeeType             = big.NewInt(1 << 10)
-	ledgerActivitySourceFieldFromAmount          = big.NewInt(1 << 11)
-	ledgerActivitySourceFieldFromCurrency        = big.NewInt(1 << 12)
-	ledgerActivitySourceFieldID                  = big.NewInt(1 << 13)
-	ledgerActivitySourceFieldNotes               = big.NewInt(1 << 14)
-	ledgerActivitySourceFieldObject              = big.NewInt(1 << 15)
-	ledgerActivitySourceFieldPayerName           = big.NewInt(1 << 16)
-	ledgerActivitySourceFieldPaymentAmount       = big.NewInt(1 << 17)
-	ledgerActivitySourceFieldPaymentMethodType   = big.NewInt(1 << 18)
-	ledgerActivitySourceFieldPaymentProcessor    = big.NewInt(1 << 19)
-	ledgerActivitySourceFieldPayoutAmount        = big.NewInt(1 << 20)
-	ledgerActivitySourceFieldPayoutDestination   = big.NewInt(1 << 21)
-	ledgerActivitySourceFieldPayoutTokenNickname = big.NewInt(1 << 22)
-	ledgerActivitySourceFieldReason              = big.NewInt(1 << 23)
-	ledgerActivitySourceFieldRiskReviewHold      = big.NewInt(1 << 24)
-	ledgerActivitySourceFieldSenderAddress       = big.NewInt(1 << 25)
-	ledgerActivitySourceFieldStatus              = big.NewInt(1 << 26)
-	ledgerActivitySourceFieldTitle               = big.NewInt(1 << 27)
-	ledgerActivitySourceFieldToAmount            = big.NewInt(1 << 28)
-	ledgerActivitySourceFieldToCurrency          = big.NewInt(1 << 29)
-	ledgerActivitySourceFieldTraceCode           = big.NewInt(1 << 30)
-	ledgerActivitySourceFieldTxHash              = big.NewInt(1 << 31)
+	ledgerActivitySourceFieldBankDepositID       = big.NewInt(1 << 2)
+	ledgerActivitySourceFieldCardBrand           = big.NewInt(1 << 3)
+	ledgerActivitySourceFieldChain               = big.NewInt(1 << 4)
+	ledgerActivitySourceFieldClaimURL            = big.NewInt(1 << 5)
+	ledgerActivitySourceFieldCreatedAt           = big.NewInt(1 << 6)
+	ledgerActivitySourceFieldCreatedByUser       = big.NewInt(1 << 7)
+	ledgerActivitySourceFieldEstimatedArrival    = big.NewInt(1 << 8)
+	ledgerActivitySourceFieldFeeAmount           = big.NewInt(1 << 9)
+	ledgerActivitySourceFieldFeeKind             = big.NewInt(1 << 10)
+	ledgerActivitySourceFieldFeeType             = big.NewInt(1 << 11)
+	ledgerActivitySourceFieldFromAmount          = big.NewInt(1 << 12)
+	ledgerActivitySourceFieldFromCurrency        = big.NewInt(1 << 13)
+	ledgerActivitySourceFieldID                  = big.NewInt(1 << 14)
+	ledgerActivitySourceFieldNotes               = big.NewInt(1 << 15)
+	ledgerActivitySourceFieldObject              = big.NewInt(1 << 16)
+	ledgerActivitySourceFieldPayerName           = big.NewInt(1 << 17)
+	ledgerActivitySourceFieldPaymentAmount       = big.NewInt(1 << 18)
+	ledgerActivitySourceFieldPaymentMethodType   = big.NewInt(1 << 19)
+	ledgerActivitySourceFieldPaymentProcessor    = big.NewInt(1 << 20)
+	ledgerActivitySourceFieldPayoutAmount        = big.NewInt(1 << 21)
+	ledgerActivitySourceFieldPayoutDestination   = big.NewInt(1 << 22)
+	ledgerActivitySourceFieldPayoutTokenNickname = big.NewInt(1 << 23)
+	ledgerActivitySourceFieldReason              = big.NewInt(1 << 24)
+	ledgerActivitySourceFieldRiskReviewHold      = big.NewInt(1 << 25)
+	ledgerActivitySourceFieldSenderAddress       = big.NewInt(1 << 26)
+	ledgerActivitySourceFieldStatus              = big.NewInt(1 << 27)
+	ledgerActivitySourceFieldTitle               = big.NewInt(1 << 28)
+	ledgerActivitySourceFieldToAmount            = big.NewInt(1 << 29)
+	ledgerActivitySourceFieldToCurrency          = big.NewInt(1 << 30)
+	ledgerActivitySourceFieldTraceCode           = big.NewInt(1 << 31)
+	ledgerActivitySourceFieldTxHash              = big.NewInt(1 << 32)
 )
 
 // ledgerActivitySourceNullableFields maps the wire names of LedgerActivitySource's nullable fields (required or optional) to their field bits.
@@ -32747,12 +32748,14 @@ var ledgerActivitySourceNullableFields = map[string]*big.Int{
 	"tx_hash":               ledgerActivitySourceFieldTxHash,
 }
 
-// Source of this ledger activity. Platform markup fees use object platform_fee and the ledger activity ID.
+// Source of this ledger activity. Platform markup fees use object platform_fee and the ledger activity ID. Treasury pay-ins use object `crypto_offramp` and an ID prefixed `cofr_`. With `include_resource=false`, a treasury pay-in's source and a deposit's `bank_deposit_id` can be null.
 type LedgerActivitySource struct {
 	// ID of the account that runs the ad campaign (ad_campaign sources only).
 	AccountID *string `json:"account_id,omitempty" url:"account_id,omitempty"`
-	// Payout amount as a decimal number in the destination currency (payout sources only; requires payout:withdrawal:read).
+	// Payout amount as a decimal number in the destination currency. Present only on `withdrawal` sources. Requires `payout:withdrawal:read`.
 	AmountFloat *float64 `json:"amount_float,omitempty" url:"amount_float,omitempty"`
+	// ID of the bank deposit that this on-chain deposit delivered, prefixed `vbt_`. Present only on onchain_transaction sources for bank deposits.
+	BankDepositID *string `json:"bank_deposit_id,omitempty" url:"bank_deposit_id,omitempty"`
 	// Card brand used by the payment source.
 	CardBrand *string `json:"card_brand,omitempty" url:"card_brand,omitempty"`
 	// Chain the deposit landed on, for example plasma (onchain_transaction sources only).
@@ -32809,7 +32812,7 @@ type LedgerActivitySource struct {
 	ToCurrency *string `json:"to_currency,omitempty" url:"to_currency,omitempty"`
 	// Bank trace reference for the withdrawal. Requires payout:withdrawal:read.
 	TraceCode *string `json:"trace_code,omitempty" url:"trace_code,omitempty"`
-	// On-chain transaction hash (onchain_transaction and swap sources only).
+	// On-chain transaction hash (onchain_transaction, swap, and crypto_offramp sources only). On crypto_offramp sources, this is the wallet send that funded the pay-in.
 	TxHash *string `json:"tx_hash,omitempty" url:"tx_hash,omitempty"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -32832,6 +32835,13 @@ func (l *LedgerActivitySource) GetAmountFloat() *float64 {
 		return nil
 	}
 	return l.AmountFloat
+}
+
+func (l *LedgerActivitySource) GetBankDepositID() *string {
+	if l == nil {
+		return nil
+	}
+	return l.BankDepositID
 }
 
 func (l *LedgerActivitySource) GetCardBrand() *string {
@@ -33072,6 +33082,13 @@ func (l *LedgerActivitySource) SetAccountID(accountID *string) {
 func (l *LedgerActivitySource) SetAmountFloat(amountFloat *float64) {
 	l.AmountFloat = amountFloat
 	l.require(ledgerActivitySourceFieldAmountFloat)
+}
+
+// SetBankDepositID sets the BankDepositID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (l *LedgerActivitySource) SetBankDepositID(bankDepositID *string) {
+	l.BankDepositID = bankDepositID
+	l.require(ledgerActivitySourceFieldBankDepositID)
 }
 
 // SetCardBrand sets the CardBrand field and marks it as non-optional;
