@@ -4762,31 +4762,32 @@ var (
 	accountPreferencesFieldAdsSchedulingTimezone                   = big.NewInt(1 << 3)
 	accountPreferencesFieldAdsTripleWhaleIntegration               = big.NewInt(1 << 4)
 	accountPreferencesFieldAffiliateProgram                        = big.NewInt(1 << 5)
-	accountPreferencesFieldCancellationEmails                      = big.NewInt(1 << 6)
-	accountPreferencesFieldCardSurcharge                           = big.NewInt(1 << 7)
-	accountPreferencesFieldCardsAutoTopUp                          = big.NewInt(1 << 8)
-	accountPreferencesFieldCardsNotifications                      = big.NewInt(1 << 9)
-	accountPreferencesFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 10)
-	accountPreferencesFieldCustomerTracking                        = big.NewInt(1 << 11)
-	accountPreferencesFieldDisputeFighterEnabled                   = big.NewInt(1 << 12)
-	accountPreferencesFieldEconomicIntelligence                    = big.NewInt(1 << 13)
-	accountPreferencesFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 14)
-	accountPreferencesFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 15)
-	accountPreferencesFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 16)
-	accountPreferencesFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 17)
-	accountPreferencesFieldEconomicIntelligenceOffers              = big.NewInt(1 << 18)
-	accountPreferencesFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 19)
-	accountPreferencesFieldFailedPaymentEmails                     = big.NewInt(1 << 20)
-	accountPreferencesFieldFeedbackOptions                         = big.NewInt(1 << 21)
-	accountPreferencesFieldMerchantOfRecord                        = big.NewInt(1 << 22)
-	accountPreferencesFieldOffSessionPaymentRules                  = big.NewInt(1 << 23)
-	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 24)
-	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 25)
-	accountPreferencesFieldRenewalReminderEmails                   = big.NewInt(1 << 26)
-	accountPreferencesFieldReviewRequestEmails                     = big.NewInt(1 << 27)
-	accountPreferencesFieldSubaccountNotifications                 = big.NewInt(1 << 28)
-	accountPreferencesFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 29)
-	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 30)
+	accountPreferencesFieldAppleIapFeePayer                        = big.NewInt(1 << 6)
+	accountPreferencesFieldCancellationEmails                      = big.NewInt(1 << 7)
+	accountPreferencesFieldCardSurcharge                           = big.NewInt(1 << 8)
+	accountPreferencesFieldCardsAutoTopUp                          = big.NewInt(1 << 9)
+	accountPreferencesFieldCardsNotifications                      = big.NewInt(1 << 10)
+	accountPreferencesFieldCoversSubaccountNegativeBalances        = big.NewInt(1 << 11)
+	accountPreferencesFieldCustomerTracking                        = big.NewInt(1 << 12)
+	accountPreferencesFieldDisputeFighterEnabled                   = big.NewInt(1 << 13)
+	accountPreferencesFieldEconomicIntelligence                    = big.NewInt(1 << 14)
+	accountPreferencesFieldEconomicIntelligenceAutoRenew           = big.NewInt(1 << 15)
+	accountPreferencesFieldEconomicIntelligenceEndsAt              = big.NewInt(1 << 16)
+	accountPreferencesFieldEconomicIntelligenceFeePercentage       = big.NewInt(1 << 17)
+	accountPreferencesFieldEconomicIntelligenceFirstRenewalAt      = big.NewInt(1 << 18)
+	accountPreferencesFieldEconomicIntelligenceOffers              = big.NewInt(1 << 19)
+	accountPreferencesFieldEconomicIntelligencePreviousPeriod      = big.NewInt(1 << 20)
+	accountPreferencesFieldFailedPaymentEmails                     = big.NewInt(1 << 21)
+	accountPreferencesFieldFeedbackOptions                         = big.NewInt(1 << 22)
+	accountPreferencesFieldMerchantOfRecord                        = big.NewInt(1 << 23)
+	accountPreferencesFieldOffSessionPaymentRules                  = big.NewInt(1 << 24)
+	accountPreferencesFieldPreferredSettlementCurrency             = big.NewInt(1 << 25)
+	accountPreferencesFieldPreferredSettlementCurrencyChangeableAt = big.NewInt(1 << 26)
+	accountPreferencesFieldRenewalReminderEmails                   = big.NewInt(1 << 27)
+	accountPreferencesFieldReviewRequestEmails                     = big.NewInt(1 << 28)
+	accountPreferencesFieldSubaccountNotifications                 = big.NewInt(1 << 29)
+	accountPreferencesFieldSubaccountTeamViewOnly                  = big.NewInt(1 << 30)
+	accountPreferencesFieldSubscriptionFailureBehavior             = big.NewInt(1 << 31)
 )
 
 // accountPreferencesNullableFields maps the wire names of AccountPreferences's nullable fields (required or optional) to their field bits.
@@ -4818,6 +4819,8 @@ type AccountPreferences struct {
 	AdsTripleWhaleIntegration map[string]any `json:"ads_triple_whale_integration" url:"ads_triple_whale_integration"`
 	// The account's affiliate program: its instructions, its application and the product it features for affiliates. `GET /accounts/{account_id}/affiliate_program` returns the same object without authentication.
 	AffiliateProgram *AccountAffiliateProgram `json:"affiliate_program" url:"affiliate_program"`
+	// Who pays Apple's 30% fee on one-time purchases made in the Whop iOS app. `buyer` (the default) adds about 43% to the iOS price, so the buyer pays the fee. `company` keeps the product's own price, and the fee comes out of the sale.
+	AppleIapFeePayer AccountPreferencesAppleIapFeePayer `json:"apple_iap_fee_payer" url:"apple_iap_fee_payer"`
 	// Whether Whop emails members when their membership is canceled or terminated. `true` by default. Set it to `false` to stop these emails while keeping the account's other customer emails. They also stop while the account's `send_customer_emails` is `false`.
 	CancellationEmails bool `json:"cancellation_emails" url:"cancellation_emails"`
 	// The card surcharge a point of sale adds to credit card payments. Debit and prepaid cards never pay it.
@@ -4914,6 +4917,13 @@ func (a *AccountPreferences) GetAffiliateProgram() *AccountAffiliateProgram {
 		return nil
 	}
 	return a.AffiliateProgram
+}
+
+func (a *AccountPreferences) GetAppleIapFeePayer() AccountPreferencesAppleIapFeePayer {
+	if a == nil {
+		return ""
+	}
+	return a.AppleIapFeePayer
 }
 
 func (a *AccountPreferences) GetCancellationEmails() bool {
@@ -5149,6 +5159,13 @@ func (a *AccountPreferences) SetAffiliateProgram(affiliateProgram *AccountAffili
 	a.require(accountPreferencesFieldAffiliateProgram)
 }
 
+// SetAppleIapFeePayer sets the AppleIapFeePayer field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AccountPreferences) SetAppleIapFeePayer(appleIapFeePayer AccountPreferencesAppleIapFeePayer) {
+	a.AppleIapFeePayer = appleIapFeePayer
+	a.require(accountPreferencesFieldAppleIapFeePayer)
+}
+
 // SetCancellationEmails sets the CancellationEmails field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (a *AccountPreferences) SetCancellationEmails(cancellationEmails bool) {
@@ -5371,6 +5388,29 @@ func (a *AccountPreferences) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
+}
+
+// Who pays Apple's 30% fee on one-time purchases made in the Whop iOS app. `buyer` (the default) adds about 43% to the iOS price, so the buyer pays the fee. `company` keeps the product's own price, and the fee comes out of the sale.
+type AccountPreferencesAppleIapFeePayer string
+
+const (
+	AccountPreferencesAppleIapFeePayerBuyer   AccountPreferencesAppleIapFeePayer = "buyer"
+	AccountPreferencesAppleIapFeePayerCompany AccountPreferencesAppleIapFeePayer = "company"
+)
+
+func NewAccountPreferencesAppleIapFeePayerFromString(s string) (AccountPreferencesAppleIapFeePayer, error) {
+	switch s {
+	case "buyer":
+		return AccountPreferencesAppleIapFeePayerBuyer, nil
+	case "company":
+		return AccountPreferencesAppleIapFeePayerCompany, nil
+	}
+	var t AccountPreferencesAppleIapFeePayer
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AccountPreferencesAppleIapFeePayer) Ptr() *AccountPreferencesAppleIapFeePayer {
+	return &a
 }
 
 // The merchant of record for the account's payments. `whop` means Whop is the merchant of record and the account can switch. `null` means Whop is the merchant of record and the account cannot switch. `pending` means the account switched and waits for approval. Checkout takes no payments until then. `account` means the account is the merchant of record.
