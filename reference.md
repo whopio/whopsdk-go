@@ -26194,6 +26194,14 @@ client.Members.List(
 <dl>
 <dd>
 
+**metadata:** `*string` — JSON-encoded object of key and value pairs. Only returns members whose own metadata holds every pair with exactly that value, for example `{"utm_source":"twitter"}`. Takes up to 5 keys. Only the account's newest 50,000 members are searched, and a search that takes over 5 seconds returns a 400. Stored numbers and true or false values match their text. Nested query keys such as `metadata[utm_source]=twitter` also work.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
 **query:** `*string` — Search members by name or username. An exact email address also matches when the credential holds the member:email:read scope.
     
 </dd>
