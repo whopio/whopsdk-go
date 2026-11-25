@@ -1475,6 +1475,7 @@ type RetrieveStatsRequestMode string
 const (
 	RetrieveStatsRequestModeGlobal    RetrieveStatsRequestMode = "global"
 	RetrieveStatsRequestModeOwner     RetrieveStatsRequestMode = "owner"
+	RetrieveStatsRequestModePartners  RetrieveStatsRequestMode = "partners"
 	RetrieveStatsRequestModePlatforms RetrieveStatsRequestMode = "platforms"
 	RetrieveStatsRequestModePublic    RetrieveStatsRequestMode = "public"
 )
@@ -1485,6 +1486,8 @@ func NewRetrieveStatsRequestModeFromString(s string) (RetrieveStatsRequestMode, 
 		return RetrieveStatsRequestModeGlobal, nil
 	case "owner":
 		return RetrieveStatsRequestModeOwner, nil
+	case "partners":
+		return RetrieveStatsRequestModePartners, nil
 	case "platforms":
 		return RetrieveStatsRequestModePlatforms, nil
 	case "public":
