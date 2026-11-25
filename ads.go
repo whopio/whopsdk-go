@@ -11,6 +11,65 @@ import (
 )
 
 var (
+	appealAdsRequestFieldID   = big.NewInt(1 << 0)
+	appealAdsRequestFieldType = big.NewInt(1 << 1)
+)
+
+type AppealAdsRequest struct {
+	// The ad ID.
+	ID string `json:"-" url:"-"`
+	// How to review the ad again. `website` reviews it against its website as it is now.
+	Type AppealAdsRequestType `json:"type" url:"-"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+}
+
+func (a *AppealAdsRequest) require(field *big.Int) {
+	next := new(big.Int)
+	if a.explicitFields != nil {
+		next.Set(a.explicitFields)
+	}
+	next.Or(next, field)
+	a.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppealAdsRequest) SetID(id string) {
+	a.ID = id
+	a.require(appealAdsRequestFieldID)
+}
+
+// SetType sets the Type field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AppealAdsRequest) SetType(type_ AppealAdsRequestType) {
+	a.Type = type_
+	a.require(appealAdsRequestFieldType)
+}
+
+func (a *AppealAdsRequest) UnmarshalJSON(data []byte) error {
+	type unmarshaler AppealAdsRequest
+	var body unmarshaler
+	if err := json.Unmarshal(data, &body); err != nil {
+		return err
+	}
+	*a = AppealAdsRequest(body)
+	return nil
+}
+
+func (a *AppealAdsRequest) MarshalJSON() ([]byte, error) {
+	type embed AppealAdsRequest
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*a),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, a.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+var (
 	createAdsRequestFieldAccountID     = big.NewInt(1 << 0)
 	createAdsRequestFieldAdGroup       = big.NewInt(1 << 1)
 	createAdsRequestFieldAdGroupID     = big.NewInt(1 << 2)
@@ -721,68 +780,70 @@ var (
 	adFieldAdGroup                      = big.NewInt(1 << 1)
 	adFieldAddedToCartValue             = big.NewInt(1 << 2)
 	adFieldAddedToCarts                 = big.NewInt(1 << 3)
-	adFieldCallToAction                 = big.NewInt(1 << 4)
-	adFieldClickThroughRate             = big.NewInt(1 << 5)
-	adFieldClicks                       = big.NewInt(1 << 6)
-	adFieldCompletedRegistrationValue   = big.NewInt(1 << 7)
-	adFieldCompletedRegistrations       = big.NewInt(1 << 8)
-	adFieldContactValue                 = big.NewInt(1 << 9)
-	adFieldContacts                     = big.NewInt(1 << 10)
-	adFieldContentReview                = big.NewInt(1 << 11)
-	adFieldCostPerAddedToCart           = big.NewInt(1 << 12)
-	adFieldCostPerClick                 = big.NewInt(1 << 13)
-	adFieldCostPerCompletedRegistration = big.NewInt(1 << 14)
-	adFieldCostPerContact               = big.NewInt(1 << 15)
-	adFieldCostPerLead                  = big.NewInt(1 << 16)
-	adFieldCostPerMille                 = big.NewInt(1 << 17)
-	adFieldCostPerPurchase              = big.NewInt(1 << 18)
-	adFieldCostPerResult                = big.NewInt(1 << 19)
-	adFieldCostPerSchedule              = big.NewInt(1 << 20)
-	adFieldCostPerSubmittedApplication  = big.NewInt(1 << 21)
-	adFieldCostPerUniqueClick           = big.NewInt(1 << 22)
-	adFieldCostPerViewedContent         = big.NewInt(1 << 23)
-	adFieldCreatedAt                    = big.NewInt(1 << 24)
-	adFieldCreatives                    = big.NewInt(1 << 25)
-	adFieldCustomConversions            = big.NewInt(1 << 26)
-	adFieldCustomEventCounts            = big.NewInt(1 << 27)
-	adFieldCustomEventValues            = big.NewInt(1 << 28)
-	adFieldDeliveryStatus               = big.NewInt(1 << 29)
-	adFieldDescriptions                 = big.NewInt(1 << 30)
-	adFieldFrequency                    = big.NewInt(1 << 31)
-	adFieldHeadlines                    = big.NewInt(1 << 32)
-	adFieldID                           = big.NewInt(1 << 33)
-	adFieldImpressions                  = big.NewInt(1 << 34)
-	adFieldIssues                       = big.NewInt(1 << 35)
-	adFieldLeadValue                    = big.NewInt(1 << 36)
-	adFieldLeads                        = big.NewInt(1 << 37)
-	adFieldLinkClicks                   = big.NewInt(1 << 38)
-	adFieldPrimaryTexts                 = big.NewInt(1 << 39)
-	adFieldPurchaseValue                = big.NewInt(1 << 40)
-	adFieldPurchases                    = big.NewInt(1 << 41)
-	adFieldReach                        = big.NewInt(1 << 42)
-	adFieldResultEvent                  = big.NewInt(1 << 43)
-	adFieldResultEventName              = big.NewInt(1 << 44)
-	adFieldResults                      = big.NewInt(1 << 45)
-	adFieldReturnOnAdSpend              = big.NewInt(1 << 46)
-	adFieldScheduleValue                = big.NewInt(1 << 47)
-	adFieldSchedules                    = big.NewInt(1 << 48)
-	adFieldSpend                        = big.NewInt(1 << 49)
-	adFieldSpendCurrency                = big.NewInt(1 << 50)
-	adFieldStatus                       = big.NewInt(1 << 51)
-	adFieldSubmittedApplicationValue    = big.NewInt(1 << 52)
-	adFieldSubmittedApplications        = big.NewInt(1 << 53)
-	adFieldTitle                        = big.NewInt(1 << 54)
-	adFieldUniqueClickThroughRate       = big.NewInt(1 << 55)
-	adFieldUniqueClicks                 = big.NewInt(1 << 56)
-	adFieldUpdatedAt                    = big.NewInt(1 << 57)
-	adFieldURL                          = big.NewInt(1 << 58)
-	adFieldURLParameters                = big.NewInt(1 << 59)
-	adFieldViewedContentValue           = big.NewInt(1 << 60)
-	adFieldViewedContents               = big.NewInt(1 << 61)
+	adFieldAppealAvailableAt            = big.NewInt(1 << 4)
+	adFieldCallToAction                 = big.NewInt(1 << 5)
+	adFieldClickThroughRate             = big.NewInt(1 << 6)
+	adFieldClicks                       = big.NewInt(1 << 7)
+	adFieldCompletedRegistrationValue   = big.NewInt(1 << 8)
+	adFieldCompletedRegistrations       = big.NewInt(1 << 9)
+	adFieldContactValue                 = big.NewInt(1 << 10)
+	adFieldContacts                     = big.NewInt(1 << 11)
+	adFieldContentReview                = big.NewInt(1 << 12)
+	adFieldCostPerAddedToCart           = big.NewInt(1 << 13)
+	adFieldCostPerClick                 = big.NewInt(1 << 14)
+	adFieldCostPerCompletedRegistration = big.NewInt(1 << 15)
+	adFieldCostPerContact               = big.NewInt(1 << 16)
+	adFieldCostPerLead                  = big.NewInt(1 << 17)
+	adFieldCostPerMille                 = big.NewInt(1 << 18)
+	adFieldCostPerPurchase              = big.NewInt(1 << 19)
+	adFieldCostPerResult                = big.NewInt(1 << 20)
+	adFieldCostPerSchedule              = big.NewInt(1 << 21)
+	adFieldCostPerSubmittedApplication  = big.NewInt(1 << 22)
+	adFieldCostPerUniqueClick           = big.NewInt(1 << 23)
+	adFieldCostPerViewedContent         = big.NewInt(1 << 24)
+	adFieldCreatedAt                    = big.NewInt(1 << 25)
+	adFieldCreatives                    = big.NewInt(1 << 26)
+	adFieldCustomConversions            = big.NewInt(1 << 27)
+	adFieldCustomEventCounts            = big.NewInt(1 << 28)
+	adFieldCustomEventValues            = big.NewInt(1 << 29)
+	adFieldDeliveryStatus               = big.NewInt(1 << 30)
+	adFieldDescriptions                 = big.NewInt(1 << 31)
+	adFieldFrequency                    = big.NewInt(1 << 32)
+	adFieldHeadlines                    = big.NewInt(1 << 33)
+	adFieldID                           = big.NewInt(1 << 34)
+	adFieldImpressions                  = big.NewInt(1 << 35)
+	adFieldIssues                       = big.NewInt(1 << 36)
+	adFieldLeadValue                    = big.NewInt(1 << 37)
+	adFieldLeads                        = big.NewInt(1 << 38)
+	adFieldLinkClicks                   = big.NewInt(1 << 39)
+	adFieldPrimaryTexts                 = big.NewInt(1 << 40)
+	adFieldPurchaseValue                = big.NewInt(1 << 41)
+	adFieldPurchases                    = big.NewInt(1 << 42)
+	adFieldReach                        = big.NewInt(1 << 43)
+	adFieldResultEvent                  = big.NewInt(1 << 44)
+	adFieldResultEventName              = big.NewInt(1 << 45)
+	adFieldResults                      = big.NewInt(1 << 46)
+	adFieldReturnOnAdSpend              = big.NewInt(1 << 47)
+	adFieldScheduleValue                = big.NewInt(1 << 48)
+	adFieldSchedules                    = big.NewInt(1 << 49)
+	adFieldSpend                        = big.NewInt(1 << 50)
+	adFieldSpendCurrency                = big.NewInt(1 << 51)
+	adFieldStatus                       = big.NewInt(1 << 52)
+	adFieldSubmittedApplicationValue    = big.NewInt(1 << 53)
+	adFieldSubmittedApplications        = big.NewInt(1 << 54)
+	adFieldTitle                        = big.NewInt(1 << 55)
+	adFieldUniqueClickThroughRate       = big.NewInt(1 << 56)
+	adFieldUniqueClicks                 = big.NewInt(1 << 57)
+	adFieldUpdatedAt                    = big.NewInt(1 << 58)
+	adFieldURL                          = big.NewInt(1 << 59)
+	adFieldURLParameters                = big.NewInt(1 << 60)
+	adFieldViewedContentValue           = big.NewInt(1 << 61)
+	adFieldViewedContents               = big.NewInt(1 << 62)
 )
 
 // adNullableFields maps the wire names of Ad's nullable fields (required or optional) to their field bits.
 var adNullableFields = map[string]*big.Int{
+	"appeal_available_at":             adFieldAppealAvailableAt,
 	"call_to_action":                  adFieldCallToAction,
 	"cost_per_added_to_cart":          adFieldCostPerAddedToCart,
 	"cost_per_completed_registration": adFieldCostPerCompletedRegistration,
@@ -813,6 +874,8 @@ type Ad struct {
 	AddedToCartValue float64 `json:"added_to_cart_value" url:"added_to_cart_value"`
 	// Whop pixel-attributed add-to-cart events, last-click.
 	AddedToCarts float64 `json:"added_to_carts" url:"added_to_carts"`
+	// When the ad can next be appealed, as an ISO 8601 timestamp. `null` when it can be appealed now.
+	AppealAvailableAt *string `json:"appeal_available_at,omitempty" url:"appeal_available_at,omitempty"`
 	// The call-to-action button shown on the ad.
 	CallToAction *AdCallToAction `json:"call_to_action,omitempty" url:"call_to_action,omitempty"`
 	// Clicks divided by impressions, between 0 and 1.
@@ -958,6 +1021,13 @@ func (a *Ad) GetAddedToCarts() float64 {
 		return 0
 	}
 	return a.AddedToCarts
+}
+
+func (a *Ad) GetAppealAvailableAt() *string {
+	if a == nil {
+		return nil
+	}
+	return a.AppealAvailableAt
 }
 
 func (a *Ad) GetCallToAction() *AdCallToAction {
@@ -1408,6 +1478,13 @@ func (a *Ad) SetAddedToCartValue(addedToCartValue float64) {
 func (a *Ad) SetAddedToCarts(addedToCarts float64) {
 	a.AddedToCarts = addedToCarts
 	a.require(adFieldAddedToCarts)
+}
+
+// SetAppealAvailableAt sets the AppealAvailableAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *Ad) SetAppealAvailableAt(appealAvailableAt *string) {
+	a.AppealAvailableAt = appealAvailableAt
+	a.require(adFieldAppealAvailableAt)
 }
 
 // SetCallToAction sets the CallToAction field and marks it as non-optional;
@@ -1985,11 +2062,14 @@ func (a AdCallToAction) Ptr() *AdCallToAction {
 }
 
 var (
-	adContentReviewFieldStatus = big.NewInt(1 << 0)
-	adContentReviewFieldTags   = big.NewInt(1 << 1)
+	adContentReviewFieldBlockedByWebsite = big.NewInt(1 << 0)
+	adContentReviewFieldStatus           = big.NewInt(1 << 1)
+	adContentReviewFieldTags             = big.NewInt(1 << 2)
 )
 
 type AdContentReview struct {
+	// Whether the ad is held back for a rule the review found on its website. Changing the website and rechecking it can clear the ad.
+	BlockedByWebsite bool `json:"blocked_by_website" url:"blocked_by_website"`
 	// `reviewed` once Whop content review finishes, `in_review` while it runs, `not_reviewed` when it never ran.
 	Status AdContentReviewStatus `json:"status" url:"status"`
 	Tags   []*AdContentReviewTag `json:"tags" url:"tags"`
@@ -1999,6 +2079,13 @@ type AdContentReview struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AdContentReview) GetBlockedByWebsite() bool {
+	if a == nil {
+		return false
+	}
+	return a.BlockedByWebsite
 }
 
 func (a *AdContentReview) GetStatus() AdContentReviewStatus {
@@ -2029,6 +2116,13 @@ func (a *AdContentReview) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	a.explicitFields = next
+}
+
+// SetBlockedByWebsite sets the BlockedByWebsite field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdContentReview) SetBlockedByWebsite(blockedByWebsite bool) {
+	a.BlockedByWebsite = blockedByWebsite
+	a.require(adContentReviewFieldBlockedByWebsite)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
@@ -3396,6 +3490,26 @@ func (a *AdText) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
+}
+
+// How to review the ad again. `website` reviews it against its website as it is now.
+type AppealAdsRequestType string
+
+const (
+	AppealAdsRequestTypeWebsite AppealAdsRequestType = "website"
+)
+
+func NewAppealAdsRequestTypeFromString(s string) (AppealAdsRequestType, error) {
+	switch s {
+	case "website":
+		return AppealAdsRequestTypeWebsite, nil
+	}
+	var t AppealAdsRequestType
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AppealAdsRequestType) Ptr() *AppealAdsRequestType {
+	return &a
 }
 
 // The call-to-action button shown on the ad.
@@ -4867,30 +4981,32 @@ func (p PostAdUpdatedPayloadAPIVersion) Ptr() *PostAdUpdatedPayloadAPIVersion {
 }
 
 var (
-	postAdUpdatedPayloadDataFieldAdCampaign     = big.NewInt(1 << 0)
-	postAdUpdatedPayloadDataFieldAdGroup        = big.NewInt(1 << 1)
-	postAdUpdatedPayloadDataFieldCallToAction   = big.NewInt(1 << 2)
-	postAdUpdatedPayloadDataFieldContentReview  = big.NewInt(1 << 3)
-	postAdUpdatedPayloadDataFieldCreatedAt      = big.NewInt(1 << 4)
-	postAdUpdatedPayloadDataFieldCreatives      = big.NewInt(1 << 5)
-	postAdUpdatedPayloadDataFieldDeliveryStatus = big.NewInt(1 << 6)
-	postAdUpdatedPayloadDataFieldDescriptions   = big.NewInt(1 << 7)
-	postAdUpdatedPayloadDataFieldHeadlines      = big.NewInt(1 << 8)
-	postAdUpdatedPayloadDataFieldID             = big.NewInt(1 << 9)
-	postAdUpdatedPayloadDataFieldIssues         = big.NewInt(1 << 10)
-	postAdUpdatedPayloadDataFieldPrimaryTexts   = big.NewInt(1 << 11)
-	postAdUpdatedPayloadDataFieldStatus         = big.NewInt(1 << 12)
-	postAdUpdatedPayloadDataFieldTitle          = big.NewInt(1 << 13)
-	postAdUpdatedPayloadDataFieldUpdatedAt      = big.NewInt(1 << 14)
-	postAdUpdatedPayloadDataFieldURL            = big.NewInt(1 << 15)
-	postAdUpdatedPayloadDataFieldURLParameters  = big.NewInt(1 << 16)
+	postAdUpdatedPayloadDataFieldAdCampaign        = big.NewInt(1 << 0)
+	postAdUpdatedPayloadDataFieldAdGroup           = big.NewInt(1 << 1)
+	postAdUpdatedPayloadDataFieldAppealAvailableAt = big.NewInt(1 << 2)
+	postAdUpdatedPayloadDataFieldCallToAction      = big.NewInt(1 << 3)
+	postAdUpdatedPayloadDataFieldContentReview     = big.NewInt(1 << 4)
+	postAdUpdatedPayloadDataFieldCreatedAt         = big.NewInt(1 << 5)
+	postAdUpdatedPayloadDataFieldCreatives         = big.NewInt(1 << 6)
+	postAdUpdatedPayloadDataFieldDeliveryStatus    = big.NewInt(1 << 7)
+	postAdUpdatedPayloadDataFieldDescriptions      = big.NewInt(1 << 8)
+	postAdUpdatedPayloadDataFieldHeadlines         = big.NewInt(1 << 9)
+	postAdUpdatedPayloadDataFieldID                = big.NewInt(1 << 10)
+	postAdUpdatedPayloadDataFieldIssues            = big.NewInt(1 << 11)
+	postAdUpdatedPayloadDataFieldPrimaryTexts      = big.NewInt(1 << 12)
+	postAdUpdatedPayloadDataFieldStatus            = big.NewInt(1 << 13)
+	postAdUpdatedPayloadDataFieldTitle             = big.NewInt(1 << 14)
+	postAdUpdatedPayloadDataFieldUpdatedAt         = big.NewInt(1 << 15)
+	postAdUpdatedPayloadDataFieldURL               = big.NewInt(1 << 16)
+	postAdUpdatedPayloadDataFieldURLParameters     = big.NewInt(1 << 17)
 )
 
 // postAdUpdatedPayloadDataNullableFields maps the wire names of PostAdUpdatedPayloadData's nullable fields (required or optional) to their field bits.
 var postAdUpdatedPayloadDataNullableFields = map[string]*big.Int{
-	"call_to_action": postAdUpdatedPayloadDataFieldCallToAction,
-	"title":          postAdUpdatedPayloadDataFieldTitle,
-	"url":            postAdUpdatedPayloadDataFieldURL,
+	"appeal_available_at": postAdUpdatedPayloadDataFieldAppealAvailableAt,
+	"call_to_action":      postAdUpdatedPayloadDataFieldCallToAction,
+	"title":               postAdUpdatedPayloadDataFieldTitle,
+	"url":                 postAdUpdatedPayloadDataFieldURL,
 }
 
 type PostAdUpdatedPayloadData struct {
@@ -4898,6 +5014,8 @@ type PostAdUpdatedPayloadData struct {
 	AdCampaign *AdEntityReference `json:"ad_campaign" url:"ad_campaign"`
 	// The ad group this ad belongs to.
 	AdGroup *AdEntityReference `json:"ad_group" url:"ad_group"`
+	// When the ad can next be appealed, as an ISO 8601 timestamp. `null` when it can be appealed now.
+	AppealAvailableAt *string `json:"appeal_available_at,omitempty" url:"appeal_available_at,omitempty"`
 	// The call-to-action button shown on the ad.
 	CallToAction *PostAdUpdatedPayloadDataCallToAction `json:"call_to_action,omitempty" url:"call_to_action,omitempty"`
 	// Whop's content review of this ad: whether it has finished and the content rules it breaks.
@@ -4943,6 +5061,13 @@ func (p *PostAdUpdatedPayloadData) GetAdGroup() *AdEntityReference {
 		return nil
 	}
 	return p.AdGroup
+}
+
+func (p *PostAdUpdatedPayloadData) GetAppealAvailableAt() *string {
+	if p == nil {
+		return nil
+	}
+	return p.AppealAvailableAt
 }
 
 func (p *PostAdUpdatedPayloadData) GetCallToAction() *PostAdUpdatedPayloadDataCallToAction {
@@ -5078,6 +5203,13 @@ func (p *PostAdUpdatedPayloadData) SetAdCampaign(adCampaign *AdEntityReference) 
 func (p *PostAdUpdatedPayloadData) SetAdGroup(adGroup *AdEntityReference) {
 	p.AdGroup = adGroup
 	p.require(postAdUpdatedPayloadDataFieldAdGroup)
+}
+
+// SetAppealAvailableAt sets the AppealAvailableAt field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PostAdUpdatedPayloadData) SetAppealAvailableAt(appealAvailableAt *string) {
+	p.AppealAvailableAt = appealAvailableAt
+	p.require(postAdUpdatedPayloadDataFieldAppealAvailableAt)
 }
 
 // SetCallToAction sets the CallToAction field and marks it as non-optional;

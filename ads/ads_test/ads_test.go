@@ -276,6 +276,33 @@ func TestAdsUpdateWithWireMock(
 	VerifyRequestCount(t, "TestAdsUpdateWithWireMock", "PATCH", "/ads/id", nil, 1)
 }
 
+func TestAdsAppealWithWireMock(
+	t *testing.T,
+) {
+	WireMockBaseURL := os.Getenv("WIREMOCK_URL")
+	if WireMockBaseURL == "" {
+		WireMockBaseURL = "http://localhost:8080"
+	}
+	client := client.NewWhop(
+		option.WithBaseURL(WireMockBaseURL),
+		option.WithToken("test-token"),
+	)
+	request := &whopsdk.AppealAdsRequest{
+		ID:   "id",
+		Type: whopsdk.AppealAdsRequestTypeWebsite,
+	}
+	_, invocationErr := client.Ads.Appeal(
+		context.TODO(),
+		request,
+		option.WithHTTPHeader(
+			http.Header{"X-Test-Id": []string{"TestAdsAppealWithWireMock"}},
+		),
+	)
+
+	require.NoError(t, invocationErr, "Client method call should succeed")
+	VerifyRequestCount(t, "TestAdsAppealWithWireMock", "POST", "/ads/id/appeal", nil, 1)
+}
+
 func TestAdsDuplicateWithWireMock(
 	t *testing.T,
 ) {

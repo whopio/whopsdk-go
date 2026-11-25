@@ -4278,6 +4278,75 @@ client.Ads.Update(
 </dl>
 </details>
 
+<details><summary><code>client.Ads.Appeal(ID, request) -> *whopsdk.Ad</code></summary>
+<dl>
+<dd>
+
+#### 📝 Description
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+Asks Whop to review the ad again. A `website` appeal reviews the ad against its website as it is now. It only applies to an ad held back for something found on its website. An ad can be appealed once an hour.
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### 🔌 Usage
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+```go
+request := &whopsdk.AppealAdsRequest{
+    ID: "id",
+    Type: whopsdk.AppealAdsRequestTypeWebsite,
+}
+client.Ads.Appeal(
+    context.TODO(),
+    request,
+)
+```
+</dd>
+</dl>
+</dd>
+</dl>
+
+#### ⚙️ Parameters
+
+<dl>
+<dd>
+
+<dl>
+<dd>
+
+**id:** `string` — The ad ID.
+    
+</dd>
+</dl>
+
+<dl>
+<dd>
+
+**type_:** `whopsdk.AppealAdsRequestType` — How to review the ad again. `website` reviews it against its website as it is now.
+    
+</dd>
+</dl>
+</dd>
+</dl>
+
+
+</dd>
+</dl>
+</details>
+
 <details><summary><code>client.Ads.Duplicate(ID, request) -> *whopsdk.DuplicateAdsResponse</code></summary>
 <dl>
 <dd>
