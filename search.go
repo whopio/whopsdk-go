@@ -1254,6 +1254,7 @@ const (
 	SearchRecordMembershipStatusCanceled   SearchRecordMembershipStatus = "canceled"
 	SearchRecordMembershipStatusExpired    SearchRecordMembershipStatus = "expired"
 	SearchRecordMembershipStatusUnresolved SearchRecordMembershipStatus = "unresolved"
+	SearchRecordMembershipStatusScheduled  SearchRecordMembershipStatus = "scheduled"
 )
 
 func NewSearchRecordMembershipStatusFromString(s string) (SearchRecordMembershipStatus, error) {
@@ -1272,6 +1273,8 @@ func NewSearchRecordMembershipStatusFromString(s string) (SearchRecordMembership
 		return SearchRecordMembershipStatusExpired, nil
 	case "unresolved":
 		return SearchRecordMembershipStatusUnresolved, nil
+	case "scheduled":
+		return SearchRecordMembershipStatusScheduled, nil
 	}
 	var t SearchRecordMembershipStatus
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
