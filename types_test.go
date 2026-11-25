@@ -196620,6 +196620,13 @@ func TestEnumAccountReserveTypeType(t *testing.T) {
 		assert.Equal(t, AccountReserveTypeType("preshipment_hold"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_subaccount_negative_balances", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAccountReserveTypeTypeFromString("subaccount_negative_balances")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AccountReserveTypeType("subaccount_negative_balances"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_Invalid", func(t *testing.T) {
 		_, err := NewAccountReserveTypeTypeFromString("invalid_value_that_does_not_exist")
 		assert.Error(t, err)
