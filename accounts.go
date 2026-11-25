@@ -2346,7 +2346,7 @@ type AccountCompanyFormation struct {
 	Documents []*AccountCompanyFormationDocument `json:"documents,omitempty" url:"documents,omitempty"`
 	// Whether the company's EIN has been issued by the IRS. Present once `status` leaves `draft`.
 	EinRegistered *bool `json:"ein_registered,omitempty" url:"ein_registered,omitempty"`
-	// Registered company name including the entity ending, for example `Acme, LLC`. Present once `status` leaves `draft`.
+	// Registered company name including the entity ending, for example `Shine Time Auto Detailing, LLC`. Present once `status` leaves `draft`.
 	LegalName *string `json:"legal_name,omitempty" url:"legal_name,omitempty"`
 	// IRS forms still awaiting a founder's signature, each with a hosted signing URL. Present once `status` leaves `draft`; empty when nothing needs signing.
 	Signatures *AccountCompanyFormationSignatures `json:"signatures,omitempty" url:"signatures,omitempty"`

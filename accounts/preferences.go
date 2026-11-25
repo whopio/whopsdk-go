@@ -1478,7 +1478,7 @@ var retrievePreferencesResponseAdsTripleWhaleIntegrationNullableFields = map[str
 type RetrievePreferencesResponseAdsTripleWhaleIntegration struct {
 	// The leading characters of the stored Data-In API key, followed by asterisks. The full key is never returned. `null` when no key is stored.
 	MaskedAPIKey *string `json:"masked_api_key,omitempty" url:"masked_api_key,omitempty"`
-	// The shop domain spend is reported for, such as `acme.myshopify.com` or a custom domain for a non-Shopify store. `null` when none is set.
+	// The shop domain spend is reported for, such as `shine-time.myshopify.com` or a custom domain for a non-Shopify store. `null` when none is set.
 	ShopDomain *string `json:"shop_domain,omitempty" url:"shop_domain,omitempty"`
 	// Where the integration stands. `requires_shop_domain` means no shop domain is configured — set `shop_domain` before spend can be reported.
 	Status RetrievePreferencesResponseAdsTripleWhaleIntegrationStatus `json:"status" url:"status"`
@@ -5071,7 +5071,7 @@ var updatePreferencesResponseAdsTripleWhaleIntegrationNullableFields = map[strin
 type UpdatePreferencesResponseAdsTripleWhaleIntegration struct {
 	// The leading characters of the stored Data-In API key, followed by asterisks. The full key is never returned. `null` when no key is stored.
 	MaskedAPIKey *string `json:"masked_api_key,omitempty" url:"masked_api_key,omitempty"`
-	// The shop domain spend is reported for, such as `acme.myshopify.com` or a custom domain for a non-Shopify store. `null` when none is set.
+	// The shop domain spend is reported for, such as `shine-time.myshopify.com` or a custom domain for a non-Shopify store. `null` when none is set.
 	ShopDomain *string `json:"shop_domain,omitempty" url:"shop_domain,omitempty"`
 	// Where the integration stands. `requires_shop_domain` means no shop domain is configured — set `shop_domain` before spend can be reported.
 	Status UpdatePreferencesResponseAdsTripleWhaleIntegrationStatus `json:"status" url:"status"`

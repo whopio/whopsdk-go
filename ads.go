@@ -2114,11 +2114,16 @@ func (a AdContentReviewStatus) Ptr() *AdContentReviewStatus {
 }
 
 var (
-	adContentReviewTagFieldMessage = big.NewInt(1 << 0)
-	adContentReviewTagFieldTitle   = big.NewInt(1 << 1)
+	adContentReviewTagFieldBlocking  = big.NewInt(1 << 0)
+	adContentReviewTagFieldLocations = big.NewInt(1 << 1)
+	adContentReviewTagFieldMessage   = big.NewInt(1 << 2)
+	adContentReviewTagFieldTitle     = big.NewInt(1 << 3)
 )
 
 type AdContentReviewTag struct {
+	// Whether this rule keeps the ad from running until it's fixed. `false` when the ad can still run and fixing it only lets the ad run on more networks.
+	Blocking  bool                              `json:"blocking" url:"blocking"`
+	Locations []AdContentReviewTagLocationsItem `json:"locations" url:"locations"`
 	// The evidence the review recorded for this rule.
 	Message string `json:"message" url:"message"`
 	// The rule Whop content review found the ad breaks.
@@ -2129,6 +2134,20 @@ type AdContentReviewTag struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (a *AdContentReviewTag) GetBlocking() bool {
+	if a == nil {
+		return false
+	}
+	return a.Blocking
+}
+
+func (a *AdContentReviewTag) GetLocations() []AdContentReviewTagLocationsItem {
+	if a == nil {
+		return nil
+	}
+	return a.Locations
 }
 
 func (a *AdContentReviewTag) GetMessage() string {
@@ -2159,6 +2178,20 @@ func (a *AdContentReviewTag) require(field *big.Int) {
 	}
 	next.Or(next, field)
 	a.explicitFields = next
+}
+
+// SetBlocking sets the Blocking field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdContentReviewTag) SetBlocking(blocking bool) {
+	a.Blocking = blocking
+	a.require(adContentReviewTagFieldBlocking)
+}
+
+// SetLocations sets the Locations field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (a *AdContentReviewTag) SetLocations(locations []AdContentReviewTagLocationsItem) {
+	a.Locations = locations
+	a.require(adContentReviewTagFieldLocations)
 }
 
 // SetMessage sets the Message field and marks it as non-optional;
@@ -2215,6 +2248,35 @@ func (a *AdContentReviewTag) String() string {
 		return value
 	}
 	return fmt.Sprintf("%#v", a)
+}
+
+// Where on the ad the review found this. `creative` is the image or video, and `audio` is what is said or heard in it. `copy` is the ad's text, and `destination` is the landing page. Empty on reviews saved before findings recorded where they were found.
+type AdContentReviewTagLocationsItem string
+
+const (
+	AdContentReviewTagLocationsItemCreative    AdContentReviewTagLocationsItem = "creative"
+	AdContentReviewTagLocationsItemAudio       AdContentReviewTagLocationsItem = "audio"
+	AdContentReviewTagLocationsItemCopy        AdContentReviewTagLocationsItem = "copy"
+	AdContentReviewTagLocationsItemDestination AdContentReviewTagLocationsItem = "destination"
+)
+
+func NewAdContentReviewTagLocationsItemFromString(s string) (AdContentReviewTagLocationsItem, error) {
+	switch s {
+	case "creative":
+		return AdContentReviewTagLocationsItemCreative, nil
+	case "audio":
+		return AdContentReviewTagLocationsItemAudio, nil
+	case "copy":
+		return AdContentReviewTagLocationsItemCopy, nil
+	case "destination":
+		return AdContentReviewTagLocationsItemDestination, nil
+	}
+	var t AdContentReviewTagLocationsItem
+	return "", fmt.Errorf("%s is not a valid %T", s, t)
+}
+
+func (a AdContentReviewTagLocationsItem) Ptr() *AdContentReviewTagLocationsItem {
+	return &a
 }
 
 var (
