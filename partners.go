@@ -80,12 +80,14 @@ var (
 	partnerFieldAccountID                  = big.NewInt(1 << 0)
 	partnerFieldCertificationComplete      = big.NewInt(1 << 1)
 	partnerFieldJoinedAt                   = big.NewInt(1 << 2)
-	partnerFieldPayoutRates                = big.NewInt(1 << 3)
-	partnerFieldReferredBusinessesCount    = big.NewInt(1 << 4)
-	partnerFieldReferringPartner           = big.NewInt(1 << 5)
-	partnerFieldUser                       = big.NewInt(1 << 6)
-	partnerFieldVerificationWaitlistJoined = big.NewInt(1 << 7)
-	partnerFieldWhopPartnerVerifiedAt      = big.NewInt(1 << 8)
+	partnerFieldLeadSlotLimit              = big.NewInt(1 << 3)
+	partnerFieldLeadSlotsUsed              = big.NewInt(1 << 4)
+	partnerFieldPayoutRates                = big.NewInt(1 << 5)
+	partnerFieldReferredBusinessesCount    = big.NewInt(1 << 6)
+	partnerFieldReferringPartner           = big.NewInt(1 << 7)
+	partnerFieldUser                       = big.NewInt(1 << 8)
+	partnerFieldVerificationWaitlistJoined = big.NewInt(1 << 9)
+	partnerFieldWhopPartnerVerifiedAt      = big.NewInt(1 << 10)
 )
 
 // partnerNullableFields maps the wire names of Partner's nullable fields (required or optional) to their field bits.
@@ -102,8 +104,12 @@ type Partner struct {
 	// Whether the user finished the partner certification course: every visible quiz and knowledge check has a passing result, or, when the course has none, every visible lesson is marked completed.
 	CertificationComplete bool `json:"certification_complete" url:"certification_complete"`
 	// When the user joined the partner program, as an ISO 8601 timestamp. Null when they have not joined.
-	JoinedAt    *string              `json:"joined_at,omitempty" url:"joined_at,omitempty"`
-	PayoutRates []*PartnerPayoutTier `json:"payout_rates" url:"payout_rates"`
+	JoinedAt *string `json:"joined_at,omitempty" url:"joined_at,omitempty"`
+	// How many leads the partner can hold at once. A waiting lead offer takes a slot, and so does a lead accepted in the last 30 days whose business has made $1 or less.
+	LeadSlotLimit int `json:"lead_slot_limit" url:"lead_slot_limit"`
+	// How many of the partner's lead slots are taken now.
+	LeadSlotsUsed int                  `json:"lead_slots_used" url:"lead_slots_used"`
+	PayoutRates   []*PartnerPayoutTier `json:"payout_rates" url:"payout_rates"`
 	// Number of active first-tier business referrals attributed to the partner, excluding deleted businesses.
 	ReferredBusinessesCount int `json:"referred_businesses_count" url:"referred_businesses_count"`
 	// The user who referred this user. Deprecated: no longer populated. Always `null`.
@@ -142,6 +148,20 @@ func (p *Partner) GetJoinedAt() *string {
 		return nil
 	}
 	return p.JoinedAt
+}
+
+func (p *Partner) GetLeadSlotLimit() int {
+	if p == nil {
+		return 0
+	}
+	return p.LeadSlotLimit
+}
+
+func (p *Partner) GetLeadSlotsUsed() int {
+	if p == nil {
+		return 0
+	}
+	return p.LeadSlotsUsed
 }
 
 func (p *Partner) GetPayoutRates() []*PartnerPayoutTier {
@@ -221,6 +241,20 @@ func (p *Partner) SetCertificationComplete(certificationComplete bool) {
 func (p *Partner) SetJoinedAt(joinedAt *string) {
 	p.JoinedAt = joinedAt
 	p.require(partnerFieldJoinedAt)
+}
+
+// SetLeadSlotLimit sets the LeadSlotLimit field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Partner) SetLeadSlotLimit(leadSlotLimit int) {
+	p.LeadSlotLimit = leadSlotLimit
+	p.require(partnerFieldLeadSlotLimit)
+}
+
+// SetLeadSlotsUsed sets the LeadSlotsUsed field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Partner) SetLeadSlotsUsed(leadSlotsUsed int) {
+	p.LeadSlotsUsed = leadSlotsUsed
+	p.require(partnerFieldLeadSlotsUsed)
 }
 
 // SetPayoutRates sets the PayoutRates field and marks it as non-optional;

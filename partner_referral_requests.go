@@ -290,6 +290,231 @@ func (r *RetrievePartnerReferralRequestsRequest) SetID(id string) {
 }
 
 var (
+	businessTypeReferenceFieldID   = big.NewInt(1 << 0)
+	businessTypeReferenceFieldName = big.NewInt(1 << 1)
+)
+
+type BusinessTypeReference struct {
+	// Business type slug, such as `education`.
+	ID string `json:"id" url:"id"`
+	// Name of the business type in the viewer's language, such as `Education`.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (b *BusinessTypeReference) GetID() string {
+	if b == nil {
+		return ""
+	}
+	return b.ID
+}
+
+func (b *BusinessTypeReference) GetName() string {
+	if b == nil {
+		return ""
+	}
+	return b.Name
+}
+
+func (b *BusinessTypeReference) GetExtraProperties() map[string]interface{} {
+	if b == nil {
+		return nil
+	}
+	return b.extraProperties
+}
+
+func (b *BusinessTypeReference) require(field *big.Int) {
+	next := new(big.Int)
+	if b.explicitFields != nil {
+		next.Set(b.explicitFields)
+	}
+	next.Or(next, field)
+	b.explicitFields = next
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BusinessTypeReference) SetID(id string) {
+	b.ID = id
+	b.require(businessTypeReferenceFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (b *BusinessTypeReference) SetName(name string) {
+	b.Name = name
+	b.require(businessTypeReferenceFieldName)
+}
+
+func (b *BusinessTypeReference) UnmarshalJSON(data []byte) error {
+	type unmarshaler BusinessTypeReference
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*b = BusinessTypeReference(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *b)
+	if err != nil {
+		return err
+	}
+	b.extraProperties = extraProperties
+	b.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (b *BusinessTypeReference) MarshalJSON() ([]byte, error) {
+	type embed BusinessTypeReference
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*b),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, b.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (b *BusinessTypeReference) String() string {
+	if b == nil {
+		return "<nil>"
+	}
+	if len(b.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(b.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(b); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", b)
+}
+
+var (
+	industryTypeReferenceFieldBusinessType = big.NewInt(1 << 0)
+	industryTypeReferenceFieldID           = big.NewInt(1 << 1)
+	industryTypeReferenceFieldName         = big.NewInt(1 << 2)
+)
+
+type IndustryTypeReference struct {
+	// The business type the industry type belongs to.
+	BusinessType *BusinessTypeReference `json:"business_type" url:"business_type"`
+	// Industry type slug, such as `equity_research`. With `business_type`, it identifies one industry type.
+	ID string `json:"id" url:"id"`
+	// Name of the industry type in the viewer's language, such as `Equity research`.
+	Name string `json:"name" url:"name"`
+
+	// Private bitmask of fields set to an explicit value and therefore not to be omitted
+	explicitFields *big.Int `json:"-" url:"-"`
+
+	extraProperties map[string]interface{}
+	rawJSON         json.RawMessage
+}
+
+func (i *IndustryTypeReference) GetBusinessType() *BusinessTypeReference {
+	if i == nil {
+		return nil
+	}
+	return i.BusinessType
+}
+
+func (i *IndustryTypeReference) GetID() string {
+	if i == nil {
+		return ""
+	}
+	return i.ID
+}
+
+func (i *IndustryTypeReference) GetName() string {
+	if i == nil {
+		return ""
+	}
+	return i.Name
+}
+
+func (i *IndustryTypeReference) GetExtraProperties() map[string]interface{} {
+	if i == nil {
+		return nil
+	}
+	return i.extraProperties
+}
+
+func (i *IndustryTypeReference) require(field *big.Int) {
+	next := new(big.Int)
+	if i.explicitFields != nil {
+		next.Set(i.explicitFields)
+	}
+	next.Or(next, field)
+	i.explicitFields = next
+}
+
+// SetBusinessType sets the BusinessType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IndustryTypeReference) SetBusinessType(businessType *BusinessTypeReference) {
+	i.BusinessType = businessType
+	i.require(industryTypeReferenceFieldBusinessType)
+}
+
+// SetID sets the ID field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IndustryTypeReference) SetID(id string) {
+	i.ID = id
+	i.require(industryTypeReferenceFieldID)
+}
+
+// SetName sets the Name field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *IndustryTypeReference) SetName(name string) {
+	i.Name = name
+	i.require(industryTypeReferenceFieldName)
+}
+
+func (i *IndustryTypeReference) UnmarshalJSON(data []byte) error {
+	type unmarshaler IndustryTypeReference
+	var value unmarshaler
+	if err := json.Unmarshal(data, &value); err != nil {
+		return err
+	}
+	*i = IndustryTypeReference(value)
+	extraProperties, err := internal.ExtractExtraProperties(data, *i)
+	if err != nil {
+		return err
+	}
+	i.extraProperties = extraProperties
+	i.rawJSON = json.RawMessage(data)
+	return nil
+}
+
+func (i *IndustryTypeReference) MarshalJSON() ([]byte, error) {
+	type embed IndustryTypeReference
+	var marshaler = struct {
+		embed
+	}{
+		embed: embed(*i),
+	}
+	explicitMarshaler := internal.HandleExplicitFields(marshaler, i.explicitFields)
+	return json.Marshal(explicitMarshaler)
+}
+
+func (i *IndustryTypeReference) String() string {
+	if i == nil {
+		return "<nil>"
+	}
+	if len(i.rawJSON) > 0 {
+		if value, err := internal.StringifyJSON(i.rawJSON); err == nil {
+			return value
+		}
+	}
+	if value, err := internal.StringifyJSON(i); err == nil {
+		return value
+	}
+	return fmt.Sprintf("%#v", i)
+}
+
+var (
 	partnerReferralRequestFieldAccount          = big.NewInt(1 << 0)
 	partnerReferralRequestFieldAuthorizedUserID = big.NewInt(1 << 1)
 	partnerReferralRequestFieldCode             = big.NewInt(1 << 2)
@@ -673,29 +898,45 @@ func (p *PartnerReferralRequest) String() string {
 var (
 	partnerReferralRequestLeadFieldBusinessType  = big.NewInt(1 << 0)
 	partnerReferralRequestLeadFieldCountry       = big.NewInt(1 << 1)
-	partnerReferralRequestLeadFieldMigratingFrom = big.NewInt(1 << 2)
-	partnerReferralRequestLeadFieldOwner         = big.NewInt(1 << 3)
-	partnerReferralRequestLeadFieldSignedUpAt    = big.NewInt(1 << 4)
-	partnerReferralRequestLeadFieldWebsite       = big.NewInt(1 << 5)
+	partnerReferralRequestLeadFieldIndustryType  = big.NewInt(1 << 2)
+	partnerReferralRequestLeadFieldMigratingFrom = big.NewInt(1 << 3)
+	partnerReferralRequestLeadFieldOwner         = big.NewInt(1 << 4)
+	partnerReferralRequestLeadFieldOwnerEmail    = big.NewInt(1 << 5)
+	partnerReferralRequestLeadFieldOwnerPhone    = big.NewInt(1 << 6)
+	partnerReferralRequestLeadFieldRevenueBand   = big.NewInt(1 << 7)
+	partnerReferralRequestLeadFieldSignedUpAt    = big.NewInt(1 << 8)
+	partnerReferralRequestLeadFieldWebsite       = big.NewInt(1 << 9)
 )
 
 // partnerReferralRequestLeadNullableFields maps the wire names of PartnerReferralRequestLead's nullable fields (required or optional) to their field bits.
 var partnerReferralRequestLeadNullableFields = map[string]*big.Int{
 	"business_type":  partnerReferralRequestLeadFieldBusinessType,
 	"country":        partnerReferralRequestLeadFieldCountry,
+	"industry_type":  partnerReferralRequestLeadFieldIndustryType,
 	"migrating_from": partnerReferralRequestLeadFieldMigratingFrom,
+	"owner_email":    partnerReferralRequestLeadFieldOwnerEmail,
+	"owner_phone":    partnerReferralRequestLeadFieldOwnerPhone,
+	"revenue_band":   partnerReferralRequestLeadFieldRevenueBand,
 	"website":        partnerReferralRequestLeadFieldWebsite,
 }
 
 type PartnerReferralRequestLead struct {
-	// What the business sells, as the owner picked it at signup, such as `education` or `coaching_and_courses`. `null` when they skipped it.
+	// The business type Whop classified the business into, the same value as the account's `business_type`, such as `education`. `null` until the business is classified.
 	BusinessType *string `json:"business_type,omitempty" url:"business_type,omitempty"`
 	// The business's country as a two-letter ISO 3166-1 code, such as `us`.
 	Country *string `json:"country,omitempty" url:"country,omitempty"`
+	// The industry type Whop classified the business into, the same one the account's `industry_type` names. `null` until the business is classified, or when no industry type fits.
+	IndustryType *IndustryTypeReference `json:"industry_type,omitempty" url:"industry_type,omitempty"`
 	// The platform the owner said they are moving from, such as `stripe`, or `none`. `null` when the form did not ask.
 	MigratingFrom *string `json:"migrating_from,omitempty" url:"migrating_from,omitempty"`
 	// The business owner. A partner messages them with this user's ID.
 	Owner *UserSummary `json:"owner" url:"owner"`
+	// The business owner's email address. `null` until the partner accepts the offer.
+	OwnerEmail *string `json:"owner_email,omitempty" url:"owner_email,omitempty"`
+	// The business owner's phone number in E.164 format, such as `+14155552671`. `null` until the partner accepts the offer, or when the owner gave none.
+	OwnerPhone *string `json:"owner_phone,omitempty" url:"owner_phone,omitempty"`
+	// The revenue range the owner picked at signup, such as `0-50k` or `50-250k`. `null` when they skipped it.
+	RevenueBand *string `json:"revenue_band,omitempty" url:"revenue_band,omitempty"`
 	// When the business was created, as an ISO 8601 timestamp.
 	SignedUpAt string `json:"signed_up_at" url:"signed_up_at"`
 	// The business's website. `null` when the business has none.
@@ -722,6 +963,13 @@ func (p *PartnerReferralRequestLead) GetCountry() *string {
 	return p.Country
 }
 
+func (p *PartnerReferralRequestLead) GetIndustryType() *IndustryTypeReference {
+	if p == nil {
+		return nil
+	}
+	return p.IndustryType
+}
+
 func (p *PartnerReferralRequestLead) GetMigratingFrom() *string {
 	if p == nil {
 		return nil
@@ -734,6 +982,27 @@ func (p *PartnerReferralRequestLead) GetOwner() *UserSummary {
 		return nil
 	}
 	return p.Owner
+}
+
+func (p *PartnerReferralRequestLead) GetOwnerEmail() *string {
+	if p == nil {
+		return nil
+	}
+	return p.OwnerEmail
+}
+
+func (p *PartnerReferralRequestLead) GetOwnerPhone() *string {
+	if p == nil {
+		return nil
+	}
+	return p.OwnerPhone
+}
+
+func (p *PartnerReferralRequestLead) GetRevenueBand() *string {
+	if p == nil {
+		return nil
+	}
+	return p.RevenueBand
 }
 
 func (p *PartnerReferralRequestLead) GetSignedUpAt() string {
@@ -780,6 +1049,13 @@ func (p *PartnerReferralRequestLead) SetCountry(country *string) {
 	p.require(partnerReferralRequestLeadFieldCountry)
 }
 
+// SetIndustryType sets the IndustryType field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralRequestLead) SetIndustryType(industryType *IndustryTypeReference) {
+	p.IndustryType = industryType
+	p.require(partnerReferralRequestLeadFieldIndustryType)
+}
+
 // SetMigratingFrom sets the MigratingFrom field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
 func (p *PartnerReferralRequestLead) SetMigratingFrom(migratingFrom *string) {
@@ -792,6 +1068,27 @@ func (p *PartnerReferralRequestLead) SetMigratingFrom(migratingFrom *string) {
 func (p *PartnerReferralRequestLead) SetOwner(owner *UserSummary) {
 	p.Owner = owner
 	p.require(partnerReferralRequestLeadFieldOwner)
+}
+
+// SetOwnerEmail sets the OwnerEmail field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralRequestLead) SetOwnerEmail(ownerEmail *string) {
+	p.OwnerEmail = ownerEmail
+	p.require(partnerReferralRequestLeadFieldOwnerEmail)
+}
+
+// SetOwnerPhone sets the OwnerPhone field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralRequestLead) SetOwnerPhone(ownerPhone *string) {
+	p.OwnerPhone = ownerPhone
+	p.require(partnerReferralRequestLeadFieldOwnerPhone)
+}
+
+// SetRevenueBand sets the RevenueBand field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *PartnerReferralRequestLead) SetRevenueBand(revenueBand *string) {
+	p.RevenueBand = revenueBand
+	p.require(partnerReferralRequestLeadFieldRevenueBand)
 }
 
 // SetSignedUpAt sets the SignedUpAt field and marks it as non-optional;
