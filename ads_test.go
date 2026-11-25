@@ -10,6 +10,90 @@ import (
 	time "time"
 )
 
+func TestSettersAppealAdsRequest(t *testing.T) {
+	t.Run("SetID", func(t *testing.T) {
+		obj := &AppealAdsRequest{}
+		var fernTestValueID string
+		obj.SetID(fernTestValueID)
+		assert.Equal(t, fernTestValueID, obj.ID)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+	t.Run("SetType", func(t *testing.T) {
+		obj := &AppealAdsRequest{}
+		var fernTestValueType AppealAdsRequestType
+		obj.SetType(fernTestValueType)
+		assert.Equal(t, fernTestValueType, obj.Type)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
+}
+
+func TestSettersMarkExplicitAppealAdsRequest(t *testing.T) {
+	t.Run("SetID_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AppealAdsRequest{}
+		var fernTestValueID string
+
+		// Act
+		obj.SetID(fernTestValueID)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetType_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AppealAdsRequest{}
+		var fernTestValueType AppealAdsRequestType
+
+		// Act
+		obj.SetType(fernTestValueType)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+}
+
 func TestSettersCreateAdsRequest(t *testing.T) {
 	t.Run("SetAccountID", func(t *testing.T) {
 		obj := &CreateAdsRequest{}
@@ -1924,6 +2008,14 @@ func TestSettersAd(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAppealAvailableAt", func(t *testing.T) {
+		obj := &Ad{}
+		var fernTestValueAppealAvailableAt *string
+		obj.SetAppealAvailableAt(fernTestValueAppealAvailableAt)
+		assert.Equal(t, fernTestValueAppealAvailableAt, obj.AppealAvailableAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCallToAction", func(t *testing.T) {
 		obj := &Ad{}
 		var fernTestValueCallToAction *AdCallToAction
@@ -2501,6 +2593,39 @@ func TestGettersAd(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAddedToCarts() // Should return zero value
+	})
+
+	t.Run("GetAppealAvailableAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Ad{}
+		var expected *string
+		obj.AppealAvailableAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAppealAvailableAt(), "getter should return the property value")
+	})
+
+	t.Run("GetAppealAvailableAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Ad{}
+		obj.AppealAvailableAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAppealAvailableAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAppealAvailableAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *Ad
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAppealAvailableAt() // Should return zero value
 	})
 
 	t.Run("GetCallToAction", func(t *testing.T) {
@@ -4221,6 +4346,37 @@ func TestSettersMarkExplicitAd(t *testing.T) {
 
 		// Act
 		obj.SetAddedToCarts(fernTestValueAddedToCarts)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAppealAvailableAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &Ad{}
+		var fernTestValueAppealAvailableAt *string
+
+		// Act
+		obj.SetAppealAvailableAt(fernTestValueAppealAvailableAt)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -6045,6 +6201,14 @@ func TestSettersMarkExplicitAd(t *testing.T) {
 }
 
 func TestSettersAdContentReview(t *testing.T) {
+	t.Run("SetBlockedByWebsite", func(t *testing.T) {
+		obj := &AdContentReview{}
+		var fernTestValueBlockedByWebsite bool
+		obj.SetBlockedByWebsite(fernTestValueBlockedByWebsite)
+		assert.Equal(t, fernTestValueBlockedByWebsite, obj.BlockedByWebsite)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetStatus", func(t *testing.T) {
 		obj := &AdContentReview{}
 		var fernTestValueStatus AdContentReviewStatus
@@ -6064,6 +6228,29 @@ func TestSettersAdContentReview(t *testing.T) {
 }
 
 func TestGettersAdContentReview(t *testing.T) {
+	t.Run("GetBlockedByWebsite", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdContentReview{}
+		var expected bool
+		obj.BlockedByWebsite = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetBlockedByWebsite(), "getter should return the property value")
+	})
+
+	t.Run("GetBlockedByWebsite_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *AdContentReview
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetBlockedByWebsite() // Should return zero value
+	})
+
 	t.Run("GetStatus", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -6123,6 +6310,37 @@ func TestGettersAdContentReview(t *testing.T) {
 }
 
 func TestSettersMarkExplicitAdContentReview(t *testing.T) {
+	t.Run("SetBlockedByWebsite_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &AdContentReview{}
+		var fernTestValueBlockedByWebsite bool
+
+		// Act
+		obj.SetBlockedByWebsite(fernTestValueBlockedByWebsite)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
 	t.Run("SetStatus_MarksExplicit", func(t *testing.T) {
 		t.Parallel()
 		// Arrange
@@ -10348,6 +10566,14 @@ func TestSettersPostAdUpdatedPayloadData(t *testing.T) {
 		assert.NotNil(t, obj.explicitFields)
 	})
 
+	t.Run("SetAppealAvailableAt", func(t *testing.T) {
+		obj := &PostAdUpdatedPayloadData{}
+		var fernTestValueAppealAvailableAt *string
+		obj.SetAppealAvailableAt(fernTestValueAppealAvailableAt)
+		assert.Equal(t, fernTestValueAppealAvailableAt, obj.AppealAvailableAt)
+		assert.NotNil(t, obj.explicitFields)
+	})
+
 	t.Run("SetCallToAction", func(t *testing.T) {
 		obj := &PostAdUpdatedPayloadData{}
 		var fernTestValueCallToAction *PostAdUpdatedPayloadDataCallToAction
@@ -10535,6 +10761,39 @@ func TestGettersPostAdUpdatedPayloadData(t *testing.T) {
 			}
 		}()
 		_ = obj.GetAdGroup() // Should return zero value
+	})
+
+	t.Run("GetAppealAvailableAt", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostAdUpdatedPayloadData{}
+		var expected *string
+		obj.AppealAvailableAt = expected
+
+		// Act & Assert
+		assert.Equal(t, expected, obj.GetAppealAvailableAt(), "getter should return the property value")
+	})
+
+	t.Run("GetAppealAvailableAt_NilValue", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostAdUpdatedPayloadData{}
+		obj.AppealAvailableAt = nil
+
+		// Act & Assert
+		assert.Nil(t, obj.GetAppealAvailableAt(), "getter should return nil when property is nil")
+	})
+
+	t.Run("GetAppealAvailableAt_NilReceiver", func(t *testing.T) {
+		t.Parallel()
+		var obj *PostAdUpdatedPayloadData
+		// Should not panic - getters should handle nil receiver gracefully
+		defer func() {
+			if r := recover(); r != nil {
+				t.Errorf("Getter panicked on nil receiver: %v", r)
+			}
+		}()
+		_ = obj.GetAppealAvailableAt() // Should return zero value
 	})
 
 	t.Run("GetCallToAction", func(t *testing.T) {
@@ -11024,6 +11283,37 @@ func TestSettersMarkExplicitPostAdUpdatedPayloadData(t *testing.T) {
 
 		// Act
 		obj.SetAdGroup(fernTestValueAdGroup)
+
+		// Assert - object with explicitly set field can be marshaled/unmarshaled
+		bytes, err := json.Marshal(obj)
+		require.NoError(t, err, "marshaling should succeed for test setup")
+
+		// This test ensures JSON marshaling and unmarshaling succeed when the field has a zero/nil value
+		// Detect if marshaled JSON is an object or primitive to use correct unmarshal target
+		if len(bytes) > 0 && bytes[0] == '{' {
+			// JSON object - unmarshal into map
+			var unmarshaled map[string]interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		} else {
+			// JSON primitive (string, number, boolean, null) - unmarshal into interface{}
+			var unmarshaled interface{}
+			err = json.Unmarshal(bytes, &unmarshaled)
+			require.NoError(t, err, "unmarshaling should succeed for test verification")
+		}
+
+		// Note: This does not explicitly assert the presence of a specific JSON field
+		// It verifies that setting a field via setter allows successful JSON round-trip
+	})
+
+	t.Run("SetAppealAvailableAt_MarksExplicit", func(t *testing.T) {
+		t.Parallel()
+		// Arrange
+		obj := &PostAdUpdatedPayloadData{}
+		var fernTestValueAppealAvailableAt *string
+
+		// Act
+		obj.SetAppealAvailableAt(fernTestValueAppealAvailableAt)
 
 		// Assert - object with explicitly set field can be marshaled/unmarshaled
 		bytes, err := json.Marshal(obj)
@@ -13905,6 +14195,7 @@ func TestJSONMarshalingUpdateAdsRequestPrimaryTextsItem(t *testing.T) {
 
 func TestRequiredNullableRoundTripAd(t *testing.T) {
 	requiredNullableKeys := []string{
+		"appeal_available_at",
 		"call_to_action",
 		"cost_per_added_to_cart",
 		"cost_per_completed_registration",
@@ -13936,7 +14227,7 @@ func TestRequiredNullableRoundTripAd(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj Ad
-		require.NoError(t, json.Unmarshal([]byte(`{"call_to_action":null,"cost_per_added_to_cart":null,"cost_per_completed_registration":null,"cost_per_contact":null,"cost_per_lead":null,"cost_per_purchase":null,"cost_per_result":null,"cost_per_schedule":null,"cost_per_submitted_application":null,"cost_per_unique_click":null,"cost_per_viewed_content":null,"frequency":null,"result_event":null,"result_event_name":null,"results":null,"spend_currency":null,"title":null,"unique_click_through_rate":null,"url":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"appeal_available_at":null,"call_to_action":null,"cost_per_added_to_cart":null,"cost_per_completed_registration":null,"cost_per_contact":null,"cost_per_lead":null,"cost_per_purchase":null,"cost_per_result":null,"cost_per_schedule":null,"cost_per_submitted_application":null,"cost_per_unique_click":null,"cost_per_viewed_content":null,"frequency":null,"result_event":null,"result_event_name":null,"results":null,"spend_currency":null,"title":null,"unique_click_through_rate":null,"url":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -14188,6 +14479,7 @@ func TestRequiredNullableRoundTripPostAdUpdatedPayload(t *testing.T) {
 
 func TestRequiredNullableRoundTripPostAdUpdatedPayloadData(t *testing.T) {
 	requiredNullableKeys := []string{
+		"appeal_available_at",
 		"call_to_action",
 		"title",
 		"url",
@@ -14203,7 +14495,7 @@ func TestRequiredNullableRoundTripPostAdUpdatedPayloadData(t *testing.T) {
 	t.Run("NullPreserved", func(t *testing.T) {
 		t.Parallel()
 		var obj PostAdUpdatedPayloadData
-		require.NoError(t, json.Unmarshal([]byte(`{"call_to_action":null,"title":null,"url":null}`), &obj))
+		require.NoError(t, json.Unmarshal([]byte(`{"appeal_available_at":null,"call_to_action":null,"title":null,"url":null}`), &obj))
 		result := marshalToMap(t, &obj)
 		for _, key := range requiredNullableKeys {
 			value, ok := result[key]
@@ -15428,6 +15720,28 @@ func TestEnumAdStatus(t *testing.T) {
 
 	t.Run("Ptr", func(t *testing.T) {
 		val, err := NewAdStatusFromString("active")
+		assert.NoError(t, err)
+		ptr := val.Ptr()
+		assert.NotNil(t, ptr)
+		assert.Equal(t, val, *ptr)
+	})
+}
+
+func TestEnumAppealAdsRequestType(t *testing.T) {
+	t.Run("NewFromString_website", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewAppealAdsRequestTypeFromString("website")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, AppealAdsRequestType("website"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_Invalid", func(t *testing.T) {
+		_, err := NewAppealAdsRequestTypeFromString("invalid_value_that_does_not_exist")
+		assert.Error(t, err)
+	})
+
+	t.Run("Ptr", func(t *testing.T) {
+		val, err := NewAppealAdsRequestTypeFromString("website")
 		assert.NoError(t, err)
 		ptr := val.Ptr()
 		assert.NotNil(t, ptr)

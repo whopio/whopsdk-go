@@ -300,6 +300,34 @@ func (c *Client) Update(
 	return response.Body, nil
 }
 
+// Asks Whop to review the ad again. A `website` appeal reviews the ad against its website as it is now. It only applies to an ad held back for something found on its website. An ad can be appealed once an hour.
+//
+// Example:
+//
+//	request := &whopsdk.AppealAdsRequest{
+//	    ID: "id",
+//	    Type: whopsdk.AppealAdsRequestTypeWebsite,
+//	}
+//	client.Ads.Appeal(
+//	    context.TODO(),
+//	    request,
+//	)
+func (c *Client) Appeal(
+	ctx context.Context,
+	request *whopsdk.AppealAdsRequest,
+	opts ...option.RequestOption,
+) (*whopsdk.Ad, error) {
+	response, err := c.WithRawResponse.Appeal(
+		ctx,
+		request,
+		opts...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response.Body, nil
+}
+
 // Copies an ad into its own ad group or into another one. Copies keep the source ad's active or paused state.
 //
 // Example:
