@@ -338,7 +338,7 @@ type ListMembershipsRequest struct {
 	MemberID *string `json:"-" url:"member_id,omitempty"`
 	// Narrow to memberships linked to one Discord or Telegram account, given as the platform's user ID prefixed with `discord_` or `telegram_`. Discord matches include memberships imported with that Discord ID. Any other format is a 400.
 	ExternalAccount *string `json:"-" url:"external_account,omitempty"`
-	// Filter by billing state. `trialing`, `active`, `past_due`, `completed`, `canceled`, and `expired` match the membership's `status`; `active`, `trialing`, and `past_due` exclude memberships set to cancel at period end. The other values are derived buckets that never appear as a `status`: `canceling` matches memberships set to cancel at period end; `paused` matches memberships with payment collection paused; `expiring` matches one-time purchases that have not yet expired; `one_time` matches one-time purchases that never expire; `unclaimed` matches memberships with no buyer user, including memberships bought by another business; `banned` matches memberships whose buyer is banned from the account.
+	// Filter by billing state. `trialing`, `active`, `scheduled`, `past_due`, `completed`, `canceled`, and `expired` match the membership's `status`. `active`, `trialing`, and `past_due` exclude memberships set to cancel at period end. The other values are derived buckets that never appear as a `status`. `canceling` matches memberships set to cancel at period end. `paused` matches memberships with payment collection paused. `expiring` matches one-time purchases that have not yet expired. `one_time` matches one-time purchases that never expire. `unclaimed` matches memberships with no buyer user, including memberships bought by another business. `banned` matches memberships whose buyer is banned from the account.
 	Status *ListMembershipsRequestStatus `json:"-" url:"status,omitempty"`
 	// Filter to memberships matching any of these billing states, with the same meanings as `status`. Repeat the parameter to pass several. Combined with `status` when both are sent.
 	Statuses []*ListMembershipsRequestStatusesItem `json:"-" url:"statuses,omitempty"`
@@ -878,7 +878,7 @@ type Membership struct {
 	SplitPayCurrentPayments *int `json:"split_pay_current_payments,omitempty" url:"split_pay_current_payments,omitempty"`
 	// Installment payments required before the membership stops billing. `null` when the membership is not on split pay.
 	SplitPayRequiredPayments *int `json:"split_pay_required_payments,omitempty" url:"split_pay_required_payments,omitempty"`
-	// Billing state of the membership. `active`/`trialing` memberships grant access; `past_due` is the grace period after a failed payment; `completed` one-time purchases keep access; `canceled`/`expired` do not.
+	// Billing state of the membership. `active` and `trialing` memberships grant access. `past_due` is the grace period after a failed payment. `completed` one-time purchases keep access. `scheduled` memberships wait for their variant's start date, when the first charge runs and access starts. `canceled` and `expired` memberships do not grant access.
 	Status MembershipStatus `json:"status" url:"status"`
 	// When the membership was last changed, as an ISO 8601 timestamp. Reflects the most recent change to the membership itself, so you can reconcile against webhook retries, replays, and backfills.
 	UpdatedAt string `json:"updated_at" url:"updated_at"`
@@ -2390,6 +2390,7 @@ const (
 	MembershipStatusCanceled   MembershipStatus = "canceled"
 	MembershipStatusExpired    MembershipStatus = "expired"
 	MembershipStatusUnresolved MembershipStatus = "unresolved"
+	MembershipStatusScheduled  MembershipStatus = "scheduled"
 	MembershipStatusDrafted    MembershipStatus = "drafted"
 	MembershipStatusCanceling  MembershipStatus = "canceling"
 )
@@ -2410,6 +2411,8 @@ func NewMembershipStatusFromString(s string) (MembershipStatus, error) {
 		return MembershipStatusExpired, nil
 	case "unresolved":
 		return MembershipStatusUnresolved, nil
+	case "scheduled":
+		return MembershipStatusScheduled, nil
 	case "drafted":
 		return MembershipStatusDrafted, nil
 	case "canceling":
@@ -2880,6 +2883,7 @@ type ListMembershipsRequestStatus string
 const (
 	ListMembershipsRequestStatusActive    ListMembershipsRequestStatus = "active"
 	ListMembershipsRequestStatusTrialing  ListMembershipsRequestStatus = "trialing"
+	ListMembershipsRequestStatusScheduled ListMembershipsRequestStatus = "scheduled"
 	ListMembershipsRequestStatusPastDue   ListMembershipsRequestStatus = "past_due"
 	ListMembershipsRequestStatusCompleted ListMembershipsRequestStatus = "completed"
 	ListMembershipsRequestStatusCanceled  ListMembershipsRequestStatus = "canceled"
@@ -2898,6 +2902,8 @@ func NewListMembershipsRequestStatusFromString(s string) (ListMembershipsRequest
 		return ListMembershipsRequestStatusActive, nil
 	case "trialing":
 		return ListMembershipsRequestStatusTrialing, nil
+	case "scheduled":
+		return ListMembershipsRequestStatusScheduled, nil
 	case "past_due":
 		return ListMembershipsRequestStatusPastDue, nil
 	case "completed":
@@ -2932,6 +2938,7 @@ type ListMembershipsRequestStatusesItem string
 const (
 	ListMembershipsRequestStatusesItemActive    ListMembershipsRequestStatusesItem = "active"
 	ListMembershipsRequestStatusesItemTrialing  ListMembershipsRequestStatusesItem = "trialing"
+	ListMembershipsRequestStatusesItemScheduled ListMembershipsRequestStatusesItem = "scheduled"
 	ListMembershipsRequestStatusesItemPastDue   ListMembershipsRequestStatusesItem = "past_due"
 	ListMembershipsRequestStatusesItemCompleted ListMembershipsRequestStatusesItem = "completed"
 	ListMembershipsRequestStatusesItemCanceled  ListMembershipsRequestStatusesItem = "canceled"
@@ -2950,6 +2957,8 @@ func NewListMembershipsRequestStatusesItemFromString(s string) (ListMembershipsR
 		return ListMembershipsRequestStatusesItemActive, nil
 	case "trialing":
 		return ListMembershipsRequestStatusesItemTrialing, nil
+	case "scheduled":
+		return ListMembershipsRequestStatusesItemScheduled, nil
 	case "past_due":
 		return ListMembershipsRequestStatusesItemPastDue, nil
 	case "completed":

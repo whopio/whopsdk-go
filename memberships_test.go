@@ -9649,6 +9649,13 @@ func TestEnumListMembershipsRequestStatus(t *testing.T) {
 		assert.Equal(t, ListMembershipsRequestStatus("trialing"), val, "enum value should match expected wire value")
 	})
 
+	t.Run("NewFromString_scheduled", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembershipsRequestStatusFromString("scheduled")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembershipsRequestStatus("scheduled"), val, "enum value should match expected wire value")
+	})
+
 	t.Run("NewFromString_past_due", func(t *testing.T) {
 		t.Parallel()
 		val, err := NewListMembershipsRequestStatusFromString("past_due")
@@ -9746,6 +9753,13 @@ func TestEnumListMembershipsRequestStatusesItem(t *testing.T) {
 		val, err := NewListMembershipsRequestStatusesItemFromString("trialing")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, ListMembershipsRequestStatusesItem("trialing"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_scheduled", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewListMembershipsRequestStatusesItemFromString("scheduled")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, ListMembershipsRequestStatusesItem("scheduled"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_past_due", func(t *testing.T) {
@@ -10238,6 +10252,13 @@ func TestEnumMembershipStatus(t *testing.T) {
 		val, err := NewMembershipStatusFromString("unresolved")
 		assert.NoError(t, err, "valid enum value should not return error")
 		assert.Equal(t, MembershipStatus("unresolved"), val, "enum value should match expected wire value")
+	})
+
+	t.Run("NewFromString_scheduled", func(t *testing.T) {
+		t.Parallel()
+		val, err := NewMembershipStatusFromString("scheduled")
+		assert.NoError(t, err, "valid enum value should not return error")
+		assert.Equal(t, MembershipStatus("scheduled"), val, "enum value should match expected wire value")
 	})
 
 	t.Run("NewFromString_drafted", func(t *testing.T) {
