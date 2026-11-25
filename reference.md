@@ -14679,7 +14679,7 @@ client.CourseChapters.Create(
 <dl>
 <dd>
 
-**courseID:** `string` — The unique identifier of the course to create the chapter in (e.g., "course_XXXXX").
+**courseID:** `string` — The unique identifier of the course to create the chapter in (for example, "cors_XXXXX").
     
 </dd>
 </dl>
@@ -15445,7 +15445,7 @@ client.CourseLessons.Delete(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the lesson to delete (e.g., "les_XXXXX").
+**id:** `string` — The unique identifier of the lesson to delete (for example, "lesn_XXXXX").
     
 </dd>
 </dl>
@@ -15508,7 +15508,7 @@ client.CourseLessons.Update(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the lesson to update (e.g., "les_XXXXX").
+**id:** `string` — The unique identifier of the lesson to update (for example, "lesn_XXXXX").
     
 </dd>
 </dl>
@@ -15680,7 +15680,7 @@ client.CourseLessons.MarkAsCompleted(
 <dl>
 <dd>
 
-**lessonID:** `string` — The unique identifier of the lesson to mark as completed (e.g., "les_XXXXX").
+**lessonID:** `string` — The unique identifier of the lesson to mark as completed (for example, "lesn_XXXXX").
     
 </dd>
 </dl>
@@ -15740,7 +15740,7 @@ client.CourseLessons.Start(
 <dl>
 <dd>
 
-**lessonID:** `string` — The unique identifier of the lesson the user is starting (e.g., "les_XXXXX").
+**lessonID:** `string` — The unique identifier of the lesson the user is starting (for example, "lesn_XXXXX").
     
 </dd>
 </dl>
@@ -15805,7 +15805,7 @@ client.CourseLessons.SubmitAssessment(
 <dl>
 <dd>
 
-**lessonID:** `string` — The unique identifier of the quiz or knowledge check lesson to submit answers for (e.g., "les_XXXXX").
+**lessonID:** `string` — The unique identifier of the quiz or knowledge check lesson to submit answers for (for example, "lesn_XXXXX").
     
 </dd>
 </dl>
@@ -16349,7 +16349,7 @@ client.Courses.Delete(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the course to delete (e.g., "course_XXXXX").
+**id:** `string` — The unique identifier of the course to delete (for example, "cors_XXXXX").
     
 </dd>
 </dl>
@@ -16412,7 +16412,7 @@ client.Courses.Update(
 <dl>
 <dd>
 
-**id:** `string` — The unique identifier of the course to update (e.g., "course_XXXXX").
+**id:** `string` — The unique identifier of the course to update (for example, "cors_XXXXX").
     
 </dd>
 </dl>
@@ -36585,7 +36585,7 @@ client.PromoCodes.Create(
 <dl>
 <dd>
 
-**amountOff:** `float64` 
+**amountOff:** `float64` — The discount. For `percentage`, a whole percent from 0.01 to 100 (25 means 25% off). Responses return it as a fraction, 0.25. For `flat_amount`, an amount in `base_currency` units, such as dollars (5 means $5.00).
     
 </dd>
 </dl>
@@ -36609,7 +36609,7 @@ client.PromoCodes.Create(
 <dl>
 <dd>
 
-**code:** `string` 
+**code:** `string` — The code customers enter at checkout. Stored lowercase.
     
 </dd>
 </dl>
@@ -36657,7 +36657,7 @@ client.PromoCodes.Create(
 <dl>
 <dd>
 
-**promoDurationMonths:** `int` 
+**promoDurationMonths:** `int` — How many billing cycles the discount applies to: 0 for every payment, 1 for the first payment only, N to cover the first N payments.
     
 </dd>
 </dl>
@@ -36673,7 +36673,7 @@ client.PromoCodes.Create(
 <dl>
 <dd>
 
-**stock:** `*int` 
+**stock:** `*int` — How many times the code can be used. Required unless `unlimited_stock` is true.
     
 </dd>
 </dl>
@@ -36681,7 +36681,7 @@ client.PromoCodes.Create(
 <dl>
 <dd>
 
-**unlimitedStock:** `*bool` 
+**unlimitedStock:** `*bool` — Allow unlimited uses. When false or omitted, `stock` is required.
     
 </dd>
 </dl>
@@ -44359,7 +44359,7 @@ client.Variants.Create(
 <dl>
 <dd>
 
-**customFields:** `[]*whopsdk.CreateVariantsRequestCustomFieldsItem` — An array of custom field definitions to collect from customers at checkout. Omitting this field clears existing custom fields.
+**customFields:** `[]*whopsdk.CreateVariantsRequestCustomFieldsItem` — An array of custom field definitions to collect from customers at checkout. On update, omitting this field leaves existing custom fields unchanged. Send an empty array to clear them.
     
 </dd>
 </dl>
@@ -44804,7 +44804,7 @@ client.Variants.Update(
 <dl>
 <dd>
 
-**customFields:** `[]*whopsdk.UpdateVariantsRequestCustomFieldsItem` — An array of custom field definitions to collect from customers at checkout. Omitting this field clears existing custom fields.
+**customFields:** `[]*whopsdk.UpdateVariantsRequestCustomFieldsItem` — An array of custom field definitions to collect from customers at checkout. On update, omitting this field leaves existing custom fields unchanged. Send an empty array to clear them.
     
 </dd>
 </dl>
@@ -45624,7 +45624,7 @@ client.WaitlistEntries.List(
 <dl>
 <dd>
 
-**createdBefore:** `*string` — Only return signups submitted at or before this ISO 8601 timestamp.
+**createdBefore:** `*time.Time` — Only return signups submitted at or before this ISO 8601 timestamp.
     
 </dd>
 </dl>
@@ -45632,7 +45632,7 @@ client.WaitlistEntries.List(
 <dl>
 <dd>
 
-**createdAfter:** `*string` — Only return signups submitted at or after this ISO 8601 timestamp.
+**createdAfter:** `*time.Time` — Only return signups submitted at or after this ISO 8601 timestamp.
     
 </dd>
 </dl>

@@ -57,21 +57,26 @@ var (
 )
 
 type CreatePromoCodesRequest struct {
-	AccountID               string                              `json:"account_id" url:"-"`
-	AmountOff               float64                             `json:"amount_off" url:"-"`
-	BaseCurrency            CreatePromoCodesRequestBaseCurrency `json:"base_currency" url:"-"`
-	ChurnedUsersOnly        *bool                               `json:"churned_users_only,omitempty" url:"-"`
-	Code                    string                              `json:"code" url:"-"`
-	ExistingMembershipsOnly *bool                               `json:"existing_memberships_only,omitempty" url:"-"`
-	ExpiresAt               *string                             `json:"expires_at,omitempty" url:"-"`
-	NewUsersOnly            bool                                `json:"new_users_only" url:"-"`
-	OnePerCustomer          *bool                               `json:"one_per_customer,omitempty" url:"-"`
-	ProductID               *string                             `json:"product_id,omitempty" url:"-"`
-	PromoDurationMonths     int                                 `json:"promo_duration_months" url:"-"`
-	PromoType               CreatePromoCodesRequestPromoType    `json:"promo_type" url:"-"`
-	Stock                   *int                                `json:"stock,omitempty" url:"-"`
-	UnlimitedStock          *bool                               `json:"unlimited_stock,omitempty" url:"-"`
-	VariantIDs              []string                            `json:"variant_ids,omitempty" url:"-"`
+	AccountID string `json:"account_id" url:"-"`
+	// The discount. For `percentage`, a whole percent from 0.01 to 100 (25 means 25% off). Responses return it as a fraction, 0.25. For `flat_amount`, an amount in `base_currency` units, such as dollars (5 means $5.00).
+	AmountOff        float64                             `json:"amount_off" url:"-"`
+	BaseCurrency     CreatePromoCodesRequestBaseCurrency `json:"base_currency" url:"-"`
+	ChurnedUsersOnly *bool                               `json:"churned_users_only,omitempty" url:"-"`
+	// The code customers enter at checkout. Stored lowercase.
+	Code                    string  `json:"code" url:"-"`
+	ExistingMembershipsOnly *bool   `json:"existing_memberships_only,omitempty" url:"-"`
+	ExpiresAt               *string `json:"expires_at,omitempty" url:"-"`
+	NewUsersOnly            bool    `json:"new_users_only" url:"-"`
+	OnePerCustomer          *bool   `json:"one_per_customer,omitempty" url:"-"`
+	ProductID               *string `json:"product_id,omitempty" url:"-"`
+	// How many billing cycles the discount applies to: 0 for every payment, 1 for the first payment only, N to cover the first N payments.
+	PromoDurationMonths int                              `json:"promo_duration_months" url:"-"`
+	PromoType           CreatePromoCodesRequestPromoType `json:"promo_type" url:"-"`
+	// How many times the code can be used. Required unless `unlimited_stock` is true.
+	Stock *int `json:"stock,omitempty" url:"-"`
+	// Allow unlimited uses. When false or omitted, `stock` is required.
+	UnlimitedStock *bool    `json:"unlimited_stock,omitempty" url:"-"`
+	VariantIDs     []string `json:"variant_ids,omitempty" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
 	explicitFields *big.Int `json:"-" url:"-"`

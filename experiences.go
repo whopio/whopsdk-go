@@ -705,7 +705,7 @@ func (e *Experience) String() string {
 	return fmt.Sprintf("%#v", e)
 }
 
-// The different access levels for experiences (PUBLIC IS NEVER USED ANYMORE).
+// The different access levels for experiences.
 type ExperienceAccessLevels string
 
 const (

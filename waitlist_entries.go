@@ -7,6 +7,7 @@ import (
 	fmt "fmt"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
+	time "time"
 )
 
 var (
@@ -276,9 +277,9 @@ type ListWaitlistEntriesRequest struct {
 	// Search signups by the user's name or username, or the name of the account they were submitted on behalf of. An account ID, prefixed `biz_`, matches signups submitted on behalf of that account, and a user ID, prefixed `user_`, or an exact email address matches that user's signups.
 	Query *string `json:"-" url:"query,omitempty"`
 	// Only return signups submitted at or before this ISO 8601 timestamp.
-	CreatedBefore *string `json:"-" url:"created_before,omitempty"`
+	CreatedBefore *time.Time `json:"-" url:"created_before,omitempty"`
 	// Only return signups submitted at or after this ISO 8601 timestamp.
-	CreatedAfter *string `json:"-" url:"created_after,omitempty"`
+	CreatedAfter *time.Time `json:"-" url:"created_after,omitempty"`
 	// The field to sort results by. Defaults to `created_at`.
 	Order *ListWaitlistEntriesRequestOrder `json:"-" url:"order,omitempty"`
 	// The sort direction for results. Defaults to descending.
@@ -383,14 +384,14 @@ func (l *ListWaitlistEntriesRequest) SetQuery(query *string) {
 
 // SetCreatedBefore sets the CreatedBefore field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListWaitlistEntriesRequest) SetCreatedBefore(createdBefore *string) {
+func (l *ListWaitlistEntriesRequest) SetCreatedBefore(createdBefore *time.Time) {
 	l.CreatedBefore = createdBefore
 	l.require(listWaitlistEntriesRequestFieldCreatedBefore)
 }
 
 // SetCreatedAfter sets the CreatedAfter field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (l *ListWaitlistEntriesRequest) SetCreatedAfter(createdAfter *string) {
+func (l *ListWaitlistEntriesRequest) SetCreatedAfter(createdAfter *time.Time) {
 	l.CreatedAfter = createdAfter
 	l.require(listWaitlistEntriesRequestFieldCreatedAfter)
 }

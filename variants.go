@@ -144,7 +144,7 @@ type CreateVariantsRequest struct {
 	CheckoutStyling map[string]any `json:"checkout_styling,omitempty" url:"-"`
 	// The three-letter ISO currency code for the variant's pricing. Defaults to USD.
 	Currency *string `json:"currency,omitempty" url:"-"`
-	// An array of custom field definitions to collect from customers at checkout. Omitting this field clears existing custom fields.
+	// An array of custom field definitions to collect from customers at checkout. On update, omitting this field leaves existing custom fields unchanged. Send an empty array to clear them.
 	CustomFields []*CreateVariantsRequestCustomFieldsItem `json:"custom_fields,omitempty" url:"-"`
 	// A text description of the variant displayed to customers on the product page.
 	Description *string `json:"description,omitempty" url:"-"`
@@ -4755,7 +4755,7 @@ type UpdateVariantsRequest struct {
 	CheckoutStyling map[string]any `json:"checkout_styling,omitempty" url:"-"`
 	// The three-letter ISO currency code for the variant's pricing. Defaults to USD.
 	Currency *string `json:"currency,omitempty" url:"-"`
-	// An array of custom field definitions to collect from customers at checkout. Omitting this field clears existing custom fields.
+	// An array of custom field definitions to collect from customers at checkout. On update, omitting this field leaves existing custom fields unchanged. Send an empty array to clear them.
 	CustomFields []*UpdateVariantsRequestCustomFieldsItem `json:"custom_fields,omitempty" url:"-"`
 	// A text description of the variant displayed to customers on the product page.
 	Description *string `json:"description,omitempty" url:"-"`

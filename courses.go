@@ -134,7 +134,7 @@ var (
 )
 
 type DeleteCoursesRequest struct {
-	// The unique identifier of the course to delete (e.g., "course_XXXXX").
+	// The unique identifier of the course to delete (for example, "cors_XXXXX").
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -3197,7 +3197,7 @@ var (
 )
 
 type UpdateCoursesRequest struct {
-	// The unique identifier of the course to update (e.g., "course_XXXXX").
+	// The unique identifier of the course to update (for example, "cors_XXXXX").
 	ID string `json:"-" url:"-"`
 	// Whether the course awards students a PDF certificate after completing all lessons.
 	CertificateAfterCompletionEnabled *bool `json:"certificate_after_completion_enabled,omitempty" url:"-"`

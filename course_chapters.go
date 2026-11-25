@@ -15,7 +15,7 @@ var (
 )
 
 type CreateCourseChaptersRequest struct {
-	// The unique identifier of the course to create the chapter in (e.g., "course_XXXXX").
+	// The unique identifier of the course to create the chapter in (for example, "cors_XXXXX").
 	CourseID string `json:"course_id" url:"-"`
 	// The display title of the chapter (e.g., "Module 1: Introduction").
 	Title *string `json:"title,omitempty" url:"-"`
