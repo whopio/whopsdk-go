@@ -6309,7 +6309,7 @@ type AccountReserveType struct {
 	HoldPeriodDays *int `json:"hold_period_days,omitempty" url:"hold_period_days,omitempty"`
 	// Percentage of each incoming payment currently held for this reason, or `null` when the reason is not a percentage of anything. Money already held keeps the release date it was given, which `unlocks_by_date` reflects.
 	Percentage *float64 `json:"percentage,omitempty" url:"percentage,omitempty"`
-	// Why this part of the balance is held. `regular` is the account's standing risk reserve; `bnpl` and `sequra` cover buy-now-pay-later settlement; `preshipment_hold` covers a physical order that has not shipped yet; `fraud_hold` is held while activity is reviewed.
+	// Why this part of the balance is held. `regular` is the account's standing risk reserve. `bnpl` and `sequra` cover buy-now-pay-later settlement. `preshipment_hold` covers a physical order that has not shipped yet. `fraud_hold` is held while activity is reviewed. `subaccount_negative_balances` is held by a platform for the negative balances of its sub-accounts.
 	Type AccountReserveTypeType `json:"type" url:"type"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -6440,15 +6440,16 @@ func (a *AccountReserveType) String() string {
 	return fmt.Sprintf("%#v", a)
 }
 
-// Why this part of the balance is held. `regular` is the account's standing risk reserve; `bnpl` and `sequra` cover buy-now-pay-later settlement; `preshipment_hold` covers a physical order that has not shipped yet; `fraud_hold` is held while activity is reviewed.
+// Why this part of the balance is held. `regular` is the account's standing risk reserve. `bnpl` and `sequra` cover buy-now-pay-later settlement. `preshipment_hold` covers a physical order that has not shipped yet. `fraud_hold` is held while activity is reviewed. `subaccount_negative_balances` is held by a platform for the negative balances of its sub-accounts.
 type AccountReserveTypeType string
 
 const (
-	AccountReserveTypeTypeRegular         AccountReserveTypeType = "regular"
-	AccountReserveTypeTypeBnpl            AccountReserveTypeType = "bnpl"
-	AccountReserveTypeTypeSequra          AccountReserveTypeType = "sequra"
-	AccountReserveTypeTypeFraudHold       AccountReserveTypeType = "fraud_hold"
-	AccountReserveTypeTypePreshipmentHold AccountReserveTypeType = "preshipment_hold"
+	AccountReserveTypeTypeRegular                    AccountReserveTypeType = "regular"
+	AccountReserveTypeTypeBnpl                       AccountReserveTypeType = "bnpl"
+	AccountReserveTypeTypeSequra                     AccountReserveTypeType = "sequra"
+	AccountReserveTypeTypeFraudHold                  AccountReserveTypeType = "fraud_hold"
+	AccountReserveTypeTypePreshipmentHold            AccountReserveTypeType = "preshipment_hold"
+	AccountReserveTypeTypeSubaccountNegativeBalances AccountReserveTypeType = "subaccount_negative_balances"
 )
 
 func NewAccountReserveTypeTypeFromString(s string) (AccountReserveTypeType, error) {
@@ -6463,6 +6464,8 @@ func NewAccountReserveTypeTypeFromString(s string) (AccountReserveTypeType, erro
 		return AccountReserveTypeTypeFraudHold, nil
 	case "preshipment_hold":
 		return AccountReserveTypeTypePreshipmentHold, nil
+	case "subaccount_negative_balances":
+		return AccountReserveTypeTypeSubaccountNegativeBalances, nil
 	}
 	var t AccountReserveTypeType
 	return "", fmt.Errorf("%s is not a valid %T", s, t)
