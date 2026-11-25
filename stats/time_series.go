@@ -1246,6 +1246,7 @@ type RetrieveTimeSeriesRequestMode string
 const (
 	RetrieveTimeSeriesRequestModeGlobal    RetrieveTimeSeriesRequestMode = "global"
 	RetrieveTimeSeriesRequestModeOwner     RetrieveTimeSeriesRequestMode = "owner"
+	RetrieveTimeSeriesRequestModePartners  RetrieveTimeSeriesRequestMode = "partners"
 	RetrieveTimeSeriesRequestModePlatforms RetrieveTimeSeriesRequestMode = "platforms"
 	RetrieveTimeSeriesRequestModePublic    RetrieveTimeSeriesRequestMode = "public"
 )
@@ -1256,6 +1257,8 @@ func NewRetrieveTimeSeriesRequestModeFromString(s string) (RetrieveTimeSeriesReq
 		return RetrieveTimeSeriesRequestModeGlobal, nil
 	case "owner":
 		return RetrieveTimeSeriesRequestModeOwner, nil
+	case "partners":
+		return RetrieveTimeSeriesRequestModePartners, nil
 	case "platforms":
 		return RetrieveTimeSeriesRequestModePlatforms, nil
 	case "public":
