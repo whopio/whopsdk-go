@@ -1244,9 +1244,10 @@ func (r RetrieveTimeSeriesRequestInterval) Ptr() *RetrieveTimeSeriesRequestInter
 type RetrieveTimeSeriesRequestMode string
 
 const (
-	RetrieveTimeSeriesRequestModeGlobal RetrieveTimeSeriesRequestMode = "global"
-	RetrieveTimeSeriesRequestModeOwner  RetrieveTimeSeriesRequestMode = "owner"
-	RetrieveTimeSeriesRequestModePublic RetrieveTimeSeriesRequestMode = "public"
+	RetrieveTimeSeriesRequestModeGlobal    RetrieveTimeSeriesRequestMode = "global"
+	RetrieveTimeSeriesRequestModeOwner     RetrieveTimeSeriesRequestMode = "owner"
+	RetrieveTimeSeriesRequestModePlatforms RetrieveTimeSeriesRequestMode = "platforms"
+	RetrieveTimeSeriesRequestModePublic    RetrieveTimeSeriesRequestMode = "public"
 )
 
 func NewRetrieveTimeSeriesRequestModeFromString(s string) (RetrieveTimeSeriesRequestMode, error) {
@@ -1255,6 +1256,8 @@ func NewRetrieveTimeSeriesRequestModeFromString(s string) (RetrieveTimeSeriesReq
 		return RetrieveTimeSeriesRequestModeGlobal, nil
 	case "owner":
 		return RetrieveTimeSeriesRequestModeOwner, nil
+	case "platforms":
+		return RetrieveTimeSeriesRequestModePlatforms, nil
 	case "public":
 		return RetrieveTimeSeriesRequestModePublic, nil
 	}

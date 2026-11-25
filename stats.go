@@ -1473,9 +1473,10 @@ func (r RetrieveStatsRequestInterval) Ptr() *RetrieveStatsRequestInterval {
 type RetrieveStatsRequestMode string
 
 const (
-	RetrieveStatsRequestModeGlobal RetrieveStatsRequestMode = "global"
-	RetrieveStatsRequestModeOwner  RetrieveStatsRequestMode = "owner"
-	RetrieveStatsRequestModePublic RetrieveStatsRequestMode = "public"
+	RetrieveStatsRequestModeGlobal    RetrieveStatsRequestMode = "global"
+	RetrieveStatsRequestModeOwner     RetrieveStatsRequestMode = "owner"
+	RetrieveStatsRequestModePlatforms RetrieveStatsRequestMode = "platforms"
+	RetrieveStatsRequestModePublic    RetrieveStatsRequestMode = "public"
 )
 
 func NewRetrieveStatsRequestModeFromString(s string) (RetrieveStatsRequestMode, error) {
@@ -1484,6 +1485,8 @@ func NewRetrieveStatsRequestModeFromString(s string) (RetrieveStatsRequestMode, 
 		return RetrieveStatsRequestModeGlobal, nil
 	case "owner":
 		return RetrieveStatsRequestModeOwner, nil
+	case "platforms":
+		return RetrieveStatsRequestModePlatforms, nil
 	case "public":
 		return RetrieveStatsRequestModePublic, nil
 	}
