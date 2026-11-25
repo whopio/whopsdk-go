@@ -420,7 +420,7 @@ type ListExperimentsRequest struct {
 	Last *int `json:"-" url:"last,omitempty"`
 	// Return results before this cursor. Use `page_info.start_cursor` from the previous response to fetch the previous page.
 	Before *string `json:"-" url:"before,omitempty"`
-	// The field to sort experiments by.
+	// The field to sort experiments by. `lift` puts the experiment whose primary measure moved the most first. With `account_id=global` it is the only order allowed.
 	Order *ListExperimentsRequestOrder `json:"-" url:"order,omitempty"`
 	// Sort direction.
 	Direction *ListExperimentsRequestDirection `json:"-" url:"direction,omitempty"`
@@ -2947,6 +2947,7 @@ type ListExperimentsRequestOrder string
 const (
 	ListExperimentsRequestOrderCreatedAt ListExperimentsRequestOrder = "created_at"
 	ListExperimentsRequestOrderFlagKey   ListExperimentsRequestOrder = "flag_key"
+	ListExperimentsRequestOrderLift      ListExperimentsRequestOrder = "lift"
 )
 
 func NewListExperimentsRequestOrderFromString(s string) (ListExperimentsRequestOrder, error) {
@@ -2955,6 +2956,8 @@ func NewListExperimentsRequestOrderFromString(s string) (ListExperimentsRequestO
 		return ListExperimentsRequestOrderCreatedAt, nil
 	case "flag_key":
 		return ListExperimentsRequestOrderFlagKey, nil
+	case "lift":
+		return ListExperimentsRequestOrderLift, nil
 	}
 	var t ListExperimentsRequestOrder
 	return "", fmt.Errorf("%s is not a valid %T", s, t)

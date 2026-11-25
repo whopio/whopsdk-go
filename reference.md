@@ -20248,7 +20248,7 @@ client.Experiments.List(
 <dl>
 <dd>
 
-**order:** `*whopsdk.ListExperimentsRequestOrder` — The field to sort experiments by.
+**order:** `*whopsdk.ListExperimentsRequestOrder` — The field to sort experiments by. `lift` puts the experiment whose primary measure moved the most first. With `account_id=global` it is the only order allowed.
     
 </dd>
 </dl>
