@@ -66288,7 +66288,7 @@ var (
 type ProductLegacyCompany struct {
 	// The unique identifier for the company.
 	ID string `json:"id" url:"id"`
-	// URL slug for the account's store page. For example, `pickaxe` in whop.com/pickaxe.
+	// URL slug for the account's store page. For example, `shine-time-auto-detailing` in whop.com/shine-time-auto-detailing.
 	Route string `json:"route" url:"route"`
 	// The display name of the company shown to customers.
 	Title string `json:"title" url:"title"`

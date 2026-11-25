@@ -96,7 +96,7 @@ func TestSetupIntentsDirectCreateWithWireMock(
 				PostalCode: "94105",
 			},
 			Email: "dana@shinetime.example",
-			Name:  "Dana Shine",
+			Name:  "Dana Whitfield",
 		},
 		PaymentMethod: &setupintents.CreateDirectRequestPaymentMethod{
 			Type: setupintents.CreateDirectRequestPaymentMethodTypeCard,

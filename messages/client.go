@@ -127,7 +127,7 @@ func (c *Client) List(
 //
 //	request := &whopsdk.CreateMessagesRequest{
 //	    ChannelID: "feed_xxxxxxxxxxxxxxxxxxxxxx",
-//	    Content: "New **message**",
+//	    Content: "Your **ceramic coating** is booked for Tuesday.",
 //	}
 //	client.Messages.Create(
 //	    context.TODO(),

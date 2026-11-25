@@ -116,7 +116,7 @@ func TestMessagesCreateWithWireMock(
 	)
 	request := &whopsdk.CreateMessagesRequest{
 		ChannelID: "feed_xxxxxxxxxxxxxxxxxxxxxx",
-		Content:   "New **message**",
+		Content:   "Your **ceramic coating** is booked for Tuesday.",
 	}
 	_, invocationErr := client.Messages.Create(
 		context.TODO(),

@@ -27924,7 +27924,7 @@ Sends a Markdown message as the authenticated user or app agent. Channel access,
 ```go
 request := &whopsdk.CreateMessagesRequest{
     ChannelID: "feed_xxxxxxxxxxxxxxxxxxxxxx",
-    Content: "New **message**",
+    Content: "Your **ceramic coating** is booked for Tuesday.",
 }
 client.Messages.Create(
     context.TODO(),
@@ -49882,7 +49882,7 @@ request := &payments.CreateDirectRequest{
             PostalCode: "94105",
         },
         Email: "dana@shinetime.example",
-        Name: "Dana Shine",
+        Name: "Dana Whitfield",
     },
     PaymentMethod: &payments.CreateDirectRequestPaymentMethod{
         Type: payments.CreateDirectRequestPaymentMethodTypeCard,
@@ -50791,7 +50791,7 @@ request := &setupintents.CreateDirectRequest{
             PostalCode: "94105",
         },
         Email: "dana@shinetime.example",
-        Name: "Dana Shine",
+        Name: "Dana Whitfield",
     },
     PaymentMethod: &setupintents.CreateDirectRequestPaymentMethod{
         Type: setupintents.CreateDirectRequestPaymentMethodTypeCard,
