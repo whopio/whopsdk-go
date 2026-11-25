@@ -134,7 +134,7 @@ var (
 )
 
 type DeleteCourseLessonsRequest struct {
-	// The unique identifier of the lesson to delete (e.g., "les_XXXXX").
+	// The unique identifier of the lesson to delete (for example, "lesn_XXXXX").
 	ID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -240,7 +240,7 @@ var (
 )
 
 type MarkAsCompletedCourseLessonsRequest struct {
-	// The unique identifier of the lesson to mark as completed (e.g., "les_XXXXX").
+	// The unique identifier of the lesson to mark as completed (for example, "lesn_XXXXX").
 	LessonID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -296,7 +296,7 @@ var (
 )
 
 type StartCourseLessonsRequest struct {
-	// The unique identifier of the lesson the user is starting (e.g., "les_XXXXX").
+	// The unique identifier of the lesson the user is starting (for example, "lesn_XXXXX").
 	LessonID string `json:"-" url:"-"`
 
 	// Private bitmask of fields set to an explicit value and therefore not to be omitted
@@ -325,7 +325,7 @@ var (
 )
 
 type SubmitAssessmentCourseLessonsRequest struct {
-	// The unique identifier of the quiz or knowledge check lesson to submit answers for (e.g., "les_XXXXX").
+	// The unique identifier of the quiz or knowledge check lesson to submit answers for (for example, "lesn_XXXXX").
 	LessonID string `json:"-" url:"-"`
 	// The list of answers to submit for each assessment question.
 	Answers []*SubmitAssessmentCourseLessonsRequestAnswersItem `json:"answers" url:"-"`
@@ -4125,7 +4125,7 @@ var (
 )
 
 type UpdateCourseLessonsRequest struct {
-	// The unique identifier of the lesson to update (e.g., "les_XXXXX").
+	// The unique identifier of the lesson to update (for example, "lesn_XXXXX").
 	ID string `json:"-" url:"-"`
 	// The passing criteria for quiz or knowledge check lessons, such as minimum grade or correct answers.
 	AssessmentCompletionRequirement *UpdateCourseLessonsRequestAssessmentCompletionRequirement `json:"assessment_completion_requirement,omitempty" url:"-"`

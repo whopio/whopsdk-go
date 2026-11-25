@@ -7,6 +7,7 @@ import (
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
 	testing "testing"
+	time "time"
 )
 
 func TestSettersApproveWaitlistEntriesRequest(t *testing.T) {
@@ -489,7 +490,7 @@ func TestSettersListWaitlistEntriesRequest(t *testing.T) {
 
 	t.Run("SetCreatedBefore", func(t *testing.T) {
 		obj := &ListWaitlistEntriesRequest{}
-		var fernTestValueCreatedBefore *string
+		var fernTestValueCreatedBefore *time.Time
 		obj.SetCreatedBefore(fernTestValueCreatedBefore)
 		assert.Equal(t, fernTestValueCreatedBefore, obj.CreatedBefore)
 		assert.NotNil(t, obj.explicitFields)
@@ -497,7 +498,7 @@ func TestSettersListWaitlistEntriesRequest(t *testing.T) {
 
 	t.Run("SetCreatedAfter", func(t *testing.T) {
 		obj := &ListWaitlistEntriesRequest{}
-		var fernTestValueCreatedAfter *string
+		var fernTestValueCreatedAfter *time.Time
 		obj.SetCreatedAfter(fernTestValueCreatedAfter)
 		assert.Equal(t, fernTestValueCreatedAfter, obj.CreatedAfter)
 		assert.NotNil(t, obj.explicitFields)
@@ -898,7 +899,7 @@ func TestSettersMarkExplicitListWaitlistEntriesRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListWaitlistEntriesRequest{}
-		var fernTestValueCreatedBefore *string
+		var fernTestValueCreatedBefore *time.Time
 
 		// Act
 		obj.SetCreatedBefore(fernTestValueCreatedBefore)
@@ -929,7 +930,7 @@ func TestSettersMarkExplicitListWaitlistEntriesRequest(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &ListWaitlistEntriesRequest{}
-		var fernTestValueCreatedAfter *string
+		var fernTestValueCreatedAfter *time.Time
 
 		// Act
 		obj.SetCreatedAfter(fernTestValueCreatedAfter)

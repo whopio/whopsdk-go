@@ -7,6 +7,7 @@ import (
 	fmt "fmt"
 	internal "github.com/whopio/whopsdk-go/v2/internal"
 	big "math/big"
+	time "time"
 )
 
 var (
@@ -716,7 +717,7 @@ type Experiment struct {
 	Status ExperimentStatus `json:"status" url:"status"`
 	// The measures the experiment sets out to move, as the stats API reads them. `null` when there are none.
 	TargetStats []*ExperimentStat `json:"target_stats,omitempty" url:"target_stats,omitempty"`
-	UpdatedAt   *string           `json:"updated_at,omitempty" url:"updated_at,omitempty"`
+	UpdatedAt   *time.Time        `json:"updated_at,omitempty" url:"updated_at,omitempty"`
 	// Treatment arms. Users outside every arm's allocation form the implicit `control` group. Weights only ever grow and arms are never removed, so a user moves from control into a treatment at most once.
 	Variants []*ExperimentVariantsItem `json:"variants" url:"variants"`
 	// The treatment that won, set when the experiment was ended. Once set, every evaluation returns this arm to every caller regardless of targeting or allocation, and no further exposures are recorded. `null` means control won — an ended experiment with no winning arm evaluates to `control` for everyone. Always `null` for feature flags, which simply evaluate to disabled once ended.
@@ -869,7 +870,7 @@ func (e *Experiment) GetTargetStats() []*ExperimentStat {
 	return e.TargetStats
 }
 
-func (e *Experiment) GetUpdatedAt() *string {
+func (e *Experiment) GetUpdatedAt() *time.Time {
 	if e == nil {
 		return nil
 	}
@@ -1048,7 +1049,7 @@ func (e *Experiment) SetTargetStats(targetStats []*ExperimentStat) {
 
 // SetUpdatedAt sets the UpdatedAt field and marks it as non-optional;
 // this prevents an empty or null value for this field from being omitted during serialization.
-func (e *Experiment) SetUpdatedAt(updatedAt *string) {
+func (e *Experiment) SetUpdatedAt(updatedAt *time.Time) {
 	e.UpdatedAt = updatedAt
 	e.require(experimentFieldUpdatedAt)
 }
@@ -1068,12 +1069,18 @@ func (e *Experiment) SetWinningArm(winningArm *string) {
 }
 
 func (e *Experiment) UnmarshalJSON(data []byte) error {
-	type unmarshaler Experiment
-	var value unmarshaler
-	if err := json.Unmarshal(data, &value); err != nil {
+	type embed Experiment
+	var unmarshaler = struct {
+		embed
+		UpdatedAt *internal.DateTime `json:"updated_at,omitempty"`
+	}{
+		embed: embed(*e),
+	}
+	if err := json.Unmarshal(data, &unmarshaler); err != nil {
 		return err
 	}
-	*e = Experiment(value)
+	*e = Experiment(unmarshaler.embed)
+	e.UpdatedAt = unmarshaler.UpdatedAt.TimePtr()
 	extraProperties, err := internal.ExtractExtraProperties(data, *e)
 	if err != nil {
 		return err
@@ -1094,8 +1101,10 @@ func (e *Experiment) MarshalJSON() ([]byte, error) {
 	type embed Experiment
 	var marshaler = struct {
 		embed
+		UpdatedAt *internal.DateTime `json:"updated_at,omitempty"`
 	}{
-		embed: embed(*e),
+		embed:     embed(*e),
+		UpdatedAt: internal.NewOptionalDateTime(e.UpdatedAt),
 	}
 	explicitMarshaler := internal.HandleExplicitFields(marshaler, e.explicitFields)
 	return json.Marshal(explicitMarshaler)

@@ -7,6 +7,7 @@ import (
 	assert "github.com/stretchr/testify/assert"
 	require "github.com/stretchr/testify/require"
 	testing "testing"
+	time "time"
 )
 
 func TestSettersActivateExperimentsRequest(t *testing.T) {
@@ -1858,7 +1859,7 @@ func TestSettersExperiment(t *testing.T) {
 
 	t.Run("SetUpdatedAt", func(t *testing.T) {
 		obj := &Experiment{}
-		var fernTestValueUpdatedAt *string
+		var fernTestValueUpdatedAt *time.Time
 		obj.SetUpdatedAt(fernTestValueUpdatedAt)
 		assert.Equal(t, fernTestValueUpdatedAt, obj.UpdatedAt)
 		assert.NotNil(t, obj.explicitFields)
@@ -2477,7 +2478,7 @@ func TestGettersExperiment(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &Experiment{}
-		var expected *string
+		var expected *time.Time
 		obj.UpdatedAt = expected
 
 		// Act & Assert
@@ -3199,7 +3200,7 @@ func TestSettersMarkExplicitExperiment(t *testing.T) {
 		t.Parallel()
 		// Arrange
 		obj := &Experiment{}
-		var fernTestValueUpdatedAt *string
+		var fernTestValueUpdatedAt *time.Time
 
 		// Act
 		obj.SetUpdatedAt(fernTestValueUpdatedAt)
