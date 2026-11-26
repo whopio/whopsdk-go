@@ -1710,9 +1710,10 @@ func (r *RetrieveTimeSeriesResponseDataPointsItem) String() string {
 }
 
 var (
-	retrieveTimeSeriesResponseDataPointsItemBreakdownItemFieldName  = big.NewInt(1 << 0)
-	retrieveTimeSeriesResponseDataPointsItemBreakdownItemFieldSteps = big.NewInt(1 << 1)
-	retrieveTimeSeriesResponseDataPointsItemBreakdownItemFieldValue = big.NewInt(1 << 2)
+	retrieveTimeSeriesResponseDataPointsItemBreakdownItemFieldLabel = big.NewInt(1 << 0)
+	retrieveTimeSeriesResponseDataPointsItemBreakdownItemFieldName  = big.NewInt(1 << 1)
+	retrieveTimeSeriesResponseDataPointsItemBreakdownItemFieldSteps = big.NewInt(1 << 2)
+	retrieveTimeSeriesResponseDataPointsItemBreakdownItemFieldValue = big.NewInt(1 << 3)
 )
 
 // retrieveTimeSeriesResponseDataPointsItemBreakdownItemNullableFields maps the wire names of RetrieveTimeSeriesResponseDataPointsItemBreakdownItem's nullable fields (required or optional) to their field bits.
@@ -1721,6 +1722,8 @@ var retrieveTimeSeriesResponseDataPointsItemBreakdownItemNullableFields = map[st
 }
 
 type RetrieveTimeSeriesResponseDataPointsItemBreakdownItem struct {
+	// The display name of the property value. It is present only when the value has a name. For example, a country code has the name of its country.
+	Label *string `json:"label,omitempty" url:"label,omitempty"`
 	// The property value, for example usd or visa.
 	Name string `json:"name" url:"name"`
 	// Present for the funnel metric. People reaching each step in order, starting with the entry step.
@@ -1733,6 +1736,13 @@ type RetrieveTimeSeriesResponseDataPointsItemBreakdownItem struct {
 
 	extraProperties map[string]interface{}
 	rawJSON         json.RawMessage
+}
+
+func (r *RetrieveTimeSeriesResponseDataPointsItemBreakdownItem) GetLabel() *string {
+	if r == nil {
+		return nil
+	}
+	return r.Label
 }
 
 func (r *RetrieveTimeSeriesResponseDataPointsItemBreakdownItem) GetName() string {
@@ -1770,6 +1780,13 @@ func (r *RetrieveTimeSeriesResponseDataPointsItemBreakdownItem) require(field *b
 	}
 	next.Or(next, field)
 	r.explicitFields = next
+}
+
+// SetLabel sets the Label field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (r *RetrieveTimeSeriesResponseDataPointsItemBreakdownItem) SetLabel(label *string) {
+	r.Label = label
+	r.require(retrieveTimeSeriesResponseDataPointsItemBreakdownItemFieldLabel)
 }
 
 // SetName sets the Name field and marks it as non-optional;
