@@ -47473,23 +47473,24 @@ var (
 	paymentFieldSettlementTimeAt                 = big.NewInt(1 << 53)
 	paymentFieldShipmentID                       = big.NewInt(1 << 54)
 	paymentFieldShippingAddress                  = big.NewInt(1 << 55)
-	paymentFieldStatus                           = big.NewInt(1 << 56)
-	paymentFieldSubstatus                        = big.NewInt(1 << 57)
-	paymentFieldSubtotal                         = big.NewInt(1 << 58)
-	paymentFieldSurcharge                        = big.NewInt(1 << 59)
-	paymentFieldTaxAmount                        = big.NewInt(1 << 60)
-	paymentFieldTaxBehavior                      = big.NewInt(1 << 61)
-	paymentFieldTaxRefundedAmount                = big.NewInt(1 << 62)
-	paymentFieldThreeDsVerified                  = big.NewInt(0).Lsh(big.NewInt(1), 63)
-	paymentFieldTotal                            = big.NewInt(0).Lsh(big.NewInt(1), 64)
-	paymentFieldUpdatedAt                        = big.NewInt(0).Lsh(big.NewInt(1), 65)
-	paymentFieldUsdTotal                         = big.NewInt(0).Lsh(big.NewInt(1), 66)
-	paymentFieldUser                             = big.NewInt(0).Lsh(big.NewInt(1), 67)
-	paymentFieldUserAgent                        = big.NewInt(0).Lsh(big.NewInt(1), 68)
-	paymentFieldVariantID                        = big.NewInt(0).Lsh(big.NewInt(1), 69)
-	paymentFieldVerificationChecks               = big.NewInt(0).Lsh(big.NewInt(1), 70)
-	paymentFieldVoidable                         = big.NewInt(0).Lsh(big.NewInt(1), 71)
-	paymentFieldWuid                             = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	paymentFieldStatementDescriptor              = big.NewInt(1 << 56)
+	paymentFieldStatus                           = big.NewInt(1 << 57)
+	paymentFieldSubstatus                        = big.NewInt(1 << 58)
+	paymentFieldSubtotal                         = big.NewInt(1 << 59)
+	paymentFieldSurcharge                        = big.NewInt(1 << 60)
+	paymentFieldTaxAmount                        = big.NewInt(1 << 61)
+	paymentFieldTaxBehavior                      = big.NewInt(1 << 62)
+	paymentFieldTaxRefundedAmount                = big.NewInt(0).Lsh(big.NewInt(1), 63)
+	paymentFieldThreeDsVerified                  = big.NewInt(0).Lsh(big.NewInt(1), 64)
+	paymentFieldTotal                            = big.NewInt(0).Lsh(big.NewInt(1), 65)
+	paymentFieldUpdatedAt                        = big.NewInt(0).Lsh(big.NewInt(1), 66)
+	paymentFieldUsdTotal                         = big.NewInt(0).Lsh(big.NewInt(1), 67)
+	paymentFieldUser                             = big.NewInt(0).Lsh(big.NewInt(1), 68)
+	paymentFieldUserAgent                        = big.NewInt(0).Lsh(big.NewInt(1), 69)
+	paymentFieldVariantID                        = big.NewInt(0).Lsh(big.NewInt(1), 70)
+	paymentFieldVerificationChecks               = big.NewInt(0).Lsh(big.NewInt(1), 71)
+	paymentFieldVoidable                         = big.NewInt(0).Lsh(big.NewInt(1), 72)
+	paymentFieldWuid                             = big.NewInt(0).Lsh(big.NewInt(1), 73)
 )
 
 // paymentNullableFields maps the wire names of Payment's nullable fields (required or optional) to their field bits.
@@ -47539,6 +47540,7 @@ var paymentNullableFields = map[string]*big.Int{
 	"settlement_time_at":                  paymentFieldSettlementTimeAt,
 	"shipment_id":                         paymentFieldShipmentID,
 	"shipping_address":                    paymentFieldShippingAddress,
+	"statement_descriptor":                paymentFieldStatementDescriptor,
 	"subtotal":                            paymentFieldSubtotal,
 	"surcharge":                           paymentFieldSurcharge,
 	"tax_amount":                          paymentFieldTaxAmount,
@@ -47663,6 +47665,8 @@ type Payment struct {
 	ShipmentID *string `json:"shipment_id,omitempty" url:"shipment_id,omitempty"`
 	// The shipping address for physical goods, or null.
 	ShippingAddress *PaymentAddress `json:"shipping_address,omitempty" url:"shipping_address,omitempty"`
+	// The text the buyer's bank or card statement shows for this payment. Null when the processor did not report one.
+	StatementDescriptor *string `json:"statement_descriptor,omitempty" url:"statement_descriptor,omitempty"`
 	// The lifecycle state of the charge: `open` while collection is outstanding, `paid` once the money moved, `pending` while a settlement rail clears, `void`/`uncollectible` when it ended without collecting.
 	Status ReceiptStatus `json:"status" url:"status"`
 	// The dashboard's finer-grained reading of the payment, folding in refunds, disputes and Resolution Center cases.
@@ -48095,6 +48099,13 @@ func (p *Payment) GetShippingAddress() *PaymentAddress {
 		return nil
 	}
 	return p.ShippingAddress
+}
+
+func (p *Payment) GetStatementDescriptor() *string {
+	if p == nil {
+		return nil
+	}
+	return p.StatementDescriptor
 }
 
 func (p *Payment) GetStatus() ReceiptStatus {
@@ -48622,6 +48633,13 @@ func (p *Payment) SetShipmentID(shipmentID *string) {
 func (p *Payment) SetShippingAddress(shippingAddress *PaymentAddress) {
 	p.ShippingAddress = shippingAddress
 	p.require(paymentFieldShippingAddress)
+}
+
+// SetStatementDescriptor sets the StatementDescriptor field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (p *Payment) SetStatementDescriptor(statementDescriptor *string) {
+	p.StatementDescriptor = statementDescriptor
+	p.require(paymentFieldStatementDescriptor)
 }
 
 // SetStatus sets the Status field and marks it as non-optional;
