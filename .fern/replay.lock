@@ -6138,5 +6138,11 @@ generations:
     cli_version: unknown
     generator_versions:
       fernapi/fern-go-sdk: 1.65.1
-current_generation: 473fca77d5fc08b4c200b61527d2fab68b983234
+  - commit_sha: 349c4351ee36c5a4c9b252750fd878068ccd94fd
+    tree_hash: 749a33d04474d2b4d5a1359e5d842ce7b9783479
+    timestamp: 2026-11-26T04:04:13.506Z
+    cli_version: unknown
+    generator_versions:
+      fernapi/fern-go-sdk: 1.65.1
+current_generation: 349c4351ee36c5a4c9b252750fd878068ccd94fd
 patches: []
