@@ -3572,6 +3572,7 @@ const (
 	ListResolutionCenterCasesRequestPaymentMethodsItemBancontact             ListResolutionCenterCasesRequestPaymentMethodsItem = "bancontact"
 	ListResolutionCenterCasesRequestPaymentMethodsItemBankWire               ListResolutionCenterCasesRequestPaymentMethodsItem = "bank_wire"
 	ListResolutionCenterCasesRequestPaymentMethodsItemBillie                 ListResolutionCenterCasesRequestPaymentMethodsItem = "billie"
+	ListResolutionCenterCasesRequestPaymentMethodsItemBizum                  ListResolutionCenterCasesRequestPaymentMethodsItem = "bizum"
 	ListResolutionCenterCasesRequestPaymentMethodsItemBlik                   ListResolutionCenterCasesRequestPaymentMethodsItem = "blik"
 	ListResolutionCenterCasesRequestPaymentMethodsItemBoleto                 ListResolutionCenterCasesRequestPaymentMethodsItem = "boleto"
 	ListResolutionCenterCasesRequestPaymentMethodsItemBreB                   ListResolutionCenterCasesRequestPaymentMethodsItem = "bre_b"
@@ -3830,6 +3831,8 @@ func NewListResolutionCenterCasesRequestPaymentMethodsItemFromString(s string) (
 		return ListResolutionCenterCasesRequestPaymentMethodsItemBankWire, nil
 	case "billie":
 		return ListResolutionCenterCasesRequestPaymentMethodsItemBillie, nil
+	case "bizum":
+		return ListResolutionCenterCasesRequestPaymentMethodsItemBizum, nil
 	case "blik":
 		return ListResolutionCenterCasesRequestPaymentMethodsItemBlik, nil
 	case "boleto":
@@ -5512,6 +5515,7 @@ const (
 	SummaryResolutionCenterCasesRequestPaymentMethodsItemBancontact             SummaryResolutionCenterCasesRequestPaymentMethodsItem = "bancontact"
 	SummaryResolutionCenterCasesRequestPaymentMethodsItemBankWire               SummaryResolutionCenterCasesRequestPaymentMethodsItem = "bank_wire"
 	SummaryResolutionCenterCasesRequestPaymentMethodsItemBillie                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "billie"
+	SummaryResolutionCenterCasesRequestPaymentMethodsItemBizum                  SummaryResolutionCenterCasesRequestPaymentMethodsItem = "bizum"
 	SummaryResolutionCenterCasesRequestPaymentMethodsItemBlik                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "blik"
 	SummaryResolutionCenterCasesRequestPaymentMethodsItemBoleto                 SummaryResolutionCenterCasesRequestPaymentMethodsItem = "boleto"
 	SummaryResolutionCenterCasesRequestPaymentMethodsItemBreB                   SummaryResolutionCenterCasesRequestPaymentMethodsItem = "bre_b"
@@ -5770,6 +5774,8 @@ func NewSummaryResolutionCenterCasesRequestPaymentMethodsItemFromString(s string
 		return SummaryResolutionCenterCasesRequestPaymentMethodsItemBankWire, nil
 	case "billie":
 		return SummaryResolutionCenterCasesRequestPaymentMethodsItemBillie, nil
+	case "bizum":
+		return SummaryResolutionCenterCasesRequestPaymentMethodsItemBizum, nil
 	case "blik":
 		return SummaryResolutionCenterCasesRequestPaymentMethodsItemBlik, nil
 	case "boleto":

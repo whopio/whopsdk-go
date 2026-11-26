@@ -5427,6 +5427,7 @@ const (
 	ListPaymentsRequestPaymentMethodsItemBancontact             ListPaymentsRequestPaymentMethodsItem = "bancontact"
 	ListPaymentsRequestPaymentMethodsItemBankWire               ListPaymentsRequestPaymentMethodsItem = "bank_wire"
 	ListPaymentsRequestPaymentMethodsItemBillie                 ListPaymentsRequestPaymentMethodsItem = "billie"
+	ListPaymentsRequestPaymentMethodsItemBizum                  ListPaymentsRequestPaymentMethodsItem = "bizum"
 	ListPaymentsRequestPaymentMethodsItemBlik                   ListPaymentsRequestPaymentMethodsItem = "blik"
 	ListPaymentsRequestPaymentMethodsItemBoleto                 ListPaymentsRequestPaymentMethodsItem = "boleto"
 	ListPaymentsRequestPaymentMethodsItemBreB                   ListPaymentsRequestPaymentMethodsItem = "bre_b"
@@ -5685,6 +5686,8 @@ func NewListPaymentsRequestPaymentMethodsItemFromString(s string) (ListPaymentsR
 		return ListPaymentsRequestPaymentMethodsItemBankWire, nil
 	case "billie":
 		return ListPaymentsRequestPaymentMethodsItemBillie, nil
+	case "bizum":
+		return ListPaymentsRequestPaymentMethodsItemBizum, nil
 	case "blik":
 		return ListPaymentsRequestPaymentMethodsItemBlik, nil
 	case "boleto":
@@ -8931,6 +8934,7 @@ const (
 	SummaryPaymentsRequestPaymentMethodsItemBancontact             SummaryPaymentsRequestPaymentMethodsItem = "bancontact"
 	SummaryPaymentsRequestPaymentMethodsItemBankWire               SummaryPaymentsRequestPaymentMethodsItem = "bank_wire"
 	SummaryPaymentsRequestPaymentMethodsItemBillie                 SummaryPaymentsRequestPaymentMethodsItem = "billie"
+	SummaryPaymentsRequestPaymentMethodsItemBizum                  SummaryPaymentsRequestPaymentMethodsItem = "bizum"
 	SummaryPaymentsRequestPaymentMethodsItemBlik                   SummaryPaymentsRequestPaymentMethodsItem = "blik"
 	SummaryPaymentsRequestPaymentMethodsItemBoleto                 SummaryPaymentsRequestPaymentMethodsItem = "boleto"
 	SummaryPaymentsRequestPaymentMethodsItemBreB                   SummaryPaymentsRequestPaymentMethodsItem = "bre_b"
@@ -9189,6 +9193,8 @@ func NewSummaryPaymentsRequestPaymentMethodsItemFromString(s string) (SummaryPay
 		return SummaryPaymentsRequestPaymentMethodsItemBankWire, nil
 	case "billie":
 		return SummaryPaymentsRequestPaymentMethodsItemBillie, nil
+	case "bizum":
+		return SummaryPaymentsRequestPaymentMethodsItemBizum, nil
 	case "blik":
 		return SummaryPaymentsRequestPaymentMethodsItemBlik, nil
 	case "boleto":
