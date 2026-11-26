@@ -73,19 +73,20 @@ var (
 	createInvoicesRequestFieldAccountID                  = big.NewInt(1 << 0)
 	createInvoicesRequestFieldBillingAddress             = big.NewInt(1 << 1)
 	createInvoicesRequestFieldBuyerFeePercentage         = big.NewInt(1 << 2)
-	createInvoicesRequestFieldCustomerName               = big.NewInt(1 << 3)
-	createInvoicesRequestFieldDueAt                      = big.NewInt(1 << 4)
-	createInvoicesRequestFieldEmailAddress               = big.NewInt(1 << 5)
-	createInvoicesRequestFieldItems                      = big.NewInt(1 << 6)
-	createInvoicesRequestFieldMailingAddressID           = big.NewInt(1 << 7)
-	createInvoicesRequestFieldMemberID                   = big.NewInt(1 << 8)
-	createInvoicesRequestFieldMemo                       = big.NewInt(1 << 9)
-	createInvoicesRequestFieldMetadata                   = big.NewInt(1 << 10)
-	createInvoicesRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 11)
-	createInvoicesRequestFieldPaymentMethodID            = big.NewInt(1 << 12)
-	createInvoicesRequestFieldRecipientEmails            = big.NewInt(1 << 13)
-	createInvoicesRequestFieldSubscriptionStartsAt       = big.NewInt(1 << 14)
-	createInvoicesRequestFieldTimeZone                   = big.NewInt(1 << 15)
+	createInvoicesRequestFieldChargeAtSubscriptionStart  = big.NewInt(1 << 3)
+	createInvoicesRequestFieldCustomerName               = big.NewInt(1 << 4)
+	createInvoicesRequestFieldDueAt                      = big.NewInt(1 << 5)
+	createInvoicesRequestFieldEmailAddress               = big.NewInt(1 << 6)
+	createInvoicesRequestFieldItems                      = big.NewInt(1 << 7)
+	createInvoicesRequestFieldMailingAddressID           = big.NewInt(1 << 8)
+	createInvoicesRequestFieldMemberID                   = big.NewInt(1 << 9)
+	createInvoicesRequestFieldMemo                       = big.NewInt(1 << 10)
+	createInvoicesRequestFieldMetadata                   = big.NewInt(1 << 11)
+	createInvoicesRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 12)
+	createInvoicesRequestFieldPaymentMethodID            = big.NewInt(1 << 13)
+	createInvoicesRequestFieldRecipientEmails            = big.NewInt(1 << 14)
+	createInvoicesRequestFieldSubscriptionStartsAt       = big.NewInt(1 << 15)
+	createInvoicesRequestFieldTimeZone                   = big.NewInt(1 << 16)
 )
 
 type CreateInvoicesRequest struct {
@@ -95,6 +96,8 @@ type CreateInvoicesRequest struct {
 	BillingAddress *CreateInvoicesRequestBillingAddress `json:"billing_address,omitempty" url:"-"`
 	// The buyer's adjustable fee in percentage points, with at most two decimal places: `0` for none, or between 5 and 100. The account keeps it, and Whop waives its take rate on the invoice.
 	BuyerFeePercentage *float64 `json:"buyer_fee_percentage,omitempty" url:"-"`
+	// When true, the customer pays only each item's initial fee now, and their payment method is first charged the renewal price at `subscription_starts_at`. The membership is `scheduled` and has no access until then. Needs `subscription_starts_at`, items that all renew, no split pay, and renewals that charge the payment method. With nothing due now, it also needs `payment_method_id`. Defaults to `false`. Can be updated on drafts.
+	ChargeAtSubscriptionStart *bool `json:"charge_at_subscription_start,omitempty" url:"-"`
 	// The contact name when creating an email-only member.
 	CustomerName *string `json:"customer_name,omitempty" url:"-"`
 	// When payment is due, as an ISO 8601 timestamp.
@@ -117,7 +120,7 @@ type CreateInvoicesRequest struct {
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
 	RecipientEmails []string `json:"recipient_emails,omitempty" url:"-"`
-	// When the first billing period of the invoice's recurring items starts, as an ISO 8601 timestamp in the future. Renewals count from this moment. `null` starts the period when the invoice is paid. Needs a recurring item. Can be updated on drafts. A start date replaces a variant's free trial, and the invoice bills the full price.
+	// When the first billing period of the invoice's recurring items starts, as an ISO 8601 timestamp in the future. Renewals count from this moment. `null` starts the period when the invoice is paid. Needs a recurring item. Can be updated on drafts. A start date replaces a variant's free trial, and the invoice bills the full price. With `charge_at_subscription_start`, the subscription, its first renewal charge and its access begin at this moment instead.
 	SubscriptionStartsAt *time.Time `json:"subscription_starts_at,omitempty" url:"-"`
 	// The IANA time zone for the dates on the invoice's email and PDF. Set it so the due date reads as the day you picked. When omitted, a new invoice uses the time zone Whop has for the user creating it, else UTC. Can be updated on drafts.
 	TimeZone *string `json:"time_zone,omitempty" url:"-"`
@@ -154,6 +157,13 @@ func (c *CreateInvoicesRequest) SetBillingAddress(billingAddress *CreateInvoices
 func (c *CreateInvoicesRequest) SetBuyerFeePercentage(buyerFeePercentage *float64) {
 	c.BuyerFeePercentage = buyerFeePercentage
 	c.require(createInvoicesRequestFieldBuyerFeePercentage)
+}
+
+// SetChargeAtSubscriptionStart sets the ChargeAtSubscriptionStart field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (c *CreateInvoicesRequest) SetChargeAtSubscriptionStart(chargeAtSubscriptionStart *bool) {
+	c.ChargeAtSubscriptionStart = chargeAtSubscriptionStart
+	c.require(createInvoicesRequestFieldChargeAtSubscriptionStart)
 }
 
 // SetCustomerName sets the CustomerName field and marks it as non-optional;
@@ -828,51 +838,52 @@ var (
 	invoiceFieldBillingAddress             = big.NewInt(1 << 3)
 	invoiceFieldBuyerFeeAmount             = big.NewInt(1 << 4)
 	invoiceFieldBuyerFeePercentage         = big.NewInt(1 << 5)
-	invoiceFieldCheckoutLink               = big.NewInt(1 << 6)
-	invoiceFieldCreatedAt                  = big.NewInt(1 << 7)
-	invoiceFieldCustomerName               = big.NewInt(1 << 8)
-	invoiceFieldDeletable                  = big.NewInt(1 << 9)
-	invoiceFieldDueAt                      = big.NewInt(1 << 10)
-	invoiceFieldEmailAddress               = big.NewInt(1 << 11)
-	invoiceFieldID                         = big.NewInt(1 << 12)
-	invoiceFieldInvoicePrefix              = big.NewInt(1 << 13)
-	invoiceFieldIssuedAt                   = big.NewInt(1 << 14)
-	invoiceFieldLineItems                  = big.NewInt(1 << 15)
-	invoiceFieldMailingAddressID           = big.NewInt(1 << 16)
-	invoiceFieldMemberID                   = big.NewInt(1 << 17)
-	invoiceFieldMembershipID               = big.NewInt(1 << 18)
-	invoiceFieldMemo                       = big.NewInt(1 << 19)
-	invoiceFieldMetadata                   = big.NewInt(1 << 20)
-	invoiceFieldNumber                     = big.NewInt(1 << 21)
-	invoiceFieldObject                     = big.NewInt(1 << 22)
-	invoiceFieldOverdue                    = big.NewInt(1 << 23)
-	invoiceFieldPaidAt                     = big.NewInt(1 << 24)
-	invoiceFieldPaymentMethodConfiguration = big.NewInt(1 << 25)
-	invoiceFieldPaymentMethodID            = big.NewInt(1 << 26)
-	invoiceFieldQuoteAcceptedAt            = big.NewInt(1 << 27)
-	invoiceFieldQuoteAmountPaid            = big.NewInt(1 << 28)
-	invoiceFieldQuoteAmountRemaining       = big.NewInt(1 << 29)
-	invoiceFieldQuoteDepositAmount         = big.NewInt(1 << 30)
-	invoiceFieldQuoteDepositPercentage     = big.NewInt(1 << 31)
-	invoiceFieldQuoteInvoiceIDs            = big.NewInt(1 << 32)
-	invoiceFieldQuotePaymentURL            = big.NewInt(1 << 33)
-	invoiceFieldQuoteSentAt                = big.NewInt(1 << 34)
-	invoiceFieldQuoteSignatureURL          = big.NewInt(1 << 35)
-	invoiceFieldQuoteSignerEmail           = big.NewInt(1 << 36)
-	invoiceFieldQuoteSignerName            = big.NewInt(1 << 37)
-	invoiceFieldRecipientEmails            = big.NewInt(1 << 38)
-	invoiceFieldScheduledChargeAt          = big.NewInt(1 << 39)
-	invoiceFieldScheduledCollectionMethod  = big.NewInt(1 << 40)
-	invoiceFieldScheduledSendAt            = big.NewInt(1 << 41)
-	invoiceFieldSendsOnDueDate             = big.NewInt(1 << 42)
-	invoiceFieldStatus                     = big.NewInt(1 << 43)
-	invoiceFieldSubscriptionStartsAt       = big.NewInt(1 << 44)
-	invoiceFieldSubtotal                   = big.NewInt(1 << 45)
-	invoiceFieldTaxAmount                  = big.NewInt(1 << 46)
-	invoiceFieldTimeZone                   = big.NewInt(1 << 47)
-	invoiceFieldTotal                      = big.NewInt(1 << 48)
-	invoiceFieldTotalsStatus               = big.NewInt(1 << 49)
-	invoiceFieldUpdatedAt                  = big.NewInt(1 << 50)
+	invoiceFieldChargeAtSubscriptionStart  = big.NewInt(1 << 6)
+	invoiceFieldCheckoutLink               = big.NewInt(1 << 7)
+	invoiceFieldCreatedAt                  = big.NewInt(1 << 8)
+	invoiceFieldCustomerName               = big.NewInt(1 << 9)
+	invoiceFieldDeletable                  = big.NewInt(1 << 10)
+	invoiceFieldDueAt                      = big.NewInt(1 << 11)
+	invoiceFieldEmailAddress               = big.NewInt(1 << 12)
+	invoiceFieldID                         = big.NewInt(1 << 13)
+	invoiceFieldInvoicePrefix              = big.NewInt(1 << 14)
+	invoiceFieldIssuedAt                   = big.NewInt(1 << 15)
+	invoiceFieldLineItems                  = big.NewInt(1 << 16)
+	invoiceFieldMailingAddressID           = big.NewInt(1 << 17)
+	invoiceFieldMemberID                   = big.NewInt(1 << 18)
+	invoiceFieldMembershipID               = big.NewInt(1 << 19)
+	invoiceFieldMemo                       = big.NewInt(1 << 20)
+	invoiceFieldMetadata                   = big.NewInt(1 << 21)
+	invoiceFieldNumber                     = big.NewInt(1 << 22)
+	invoiceFieldObject                     = big.NewInt(1 << 23)
+	invoiceFieldOverdue                    = big.NewInt(1 << 24)
+	invoiceFieldPaidAt                     = big.NewInt(1 << 25)
+	invoiceFieldPaymentMethodConfiguration = big.NewInt(1 << 26)
+	invoiceFieldPaymentMethodID            = big.NewInt(1 << 27)
+	invoiceFieldQuoteAcceptedAt            = big.NewInt(1 << 28)
+	invoiceFieldQuoteAmountPaid            = big.NewInt(1 << 29)
+	invoiceFieldQuoteAmountRemaining       = big.NewInt(1 << 30)
+	invoiceFieldQuoteDepositAmount         = big.NewInt(1 << 31)
+	invoiceFieldQuoteDepositPercentage     = big.NewInt(1 << 32)
+	invoiceFieldQuoteInvoiceIDs            = big.NewInt(1 << 33)
+	invoiceFieldQuotePaymentURL            = big.NewInt(1 << 34)
+	invoiceFieldQuoteSentAt                = big.NewInt(1 << 35)
+	invoiceFieldQuoteSignatureURL          = big.NewInt(1 << 36)
+	invoiceFieldQuoteSignerEmail           = big.NewInt(1 << 37)
+	invoiceFieldQuoteSignerName            = big.NewInt(1 << 38)
+	invoiceFieldRecipientEmails            = big.NewInt(1 << 39)
+	invoiceFieldScheduledChargeAt          = big.NewInt(1 << 40)
+	invoiceFieldScheduledCollectionMethod  = big.NewInt(1 << 41)
+	invoiceFieldScheduledSendAt            = big.NewInt(1 << 42)
+	invoiceFieldSendsOnDueDate             = big.NewInt(1 << 43)
+	invoiceFieldStatus                     = big.NewInt(1 << 44)
+	invoiceFieldSubscriptionStartsAt       = big.NewInt(1 << 45)
+	invoiceFieldSubtotal                   = big.NewInt(1 << 46)
+	invoiceFieldTaxAmount                  = big.NewInt(1 << 47)
+	invoiceFieldTimeZone                   = big.NewInt(1 << 48)
+	invoiceFieldTotal                      = big.NewInt(1 << 49)
+	invoiceFieldTotalsStatus               = big.NewInt(1 << 50)
+	invoiceFieldUpdatedAt                  = big.NewInt(1 << 51)
 )
 
 // invoiceNullableFields maps the wire names of Invoice's nullable fields (required or optional) to their field bits.
@@ -916,6 +927,8 @@ type Invoice struct {
 	BillingAddress     *PaymentAddress `json:"billing_address,omitempty" url:"billing_address,omitempty"`
 	BuyerFeeAmount     *Money          `json:"buyer_fee_amount" url:"buyer_fee_amount"`
 	BuyerFeePercentage float64         `json:"buyer_fee_percentage" url:"buyer_fee_percentage"`
+	// True when the customer pays only the initial fee of each item now and is first charged the renewal price at `subscription_starts_at`. Until then the membership is `scheduled` and has no access.
+	ChargeAtSubscriptionStart bool `json:"charge_at_subscription_start" url:"charge_at_subscription_start"`
 	// A signed link that opens this invoice in a checkout session so the buyer can pay it. Pass it as `link` to `POST /checkout_sessions`. Present while the invoice is open. `null` in any other status, for an invoice billed to a business buyer, and for an invoice whose membership was canceled. Also `null` unless you have `payment:charge`, or `invoice:create` or `invoice:update` on an invoice with no `payment_method_id`.
 	CheckoutLink *string `json:"checkout_link,omitempty" url:"checkout_link,omitempty"`
 	CreatedAt    string  `json:"created_at" url:"created_at"`
@@ -974,7 +987,7 @@ type Invoice struct {
 	// Whether this draft is issued automatically when its `due_at` arrives. Issuing it charges its `payment_method_id`, or emails its payment link to its `recipient_emails`. `false` for an invoice that is not a draft, for a draft with a scheduled send, and for a draft sent as a quote. `false` while sending the draft would fail for missing recipients or an unavailable payment link. `false` for a draft that had no future `due_at` when it was last saved. `false` for a draft created before 2026-11-12T22:00:00Z.
 	SendsOnDueDate bool          `json:"sends_on_due_date" url:"sends_on_due_date"`
 	Status         InvoiceStatus `json:"status" url:"status"`
-	// When the first billing period of the invoice's recurring items starts, as an ISO 8601 timestamp. Renewals count from this moment. `null` starts the period when the invoice is paid, and so does a time that has passed by then. An invoice with a start date skips its variants' free trial.
+	// When the first billing period of the invoice's recurring items starts, as an ISO 8601 timestamp. Renewals count from this moment. `null` starts the period when the invoice is paid, and so does a time that has passed by then. An invoice with a start date skips its variants' free trial. With `charge_at_subscription_start`, the subscription and its access begin at this moment instead.
 	SubscriptionStartsAt *string `json:"subscription_starts_at,omitempty" url:"subscription_starts_at,omitempty"`
 	Subtotal             *Money  `json:"subtotal" url:"subtotal"`
 	// The tax charged on the invoice. On a draft, it is an estimate once the draft has a complete billing address, calculated as if it were issued now. Issuing calculates it again, so the final tax can differ. `null` on a draft without a complete billing address, and when tax could not be estimated.
@@ -1033,6 +1046,13 @@ func (i *Invoice) GetBuyerFeePercentage() float64 {
 		return 0
 	}
 	return i.BuyerFeePercentage
+}
+
+func (i *Invoice) GetChargeAtSubscriptionStart() bool {
+	if i == nil {
+		return false
+	}
+	return i.ChargeAtSubscriptionStart
 }
 
 func (i *Invoice) GetCheckoutLink() *string {
@@ -1406,6 +1426,13 @@ func (i *Invoice) SetBuyerFeeAmount(buyerFeeAmount *Money) {
 func (i *Invoice) SetBuyerFeePercentage(buyerFeePercentage float64) {
 	i.BuyerFeePercentage = buyerFeePercentage
 	i.require(invoiceFieldBuyerFeePercentage)
+}
+
+// SetChargeAtSubscriptionStart sets the ChargeAtSubscriptionStart field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (i *Invoice) SetChargeAtSubscriptionStart(chargeAtSubscriptionStart bool) {
+	i.ChargeAtSubscriptionStart = chargeAtSubscriptionStart
+	i.require(invoiceFieldChargeAtSubscriptionStart)
 }
 
 // SetCheckoutLink sets the CheckoutLink field and marks it as non-optional;
@@ -7257,17 +7284,18 @@ var (
 	updateInvoicesRequestFieldID                         = big.NewInt(1 << 0)
 	updateInvoicesRequestFieldBillingAddress             = big.NewInt(1 << 1)
 	updateInvoicesRequestFieldBuyerFeePercentage         = big.NewInt(1 << 2)
-	updateInvoicesRequestFieldDueAt                      = big.NewInt(1 << 3)
-	updateInvoicesRequestFieldItems                      = big.NewInt(1 << 4)
-	updateInvoicesRequestFieldMailingAddressID           = big.NewInt(1 << 5)
-	updateInvoicesRequestFieldMemberID                   = big.NewInt(1 << 6)
-	updateInvoicesRequestFieldMemo                       = big.NewInt(1 << 7)
-	updateInvoicesRequestFieldMetadata                   = big.NewInt(1 << 8)
-	updateInvoicesRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 9)
-	updateInvoicesRequestFieldPaymentMethodID            = big.NewInt(1 << 10)
-	updateInvoicesRequestFieldRecipientEmails            = big.NewInt(1 << 11)
-	updateInvoicesRequestFieldSubscriptionStartsAt       = big.NewInt(1 << 12)
-	updateInvoicesRequestFieldTimeZone                   = big.NewInt(1 << 13)
+	updateInvoicesRequestFieldChargeAtSubscriptionStart  = big.NewInt(1 << 3)
+	updateInvoicesRequestFieldDueAt                      = big.NewInt(1 << 4)
+	updateInvoicesRequestFieldItems                      = big.NewInt(1 << 5)
+	updateInvoicesRequestFieldMailingAddressID           = big.NewInt(1 << 6)
+	updateInvoicesRequestFieldMemberID                   = big.NewInt(1 << 7)
+	updateInvoicesRequestFieldMemo                       = big.NewInt(1 << 8)
+	updateInvoicesRequestFieldMetadata                   = big.NewInt(1 << 9)
+	updateInvoicesRequestFieldPaymentMethodConfiguration = big.NewInt(1 << 10)
+	updateInvoicesRequestFieldPaymentMethodID            = big.NewInt(1 << 11)
+	updateInvoicesRequestFieldRecipientEmails            = big.NewInt(1 << 12)
+	updateInvoicesRequestFieldSubscriptionStartsAt       = big.NewInt(1 << 13)
+	updateInvoicesRequestFieldTimeZone                   = big.NewInt(1 << 14)
 )
 
 type UpdateInvoicesRequest struct {
@@ -7277,6 +7305,8 @@ type UpdateInvoicesRequest struct {
 	BillingAddress *UpdateInvoicesRequestBillingAddress `json:"billing_address,omitempty" url:"-"`
 	// The buyer's adjustable fee in percentage points, with at most two decimal places: `0` for none, or between 5 and 100. The account keeps it, and Whop waives its take rate on the invoice.
 	BuyerFeePercentage *float64 `json:"buyer_fee_percentage,omitempty" url:"-"`
+	// When true, the customer pays only each item's initial fee now, and their payment method is first charged the renewal price at `subscription_starts_at`. The membership is `scheduled` and has no access until then. Needs `subscription_starts_at`, items that all renew, no split pay, and renewals that charge the payment method. With nothing due now, it also needs `payment_method_id`. Defaults to `false`. Can be updated on drafts.
+	ChargeAtSubscriptionStart *bool `json:"charge_at_subscription_start,omitempty" url:"-"`
 	// When payment is due, as an ISO 8601 timestamp.
 	DueAt *time.Time `json:"due_at,omitempty" url:"-"`
 	// The variants being invoiced, all in the same currency. Each variant may appear once. Use quantity for multiple units. A recurring variant must belong to a product. Its first invoice charges `initial_price` plus `renewal_price`. Later invoices charge only `renewal_price`. When the variant has `trial_period_days`, the first invoice charges only `initial_price`. Paying it starts the trial, and the first renewal is billed when the trial ends. A customer who already had a subscription to the variant gets no trial, so paying starts a paid billing period immediately. Renewal invoices never start a trial. When the trial leaves nothing due, issuing or sending needs a `payment_method_id` or the `send_invoice` collection method. The subscription uses the `collection_method` the invoice was sent or issued with. A finite payment count includes the first paid invoice. With several items, every item that has a product must be a regular product, and all items need compatible payment, tax, access, and trial settings.
@@ -7295,7 +7325,7 @@ type UpdateInvoicesRequest struct {
 	PaymentMethodID *string `json:"payment_method_id,omitempty" url:"-"`
 	// Email addresses saved for invoice delivery, independent of the billed customer. Saving them sends no email. Defaults to the customer email when omitted on create. Can be updated on draft, open, or uncollectible invoices.
 	RecipientEmails []string `json:"recipient_emails,omitempty" url:"-"`
-	// When the first billing period of the invoice's recurring items starts, as an ISO 8601 timestamp in the future. Renewals count from this moment. `null` starts the period when the invoice is paid. Needs a recurring item. Can be updated on drafts. A start date replaces a variant's free trial, and the invoice bills the full price.
+	// When the first billing period of the invoice's recurring items starts, as an ISO 8601 timestamp in the future. Renewals count from this moment. `null` starts the period when the invoice is paid. Needs a recurring item. Can be updated on drafts. A start date replaces a variant's free trial, and the invoice bills the full price. With `charge_at_subscription_start`, the subscription, its first renewal charge and its access begin at this moment instead.
 	SubscriptionStartsAt *time.Time `json:"subscription_starts_at,omitempty" url:"-"`
 	// The IANA time zone for the dates on the invoice's email and PDF. Set it so the due date reads as the day you picked. When omitted, a new invoice uses the time zone Whop has for the user creating it, else UTC. Can be updated on drafts.
 	TimeZone *string `json:"time_zone,omitempty" url:"-"`
@@ -7332,6 +7362,13 @@ func (u *UpdateInvoicesRequest) SetBillingAddress(billingAddress *UpdateInvoices
 func (u *UpdateInvoicesRequest) SetBuyerFeePercentage(buyerFeePercentage *float64) {
 	u.BuyerFeePercentage = buyerFeePercentage
 	u.require(updateInvoicesRequestFieldBuyerFeePercentage)
+}
+
+// SetChargeAtSubscriptionStart sets the ChargeAtSubscriptionStart field and marks it as non-optional;
+// this prevents an empty or null value for this field from being omitted during serialization.
+func (u *UpdateInvoicesRequest) SetChargeAtSubscriptionStart(chargeAtSubscriptionStart *bool) {
+	u.ChargeAtSubscriptionStart = chargeAtSubscriptionStart
+	u.require(updateInvoicesRequestFieldChargeAtSubscriptionStart)
 }
 
 // SetDueAt sets the DueAt field and marks it as non-optional;
